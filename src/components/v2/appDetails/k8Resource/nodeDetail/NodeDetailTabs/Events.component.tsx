@@ -29,7 +29,7 @@ function EventsComponent({ selectedTab, isDeleted }) {
 
         getEvent(appDetails, params.podName, params.nodeType)
             .then((response) => {
-                setEvents(response.result.items || []);
+                setEvents(response.result.items || (response.result.events && response.result.events.items) || []);
                 setLoading(false);
             })
             .catch((err) => {
@@ -51,15 +51,19 @@ function EventsComponent({ selectedTab, isDeleted }) {
                     <React.Fragment>
                         {!loading && events && events.length > 0 && (
                             <div className="cn-0 ">
-                                <table
-                                    className="events-logs__events-table pl-20"
-                                    style={{ minHeight: '600px', background: '#0B0F22' }}
-                                >
-                                    <thead>
-                                        <tr className="no-border events-logs__events-table-row event-header">
-                                            {['Reason', 'Message', 'Count', 'Last Timestamp'].map((head, idx) => {
+                                <table className="table pl-20">
+                                    <thead style={{ minHeight: '600px', background: '#0B0F22' }}>
+                                        <tr className="no-border pl-20 event-row">
+                                            {['reason', 'message', 'count', 'last timestamp'].map((head, idx) => {
                                                 return (
-                                                    <th className="pl-20 pr-20" key={`eh_${idx}`}>
+                                                    <th
+                                                        key={`eh_${idx}`}
+                                                        className={
+                                                            'cell-style capitalize ' +
+                                                            head +
+                                                            (idx === 0 && ' pad-left-20')
+                                                        }
+                                                    >
                                                         {head}
                                                     </th>
                                                 );
@@ -70,15 +74,16 @@ function EventsComponent({ selectedTab, isDeleted }) {
                                         {events.map((event, index) => {
                                             return (
                                                 <tr
-                                                    className={`${
-                                                        index % 2 === 0 ? 'event__row-bc' : ''
-                                                    } no-border events-logs__events-table-row w-100 mono fs-13`}
+                                                    className={
+                                                        'no-border pl-20 event-row ' +
+                                                        (index % 2 === 0 && 'alternate-row')
+                                                    }
                                                     key={`eb_${index}`}
                                                 >
-                                                    <td className="pl-20 pr-20">{event.reason}</td>
-                                                    <td className="pl-20 pr-20">{event.message}</td>
-                                                    <td className="pl-20 pr-20">{event.count}</td>
-                                                    <td className="pl-20 pr-20">
+                                                    <td className="cell-style reason pad-left-20">{event.reason}</td>
+                                                    <td className="cell-style message">{event.message}</td>
+                                                    <td className="cell-style count">{event.count}</td>
+                                                    <td className="cell-style timestamp">
                                                         {moment(event.lastTimestamp, 'YYYY-MM-DDTHH:mm:ss')
                                                             .add(5, 'hours')
                                                             .add(30, 'minutes')

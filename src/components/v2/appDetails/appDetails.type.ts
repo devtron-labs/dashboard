@@ -139,6 +139,7 @@ export interface AppDetails {
     projectName?: string;
     appType?: AppType;
     additionalData?: any;
+    clusterId?: number;
 }
 
 interface MaterialInfo {

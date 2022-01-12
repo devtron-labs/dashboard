@@ -41,7 +41,8 @@ function ExternalAppDetail({appId, appName}) {
             },
             appStoreAppName : helmAppDetail.chartMetadata.chartName,
             appStoreAppVersion : helmAppDetail.chartMetadata.chartVersion,
-            additionalData : helmAppDetail.releaseStatus
+            additionalData : helmAppDetail.releaseStatus,
+            clusterId: helmAppDetail.environmentDetails.clusterId,
         }
         return genericAppDetail
     }
