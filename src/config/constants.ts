@@ -117,6 +117,7 @@ export const Routes = {
     MANIFEST: 'k8s/resource',
     DESIRED_MANIFEST: 'application/desired-manifest',
     EVENTS: 'k8s/events',
+    LOGS: 'k8s/pods/logs',
 };
 
 export const ViewType = {
