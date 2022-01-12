@@ -807,7 +807,6 @@ button.anchor {
 }
 
 .saved-filter__clear-btn--dark {
-    width: 130px;
     height: 36px;
     background-color: var(--white);
     color: var(--B500);
@@ -815,7 +814,7 @@ button.anchor {
     border-radius: 4px;
     margin: auto 6px;
     font-weight: 600;
-    padding: 8px;
+    padding: 6px 12px;
 }
 
 .saved-filter__clear-btn--dark:hover {
@@ -1495,9 +1494,9 @@ button.anchor {
     font-size: 14px;
     line-height: 1;
     margin-left: 10px;
-    color: #72767a;
-    border: none;
-    padding: 6px;
+    color: var(--B500);
+    border: 1px solid var(--B500);
+    padding: 6px 12px;
     margin: 2px;
     background-color: var(--white);
 }

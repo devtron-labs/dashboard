@@ -497,7 +497,7 @@ export default function AppList() {
                             <span className="fw-6 mr-5">{_filterKey}</span>
                             <span className="saved-filter-divider"></span>
                             <span className="ml-5">{_text}</span>
-                            <button type="button" className="saved-filter__clear-btn"
+                            <button type="button" className="saved-filter__close-btn"
                                     onClick={(event) => removeFilter(filter, filterType)} >
                                 <i className="fa fa-times-circle" aria-hidden="true"></i>
                             </button>

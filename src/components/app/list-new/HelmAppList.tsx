@@ -5,7 +5,7 @@ import { buildClusterVsNamespace, getDevtronInstalledHelmApps, AppListResponse, 
 import { showError, Progressing, ErrorScreenManager, LazyImage, handleUTCTime, useEventSource } from '../../common';
 import { Host, SERVER_MODE, URLS } from '../../../config';
 import { AppListViewType } from '../config';
-import { Link, withRouter } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg';
 import NoClusterSelectImage from '../../../assets/img/ic-no-cluster-select@2x.png';
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg';
@@ -453,10 +453,10 @@ export default function HelmAppList({
                 {showTippy && (
                     <div className='mt-18'>
                         <p className="bcb-1 cn-9 fs-13 pt-10 pb-10 pl-16 pr-16 eb-2 bw-1 br-4 cluster-tip flex left top" style={{ width: '300px' }}>
-                            <div>
-                                <InfoFill className="icon-dim-20" />
-                            </div>
-                            <div className="ml-12">
+                            <span>
+                                <InfoFill className="icon-dim-20"/>
+                            </span>
+                            <div className="ml-12 cn-9" style={{textAlign:'start'}}>
                                 <span className="fw-6">Tip </span>
                                 <span>
                                     Select a cluster from above filters to see apps deployed from outside devtron.
