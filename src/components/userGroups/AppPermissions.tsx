@@ -149,8 +149,28 @@ export default function AppPermissions({
             foundHelmApps = false,
             uniqueProjectIdsDevtronApps = [],
             uniqueProjectIdsHelmApps = [];
+        if (serverMode !== SERVER_MODE.EA_ONLY) {
+            roleFilters.forEach((element) => {
+                if (element.entity === EntityTypes.DIRECT) {
+                    const projectId = projectsMap.get(element.team)?.id;
+                    if (!element['accessType']) {
+                        uniqueProjectIdsDevtronApps.push(projectId);
+                    } else if (element['accessType'] === ACCESS_TYPE_MAP.HELM_APPS) {
+                        projectId && uniqueProjectIdsHelmApps.push(projectId);
+                    }
+                }
+            });
+            await Promise.all([
+                fetchAppList([...new Set(uniqueProjectIdsDevtronApps)].map(Number)),
+                fetchAppListHelmApps([...new Set(uniqueProjectIdsHelmApps)].map(Number)),
+            ]);
+        }
         const directPermissions: DirectPermissionsRoleFilter[] = roleFilters
-            ?.filter((roleFilter: APIRoleFilter) => roleFilter.entity === EntityTypes.DIRECT)
+            ?.filter(
+                (roleFilter: APIRoleFilter) =>
+                    roleFilter.entity === EntityTypes.DIRECT &&
+                    (serverMode !== SERVER_MODE.EA_ONLY || roleFilter.accessType === ACCESS_TYPE_MAP.HELM_APPS),
+            )
             ?.map((directRolefilter: APIRoleFilter, index: number) => {
                 const projectId =
                     serverMode !== SERVER_MODE.EA_ONLY &&
@@ -161,9 +181,7 @@ export default function AppPermissions({
                 }
                 if (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
                     foundDevtronApps = true;
-                    uniqueProjectIdsDevtronApps.push(projectId);
                 } else if (directRolefilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
-                    projectId && uniqueProjectIdsHelmApps.push(projectId);
                     foundHelmApps = true;
                 }
                 return {
@@ -177,12 +195,7 @@ export default function AppPermissions({
                     environment: setAllEnv(directRolefilter),
                 } as DirectPermissionsRoleFilter;
             });
-        if (serverMode !== SERVER_MODE.EA_ONLY) {
-            await Promise.all([
-                fetchAppList([...new Set(uniqueProjectIdsDevtronApps)].map(Number)),
-                fetchAppListHelmApps([...new Set(uniqueProjectIdsHelmApps)].map(Number)),
-            ]);
-        }
+
         if (!foundDevtronApps && serverMode !== SERVER_MODE.EA_ONLY) {
             directPermissions.push(emptyDirectPermissionDevtronApps);
         }
@@ -392,15 +405,17 @@ export default function AppPermissions({
             </ul>
             <div>
                 <Switch>
-                    <Route path={`${path}/devtron-apps`}>
-                        <AppPermissionDetail
-                            accessType={ACCESS_TYPE_MAP.DEVTRON_APPS}
-                            removeDirectPermissionRow={removeDirectPermissionRow}
-                            handleDirectPermissionChange={handleDirectPermissionChange}
-                            AddNewPermissionRow={AddNewPermissionRowLocal}
-                            directPermission={directPermission}
-                        />
-                    </Route>
+                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                        <Route path={`${path}/devtron-apps`}>
+                            <AppPermissionDetail
+                                accessType={ACCESS_TYPE_MAP.DEVTRON_APPS}
+                                removeDirectPermissionRow={removeDirectPermissionRow}
+                                handleDirectPermissionChange={handleDirectPermissionChange}
+                                AddNewPermissionRow={AddNewPermissionRowLocal}
+                                directPermission={directPermission}
+                            />
+                        </Route>
+                    )}
                     <Route path={`${path}/helm-apps`}>
                         <AppPermissionDetail
                             accessType={ACCESS_TYPE_MAP.HELM_APPS}
@@ -410,9 +425,14 @@ export default function AppPermissions({
                             directPermission={directPermission}
                         />
                     </Route>
-                    <Route path={`${path}/chart-groups`}>
-                        <ChartPermission chartPermission={chartPermission} setChartPermission={setChartPermission} />
-                    </Route>
+                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                        <Route path={`${path}/chart-groups`}>
+                            <ChartPermission
+                                chartPermission={chartPermission}
+                                setChartPermission={setChartPermission}
+                            />
+                        </Route>
+                    )}
                     <Redirect to={serverMode !== SERVER_MODE.EA_ONLY ? `${path}/devtron-apps` : `${path}/helm-apps`} />
                 </Switch>
             </div>
@@ -430,9 +450,9 @@ function AppPermissionDetail({
     return (
         <>
             <legend>
-                {accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ?
-                'Manage permission for custom apps created using devtron' :
-                'Manage permission for helm apps deployed from devtron or outside devtron'}
+                {accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
+                    ? 'Manage permission for custom apps created using devtron'
+                    : 'Manage permission for helm apps deployed from devtron or outside devtron'}
             </legend>
             <div
                 className="w-100 mb-26"
