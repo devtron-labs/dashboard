@@ -441,7 +441,7 @@ export default function HelmAppList({
         );
     }
 
-    function askToClearFilters(showTippy?: boolean) {
+    function askToClearFilters(showTipToSelectCluster?: boolean) {
         return (
             <Empty
                 view={AppListViewType.NO_RESULT}
@@ -450,7 +450,7 @@ export default function HelmAppList({
                 buttonLabel={'Clear filters'}
                 clickHandler={clearAllFilters}
             >
-                {showTippy && (
+                {showTipToSelectCluster && (
                     <div className='mt-18'>
                         <p className="bcb-1 cn-9 fs-13 pt-10 pb-10 pl-16 pr-16 eb-2 bw-1 br-4 cluster-tip flex left top" style={{ width: '300px' }}>
                             <span>
