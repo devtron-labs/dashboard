@@ -235,6 +235,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
     useEffect(() => {
         //Values are already set once we reach here
         //selected pods, containers, searchText
+        onLogsCleared();
         stopWorker();
         fetchLogs();
 
