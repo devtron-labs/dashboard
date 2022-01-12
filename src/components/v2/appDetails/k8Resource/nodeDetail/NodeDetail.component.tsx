@@ -9,11 +9,9 @@ import { NavLink, Route, Switch } from 'react-router-dom';
 import { useParams, useRouteMatch, useHistory } from 'react-router';
 import { NodeDetailTab } from './nodeDetail.type';
 import { getNodeDetailTabs } from './nodeDetail.util';
-import { ApplicationObject, NodeType } from '../../appDetails.type';
+import { NodeType } from '../../appDetails.type';
 import AppDetailsStore from '../../appDetails.store';
-import { URLS } from '../../../../../config';
 import { useSharedState } from '../../../utils/useSharedState';
-import MessageUI from '../../../common/message.ui';
 
 function NodeDetailComponent() {
     const [applicationObjectTabs] = useSharedState(
@@ -53,16 +51,14 @@ function NodeDetailComponent() {
         }
     };
 
-    const currentTab = applicationObjectTabs.filter(
-        (tab) => { 
-           return tab.name.toLowerCase() === params.nodeType + '/...' + params.podName.slice(-6)
-       }
-    );
+    const currentTab = applicationObjectTabs.filter((tab) => {
+        return tab.name.toLowerCase() === params.nodeType + '/...' + params.podName.slice(-6);
+    });
     const isDeleted = currentTab && currentTab[0] ? currentTab[0].isDeleted : false;
 
     return (
         <React.Fragment>
-            <div className="node-details_tab bcn-0 flex left top w-100 border-bottom pr-20 ">
+            <div className="node-details_tab pl-20 bcn-0 flex left top w-100 border-bottom pr-20 ">
                 <>
                     {tabs &&
                         tabs.length > 0 &&
@@ -74,7 +70,7 @@ function NodeDetailComponent() {
                                         tab.toLowerCase() === selectedTabName.toLowerCase()
                                             ? 'default-tab-row cb-5'
                                             : 'cn-7'
-                                    } pl-20 pt-6 pb-6 cursor pl-8 pr-8`}
+                                    } pt-6 pb-6 cursor pl-8 pr-8`}
                                 >
                                     <NavLink to={`${url}/${tab.toLowerCase()}`} className=" no-decor flex left">
                                         <span
@@ -91,38 +87,38 @@ function NodeDetailComponent() {
                         })}{' '}
                 </>
             </div>
-                <Switch>
-                    <Route
-                        path={`${path}/${NodeDetailTab.MANIFEST}`}
-                        render={() => {
-                            return <ManifestComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
-                        }}
-                    />
-                    <Route
-                        path={`${path}/${NodeDetailTab.EVENTS}`}
-                        render={() => {
-                            return <EventsComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
-                        }}
-                    />
-                    <Route
-                        path={`${path}/${NodeDetailTab.LOGS}`}
-                        render={() => {
-                            return <LogsComponent selectedTab={handleSelectedTab} isDeleted={isDeleted}  />;
-                        }}
-                    />
-                    <Route
-                        path={`${path}/${NodeDetailTab.SUMMARY}`}
-                        render={() => {
-                            return <SummaryComponent selectedTab={handleSelectedTab} />;
-                        }}
-                    />
-                    <Route
-                        path={`${path}/${NodeDetailTab.TERMINAL}`}
-                        render={() => {
-                            return <TerminalComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
-                        }}
-                    />
-                </Switch>
+            <Switch>
+                <Route
+                    path={`${path}/${NodeDetailTab.MANIFEST}`}
+                    render={() => {
+                        return <ManifestComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
+                    }}
+                />
+                <Route
+                    path={`${path}/${NodeDetailTab.EVENTS}`}
+                    render={() => {
+                        return <EventsComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
+                    }}
+                />
+                <Route
+                    path={`${path}/${NodeDetailTab.LOGS}`}
+                    render={() => {
+                        return <LogsComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
+                    }}
+                />
+                <Route
+                    path={`${path}/${NodeDetailTab.SUMMARY}`}
+                    render={() => {
+                        return <SummaryComponent selectedTab={handleSelectedTab} />;
+                    }}
+                />
+                <Route
+                    path={`${path}/${NodeDetailTab.TERMINAL}`}
+                    render={() => {
+                        return <TerminalComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
+                    }}
+                />
+            </Switch>
         </React.Fragment>
     );
 }

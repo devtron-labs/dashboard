@@ -37,10 +37,10 @@ function EventsComponent({ selectedTab, isDeleted }) {
                 setEvents([]);
                 setLoading(false);
             });
-    }, [podName]);
+    }, [params.podName, params.nodeType]);
 
     return (
-        <div style={{ minHeight: '600px', background: '#0B0F22' }} className="">
+        <div style={{ minHeight: '600px', background: '#0B0F22', flex: 1 }}>
             {isDeleted ? (
                 <div>
                     <MessageUI msg="This resource no longer exists" size={32} />
@@ -51,22 +51,34 @@ function EventsComponent({ selectedTab, isDeleted }) {
                     <React.Fragment>
                         {!loading && events && events.length > 0 && (
                             <div className="cn-0 ">
-                                <table className="table pl-20">
-                                    <thead style={{ minHeight: '600px', background: '#0B0F22' }}>
-                                        <tr className="no-border pl-20">
-                                            {['reason', 'message', 'count', 'last timestamp'].map((head, idx) => {
-                                                return <th key={`eh_${idx}`}>{head}</th>;
+                                <table
+                                    className="events-logs__events-table pl-20"
+                                    style={{ minHeight: '600px', background: '#0B0F22' }}
+                                >
+                                    <thead>
+                                        <tr className="no-border events-logs__events-table-row event-header">
+                                            {['Reason', 'Message', 'Count', 'Last Timestamp'].map((head, idx) => {
+                                                return (
+                                                    <th className="pl-20 pr-20" key={`eh_${idx}`}>
+                                                        {head}
+                                                    </th>
+                                                );
                                             })}
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {events.map((event, index) => {
                                             return (
-                                                <tr className="no-border pl-20" key={`eb_${index}`}>
-                                                    <td>{event.reason}</td>
-                                                    <td>{event.message}</td>
-                                                    <td>{event.count}</td>
-                                                    <td>
+                                                <tr
+                                                    className={`${
+                                                        index % 2 === 0 ? 'event__row-bc' : ''
+                                                    } no-border events-logs__events-table-row w-100 mono fs-13`}
+                                                    key={`eb_${index}`}
+                                                >
+                                                    <td className="pl-20 pr-20">{event.reason}</td>
+                                                    <td className="pl-20 pr-20">{event.message}</td>
+                                                    <td className="pl-20 pr-20">{event.count}</td>
+                                                    <td className="pl-20 pr-20">
                                                         {moment(event.lastTimestamp, 'YYYY-MM-DDTHH:mm:ss')
                                                             .add(5, 'hours')
                                                             .add(30, 'minutes')

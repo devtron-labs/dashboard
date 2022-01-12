@@ -33,14 +33,10 @@ const AppDetailsStore = {
     },
     initAppDetailsTabs: (_url: string, displayLogAnalyzer: boolean, isLogAnalyserURL: boolean) => {
         let aots = [] as Array<ApplicationObject>;
-        let applicationObjectTabs = applicationObjectTabsSubject.getValue();
 
-        // let details = IndexStore.getAppDetails()
-        // details.resourceTree.nodes.filter((node)=>{
-        //     node.uid === applicationObjectTabs
-        // })
-        
-        aots.push(addAOT(AppDetailsTabs.k8s_Resources, _url + '/' + URLS.APP_DETAILS_K8, !isLogAnalyserURL));
+        let url = `${_url}${_url.endsWith('/') ? '' : '/'}`;
+
+        aots.push(addAOT(AppDetailsTabs.k8s_Resources, url + URLS.APP_DETAILS_K8, !isLogAnalyserURL));
 
         if (displayLogAnalyzer) {
             aots.push(addAOT(AppDetailsTabs.log_analyzer, _url + '/' + URLS.APP_DETAILS_LOG, isLogAnalyserURL));
@@ -64,7 +60,7 @@ const AppDetailsStore = {
         let alreadyAdded = false;
         let title = tabKind + '/' + tabName;
         tabName = tabKind + '/...' + tabName.slice(-6);
-        
+
         for (let index = 0; index < applicationObjectTabs.length; index++) {
             const tab = applicationObjectTabs[index];
             tab.isSelected = false;
@@ -85,7 +81,7 @@ const AppDetailsStore = {
     removeAppDetailsTab: (tabUrl: string): string => {
         const applicationObjectTabs = applicationObjectTabsSubject.getValue();
         let pushURL = '';
-        const pathname = window.location.pathname;
+
         var selectedRemoved = false;
 
         var remainingTabs = [] as Array<ApplicationObject>;
@@ -125,7 +121,6 @@ const AppDetailsStore = {
         return isTabFound;
     },
     markResourceDeleted: (objectKind: string, objectName: string) => {
-
         const applicationObjectTabs = applicationObjectTabsSubject.getValue();
 
         objectName = objectKind + '/...' + objectName.slice(-6);

@@ -13,7 +13,7 @@ import { SocketConnectionType } from './node.type';
 import TerminalView from './terminal/Terminal';
 import MessageUI from '../../../../common/message.ui';
 
-const sellTypes = [
+const shellTypes = [
     { label: 'bash', value: 'bash' },
     { label: 'sh', value: 'sh' },
     { label: 'powershell', value: 'powershell' },
@@ -26,7 +26,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
     const containers = IndexStore.getAllContainersForPod(params.podName);
     const [logsPaused, toggleLogStream] = useState(false);
     const [selectedContainerName, setSelectedContainerName] = useState(containers[0]);
-    const [selectedtTerminalType, setSelectedtTerminalType] = useState(sellTypes[0]);
+    const [selectedtTerminalType, setSelectedtTerminalType] = useState(shellTypes[0]);
     const [terminalCleared, setTerminalCleared] = useState(false);
 
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>('CONNECTING');
@@ -54,7 +54,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
         </div>
     ) : (
         <div>
-            <div className="flex left bcn-0 pt-4 pb-4 pl-20">
+            <div className="flex left bcn-0 pt-4 pb-4 pl-20 border-top">
                 <Tippy
                     className="default-tt"
                     arrow={false}
@@ -138,8 +138,8 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                 <div style={{ minWidth: '145px' }}>
                     <Select
                         placeholder="Select Shell"
-                        options={sellTypes}
-                        defaultValue={sellTypes[0]}
+                        options={shellTypes}
+                        defaultValue={shellTypes[0]}
                         onChange={(selected) => {
                             setSelectedtTerminalType(selected as any);
                             setTerminalCleared(true);

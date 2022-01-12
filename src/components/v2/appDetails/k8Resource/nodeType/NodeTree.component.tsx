@@ -63,7 +63,7 @@ function NodeTreeComponent() {
 
     const getInfo = (nodeByKind) => {
         return nodeByKind.map((_node) => {
-            return getNodeStatus(_node)
+            return getNodeStatus(_node);
         });
     };
 
@@ -130,8 +130,8 @@ function NodeTreeComponent() {
     }, [filteredNodes.length]);
 
     const hasErrorInTreeNode = (treeNode: iNode) => {
-        if(treeNode.status && treeNode.status.toLowerCase() === 'degraded'){
-            return true
+        if (treeNode.status && treeNode.status.toLowerCase() === 'degraded') {
+            return true;
         }
         return false;
     };

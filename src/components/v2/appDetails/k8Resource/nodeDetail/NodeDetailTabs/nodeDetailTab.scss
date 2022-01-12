@@ -50,19 +50,19 @@
 
         .events-logs__events-table-row {
             display: grid;
-            grid-template-columns: 180px auto 50px 140px;
-            grid-column-gap: 60px;
+            grid-template-columns: 180px auto 50px 180px;
             grid-auto-rows: minmax(56px, max-content);
             justify-items: start;
             align-items: center;
 
-            // margin: 12px 0;
-            &.header {
-                font-weight: 600;
-                position: sticky;
-                top: 0;
+            &.event-header {
                 background: #0b0f22;
-                grid-template-rows: 32px;
+                grid-template-rows: 20px;
+                box-shadow: inset 0 -1px 0 0 #2c3354;
+            }
+
+            &.event__row-bc{
+                background-color: rgba(255, 255, 255, 0.05);
             }
         }
     }

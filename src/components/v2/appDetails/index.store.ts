@@ -24,72 +24,11 @@ const publishFilteredNodes = () => {
         if (_nodeFilter.filterType.toLowerCase() === _node.health?.status?.toLowerCase()) {
             return true;
         }
-        // let _nodeHealth = _node.health?.status || ""
-
-        // if (_node.name.indexOf(_nodeFilter.searchString) === -1) {
-        //     return false
-        // }
 
         return false;
     });
 
     _nodesFilteredSubject.next([...filteredNodes]);
-};
-
-const fillChildNodes = (_allParentNodes: Array<iNode>, _nodes: Array<Node>, _kind: string) => {
-    return _allParentNodes.map((_pn: iNode) => {
-        let childNodes = [];
-        //let _childNodesTypes = []
-
-        _nodes.forEach((_n: Node) => {
-            _n.parentRefs?.forEach((_pr) => {
-                if (_pr.uid === _pn.uid) {
-                    childNodes.push(_n as iNode);
-                    //_childNodesTypes.push(_n.name)
-                }
-            });
-        });
-
-        if (childNodes.length > 0) {
-            fillChildNodes(childNodes, _nodes, _kind);
-
-            _pn.childNodes = childNodes;
-        }
-
-        if (_kind?.toLowerCase() === NodeType.Pod.toLowerCase()) {
-            _pn.childNodes = _appDetailsSubject
-                .getValue()
-                .resourceTree?.podMetadata?.filter((_pmd) => {
-                    return _pmd.uid === _pn.uid;
-                })[0]
-                ?.containers?.map((_c) => {
-                    let childNode = {} as iNode;
-                    childNode.kind = NodeType.Containers;
-                    childNode['pNode'] = _pn;
-                    childNode.name = _c;
-                    return childNode;
-                });
-        }
-
-        return _pn;
-    });
-};
-
-const getAllParentNods = (_nodes: Array<Node>, _kind: string): Array<iNode> => {
-    let _allParentNodes = [];
-    let _allParentNodeTypes = [];
-
-    _nodes.forEach((_n) => {
-        _n.parentRefs?.forEach((_prn: Node) => {
-            //if (_allParentNodeTypes.indexOf(_n.kind) === -1) {
-            let prn = _n as iNode;
-            _allParentNodes.push(prn);
-            _allParentNodeTypes.push(_prn.kind);
-            // }
-        });
-    });
-
-    return fillChildNodes(_allParentNodes, _nodes, _kind);
 };
 
 const IndexStore = {
@@ -153,20 +92,82 @@ const IndexStore = {
     },
 
     getiNodesByKind: (_kind: string) => {
-        const _nodes = _nodesSubject.getValue();
-        const parentNodes = getAllParentNods(_nodes, _kind);
+        const _nodes = _nodesSubject.getValue()
 
-        let _filteredNodes = parentNodes.filter((pn) => pn.kind.toLowerCase() === _kind.toLowerCase());
+        const rootNodes = _nodes.filter( _node => _node.kind.toLowerCase() == _kind.toLowerCase()).map( _node => _node as iNode)
+        //if any node as childNode we have already processed this node and there have been not api calls since then
+        //hence reusing it. After api call this is unset
+        if (rootNodes.some( _node => _node.childNodes)) {
+            return rootNodes
+        }
+        let matchingNodes = rootNodes
+        const _nodesByParent = new Map<String, Map<String, Array<iNode>>>()
 
-        if (_filteredNodes.length === 0) {
-            _filteredNodes = _nodes
-                .filter((_node) => _node.kind.toLowerCase() === _kind.toLowerCase())
-                .map((_n) => {
-                    return _n as iNode;
-                });
+        //Create Map with every node listing against its parent
+        //structure is <group/kind: <name : [iNode]>>
+        _nodes.forEach( _node => {
+            _node.parentRefs?.forEach( _parent => {
+                const _groupKind = _parent.group + "/" + _parent.kind
+                if (!_nodesByParent.has(_groupKind)) {
+                    _nodesByParent.set(_groupKind, new Map<String, Array<iNode>>())
+                }
+                if (!_nodesByParent.get(_groupKind).has(_parent.name)) {
+                    _nodesByParent.get(_groupKind).set(_parent.name, [_node as iNode])
+                } else {
+                    _nodesByParent.get(_groupKind).get(_parent.name).push(_node as iNode)
+                }
+            })
+        })
+
+        //check if matching nodes is parent of some other nodes then add those nodes as children of corresponding matching node
+        // and set these children nodes as the matching nodes. Repeat the process till we dont matching nodes as parent as of other nodes.
+        while (matchingNodes.length > 0) {
+            let _matchingNodes = [] as Array<iNode>
+            matchingNodes.forEach( _node => {
+                const _groupKind = _node.group + "/" + _node.kind
+                const children = _nodesByParent.get(_groupKind)?.get(_node.name) ?? [] as Array<iNode>
+                if (children.length > 0) {
+                    if (!_node.childNodes) {
+                        _node.childNodes = [] as Array<iNode>
+                    }
+                    _node.childNodes.push(...children)
+                    _matchingNodes.push(...children)
+                }
+            })
+            matchingNodes = _matchingNodes
         }
 
-        return _filteredNodes;
+        let children = rootNodes
+        while (children.length > 0) {
+            children.forEach( _node => {
+                (_node.childNodes ?? []).sort((a, b) => {
+                    if(a.name < b.name) { return -1; }
+                    if(a.name > b.name) { return 1; }
+                    return 0;
+                })
+            })
+
+            //Add containers to Pod type nodes
+            children
+            .filter( _child => _child.kind.toLowerCase() == NodeType.Pod.toLowerCase())
+            .map( _pn => {
+                _pn.childNodes = _appDetailsSubject
+                .getValue()
+                .resourceTree?.podMetadata?.filter((_pmd) => {
+                    return _pmd.uid === _pn.uid;
+                })[0]
+                ?.containers?.map((_c) => {
+                    let childNode = {} as iNode;
+                    childNode.kind = NodeType.Containers;
+                    childNode['pNode'] = _pn;
+                    childNode.name = _c;
+                    return childNode;
+                });
+            })
+            children = children.flatMap(_node => (_node.childNodes ?? []))
+        }
+
+        return rootNodes
     },
 
     getNodesByKind: (_kind: string) => {
@@ -192,7 +193,7 @@ const IndexStore = {
     },
 
     getAllContainersForPod: (_name: string) => {
-        return _appDetailsSubject.getValue().resourceTree.podMetadata.filter((pod) => pod.name === _name)[0].containers;
+        return _appDetailsSubject.getValue().resourceTree?.podMetadata?.find((pod) => pod.name === _name)?.containers;
     },
 
     getAllContainers: () => {
@@ -234,14 +235,38 @@ const IndexStore = {
             });
         });
 
-        return { containers: containers, pods: pods.map((p) => p.name) };
+        return { containers: containers, pods: pods };
+    },
+
+    getAllPods: () => {
+        let containers = [];
+
+        const pods = _appDetailsSubject.getValue().resourceTree.podMetadata;
+
+        return pods;
+    },
+
+    getAllNewPods: () => {
+        let containers = [];
+
+        const pods = _appDetailsSubject.getValue().resourceTree.podMetadata.filter((p) => p.isNew);
+
+        return pods;
+    },
+
+    getAllOldPods: () => {
+        let containers = [];
+
+        const pods = _appDetailsSubject.getValue().resourceTree.podMetadata.filter((p) => !p.isNew);
+
+        return pods;
     },
 
     getPodForAContainer: (_c: string) => {
         let podeName;
 
         _appDetailsSubject.getValue().resourceTree.podMetadata.forEach((p) => {
-            p.containers.forEach((c) => {
+            p.containers.find((c) => {
                 if (c === _c) {
                     podeName = p.name;
                 }
