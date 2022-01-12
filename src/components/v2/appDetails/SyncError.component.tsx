@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 
 import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg';
@@ -48,4 +48,4 @@ const SyncErrorComponent: React.FC<{ appStreamData }> = ({ appStreamData }) => {
         </div>
     );
 };
-export default SyncErrorComponent
+export default SyncErrorComponent;

@@ -62,7 +62,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
         } catch (err) {
             console.log('err', err);
         }
-    }, [params.podName]);
+    }, [params.podName, params.nodeType]);
 
     useEffect(() => {
         if (!isEditmode && activeManifestEditorData !== modifiedManifest) {
@@ -174,7 +174,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
             <MessageUI msg="This resource no longer exists" size={32} />
         </div>
     ) : (
-        <div style={{ minHeight: '600px', background: '#0B0F22' }}>
+        <div style={{ minHeight: '600px', background: '#0B0F22', flex: 1 }}>
             {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
             {!error && (
                 <>

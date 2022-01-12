@@ -37,10 +37,10 @@ function EventsComponent({ selectedTab, isDeleted }) {
                 setEvents([]);
                 setLoading(false);
             });
-    }, [podName]);
+    }, [params.podName, params.nodeType]);
 
     return (
-        <div style={{ minHeight: '600px', background: '#0B0F22' }} className="">
+        <div style={{ minHeight: '600px', background: '#0B0F22', flex: 1 }}>
             {isDeleted ? (
                 <div>
                     <MessageUI msg="This resource no longer exists" size={32} />
