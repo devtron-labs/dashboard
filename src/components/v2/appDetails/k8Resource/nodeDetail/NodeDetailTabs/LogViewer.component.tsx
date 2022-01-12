@@ -17,6 +17,7 @@ interface logViewerInterface {
     indexHidden?: boolean;
     highlightString?: string;
     subject: Subject<string>;
+    reset?: boolean
 }
 
 const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
@@ -24,6 +25,7 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
     rootClassName = '',
     indexHidden = true,
     highlightString = '',
+    reset = false,
 }) => {
     let subscribed: boolean = false,
         unsubscribe: () => boolean = null;
@@ -73,7 +75,9 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
 
     function handleSelectionChange() {
         copyToClipboard(terminal.current.getSelection());
-        setPopupText(true);
+        if (terminal.current.getSelection()) {
+            setPopupText(true);
+        }
     }
 
     useEffect(() => {
@@ -121,6 +125,12 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
             webFontAddon.current = null;
         };
     }, []);
+
+    useEffect(() => {
+        if (reset) {
+            terminal.current.reset()
+        }
+    }, [reset])
 
     return (
         <>
