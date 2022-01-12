@@ -9,6 +9,8 @@ import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation 
 
 import { getAppOtherEnvironment } from '../appDetails.api';
 import { useSharedState } from '../../utils/useSharedState';
+import { AppType } from "../appDetails.type";
+import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate.svg';
 
 function EnvironmentSelectorComponent() {
     const params = useParams<{ appId: string; envId?: string }>();
@@ -22,14 +24,16 @@ function EnvironmentSelectorComponent() {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable());
 
     useEffect(() => {
-        getAppOtherEnvironment(params.appId)
-            .then((response) => {
-                setEnvironments(response.result || []);
-            })
-            .catch((error) => {
-                console.error('erroe in fetching environments');
-                setEnvironments([]);
-            });
+        if (appDetails.appType != AppType.EXTERNAL_HELM_CHART) {
+            getAppOtherEnvironment(params.appId)
+                .then((response) => {
+                    setEnvironments(response.result || []);
+                })
+                .catch((error) => {
+                    console.error('erroe in fetching environments');
+                    setEnvironments([]);
+                });
+        }
     }, [params.appId]);
 
     useEffect(() => {
@@ -124,15 +128,20 @@ function EnvironmentSelectorComponent() {
                     </div>
                 </div>
             </div>
-            <div>
-                {/* <button className="scale-pod__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12" onClick={() => setshowHibernateConfirmationModal(true)}>
-                    <CodeCompare className="mr-4" /> Scale objects
-            </button> */}
-            </div>
+            {/*{
+                appDetails.appType == AppType.EXTERNAL_HELM_CHART && !showhiberbateConfirmationModal &&
+                <div>
+                    <button className="scale-pod__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12" onClick={() => setshowHibernateConfirmationModal(true)}>
+                        <HibernateIcon className="mr-4" /> Scale objects
+                    </button>
+                </div>
+            }*/}
 
-            {showhiberbateConfirmationModal && (
+            {
+                showhiberbateConfirmationModal &&
                 <ScalePodModalComponent onClose={() => setshowHibernateConfirmationModal(false)} />
-            )}
+            }
+
         </div>
     );
 }

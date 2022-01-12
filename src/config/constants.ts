@@ -74,6 +74,7 @@ export const Routes = {
     ACTIVE_ENVIRONMENT: 'env/active',
     ENVIRONMENT_LIST: 'list/environments',
     ENVIRONMENT_LIST_MIN: 'env/autocomplete',
+    ENVIRONMENT_LIST_MIN_HELM_PROJECTS: 'env/autocomplete/helm',
 
     REFRESH_MATERIAL: 'app/ci-pipeline/refresh-material',
     APPLICATIONS: 'api/v1/applications',
@@ -108,6 +109,11 @@ export const Routes = {
     APP_CREATE_ENV_SECRET: 'config/environment/cs',
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
     APP_META_INFO: 'app/meta/info',
+    CLUSTER_ENV_MAPPING: 'env',
+    APP_VERSION: '/version',
+    HELM_RELEASE_INFO_API: 'application/release-info',
+    HELM_RELEASE_DEPLOYMENT_HISTORY_API: 'application/deployment-history',
+    HELM_RELEASE_APP_DETAIL_API: 'application/app'
 };
 
 export const ViewType = {
@@ -183,3 +189,37 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_SSO: 'https://docs.devtron.ai/user-guide/global-configurations/sso-login',
     GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/user-guide/global-configurations/user-access',
 }
+
+// APP LIST STARTS
+export const AppListConstants = {
+    CREATE_APP_URL: 'create-app',
+    AppTabs : {
+        DEVTRON_APPS: 'Devtron Apps',
+        HELM_APPS: 'Helm Apps'
+    },
+    AppType : {
+        DEVTRON_APPS: 'd',
+        HELM_APPS: 'h'
+    },
+    FilterType : {
+        PROJECT: 'team',
+        CLUTSER: 'cluster',
+        NAMESPACE: 'namespace',
+        ENVIRONMENT: 'environment'
+    }
+}
+// APP LIST ENDS
+
+export enum SERVER_MODE {
+    EA_ONLY = 'EA_ONLY',
+    FULL = 'FULL',
+}
+
+export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE;
+
+export enum ACCESS_TYPE_MAP {
+  DEVTRON_APPS = '', // devtron app work flow
+  HELM_APPS = 'helm-app', //helm app work flow
+}
+
+export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned';

@@ -27,6 +27,7 @@
 }
 
 .f-healthy,
+.f-deployed,
 .f-synced,
 .f-sync.ok,
 .f-running,
@@ -44,6 +45,7 @@
 .f-failed,
 .f-imagepullbackoff,
 .f-errimagepull,
+.f-superseded,
 .f-outofsync {
     color: var(--R500);
 }
@@ -51,6 +53,10 @@
 .f-progressing,
 .f-inprogress,
 .f-unknown,
+.f-uninstalling,
+.f-pending-install,
+.f-pending-upgrade,
+.f-pending-rollback,
 .initiated {
     color: var(--yellow);
 }

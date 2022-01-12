@@ -1,0 +1,21 @@
+.ci-details__history.deployment-cards {
+    grid-template-rows: 30px 1fr;
+    flex-basis: 305px;
+}
+
+.ci-details__build-card{
+    cursor : pointer;
+}
+
+.border-btm {
+    border-bottom: 1px solid #d0d4d9;
+}
+
+.trigger-outputs-container .source-detail{
+    display : grid;
+    grid-template-columns: 30% 70%;
+}
+
+.deployment-tab-list{
+    margin-left : 20px !important;
+}

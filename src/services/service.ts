@@ -1,10 +1,11 @@
 import { get, post } from './api';
-import { Routes } from '../config';
+import { ACCESS_TYPE_MAP, Routes } from '../config';
 import { sortCallback } from '../components/common/helpers/util';
 import moment from 'moment';
-import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions } from './service.types';
+import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions, ClusterEnvironmentDetailList, EnvironmentListHelmResponse } from './service.types';
 import { Chart } from '../components/charts/charts.types';
 import { fetchWithFullRoute } from './fetchWithFullRoute';
+
 
 export function getAppConfigStatus(appId: number): Promise<any> {
     const URL = `${Routes.APP_CONFIG_STATUS}?app-id=${appId}`;
@@ -81,8 +82,12 @@ export function getAppListMin(teamId = null, options?): Promise<AppListMin> {
     });
 }
 
-export function getProjectFilteredApps(projectIds: number[] | string[]): Promise<ProjectFilteredApps> {
-    return get(`app/min?teamIds=${projectIds.join(",")}`)
+export function getProjectFilteredApps(
+    projectIds: number[] | string[],
+    accessType?: string,
+): Promise<ProjectFilteredApps> {
+    const chartOnlyQueryParam = accessType === ACCESS_TYPE_MAP.HELM_APPS ? '&appType=DevtronChart' : '';
+    return get(`app/min?teamIds=${projectIds.join(',')}${chartOnlyQueryParam}`);
 }
 
 export function getAvailableCharts(queryString?: string, options?: APIOptions): Promise<{ code: number, result: Chart[] }> {
@@ -345,5 +350,19 @@ export function getWebhookEventsForEventId(eventId: string | number) {
 
 export function getWebhookDataMetaConfig(gitProviderId: string | number) {
     const URL = `git/host/webhook-meta-config/${gitProviderId}`;
+    return get(URL);
+}
+
+export function getEnvironmentListHelmApps(): Promise<EnvironmentListHelmResponse> {
+    return get(Routes.ENVIRONMENT_LIST_MIN_HELM_PROJECTS);
+}
+
+export function getClusterNamespaceMapping(): Promise<ClusterEnvironmentDetailList> {
+    let url = `${Routes.CLUSTER_ENV_MAPPING}`;
+    return get(url);
+}
+
+export function getVersionConfig() {
+    const URL = `${Routes.APP_VERSION}`;
     return get(URL);
 }

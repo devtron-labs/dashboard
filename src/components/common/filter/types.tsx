@@ -11,9 +11,15 @@ export interface FilterProps {
     placeholder: string;
     buttonText: string;
     type: string;
-    searchable ?: boolean;
-    multi ?: boolean;
+    searchable?: boolean;
+    multi?: boolean;
     applyFilter: (type: string, list: FilterOption[]) => void;
+    badgeCount?: number;
+    isDisabled? : boolean;
+    disableTooltipMessage? : string;
+    isLabelHtml? :boolean;
+    onShowHideFilterContent?: (show : boolean) => void;
+    showPulsatingDot? : boolean;
 }
 
 export interface FilterState {

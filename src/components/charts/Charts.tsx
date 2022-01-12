@@ -9,7 +9,6 @@ import './list/list.scss';
 import '../app/details/appDetails/appDetails.scss';
 import './charts.css';
 import { RedirectWithSentry } from '../common/navigation/NavigationRoutes';
-import AppListContainer from '../app/list/AppListContainer';
 import { ErrorBoundary, AppContext } from '../common';
 import { useRouteMatch, useHistory, useLocation } from 'react-router';
 import { EnvType } from '../v2/appDetails/appDetails.type';
@@ -27,8 +26,7 @@ export default function Charts({ isV2 }) {
             <Route path={`${path}/deployments/:appId(\\d+)/env/:envId(\\d+)`} component={DeploymentDetail} />
         }
         <Route path={`${path}/discover`} component={DiscoverCharts} />
-        <Route path={`${path}/deployed`} component={Deployed} />
-        <Redirect to={`${path}/deployed`} />
+        <Redirect to={`${path}/discover`} />
     </Switch>
 }
 
@@ -42,9 +40,6 @@ export function GenericChartsHeader({ children = null }) {
 export function ChartDetailNavigator() {
     return (
         <ul role="tablist" className="tab-list">
-            <li className='tab-list__tab'>
-                <NavLink replace to="deployed" className="tab-list__tab-link" activeClassName="active">Deployed</NavLink>
-            </li>
             <li className='tab-list__tab'>
                 <NavLink replace to="discover" className="tab-list__tab-link" activeClassName="active">Discover</NavLink>
             </li>

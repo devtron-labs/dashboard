@@ -15,6 +15,12 @@ export enum EnvType {
     APPLICATION = 'apps',
 }
 
+export enum AppType {
+    DEVTRON_APP = 'devtron_app',
+    DEVTRON_HELM_CHART = 'devtron_helm_chart',
+    EXTERNAL_HELM_CHART = 'external_helm_chart'
+}
+
 export interface EnvDetails {
     envType: EnvType;
     envId: number;
@@ -107,30 +113,32 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
 }
 
 export interface AppDetails {
-    appId: number;
-    appName: string;
-    appStoreAppName: string;
-    appStoreAppVersion: string;
-    appStoreChartId: number;
-    appStoreChartName: string;
-    appStoreInstalledAppVersionId: number;
-    ciArtifactId: number;
-    deprecated: false;
-    environmentId: number;
-    environmentName: string;
-    installedAppId: number;
-    instanceDetail: null;
-    k8sVersion: string;
-    lastDeployedBy: string;
-    lastDeployedTime: string;
-    namespace: string;
-    resourceTree: ResourceTree;
-    materialInfo: MaterialInfo[];
-    releaseVersion: string;
-    dataSource: string;
-    lastDeployedPipeline: string;
-    otherEnvironment: OtherEnvironment[];
+    appId: number
+    appName: string
+    appStoreAppName?: string
+    appStoreAppVersion?: string
+    appStoreChartId?: number
+    appStoreChartName?: string
+    appStoreInstalledAppVersionId?: number
+    ciArtifactId?: number
+    deprecated?: false
+    environmentId?: number
+    environmentName: string
+    installedAppId?: number
+    instanceDetail?: null
+    k8sVersion?: string
+    lastDeployedBy?: string
+    lastDeployedTime: string
+    namespace: string
+    resourceTree: ResourceTree
+    materialInfo?: MaterialInfo[];
+    releaseVersion?: string;
+    dataSource?: string;
+    lastDeployedPipeline?: string;
+    otherEnvironment?: OtherEnvironment[];
     projectName?: string;
+    appType?: AppType;
+    additionalData?: any;
 }
 
 interface MaterialInfo {
@@ -182,8 +190,9 @@ export interface Node {
     version: string;
     parentRefs: Array<Node>;
     group: string;
-    isSelected: boolean;
-    info: Info[];
+    isSelected: boolean
+    info: Info[]
+    canBeHibernated: boolean
 }
 
 export interface Health {

@@ -16,7 +16,7 @@ import { ClusterInstallStatus } from './ClusterInstallStatus';
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type';
 import { useHistory } from 'react-router';
 import { toast } from 'react-toastify';
-import { DOCUMENTATION, ViewType } from '../../config';
+import { DOCUMENTATION, SERVER_MODE, ViewType } from '../../config';
 import { getEnvName } from './cluster.util';
 import Reload from '../Reload/Reload';
 
@@ -59,9 +59,16 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         this.initialise();
     }
 
+    componentDidUpdate(prevProps) {
+      if(this.props.serverMode !== prevProps.serverMode)
+      {
+        this.initialise();
+      }
+    }
+
     initialise() {
         if (this.timerRef) clearInterval(this.timerRef);
-        Promise.all([getClusterList(), getEnvironmentList()]).then(([clusterRes, envResponse]) => {
+        Promise.all([getClusterList(), (this.props.serverMode === SERVER_MODE.EA_ONLY ? { result: undefined } : getEnvironmentList())]).then(([clusterRes, envResponse]) => {
             let environments = envResponse.result || [];
             const clusterEnvMap = environments.reduce((agg, curr, idx) => {
                 agg[curr.cluster_id] = agg[curr.cluster_id] || []
@@ -124,17 +131,20 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     render() {
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
         else if (this.state.view === ViewType.ERROR) return <Reload />
-        else return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
-            <h2 className="form__title">Clusters and Environments</h2>
-            <h5 className="form__subtitle">Manage your organization’s clusters and environments. &nbsp;
-                <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER} rel="noopener noreferer" target="_blank">Learn more about cluster and environments</a>
-            </h5>
-            {this.state.clusters.map(cluster => <Cluster {...cluster} reload={this.initialise} key={cluster.id || Math.random().toString(36).substr(2, 5)} />)}
-        </section>
+        else {
+          const moduleBasedTitle = 'Clusters' + (this.props.serverMode === SERVER_MODE.EA_ONLY ? '' : ' and Environments');
+          return <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
+              <h2 className="form__title">{moduleBasedTitle}</h2>
+              <h5 className="form__subtitle">Manage your organization’s {moduleBasedTitle.toLowerCase()}. &nbsp;
+                  <a className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER} rel="noopener noreferer" target="_blank">Learn more</a>
+              </h5>
+              {this.state.clusters.map(cluster => <Cluster {...cluster} reload={this.initialise} key={cluster.id || Math.random().toString(36).substr(2, 5)} serverMode={this.props.serverMode} />)}
+          </section>
+        }
     }
 }
 
-function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentInstallationStage, server_url, active, config: defaultConfig, environments, reload, prometheus_url }) {
+function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentInstallationStage, server_url, active, config: defaultConfig, environments, reload, prometheus_url,  serverMode }) {
     const [editMode, toggleEditMode] = useState(false);
     const [environment, setEnvironment] = useState(null);
     const [config, setConfig] = useState(defaultConfig);
@@ -201,8 +211,8 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
                     </div>
                     {clusterId && <List.DropDown src={<Pencil color="#b1b7bc" onClick={handleEdit} />} />}
                 </List>
-                {clusterId ? <hr className="mt-0 mb-16" /> : null}
-                {clusterId ? <ClusterInstallStatus agentInstallationStage={agentInstallationStage}
+                {serverMode !== SERVER_MODE.EA_ONLY  && clusterId ? <hr className="mt-0 mb-16" /> : null}
+                {serverMode !== SERVER_MODE.EA_ONLY  && clusterId ? <ClusterInstallStatus agentInstallationStage={agentInstallationStage}
                     envName={envName}
                     onClick={clusterInstallStatusOnclick} /> : null}
                 {showClusterComponentModal ? <ClusterComponentModal agentInstallationStage={agentInstallationStage}
@@ -211,7 +221,7 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
                     callRetryClusterInstall={callRetryClusterInstall}
                     redirectToChartDeployment={redirectToChartDeployment}
                     close={(e) => { toggleClusterComponentModal(!showClusterComponentModal) }} /> : null}
-                {Array.isArray(newEnvs) && newEnvs.length > 0 && <div className="environments-container">
+                {serverMode !== SERVER_MODE.EA_ONLY  && Array.isArray(newEnvs) && newEnvs.length > 0 && <div className="environments-container">
                     {newEnvs.map(({ id, environment_name, cluster_id, cluster_name, active, prometheus_url, namespace, default: isProduction }) => (
                         <List onClick={e => setEnvironment({ id, environment_name, cluster_id: clusterId, namespace, prometheus_url, isProduction })} key={id} className={`cluster-environment cluster-environment--${id ? 'update' : 'create collapsed-list collapsed-list--create'}`}>
                             <List.Logo>{id ? <Database className="icon-dim-24" /> : <Add className="icon-dim-24 fcb-5" />}</List.Logo>
@@ -223,13 +233,13 @@ function Cluster({ id: clusterId, cluster_name, defaultClusterComponent, agentIn
                 </div>}
             </>
                 : <>
-                    <ClusterForm {...{ id: clusterId, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth }} /></>}
+                    <ClusterForm {...{ id: clusterId, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth, serverMode }} /></>}
         </article>
         {environment && <Environment {...environment} handleClose={handleClose} isNamespaceMandatory={Array.isArray(environments) && environments.length > 0} />}
     </>
 }
 
-function ClusterForm({ id, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth }) {
+function ClusterForm({ id, cluster_name, server_url, active, config, environments, toggleEditMode, reload, prometheus_url, prometheusAuth, serverMode }) {
     const [loading, setLoading] = useState(false);
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false);
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({ type: prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS });
@@ -396,8 +406,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 <FormError className="form__icon form__icon--error" />
                 {state.token.error}</label>}
         </div>
-        <hr></hr>
-        <div className={`${prometheusToggleEnabled ? 'mb-20' : (prometheus_url) ? 'mb-20' : 'mb-40'} mt-20`}>
+        {serverMode !== SERVER_MODE.EA_ONLY  && (<><hr></hr><div className={`${prometheusToggleEnabled ? 'mb-20' : (prometheus_url) ? 'mb-20' : 'mb-40'} mt-20`}>
             <div className="content-space flex">
                 <span className="form__input-header">See metrics for applications in this cluster</span>
                 <div className="" style={{ width: "32px", height: "20px" }}>
@@ -405,11 +414,11 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 </div>
             </div>
             <span className="cn-6 fs-12">Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications running in this cluster</span>
-        </div>
-        {!prometheusToggleEnabled && prometheus_url &&
+        </div></>)}
+        {serverMode !== SERVER_MODE.EA_ONLY  && !prometheusToggleEnabled && prometheus_url &&
             <PrometheusWarningInfo />
         }
-        {prometheusToggleEnabled &&
+        {serverMode !== SERVER_MODE.EA_ONLY  && prometheusToggleEnabled &&
             <div className=''>
                 {(state.userName.error || state.password.error || state.endpoint.error) &&
                     <PrometheusRequiredFieldInfo />

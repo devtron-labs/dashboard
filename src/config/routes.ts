@@ -8,13 +8,19 @@ export interface NavItem {
 export const URLS = {
     CHARTS: '/chart-store',
     CHARTS_OLD: '/chart-store-old',
+    CHARTS_DISCOVER: '/chart-store/discover',
     APP: '/app',
+    EXTERNAL_APPS: 'ea',
+    APP_LIST: 'list',
+    APP_LIST_DEVTRON: 'd',
+    APP_LIST_HELM: 'h',
     APPS: '/devtron-apps',           // for V2 router
     HELM_CHARTS: 'helm-apps',     // for V2 router
     APP_VALUES: 'values',        // for V2 router
     APP_DETAILS: 'details',
+    APP_DEPLOYMNENT_HISTORY : 'deployments',
     APP_DETAILS_K8: 'k8s-resources',// for V2 
-    APP_DETAILS_LOG: 'log-analyzer',// for V2 
+    APP_DETAILS_LOG: 'log-analyzer',// for V2
     APP_DETAILS_DEFAULT: 'default-view',
     APP_TRIGGER: 'trigger',
     APP_CI_DETAILS: 'ci-details',
