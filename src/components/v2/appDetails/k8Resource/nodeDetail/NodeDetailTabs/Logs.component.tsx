@@ -33,7 +33,7 @@ interface PodContainerOptions {
 interface LogState {
     selectedPods : Array<string>
     selectedContainer: string
-    grepTokens: any
+    grepTokens?: any
 }
 
 function LogsComponent({ selectedTab, isDeleted }) {
@@ -114,6 +114,11 @@ function LogsComponent({ selectedTab, isDeleted }) {
 
     const handleSearchTextChange = (searchText: string) => {
         if (!searchText) {
+            setLogState({
+                selectedPods: logState.selectedPods,
+                selectedContainer: logState.selectedContainer,
+                grepTokens: undefined
+            })
             return;
         }
         const pipes = parsePipes(searchText);
@@ -198,7 +203,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
 
     const handleLogsSearch = (e) => {
         if (e.key === 'Enter' || e.keyCode === 13) {
-            setLogSearchString(e.target.value);
+            handleSearchTextChange(e.target.value as string);
             const { length, [length - 1]: highlightString } = e.target.value.split(' ');
             setHighlightString(highlightString);
         }
@@ -375,7 +380,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                             className="bw-0 w-100"
                             style={{ background: 'transparent', outline: 'none' }}
                             onKeyUp={handleLogsSearch}
-                            onChange={(e) => handleSearchTextChange(e.target.value as string)}
+                            onChange={(e) => setTempSearch(e.target.value as string)}
                             type="search"
                             name="log_search_input"
                             placeholder='grep -A 10 -B 20 "Server Error" | grep 500'
@@ -384,7 +389,8 @@ function LogsComponent({ selectedTab, isDeleted }) {
                             <CloseImage
                                 className="icon-dim-20 pointer"
                                 onClick={(e) => {
-                                    setLogSearchString('');
+                                    e.preventDefault()
+                                    handleSearchTextChange('');
                                     setTempSearch('');
                                 }}
                             />
