@@ -48,9 +48,9 @@ const AppDetailsComponent = () => {
         AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0, isLogAnalyserURL);
     }, [params.appId, params.envId]);
 
-    const handleCloseTab = (e: any, tabUrl: string) => {
+    const handleCloseTab = (e: any, tabIdentifier: string) => {
         e.stopPropagation();
-        const pushURL = AppDetailsStore.removeAppDetailsTab(tabUrl);
+        const pushURL = AppDetailsStore.removeAppDetailsTabByIdentifier(tabIdentifier);
         setTimeout(() => {
             if (pushURL) {
                 history.push(pushURL);
@@ -140,7 +140,7 @@ const AppDetailsComponent = () => {
                                                     tab.name !== AppDetailsTabs.k8s_Resources && (
                                                         <div className="resource-tab__close-wrapper flex br-5">
                                                             <Cross
-                                                                onClick={(e) => handleCloseTab(e, tab.url)}
+                                                                onClick={(e) => handleCloseTab(e, tab.title)}
                                                                 className="icon-dim-16 cursor"
                                                             />
                                                         </div>

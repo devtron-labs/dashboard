@@ -30,7 +30,7 @@ function NodeDetailComponent() {
     }, []);
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
-        const isTabFound = AppDetailsStore.markAppDetailsTabActive(_url, url);
+        const isTabFound = AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType);
 
         if (!isTabFound) {
             setTimeout(() => {

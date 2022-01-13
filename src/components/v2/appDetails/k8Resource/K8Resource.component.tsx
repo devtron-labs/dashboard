@@ -7,13 +7,14 @@ import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store';
 import NodeComponent from './nodeType/Node.component';
 import { useSharedState } from '../../utils/useSharedState';
 import IndexStore from '../index.store';
+import { URLS } from '../../../../config';
 
 export default function K8ResourceComponent() {
     const { url } = useRouteMatch();
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable());
 
     useEffect(() => {
-        AppDetailsStore.markAppDetailsTabActive(url);
+        AppDetailsStore.markAppDetailsTabActiveByIdentifier(URLS.APP_DETAILS_K8);
     }, []);
 
     return (
