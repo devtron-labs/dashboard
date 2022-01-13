@@ -781,8 +781,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         );
     };
 
-    knowMoreHandler = () => {};
-
     checkInstallHandler = () => {};
 
     renderEmptyEAOnly = () => {
@@ -794,7 +792,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'
                     }
                     img={EAType.BULKEDIT}
-                    knowMoreHandler={this.knowMoreHandler}
+                    knowMoreLink={DOCUMENTATION.BULK_UPDATE}
                     checkInstallHandler={this.checkInstallHandler}
                 />
             </div>

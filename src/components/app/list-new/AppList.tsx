@@ -578,9 +578,6 @@ export default function AppList() {
         </Modal>
     }
 
-    const knowMoreHandler = () => {
-    }
-
     const checkInstallHandler = () =>{
 
     }
@@ -619,8 +616,11 @@ export default function AppList() {
                             <EAEmptyState 
                             title={'Create, build, deploy and debug custom apps'} 
                             msg={'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'} 
-                            img={EAType.DEVTRONAPPS} 
-                            knowMoreHandler={knowMoreHandler}
+                            img={EAType.DEVTRONAPPS}
+
+                            //Need to Update the link below
+                            
+                            knowMoreLink={``} 
                             checkInstallHandler={checkInstallHandler}
                             />
                         </div>

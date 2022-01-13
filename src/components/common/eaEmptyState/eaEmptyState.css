@@ -6,3 +6,12 @@
 .ea-empty-img {
     box-shadow: 0 0 8px 0 rgba(61, 61, 61, 0.2);
 }
+
+.empty__install-btn{
+    line-height: 32px;
+    height: 32px;
+}
+
+.empty__know-more-btn:hover {
+    text-decoration: none;
+}

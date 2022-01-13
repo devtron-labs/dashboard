@@ -72,7 +72,7 @@ export default function NavigationRoutes() {
                 const response = getVersionConfig();
                 const json = await response;
                 if (json.code == 200) {
-                    setServerMode(json.result.serverMode);
+                    setServerMode('EA_ONLY');
                     setPageState(ViewType.FORM);
                 }
             } catch (err) {
@@ -102,12 +102,12 @@ export default function NavigationRoutes() {
                               {/* <Route path={URLS.APPS} render={() => <V2Router envType={EnvType.APPLICATION} />} /> */}
                               {/*---- V2 routing end-----*/}
 
-                              <Route path={URLS.CHARTS} render={() => <Charts isV2={true}/>} />
-                              <Route path={URLS.CHARTS_OLD} render={() => <Charts isV2={false}/>} />
-                              <Route path={URLS.DEPLOYMENT_GROUPS} render={props => <BulkActions {...props} />} />
+                              <Route path={URLS.CHARTS} render={() => <Charts isV2={true} serverMode={serverMode}/>} />
+                              <Route path={URLS.CHARTS_OLD} render={() => <Charts isV2={false} serverMode={serverMode}/>} />
+                              <Route path={URLS.DEPLOYMENT_GROUPS} render={props => <BulkActions {...props} serverMode={serverMode}/>} />
                               <Route path={URLS.GLOBAL_CONFIG} render={props => <GlobalConfig {...props} />} />
                               <Route path={URLS.BULK_EDITS} render={props => < BulkEdit {...props} serverMode={serverMode}/>} />
-                              <Route path={URLS.SECURITY} render={(props) => <Security {...props} />} />
+                              <Route path={URLS.SECURITY} render={(props) => <Security {...props} serverMode={serverMode}/>} />
                               <Route>
                                   <RedirectWithSentry />
                               </Route>

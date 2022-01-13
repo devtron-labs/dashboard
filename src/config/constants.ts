@@ -182,6 +182,7 @@ export const DOCUMENTATION = {
     BULK_UPDATE: 'https://docs.devtron.ai/user-guide/bulk-update',
     CHART_DEPLOY: 'https://docs.devtron.ai/user-guide/deploy-chart',
     CHART_LIST: 'https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts',
+    SECURITY: 'https://docs.devtron.ai/user-guide/security-features',
     GLOBAL_CONFIG_GITOPS: 'https://docs.devtron.ai/user-guide/global-configurations/gitops',
     GLOBAL_CONFIG_GIT: 'https://docs.devtron.ai/user-guide/global-configurations/git-accounts',
     GLOBAL_CONFIG_DOCKER: 'https://docs.devtron.ai/user-guide/global-configurations/docker-registries',
