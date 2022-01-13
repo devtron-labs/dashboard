@@ -38,6 +38,9 @@ function ManifestComponent({ selectedTab, isDeleted }) {
         setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest);
         setLoading(true);
         selectedTab(NodeDetailTab.MANIFEST, url);
+        if(appDetails.appType === AppType.EXTERNAL_HELM_CHART){
+            markActiveTab('Live manifest');
+        }
         try {
             Promise.all([
                 getManifestResource(appDetails, params.podName, params.nodeType),
@@ -143,7 +146,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
     };
 
     const handleTabClick = (_tab: iLink) => {
-        if (_tab.isDisabled) {
+        if (_tab.isDisabled || loading) {
             return;
         }
         markActiveTab(_tab.name);
@@ -192,7 +195,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                         !showDesiredAndCompareManifest && (tab.name == 'Desired manifest' || tab.name == 'Compare') ? <></> :
                                         <div
                                             key={index + 'tab'}
-                                            className={` ${tab.isDisabled ? 'no-drop' : 'cursor'} pl-4 pt-8 pb-8 pr-4`}
+                                            className={` ${tab.isDisabled || loading ? 'no-drop' : 'cursor'} pl-4 pt-8 pb-8 pr-4`}
                                         >
                                             <div
                                                 className={`${
@@ -206,7 +209,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                     );
                                 })}
 
-                                {activeTab === 'Live manifest' && (
+                                {activeTab === 'Live manifest' && !loading && (
                                     <>
                                         <div className="pl-16 pr-16">|</div>
                                         {!isEditmode ? (
