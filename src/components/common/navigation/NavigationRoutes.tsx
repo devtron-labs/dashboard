@@ -10,6 +10,7 @@ import { Security } from '../../security/Security';
 import { getVersionConfig } from '../../../services/service';
 import { showError } from '../helpers/Helpers';
 import Reload from '../../Reload/Reload';
+import { EnvType } from '../../v2/appDetails/appDetails.type';
 
 const Charts = lazy(() => import('../../charts/Charts'));
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'));
@@ -101,9 +102,8 @@ export default function NavigationRoutes() {
                               {/* <Route path={`${URLS.HELM_CHARTS}`} render={() => <V2Router envType={EnvType.CHART} />} /> */}
                               {/* <Route path={URLS.APPS} render={() => <V2Router envType={EnvType.APPLICATION} />} /> */}
                               {/*---- V2 routing end-----*/}
-
-                              <Route path={URLS.CHARTS} render={() => <Charts isV2={true}/>} />
-                              <Route path={URLS.CHARTS_OLD} render={() => <Charts isV2={false}/>} />
+                              <Route path={URLS.CHARTS} render={() => <Charts />} />
+                              <Route path={URLS.CHARTS_OLD} render={() => <Charts />} />
                               <Route path={URLS.DEPLOYMENT_GROUPS} render={props => <BulkActions {...props} />} />
                               <Route path={URLS.GLOBAL_CONFIG} render={props => <GlobalConfig {...props} />} />
                               <Route path={URLS.BULK_EDITS} render={props => < BulkEdit {...props} />} />
@@ -132,6 +132,7 @@ export function AppRouter() {
                 <Switch>
                     <Route path={`${path}/${URLS.APP_LIST}`} render={() => <AppListRouter />} />
                     <Route path={`${path}/${URLS.EXTERNAL_APPS}/:appId/:appName`} render={() => <ExternalApps />} />
+                    <Route path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`} render={(props) => <V2Details envType={EnvType.CHART} />} />
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage isV2={false} />} />
                     <Route path={`${path}/v2/:appId(\\d+)`} render={() => <AppDetailsPage isV2={true} />} />
                     <Route exact path="">

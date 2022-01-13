@@ -271,7 +271,7 @@ export default function HelmAppList({
         if (app.isExternal) {
             return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${app.appId}/${app.appName}`;
         } else {
-            return `/chart-store/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`;
+            return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`;
         }
     }
 
