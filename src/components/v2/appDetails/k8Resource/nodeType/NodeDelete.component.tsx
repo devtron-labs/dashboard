@@ -81,7 +81,7 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
             const _tabs = AppDetailsStore.getAppDetailsTabs();
             const appDetailsTabs = _tabs.filter((_tab) => _tab.name === nodeDetails.name);
 
-            appDetailsTabs.forEach((_tab) => AppDetailsStore.removeAppDetailsTab(_tab.url));
+            appDetailsTabs.forEach((_tab) => AppDetailsStore.removeAppDetailsTabByIdentifier(_tab.title));
         } catch (err) {
             showError(err);
         }
