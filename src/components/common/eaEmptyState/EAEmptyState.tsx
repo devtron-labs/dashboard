@@ -4,7 +4,7 @@ import chartsEmpty from '../../../assets/img/ic-empty-ea-charts.png';
 import securityEmpty from '../../../assets/img/ic-empty-ea-security.png';
 import './eaEmptyState.css';
 
-export enum EAEmptyType {
+export enum EAType {
     DEVTRONAPPS = 'devtron_apps',
     HELMCHARTS = 'helm_charts',
     SECURITY = 'security',
@@ -20,18 +20,16 @@ function EAEmptyState({ title, msg, img, knowMoreHandler, checkInstallHandler })
             <div className="m-tb-20">
                 {(() => {
                     switch (img) {
-                        case EAEmptyType.DEVTRONAPPS:
-                            return (
-                                <img className="ea-empty-img" src={appDetailEmpty} width="600" alt="no apps found" />
-                            );
-                        case EAEmptyType.HELMCHARTS:
-                            return <img className="ea-empty-img" src={chartsEmpty} alt="no apps found" />;
-                        case EAEmptyType.BULKEDIT:
-                            return <img className="ea-empty-img" src={appDetailEmpty} alt="no apps found" />;
-                        case EAEmptyType.DEPLOYMENTGROUPS:
-                            return <img src={appDetailEmpty} alt="no apps found" />;
-                        case EAEmptyType.SECURITY:
-                            return <img className="ea-empty-img" src={securityEmpty} alt="no apps found" />;
+                        case EAType.DEVTRONAPPS:
+                            return <img className="ea-empty-img" src={appDetailEmpty} width="600" alt="no apps found" />;
+                        case EAType.HELMCHARTS:
+                            return <img className="ea-empty-img" src={chartsEmpty} width="600" alt="no apps found" />;
+                        case EAType.BULKEDIT:
+                            return <img className="ea-empty-img" src={appDetailEmpty} width="600" alt="no apps found" />;
+                        case EAType.DEPLOYMENTGROUPS:
+                            return <img src={appDetailEmpty} alt="no apps found" width="600"/>;
+                        case EAType.SECURITY:
+                            return <img className="ea-empty-img" src={securityEmpty} width="600" alt="no apps found" />;
                     }
                 })()}
             </div>

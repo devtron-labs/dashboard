@@ -1,4 +1,5 @@
 import { RouteComponentProps } from "react-router-dom";
+import { SERVER_MODE_TYPE } from "../../config";
 
 export interface CodeEditorScript {
     apiVersion: string;
@@ -121,4 +122,5 @@ export interface OutputTabType {
 
 export interface BulkEditsProps extends RouteComponentProps<{}> {
     // close: (event) => void;
+    serverMode: SERVER_MODE_TYPE
 }

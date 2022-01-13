@@ -19,7 +19,7 @@ import { OrderBy, SortBy } from '../list/types';
 import { AddNewApp } from '../create/CreateApp';
 import { mainContext } from '../../common/navigation/NavigationRoutes';
 import '../list/list.css';
-import EAEmptyState, { EAEmptyType } from '../../common/eaEmptyState/EAEmptyState';
+import EAEmptyState, { EAType } from '../../common/eaEmptyState/EAEmptyState';
 
 export default function AppList() {
     const location = useLocation();
@@ -619,7 +619,7 @@ export default function AppList() {
                             <EAEmptyState 
                             title={'Create, build, deploy and debug custom apps'} 
                             msg={'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'} 
-                            img={EAEmptyType.DEVTRONAPPS} 
+                            img={EAType.DEVTRONAPPS} 
                             knowMoreHandler={knowMoreHandler}
                             checkInstallHandler={checkInstallHandler}
                             />
