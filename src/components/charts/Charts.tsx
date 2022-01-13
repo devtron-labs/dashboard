@@ -11,20 +11,12 @@ import './charts.css';
 import { RedirectWithSentry } from '../common/navigation/NavigationRoutes';
 import { ErrorBoundary, AppContext } from '../common';
 import { useRouteMatch, useHistory, useLocation } from 'react-router';
-import { EnvType } from '../v2/appDetails/appDetails.type';
 
-const V2Details = lazy(() => import('../v2/index'));
-// const AppDetailsComponent = lazy(() => import('../v2/appDetails/AppDetails.component'));
-
-
-export default function Charts({ isV2 }) {
+export default function Charts() {
     const { path } = useRouteMatch()
 
     return <Switch>
-        {isV2 ?
-            <Route path={`${path}/deployments/:appId(\\d+)/env/:envId(\\d+)`} render={(props) => <V2Details envType={EnvType.CHART} />} /> :
-            <Route path={`${path}/deployments/:appId(\\d+)/env/:envId(\\d+)`} component={DeploymentDetail} />
-        }
+        <Route path={`${path}/deployments/:appId(\\d+)/env/:envId(\\d+)`} component={DeploymentDetail} />
         <Route path={`${path}/discover`} component={DiscoverCharts} />
         <Redirect to={`${path}/discover`} />
     </Switch>
