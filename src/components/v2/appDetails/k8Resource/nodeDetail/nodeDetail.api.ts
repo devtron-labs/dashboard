@@ -96,12 +96,15 @@ function getEventHelmApps(ad: AppDetails, nodeName: string, nodeType: string) {
 }
 
 export const getLogsURL = (ad, nodeName, Host, container) => {
-    const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0];
+    //const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0];
     let prefix = '';
     if (process.env.NODE_ENV === 'production') {
         prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
     } else {
         prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
+    }
+    if (ad.appType === AppType.EXTERNAL_HELM_CHART) {
+        return `${prefix}${Host}/${Routes.LOGS}/${ad.clusterId}/${ad.appName}/${nodeName}?containerName=${container}&namespace=${ad.namespace}&follow=true&tailLines=500`;
     }
     return `${prefix}${Host}/api/v1/applications/${ad.appName}-${ad.environmentName}/pods/${nodeName}/logs?container=${container}&follow=true&namespace=${ad.namespace}&tailLines=500`;
 };

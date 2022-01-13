@@ -19,7 +19,7 @@ import { NodeType } from '../../appDetails.type';
 import AppDetailsStore from '../../appDetails.store';
 import warn from '../../../assets/icons/ic-warning.svg';
 
-function NodeDeleteComponent({ appName, environmentName, nodeDetails, describeNode, appId }) {
+function NodeDeleteComponent({ nodeDetails, appDetails }) {
     const { path } = useRouteMatch();
     const history = useHistory();
     const params = useParams<{ actionName: string; podName: string; nodeType: string; appId: string; envId: string }>();
@@ -36,18 +36,9 @@ function NodeDeleteComponent({ appName, environmentName, nodeDetails, describeNo
     }
 
     const PodPopup: React.FC<{
-        appName: string;
-        environmentName: string;
-        name: string;
         kind: NodeType;
-        group;
-        version;
-        namespace: string;
         describeNode: (tab?: NodeDetailTabsType) => void;
-        appId: number;
-    }> = ({ appName, environmentName, name, kind, version, group, namespace, describeNode, appId }) => {
-        const params = useParams<{ appId: string; envId: string }>();
-
+    }> = ({ kind, describeNode }) => {
         return (
             <div className="pod-info__popup-container">
                 {kind === NodeType.Pod ? (
@@ -83,19 +74,8 @@ function NodeDeleteComponent({ appName, environmentName, nodeDetails, describeNo
     async function asyncDeletePod(nodeDetails) {
         console.log(window.location.pathname);
 
-        let apiParams = {
-            appId: appId,
-            appName,
-            kind: nodeDetails?.kind,
-            group: nodeDetails?.group,
-            env: environmentName,
-            envId: +params.envId,
-            namespace: nodeDetails?.namespace,
-            version: nodeDetails?.version,
-            name: nodeDetails?.name,
-        };
         try {
-            await deleteResource(apiParams);
+            await deleteResource(nodeDetails, appDetails, params.envId);
             toast.success('Deletion initiated successfully.');
             // AppDetailsStore.markResourceDeleted(nodeDetails?.kind, nodeDetails?.name);
             const _tabs = AppDetailsStore.getAppDetailsTabs();
@@ -114,17 +94,7 @@ function NodeDeleteComponent({ appName, environmentName, nodeDetails, describeNo
                     <img src={dots} className="pod-info__dots" />
                 </PopupMenu.Button>
                 <PopupMenu.Body>
-                    <PodPopup
-                        kind={nodeDetails?.kind}
-                        name={nodeDetails?.name}
-                        version={nodeDetails?.version}
-                        group={nodeDetails?.group}
-                        namespace={nodeDetails.namespace}
-                        describeNode={describeNodeWrapper}
-                        appName={appName}
-                        environmentName={environmentName}
-                        appId={appId}
-                    />
+                    <PodPopup kind={nodeDetails?.kind} describeNode={describeNodeWrapper} />
                 </PopupMenu.Body>
             </PopupMenu>
             {showDeleteConfirmation && (
