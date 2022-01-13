@@ -25,7 +25,7 @@ import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails';
 import { toast } from 'react-toastify';
 import '../charts/discoverChartDetail/DiscoverChartDetails.scss';
 import '../charts/modal/DeployChart.scss';
-import EAEmptyState, { EAType } from '../common/eaEmptyState/EAEmptyState';
+import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState';
 
 export enum OutputObjectTabs {
     OUTPUT = 'Output',
@@ -69,17 +69,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     componentDidMount = () => {
-        this.setState({
-            view: ViewType.LOADING,
-        });
-        this.initialise();
-    };
-
-    componentDidUpdate(prevProps) {
-        if (this.props.serverMode !== prevProps.serverMode) {
+        if(this.props.serverMode == SERVER_MODE.FULL){
+            this.setState({
+                view: ViewType.LOADING,
+            });
             this.initialise();
         }
-    }
+    };
 
     initialise() {
         getSeeExample()
@@ -115,9 +111,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderBulkEditHeader = () => {
         return (
             <div className="page-header brdr-btm pl-20">
-                <div className="page-header__title flex left fs-16 pt-16 pb-16 ">
-                    {' '}
-                    Bulk Edit
+                <div className="page-header__title flex left fs-16 pt-16 pb-16 "> Bulk Edit
                     <Tippy
                         className="default-tt "
                         arrow={false}
@@ -143,17 +137,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div className="deployment-group-list-page">
                 <div className="bulk-desciription flex left pt-10 pb-10 pl-20 pr-20 cn-9">
                     <Question className="icon-dim-16 mr-13 fcv-5" />
-                    <div>
-                        Run scripts to bulk edit configurations for multiple devtron components.
-                        <a
-                            className="learn-more__href"
-                            href={DOCUMENTATION.BULK_UPDATE}
-                            rel="noreferrer noopener"
-                            target="_blank"
-                        >
-                            {' '}
-                            Learn more
-                        </a>
+                    <div>Run scripts to bulk edit configurations for multiple devtron components.
+                        <a className="learn-more__href" href={DOCUMENTATION.BULK_UPDATE} rel="noreferrer noopener" target="_blank"> Learn more</a>
                     </div>
                     <Close
                         style={{ margin: 'auto', marginRight: '0' }}
@@ -353,14 +338,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderConfigMapOutput = () => {
         return (
             <div>
-                <div>
-                    {' '}
-                    *CONFIGMAPS: <br />
+                <div> *CONFIGMAPS: <br />
                     <br />
                 </div>
-                <div>
-                    {' '}
-                    #Message: <br />
+                <div> #Message: <br />
                     <br />
                     {this.state.outputResult.configMap?.message?.map((elm) => {
                         return (
@@ -447,14 +428,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderDeploymentTemplateOutput = () => {
         return (
             <div>
-                <div>
-                    {' '}
-                    *DEPLOYMENT TEMPLATE: <br />
+                <div> *DEPLOYMENT TEMPLATE: <br />
                     <br />
                 </div>
-                <div>
-                    {' '}
-                    #Message: <br />
+                <div> #Message: <br />
                     <br />
                     {this.state.outputResult.deploymentTemplate?.message.map((elm) => {
                         return (
@@ -505,14 +482,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderSecretOutput = () => {
         return (
             <div>
-                <div>
-                    {' '}
-                    *SECRETS: <br />
+                <div> *SECRETS: <br />
                     <br />
                 </div>
-                <div>
-                    {' '}
-                    #Message: <br />
+                <div> #Message: <br />
                     <br />
                     {this.state.outputResult.secret?.message.map((elm) => {
                         return (
@@ -583,9 +556,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderConfigMapImpObj = () => {
         return (
             <div>
-                <div>
-                    {' '}
-                    *CONFIGMAPS: <br /> <br />
+                <div> *CONFIGMAPS: <br /> <br />
                     {this.state.impactedObjects.configMap.length === 0 ? (
                         <>No Result Found </>
                     ) : (
@@ -604,9 +575,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderDeploymentTemplateImpObj = () => {
         return (
             <div>
-                <div>
-                    {' '}
-                    *DEPLOYMENT TEMPLATE: <br /> <br />
+                <div> *DEPLOYMENT TEMPLATE: <br /> <br />
                     {this.state.impactedObjects.deploymentTemplate.length === 0 ? (
                         <>No Result Found</>
                     ) : (
@@ -632,9 +601,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderSecretImpObj = () => {
         return (
             <div>
-                <div>
-                    {' '}
-                    *SECRETS: <br /> <br />
+                <div> *SECRETS: <br /> <br />
                     {this.state.impactedObjects.secret.length === 0 ? (
                         <>No Result Found</>
                     ) : (
@@ -781,9 +748,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         );
     };
 
-    checkInstallHandler = () => {};
-
-    renderEmptyEAOnly = () => {
+    renderEmptyStateForEAOnlyMode = () => {
         return (
             <div style={{ height: 'calc(100vh - 250px)' }}>
                 <EAEmptyState
@@ -791,9 +756,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     msg={
                         'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'
                     }
-                    img={EAType.BULKEDIT}
+                    stateType={EAEmptyStateType.BULKEDIT}
                     knowMoreLink={DOCUMENTATION.BULK_UPDATE}
-                    checkInstallHandler={this.checkInstallHandler}
                 />
             </div>
         );
@@ -811,7 +775,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div className="fs-13">
                 {this.renderBulkEditHeader()}
-                {this.props.serverMode == SERVER_MODE.EA_ONLY ? this.renderEmptyEAOnly() : this.renderBulkEditBody()}
+                {this.props.serverMode == SERVER_MODE.EA_ONLY ? this.renderEmptyStateForEAOnlyMode() : this.renderBulkEditBody()}
             </div>
         );
     }

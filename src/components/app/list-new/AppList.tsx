@@ -19,7 +19,7 @@ import { OrderBy, SortBy } from '../list/types';
 import { AddNewApp } from '../create/CreateApp';
 import { mainContext } from '../../common/navigation/NavigationRoutes';
 import '../list/list.css';
-import EAEmptyState, { EAType } from '../../common/eaEmptyState/EAEmptyState';
+import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState';
 
 export default function AppList() {
     const location = useLocation();
@@ -578,9 +578,6 @@ export default function AppList() {
         </Modal>
     }
 
-    const checkInstallHandler = () =>{
-
-    }
 
     return (
         <div>
@@ -614,14 +611,10 @@ export default function AppList() {
                         params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.EA_ONLY &&
                         <div style={{ height: "calc(100vh - 250px)" }}>
                             <EAEmptyState 
-                            title={'Create, build, deploy and debug custom apps'} 
-                            msg={'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'} 
-                            img={EAType.DEVTRONAPPS}
-
-                            //Need to Update the link below
-                            
-                            knowMoreLink={``} 
-                            checkInstallHandler={checkInstallHandler}
+                                title={'Create, build, deploy and debug custom apps'}
+                                msg={'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'}
+                                stateType={EAEmptyStateType.DEVTRONAPPS}
+                                knowMoreLink={``}
                             />
                         </div>
                     }

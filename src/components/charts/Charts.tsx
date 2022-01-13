@@ -1,4 +1,4 @@
-import React, { lazy, useState } from 'react';
+import React, { lazy, useState, useContext } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { DOCUMENTATION, SERVER_MODE, URLS } from '../../config';
 import Deployed from './list/Deployed';
@@ -12,43 +12,32 @@ import { RedirectWithSentry } from '../common/navigation/NavigationRoutes';
 import { ErrorBoundary, AppContext } from '../common';
 import { useRouteMatch, useHistory, useLocation } from 'react-router';
 import { EnvType } from '../v2/appDetails/appDetails.type';
-import EAEmptyState, { EAType } from '../common/eaEmptyState/EAEmptyState';
+import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState';
+import { mainContext } from '../common/navigation/NavigationRoutes';
 
-const V2Details = lazy(() => import('../v2/index'));
-// const AppDetailsComponent = lazy(() => import('../v2/appDetails/AppDetails.component'));
-
-export default function Charts({ isV2, serverMode }) {
+export default function Charts () {
     const { path } = useRouteMatch();
+    const {serverMode} = useContext(mainContext);
 
-    const checkInstallHandler = () => {};
-
-    const renderEmptyEAOnly = () => {
+    const renderEmptyStateForEAOnlyMode = () => {
         return (
             <div style={{ height: 'calc(100vh - 250px)' }}>
                 <EAEmptyState
                     title={'Deploy third-party helm charts'}
                     msg={'Deploy and manage helm apps from public and private repositories.'}
-                    img={EAType.HELMCHARTS}
+                    stateType={EAEmptyStateType.HELMCHARTS}
                     knowMoreLink={DOCUMENTATION.CHART_LIST}
-                    checkInstallHandler={checkInstallHandler}
-                    isHeader={true}
                     headerText="Chart Store"
                 />
             </div>
         );
     };
+    
     return serverMode === SERVER_MODE.EA_ONLY ? (
-        renderEmptyEAOnly()
+        renderEmptyStateForEAOnlyMode()
     ) : (
         <Switch>
-            {isV2 ? (
-                <Route
-                    path={`${path}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
-                    render={(props) => <V2Details envType={EnvType.CHART} />}
-                />
-            ) : (
-                <Route path={`${path}/deployments/:appId(\\d+)/env/:envId(\\d+)`} component={DeploymentDetail} />
-            )}
+            <Route path={`${path}/deployments/:appId(\\d+)/env/:envId(\\d+)`} component={DeploymentDetail} />
             <Route path={`${path}/discover`} component={DiscoverCharts} />
             <Redirect to={`${path}/discover`} />
         </Switch>

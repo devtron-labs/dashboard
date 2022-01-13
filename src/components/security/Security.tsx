@@ -4,7 +4,7 @@ import { SecurityPoliciesTab } from './SecurityPoliciesTab';
 import { SecurityScansTab } from './SecurityScansTab';
 import './security.css';
 import { DOCUMENTATION, SERVER_MODE, SERVER_MODE_TYPE } from '../../config';
-import EAEmptyState, { EAType } from '../common/eaEmptyState/EAEmptyState';
+import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
 
@@ -62,9 +62,7 @@ export class Security extends Component<SecurityProps> {
         );
     }
 
-    checkInstallHandler = () => {};
-
-    renderEmptyEAOnly = () => {
+    renderEmptyStateForEAOnlyMode = () => {
         return (
             <div style={{ height: 'calc(100vh - 250px)' }}>
                 <EAEmptyState
@@ -72,9 +70,8 @@ export class Security extends Component<SecurityProps> {
                     msg={
                         'Deploy and manage helm apps from public and private repositories.'
                     }
-                    img={EAType.SECURITY}
+                    stateType={EAEmptyStateType.SECURITY}
                     knowMoreLink={DOCUMENTATION.SECURITY}
-                    checkInstallHandler={this.checkInstallHandler}
                 />
             </div>
         );
@@ -84,7 +81,7 @@ export class Security extends Component<SecurityProps> {
         return (
             <>
                 {this.renderPageheader()}
-                {this.props.serverMode === SERVER_MODE.EA_ONLY ? this.renderEmptyEAOnly() : this.renderRouter()}
+                {this.props.serverMode === SERVER_MODE.EA_ONLY ? this.renderEmptyStateForEAOnlyMode() : this.renderRouter()}
             </>
         );
     }

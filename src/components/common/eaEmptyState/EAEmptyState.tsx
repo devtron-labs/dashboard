@@ -4,7 +4,7 @@ import chartsEmpty from '../../../assets/img/ic-empty-ea-charts.png';
 import securityEmpty from '../../../assets/img/ic-empty-ea--security.png';
 import './eaEmptyState.css';
 
-export enum EAType {
+export enum EAEmptyStateType {
     DEVTRONAPPS = 'devtron_apps',
     HELMCHARTS = 'helm_charts',
     SECURITY = 'security',
@@ -12,10 +12,13 @@ export enum EAType {
     BULKEDIT = 'bulk_edit',
 }
 
-function EAEmptyState({ title, msg, img, knowMoreLink, checkInstallHandler, isHeader = false, headerText = '' }) {
+function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefined }) {
+
+    const checkInstallHandler = () => {};
+
     return (
         <div>
-            {isHeader && (
+            {headerText && (
                 <div className="page-header brdr-btm pl-20">
                     <div className="page-header__title flex left fs-16 pt-16 pb-16 ">{headerText}</div>
                 </div>
@@ -25,8 +28,8 @@ function EAEmptyState({ title, msg, img, knowMoreLink, checkInstallHandler, isHe
                 <div className="fs-14 m-auto w-600">{msg}</div>
                 <div className="m-tb-20">
                     {(() => {
-                        switch (img) {
-                            case EAType.DEVTRONAPPS:
+                        switch (stateType) {
+                            case EAEmptyStateType.DEVTRONAPPS:
                                 return (
                                     <img
                                         className="ea-empty-img"
@@ -35,11 +38,11 @@ function EAEmptyState({ title, msg, img, knowMoreLink, checkInstallHandler, isHe
                                         alt="no apps found"
                                     />
                                 );
-                            case EAType.HELMCHARTS:
+                            case EAEmptyStateType.HELMCHARTS:
                                 return (
                                     <img className="ea-empty-img" src={chartsEmpty} width="800" alt="no apps found" />
                                 );
-                            case EAType.BULKEDIT:
+                            case EAEmptyStateType.BULKEDIT:
                                 return (
                                     <img
                                         className="ea-empty-img"
@@ -48,9 +51,9 @@ function EAEmptyState({ title, msg, img, knowMoreLink, checkInstallHandler, isHe
                                         alt="no apps found"
                                     />
                                 );
-                            case EAType.DEPLOYMENTGROUPS:
+                            case EAEmptyStateType.DEPLOYMENTGROUPS:
                                 return <img src={appDetailEmpty} alt="no apps found" width="800" />;
-                            case EAType.SECURITY:
+                            case EAEmptyStateType.SECURITY:
                                 return (
                                     <img className="ea-empty-img" src={securityEmpty} width="800" alt="no apps found" />
                                 );

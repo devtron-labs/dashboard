@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { useRouteMatch } from 'react-router';
 import DeploymentGroupList from './DeploymentGroupList';
@@ -6,14 +6,14 @@ import BulkActionEdit from './BulkActionEdit';
 import BulkActionDetails from './BulkActionDetails';
 import './BulkActions.scss';
 import { DOCUMENTATION, SERVER_MODE } from '../../config';
-import EAEmptyState, { EAType } from '../common/eaEmptyState/EAEmptyState';
+import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState';
+import { mainContext } from '../common/navigation/NavigationRoutes';
 
-export default function BulkActions({ serverMode }) {
+export default function BulkActions({ ...props }) {
     const { path } = useRouteMatch();
+    const {serverMode} = useContext(mainContext);
 
-    const checkInstallHandler = () => {};
-
-    const renderEmptyEAOnly = () => {
+    const renderEmptyStateForEAOnlyMode = () => {
         return (
             <div style={{ height: 'calc(100vh - 250px)' }}>
                 <EAEmptyState
@@ -21,17 +21,15 @@ export default function BulkActions({ serverMode }) {
                     msg={
                         'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'
                     }
-                    img={EAType.BULKEDIT}
+                    stateType={EAEmptyStateType.BULKEDIT}
                     knowMoreLink={DOCUMENTATION.BULK_UPDATE}
-                    checkInstallHandler={checkInstallHandler}
-                    isHeader={true}
                     headerText="Deployment Groups"
                 />
             </div>
         );
     };
     return serverMode === SERVER_MODE.EA_ONLY ? (
-        renderEmptyEAOnly()
+        renderEmptyStateForEAOnlyMode()
     ) : (
         <Switch>
             <Route path={`${path}/:id/details`} render={() => <BulkActionDetails />} />
