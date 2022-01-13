@@ -231,12 +231,7 @@ function NodeComponent() {
                         <div className={'col-1 pt-9 pb-9 d-flex flex-row-reverse'}>
                             <NodeDeleteComponent
                                 nodeDetails={node}
-                                describeNode={describeNode}
-                                appName={appDetails.appName}
-                                environmentName={appDetails.environmentName}
-                                appId={appDetails.appId}
-                                clusterId={appDetails.clusterId}
-                                appType={appDetails.appType}
+                                appDetails={appDetails}
                             />
                         </div>
                     </div>

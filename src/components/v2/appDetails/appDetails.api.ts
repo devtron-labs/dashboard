@@ -1,5 +1,6 @@
 import { Routes } from '../../../config/constants';
 import { get, post, trash } from '../../../services/api';
+import { AppDetails } from '../../app/types';
 import { AppType } from './appDetails.type';
 
 export const getInstalledChartDetail = (_appId: number, _envId: number) => {
@@ -10,14 +11,14 @@ export const getInstalledAppDetail = (_appId: number, _envId: number) => {
     return get(`app/detail?app-id=${_appId}&env-id=${_envId}`);
 };
 
-export const deleteResource = (nodeDetails, appId, appName, env, envId, clusterId, appType) => {
+export const deleteResource = (nodeDetails, appDetails, envId) => {
     if (!nodeDetails.group) nodeDetails.group = '';
-    if (appType === AppType.EXTERNAL_HELM_CHART) {
+    if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
         let data = {
             appIdentifier: {
-                clusterId: clusterId,
+                clusterId: appDetails.clusterId,
                 namespace: nodeDetails.namespace,
-                releaseName: appName,
+                releaseName: appDetails.appName,
             },
             k8sRequest: {
                 resourceIdentifier: {
@@ -28,16 +29,13 @@ export const deleteResource = (nodeDetails, appId, appName, env, envId, clusterI
                     },
                     namespace: nodeDetails.namespace,
                     name: nodeDetails.name,
-                },
-                // podLogsRequest: {
-                //     containerName: 'envoy',
-                // },
+                }
             },
         };
         const URL = Routes.DELETE_RESOURCE;
         return post(URL, data);
     }
-    const URL = `${Routes.APPLICATIONS}/${appName}-${env}/resource?name=${nodeDetails.name}&namespace=${nodeDetails.namespace}&resourceName=${nodeDetails.name}&version=${nodeDetails.version}&group=${nodeDetails.group}&kind=${nodeDetails.kind}&force=true&appId=${appId}&envId=${envId}`;
+    const URL = `${Routes.APPLICATIONS}/${appDetails.appName}-${appDetails.env}/resource?name=${nodeDetails.name}&namespace=${nodeDetails.namespace}&resourceName=${nodeDetails.name}&version=${nodeDetails.version}&group=${nodeDetails.group}&kind=${nodeDetails.kind}&force=true&appId=${appDetails.appId}&envId=${envId}`;
     return trash(URL);
 };
 
