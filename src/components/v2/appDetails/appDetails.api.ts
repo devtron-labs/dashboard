@@ -35,7 +35,7 @@ export const deleteResource = (nodeDetails, appDetails, envId) => {
         const URL = Routes.DELETE_RESOURCE;
         return post(URL, data);
     }
-    const URL = `${Routes.APPLICATIONS}/${appDetails.appName}-${appDetails.env}/resource?name=${nodeDetails.name}&namespace=${nodeDetails.namespace}&resourceName=${nodeDetails.name}&version=${nodeDetails.version}&group=${nodeDetails.group}&kind=${nodeDetails.kind}&force=true&appId=${appDetails.appId}&envId=${envId}`;
+    const URL = `${Routes.APPLICATIONS}/${appDetails.appName}-${appDetails.environmentName}/resource?name=${nodeDetails.name}&namespace=${nodeDetails.namespace}&resourceName=${nodeDetails.name}&version=${nodeDetails.version}&group=${nodeDetails.group}&kind=${nodeDetails.kind}&force=true&appId=${appDetails.appId}&envId=${envId}`;
     return trash(URL);
 };
 
