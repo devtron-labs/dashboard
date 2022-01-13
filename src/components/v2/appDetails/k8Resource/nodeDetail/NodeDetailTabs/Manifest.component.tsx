@@ -27,15 +27,24 @@ function ManifestComponent({ selectedTab, isDeleted }) {
     const [error, setError] = useState(false);
     const [errorText, setErrorText] = useState('');
     const [isEditmode, setIsEditmode] = useState(false);
+    const [showDesiredAndCompareManifest, setShowDesiredAndCompareManifest] = useState(false);
 
     useEffect(() => {
+        const selectedResource = appDetails.resourceTree.nodes.filter(
+            (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
+        )[0];
+        let _showDesiredAndCompareManifest = (appDetails.appType === AppType.EXTERNAL_HELM_CHART && !selectedResource.parentRefs?.length);
+
+        setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest);
         setLoading(true);
         selectedTab(NodeDetailTab.MANIFEST, url);
+        if(appDetails.appType === AppType.EXTERNAL_HELM_CHART){
+            markActiveTab('Live manifest');
+        }
         try {
             Promise.all([
                 getManifestResource(appDetails, params.podName, params.nodeType),
-                appDetails.appType === AppType.EXTERNAL_HELM_CHART &&
-                    getDesiredManifestResource(appDetails, params.podName, params.nodeType),
+                _showDesiredAndCompareManifest && getDesiredManifestResource(appDetails, params.podName, params.nodeType),
             ])
                 .then((response) => {
                     let _manifest;
@@ -137,7 +146,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
     };
 
     const handleTabClick = (_tab: iLink) => {
-        if (_tab.isDisabled) {
+        if (_tab.isDisabled || loading) {
             return;
         }
         markActiveTab(_tab.name);
@@ -180,12 +189,13 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                 <>
                     <div className="bcn-0">
                         {appDetails.appType === AppType.EXTERNAL_HELM_CHART && (
-                            <div className="flex left pl-20 pr-20 border-bottom">
+                            <div className="flex left pl-20 pr-20 border-bottom manifest-tabs-row">
                                 {tabs.map((tab: iLink, index) => {
                                     return (
+                                        !showDesiredAndCompareManifest && (tab.name == 'Desired manifest' || tab.name == 'Compare') ? <></> :
                                         <div
                                             key={index + 'tab'}
-                                            className={` ${tab.isDisabled ? 'no-drop' : 'cursor'} pl-4 pt-8 pb-8 pr-4`}
+                                            className={` ${tab.isDisabled || loading ? 'no-drop' : 'cursor'} pl-4 pt-8 pb-8 pr-4`}
                                         >
                                             <div
                                                 className={`${
@@ -199,7 +209,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                     );
                                 })}
 
-                                {activeTab === 'Live manifest' && (
+                                {activeTab === 'Live manifest' && !loading && (
                                     <>
                                         <div className="pl-16 pr-16">|</div>
                                         {!isEditmode ? (

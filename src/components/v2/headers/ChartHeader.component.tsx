@@ -1,6 +1,6 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { URLS, Routes } from '../../../config';
+import { NavLink, Link } from 'react-router-dom';
+import { URLS, Routes, AppListConstants } from '../../../config';
 import { BreadCrumb, useBreadcrumb } from '../../common';
 import ReactGA from 'react-ga';
 import AppSelector from '../../AppSelector';
@@ -69,11 +69,11 @@ function ChartHeaderComponent() {
     return (
         <div className="app-page-header" style={{ gridTemplateColumns: 'unset' }}>
             <div className="m-0 flex left ">
-                <span className="cb-5 fs-16">Helm Apps </span>
+                <Link to={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`} className="devtron-breadcrumb__item">
+                    <span className="cb-5 fs-16">Helm Apps </span>
+                </Link>
                 <span className="fs-16 cn-9 ml-4 mr-4"> / </span>
                 <span className="fs-16 cn-9">{appDetails.appName}</span>
-
-                {/* <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 2)} /> */}
             </div>
 
             <ul role="tablist" className="tab-list">

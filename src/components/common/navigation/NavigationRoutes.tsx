@@ -10,6 +10,7 @@ import { Security } from '../../security/Security';
 import { getVersionConfig } from '../../../services/service';
 import { showError } from '../helpers/Helpers';
 import Reload from '../../Reload/Reload';
+import { EnvType } from '../../v2/appDetails/appDetails.type';
 
 const Charts = lazy(() => import('../../charts/Charts'));
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'));
@@ -132,6 +133,7 @@ export function AppRouter() {
                 <Switch>
                     <Route path={`${path}/${URLS.APP_LIST}`} render={() => <AppListRouter />} />
                     <Route path={`${path}/${URLS.EXTERNAL_APPS}/:appId/:appName`} render={() => <ExternalApps />} />
+                    <Route path={`${path}/${URLS.CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`} render={(props) => <V2Details envType={EnvType.CHART} />} />
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage isV2={false} />} />
                     <Route path={`${path}/v2/:appId(\\d+)`} render={() => <AppDetailsPage isV2={true} />} />
                     <Route exact path="">
