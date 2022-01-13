@@ -51,7 +51,9 @@ function EnvironmentStatusComponent() {
                     <div className="app-status-card bcn-0 mr-12 br-8 p-16">
                         <div className="lh-1-33 cn-9 flex left">
                             <span>Config apply status</span>
-                            <Question className="icon-dim-16 ml-4" />
+                            <Tippy className="default-tt cursor" arrow={false} content={'Whether or not your last helm install was successful'}>
+                                <Question className="cursor icon-dim-16 ml-4" />
+                            </Tippy>
                         </div>
                         <div className={`f-${appDetails.additionalData["status"].toLowerCase()} text-capitalize fw-6 fs-14 flex left`}>
                             <span>{appDetails.additionalData["status"]}</span>
