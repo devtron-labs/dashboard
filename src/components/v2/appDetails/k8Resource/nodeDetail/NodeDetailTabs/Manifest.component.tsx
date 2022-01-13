@@ -189,7 +189,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                 <>
                     <div className="bcn-0">
                         {appDetails.appType === AppType.EXTERNAL_HELM_CHART && (
-                            <div className="flex left pl-20 pr-20 border-bottom">
+                            <div className="flex left pl-20 pr-20 border-bottom manifest-tabs-row">
                                 {tabs.map((tab: iLink, index) => {
                                     return (
                                         !showDesiredAndCompareManifest && (tab.name == 'Desired manifest' || tab.name == 'Compare') ? <></> :
