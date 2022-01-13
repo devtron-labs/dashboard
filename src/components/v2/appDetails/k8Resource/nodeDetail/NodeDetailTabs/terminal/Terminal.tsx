@@ -10,6 +10,7 @@ import ReactGA from 'react-ga';
 
 import './terminal.css';
 import IndexStore from '../../../../index.store';
+import { AppType } from '../../../../appDetails.type';
 
 interface TerminalViewProps {
     nodeName: string;
@@ -63,7 +64,12 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     };
 
     const postInitialize = (sessionId: string) => {
-        let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
+        let socketURL = process.env.REACT_APP_ORCHESTRATOR_ROOT;
+        if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
+            socketURL += '/k8s/pod/exec/sockjs/ws/';
+        } else {
+            socketURL += '/api/vi/pod/exec/ws/';
+        }
 
         socket?.close();
 
@@ -242,8 +248,13 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             !appDetails
         )
             return;
-
-        let url = `api/v1/applications/pod/exec/session/${appDetails.appId}/${appDetails.environmentId}/${appDetails.namespace}/${terminalViewProps.nodeName}/${terminalViewProps.shell.value}/${terminalViewProps.containerName}`;
+        let url = '';
+        if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
+            url = `k8s/pod/exec/session/${appDetails.appId}`;
+        } else {
+            url = `api/v1/applications/pod/exec/session/${appDetails.appId}/${appDetails.environmentId}`;
+        }
+        url += `/${appDetails.namespace}/${terminalViewProps.nodeName}/${terminalViewProps.shell.value}/${terminalViewProps.containerName}`;
 
         get(url)
             .then((response: any) => {
