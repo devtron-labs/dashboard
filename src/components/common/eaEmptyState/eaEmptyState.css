@@ -1,0 +1,8 @@
+.ea-empty__wrapper {
+    height: calc(100vh - 250px);
+    margin-top: 60px;
+}
+
+.ea-empty-img {
+    box-shadow: 0 0 8px 0 rgba(61, 61, 61, 0.2);
+}

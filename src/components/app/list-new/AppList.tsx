@@ -19,6 +19,7 @@ import { OrderBy, SortBy } from '../list/types';
 import { AddNewApp } from '../create/CreateApp';
 import { mainContext } from '../../common/navigation/NavigationRoutes';
 import '../list/list.css';
+import EAEmptyState, { EAEmptyType } from '../../common/eaEmptyState/EAEmptyState';
 
 export default function AppList() {
     const location = useLocation();
@@ -577,6 +578,13 @@ export default function AppList() {
         </Modal>
     }
 
+    const knowMoreHandler = () => {
+    }
+
+    const checkInstallHandler = () =>{
+
+    }
+
     return (
         <div>
             {
@@ -608,12 +616,13 @@ export default function AppList() {
                     {
                         params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.EA_ONLY &&
                         <div style={{ height: "calc(100vh - 250px)" }}>
-                            <EmptyState>
-                                <img src={InstallDevtronFullImage} width="250" height="200" alt="Install devtron" />
-                                <h2 className="fs-16 fw-4 c-9">Create, build, deploy, debug</h2>
-                                <p className="text-left">Use Discover, Sentry’s powerful built-in query language interface, to uncover patterns and trends in your event data - all in one place. Measuring the health of your application is just a few simple clicks away. Learn more</p>
-                                <p>Run below command to install</p>
-                            </EmptyState>
+                            <EAEmptyState 
+                            title={'Create, build, deploy and debug custom apps'} 
+                            msg={'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'} 
+                            img={EAEmptyType.DEVTRONAPPS} 
+                            knowMoreHandler={knowMoreHandler}
+                            checkInstallHandler={checkInstallHandler}
+                            />
                         </div>
                     }
                     {
