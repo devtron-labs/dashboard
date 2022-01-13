@@ -67,7 +67,7 @@ const IndexStore = {
         _nodesFilteredSubject.next([..._nodes]);
     },
 
-    getAppDetails: () => {
+    getAppDetails: () : AppDetails => {
         return _appDetailsSubject.getValue();
     },
 
