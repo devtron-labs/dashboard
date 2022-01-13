@@ -73,7 +73,7 @@ export default function NavigationRoutes() {
                 const response = getVersionConfig();
                 const json = await response;
                 if (json.code == 200) {
-                    setServerMode(json.result.serverMode);
+                    setServerMode(json.result.serverMode)
                     setPageState(ViewType.FORM);
                 }
             } catch (err) {
@@ -102,12 +102,13 @@ export default function NavigationRoutes() {
                               {/* <Route path={`${URLS.HELM_CHARTS}`} render={() => <V2Router envType={EnvType.CHART} />} /> */}
                               {/* <Route path={URLS.APPS} render={() => <V2Router envType={EnvType.APPLICATION} />} /> */}
                               {/*---- V2 routing end-----*/}
+
                               <Route path={URLS.CHARTS} render={() => <Charts />} />
                               <Route path={URLS.CHARTS_OLD} render={() => <Charts />} />
                               <Route path={URLS.DEPLOYMENT_GROUPS} render={props => <BulkActions {...props} />} />
                               <Route path={URLS.GLOBAL_CONFIG} render={props => <GlobalConfig {...props} />} />
-                              <Route path={URLS.BULK_EDITS} render={props => < BulkEdit {...props} />} />
-                              <Route path={URLS.SECURITY} render={(props) => <Security {...props} />} />
+                              <Route path={URLS.BULK_EDITS} render={props => < BulkEdit {...props} serverMode={serverMode}/>} />
+                              <Route path={URLS.SECURITY} render={(props) => <Security {...props} serverMode={serverMode}/>} />
                               <Route>
                                   <RedirectWithSentry />
                               </Route>
