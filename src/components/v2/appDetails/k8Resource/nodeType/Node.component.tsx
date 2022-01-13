@@ -235,6 +235,8 @@ function NodeComponent() {
                                 appName={appDetails.appName}
                                 environmentName={appDetails.environmentName}
                                 appId={appDetails.appId}
+                                clusterId={appDetails.clusterId}
+                                appType={appDetails.appType}
                             />
                         </div>
                     </div>

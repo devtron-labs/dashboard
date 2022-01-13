@@ -19,7 +19,7 @@ import { NodeType } from '../../appDetails.type';
 import AppDetailsStore from '../../appDetails.store';
 import warn from '../../../assets/icons/ic-warning.svg';
 
-function NodeDeleteComponent({ appName, environmentName, nodeDetails, describeNode, appId }) {
+function NodeDeleteComponent({ appName, environmentName, nodeDetails, describeNode, appId, clusterId, appType }) {
     const { path } = useRouteMatch();
     const history = useHistory();
     const params = useParams<{ actionName: string; podName: string; nodeType: string; appId: string; envId: string }>();
@@ -83,19 +83,8 @@ function NodeDeleteComponent({ appName, environmentName, nodeDetails, describeNo
     async function asyncDeletePod(nodeDetails) {
         console.log(window.location.pathname);
 
-        let apiParams = {
-            appId: appId,
-            appName,
-            kind: nodeDetails?.kind,
-            group: nodeDetails?.group,
-            env: environmentName,
-            envId: +params.envId,
-            namespace: nodeDetails?.namespace,
-            version: nodeDetails?.version,
-            name: nodeDetails?.name,
-        };
         try {
-            await deleteResource(apiParams);
+            await deleteResource(nodeDetails, appId, appName, environmentName, params.envId, clusterId, appType);
             toast.success('Deletion initiated successfully.');
             // AppDetailsStore.markResourceDeleted(nodeDetails?.kind, nodeDetails?.name);
             const _tabs = AppDetailsStore.getAppDetailsTabs();
