@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import ReactGA from 'react-ga';
 import { DropdownIcon, Page } from '../../../common';
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails';
-import '../DeployChart.scss';
+import '../../../charts/modal/DeployChart.scss';
 
 function ReadmeColumn({ readmeCollapsed, toggleReadmeCollapsed, readme, ...props }) {
 
