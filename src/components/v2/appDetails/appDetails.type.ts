@@ -194,6 +194,7 @@ export interface Node {
     isSelected: boolean
     info: Info[]
     canBeHibernated: boolean
+    isHibernated: boolean
 }
 
 export interface Health {
