@@ -167,7 +167,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                 </div>
             </div>
 
-            <div style={{ minHeight: '600px', background: '#0b0f22' }}>
+            <div style={{ minHeight: '600px', background: '#0b0f22', flex: 1 }}>
                 <TerminalView
                     nodeName={params.podName}
                     containerName={selectedContainerName}

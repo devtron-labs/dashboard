@@ -124,11 +124,25 @@ function ExternalAppDeploymentHistory({appId}) {
                         </div>
                         <div className="source-detail border-btm pb-10 pt-10">
                             <div className="cn-7">Home</div>
-                            <div>{chartMetadata.home}</div>
+                            <div>
+                                <a rel="noreferrer noopener" target="_blank" href={chartMetadata.home} className="anchor">
+                                    {chartMetadata.home}
+                                </a>
+                            </div>
                         </div>
                         <div className="source-detail border-btm pb-10 pt-10">
                             <div className="cn-7">Sources</div>
-                            <div>{chartMetadata.sources?.join(',')}</div>
+                            <div>
+                                {chartMetadata.sources?.map((source) => {
+                                    return (
+                                        <div>
+                                            <a rel="noreferrer noopener" target="_blank" href={source} className="anchor">
+                                                {source}
+                                            </a>
+                                        </div>
+                                    )
+                                })}
+                            </div>
                         </div>
                         <div className="source-detail pb-10 pt-10">
                             <div className="cn-7">Description</div>
@@ -165,7 +179,7 @@ function ExternalAppDeploymentHistory({appId}) {
                             deployment.dockerImages.map((dockerImage, index) => {
                                 return (
                                     <div key={index} className="app-commit__hash ml-10">
-                                        <Tippy arrow={true} content={dockerImage}>
+                                        <Tippy arrow={true} className="default-tt" content={dockerImage}>
                                             <span>
                                                 <img src={docker} className="commit-hash__icon grayscale" />
                                                 <span className="ml-3">{dockerImage.split(':')[1]}</span>

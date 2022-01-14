@@ -418,7 +418,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                             placement="bottom"
                             content={
                                 <div>
-                                    <div className="flex column left">
+                                    <div className="flex column left ">
                                         <h5>Supported grep commands</h5>
                                         <span>grep 500</span>
                                         <span>grep -A 2 -B 3 -C 5 error</span>
@@ -427,7 +427,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                 </div>
                             }
                         >
-                            <Question className="icon-dim-24" />
+                            <Question className="icon-dim-24 cursor" />
                         </Tippy>
                     </form>
                 </div>
@@ -438,7 +438,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                     className="flex column log-viewer-container"
                 >
                     <div
-                        className={`pod-readyState pod-readyState--top bcr-7 ${
+                        className={`pod-readyState pod-readyState--top bcr-7 w-100 pl-20 ${
                             logsPaused || readyState === 2 ? 'pod-readyState--show' : ''
                         }`}
                     >

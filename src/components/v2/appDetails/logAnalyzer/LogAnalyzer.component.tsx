@@ -9,7 +9,7 @@ function LogAnalyzerComponent() {
     const { url } = useRouteMatch();
 
     useEffect(() => {
-        AppDetailsStore.markAppDetailsTabActiveByIdentifier(URLS.APP_DETAILS_LOG);
+        AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.log_analyzer);
     }, []);
 
     return (

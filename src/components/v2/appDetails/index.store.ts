@@ -241,7 +241,7 @@ const IndexStore = {
     getAllPods: () => {
         let containers = [];
 
-        const pods = _appDetailsSubject.getValue().resourceTree.podMetadata;
+        const pods = _appDetailsSubject.getValue().resourceTree?.podMetadata;
 
         return pods;
     },

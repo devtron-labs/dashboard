@@ -10,7 +10,7 @@ import AsyncSelect from 'react-select/async';
 import checkIcon from '../../../assets/icons/appstatus/ic-check.svg'
 import ReactGA from 'react-ga';
 import ReactSelect from 'react-select';
-import './DeployChart.scss';
+import '../../charts/modal/DeployChart.scss';
 import { ServerErrors } from '../../../modals/commonTypes';
 import ForceDeleteDialog from '../../common/dialogs/ForceDeleteDialog';
 import { getChartValuesURL } from '../../charts/charts.helper';

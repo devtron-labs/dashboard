@@ -66,9 +66,9 @@ export class Security extends Component<SecurityProps> {
         return (
             <div style={{ height: 'calc(100vh - 250px)' }}>
                 <EAEmptyState
-                    title={'Deploy third-party helm charts'}
+                    title={'Integrated DevSecOps'}
                     msg={
-                        'Deploy and manage helm apps from public and private repositories.'
+                        'Enable security scanning to identify vulnerabilities in your container and protect from external attacks. Manage security policies to allow or block specific vulnerabilities.'
                     }
                     stateType={EAEmptyStateType.SECURITY}
                     knowMoreLink={DOCUMENTATION.SECURITY}
