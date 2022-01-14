@@ -179,7 +179,7 @@ function ExternalAppDeploymentHistory({appId}) {
                             deployment.dockerImages.map((dockerImage, index) => {
                                 return (
                                     <div key={index} className="app-commit__hash ml-10">
-                                        <Tippy arrow={true} content={dockerImage}>
+                                        <Tippy arrow={true} className="default-tt" content={dockerImage}>
                                             <span>
                                                 <img src={docker} className="commit-hash__icon grayscale" />
                                                 <span className="ml-3">{dockerImage.split(':')[1]}</span>
