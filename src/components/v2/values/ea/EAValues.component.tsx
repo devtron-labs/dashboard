@@ -31,10 +31,7 @@ function ExternalAppValues({appId}) {
 
     function renderData() {
         return <div className={`deploy-chart-container bcn-0 ${readmeCollapsed ? 'readmeCollapsed' : 'readmeOpen'}`} style={{height: 'calc(100vh - 50px)'}}>
-            <div className="header-container flex column">
-                <div className="title">{releaseInfo.deployedAppDetail.appName}</div>
-                <div className="border" />
-            </div>
+            <div className="header-container flex column"></div>
             <ReadmeColumn readmeCollapsed={readmeCollapsed} toggleReadmeCollapsed={toggleReadmeCollapsed} readme={releaseInfo.readme} />
             <div className="deploy-chart-body">
                 <div className="overflown">

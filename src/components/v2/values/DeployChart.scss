@@ -1,6 +1,6 @@
 .deploy-chart-container {
     display: grid;
-    grid-template-rows: 20px 1fr 64px;
+    grid-template-rows: 0px 1fr 64px;
     grid-template-columns: auto 100%;
     width: 100%;
     margin: 0 auto;
@@ -52,7 +52,7 @@
             .overflown {
                 .hide-scroll {
                     width: 100%;
-                    padding: 0 8px;
+                    padding: 20px 8px;
                 }
             }
         }
@@ -99,7 +99,7 @@
                 display: flex;
                 align-items: flex-start;
                 flex-direction: column;
-                margin: 8px auto 0 auto;
+                margin: 20px auto 0 auto;
                 transition: all 0.2s ease-out;
             }
         }
