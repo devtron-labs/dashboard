@@ -418,7 +418,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                             placement="bottom"
                             content={
                                 <div>
-                                    <div className="flex column left">
+                                    <div className="flex column left cursor">
                                         <h5>Supported grep commands</h5>
                                         <span>grep 500</span>
                                         <span>grep -A 2 -B 3 -C 5 error</span>
