@@ -124,11 +124,25 @@ function ExternalAppDeploymentHistory({appId}) {
                         </div>
                         <div className="source-detail border-btm pb-10 pt-10">
                             <div className="cn-7">Home</div>
-                            <div>{chartMetadata.home}</div>
+                            <div>
+                                <a rel="noreferrer noopener" target="_blank" href={chartMetadata.home} className="anchor">
+                                    {chartMetadata.home}
+                                </a>
+                            </div>
                         </div>
                         <div className="source-detail border-btm pb-10 pt-10">
                             <div className="cn-7">Sources</div>
-                            <div>{chartMetadata.sources?.join(',')}</div>
+                            <div>
+                                {chartMetadata.sources?.map((source) => {
+                                    return (
+                                        <div>
+                                            <a rel="noreferrer noopener" target="_blank" href={source} className="anchor">
+                                                {source}
+                                            </a>
+                                        </div>
+                                    )
+                                })}
+                            </div>
                         </div>
                         <div className="source-detail pb-10 pt-10">
                             <div className="cn-7">Description</div>

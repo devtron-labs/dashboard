@@ -102,7 +102,7 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
                     if(!filters.namespaces.some(_ns => (_ns.clusterId == _clusterId && _ns.actualName == _namespace))){
                         filters.namespaces.push({
                             key: _clusterId + "_" + _namespace,
-                            label: '<div><div>'+_namespace+'</div><div class="cn-6 fs-11 fw-n">'+_clusterName+'</div></div>',
+                            label: '<div><div>'+_namespace+'</div><div class="cn-6 fs-11 fw-n"> cluster: '+_clusterName+'</div></div>',
                             isSaved: true,
                             isChecked: _isClusterSelected && filterApplied.clusterVsNamespaceMap.get(_clusterId.toString()).includes(_namespace),
                             clusterId : _clusterId,
