@@ -15,9 +15,21 @@ export interface MsgUIProps {
     bodyStyle?: any;
     msgStyle?: any;
     size: number;
+    isShowActionButton?: boolean;
+    actionButtonText?: string;
+    onActionButtonClick?: () => void;
 }
 
-const MessageUI: React.FC<MsgUIProps> = ({ msg, icon, bodyStyle, msgStyle, size = 24 }) => {
+const MessageUI: React.FC<MsgUIProps> = ({
+    msg,
+    icon,
+    bodyStyle,
+    msgStyle,
+    size = 24,
+    isShowActionButton,
+    actionButtonText,
+    onActionButtonClick,
+}) => {
     return (
         <div className="flex column dark-background w-100 " style={{ ...bodyStyle, minHeight: '600px' }}>
             <div>
@@ -54,6 +66,15 @@ const MessageUI: React.FC<MsgUIProps> = ({ msg, icon, bodyStyle, msgStyle, size 
             <div className="fs-14" style={{ ...msgStyle, marginTop: '8px', color: 'white' }}>
                 {msg}
             </div>
+            {isShowActionButton && (
+                <div
+                    className="flex left cb-5 cursor"
+                    onClick={onActionButtonClick}
+                    style={{ fontSize: '14px', textDecoration: 'underline' }}
+                >
+                    {actionButtonText}
+                </div>
+            )}
         </div>
     );
 };

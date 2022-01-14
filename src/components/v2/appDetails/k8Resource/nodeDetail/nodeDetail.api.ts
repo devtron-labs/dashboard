@@ -116,3 +116,8 @@ export const getTerminalData = (ad: AppDetails, nodeName: string, terminalType: 
     console.log('getTerminalData', _url);
     return get(_url);
 };
+
+export const createResource = (ad: AppDetails, podName: string, nodeType: string) => {
+    const requestData = createBody(ad, podName, nodeType);
+    return post(Routes.CREATE_RESOURCE, requestData);
+};
