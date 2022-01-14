@@ -272,14 +272,14 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     };
 
     return (
-        <div className="terminal-view" style={{ height: '100vh' }}>
+        <div className="terminal-view">
             <div
                 style={{ zIndex: 4, textTransform: 'capitalize' }}
                 className={`${
                     terminalViewProps.socketConnection !== 'CONNECTED'
                         ? `${
                               terminalViewProps.socketConnection === 'CONNECTING' ? 'bcy-2' : 'bcr-7'
-                          } pod-readyState--show`
+                          } pod-readyState--show pl-20`
                         : ''
                 } ${
                     terminalViewProps.socketConnection === 'CONNECTING' ? 'cn-9' : 'cn-0'
