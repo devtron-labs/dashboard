@@ -6,7 +6,7 @@ import { ServerErrors } from '../../../../modals/commonTypes';
 import ReadmeColumn  from '../common/ReadmeColumn.component';
 import CodeEditor from '../../../CodeEditor/CodeEditor'
 import YAML from 'yaml';
-import '../DeployChart.scss';
+import '../../../charts/modal/DeployChart.scss';
 
 function ExternalAppValues({appId}) {
     const [isLoading, setIsLoading] = useState(true);
