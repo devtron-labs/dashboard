@@ -105,7 +105,7 @@ export const BreadCrumb: React.FC<Breadcrumbs> = ({ breadcrumbs, sep = "/", clas
                         {children}
                     </Link>}
                 >
-                    <div className="cb-5 fw-4 fs-16 ">{breadcrumb.name}</div>
+                    <div className="cb-5 fw-4 fs-18 fw-6">{breadcrumb.name}</div>
                 </ConditionalWrap>
 
                 {idx + 1 !== filteredCrumbs.length && breadcrumb.name && <span className={`${className}__separator cn-5`}>{sep}</span>}
