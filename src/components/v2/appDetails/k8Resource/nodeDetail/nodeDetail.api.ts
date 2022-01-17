@@ -2,6 +2,10 @@ import { Routes } from '../../../../../config';
 import { get, post, put } from '../../../../../services/api';
 import { AppDetails, AppType } from '../../appDetails.type';
 
+const getAppId = (clusterId: number, namespace: string, appName: string) => {
+    return `${clusterId}|${namespace}|${appName}`;
+};
+
 export const getManifestResource = (ad: AppDetails, podName: string, nodeType: string) => {
     if (ad.appType === AppType.EXTERNAL_HELM_CHART) {
         return getManifestResourceHelmApps(ad, podName, nodeType);
@@ -20,7 +24,7 @@ export const getDesiredManifestResource = (appDetails: AppDetails, podName: stri
         (data) => data.name === podName && data.kind.toLowerCase() === nodeType,
     )[0];
     const requestData = {
-        appId: `${appDetails.clusterId}|${selectedResource.namespace}|${appDetails.appName}`,
+        appId: getAppId(appDetails.clusterId, selectedResource.namespace, appDetails.appName),
         resource: {
             Group: selectedResource.group ? selectedResource.group : '',
             Version: selectedResource.version ? selectedResource.version : 'v1',
@@ -49,11 +53,7 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
         (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
     )[0];
     let requestBody = {
-        appIdentifier: {
-            clusterId: appDetails.clusterId,
-            namespace: selectedResource.namespace,
-            releaseName: appDetails.appName,
-        },
+        appId: getAppId(appDetails.clusterId, selectedResource.namespace, appDetails.appName),
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
@@ -104,7 +104,11 @@ export const getLogsURL = (ad, nodeName, Host, container) => {
         prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
     }
     if (ad.appType === AppType.EXTERNAL_HELM_CHART) {
-        return `${prefix}${Host}/${Routes.LOGS}/${ad.clusterId}/${ad.appName}/${nodeName}?containerName=${container}&namespace=${ad.namespace}&follow=true&tailLines=500`;
+        return `${prefix}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}&appId=${getAppId(
+            ad.clusterId,
+            ad.namespace,
+            ad.appName
+        )}&follow=true&tailLines=500`;
     }
     return `${prefix}${Host}/api/v1/applications/${ad.appName}-${ad.environmentName}/pods/${nodeName}/logs?container=${container}&follow=true&namespace=${ad.namespace}&tailLines=500`;
 };
