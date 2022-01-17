@@ -130,6 +130,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
 
     const recreateResource = () => {
         setLoading(true);
+        setActiveManifestEditorData('');
         createResource(appDetails, params.podName, params.nodeType)
             .then((response) => {
                 const _manifest = JSON.stringify(response?.result?.manifest);
@@ -263,7 +264,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                 )}
                             </div>
                         )}
-                        {isResourceMissing ? (
+                        {isResourceMissing && !loading ? (
                             <MessageUI
                                 msg="Manifest not available"
                                 size={24}
