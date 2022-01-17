@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
 import NodeTreeComponent from './nodeType/NodeTree.component';
 import FilterResource from './FilterResource';
 import './k8resources.css';
@@ -9,7 +9,12 @@ import { useSharedState } from '../../utils/useSharedState';
 import IndexStore from '../index.store';
 import { URLS } from '../../../../config';
 
-export default function K8ResourceComponent() {
+interface K8ResourceComponentProps {
+    clickedNodes: Map<string, string>
+    registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>
+}
+
+export default function K8ResourceComponent(props: K8ResourceComponentProps) {
     const { url } = useRouteMatch();
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable());
 
@@ -20,7 +25,7 @@ export default function K8ResourceComponent() {
     return (
         <div className="bcn-0" style={{ justifyContent: 'space-between' }}>
             <div className="pt-16 pl-20 pb-16">
-                <FilterResource />
+                <FilterResource nodes={nodes} />
             </div>
             {nodes.length > 0 ? (
                 <div className="resource-node-wrapper d-flex">

@@ -16,7 +16,7 @@ function ExternalAppDetail({appId, appName}) {
     useEffect(() => {
         getAppDetail(appId)
             .then((appDetailResponse: HelmAppDetailResponse) => {
-                IndexStore.setAppDetails(_convertToGenericAppDetailModel(appDetailResponse.result));
+                IndexStore.publishAppDetails(_convertToGenericAppDetailModel(appDetailResponse.result));
                 setIsLoading(false);
             })
             .catch((errors: ServerErrors) => {

@@ -24,13 +24,16 @@ import MessageUI from '../common/message.ui';
 const AppDetailsComponent = () => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
     const { path, url } = useRouteMatch();
+    const [loading, setLoading] = useState(true);
+    const history = useHistory();
+
+    const [streamData, setStreamData] = useState<AppStreamData>(null);
+    const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>())
     const [applicationObjectTabs] = useSharedState(
         AppDetailsStore.getAppDetailsTabs(),
         AppDetailsStore.getAppDetailsTabsObservable(),
     );
-    const [loading, setLoading] = useState(true);
-    const history = useHistory();
-    const [streamData, setStreamData] = useState<AppStreamData>(null);
+
     const appDetails = IndexStore.getAppDetails();
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
     const pathname = window.location.pathname;
@@ -167,13 +170,13 @@ const AppDetailsComponent = () => {
                 <Route
                     path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType`}
                     render={() => {
-                        return <K8ResourceComponent />;
+                        return <K8ResourceComponent clickedNodes={clickedNodes} registerNodeClick={registerNodeClick} />;
                     }}
                 />
                 <Route
                     path={`${path}/${URLS.APP_DETAILS_K8}`}
                     render={() => {
-                        return <K8ResourceComponent />;
+                        return <K8ResourceComponent clickedNodes={clickedNodes} registerNodeClick={registerNodeClick} />;
                     }}
                 />
                 <Route

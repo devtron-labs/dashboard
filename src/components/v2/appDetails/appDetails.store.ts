@@ -40,8 +40,8 @@ const AppDetailsStore = {
 
         if (displayLogAnalyzer) {
             aots.push(addAOT(AppDetailsTabs.log_analyzer, _url + '/' + URLS.APP_DETAILS_LOG, isLogAnalyserURL, AppDetailsTabs.log_analyzer));
-            _maxTabAllowd = 7;
         }
+        _maxTabAllowd = 7;
 
         applicationObjectTabsSubject.next([...aots]);
 

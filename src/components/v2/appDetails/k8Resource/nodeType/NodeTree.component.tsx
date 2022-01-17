@@ -1,6 +1,6 @@
 import React, { Children, useEffect, useState } from 'react';
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
-import { NodeTreeActions, useNodeTree } from './useNodeTreeReducer';
+import { getTreeNodesWithChild, NodeTreeActions, useNodeTree } from './useNodeTreeReducer';
 import { useHistory, useRouteMatch, useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import IndexStore from '../../index.store';
@@ -22,6 +22,8 @@ function NodeTreeComponent() {
         IndexStore.getAppDetailsNodesFilteredObservable(),
     );
     const params = useParams<{ nodeType: NodeType }>();
+
+    // let _treeNodes = getTreeNodesWithChild(filteredNodes)
 
     const handleNodeClick = (treeNode: iNode, parentNode: iNode, e: any) => {
         if (e) {

@@ -43,15 +43,11 @@ function LogsComponent({ selectedTab, isDeleted }) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string }>();
 
     const [logsPaused, setLogsPaused] = useState(false);
-    // const [containers, setContainers] = useState([]);
-    // const [selectedContainerName, setSelectedContainerName] = useState('');
     const [tempSearch, setTempSearch] = useState<string>('');
     const [logSearchString, setLogSearchString] = useState('');
-    // const [grepTokens, setGrepTokens] = useState(null);
     const [highlightString, setHighlightString] = useState('');
     const [logsCleared, setLogsCleared] = useState(false);
     const [readyState, setReadyState] = useState(null);
-    // const [selectedPods, setSelectedPods] = useState<Array<string>>([]);
 
     const logsPausedRef = useRef(false);
     const workerRef = useRef(null);

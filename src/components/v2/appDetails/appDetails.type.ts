@@ -219,7 +219,6 @@ export interface iNodes extends Array<iNode> {}
 export interface iNode extends Node {
     childNodes: iNodes;
     type: NodeType;
-    isSelected: boolean;
     status: string;
 }
 

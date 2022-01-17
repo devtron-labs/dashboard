@@ -1,6 +1,10 @@
 
 import { useReducer } from "react";
-import { AggregationKeys, getAggregator, iNode, Node } from "../../appDetails.type";
+import { nodes } from "../../../../app/details/appDetails/__test__/appDetails.data";
+import { AggregationKeys, getAggregator, iNode, Node } from '../../appDetails.type';
+import { NodeType } from '../../../../app/types';
+import { array } from "prop-types";
+import { getPodsRootParent } from "../../index.store";
 
 export const NodeTreeActions = {
     Init: "INIT",
@@ -8,7 +12,6 @@ export const NodeTreeActions = {
     ParentNodeClick: "PARENT_NODE_CLICK",
     ChildNodeClick: "CHILD_NODE_CLICK"
 };
-
 
 const initialState = {
     loading: true,
@@ -45,46 +48,49 @@ const handleChildNodeClick = (treeNodes: Array<iNode>, selectedNode: iNode, pare
     return treeNodes
 }
 
-const getChildiNodes = (nodes: Array<Node>, parentNodeName: string) => {
-
-    let _nodes = []
-    let _alreadyAddedNodes = []
-
-    nodes.forEach((node: Node) => {
-        const aggregator = getAggregator(node.kind)
-        if (aggregator.toLowerCase() === parentNodeName.toLowerCase()) {
-            if (_alreadyAddedNodes.indexOf(node.kind) === -1) {
-                _alreadyAddedNodes.push(node.kind)
-                const _inode = {} as iNode;
-                _inode.name = node.kind
-                _inode.status = node.health?.status
-                _nodes.push(_inode)
-            }
-
-        }
-    });
-
-    return _nodes
-}
-
-const getTreeNodes = (_nodes: Array<Node>) => {
-
+export const getTreeNodesWithChild = (_nodes: Array<Node>) => {
+    let podParents = getPodsRootParent(_nodes)
     const _inodes = [];
 
+    let nodesByAggregator = _nodes.reduce((nodesByAggregator: Map<string, Map<string, string | Array<[string, string]>>> , node: Node) => {
+        let agg = getAggregator(node.kind)
+        if (!nodesByAggregator.get(agg)) {
+            nodesByAggregator.set(agg, new Map<string, string>())
+        }
+        if (!nodesByAggregator.get(agg).get(node.kind)) {
+            nodesByAggregator.get(agg).set(node.kind, node.health?.status)
+        } else {
+            //At this stage we know status in string therefore we can safely cast it to string
+            nodesByAggregator.get(agg).set(node.kind, reduceKindStatus(nodesByAggregator.get(agg).get(node.kind) as string, node.health?.status))
+        }
+        return nodesByAggregator
+    }, new Map<string, Map<string, string | Array<[string, string]>>>())
+
     Object.keys(AggregationKeys).map(key => {
-        const aggregationKey = AggregationKeys[key];
-
-        let cNodes = getChildiNodes(_nodes, aggregationKey)
-
-        if (cNodes.length > 0) {
+        if (nodesByAggregator.get(AggregationKeys[key])?.size > 0) {
             const _inode = {} as iNode;
-            _inode.name = aggregationKey
-            _inode.childNodes = cNodes
+            _inode.name = AggregationKeys[key]
+            // if (key == AggregationKeys.Workloads) {
+            //     let pod = nodesByAggregator.get(AggregationKeys[key]).get("Pod")
+            //     if (pod && podParents.length > 0) {
+
+            //     }
+            // }
+            _inode.childNodes = Array.from(nodesByAggregator.get(AggregationKeys[key]), ([name, value]) => ({ name: name, status: value, isSelected: false } as iNode)).sort((a, b) => a.name < b.name? -1 : 1)
             _inodes.push(_inode)
         }
     })
-
     return _inodes
+}
+
+const reduceKindStatus = (aggregatedStatus: string, newStatus: string) => {
+    if (aggregatedStatus.toLowerCase() == "degraded" || newStatus.toLowerCase() == "degraded") {
+        return "Degraded"
+    }
+    if (aggregatedStatus.toLowerCase() == "progressing" || newStatus.toLowerCase() == "progressing") {
+        return "Progressing"
+    }
+    return "Healthy"
 }
 
 const reducer = (state: any, action: any) => {
@@ -92,7 +98,7 @@ const reducer = (state: any, action: any) => {
     switch (action.type) {
 
         case NodeTreeActions.Init:
-            const initialNodes = getTreeNodes(action.nodes);
+            const initialNodes = getTreeNodesWithChild(action.nodes);
 
             return { ...state, loading: false, treeNodes: initialNodes };
 
@@ -118,4 +124,3 @@ export const useNodeTree = () => {
 
     return [state, dispatch];
 };
-

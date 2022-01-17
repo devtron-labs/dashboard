@@ -1,8 +1,9 @@
 import React from 'react';
 import IndexStore from '../index.store';
 import { StatusFilterButtonComponent } from './StatusFilterButton.component';
+import { Node } from '../appDetails.type';
 
-export default function FilterResource() {
+export default function FilterResource({ nodes }: { nodes: Array<Node>}) {
     {
         /* ---for  later purpose---- */
     }
@@ -20,7 +21,7 @@ export default function FilterResource() {
                 }} className="w-100 en-2 bw-1 pt-6 pb-6 br-4 pl-32 pr-8 " placeholder="Search objects" type="text" />
             </div> */}
             <div>
-                <StatusFilterButtonComponent />
+                <StatusFilterButtonComponent nodes={nodes} />
             </div>
         </div>
     );

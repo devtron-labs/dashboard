@@ -52,7 +52,7 @@ function RouterComponent({ envType }) {
                 response = await getInstalledAppDetail(+params.appId, +params.envId);
             }
 
-            IndexStore.setAppDetails(response.result);
+            IndexStore.publishAppDetails(response.result);
             setStatusCode(response?.code);
 
             setIsLoading(false);
