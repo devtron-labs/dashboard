@@ -33,28 +33,28 @@ function ManifestComponent({ selectedTab, isDeleted }) {
     const [errorText, setErrorText] = useState('');
     const [isEditmode, setIsEditmode] = useState(false);
     const [showDesiredAndCompareManifest, setShowDesiredAndCompareManifest] = useState(false);
-    const [isHealthStatusMissing, setIsHealthStatusMissing] = useState(false);
+    const [isResourceMissing, setIsResourceMissing] = useState(false);
 
     useEffect(() => {
         const selectedResource = appDetails.resourceTree.nodes.filter(
             (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
         )[0];
-        let _sHealthStatusMissing = selectedResource.health?.status === 'Missing';
-        setIsHealthStatusMissing(_sHealthStatusMissing);
-        let _showDesiredAndCompareManifest =
-            appDetails.appType === AppType.EXTERNAL_HELM_CHART && !selectedResource.parentRefs?.length;
 
+        let _isResourceMissing = appDetails.appType === AppType.EXTERNAL_HELM_CHART && selectedResource.health?.status === 'Missing';
+        setIsResourceMissing(_isResourceMissing);
+        let _showDesiredAndCompareManifest = appDetails.appType === AppType.EXTERNAL_HELM_CHART && !selectedResource.parentRefs?.length;
         setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest);
+
         setLoading(true);
         selectedTab(NodeDetailTab.MANIFEST, url);
+
         if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
             markActiveTab('Live manifest');
         }
         try {
             Promise.all([
-                !_sHealthStatusMissing && getManifestResource(appDetails, params.podName, params.nodeType),
-                _showDesiredAndCompareManifest &&
-                    getDesiredManifestResource(appDetails, params.podName, params.nodeType),
+                !_isResourceMissing && getManifestResource(appDetails, params.podName, params.nodeType),
+                _showDesiredAndCompareManifest && getDesiredManifestResource(appDetails, params.podName, params.nodeType),
             ])
                 .then((response) => {
                     let _manifest;
@@ -137,7 +137,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                     setManifest(_manifest);
                     setActiveManifestEditorData(_manifest);
                     setModifiedManifest(_manifest);
-                    setIsHealthStatusMissing(false);
+                    setIsResourceMissing(false);
                 }
                 setLoading(false);
             })
@@ -242,7 +242,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                     );
                                 })}
 
-                                {activeTab === 'Live manifest' && !loading && !isHealthStatusMissing && (
+                                {activeTab === 'Live manifest' && !loading && !isResourceMissing && (
                                     <>
                                         <div className="pl-16 pr-16">|</div>
                                         {!isEditmode ? (
@@ -263,7 +263,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                 )}
                             </div>
                         )}
-                        {isHealthStatusMissing ? (
+                        {isResourceMissing ? (
                             <MessageUI
                                 msg="Manifest not available"
                                 size={24}
