@@ -5,7 +5,12 @@ import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
 import { useParams, useRouteMatch } from 'react-router';
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg';
 import { NodeDetailTab } from '../nodeDetail.type';
-import { getDesiredManifestResource, getManifestResource, updateManifestResourceHelmApps } from '../nodeDetail.api';
+import {
+    createResource,
+    getDesiredManifestResource,
+    getManifestResource,
+    updateManifestResourceHelmApps,
+} from '../nodeDetail.api';
 import CodeEditor from '../../../../../CodeEditor/CodeEditor';
 import IndexStore from '../../../index.store';
 import MessageUI, { MsgUIType } from '../../../../common/message.ui';
@@ -28,22 +33,27 @@ function ManifestComponent({ selectedTab, isDeleted }) {
     const [errorText, setErrorText] = useState('');
     const [isEditmode, setIsEditmode] = useState(false);
     const [showDesiredAndCompareManifest, setShowDesiredAndCompareManifest] = useState(false);
+    const [isResourceMissing, setIsResourceMissing] = useState(false);
 
     useEffect(() => {
         const selectedResource = appDetails.resourceTree.nodes.filter(
             (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
         )[0];
-        let _showDesiredAndCompareManifest = (appDetails.appType === AppType.EXTERNAL_HELM_CHART && !selectedResource.parentRefs?.length);
 
+        let _isResourceMissing = appDetails.appType === AppType.EXTERNAL_HELM_CHART && selectedResource.health?.status === 'Missing';
+        setIsResourceMissing(_isResourceMissing);
+        let _showDesiredAndCompareManifest = appDetails.appType === AppType.EXTERNAL_HELM_CHART && !selectedResource.parentRefs?.length;
         setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest);
+
         setLoading(true);
         selectedTab(NodeDetailTab.MANIFEST, url);
-        if(appDetails.appType === AppType.EXTERNAL_HELM_CHART){
+
+        if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
             markActiveTab('Live manifest');
         }
         try {
             Promise.all([
-                getManifestResource(appDetails, params.podName, params.nodeType),
+                !_isResourceMissing && getManifestResource(appDetails, params.podName, params.nodeType),
                 _showDesiredAndCompareManifest && getDesiredManifestResource(appDetails, params.podName, params.nodeType),
             ])
                 .then((response) => {
@@ -58,8 +68,6 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                         setManifest(_manifest);
                         setActiveManifestEditorData(_manifest);
                         setModifiedManifest(_manifest);
-                    } else {
-                        setError(true);
                     }
                     setLoading(false);
                 })
@@ -120,6 +128,26 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                 });
     };
 
+    const recreateResource = () => {
+        setLoading(true);
+        setActiveManifestEditorData('');
+        createResource(appDetails, params.podName, params.nodeType)
+            .then((response) => {
+                const _manifest = JSON.stringify(response?.result?.manifest);
+                if (_manifest) {
+                    setManifest(_manifest);
+                    setActiveManifestEditorData(_manifest);
+                    setModifiedManifest(_manifest);
+                    setIsResourceMissing(false);
+                }
+                setLoading(false);
+            })
+            .catch((err) => {
+                setLoading(false);
+                showError(err);
+            });
+    };
+
     const handleCancel = () => {
         setIsEditmode(false);
         setModifiedManifest(manifest);
@@ -139,6 +167,8 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                 setActiveManifestEditorData(modifiedManifest);
                 break;
             case 'Compare':
+                setActiveManifestEditorData(manifest);
+                break;
             case 'Desired manifest':
                 setActiveManifestEditorData(desiredManifest);
                 break;
@@ -191,11 +221,15 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                         {appDetails.appType === AppType.EXTERNAL_HELM_CHART && (
                             <div className="flex left pl-20 pr-20 border-bottom manifest-tabs-row">
                                 {tabs.map((tab: iLink, index) => {
-                                    return (
-                                        !showDesiredAndCompareManifest && (tab.name == 'Desired manifest' || tab.name == 'Compare') ? <></> :
+                                    return !showDesiredAndCompareManifest &&
+                                        (tab.name == 'Desired manifest' || tab.name == 'Compare') ? (
+                                        <></>
+                                    ) : (
                                         <div
                                             key={index + 'tab'}
-                                            className={` ${tab.isDisabled || loading ? 'no-drop' : 'cursor'} pl-4 pt-8 pb-8 pr-4`}
+                                            className={` ${
+                                                tab.isDisabled || loading ? 'no-drop' : 'cursor'
+                                            } pl-4 pt-8 pb-8 pr-4`}
                                         >
                                             <div
                                                 className={`${
@@ -209,12 +243,12 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                     );
                                 })}
 
-                                {activeTab === 'Live manifest' && !loading && (
+                                {activeTab === 'Live manifest' && !loading && !isResourceMissing && (
                                     <>
                                         <div className="pl-16 pr-16">|</div>
                                         {!isEditmode ? (
                                             <div className="flex left cb-5 cursor" onClick={handleEditLiveManifest}>
-                                                <Edit className="icon-dim-16 pr-4 fc-5 " /> Edit Live manifest
+                                                <Edit className="icon-dim-16 pr-4 fc-5 edit-icon" /> Edit Live manifest
                                             </div>
                                         ) : (
                                             <div>
@@ -230,28 +264,39 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                 )}
                             </div>
                         )}
-                        <CodeEditor
-                            defaultValue={manifest}
-                            diffView={activeTab === 'Compare'}
-                            theme="vs-dark"
-                            height={700}
-                            value={activeManifestEditorData}
-                            mode="yaml"
-                            readOnly={activeTab !== 'Live manifest' || (!isEditmode && activeTab === 'Live manifest')}
-                            onChange={handleEditorValueChange}
-                            loading={loading}
-                            customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} size={24} />}
-                        >
-                            {activeTab === 'Compare' && (
-                                <CodeEditor.Header hideDefaultSplitHeader={true}>
-                                    <div className="split-header">
-                                        <div className="left-pane">Live manifest</div>
-                                        <div className="right-pane">Desired manifest</div>
-                                    </div>
-                                </CodeEditor.Header>
-                            )}
-                            {activeTab === 'Live manifest' && errorText && <CodeEditor.ErrorBar text={errorText} />}
-                        </CodeEditor>
+                        {isResourceMissing && !loading ? (
+                            <MessageUI
+                                msg="Manifest not available"
+                                size={24}
+                                isShowActionButton={showDesiredAndCompareManifest}
+                                actionButtonText="Recreate this resource"
+                                onActionButtonClick={recreateResource}
+                            />
+                        ) : (
+                            <CodeEditor
+                                defaultValue={desiredManifest}
+                                diffView={activeTab === 'Compare'}
+                                theme="vs-dark--dt"
+                                height={700}
+                                value={activeManifestEditorData}
+                                mode="yaml"
+                                readOnly={activeTab !== 'Live manifest' || !isEditmode}
+                                onChange={handleEditorValueChange}
+                                loading={loading}
+                                customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} size={24} />}
+                                focus={isEditmode}
+                            >
+                                {activeTab === 'Compare' && (
+                                    <CodeEditor.Header hideDefaultSplitHeader={true}>
+                                        <div className="split-header">
+                                            <div className="left-pane">Desired manifest</div>
+                                            <div className="right-pane">Live manifest</div>
+                                        </div>
+                                    </CodeEditor.Header>
+                                )}
+                                {activeTab === 'Live manifest' && errorText && <CodeEditor.ErrorBar text={errorText} />}
+                            </CodeEditor>
+                        )}
                     </div>
                 </>
             )}

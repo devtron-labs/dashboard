@@ -119,6 +119,7 @@ export const Routes = {
     EVENTS: 'k8s/events',
     LOGS: 'k8s/pods/logs',
     DELETE_RESOURCE: 'k8s/resource/delete',
+    CREATE_RESOURCE: 'k8s/resource/create',
 };
 
 export const ViewType = {

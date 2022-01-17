@@ -2,8 +2,5 @@
     position: relative;
     background-color: inherit;
     grid-column: 1 / span 2;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 25px;
     min-width: cal(100vw-40);
 }

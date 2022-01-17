@@ -36,6 +36,7 @@ interface CodeEditorInterface {
     customLoader?: JSX.Element;
     theme?: string;
     original?: string;
+    focus?: boolean;
 }
 
 interface CodeEditorHeaderInterface {
@@ -85,7 +86,7 @@ interface CodeEditorState {
     height: string;
     noParsing: boolean;
 }
-const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader}) {
+const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus}) {
     const editorRef = useRef(null)
     const monacoRef = useRef(null)
     const { width, height: windowHeight } = useWindowSize()
@@ -218,6 +219,12 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     useEffect(() => {
       dispatch({ type: 'setDiff', value: diffView })
     }, [diffView])
+
+    useEffect(() => {
+      if(focus){
+        editorRef.current.focus();
+      }
+    }, [focus]);
 
     function handleOnChange(newValue, e) {
         dispatch({ type: 'setCode', value: newValue })
