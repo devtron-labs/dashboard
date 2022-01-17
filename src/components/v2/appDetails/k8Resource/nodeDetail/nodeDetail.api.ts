@@ -49,11 +49,7 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
         (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
     )[0];
     let requestBody = {
-        appIdentifier: {
-            clusterId: appDetails.clusterId,
-            namespace: selectedResource.namespace,
-            releaseName: appDetails.appName,
-        },
+        appId: `${appDetails.clusterId}|${selectedResource.namespace}|${appDetails.appName}`,
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
@@ -104,7 +100,7 @@ export const getLogsURL = (ad, nodeName, Host, container) => {
         prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
     }
     if (ad.appType === AppType.EXTERNAL_HELM_CHART) {
-        return `${prefix}${Host}/${Routes.LOGS}/${ad.clusterId}/${ad.appName}/${nodeName}?containerName=${container}&namespace=${ad.namespace}&follow=true&tailLines=500`;
+        return `${prefix}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}&appId=${ad.clusterId}|${ad.namespace}|${ad.appName}&follow=true&tailLines=500`;
     }
     return `${prefix}${Host}/api/v1/applications/${ad.appName}-${ad.environmentName}/pods/${nodeName}/logs?container=${container}&follow=true&namespace=${ad.namespace}&tailLines=500`;
 };
