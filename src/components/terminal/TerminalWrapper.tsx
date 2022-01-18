@@ -256,7 +256,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
 
     render() {
         let self = this;
-        let statusBarClasses = `cn-0 m-0 w-100 pod-readyState pod-readyState--top`;
+        let statusBarClasses = `cn-0 m-0 w-100 pod-readyState pod-readyState--top pl-20`;
         if (this.props.socketConnection !== "CONNECTED") {
             statusBarClasses = `${statusBarClasses} bcr-7 pod-readyState--show`;
         }
