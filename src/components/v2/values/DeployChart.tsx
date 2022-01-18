@@ -210,10 +210,11 @@ const DeployChart: React.FC<DeployChartProps> = ({
 	}
 	useEffect(() => {
 		// scroll to the editor view with animation for only update-chart
+		// subtracting - 100 from offset top because of floating header's tab 
 		if (envId) {
 			setTimeout(() => {
 				deployChartForm.current?.scrollTo({
-					top: deployChartEditor.current.offsetTop,
+					top: deployChartEditor.current.offsetTop - 100,
 					behavior: 'smooth',
 				});
 			}, 1000);
