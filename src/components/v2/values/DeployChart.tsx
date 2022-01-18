@@ -198,7 +198,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
 				};
 				const { result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId } } = await installChart(payload);
 				toast.success('Deployment initiated');
-				push(`/chart-store/deployments/${newInstalledAppId}/env/${newEnvironmentId}`)
+                push(`app/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}`)
+
+				// push(`/chart-store/deployments/${newInstalledAppId}/env/${newEnvironmentId}`)
 			}
 		}
 		catch (err) {
@@ -304,7 +306,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
 				await deleteInstalledChart(installedAppId)
 			}
 			toast.success('Successfully deleted.')
-			push(URLS.CHARTS)
+			// push(URLS.CHARTS)
+			let url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`;
+			push(url);
 		}
 		catch (err) {
 			// if (!force && err.code != 403) {
