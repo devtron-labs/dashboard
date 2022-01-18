@@ -10,7 +10,7 @@ import { useRouteMatch, Redirect, useParams, useHistory } from 'react-router';
 import { URLS } from '../../../config';
 import AppDetailsStore, { AppDetailsTabs } from './appDetails.store';
 import { useSharedState } from '../utils/useSharedState';
-import { ApplicationObject, AppStreamData, NodeType } from './appDetails.type';
+import { ApplicationObject, AppStreamData, NodeType, AppType } from './appDetails.type';
 import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component';
 import Tippy from '@tippyjs/react';
 import IndexStore from './index.store';
@@ -38,10 +38,11 @@ const AppDetailsComponent = () => {
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
     const pathname = window.location.pathname;
 
+    // if app type not of EA, then call stream API
     const syncSSE = useEventSource(
         `${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
         [params.appId, params.envId],
-        !!appDetails?.appName && !!appDetails?.environmentName,
+        !!appDetails?.appName && !!appDetails?.environmentName && (appDetails?.appType?.toString() != AppType.EXTERNAL_HELM_CHART.toString()),
         (event) => setStreamData(JSON.parse(event.data)),
     );
 
