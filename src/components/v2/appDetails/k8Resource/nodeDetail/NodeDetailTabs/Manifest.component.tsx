@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import {useLocation, useHistory} from 'react-router';
 import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json';
 import { iLink } from '../../../../utils/tabUtils/link.type';
 import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
@@ -20,6 +21,8 @@ import { toast } from 'react-toastify';
 import { showError, ToastBody } from '../../../../../common';
 
 function ManifestComponent({ selectedTab, isDeleted }) {
+    const location = useLocation();
+    const history = useHistory();
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON);
     const { url } = useRouteMatch();
     const params = useParams<{ actionName: string; podName: string; nodeType: string }>();
@@ -154,12 +157,21 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                     setIsResourceMissing(false);
                 }
                 setLoading(false);
+                _refetchAppDetailData();
             })
             .catch((err) => {
                 setLoading(false);
                 showError(err);
             });
     };
+
+    const _refetchAppDetailData = () => {
+        const queryParams = new URLSearchParams(location.search);
+        queryParams.append('refetchData', 'true');
+        history.replace({
+            search: queryParams.toString(),
+        })
+    }
 
     const handleCancel = () => {
         setIsEditmode(false);
