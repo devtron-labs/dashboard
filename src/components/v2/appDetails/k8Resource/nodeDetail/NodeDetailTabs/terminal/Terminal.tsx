@@ -283,7 +283,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                         : ''
                 } ${
                     terminalViewProps.socketConnection === 'CONNECTING' ? 'cn-9' : 'cn-0'
-                } m-0 w-100 pod-readyState pod-readyState--top`}
+                } m-0 pl-20 w-100 pod-readyState pod-readyState--top`}
             >
                 <span className={terminalViewProps.socketConnection === 'CONNECTING' ? 'loading-dots' : ''}>
                     {terminalViewProps.socketConnection?.toLowerCase()}
@@ -309,7 +309,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             </div>
 
             <div>
-                <div id="terminal-id"></div>
+                <div id="terminal-id pl-20"></div>
             </div>
 
             {terminalViewProps.socketConnection === 'CONNECTED' && (

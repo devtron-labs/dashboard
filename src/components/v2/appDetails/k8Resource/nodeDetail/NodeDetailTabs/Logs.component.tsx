@@ -478,7 +478,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                     </div>
 
                     <div
-                        className={`pod-readyState pod-readyState--bottom ${
+                        className={`pod-readyState pod-readyState--bottom w-100 ${
                             !logsPaused && [0, 1].includes(readyState) ? 'pod-readyState--show' : ''
                         }`}
                     >
