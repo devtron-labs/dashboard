@@ -2,6 +2,7 @@ import { Routes } from '../../../config/constants';
 import { get, post, trash } from '../../../services/api';
 import { AppDetails } from '../../app/types';
 import { AppType } from './appDetails.type';
+import { getAppId } from '../appDetails/k8Resource/nodeDetail/nodeDetail.api';
 
 export const getInstalledChartDetail = (_appId: number, _envId: number) => {
     return get(`app-store/installed-app/detail?installed-app-id=${_appId}&env-id=${_envId}`);
@@ -15,11 +16,7 @@ export const deleteResource = (nodeDetails, appDetails, envId) => {
     if (!nodeDetails.group) nodeDetails.group = '';
     if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
         let data = {
-            appIdentifier: {
-                clusterId: appDetails.clusterId,
-                namespace: nodeDetails.namespace,
-                releaseName: appDetails.appName,
-            },
+            appId: getAppId(appDetails.clusterId, nodeDetails.namespace, appDetails.appName),
             k8sRequest: {
                 resourceIdentifier: {
                     groupVersionKind: {
