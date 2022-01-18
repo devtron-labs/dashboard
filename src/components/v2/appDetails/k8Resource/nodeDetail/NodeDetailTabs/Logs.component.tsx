@@ -233,7 +233,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
         if (selectedTab) {
             selectedTab(NodeDetailTab.LOGS, url);
         }
-    }, []);
+    }, [params.podName]);
 
     useEffect(() => {
         //Values are already set once we reach here
@@ -483,7 +483,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                 Connecting
                             </div>
                         )}
-                        {readyState === 1 && <div className="readyState loading-dots cg-5">Connected</div>}
+                        {readyState === 1 && <div className="readyState loading-dots cg-5 pl-20">Connected</div>}
                     </div>
                 </div>
             )}
