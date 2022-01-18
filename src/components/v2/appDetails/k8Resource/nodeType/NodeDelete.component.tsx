@@ -89,6 +89,7 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
         }
     }
 
+    // TODO : move it to some common place, so that recreateResource in manifest can also use that common function.
     const _refetchAppDetailData = () => {
         const queryParams = new URLSearchParams(location.search);
         queryParams.append('refetchData', 'true');
