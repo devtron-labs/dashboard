@@ -1,10 +1,7 @@
 
 import { useReducer } from "react";
-import { nodes } from "../../../../app/details/appDetails/__test__/appDetails.data";
-import { AggregationKeys, getAggregator, iNode, Node } from '../../appDetails.type';
-import { NodeType } from '../../../../app/types';
-import { array } from "prop-types";
-import { getPodsRootParent } from "../../index.store";
+import { AggregationKeys, getAggregator, iNode, Node, NodeType } from '../../appDetails.type';
+import { getPodsRootParent, reduceKindStatus } from "../../index.store";
 
 export const NodeTreeActions = {
     Init: "INIT",
@@ -48,17 +45,17 @@ const handleChildNodeClick = (treeNodes: Array<iNode>, selectedNode: iNode, pare
     return treeNodes
 }
 
-export const getTreeNodesWithChild = (_nodes: Array<Node>) => {
+export const getTreeNodesWithChild = (_nodes: Array<Node>): Array<iNode> => {
     let podParents = getPodsRootParent(_nodes)
-    const _inodes = [];
+    const _inodes = [] as Array<iNode>;
 
     let nodesByAggregator = _nodes.reduce((nodesByAggregator: Map<string, Map<string, string | Array<[string, string]>>> , node: Node) => {
         let agg = getAggregator(node.kind)
         if (!nodesByAggregator.get(agg)) {
-            nodesByAggregator.set(agg, new Map<string, string>())
+            nodesByAggregator.set(agg, new Map<string, string | Array<[string, string]>>())
         }
         if (!nodesByAggregator.get(agg).get(node.kind)) {
-            nodesByAggregator.get(agg).set(node.kind, node.health?.status)
+            nodesByAggregator.get(agg).set(node.kind, node.health?.status ?? '')
         } else {
             //At this stage we know status in string therefore we can safely cast it to string
             nodesByAggregator.get(agg).set(node.kind, reduceKindStatus(nodesByAggregator.get(agg).get(node.kind) as string, node.health?.status))
@@ -70,28 +67,23 @@ export const getTreeNodesWithChild = (_nodes: Array<Node>) => {
         if (nodesByAggregator.get(AggregationKeys[key])?.size > 0) {
             const _inode = {} as iNode;
             _inode.name = AggregationKeys[key]
-            // if (key == AggregationKeys.Workloads) {
-            //     let pod = nodesByAggregator.get(AggregationKeys[key]).get("Pod")
-            //     if (pod && podParents.length > 0) {
-
-            //     }
-            // }
-            _inode.childNodes = Array.from(nodesByAggregator.get(AggregationKeys[key]), ([name, value]) => ({ name: name, status: value, isSelected: false } as iNode)).sort((a, b) => a.name < b.name? -1 : 1)
+            _inode.childNodes = Array.from(nodesByAggregator.get(AggregationKeys[key]), ([name, value]) => {
+                let _node = { name: name, status: value, isSelected: false } as iNode
+                if (name.toLowerCase() == NodeType.Pod.toLowerCase() && podParents.length > 0) {
+                    _node.childNodes = podParents.map( _podParent => {
+                        let pParts = _podParent[0].split("/")
+                        return {name: pParts[pParts.length-1], status: _podParent[1], isSelected: false} as iNode
+                    })
+                }
+                return _node
+            }).sort((a, b) => a.name < b.name? -1 : 1)
             _inodes.push(_inode)
         }
     })
     return _inodes
 }
 
-const reduceKindStatus = (aggregatedStatus: string, newStatus: string) => {
-    if (aggregatedStatus.toLowerCase() == "degraded" || newStatus.toLowerCase() == "degraded") {
-        return "Degraded"
-    }
-    if (aggregatedStatus.toLowerCase() == "progressing" || newStatus.toLowerCase() == "progressing") {
-        return "Progressing"
-    }
-    return "Healthy"
-}
+
 
 const reducer = (state: any, action: any) => {
 

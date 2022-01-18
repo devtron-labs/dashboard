@@ -295,7 +295,7 @@ export function getiNodesByKind(_nodes: Array<Node>, _kind: string): Array<iNode
     return rootNodes
 }
 
-export function getPodsRootParent(_nodes: Array<Node>): Array<string> {
+export function getPodsRootParent(_nodes: Array<Node>): Array<[string, string]> {
     let podNodes = [..._nodes.filter(_node => _node.kind.toLowerCase() == NodeType.Pod.toLowerCase())]
     const _nodesById = new Map<String, Node>()
 
@@ -306,23 +306,53 @@ export function getPodsRootParent(_nodes: Array<Node>): Array<string> {
             _nodesById.set(_groupKindName, _node)
     })
 
-    let uniqueParents = new Set ( podNodes.flatMap( _pod => (_pod.parentRefs ?? []).map( _parent =>  _parent.group + "/" + _parent.kind + "/" + _parent.name )))
-    let rootParents = new Set<string>()
+    let uniqueParents = podNodes
+                        .flatMap( _pod => {
+                            return (_pod.parentRefs ?? []).map( _parent =>  {
+                                return [_parent.group + "/" + _parent.kind + "/" + _parent.name, _pod.health?.status ?? '']
+                            })
+                        })
+                        .reduce((acc, val) => {
+                            if (!acc.get(val[0])) {
+                                acc.set(val[0], val[1])
+                            } else {
+                                acc.set(val[0], reduceKindStatus(acc.get(val[0]), val[1]))
+                            }
+                            return acc
+                        }, new Map<string, string>())
+
+    let rootParents = new Map<string, string>()
     while (uniqueParents.size > 0) {
-        let _uniqueParents = new Set<string>()
-        uniqueParents.forEach(_parent => {
+        let _uniqueParents = new Map<string, string>()
+        uniqueParents.forEach( (_status, _parent) => {
             console.log(_parent);
-            (_nodesById.get(_parent)?.parentRefs ?? []).forEach(_parent => _uniqueParents.add(_parent.group + "/" + _parent.kind + "/" + _parent.name))
+            (_nodesById.get(_parent)?.parentRefs ?? []).forEach(_parent => _uniqueParents.set(_parent.group + "/" + _parent.kind + "/" + _parent.name, _status))
             if ((_nodesById.get(_parent)?.parentRefs ?? []).length == 0) {
                 let selfNode = _nodesById.get(_parent)
                 if (selfNode) {
-                    rootParents.add(selfNode.group + "/" + selfNode.kind + "/" + selfNode.name)
+                    rootParents.set(selfNode.group + "/" + selfNode.kind + "/" + selfNode.name, _status)
                 }
             }
         })
         uniqueParents = _uniqueParents
     }
-    return [...rootParents].sort()
+    return Array.from(rootParents, ([name, value]) => [name, value] as [string, string]).sort((a: [string, string],b: [string, string]) => {
+        if (a[0] > b[0]) {
+            return 1
+        }
+        return -1
+    })
+}
+
+
+export const reduceKindStatus = (aggregatedStatus: string, newStatus: string) => {
+    if (aggregatedStatus.toLowerCase() == "degraded" || newStatus.toLowerCase() == "degraded") {
+        return "degraded"
+    }
+    if (aggregatedStatus.toLowerCase() == "progressing" || newStatus.toLowerCase() == "progressing") {
+        return "progressing"
+    }
+    return "healthy"
 }
 
 export default IndexStore;

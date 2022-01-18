@@ -18,8 +18,6 @@ import EnvironmentStatusComponent from './sourceInfo/environmentStatus/Environme
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component';
 import SyncErrorComponent from './SyncError.component';
 import { Progressing, useEventSource } from '../../common';
-import { table } from 'console';
-import MessageUI from '../common/message.ui';
 
 const AppDetailsComponent = () => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();

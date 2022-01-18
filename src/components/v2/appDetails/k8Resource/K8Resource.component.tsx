@@ -7,14 +7,8 @@ import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store';
 import NodeComponent from './nodeType/Node.component';
 import { useSharedState } from '../../utils/useSharedState';
 import IndexStore from '../index.store';
-import { URLS } from '../../../../config';
 
-interface K8ResourceComponentProps {
-    clickedNodes: Map<string, string>
-    registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>
-}
-
-export default function K8ResourceComponent(props: K8ResourceComponentProps) {
+export default function K8ResourceComponent({clickedNodes, registerNodeClick}: {clickedNodes: Map<string, string>, registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>}) {
     const { url } = useRouteMatch();
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable());
 
@@ -30,10 +24,10 @@ export default function K8ResourceComponent(props: K8ResourceComponentProps) {
             {nodes.length > 0 ? (
                 <div className="resource-node-wrapper d-flex">
                     <div className="k8-resources-node-tree pt-8 pl-16 border-right">
-                        <NodeTreeComponent />
+                        <NodeTreeComponent clickedNodes={clickedNodes} registerNodeClick={registerNodeClick} />
                     </div>
                     <div className="flex-grow-1 p-0">
-                        <NodeComponent />
+                        <NodeComponent clickedNodes={clickedNodes}/>
                     </div>
                 </div>
             ) : (

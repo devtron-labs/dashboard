@@ -1,17 +1,18 @@
-import React, { Children, useEffect, useState } from 'react';
+import React, { Children, Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
 import { getTreeNodesWithChild, NodeTreeActions, useNodeTree } from './useNodeTreeReducer';
 import { useHistory, useRouteMatch, useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import IndexStore from '../../index.store';
 import { useSharedState } from '../../../utils/useSharedState';
-import { getAggregator, iNode, iNodes, NodeType } from '../../appDetails.type';
+import { AggregationKeys, getAggregator, iNode, iNodes, NodeType } from '../../appDetails.type';
 import AppDetailsStore from '../../appDetails.store';
 import { URLS } from '../../../../../config';
 import { ReactComponent as ErrorImage } from '../../../../../assets/icons/misc/errorInfo.svg';
 import { getNodeStatus } from './nodeType.util';
+import { string } from 'prop-types';
 
-function NodeTreeComponent() {
+function NodeTreeComponent({clickedNodes, registerNodeClick}: {clickedNodes: Map<string, string>, registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>}) {
     const { url, path } = useRouteMatch();
     const history = useHistory();
     const [k8URL, setK8URL] = useState('');
@@ -23,7 +24,23 @@ function NodeTreeComponent() {
     );
     const params = useParams<{ nodeType: NodeType }>();
 
-    // let _treeNodes = getTreeNodesWithChild(filteredNodes)
+    let _treeNodes = getTreeNodesWithChild(filteredNodes)
+
+    const getPNodeName = (_string: string): AggregationKeys => {
+        return getAggregator((_string.charAt(0).toUpperCase() + _string.slice(1)) as NodeType);
+    };
+
+    const handleClickOnNodes = (_node: string, parents?: Array<string>) => {
+        let _clickedNodes = generateSelectedNodes(clickedNodes, _treeNodes, _node, parents)
+        registerNodeClick(_clickedNodes)
+    }
+
+    const _urlArray = window.location.href.split(URLS.APP_DETAILS_K8 + '/');
+    if (_urlArray?.length === 2) {
+        const _kind = _urlArray[1].split('/')[0];
+        let parent = getPNodeName(_kind)
+        handleClickOnNodes(_kind, [parent.toLowerCase()])
+    }
 
     const handleNodeClick = (treeNode: iNode, parentNode: iNode, e: any) => {
         if (e) {
@@ -59,9 +76,7 @@ function NodeTreeComponent() {
         history.push(_url);
     };
 
-    const getPNodeName = (_string: string) => {
-        return getAggregator((_string.charAt(0).toUpperCase() + _string.slice(1)) as NodeType);
-    };
+
 
     const getInfo = (nodeByKind) => {
         return nodeByKind.map((_node) => {
@@ -132,7 +147,7 @@ function NodeTreeComponent() {
     }, [filteredNodes.length]);
 
     const hasErrorInTreeNode = (treeNode: iNode) => {
-        if (treeNode.status && treeNode.status.toLowerCase() === 'degraded') {
+        if (treeNode.status && typeof treeNode.status === "string" && treeNode.status.toLowerCase() === 'degraded') {
             return true;
         }
         return false;
@@ -197,6 +212,52 @@ function NodeTreeComponent() {
     };
 
     return <div>{treeNodes && treeNodes.length > 0 && makeNodeTree(treeNodes)}</div>;
+}
+
+
+export function generateSelectedNodes(clickedNodes: Map<string, string>, _treeNodes: Array<iNode>, _node: string, parents?: Array<string>): Map<string, string> {
+    let _nodeLowerCase = _node.toLowerCase()
+    if (clickedNodes.has(_nodeLowerCase)) {
+        return
+    }
+    //If parents length is zero then it is the aggregation key which is clicked
+    if ((parents ?? []).length == 0) {
+        //if aggregation key is clicked and there is no previous selection then we
+        //drill down till we reach node which is doesnt have child node
+        //currently at max only 3 levels are possible
+        if (clickedNodes.size == 0) {
+            let childNodes = _treeNodes.find(_tn => _tn.name.toLowerCase() == _nodeLowerCase)?.childNodes
+            if ((childNodes ?? []).length > 0) {
+                clickedNodes.set(childNodes[0].name.toLowerCase(), '')
+                if ((childNodes[0].childNodes ?? []).length > 0) {
+                    clickedNodes.set(childNodes[0].childNodes[0].name.toLowerCase(), '')
+                }
+            }
+        }
+        clickedNodes.set(_nodeLowerCase, '')
+    } else {
+        //parents length 2 is possible only if this is pod that means click happened on child of pod node
+        //parent length 1 but node is not type pod means it is a leaf node
+        if (parents.length == 2 || (parents.length == 1 && _nodeLowerCase != NodeType.Pod.toLowerCase())) {
+            //remove if leaf node selected previouslf if any
+            let _childNodes = _treeNodes.flatMap(_tn => _tn.childNodes)
+            let leafNode = _childNodes.find(_cn => clickedNodes.has(_cn.name.toLowerCase()) && _cn.name.toLowerCase() != NodeType.Pod.toLowerCase())
+            if (leafNode) {
+                clickedNodes.delete(leafNode.name.toLowerCase())
+            } else {
+                leafNode = _childNodes.find(_cn => clickedNodes.has(_cn.name.toLowerCase()) && _cn.kind.toLowerCase() == NodeType.Pod.toLowerCase())
+                if (leafNode) {
+                    leafNode = leafNode.childNodes?.find(_cn => clickedNodes.has(_cn.name.toLowerCase()))
+                    if (leafNode) {
+                        clickedNodes.delete(leafNode.name.toLowerCase())
+                    }
+                }
+            }
+        }
+        parents.forEach( _p => clickedNodes.set(_p.toLowerCase(), ''))
+        clickedNodes.set(_nodeLowerCase, '')
+    }
+    return clickedNodes
 }
 
 export default NodeTreeComponent;

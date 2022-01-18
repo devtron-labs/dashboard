@@ -240,6 +240,117 @@ export const nodesWithMultiDeploymentAndStatefulSet = [
     } as iNode
 ]
 
+export const nodesWithMultiDeploymentAndStatefulSetAndStatus = [
+  {
+      name: "pod1",
+      kind: "Pod",
+      health: {
+        status: "healthy"
+      },
+      parentRefs: [
+          {
+              name: "ReplicaSet1",
+              kind: "ReplicaSet"
+          } as Node
+      ]
+  } as iNode,
+  {
+      name: "pod2",
+      kind: "Pod",
+      health: {
+        status: "healthy"
+      },
+      parentRefs: [
+          {
+              name: "ReplicaSet2",
+              kind: "ReplicaSet"
+          } as Node
+      ]
+  } as iNode,
+  {
+      name: "pod5",
+      kind: "Pod",
+      health: {
+        status: "degraded"
+      },
+      parentRefs: [
+          {
+              name: "ReplicaSet2",
+              kind: "ReplicaSet"
+          } as Node
+      ]
+  } as iNode,
+  {
+      name: "pod3",
+      kind: "Pod",
+      parentRefs: [
+          {
+              name: "ReplicaSet3",
+              kind: "ReplicaSet"
+          } as Node
+      ]
+  } as iNode,
+  {
+      name: "pod4",
+      kind: "Pod",
+      parentRefs: [
+          {
+              group: "apps/v1",
+              name: "StatefulSet1",
+              kind: "StatefulSet"
+          } as Node
+      ]
+  } as iNode,
+  {
+      group: "apps/v1",
+      name: "StatefulSet1",
+      kind: "StatefulSet"
+  } as iNode,
+  {
+      name: "ReplicaSet1",
+      kind: "ReplicaSet",
+      parentRefs: [
+          {
+              group: "apps/v1",
+              name: "Deployment",
+              kind: "Deployment"
+          } as Node
+      ]
+  } as iNode,
+  {
+      name: "ReplicaSet2",
+      kind: "ReplicaSet",
+      parentRefs: [
+          {
+              group: "apps/v1",
+              name: "Deployment",
+              kind: "Deployment"
+          } as Node
+      ]
+  } as iNode,
+  {
+      name: "ReplicaSet3",
+      kind: "ReplicaSet",
+      parentRefs: [
+          {
+              group: "apps/v1",
+              name: "Deployment2",
+              kind: "Deployment"
+          } as Node
+      ]
+  } as iNode,
+  {
+      group: "apps/v1",
+      name: "Deployment",
+      kind: "Deployment"
+  } as iNode,
+  {
+      group: "apps/v1",
+      name: "Deployment2",
+      kind: "Deployment"
+  } as iNode
+]
+
 export const statefulSeWithChildren = [
     {
       group: "apps/v1",

@@ -14,7 +14,7 @@ import AppDetailsStore from '../../appDetails.store';
 import { toast } from 'react-toastify';
 import { getNodeStatus } from './nodeType.util';
 
-function NodeComponent() {
+function NodeComponent({clickedNodes}: {clickedNodes: Map<string, string>}) {
     const { path, url } = useRouteMatch();
     const history = useHistory();
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
