@@ -22,6 +22,7 @@ import warn from '../../../assets/icons/ic-warning.svg';
 function NodeDeleteComponent({ nodeDetails, appDetails }) {
     const { path } = useRouteMatch();
     const history = useHistory();
+    const location = useLocation();
     const params = useParams<{ actionName: string; podName: string; nodeType: string; appId: string; envId: string }>();
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
@@ -82,9 +83,19 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
             const appDetailsTabs = _tabs.filter((_tab) => _tab.name === nodeDetails.name);
 
             appDetailsTabs.forEach((_tab) => AppDetailsStore.removeAppDetailsTabByIdentifier(_tab.title));
+            _refetchAppDetailData();
         } catch (err) {
             showError(err);
         }
+    }
+
+    // TODO : move it to some common place, so that recreateResource in manifest can also use that common function.
+    const _refetchAppDetailData = () => {
+        const queryParams = new URLSearchParams(location.search);
+        queryParams.append('refetchData', 'true');
+        history.replace({
+            search: queryParams.toString(),
+        })
     }
 
     return (

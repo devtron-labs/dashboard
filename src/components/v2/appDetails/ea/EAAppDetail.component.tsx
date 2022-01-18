@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import {useLocation, useHistory} from 'react-router';
 import { showError, Progressing, ErrorScreenManager,  } from '../../../common';
 import { getAppDetail, HelmAppDetailResponse, HelmAppDetail } from '../../../external-apps/ExternalAppService';
 import { ServerErrors } from '../../../../modals/commonTypes';
@@ -6,26 +7,41 @@ import IndexStore from '../index.store';
 import { AppDetails, AppType } from "../appDetails.type";
 import AppDetailsComponent from '../AppDetails.component';
 import moment from 'moment'
+import * as queryString from 'query-string';
 import '../../lib/bootstrap-grid.min.css';
 
 function ExternalAppDetail({appId, appName}) {
+    const location = useLocation();
+    const history = useHistory();
     const [isLoading, setIsLoading] = useState(true);
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
 
+    let initTimer = null;
+
     // component load
     useEffect(() => {
-        getAppDetail(appId)
-            .then((appDetailResponse: HelmAppDetailResponse) => {
-                IndexStore.publishAppDetails(_convertToGenericAppDetailModel(appDetailResponse.result));
-                setIsLoading(false);
-            })
-            .catch((errors: ServerErrors) => {
-                showError(errors);
-                setErrorResponseCode(errors.code);
-                setIsLoading(false);
-            });
+        _init();
+        return (): void => {
+            if (initTimer) {
+                clearTimeout(initTimer);
+            }
+        };
     }, []);
 
+
+    useEffect(() => {
+        if(_checkIfToRefetchData()){
+            setTimeout(() => {
+                _getAndSetAppDetail();
+                _deleteRefetchDataFromUrl();
+            } , 5000);
+        }
+    }, [location.search]);
+
+    const _init = () => {
+        _getAndSetAppDetail();
+        initTimer = setTimeout(_init, 30000);
+    }
 
     const _convertToGenericAppDetailModel = (helmAppDetail : HelmAppDetail) : AppDetails =>  {
         let genericAppDetail : AppDetails = {
@@ -47,6 +63,36 @@ function ExternalAppDetail({appId, appName}) {
         return genericAppDetail
     }
 
+    const _checkIfToRefetchData = () : boolean => {
+        const queryParams = new URLSearchParams(location.search)
+        if (queryParams.has('refetchData')){
+            return true;
+        }
+        return false;
+    }
+
+    const _deleteRefetchDataFromUrl = () => {
+        if(_checkIfToRefetchData()){
+            const queryParams = new URLSearchParams(location.search);
+            queryParams.delete('refetchData');
+            history.replace({
+                search: queryParams.toString(),
+            })
+        }
+    }
+
+    const _getAndSetAppDetail = () => {
+        getAppDetail(appId)
+            .then((appDetailResponse: HelmAppDetailResponse) => {
+                IndexStore.publishAppDetails(_convertToGenericAppDetailModel(appDetailResponse.result));
+                setIsLoading(false);
+            })
+            .catch((errors: ServerErrors) => {
+                showError(errors);
+                setErrorResponseCode(errors.code);
+                setIsLoading(false);
+            });
+    }
 
     return (
         <>

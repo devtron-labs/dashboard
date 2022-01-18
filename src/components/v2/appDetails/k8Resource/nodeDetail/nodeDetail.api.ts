@@ -2,7 +2,7 @@ import { Routes } from '../../../../../config';
 import { get, post, put } from '../../../../../services/api';
 import { AppDetails, AppType } from '../../appDetails.type';
 
-const getAppId = (clusterId: number, namespace: string, appName: string) => {
+export const getAppId = (clusterId: number, namespace: string, appName: string) => {
     return `${clusterId}|${namespace}|${appName}`;
 };
 

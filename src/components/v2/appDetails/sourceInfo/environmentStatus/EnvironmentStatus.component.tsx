@@ -8,12 +8,13 @@ import IndexStore from '../../index.store';
 import moment from 'moment';
 import { URLS } from '../../../../../config';
 import { AppType } from "../../../appDetails/appDetails.type";
+import { useSharedState } from '../../../utils/useSharedState';
 import { Link } from 'react-router-dom';
 import { useRouteMatch, useHistory } from 'react-router';
 import Tippy from '@tippyjs/react';
 
 function EnvironmentStatusComponent() {
-    const appDetails = IndexStore.getAppDetails();
+    const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable());
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false);
     const [showConfigStatusModal, setShowConfigStatusModal] = useState(false);
     const status = appDetails.resourceTree?.status || '';
