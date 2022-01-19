@@ -205,7 +205,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
     };
 
     const handleLogsSearch = (e) => {
-        e.preventDefault()
+        e.preventDefault();
         if (e.key === 'Enter' || e.keyCode === 13) {
             handleSearchTextChange(e.target.value as string);
             const { length, [length - 1]: highlightString } = e.target.value.split(' ');
@@ -238,7 +238,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
     useEffect(() => {
         //Values are already set once we reach here
         //selected pods, containers, searchText
-        onLogsCleared()
+        onLogsCleared();
         stopWorker();
         fetchLogs();
 
@@ -252,7 +252,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
     ) : (
         <React.Fragment>
             <div className="container-fluid bcn-0">
-                <div className="row pt-2 pb-2 pl-16 pr-16 border-top">
+                <div className={`row pt-2 pb-2 pl-16 pr-16 ${!isLogAnalyzer ? 'border-top' : ''}`}>
                     <div className="col-6 d-flex align-items-center">
                         <Tippy
                             className="default-tt"
@@ -318,7 +318,6 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                                 }),
                                                 indicatorsContainer: (provided, state) => ({
                                                     ...provided,
-                                                    height: '24px',
                                                 }),
                                             }}
                                             components={{
@@ -364,7 +363,6 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                             singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
                                             indicatorsContainer: (provided, state) => ({
                                                 ...provided,
-                                                height: '24px',
                                             }),
                                         }}
                                         components={{

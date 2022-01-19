@@ -58,7 +58,7 @@ function NodeDetailComponent() {
 
     return (
         <React.Fragment>
-            <div className="node-details_tab pl-20 bcn-0 flex left top w-100 border-bottom pr-20 ">
+            <div className="pl-20 bcn-0 flex left top w-100 pr-20 ">
                 <>
                     {tabs &&
                         tabs.length > 0 &&
