@@ -14,7 +14,7 @@ import AppDetailsStore from '../../appDetails.store';
 import { toast } from 'react-toastify';
 import { getNodeStatus } from './nodeType.util';
 
-function NodeComponent() {
+function NodeComponent({handleFocusTabs}) {
     const { path, url } = useRouteMatch();
     const history = useHistory();
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
@@ -190,8 +190,10 @@ function NodeComponent() {
                                                 } else {
                                                     handleActionTabClick(node, kind);
                                                 }
+                                                handleFocusTabs()
                                             }}
                                             className="fw-6 cb-5 ml-6 cursor resource-action-tabs__active"
+                                            
                                         >
                                             {kind}
                                         </a>
