@@ -225,7 +225,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
             <MessageUI msg="This resource no longer exists" size={32} />
         </div>
     ) : (
-        <div style={{ minHeight: '600px', background: '#0B0F22', flex: 1 }}>
+        <div style={{ background: '#0B0F22', flex: 1 }}>
             {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
             {!error && (
                 <>
