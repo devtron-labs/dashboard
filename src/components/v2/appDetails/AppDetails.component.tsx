@@ -109,7 +109,7 @@ const AppDetailsComponent = () => {
                                             <div
                                                 className={`${
                                                     tab.isSelected ? 'resource-tree-tab bcn-0 cn-9' : ''
-                                                } flex left pl-12 pt-8 pb-8 pr-12 ${!tab.isSelected && index === 0 ? 'border-left' : '' }`}
+                                                } flex left pl-12 pt-8 pb-8 pr-12 `}
                                             >
                                                 <NavLink
                                                     to={`${tab.url}`}
@@ -159,9 +159,9 @@ const AppDetailsComponent = () => {
                                                         </div>
                                                     )}
                                             </div>
-                                            {/* <div
+                                             <div
                                                 className={` ${!tab.isSelected || !(tab.isSelected && index - 1) ? 'resource-tree-tab__border' : '' }`}
-                                            ></div> */}
+                                            ></div>
                                         </div>
                                     </Tippy>
                                 </li>
