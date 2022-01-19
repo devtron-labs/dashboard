@@ -65,12 +65,14 @@ function NodeDetailComponent() {
                         tabs.map((tab: string, index: number) => {
                             return (
                                 <div
+                                  
                                     key={index + 'resourceTreeTab'}
                                     className={`${
                                         tab.toLowerCase() === selectedTabName.toLowerCase()
                                             ? 'default-tab-row cb-5'
                                             : 'cn-7'
-                                    } pt-6 pb-6 cursor pl-8 pr-8`}
+                                    } pt-6 pb-6 cursor pl-8 pr-8`
+                               }
                                 >
                                     <NavLink to={`${url}/${tab.toLowerCase()}`} className=" no-decor flex left">
                                         <span

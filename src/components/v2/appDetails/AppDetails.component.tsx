@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import K8ResourceComponent from './k8Resource/K8Resource.component';
 import './appDetails.scss';
 import { ReactComponent as K8ResourceIcon } from '../../../assets/icons/ic-object.svg';
@@ -28,7 +28,7 @@ const AppDetailsComponent = () => {
     const history = useHistory();
 
     const [streamData, setStreamData] = useState<AppStreamData>(null);
-    const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>())
+    const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>());
     const [applicationObjectTabs] = useSharedState(
         AppDetailsStore.getAppDetailsTabs(),
         AppDetailsStore.getAppDetailsTabsObservable(),
@@ -36,13 +36,16 @@ const AppDetailsComponent = () => {
 
     const appDetails = IndexStore.getAppDetails();
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
-    const pathname = window.location.pathname;
+
+    const tabRef = useRef<HTMLDivElement>(null);
 
     // if app type not of EA, then call stream API
     const syncSSE = useEventSource(
         `${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
         [params.appId, params.envId],
-        !!appDetails?.appName && !!appDetails?.environmentName && (appDetails?.appType?.toString() != AppType.EXTERNAL_HELM_CHART.toString()),
+        !!appDetails?.appName &&
+            !!appDetails?.environmentName &&
+            appDetails?.appType?.toString() != AppType.EXTERNAL_HELM_CHART.toString(),
         (event) => setStreamData(JSON.parse(event.data)),
     );
 
@@ -62,6 +65,12 @@ const AppDetailsComponent = () => {
         }, 1);
     };
 
+    const handleFocusTabs = () => {
+        if (tabRef?.current) {
+            tabRef.current.focus();
+        }
+    };
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             <div>
@@ -71,7 +80,7 @@ const AppDetailsComponent = () => {
 
             <SyncErrorComponent appStreamData={streamData} />
 
-            <div className="resource-tree-wrapper flexbox pl-20 pr-20">
+            <div className="resource-tree-wrapper flexbox pl-20 pr-20" style={{outline: 'none'}} tabIndex={0} ref={tabRef}>
                 <ul className="tab-list">
                     {applicationObjectTabs.map((tab: ApplicationObject, index: number) => {
                         return (
@@ -150,8 +159,8 @@ const AppDetailsComponent = () => {
                                                         </div>
                                                     )}
                                             </div>
-                                            <div
-                                                className={` ${!tab.isSelected ? 'resource-tree-tab__border' : ''}`}
+                                             <div
+                                                className={` ${!tab.isSelected || !(tab.isSelected && index - 1) ? 'resource-tree-tab__border' : '' }`}
                                             ></div>
                                         </div>
                                     </Tippy>
@@ -171,13 +180,25 @@ const AppDetailsComponent = () => {
                 <Route
                     path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType`}
                     render={() => {
-                        return <K8ResourceComponent clickedNodes={clickedNodes} registerNodeClick={registerNodeClick} />;
+                        return (
+                            <K8ResourceComponent
+                                clickedNodes={clickedNodes}
+                                registerNodeClick={registerNodeClick}
+                                handleFocusTabs={handleFocusTabs}
+                            />
+                        );
                     }}
                 />
                 <Route
                     path={`${path}/${URLS.APP_DETAILS_K8}`}
                     render={() => {
-                        return <K8ResourceComponent clickedNodes={clickedNodes} registerNodeClick={registerNodeClick} />;
+                        return (
+                            <K8ResourceComponent
+                                clickedNodes={clickedNodes}
+                                registerNodeClick={registerNodeClick}
+                                handleFocusTabs={handleFocusTabs}
+                            />
+                        );
                     }}
                 />
                 <Route

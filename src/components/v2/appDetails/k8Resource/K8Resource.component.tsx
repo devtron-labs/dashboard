@@ -10,8 +10,9 @@ import IndexStore from '../index.store';
 import { URLS } from '../../../../config';
 
 interface K8ResourceComponentProps {
-    clickedNodes: Map<string, string>
-    registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>
+    clickedNodes: Map<string, string>;
+    registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>;
+    handleFocusTabs: () => void;
 }
 
 export default function K8ResourceComponent(props: K8ResourceComponentProps) {
@@ -33,7 +34,7 @@ export default function K8ResourceComponent(props: K8ResourceComponentProps) {
                         <NodeTreeComponent />
                     </div>
                     <div className="flex-grow-1 p-0">
-                        <NodeComponent />
+                        <NodeComponent handleFocusTabs={props.handleFocusTabs}/>
                     </div>
                 </div>
             ) : (
