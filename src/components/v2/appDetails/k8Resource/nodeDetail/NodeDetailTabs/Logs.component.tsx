@@ -242,7 +242,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
         stopWorker();
         fetchLogs();
 
-        return () => stopWorker;
+        return () => stopWorker();
     }, [logState]);
 
     return isDeleted ? (
