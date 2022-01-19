@@ -17,6 +17,7 @@ import { ReactComponent as InfoFill } from '../../../assets/icons/ic-info-filled
 import { ReactComponent as InfoFillPurple } from '../../../assets/icons/ic-info-filled-purple.svg';
 import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg';
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg';
+import { ReactComponent as AlertTriangleIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import '../list/list.css';
 
 export default function HelmAppList({
@@ -332,6 +333,16 @@ export default function HelmAppList({
     function renderApplicationList() {
         return (
             <>
+                <div className="bcn-0">
+                    <div className="h-8"></div>
+                    <div className="helm-permission-message-strip above-header-message flex left">
+                        <span className="mr-8 flex">
+                            <AlertTriangleIcon className="icon-dim-20 icon" />
+                        </span>
+                        <span>Permissions for helm apps are now managed separately under user access. Please request permission from super-admin if required.</span>
+                    </div>
+                </div>
+
                 {!clusterIdsCsv && (
                     <div className="bcn-0">
                         <div className="h-8"></div>
