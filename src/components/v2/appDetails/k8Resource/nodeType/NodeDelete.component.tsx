@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router';
 import {
     PopupMenu,
@@ -25,10 +25,8 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
     const { queryParams } = useSearchString();
 
     function describeNodeWrapper(tab) {
-        console.log('describeNodeWrapper', tab);
         queryParams.set('kind', params.podName);
         const newUrl = generatePath(path, { ...params, tab }) + '/' + nodeDetails.name + '/' + tab.toLowerCase();
-        // describeNode(nodeDetails.name);
         history.push(newUrl);
     }
 
