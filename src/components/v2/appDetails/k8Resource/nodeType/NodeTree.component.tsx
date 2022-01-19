@@ -49,11 +49,14 @@ function NodeTreeComponent() {
         }
     };
 
-    const _navigate = (nodeToBeSelected) => {
+    const _navigate = (nodeToBeSelected, replaceKindInUrl) => {
         let _url = url;
 
         if (!params.nodeType) {
             _url = `${url}/${nodeToBeSelected.name.toLowerCase()}`;
+        }else if(nodeToBeSelected && replaceKindInUrl){
+            // replace last path
+            _url = _url.split('/').slice(0,-1).join('/') + '/' + nodeToBeSelected.name.toLowerCase();
         }
 
         history.push(_url);
@@ -70,6 +73,7 @@ function NodeTreeComponent() {
     };
 
     useEffect(() => {
+
         if (!treeNodes || treeNodes.length === 0) return;
 
         let activeParentNode = AppDetailsStore.getNodeTreeActiveParentNode();
@@ -109,10 +113,17 @@ function NodeTreeComponent() {
             }
         }
 
-        activeParentNode = activeParentNode || treeNodes[0];
-        activeNode = activeNode || activeParentNode.childNodes[0];
+        let replaceKindInUrl = false;
+        if(!activeParentNode){
+            activeParentNode = treeNodes[0];
+        }
 
-        _navigate(activeNode);
+        if(!activeNode){
+            activeNode = activeParentNode.childNodes[0];
+            replaceKindInUrl = true;
+        }
+
+        _navigate(activeNode, replaceKindInUrl);
 
         setTimeout(() => {
             handleNodeClick(activeParentNode, null, null);
