@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useState } from 'react';
-import { useRouteMatch, useParams, Redirect } from 'react-router';
+import { useRouteMatch, useParams, Redirect,useLocation, useHistory } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
 import { URLS } from '../../config';
 import { DetailsProgressing } from '../common';
@@ -20,6 +20,8 @@ function RouterComponent({ envType }) {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
     const { path } = useRouteMatch();
     const [statusCode, setStatusCode] = useState(0);
+    const location = useLocation();
+    const history = useHistory();
 
     useEffect(() => {
         IndexStore.setEnvDetails(envType, +params.appId, +params.envId);
@@ -29,8 +31,9 @@ function RouterComponent({ envType }) {
         if (initTimer) {
             clearTimeout(initTimer);
         }
-
         init();
+
+        initTimer = setTimeout(init, 30000);
     }, [params.appId, params.envId]);
 
     // clearing the timer on component unmount
@@ -41,6 +44,35 @@ function RouterComponent({ envType }) {
             }
         };
     }, []);
+
+    useEffect(() => {
+        if(_checkIfToRefetchData()){
+            setTimeout(() => {
+                init();
+                _deleteRefetchDataFromUrl();
+            } , 1000);
+        }
+    }, [location.search]);
+
+
+    const _checkIfToRefetchData = () : boolean => {
+        const queryParams = new URLSearchParams(location.search)
+        if (queryParams.has('refetchData')){
+            return true;
+        }
+        return false;
+    }
+
+    const _deleteRefetchDataFromUrl = () => {
+        if(_checkIfToRefetchData()){
+            const queryParams = new URLSearchParams(location.search);
+            queryParams.delete('refetchData');
+            history.replace({
+                search: queryParams.toString(),
+            })
+        }
+    }
+    
 
     const init = async () => {
         try {
@@ -57,7 +89,6 @@ function RouterComponent({ envType }) {
 
             setIsLoading(false);
 
-            initTimer = setTimeout(init, 30000);
         } catch (e) {
             console.log('error while fetching InstalledAppDetail', e);
             setIsLoading(false);

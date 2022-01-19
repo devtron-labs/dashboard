@@ -178,11 +178,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
 				await updateChart(payload)
 				toast.success('Deployment initiated')
 				setLoading(false)
-				let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}`;
+				let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`;
 				history.push(_url);
-				console.log(url)
 				onHide(true)
-			
 			}
 
 			else {
@@ -198,7 +196,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
 				};
 				const { result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId } } = await installChart(payload);
 				toast.success('Deployment initiated');
-                push(`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}`)
+                push(`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}?refetchData=true`)
 			}
 		}
 		catch (err) {

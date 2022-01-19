@@ -428,7 +428,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
             </div>
             {logState.selectedContainer && logState.selectedPods.length > 0 && (
                 <div
-                    style={{ gridColumn: '1 / span 2', background: '#0b0f22' }}
+                    style={{ gridColumn: '1 / span 2', background: '#0b0f22', minHeight: '600px' }}
                     className="flex column log-viewer-container"
                 >
                     <div

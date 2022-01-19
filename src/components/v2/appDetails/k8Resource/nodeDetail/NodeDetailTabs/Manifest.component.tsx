@@ -221,9 +221,9 @@ function ManifestComponent({ selectedTab, isDeleted }) {
             <MessageUI msg="This resource no longer exists" size={32} />
         </div>
     ) : (
-        <div style={{ background: '#0B0F22', flex: 1 }}>
-            {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
-            {!error && (
+        <div style={{ background: '#0B0F22', flex: 1, minHeight:'600px' }}>
+            {!error && !loading && <MessageUI msg="Manifest not available" size={24} />}
+            {error && (
                 <>
                     <div className="bcn-0">
                         {appDetails.appType === AppType.EXTERNAL_HELM_CHART && (
