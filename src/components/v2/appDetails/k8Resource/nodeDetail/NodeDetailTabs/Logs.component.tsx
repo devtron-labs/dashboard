@@ -318,7 +318,6 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                                 }),
                                                 indicatorsContainer: (provided, state) => ({
                                                     ...provided,
-                                                    height: '24px',
                                                 }),
                                             }}
                                             components={{
@@ -364,7 +363,6 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                             singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
                                             indicatorsContainer: (provided, state) => ({
                                                 ...provided,
-                                                height: '24px',
                                             }),
                                         }}
                                         components={{
