@@ -104,7 +104,7 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
             </PopupMenu>
             {showDeleteConfirmation && (
                 <DeleteDialog
-                    title={`Delete ${params.nodeType} "${nodeDetails.name}"`}
+                    title={`Delete ${nodeDetails?.kind} "${nodeDetails?.name}"`}
                     delete={() => {
                         asyncDeletePod(nodeDetails);
                         setShowDeleteConfirmation(false);
@@ -112,7 +112,7 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
                     closeDelete={() => setShowDeleteConfirmation(false)}
                 >
                     <DeleteDialog.Description>
-                        <p>Are you sure you want to delete this resource?</p>
+                        <p>Are you sure, you want to delete this resource?</p>
                     </DeleteDialog.Description>
                 </DeleteDialog>
             )}
