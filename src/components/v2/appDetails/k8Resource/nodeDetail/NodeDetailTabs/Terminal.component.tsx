@@ -124,7 +124,6 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                             singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
                             indicatorsContainer: (provided, state) => ({
                                 ...provided,
-                                height: '24px',
                             }),
                         }}
                         components={{
@@ -157,7 +156,6 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                             singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
                             indicatorsContainer: (provided, state) => ({
                                 ...provided,
-                                height: '24px',
                             }),
                         }}
                         components={{
