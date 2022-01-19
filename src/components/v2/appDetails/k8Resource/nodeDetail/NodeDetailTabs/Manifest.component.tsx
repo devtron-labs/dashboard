@@ -195,7 +195,9 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                 setActiveManifestEditorData(manifest);
                 break;
             case 'Desired manifest':
-                setActiveManifestEditorData(desiredManifest);
+                return setTimeout(() => {
+                    setActiveManifestEditorData(desiredManifest);
+                }, 0);
                 break;
         }
     };
@@ -271,7 +273,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                 )}
                             </div>
                         )}
-                        {isResourceMissing && !loading && activeTab === 'Live manifest'? (
+                        {isResourceMissing && !loading && activeTab === 'Live manifest' ? (
                             <MessageUI
                                 msg="Manifest not available"
                                 size={24}
