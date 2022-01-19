@@ -190,8 +190,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 };
                 const { result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId } } = await installChart(payload);
                 toast.success('Deployment initiated');
-                push(`app/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}`)
-                // push(`/chart-store/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}`)
+                push(`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}`)
             }
         }
         catch (err) {
