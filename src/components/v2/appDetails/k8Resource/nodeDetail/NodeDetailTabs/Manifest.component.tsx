@@ -227,8 +227,9 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                         {appDetails.appType === AppType.EXTERNAL_HELM_CHART && (
                             <div className="flex left pl-20 pr-20 border-bottom manifest-tabs-row">
                                 {tabs.map((tab: iLink, index) => {
-                                    return !showDesiredAndCompareManifest &&
-                                        (tab.name == 'Desired manifest' || tab.name == 'Compare') ? (
+                                    return (!showDesiredAndCompareManifest &&
+                                        (tab.name == 'Desired manifest' || tab.name == 'Compare')) ||
+                                        (isResourceMissing && tab.name == 'Compare') ? (
                                         <></>
                                     ) : (
                                         <div
@@ -270,7 +271,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                 )}
                             </div>
                         )}
-                        {isResourceMissing && !loading ? (
+                        {isResourceMissing && !loading && activeTab === 'Live manifest'? (
                             <MessageUI
                                 msg="Manifest not available"
                                 size={24}
@@ -280,7 +281,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                             />
                         ) : (
                             <CodeEditor
-                                defaultValue={desiredManifest}
+                                defaultValue={activeTab === 'Compare' && desiredManifest}
                                 diffView={activeTab === 'Compare'}
                                 theme="vs-dark--dt"
                                 height={700}
