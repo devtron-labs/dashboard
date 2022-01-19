@@ -14,7 +14,7 @@ import AppDetailsStore from '../../appDetails.store';
 import { toast } from 'react-toastify';
 import { getNodeStatus } from './nodeType.util';
 
-function NodeComponent() {
+function NodeComponent({handleFocusTabs}) {
     const { path, url } = useRouteMatch();
     const history = useHistory();
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
@@ -71,7 +71,7 @@ function NodeComponent() {
                         _healthyNodeCount++;
                     }
                 });
-
+                
                 setSelectedNodes([..._selectedNodes]);
 
                 setSelectedHealthyNodeCount(_healthyNodeCount);
@@ -190,8 +190,10 @@ function NodeComponent() {
                                                 } else {
                                                     handleActionTabClick(node, kind);
                                                 }
+                                                handleFocusTabs()
                                             }}
                                             className="fw-6 cb-5 ml-6 cursor resource-action-tabs__active"
+                                            
                                         >
                                             {kind}
                                         </a>
@@ -247,37 +249,42 @@ function NodeComponent() {
     };
 
     return (
-        <div
-            className="container-fluid"
-            style={{ paddingRight: 0, paddingLeft: 0, height: '600px', overflow: 'scroll' }}
-        >
-            {false ? (
-                <PodHeaderComponent callBack={setPodType} />
-            ) : (
-                <div className="node-detail__sticky-header border-bottom pt-10 pb-10">
-                    <div className="pl-16 fw-6 fs-14 text-capitalize">
-                        <span className="pr-4">{selectedNodes && selectedNodes[0]?.kind}</span>
-                        <span>({selectedNodes?.length})</span>
-                    </div>
-                    {selectedHealthyNodeCount > 0 && <div className="pl-16"> {selectedHealthyNodeCount} healthy</div>}
-                </div>
-            )}
-
-            <div className="row border-bottom fw-6 m-0">
-                {tableHeader.map((cell, index) => {
-                    return (
-                        <div
-                            key={'gpt_' + index}
-                            className={`${index === 0 ? `node-row__pdding ${firstColWidth}` : 'col-1'} pt-9 pb-9`}
-                        >
-                            {cell}
+        <>
+        {
+            selectedNodes && selectedNodes.length > 0 &&
+            <div
+                className="container-fluid"
+                style={{ paddingRight: 0, paddingLeft: 0, height: '600px', overflow: 'scroll' }}
+            >
+                {false ? (
+                    <PodHeaderComponent callBack={setPodType} />
+                ) : (
+                    <div className="node-detail__sticky-header border-bottom pt-10 pb-10">
+                        <div className="pl-16 fw-6 fs-14 text-capitalize">
+                            <span className="pr-4">{selectedNodes && selectedNodes[0]?.kind}</span>
+                            <span>({selectedNodes?.length})</span>
                         </div>
-                    );
-                })}
-            </div>
+                        {selectedHealthyNodeCount > 0 && <div className="pl-16"> {selectedHealthyNodeCount} healthy</div>}
+                    </div>
+                )}
 
-            {selectedNodes && makeNodeTree(selectedNodes)}
-        </div>
+                <div className="row border-bottom fw-6 m-0">
+                    {tableHeader.map((cell, index) => {
+                        return (
+                            <div
+                                key={'gpt_' + index}
+                                className={`${index === 0 ? `node-row__pdding ${firstColWidth}` : 'col-1'} pt-9 pb-9`}
+                            >
+                                {cell}
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {selectedNodes && makeNodeTree(selectedNodes)}
+            </div>
+        }
+        </>
     );
 }
 

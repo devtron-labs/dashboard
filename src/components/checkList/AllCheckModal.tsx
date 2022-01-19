@@ -13,7 +13,7 @@ export class AllCheckModal extends Component {
             <img className="img-width pt-12 pb-12 pl-16" src={Deploy} />
             <div className="pl-20 fs-13">
                 <div className="pt-16 cn-9"> Create, build and deploy a custom application.</div>
-                <NavLink to={`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_DEVTRON}/${AppListConstants.CREATE_APP_URL}`} className="no-decor cb-5 fw-6">Create App</NavLink>
+                <NavLink to={`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_DEVTRON}/${AppListConstants.CREATE_DEVTRON_APP_URL}`} className="no-decor cb-5 fw-6">Create App</NavLink>
             </div>
         </div>
     }

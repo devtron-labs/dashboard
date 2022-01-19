@@ -45,7 +45,6 @@ function LogsComponent({ selectedTab, isDeleted }) {
 
     const [logsPaused, setLogsPaused] = useState(false);
     const [tempSearch, setTempSearch] = useState<string>('');
-    const [logSearchString, setLogSearchString] = useState('');
     const [highlightString, setHighlightString] = useState('');
     const [logsCleared, setLogsCleared] = useState(false);
     const [readyState, setReadyState] = useState(null);
@@ -56,8 +55,6 @@ function LogsComponent({ selectedTab, isDeleted }) {
     const appDetails = IndexStore.getAppDetails();
 
     const isLogAnalyzer = !params.podName;
-
-    // const [logState, setLogState] = useState<LogState>(() => getInitialStateOfLogs(isLogAnalyzer, params, location));
 
     const [podContainerOptions, setPodContainerOptions] = useState(() =>
         getInitialPodContainerOptions(isLogAnalyzer, params, location),
@@ -98,30 +95,11 @@ function LogsComponent({ selectedTab, isDeleted }) {
             selected: _containerName == selectedContainer,
         }));
 
-        // let podNames = pods
-        //     .filter((_pod) => _pod.containers.includes(selectedContainer))
-        //     .map((_pod) => _pod.name);
-
-        // if (podNames.length == 0) {
-        //     containerOptions = pods[0].containers.map((_containerName) => ({
-        //         name: _containerName,
-        //         selected: false,
-        //     }));
-        //     podNames = podOptions.filter(_pod => _pod.name == selectedOption).map(_pod => _pod.name)
-        //     selectedContainer = ''
-        // }
-
         setPodContainerOptions({
             podOptions: podOptions,
             containerOptions: containerOptions,
             grepTokens: podContainerOptions.grepTokens
         });
-
-        // setLogState({
-        //     selectedPods: podNames,
-        //     selectedContainer: selectedContainer,
-        //     grepTokens: logState.grepTokens,
-        // });
     };
 
     const handleContainerChange = (selectedContainer: string) => {
@@ -235,7 +213,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
     };
 
     const handleLogsSearch = (e) => {
-        e.preventDefault()
+        e.preventDefault();
         if (e.key === 'Enter' || e.keyCode === 13) {
             handleSearchTextChange(e.target.value as string);
             const { length, [length - 1]: highlightString } = e.target.value.split(' ');
@@ -256,7 +234,6 @@ function LogsComponent({ selectedTab, isDeleted }) {
 
     const handleLogSearchSubmit = (e) => {
         e.preventDefault();
-        setLogSearchString(tempSearch);
     };
 
     useEffect(() => {
@@ -271,11 +248,11 @@ function LogsComponent({ selectedTab, isDeleted }) {
     useEffect(() => {
         //Values are already set once we reach here
         //selected pods, containers, searchText
-        onLogsCleared()
+        onLogsCleared();
         stopWorker();
         fetchLogs();
 
-        return () => stopWorker;
+        return () => stopWorker();
     }, [podContainerOptions]);
 
     return isDeleted ? (
@@ -285,7 +262,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
     ) : (
         <React.Fragment>
             <div className="container-fluid bcn-0">
-                <div className="row pt-2 pb-2 pl-16 pr-16 border-top">
+                <div className={`row pt-2 pb-2 pl-16 pr-16 ${!isLogAnalyzer ? 'border-top' : ''}`}>
                     <div className="col-6 d-flex align-items-center">
                         <Tippy
                             className="default-tt"
@@ -353,7 +330,6 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                                 }),
                                                 indicatorsContainer: (provided, state) => ({
                                                     ...provided,
-                                                    height: '24px',
                                                 }),
                                             }}
                                             components={{
@@ -401,7 +377,6 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                             singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
                                             indicatorsContainer: (provided, state) => ({
                                                 ...provided,
-                                                height: '24px',
                                             }),
                                         }}
                                         components={{
@@ -435,7 +410,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                             name="log_search_input"
                             placeholder='grep -A 10 -B 20 "Server Error" | grep 500'
                         />
-                        {logSearchString && (
+                        {podContainerOptions.grepTokens && (
                             <CloseImage
                                 className="icon-dim-20 pointer"
                                 onClick={(e) => {
@@ -502,7 +477,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                         )}
                     </div>
 
-                    <div className="log-viewer" style={{ minHeight: '600px' }}>
+                    <div className="log-viewer">
                         <LogViewerComponent
                             subject={subject}
                             highlightString={highlightString}
@@ -521,7 +496,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                 Connecting
                             </div>
                         )}
-                        {readyState === 1 && <div className="readyState loading-dots cg-5">Connected</div>}
+                        {readyState === 1 && <div className="readyState loading-dots cg-5 pl-20">Connected</div>}
                     </div>
                 </div>
             )}
@@ -542,50 +517,6 @@ function LogsComponent({ selectedTab, isDeleted }) {
         </React.Fragment>
     );
 }
-
-// function getInitialStateOfLogs(
-//     isLogAnalyzer: boolean,
-//     params: { actionName: string; podName: string; nodeType: string },
-//     location: any,
-// ): LogState {
-//     if (!isLogAnalyzer) {
-//         let _selectedContainerName: string = new URLSearchParams(location.search).get('container');
-//         const containers = IndexStore.getAllPods()
-//             .filter((_pod) => _pod.name == params.podName)
-//             .flatMap((_pod) => _pod.containers)
-//             .sort();
-
-//         if (containers.length == 0) {
-//             return;
-//         }
-
-//         if (!_selectedContainerName) {
-//             _selectedContainerName = containers[0] as string;
-//         }
-
-//         return {
-//             selectedPods: [params.podName],
-//             selectedContainer: _selectedContainerName,
-//         } as LogState;
-//     } else {
-//         //In case of log analyzer by default we select all Pods
-//         const pods = IndexStore.getAllPods().map((_pod) => _pod.name);
-//         if (pods.length == 0) {
-//             return;
-//         }
-//         const containers = IndexStore.getAllPods()[0].containers.sort();
-//         let _selectedContainerName: string = '';
-
-//         if (containers.length > 0) {
-//             _selectedContainerName = containers[0];
-//         }
-
-//         return {
-//             selectedPods: pods,
-//             selectedContainer: _selectedContainerName,
-//         } as LogState;
-//     }
-// }
 
 function getInitialPodContainerOptions(
     isLogAnalyzer: boolean,

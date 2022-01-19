@@ -311,7 +311,6 @@ export function getPodsRootParent(_nodes: Array<Node>): Array<string> {
     while (uniqueParents.size > 0) {
         let _uniqueParents = new Set<string>()
         uniqueParents.forEach(_parent => {
-            console.log(_parent);
             (_nodesById.get(_parent)?.parentRefs ?? []).forEach(_parent => _uniqueParents.add(_parent.group + "/" + _parent.kind + "/" + _parent.name))
             if ((_nodesById.get(_parent)?.parentRefs ?? []).length == 0) {
                 let selfNode = _nodesById.get(_parent)

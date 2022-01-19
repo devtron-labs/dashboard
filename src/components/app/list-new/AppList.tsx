@@ -231,7 +231,8 @@ export default function AppList() {
     }
 
     function openDevtronAppCreateModel(event: React.MouseEvent) {
-        let url = `${buildDevtronAppListUrl()}/${AppListConstants.CREATE_APP_URL}${location.search}`
+        let _prefix = (currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl());
+        let url = `${_prefix}/${AppListConstants.CREATE_DEVTRON_APP_URL}${location.search}`
         history.push(`${url}`);
     }
 
@@ -547,13 +548,17 @@ export default function AppList() {
     }
 
     const closeDevtronAppCreateModal = () => {
-        let url = `${buildDevtronAppListUrl()}${location.search}`;
+        let _prefix = (currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl());
+        let url = `${_prefix}${location.search}`;
         history.push(`${url}`);
     }
 
     function renderAppCreateRouter() {
         return <Switch>
-            <Route path={`${buildDevtronAppListUrl()}/${AppListConstants.CREATE_APP_URL}`}
+            <Route path={`${buildDevtronAppListUrl()}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
+                   render={(props) => <AddNewApp close={closeDevtronAppCreateModal}  match={props.match} location={props.location} history={props.history} />}
+            />
+            <Route path={`${buildHelmAppListUrl()}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
                    render={(props) => <AddNewApp close={closeDevtronAppCreateModal}  match={props.match} location={props.location} history={props.history} />}
             />
         </Switch>
@@ -578,7 +583,7 @@ export default function AppList() {
         </Modal>
     }
 
-
+    
     return (
         <div>
             {
@@ -621,7 +626,7 @@ export default function AppList() {
                     {
                         params.appType == AppListConstants.AppType.HELM_APPS &&
                         <>
-                            <HelmAppList serverMode={serverMode} payloadParsedFromUrl={parsedPayloadOnUrlChange} sortApplicationList={sortApplicationList} clearAllFilters={removeAllFilters} setFetchingExternalAppsState={setFetchingExternalAppsState} updateLastDataSync={updateLastDataSync} setShowPulsatingDotState={setShowPulsatingDotState}/>
+                            <HelmAppList serverMode={serverMode} payloadParsedFromUrl={parsedPayloadOnUrlChange} sortApplicationList={sortApplicationList} clearAllFilters={removeAllFilters} setFetchingExternalAppsState={setFetchingExternalAppsState} updateLastDataSync={updateLastDataSync} setShowPulsatingDotState={setShowPulsatingDotState} masterFilters={masterFilters}/>
                             {
                                 fetchingExternalApps &&
                                 <div className="mt-16">
