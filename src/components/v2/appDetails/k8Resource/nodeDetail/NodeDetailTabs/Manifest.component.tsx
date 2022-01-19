@@ -177,6 +177,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
         setIsEditmode(false);
         setModifiedManifest(manifest);
         setActiveManifestEditorData('');
+        setErrorText('');
     };
 
     const markActiveTab = (_tabName: string) => {
