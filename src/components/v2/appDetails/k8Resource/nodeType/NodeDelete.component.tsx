@@ -4,10 +4,7 @@ import {
     PopupMenu,
     Trash,
     showError,
-    copyToClipboard,
-    not,
     useSearchString,
-    ConfirmationDialog,
     DeleteDialog,
 } from '../../../../common';
 import dots from '../../../assets/icons/ic-menu-dot.svg';
@@ -17,7 +14,6 @@ import './nodeType.scss';
 import { deleteResource } from '../../appDetails.api';
 import { NodeType } from '../../appDetails.type';
 import AppDetailsStore from '../../appDetails.store';
-import warn from '../../../assets/icons/ic-warning.svg';
 
 function NodeDeleteComponent({ nodeDetails, appDetails }) {
     const { path } = useRouteMatch();
@@ -118,7 +114,7 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
                     closeDelete={() => setShowDeleteConfirmation(false)}
                 >
                     <DeleteDialog.Description>
-                        <p>Do you want to force delete?</p>
+                        <p>Are you sure you want to delete this resource?</p>
                     </DeleteDialog.Description>
                 </DeleteDialog>
             )}
