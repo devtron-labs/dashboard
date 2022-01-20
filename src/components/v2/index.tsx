@@ -12,6 +12,7 @@ import AppDetailsComponent from './appDetails/AppDetails.component';
 import { EnvType } from './appDetails/appDetails.type';
 import IndexStore from './appDetails/index.store';
 import ErrorImage from './assets/icons/ic-404-error.png';
+import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil';
 
 let initTimer = null;
 
@@ -46,33 +47,13 @@ function RouterComponent({ envType }) {
     }, []);
 
     useEffect(() => {
-        if(_checkIfToRefetchData()){
+        if (checkIfToRefetchData(location)) {
             setTimeout(() => {
                 init();
-                _deleteRefetchDataFromUrl();
-            } , 5000);
+                deleteRefetchDataFromUrl(history, location);
+            }, 5000);
         }
     }, [location.search]);
-
-
-    const _checkIfToRefetchData = () : boolean => {
-        const queryParams = new URLSearchParams(location.search)
-        if (queryParams.has('refetchData')){
-            return true;
-        }
-        return false;
-    }
-
-    const _deleteRefetchDataFromUrl = () => {
-        if(_checkIfToRefetchData()){
-            const queryParams = new URLSearchParams(location.search);
-            queryParams.delete('refetchData');
-            history.replace({
-                search: queryParams.toString(),
-            })
-        }
-    }
-    
 
     const init = async () => {
         try {

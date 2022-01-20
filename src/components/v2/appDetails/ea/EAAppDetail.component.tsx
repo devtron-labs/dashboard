@@ -9,6 +9,7 @@ import AppDetailsComponent from '../AppDetails.component';
 import moment from 'moment'
 import * as queryString from 'query-string';
 import '../../lib/bootstrap-grid.min.css';
+import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../../../util/URLUtil';
 
 function ExternalAppDetail({appId, appName}) {
     const location = useLocation();
@@ -30,10 +31,10 @@ function ExternalAppDetail({appId, appName}) {
 
 
     useEffect(() => {
-        if(_checkIfToRefetchData()){
+        if(checkIfToRefetchData(location)){
             setTimeout(() => {
                 _getAndSetAppDetail();
-                _deleteRefetchDataFromUrl();
+                deleteRefetchDataFromUrl(history, location);
             } , 5000);
         }
     }, [location.search]);
@@ -61,24 +62,6 @@ function ExternalAppDetail({appId, appName}) {
             clusterId: helmAppDetail.environmentDetails.clusterId,
         }
         return genericAppDetail
-    }
-
-    const _checkIfToRefetchData = () : boolean => {
-        const queryParams = new URLSearchParams(location.search)
-        if (queryParams.has('refetchData')){
-            return true;
-        }
-        return false;
-    }
-
-    const _deleteRefetchDataFromUrl = () => {
-        if(_checkIfToRefetchData()){
-            const queryParams = new URLSearchParams(location.search);
-            queryParams.delete('refetchData');
-            history.replace({
-                search: queryParams.toString(),
-            })
-        }
     }
 
     const _getAndSetAppDetail = () => {

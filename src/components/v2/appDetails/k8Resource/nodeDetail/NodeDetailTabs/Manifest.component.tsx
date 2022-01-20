@@ -19,6 +19,7 @@ import { AppType } from '../../../appDetails.type';
 import YAML from 'yaml';
 import { toast } from 'react-toastify';
 import { showError, ToastBody } from '../../../../../common';
+import { appendRefetchDataToUrl } from '../../../../../util/URLUtil';
 
 function ManifestComponent({ selectedTab, isDeleted }) {
     const location = useLocation();
@@ -157,21 +158,13 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                     setIsResourceMissing(false);
                 }
                 setLoading(false);
-                _refetchAppDetailData();
+                appendRefetchDataToUrl(history, location);
             })
             .catch((err) => {
                 setLoading(false);
                 showError(err);
             });
     };
-
-    const _refetchAppDetailData = () => {
-        const queryParams = new URLSearchParams(location.search);
-        queryParams.append('refetchData', 'true');
-        history.replace({
-            search: queryParams.toString(),
-        })
-    }
 
     const handleCancel = () => {
         setIsEditmode(false);
@@ -222,8 +215,8 @@ function ManifestComponent({ selectedTab, isDeleted }) {
         </div>
     ) : (
         <div style={{ background: '#0B0F22', flex: 1, minHeight:'600px' }}>
-            {!error && !loading && <MessageUI msg="Manifest not available" size={24} />}
-            {error && (
+            {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
+            {!error && (
                 <>
                     <div className="bcn-0">
                         {appDetails.appType === AppType.EXTERNAL_HELM_CHART && (
