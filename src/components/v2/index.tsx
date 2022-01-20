@@ -50,7 +50,7 @@ function RouterComponent({ envType }) {
             setTimeout(() => {
                 init();
                 _deleteRefetchDataFromUrl();
-            } , 1000);
+            } , 5000);
         }
     }, [location.search]);
 
