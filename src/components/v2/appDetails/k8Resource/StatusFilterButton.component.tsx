@@ -20,13 +20,13 @@ export const StatusFilterButtonComponent = ({nodes}: {nodes: Array<Node>}) => {
         failedNodeCount: number = 0;
 
     nodes?.forEach((_node) => {
-        let _nodeHealth = _node.health?.status || '';
+        let _nodeHealth = _node.health?.status;
 
-        if (_nodeHealth.toLowerCase() === 'healthy' || _nodeHealth == '') {
+        if (_nodeHealth?.toLowerCase() === 'healthy') {
             healthyNodeCount++;
-        } else if (_nodeHealth.toLowerCase() === 'degraded') {
+        } else if (_nodeHealth?.toLowerCase() === 'degraded') {
             failedNodeCount++;
-        } else if (_nodeHealth.toLowerCase() === 'progressing') {
+        } else if (_nodeHealth?.toLowerCase() === 'progressing') {
             progressingNodeCount++;
         }
         allNodeCount++;
