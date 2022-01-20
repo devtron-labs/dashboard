@@ -12,8 +12,8 @@ interface TabState {
 }
 
 export const StatusFilterButtonComponent = ({nodes}: {nodes: Array<Node>}) => {
-
     const [selectedTab, setSelectedTab] = useState('all');
+
     let allNodeCount: number = 0,
         healthyNodeCount: number = 0,
         progressingNodeCount: number = 0,
@@ -39,12 +39,15 @@ export const StatusFilterButtonComponent = ({nodes}: {nodes: Array<Node>}) => {
         { status: 'PROGRESSING', count: progressingNodeCount, isSelected: "progressing" == selectedTab },
     ];
 
-    const params = useParams<{ envId: string; appId: string }>();
+    // const handleFilterClick = (filterName: string) => {
+    //     IndexStore.updateFilterType(filterName);
+    //     setSelectedTab(filterName.toLowerCase());
+    // };
 
-    const handleFilterClick = (filterName: string) => {
-        IndexStore.updateFilterType(filterName);
-        setSelectedTab(filterName.toLowerCase());
-    };
+    useEffect(()=>{
+        // handleFilterClick(selectedTab.toUpperCase())
+        IndexStore.updateFilterType(selectedTab.toUpperCase());
+   },[nodes, selectedTab])
 
     return (
         <div className="en-2 bw-1 br-4 flexbox">
@@ -55,7 +58,8 @@ export const StatusFilterButtonComponent = ({nodes}: {nodes: Array<Node>}) => {
                             {filter.count > 0 && (
                                 <a
                                     onClick={() => {
-                                        handleFilterClick(filter.status);
+                                        setSelectedTab(filter.status.toLowerCase())
+                                        // handleFilterClick(filter.status);
                                     }}
                                     className={`${
                                         filter.isSelected ? 'bcb-1' : ''
