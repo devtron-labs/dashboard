@@ -6,5 +6,4 @@
 .resource-node-wrapper{
     min-height: 600px;
     height: calc(100vh - 288px);
-    background-color: #0b0f22;
 }
