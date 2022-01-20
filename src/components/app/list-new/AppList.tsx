@@ -444,6 +444,7 @@ export default function AppList() {
                             showPulsatingDot={showPulsatingDot}/>
                     <Filter list={masterFilters.namespaces.filter(namespace => namespace.toShow)}
                             labelKey="label"
+                            searchKey="actualName"
                             buttonText="Namespace"
                             searchable multi
                             placeholder="Search Namespace"

@@ -20,6 +20,7 @@ export interface FilterProps {
     isLabelHtml? :boolean;
     onShowHideFilterContent?: (show : boolean) => void;
     showPulsatingDot? : boolean;
+    searchKey?: string;
 }
 
 export interface FilterState {
