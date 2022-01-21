@@ -17,7 +17,12 @@ export default () => {
         trailingLines: [],
         prefix: "",
         eventListener: function (ev) {
-            let log = typeof ev.data === 'string' ? ev.data : JSON.parse(ev.data).result.content;
+            let log;
+            try {
+                log = JSON.parse(ev.data).result.content;
+            } catch (e) {
+                log = ev.data;
+            }
             let bufferedLogs: Array<string> = []
             if (!log || log.length == 0) {
                 console.log("no log lines")
