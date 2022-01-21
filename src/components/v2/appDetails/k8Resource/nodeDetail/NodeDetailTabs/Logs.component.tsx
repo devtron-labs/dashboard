@@ -95,6 +95,10 @@ function LogsComponent({ selectedTab, isDeleted }) {
             selected: _containerName == selectedContainer,
         }));
 
+        if (containerOptions.length == 1) {
+            containerOptions[0].selected = true
+        }
+
         setPodContainerOptions({
             podOptions: podOptions,
             containerOptions: containerOptions,
