@@ -22,7 +22,7 @@ function ExternalAppDetail({appId, appName}) {
 
     // component load
     useEffect(() => {
-        _init(true);
+        _init();
         return (): void => {
             if (initTimer) {
                 clearTimeout(initTimer);
@@ -40,12 +40,12 @@ function ExternalAppDetail({appId, appName}) {
         }
     }, [location.search]);
 
-    const _init = (pageload : boolean) => {
-        if(pageload || !isAPICallInProgress){
+    const _init = () => {
+        if(!isAPICallInProgress){
             _getAndSetAppDetail();
         }
         initTimer = setTimeout(() => {
-            _init(false);
+            _init();
         }, 30000);
     }
 
