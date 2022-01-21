@@ -58,19 +58,21 @@ function NodeDetailComponent() {
 
     return (
         <React.Fragment>
-            <div className="node-details_tab pl-20 bcn-0 flex left top w-100 border-bottom pr-20 ">
+            <div className="pl-20 bcn-0 flex left top w-100 pr-20 ">
                 <>
                     {tabs &&
                         tabs.length > 0 &&
                         tabs.map((tab: string, index: number) => {
                             return (
                                 <div
+                                  
                                     key={index + 'resourceTreeTab'}
                                     className={`${
                                         tab.toLowerCase() === selectedTabName.toLowerCase()
                                             ? 'default-tab-row cb-5'
                                             : 'cn-7'
-                                    } pt-6 pb-6 cursor pl-8 pr-8`}
+                                    } pt-6 pb-6 cursor pl-8 pr-8`
+                               }
                                 >
                                     <NavLink to={`${url}/${tab.toLowerCase()}`} className=" no-decor flex left">
                                         <span

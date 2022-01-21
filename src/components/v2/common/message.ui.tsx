@@ -31,7 +31,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
     onActionButtonClick,
 }) => {
     return (
-        <div className="flex column dark-background w-100 " style={{ ...bodyStyle, minHeight: '600px' }}>
+        <div className="flex column dark-background w-100 " style={{ ...bodyStyle, paddingTop: '200px' }}>
             <div>
                 {(() => {
                     switch (icon) {
@@ -68,9 +68,9 @@ const MessageUI: React.FC<MsgUIProps> = ({
             </div>
             {isShowActionButton && (
                 <div
-                    className="flex left cb-5 cursor"
+                    className="flex left cursor"
                     onClick={onActionButtonClick}
-                    style={{ fontSize: '14px', textDecoration: 'underline' }}
+                    style={{ fontSize: '14px', textDecoration: 'underline', color: 'var(--B300)' }}
                 >
                     {actionButtonText}
                 </div>

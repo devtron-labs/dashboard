@@ -17,6 +17,8 @@ import { ReactComponent as InfoFill } from '../../../assets/icons/ic-info-filled
 import { ReactComponent as InfoFillPurple } from '../../../assets/icons/ic-info-filled-purple.svg';
 import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg';
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg';
+import { ReactComponent as AlertTriangleIcon } from '../../../assets/icons/ic-alert-triangle.svg';
+import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 import '../list/list.css';
 
 export default function HelmAppList({
@@ -27,6 +29,7 @@ export default function HelmAppList({
     setFetchingExternalAppsState,
     updateLastDataSync,
     setShowPulsatingDotState,
+    masterFilters
 }) {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING);
     const [errorResponseCode, setErrorResponseCode] = useState(0);
@@ -249,7 +252,7 @@ export default function HelmAppList({
         setShowPulsatingDotState(_filteredDevtronInstalledHelmAppsList.length == 0 && !clusterIdsCsv);
     }
 
-    function _isAnyFilterationAppliedExceptCluster() {
+    function _isAnyFilterationAppliedExceptClusterAndNs() {
         return (
             payloadParsedFromUrl.teams?.length ||
             payloadParsedFromUrl.appNameSearch?.length ||
@@ -258,7 +261,13 @@ export default function HelmAppList({
     }
 
     function _isAnyFilterationApplied() {
-        return _isAnyFilterationAppliedExceptCluster() || payloadParsedFromUrl.namespaces?.length;
+        return _isAnyFilterationAppliedExceptClusterAndNs() || payloadParsedFromUrl.namespaces?.length;
+    }
+
+    function _isOnlyAllClusterFilterationApplied() {
+        let _isAllClusterSelected = !masterFilters.clusters.some(_cluster => !_cluster.isChecked);
+        let _isAnyNamespaceSelected = masterFilters.namespaces.some(_namespace => _namespace.isChecked);
+        return !_isAnyFilterationAppliedExceptClusterAndNs() && _isAllClusterSelected && !_isAnyNamespaceSelected;
     }
 
     function handleImageError(e) {
@@ -332,6 +341,18 @@ export default function HelmAppList({
     function renderApplicationList() {
         return (
             <>
+                {serverMode == SERVER_MODE.FULL &&
+                    <div className="bcn-0">
+                        <div className="h-8"></div>
+                        <div className="helm-permission-message-strip above-header-message flex left">
+                            <span className="mr-8 flex">
+                                <AlertTriangleIcon className="icon-dim-20 icon"/>
+                            </span>
+                            <span>Permissions for helm apps are now managed separately under user access. Please request permission from super-admin if required.</span>
+                        </div>
+                    </div>
+                }
+
                 {!clusterIdsCsv && (
                     <div className="bcn-0">
                         <div className="h-8"></div>
@@ -473,10 +494,31 @@ export default function HelmAppList({
         return <div className="flex column">{askToClearFilters(true)}</div>;
     }
 
+    function askToConnectAClusterForNoResult() {
+        return (
+            <div style={{ height: 'calc(100vh - 150px)' }}>
+                <EmptyState>
+                    <img src={emptyImage} width="250" height="250" alt="Please connect cluster" />
+                    <h2 className="fs-16 fw-4 c-9">No helm charts found in connected clusters</h2>
+                    <p className="text-left" style={{ width: '450px' }}>
+                        Connect a kubernetes cluster containing helm apps to view them here.
+                    </p>
+                    <Link to={`${URLS.GLOBAL_CONFIG_CLUSTER}`}>
+                        <button type="button" className="cta flex">
+                            Connect a cluster
+                        </button>
+                    </Link>
+                </EmptyState>
+            </div>
+        );
+    }
+
     function renderFullModeApplicationListContainer() {
         if (!sseConnection && filteredHelmAppsList.length == 0) {
-            if (_isAnyFilterationAppliedExceptCluster() && !clusterIdsCsv) {
+            if (_isAnyFilterationAppliedExceptClusterAndNs() && !clusterIdsCsv) {
                 return askToClearFiltersWithSelectClusterTip();
+            }else if (_isOnlyAllClusterFilterationApplied()) {
+                return askToConnectAClusterForNoResult();
             } else if (_isAnyFilterationApplied()) {
                 return askToClearFilters();
             } else if (!clusterIdsCsv) {

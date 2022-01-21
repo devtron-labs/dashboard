@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import {useLocation, useHistory} from 'react-router';
 import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json';
 import { iLink } from '../../../../utils/tabUtils/link.type';
 import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
@@ -17,9 +18,11 @@ import MessageUI, { MsgUIType } from '../../../../common/message.ui';
 import { AppType } from '../../../appDetails.type';
 import YAML from 'yaml';
 import { toast } from 'react-toastify';
-import { ToastBody } from '../../../../../common';
+import { showError, ToastBody } from '../../../../../common';
 
 function ManifestComponent({ selectedTab, isDeleted }) {
+    const location = useLocation();
+    const history = useHistory();
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON);
     const { url } = useRouteMatch();
     const params = useParams<{ actionName: string; podName: string; nodeType: string }>();
@@ -124,7 +127,20 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                 })
                 .catch((err) => {
                     setLoading(false);
-                    showError(err);
+                    if (err.code === 403) {
+                        toast.info(<ToastBody title="Access denied" subtitle="You don't have access to perform this action." />, {
+                          className: 'devtron-toast unauthorized',
+                        });
+                    } else if (err.code === 500) {
+                        const error = err['errors'] && err['errors'][0];
+                        if (error && error.code && error.userMessage) {
+                            setErrorText(`ERROR ${error.code} > Message: “${error.userMessage}”`);
+                        } else {
+                            showError(err);
+                        }
+                    } else {
+                        showError(err);
+                    }
                 });
     };
 
@@ -141,6 +157,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                     setIsResourceMissing(false);
                 }
                 setLoading(false);
+                _refetchAppDetailData();
             })
             .catch((err) => {
                 setLoading(false);
@@ -148,10 +165,19 @@ function ManifestComponent({ selectedTab, isDeleted }) {
             });
     };
 
+    const _refetchAppDetailData = () => {
+        const queryParams = new URLSearchParams(location.search);
+        queryParams.append('refetchData', 'true');
+        history.replace({
+            search: queryParams.toString(),
+        })
+    }
+
     const handleCancel = () => {
         setIsEditmode(false);
         setModifiedManifest(manifest);
         setActiveManifestEditorData('');
+        setErrorText('');
     };
 
     const markActiveTab = (_tabName: string) => {
@@ -170,7 +196,9 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                 setActiveManifestEditorData(manifest);
                 break;
             case 'Desired manifest':
-                setActiveManifestEditorData(desiredManifest);
+                return setTimeout(() => {
+                    setActiveManifestEditorData(desiredManifest);
+                }, 0);
                 break;
         }
     };
@@ -189,31 +217,12 @@ function ManifestComponent({ selectedTab, isDeleted }) {
         }
     }, [params.actionName]);
 
-    function showError({ code, message }) {
-        if (code === 400) {
-            setErrorText(`Encountered data validation error while saving. “${message}”`);
-        } else if (code === 500) {
-            toast.error(
-                <ToastBody
-                    title="Could not apply changes"
-                    subtitle="API server not reachable. Please contact your admin to resolve the issue.."
-                />,
-            );
-        } else if (code === 403) {
-            toast.info(<ToastBody title="Access denied" subtitle="You don't have access to perform this action." />, {
-                className: 'devtron-toast unauthorized',
-            });
-        } else {
-            toast.error('Some Error Occurred"');
-        }
-    }
-
     return isDeleted ? (
         <div>
             <MessageUI msg="This resource no longer exists" size={32} />
         </div>
     ) : (
-        <div style={{ minHeight: '600px', background: '#0B0F22', flex: 1 }}>
+        <div style={{ background: '#0B0F22', flex: 1 }}>
             {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
             {!error && (
                 <>
@@ -221,8 +230,9 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                         {appDetails.appType === AppType.EXTERNAL_HELM_CHART && (
                             <div className="flex left pl-20 pr-20 border-bottom manifest-tabs-row">
                                 {tabs.map((tab: iLink, index) => {
-                                    return !showDesiredAndCompareManifest &&
-                                        (tab.name == 'Desired manifest' || tab.name == 'Compare') ? (
+                                    return (!showDesiredAndCompareManifest &&
+                                        (tab.name == 'Desired manifest' || tab.name == 'Compare')) ||
+                                        (isResourceMissing && tab.name == 'Compare') ? (
                                         <></>
                                     ) : (
                                         <div
@@ -264,7 +274,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                 )}
                             </div>
                         )}
-                        {isResourceMissing && !loading ? (
+                        {isResourceMissing && !loading && activeTab === 'Live manifest' ? (
                             <MessageUI
                                 msg="Manifest not available"
                                 size={24}
@@ -274,7 +284,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                             />
                         ) : (
                             <CodeEditor
-                                defaultValue={desiredManifest}
+                                defaultValue={activeTab === 'Compare' && desiredManifest}
                                 diffView={activeTab === 'Compare'}
                                 theme="vs-dark--dt"
                                 height={700}

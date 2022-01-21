@@ -8,7 +8,7 @@ import NodeComponent from './nodeType/Node.component';
 import { useSharedState } from '../../utils/useSharedState';
 import IndexStore from '../index.store';
 
-export default function K8ResourceComponent({clickedNodes, registerNodeClick}: {clickedNodes: Map<string, string>, registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>}) {
+export default function K8ResourceComponent({clickedNodes, registerNodeClick, handleFocusTabs}: {clickedNodes: Map<string, string>, registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>, handleFocusTabs: () => void}) {
     const { url } = useRouteMatch();
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable());
 
@@ -27,7 +27,7 @@ export default function K8ResourceComponent({clickedNodes, registerNodeClick}: {
                         <NodeTreeComponent clickedNodes={clickedNodes} registerNodeClick={registerNodeClick} />
                     </div>
                     <div className="flex-grow-1 p-0">
-                        <NodeComponent clickedNodes={clickedNodes}/>
+                        <NodeComponent handleFocusTabs={handleFocusTabs} clickedNodes={clickedNodes}/>
                     </div>
                 </div>
             ) : (

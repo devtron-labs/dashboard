@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router';
 import {
     PopupMenu,
     Trash,
     showError,
-    copyToClipboard,
-    not,
     useSearchString,
-    ConfirmationDialog,
     DeleteDialog,
 } from '../../../../common';
 import dots from '../../../assets/icons/ic-menu-dot.svg';
@@ -17,21 +14,19 @@ import './nodeType.scss';
 import { deleteResource } from '../../appDetails.api';
 import { NodeType } from '../../appDetails.type';
 import AppDetailsStore from '../../appDetails.store';
-import warn from '../../../assets/icons/ic-warning.svg';
 
 function NodeDeleteComponent({ nodeDetails, appDetails }) {
     const { path } = useRouteMatch();
     const history = useHistory();
+    const location = useLocation();
     const params = useParams<{ actionName: string; podName: string; nodeType: string; appId: string; envId: string }>();
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
     const { queryParams } = useSearchString();
 
     function describeNodeWrapper(tab) {
-        console.log('describeNodeWrapper', tab);
         queryParams.set('kind', params.podName);
         const newUrl = generatePath(path, { ...params, tab }) + '/' + nodeDetails.name + '/' + tab.toLowerCase();
-        // describeNode(nodeDetails.name);
         history.push(newUrl);
     }
 
@@ -82,9 +77,19 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
             const appDetailsTabs = _tabs.filter((_tab) => _tab.name === nodeDetails.name);
 
             appDetailsTabs.forEach((_tab) => AppDetailsStore.removeAppDetailsTabByIdentifier(_tab.title));
+            _refetchAppDetailData();
         } catch (err) {
             showError(err);
         }
+    }
+
+    // TODO : move it to some common place, so that recreateResource in manifest can also use that common function.
+    const _refetchAppDetailData = () => {
+        const queryParams = new URLSearchParams(location.search);
+        queryParams.append('refetchData', 'true');
+        history.replace({
+            search: queryParams.toString(),
+        })
     }
 
     return (
@@ -99,7 +104,7 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
             </PopupMenu>
             {showDeleteConfirmation && (
                 <DeleteDialog
-                    title={'Delete Pod'}
+                    title={`Delete ${nodeDetails?.kind} "${nodeDetails?.name}"`}
                     delete={() => {
                         asyncDeletePod(nodeDetails);
                         setShowDeleteConfirmation(false);
@@ -107,7 +112,7 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
                     closeDelete={() => setShowDeleteConfirmation(false)}
                 >
                     <DeleteDialog.Description>
-                        <p>Do you want to force delete?</p>
+                        <p>Are you sure, you want to delete this resource?</p>
                     </DeleteDialog.Description>
                 </DeleteDialog>
             )}

@@ -199,7 +199,7 @@ export const DOCUMENTATION = {
 
 // APP LIST STARTS
 export const AppListConstants = {
-    CREATE_APP_URL: 'create-app',
+    CREATE_DEVTRON_APP_URL: 'create-d-app',
     AppTabs : {
         DEVTRON_APPS: 'Devtron Apps',
         HELM_APPS: 'Helm Apps'

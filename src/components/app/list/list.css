@@ -467,10 +467,20 @@
     background-color: var(--N200);
 }
 
-.cluster-select-message-strip{
+.cluster-select-message-strip {
     background-color: var(--V100);
     border: solid 1px #c5bbfa;
 }
+
+.helm-permission-message-strip {
+    background-color: var(--Y100);
+    border: solid 1px #ffcb5d;
+}
+
+.helm-permission-message-strip .icon path[fill="#F33E3E"] {
+    fill: var(--Y700)
+}
+
 
 .above-header-message {
     min-height: 32px;

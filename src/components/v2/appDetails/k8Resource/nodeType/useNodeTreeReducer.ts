@@ -1,52 +1,9 @@
 
-import { useReducer } from "react";
 import { AggregationKeys, getAggregator, iNode, Node, NodeType } from '../../appDetails.type';
-import { getPodsRootParent, reduceKindStatus } from "../../index.store";
-
-export const NodeTreeActions = {
-    Init: "INIT",
-    Error: "ERROR",
-    ParentNodeClick: "PARENT_NODE_CLICK",
-    ChildNodeClick: "CHILD_NODE_CLICK"
-};
-
-const initialState = {
-    loading: true,
-    error: null,
-    treeNodes: [],
-};
-
-const handleParentNodeClick = (treeNodes: Array<iNode>, selectedNode: iNode) => {
-
-    return treeNodes.map((node: iNode) => {
-        if (node.name === selectedNode.name) {
-            node.isSelected = !node.isSelected
-        }
-
-        return node
-    })
-}
-
-const handleChildNodeClick = (treeNodes: Array<iNode>, selectedNode: iNode, parentNode: iNode) => {
-    for (let index = 0; index < treeNodes.length; index++) {
-        const cNodes = treeNodes[index].childNodes || [];
-
-        for (let _index = 0; _index < cNodes.length; _index++) {
-            const _cNode = cNodes[_index];
-
-            _cNode.isSelected = false
-
-            if (_cNode.name.toLowerCase() === selectedNode.name.toLowerCase()) {
-                _cNode.isSelected = true
-            }
-        }
-    }
-
-    return treeNodes
-}
+import { getPodsRootParentNameAndStatus, reduceKindStatus } from "../../index.store";
 
 export const getTreeNodesWithChild = (_nodes: Array<Node>): Array<iNode> => {
-    let podParents = getPodsRootParent(_nodes)
+    let podParents = getPodsRootParentNameAndStatus(_nodes)
     const _inodes = [] as Array<iNode>;
 
     let nodesByAggregator = _nodes.reduce((nodesByAggregator: Map<string, Map<string, string | Array<[string, string]>>> , node: Node) => {
@@ -82,37 +39,3 @@ export const getTreeNodesWithChild = (_nodes: Array<Node>): Array<iNode> => {
     })
     return _inodes
 }
-
-
-
-const reducer = (state: any, action: any) => {
-
-    switch (action.type) {
-
-        case NodeTreeActions.Init:
-            const initialNodes = getTreeNodesWithChild(action.nodes);
-
-            return { ...state, loading: false, treeNodes: initialNodes };
-
-        case NodeTreeActions.Error:
-            return { ...state, loading: false, error: action.error };
-
-        case NodeTreeActions.ParentNodeClick: {
-
-            const tns = handleParentNodeClick(state.treeNodes, action.selectedNode)
-            return { ...state, treeNodes: [...tns] };
-        }
-
-        case NodeTreeActions.ChildNodeClick: {
-            const tns = handleChildNodeClick(state.treeNodes, action.selectedNode, action.parentNode)
-            return { ...state, treeNodes: [...tns] };
-        }
-
-    }
-};
-
-export const useNodeTree = () => {
-    const [state, dispatch] = useReducer(reducer, initialState);
-
-    return [state, dispatch];
-};

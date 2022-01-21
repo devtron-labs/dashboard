@@ -115,6 +115,11 @@ const IndexStore = {
         return _appDetailsSubject.getValue().resourceTree.podMetadata;
     },
 
+    getPodsForRootNode: (rootNode: string): Array<iNode> => {
+        let _nodes = _nodesSubject.getValue()
+        return getPodsForRootNode(rootNode, _nodes)
+    },
+
     getAllPodNames: () => {
         return _nodesSubject
             .getValue()
@@ -224,6 +229,10 @@ const IndexStore = {
 
 export function getiNodesByKind(_nodes: Array<Node>, _kind: string): Array<iNode> {
     const rootNodes = _nodes.filter( _node => _node.kind.toLowerCase() == _kind.toLowerCase()).map( _node => _node as iNode)
+    return getiNodesByRootNode(_nodes, rootNodes)
+}
+
+export function getiNodesByRootNode(_nodes: Array<Node>, rootNodes: Array<iNode>): Array<iNode> {
     //if any node has childNode we have already processed this node during previous call to this node and there have been no api calls since then
     //hence reusing it. After api call this is unset and we will process again.
     if (rootNodes.some( _node => _node.childNodes)) {
@@ -295,7 +304,7 @@ export function getiNodesByKind(_nodes: Array<Node>, _kind: string): Array<iNode
     return rootNodes
 }
 
-export function getPodsRootParent(_nodes: Array<Node>): Array<[string, string]> {
+export function getPodsRootParentNameAndStatus(_nodes: Array<Node>): Array<[string, string]> {
     let podNodes = [..._nodes.filter(_node => _node.kind.toLowerCase() == NodeType.Pod.toLowerCase())]
     const _nodesById = new Map<String, Node>()
 
@@ -325,7 +334,6 @@ export function getPodsRootParent(_nodes: Array<Node>): Array<[string, string]> 
     while (uniqueParents.size > 0) {
         let _uniqueParents = new Map<string, string>()
         uniqueParents.forEach( (_status, _parent) => {
-            console.log(_parent);
             (_nodesById.get(_parent)?.parentRefs ?? []).forEach(_parent => _uniqueParents.set(_parent.group + "/" + _parent.kind + "/" + _parent.name, _status))
             if ((_nodesById.get(_parent)?.parentRefs ?? []).length == 0) {
                 let selfNode = _nodesById.get(_parent)
@@ -336,6 +344,7 @@ export function getPodsRootParent(_nodes: Array<Node>): Array<[string, string]> 
         })
         uniqueParents = _uniqueParents
     }
+    //value is status
     return Array.from(rootParents, ([name, value]) => [name, value] as [string, string]).sort((a: [string, string],b: [string, string]) => {
         if (a[0] > b[0]) {
             return 1
@@ -353,6 +362,17 @@ export const reduceKindStatus = (aggregatedStatus: string, newStatus: string) =>
         return "progressing"
     }
     return "healthy"
+}
+
+export const getPodsForRootNode = (_rootNode: string, _treeNodes: Array<Node>): Array<iNode> => {
+    let root = _treeNodes.filter(_tn => _tn.name.toLowerCase() == _rootNode.toLowerCase()).map(_tn => _tn as iNode)
+    let rootNodes = getiNodesByRootNode(_treeNodes, root)
+    let pods = [] as Array<iNode>
+    while(rootNodes?.length > 0) {
+        pods = pods.concat(rootNodes.filter(_n => _n.kind.toLowerCase() == NodeType.Pod.toLowerCase()))
+        rootNodes = rootNodes.flatMap(_n => (_n.childNodes ?? []))
+    }
+    return pods
 }
 
 export default IndexStore;
