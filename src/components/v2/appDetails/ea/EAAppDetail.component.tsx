@@ -18,6 +18,7 @@ function ExternalAppDetail({appId, appName}) {
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
 
     let initTimer = null;
+    let isAPICallInProgress = false;
 
     // component load
     useEffect(() => {
@@ -40,7 +41,7 @@ function ExternalAppDetail({appId, appName}) {
     }, [location.search]);
 
     const _init = (pageload : boolean) => {
-        if(pageload || !isLoading){
+        if(pageload || !isAPICallInProgress){
             _getAndSetAppDetail();
         }
         initTimer = setTimeout(() => {
@@ -69,15 +70,18 @@ function ExternalAppDetail({appId, appName}) {
     }
 
     const _getAndSetAppDetail = () => {
+        isAPICallInProgress = true;
         getAppDetail(appId)
             .then((appDetailResponse: HelmAppDetailResponse) => {
                 IndexStore.publishAppDetails(_convertToGenericAppDetailModel(appDetailResponse.result));
                 setIsLoading(false);
+                isAPICallInProgress = false;
             })
             .catch((errors: ServerErrors) => {
                 showError(errors);
                 setErrorResponseCode(errors.code);
                 setIsLoading(false);
+                isAPICallInProgress = false;
             });
     }
 
