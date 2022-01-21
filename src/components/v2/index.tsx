@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useState } from 'react';
-import { useRouteMatch, useParams, Redirect } from 'react-router';
+import { useRouteMatch, useParams, Redirect,useLocation, useHistory } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
 import { URLS } from '../../config';
 import { DetailsProgressing } from '../common';
@@ -12,6 +12,7 @@ import AppDetailsComponent from './appDetails/AppDetails.component';
 import { EnvType } from './appDetails/appDetails.type';
 import IndexStore from './appDetails/index.store';
 import ErrorImage from './assets/icons/ic-404-error.png';
+import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil';
 
 let initTimer = null;
 
@@ -20,6 +21,8 @@ function RouterComponent({ envType }) {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
     const { path } = useRouteMatch();
     const [statusCode, setStatusCode] = useState(0);
+    const location = useLocation();
+    const history = useHistory();
 
     useEffect(() => {
         IndexStore.setEnvDetails(envType, +params.appId, +params.envId);
@@ -29,8 +32,9 @@ function RouterComponent({ envType }) {
         if (initTimer) {
             clearTimeout(initTimer);
         }
-
         init();
+
+        initTimer = setTimeout(init, 30000);
     }, [params.appId, params.envId]);
 
     // clearing the timer on component unmount
@@ -41,6 +45,15 @@ function RouterComponent({ envType }) {
             }
         };
     }, []);
+
+    useEffect(() => {
+        if (checkIfToRefetchData(location)) {
+            setTimeout(() => {
+                init();
+                deleteRefetchDataFromUrl(history, location);
+            }, 5000);
+        }
+    }, [location.search]);
 
     const init = async () => {
         try {
@@ -57,7 +70,6 @@ function RouterComponent({ envType }) {
 
             setIsLoading(false);
 
-            initTimer = setTimeout(init, 30000);
         } catch (e) {
             console.log('error while fetching InstalledAppDetail', e);
             setIsLoading(false);
