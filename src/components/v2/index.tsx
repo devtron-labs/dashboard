@@ -30,18 +30,18 @@ function RouterComponent({ envType }) {
         setIsLoading(true);
 
         if (initTimer) {
-            clearTimeout(initTimer);
+            clearInterval(initTimer);
         }
         init();
 
-        initTimer = setTimeout(init, 30000);
+        initTimer = setInterval(init, 30000);
     }, [params.appId, params.envId]);
 
     // clearing the timer on component unmount
     useEffect(() => {
         return (): void => {
             if (initTimer) {
-                clearTimeout(initTimer);
+                clearInterval(initTimer);
             }
         };
     }, []);
