@@ -24,7 +24,7 @@ export const getDesiredManifestResource = (appDetails: AppDetails, podName: stri
         (data) => data.name === podName && data.kind.toLowerCase() === nodeType,
     )[0];
     const requestData = {
-        appId: getAppId(appDetails.clusterId, selectedResource.namespace, appDetails.appName),
+        appId: getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName),
         resource: {
             Group: selectedResource.group ? selectedResource.group : '',
             Version: selectedResource.version ? selectedResource.version : 'v1',
@@ -53,7 +53,7 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
         (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
     )[0];
     let requestBody = {
-        appId: getAppId(appDetails.clusterId, selectedResource.namespace, appDetails.appName),
+        appId: getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName),
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
@@ -64,9 +64,6 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
                 namespace: selectedResource.namespace,
                 name: selectedResource.name,
             },
-            // podLogsRequest: {
-            //     containerName: 'envoy',
-            // },
         },
     };
     if (updatedManifest) {

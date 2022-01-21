@@ -16,7 +16,7 @@ export const deleteResource = (nodeDetails, appDetails, envId) => {
     if (!nodeDetails.group) nodeDetails.group = '';
     if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
         let data = {
-            appId: getAppId(appDetails.clusterId, nodeDetails.namespace, appDetails.appName),
+            appId: getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName),
             k8sRequest: {
                 resourceIdentifier: {
                     groupVersionKind: {
