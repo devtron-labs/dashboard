@@ -12,7 +12,7 @@ import sseWorker from '../../../../../app/grepSSEworker';
 import { Host } from '../../../../../../config';
 import { Subject } from '../../../../../../util/Subject';
 import LogViewerComponent from './LogViewer.component';
-import { useKeyDown } from '../../../../../common';
+import { useKeyDown, SingleSelectOption as Option } from '../../../../../common';
 import './nodeDetailTab.scss';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
@@ -323,7 +323,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                             onChange={(selected) => handlePodSelection(selected.value)}
                                             styles={{
                                                 ...multiSelectStyles,
-                                                menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
+                                                menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', width: '150%'}),
                                                 control: (base, state) => ({
                                                     ...base,
                                                     border: '0px',
@@ -334,13 +334,25 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                                     ...base,
                                                     fontWeight: 600,
                                                     color: '#06c',
+                                                    direction: 'rtl',
+                                                    marginLeft: 0
                                                 }),
                                                 indicatorsContainer: (provided, state) => ({
                                                     ...provided,
                                                 }),
-                                            }}
+                                                option: (base, state) => ({
+                                                  ...base,
+                                                  backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                                  color: 'var(--N900)',
+                                                  textOverflow: 'ellipsis',
+                                                  overflow: 'hidden',
+                                                  whiteSpace: 'nowrap',
+                                                  direction: 'rtl',
+                                              }),
+                                          }}
                                             components={{
                                                 IndicatorSeparator: null,
+                                                Option,
                                             }}
                                         />
                                     </div>
@@ -374,20 +386,30 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                         }}
                                         styles={{
                                             ...multiSelectStyles,
-                                            menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
+                                            menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', width: '150%'}),
                                             control: (base, state) => ({
                                                 ...base,
                                                 border: '0px',
                                                 backgroundColor: 'transparent',
                                                 minHeight: '24px !important',
                                             }),
-                                            singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
+                                            singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c', direction: 'rtl', marginLeft: 0 }),
                                             indicatorsContainer: (provided, state) => ({
                                                 ...provided,
                                             }),
+                                            option: (base, state) => ({
+                                              ...base,
+                                              backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                              color: 'var(--N900)',
+                                              textOverflow: 'ellipsis',
+                                              overflow: 'hidden',
+                                              whiteSpace: 'nowrap',
+                                              direction: 'rtl',
+                                          }),
                                         }}
                                         components={{
                                             IndicatorSeparator: null,
+                                            Option,
                                         }}
                                     />
                                 </div>
