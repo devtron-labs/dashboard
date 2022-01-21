@@ -53,10 +53,6 @@ const AppDetailsStore = {
 
         let applicationObjectTabs = applicationObjectTabsSubject.getValue();
 
-        if (applicationObjectTabs.length === _maxTabAllowd) {
-            return false;
-        }
-
         let alreadyAdded = false;
         let title = objectKind + '/' + objectName;
         objectName = objectKind + '/...' + objectName.slice(-6);
@@ -71,6 +67,9 @@ const AppDetailsStore = {
         }
 
         if (!alreadyAdded) {
+            if (applicationObjectTabs.length === _maxTabAllowd) {
+                return false;
+            }
             applicationObjectTabs.push(addAOT(objectName, tabURL, true, title));
         }
 
