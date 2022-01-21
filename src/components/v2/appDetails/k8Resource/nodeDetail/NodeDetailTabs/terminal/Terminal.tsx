@@ -51,7 +51,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         const webFontAddon = new XtermWebfont();
         terminal.loadAddon(fitAddon);
         terminal.loadAddon(webFontAddon);
-        terminal.open(document.getElementById('terminal-id'));
+        terminal.loadWebfontAndOpen(document.getElementById('terminal-id'));
         fitAddon.fit();
         terminal.reset();
         terminal.attachCustomKeyEventHandler((event) => {
