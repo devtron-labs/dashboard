@@ -10,11 +10,13 @@ export const checkIfToRefetchData = (location): boolean => {
 };
 
 export const deleteRefetchDataFromUrl = (history, location): void => {
-    const queryParams = new URLSearchParams(location.search);
-    queryParams.delete('refetchData');
-    history.replace({
-        search: queryParams.toString(),
-    });
+    if(checkIfToRefetchData(location)){
+        const queryParams = new URLSearchParams(location.search);
+        queryParams.delete('refetchData');
+        history.replace({
+            search: queryParams.toString(),
+        });
+    }
 };
 
 export const appendRefetchDataToUrl = (history, location): void => {
