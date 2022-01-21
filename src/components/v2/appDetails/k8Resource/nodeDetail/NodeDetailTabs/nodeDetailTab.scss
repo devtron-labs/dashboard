@@ -19,14 +19,14 @@
     display: block;
     z-index: 1;
     opacity: 0;
+    &.clipboard-toast--show{
+          height:80px;
+          width:80px;
+          padding: 16px;
+          opacity: 0.95;
+          transition: height 0.25s, width 0.25s, opacity 0.25s;
+    }
 }
-/* &.clipboard-toast--show{
-      height:80px;
-      width:80px;
-      padding: 16px;
-      opacity: 0.95;
-      transition: height 0.25s, width 0.25s, opacity 0.25s;
-  } */
 
 .no-border {
     border: none;

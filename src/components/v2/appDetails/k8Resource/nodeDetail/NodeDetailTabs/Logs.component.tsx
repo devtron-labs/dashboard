@@ -134,6 +134,9 @@ function LogsComponent({ selectedTab, isDeleted }) {
             containerOptions: podContainerOptions.containerOptions,
             grepTokens: tokens
         });
+        if(logsPaused){
+          setLogsPaused(!logsPaused);
+        }
     };
 
     const parsePipes = (expression: string): Array<string> => {
