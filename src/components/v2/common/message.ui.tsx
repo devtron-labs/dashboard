@@ -31,7 +31,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
     onActionButtonClick,
 }) => {
     return (
-        <div className="flex column dark-background w-100 " style={{ ...bodyStyle, paddingTop: '200px' }}>
+        <div className="text-center dark-background w-100 " style={{ ...bodyStyle, paddingTop: '200px', minHeight: '600px', flex: '1' }}>
             <div>
                 {(() => {
                     switch (icon) {
