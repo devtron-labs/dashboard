@@ -21,14 +21,14 @@ function ExternalAppDetail({appId, appName}) {
 
     // component load
     useEffect(() => {
-        _init();
+        _init(true);
         return (): void => {
             if (initTimer) {
                 clearTimeout(initTimer);
             }
         };
     }, []);
-
+    
 
     useEffect(() => {
         if(checkIfToRefetchData(location)){
@@ -39,9 +39,13 @@ function ExternalAppDetail({appId, appName}) {
         }
     }, [location.search]);
 
-    const _init = () => {
-        _getAndSetAppDetail();
-        initTimer = setTimeout(_init, 30000);
+    const _init = (pageload : boolean) => {
+        if(pageload || !isLoading){
+            _getAndSetAppDetail();
+        }
+        initTimer = setTimeout(() => {
+            _init(false);
+        }, 30000);
     }
 
     const _convertToGenericAppDetailModel = (helmAppDetail : HelmAppDetail) : AppDetails =>  {
