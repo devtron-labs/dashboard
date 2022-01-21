@@ -32,9 +32,8 @@ function RouterComponent({ envType }) {
         if (initTimer) {
             clearTimeout(initTimer);
         }
-        init();
 
-        initTimer = setTimeout(init, 30000);
+        _init();
     }, [params.appId, params.envId]);
 
     // clearing the timer on component unmount
@@ -49,13 +48,21 @@ function RouterComponent({ envType }) {
     useEffect(() => {
         if (checkIfToRefetchData(location)) {
             setTimeout(() => {
-                init();
+                _getAndSetAppDetail();
                 deleteRefetchDataFromUrl(history, location);
             }, 5000);
         }
     }, [location.search]);
 
-    const init = async () => {
+
+    const _init = () => {
+        _getAndSetAppDetail();
+        initTimer = setTimeout(() => {
+            _init();
+        }, 30000);
+    }
+
+    const _getAndSetAppDetail = async () => {
         try {
             let response = null;
 
