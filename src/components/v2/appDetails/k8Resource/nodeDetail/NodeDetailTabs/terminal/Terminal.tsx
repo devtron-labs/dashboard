@@ -309,7 +309,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             </div>
 
             <div>
-                <div id="terminal-id pl-20"></div>
+                <div id="terminal-id" className="pl-20"></div>
             </div>
 
             {terminalViewProps.socketConnection === 'CONNECTED' && (
