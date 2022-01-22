@@ -329,6 +329,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                                     border: '0px',
                                                     backgroundColor: 'transparent',
                                                     minHeight: '24px !important',
+                                                    cursor: 'pointer',
                                                 }),
                                                 singleValue: (base, state) => ({
                                                     ...base,
@@ -348,6 +349,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                                   overflow: 'hidden',
                                                   whiteSpace: 'nowrap',
                                                   direction: 'rtl',
+                                                  cursor: 'pointer',
                                               }),
                                           }}
                                             components={{
@@ -392,6 +394,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                                 border: '0px',
                                                 backgroundColor: 'transparent',
                                                 minHeight: '24px !important',
+                                                cursor: 'pointer',
                                             }),
                                             singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c', direction: 'rtl', marginLeft: 0 }),
                                             indicatorsContainer: (provided, state) => ({
@@ -405,6 +408,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                               overflow: 'hidden',
                                               whiteSpace: 'nowrap',
                                               direction: 'rtl',
+                                              cursor: 'pointer',
                                           }),
                                         }}
                                         components={{
@@ -598,7 +602,7 @@ function getInitialPodContainerOptions(
         const containerOptions = [...containers].sort().map((_container, index) => {
                 return { name: _container, selected: false }
             });
-        
+
         return {
             containerOptions: containerOptions,
             podOptions: podOptions,

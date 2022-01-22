@@ -121,6 +121,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                                 border: '0px',
                                 backgroundColor: 'transparent',
                                 minHeight: '24px !important',
+                                cursor: 'pointer',
                             }),
                             singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c', direction: 'rtl', marginLeft: 0 }),
                             indicatorsContainer: (provided, state) => ({
@@ -134,6 +135,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                               overflow: 'hidden',
                               whiteSpace: 'nowrap',
                               direction: 'rtl',
+                              cursor: 'pointer',
                           }),
                         }}
                         components={{
@@ -163,14 +165,26 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                                 border: '0px',
                                 backgroundColor: 'transparent',
                                 minHeight: '24px !important',
+                                cursor: 'pointer',
                             }),
                             singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
                             indicatorsContainer: (provided, state) => ({
                                 ...provided,
                             }),
+                            option: (base, state) => ({
+                              ...base,
+                              backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                              color: 'var(--N900)',
+                              textOverflow: 'ellipsis',
+                              overflow: 'hidden',
+                              whiteSpace: 'nowrap',
+                              direction: 'rtl',
+                              cursor: 'pointer',
+                          }),
                         }}
                         components={{
                             IndicatorSeparator: null,
+                            Option,
                         }}
                     />
                 </div>
