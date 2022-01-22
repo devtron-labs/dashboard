@@ -2,6 +2,7 @@ import React from 'react';
 import appDetailEmpty from '../../../assets/img/ic-empty-ea-app-detail.png';
 import chartsEmpty from '../../../assets/img/ic-empty-ea-charts.png';
 import securityEmpty from '../../../assets/img/ic-empty-ea--security.png';
+import { DOCUMENTATION } from '../../../config';
 import './eaEmptyState.css';
 
 export enum EAEmptyStateType {
@@ -13,8 +14,6 @@ export enum EAEmptyStateType {
 }
 
 function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefined }) {
-
-    const checkInstallHandler = () => {};
 
     return (
         <div>
@@ -68,9 +67,11 @@ function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefi
                     >
                         Know more
                     </a>
-                    <button type="button" className="cta empty__install-btn" onClick={checkInstallHandler}>
-                        Check how to install
-                    </button>
+                    <a target="_blank" href={DOCUMENTATION.HYPERION_TO_FULL_MODE}>
+                        <button type="button" className="cta empty__install-btn">
+                            Check how to install
+                        </button>
+                    </a>
                 </div>
             </div>
         </div>

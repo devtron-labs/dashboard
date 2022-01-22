@@ -10,7 +10,7 @@ import EmptyState from '../../EmptyState/EmptyState';
 import {getInitData, buildClusterVsNamespace} from './AppListService'
 import {ServerErrors} from '../../../modals/commonTypes';
 import {AppListViewType} from '../config';
-import {URLS, AppListConstants, SERVER_MODE} from '../../../config';
+import {URLS, AppListConstants, SERVER_MODE, DOCUMENTATION} from '../../../config';
 import {ReactComponent as Clear} from '../../../assets/icons/ic-error.svg';
 import DevtronAppListContainer from '../list/DevtronAppListContainer';
 import HelmAppList from './HelmAppList';
@@ -620,7 +620,7 @@ export default function AppList() {
                                 title={'Create, build, deploy and debug custom apps'}
                                 msg={'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'}
                                 stateType={EAEmptyStateType.DEVTRONAPPS}
-                                knowMoreLink={``}
+                                knowMoreLink={DOCUMENTATION.HOME_PAGE}
                             />
                         </div>
                     }

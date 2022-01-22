@@ -3,7 +3,7 @@ import { ServerErrors } from '../../../modals/commonTypes';
 import { OrderBy, SortBy } from '../list/types';
 import { buildClusterVsNamespace, getDevtronInstalledHelmApps, AppListResponse, HelmApp } from './AppListService';
 import { showError, Progressing, ErrorScreenManager, LazyImage, handleUTCTime, useEventSource } from '../../common';
-import { Host, SERVER_MODE, URLS } from '../../../config';
+import { Host, SERVER_MODE, URLS, DOCUMENTATION } from '../../../config';
 import { AppListViewType } from '../config';
 import { Link } from 'react-router-dom';
 import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg';
@@ -362,7 +362,7 @@ export default function HelmAppList({
                             </span>
                             <span>
                                 To view helm charts deployed from outside devtron, please select a cluster from above
-                                filters. <a className="learn-more__href cursor">Learn more</a>{' '}
+                                filters. <a className="learn-more__href cursor" target="_blank" href={DOCUMENTATION.HYPERION}>Learn more</a>
                             </span>
                         </div>
                     </div>
