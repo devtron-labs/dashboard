@@ -63,7 +63,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
             </div>
             {isShowActionButton && (
                 <div
-                    className="flex left cursor"
+                    className="cursor"
                     onClick={onActionButtonClick}
                     style={{ fontSize: '14px', textDecoration: 'underline', color: 'var(--B300)' }}
                 >
