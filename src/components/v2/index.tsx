@@ -2,7 +2,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { useRouteMatch, useParams, Redirect,useLocation, useHistory } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
 import { URLS } from '../../config';
-import { DetailsProgressing } from '../common';
+import { DetailsProgressing, showError, ErrorScreenManager } from '../common';
 import './lib/bootstrap-grid.min.css';
 import ValuesComponent from './values/ChartValues.component';
 import AppHeaderComponent from './headers/AppHeader.component';
@@ -20,9 +20,9 @@ function RouterComponent({ envType }) {
     const [isLoading, setIsLoading] = useState(true);
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
     const { path } = useRouteMatch();
-    const [statusCode, setStatusCode] = useState(0);
     const location = useLocation();
     const history = useHistory();
+    const [errorResponseCode, setErrorResponseCode] = useState(undefined);
 
     useEffect(() => {
         IndexStore.setEnvDetails(envType, +params.appId, +params.envId);
@@ -71,14 +71,14 @@ function RouterComponent({ envType }) {
             } else {
                 response = await getInstalledAppDetail(+params.appId, +params.envId);
             }
-
             IndexStore.publishAppDetails(response.result);
-            setStatusCode(response?.code);
-
             setIsLoading(false);
-
+            setErrorResponseCode(undefined);
         } catch (e) {
-            console.log('error while fetching InstalledAppDetail', e);
+            showError(e);
+            if(e?.code){
+                setErrorResponseCode(e.code);
+            }
             setIsLoading(false);
         }
     };
@@ -102,21 +102,30 @@ function RouterComponent({ envType }) {
 
     return (
         <React.Fragment>
-            {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
 
-            {statusCode === 404 && <PageNotFound />}
+            { isLoading &&
+                <DetailsProgressing loadingText="Please wait…" size={24} fullHeight />
+            }
 
-            {isLoading ? (
-                <DetailsProgressing loadingText="Please wait…" size={24} />
-            ) : (
-                <Suspense fallback={<DetailsProgressing loadingText="Please wait…" size={24} />}>
-                    <Switch>
-                        <Route path={`${path}/${URLS.APP_DETAILS}`} component={AppDetailsComponent} />
-                        <Route path={`${path}/${URLS.APP_VALUES}`} component={ValuesComponent} />
-                        <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
-                    </Switch>
-                </Suspense>
-            )}
+            { !isLoading && errorResponseCode &&
+                <div className="loading-wrapper">
+                    <ErrorScreenManager code={errorResponseCode} />
+                </div>
+            }
+
+            { !isLoading && !errorResponseCode &&
+                <>
+                    {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
+                    <Suspense fallback={<DetailsProgressing loadingText="Please wait…" size={24} />}>
+                        <Switch>
+                            <Route path={`${path}/${URLS.APP_DETAILS}`} component={AppDetailsComponent} />
+                            <Route path={`${path}/${URLS.APP_VALUES}`} component={ValuesComponent} />
+                            <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
+                        </Switch>
+                    </Suspense>
+                </>
+            }
+
         </React.Fragment>
     );
 }

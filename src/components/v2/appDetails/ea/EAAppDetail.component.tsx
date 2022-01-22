@@ -76,6 +76,7 @@ function ExternalAppDetail({appId, appName}) {
                 IndexStore.publishAppDetails(_convertToGenericAppDetailModel(appDetailResponse.result));
                 setIsLoading(false);
                 isAPICallInProgress = false;
+                setErrorResponseCode(undefined);
             })
             .catch((errors: ServerErrors) => {
                 showError(errors);
