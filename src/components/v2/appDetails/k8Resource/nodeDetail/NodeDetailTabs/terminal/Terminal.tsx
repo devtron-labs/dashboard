@@ -80,6 +80,17 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         const _terminal = terminal;
         const _fitAddon = fitAddon;
 
+        const disableInput = (): void => {
+            _terminal.setOption('cursorBlink', false);
+            _terminal.setOption('disableStdin', true);
+            setFirstMessageReceived(false);
+        };
+
+        const enableInput = (): void => {
+            _terminal.setOption('cursorBlink', true);
+            _terminal.setOption('disableStdin', false);
+        };
+
         _terminal.onData(function (data) {
             const inData = { Op: 'stdin', SessionID: '', Data: data };
             if (_socket.readyState === WebSocket.OPEN) {
@@ -102,16 +113,13 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 _terminal.writeln(`Reconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`);
                 _terminal.writeln('---------------------------------------------');
                 setIsReconnection(false);
-
-                if (firstMessageReceived) {
-                    terminalViewProps.setSocketConnection('CONNECTED');
-                }
             }
         };
 
         _socket.onmessage = function (evt) {
             _terminal.write(JSON.parse(evt.data).Data);
             _terminal.focus();
+            enableInput();
 
             if (!firstMessageReceived) {
                 setFirstMessageReceived(true);
@@ -119,10 +127,12 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         };
 
         _socket.onclose = function (evt) {
+            disableInput();
             terminalViewProps.setSocketConnection('DISCONNECTED');
         };
 
         _socket.onerror = function (evt) {
+            disableInput();
             terminalViewProps.setSocketConnection('DISCONNECTED');
         };
     };
@@ -246,8 +256,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             !terminalViewProps.containerName ||
             !terminalViewProps.shell.value ||
             !appDetails
-        )
+        ) {
             return;
+        }
+
         let url = '';
         if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
             url = `k8s/pod/exec/session/${appDetails.appId}`;
@@ -280,14 +292,16 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                         ? `${
                               terminalViewProps.socketConnection === 'CONNECTING' ? 'bcy-2' : 'bcr-7'
                           } pod-readyState--show pl-20`
-                        : ''
+                        : 'pb-10'
                 } ${
                     terminalViewProps.socketConnection === 'CONNECTING' ? 'cn-9' : 'cn-0'
                 } m-0 pl-20 w-100 pod-readyState pod-readyState--top`}
             >
-                <span className={terminalViewProps.socketConnection === 'CONNECTING' ? 'loading-dots' : ''}>
-                    {terminalViewProps.socketConnection?.toLowerCase()}
-                </span>
+                {terminalViewProps.socketConnection !== 'CONNECTED' && (
+                    <span className={terminalViewProps.socketConnection === 'CONNECTING' ? 'loading-dots' : ''}>
+                        {terminalViewProps.socketConnection?.toLowerCase()}
+                    </span>
+                )}
                 {terminalViewProps.socketConnection === 'DISCONNECTED' && (
                     <React.Fragment>
                         <span>.&nbsp;</span>
@@ -313,10 +327,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             </div>
 
             {terminalViewProps.socketConnection === 'CONNECTED' && (
-                <p
-                    style={{ position: 'relative', bottom: '10px' }}
-                    className={`ff-monospace pt-2 fs-13 pb-2 m-0 capitalize cg-4`}
-                >
+                <p className={`connection-status ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 capitalize cg-4`}>
                     {terminalViewProps.socketConnection}
                 </p>
             )}
