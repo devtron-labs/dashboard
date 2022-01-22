@@ -327,10 +327,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             </div>
 
             {terminalViewProps.socketConnection === 'CONNECTED' && (
-                <p
-                    style={{ position: 'absolute', bottom: '0' }}
-                    className={`ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 capitalize cg-4`}
-                >
+                <p className={`connection-status ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 capitalize cg-4`}>
                     {terminalViewProps.socketConnection}
                 </p>
             )}

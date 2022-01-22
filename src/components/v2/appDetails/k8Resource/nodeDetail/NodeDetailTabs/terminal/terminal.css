@@ -9,3 +9,10 @@
     background: #0b0f22; 
     flex: 1;
 }
+
+.connection-status {
+    position: absolute; 
+    bottom: 0;
+    width: 100%;
+    background: #0a0f22;
+}
