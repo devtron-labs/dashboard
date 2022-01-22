@@ -6,7 +6,7 @@ import { copyToClipboard } from '../../../../common';
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg';
 import PodHeaderComponent from './PodHeader.component';
-import { NodeType, Node, iNode } from '../../appDetails.type';
+import { NodeType, Node, iNode, AppType } from '../../appDetails.type';
 import './nodeType.scss';
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util';
 import NodeDeleteComponent from './NodeDelete.component';
@@ -44,7 +44,11 @@ function NodeComponent({ handleFocusTabs }) {
 
             switch (params.nodeType) {
                 case NodeType.Pod.toLowerCase():
-                    tableHeader = ['Name', 'Ready', ''];
+                    if(appDetails.appType == AppType.EXTERNAL_HELM_CHART){
+                        tableHeader = ['Name', ''];
+                    }else{
+                        tableHeader = ['Name', 'Ready', ''];
+                    }
                     _fcw = 'col-10';
                     break;
                 case NodeType.Service.toLowerCase():
