@@ -27,7 +27,7 @@ export default function K8ResourceComponent({clickedNodes, registerNodeClick, ha
                         <NodeTreeComponent clickedNodes={clickedNodes} registerNodeClick={registerNodeClick} />
                     </div>
                     <div className="flex-grow-1 p-0">
-                        <NodeComponent handleFocusTabs={handleFocusTabs} clickedNodes={clickedNodes}/>
+                        <NodeComponent handleFocusTabs={handleFocusTabs}/>
                     </div>
                 </div>
             ) : (

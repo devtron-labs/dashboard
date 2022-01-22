@@ -14,7 +14,7 @@ import AppDetailsStore from '../../appDetails.store';
 import { toast } from 'react-toastify';
 import { getNodeStatus } from './nodeType.util';
 
-function NodeComponent({handleFocusTabs, clickedNodes}: {handleFocusTabs: () => void, clickedNodes: Map<string, string>}) {
+function NodeComponent({handleFocusTabs}: {handleFocusTabs: () => void}) {
     const { path, url } = useRouteMatch();
     const history = useHistory();
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
@@ -61,17 +61,8 @@ function NodeComponent({handleFocusTabs, clickedNodes}: {handleFocusTabs: () => 
                     _selectedResource = _selectedResource.replace(/\/$/, '')
                     _selectedNodes =IndexStore.getPodsForRootNode(_selectedResource).sort((a,b) => a.name > b.name? 1: -1)
                 } else {
-                    _selectedNodes = IndexStore.getiNodesByKind(params.nodeType).sort((a,b) => a.name > b.name? 1: -1) //.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
+                    _selectedNodes = IndexStore.getiNodesByKind(params.nodeType).sort((a,b) => a.name > b.name? 1: -1)
                 }
-
-
-                // if (params.nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
-                //     _selectedNodes = _selectedNodes.filter((node) => {
-                //         const _podMetaData = IndexStore.getMetaDataForPod(node.name);
-
-                //         return _podMetaData.isNew === podType;
-                //     });
-                // }
                 let _healthyNodeCount = 0;
 
                 _selectedNodes.forEach((node: Node) => {
@@ -110,7 +101,8 @@ function NodeComponent({handleFocusTabs, clickedNodes}: {handleFocusTabs: () => 
     };
 
     const handleActionTabClick = (node: iNode, _tabName: string, containerName?: string) => {
-        let _url = `${url.split('/').slice(0, -1).join('/')}/${node.kind.toLowerCase()}/${
+        let [_url, _ignore] = url.split("/group/")
+        _url = `${_url.split('/').slice(0, -1).join('/')}/${node.kind.toLowerCase()}/${
             node.name
         }/${_tabName.toLowerCase()}`;
 

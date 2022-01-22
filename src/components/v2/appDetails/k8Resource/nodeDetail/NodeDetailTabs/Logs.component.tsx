@@ -548,10 +548,18 @@ function getInitialPodContainerOptions(
             podOptions: [{name: params.podName, selected: true}],
         } as PodContainerOptions;
     } else {
-        let additionalPodOptions = [{ name: 'All pods', selected: true }];
+        let rootNamesOfPods = IndexStore.getPodsRootParentNameAndStatus()
+        let additionalPodOptions = rootNamesOfPods.map((rn, index) => ({ name: 'All '+ rn[0], selected: index == 0 }))
+
         if (IndexStore.getEnvDetails().envType === EnvType.APPLICATION) {
-            additionalPodOptions.push({ name: 'All new pods', selected: false });
-            additionalPodOptions.push({ name: 'All old pods', selected: false });
+            additionalPodOptions.concat(
+                rootNamesOfPods.flatMap((rn, index) => (
+                [
+                    { name: 'All new ' + rn[0], selected: false },
+                    { name: 'All old ' + rn[0], selected: false }
+                ]
+                ))
+            )
         }
         const _allPods = IndexStore.getAllPods().sort()
         if (_allPods.length == 0) {
