@@ -1,12 +1,12 @@
 import React from 'react';
 import { ReactComponent as InfoIcon } from '../assets/icons/ic-info-outline-gray.svg';
-import { Spinner } from 'patternfly-react';
+import { ReactComponent as MultipleContainer } from '../assets/icons/ic-select-container.svg';
 import { Pod as PodIcon, Progressing } from '../../common';
 
 export enum MsgUIType {
     LOADING = 'loading',
     POD = 'pod',
-    NO_CONTAINER = 'no_container',
+    MULTI_CONTAINER = 'multi_container',
 }
 
 export interface MsgUIProps {
@@ -31,7 +31,10 @@ const MessageUI: React.FC<MsgUIProps> = ({
     onActionButtonClick,
 }) => {
     return (
-        <div className="text-center dark-background w-100 " style={{ ...bodyStyle, paddingTop: '200px', minHeight: '600px', flex: '1' }}>
+        <div
+            className="text-center dark-background w-100 "
+            style={{ ...bodyStyle, paddingTop: '200px', minHeight: '600px', flex: '1' }}
+        >
             <div>
                 {(() => {
                     switch (icon) {
@@ -48,16 +51,8 @@ const MessageUI: React.FC<MsgUIProps> = ({
                                     style={{ width: '48px', height: '48px', marginBottom: '12px' }}
                                 />
                             );
-                        case MsgUIType.NO_CONTAINER:
-                            return (
-                                <div className="no-pod__container-icon">
-                                    {Array(6)
-                                        .fill(0)
-                                        .map((z, idx) => (
-                                            <span key={idx} className="bcn-0"></span>
-                                        ))}
-                                </div>
-                            );
+                        case MsgUIType.MULTI_CONTAINER:
+                            return <MultipleContainer />;
                         default:
                             return <InfoIcon className="fcn-0" width={size} height={size} />;
                     }
