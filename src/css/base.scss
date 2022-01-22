@@ -871,6 +871,9 @@ button.anchor {
 
 .details-loader {
     width: 100vw;
+}
+
+.details-loader.details-loader-height {
     height: calc(100vh - 80px);
 }
 
