@@ -12,6 +12,7 @@ import { multiSelectStyles } from '../../../../common/ReactSelectCustomization';
 import { SocketConnectionType } from './node.type';
 import TerminalView from './terminal/Terminal';
 import MessageUI from '../../../../common/message.ui';
+import { SingleSelectOption as Option } from '../../../../../common';
 
 const shellTypes = [
     { label: 'bash', value: 'bash' },
@@ -114,20 +115,30 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                         }}
                         styles={{
                             ...multiSelectStyles,
-                            menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
+                            menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', width: '150%' }),
                             control: (base, state) => ({
                                 ...base,
                                 border: '0px',
                                 backgroundColor: 'transparent',
                                 minHeight: '24px !important',
                             }),
-                            singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
+                            singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c', direction: 'rtl', marginLeft: 0 }),
                             indicatorsContainer: (provided, state) => ({
                                 ...provided,
                             }),
+                            option: (base, state) => ({
+                              ...base,
+                              backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                              color: 'var(--N900)',
+                              textOverflow: 'ellipsis',
+                              overflow: 'hidden',
+                              whiteSpace: 'nowrap',
+                              direction: 'rtl',
+                          }),
                         }}
                         components={{
                             IndicatorSeparator: null,
+                            Option,
                         }}
                     />
                 </div>
