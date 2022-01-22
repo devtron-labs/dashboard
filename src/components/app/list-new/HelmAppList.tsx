@@ -18,7 +18,7 @@ import { ReactComponent as InfoFillPurple } from '../../../assets/icons/ic-info-
 import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg';
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg';
 import { ReactComponent as AlertTriangleIcon } from '../../../assets/icons/ic-alert-triangle.svg';
-import emptyImage from '../../../assets/img/empty-noresult@2x.png';
+import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png';
 import '../list/list.css';
 
 export default function HelmAppList({
@@ -498,7 +498,7 @@ export default function HelmAppList({
         return (
             <div style={{ height: 'calc(100vh - 150px)' }}>
                 <EmptyState>
-                    <img src={emptyImage} width="250" height="250" alt="Please connect cluster" />
+                    <img src={noChartInClusterImage} width="250" height="250" alt="Please connect cluster" />
                     <h2 className="fs-16 fw-4 c-9">No helm charts found in connected clusters</h2>
                     <p className="text-left" style={{ width: '450px' }}>
                         Connect a kubernetes cluster containing helm apps to view them here.
