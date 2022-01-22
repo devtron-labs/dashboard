@@ -1,6 +1,6 @@
 import React from 'react';
 import { ReactComponent as InfoIcon } from '../assets/icons/ic-info-outline-gray.svg';
-import { Spinner } from 'patternfly-react';
+import { ReactComponent as MultipleContainer } from '../assets/icons/ic-select-container.svg';
 import { Pod as PodIcon, Progressing } from '../../common';
 
 export enum MsgUIType {
@@ -50,13 +50,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
                             );
                         case MsgUIType.NO_CONTAINER:
                             return (
-                                <div className="no-pod__container-icon">
-                                    {Array(6)
-                                        .fill(0)
-                                        .map((z, idx) => (
-                                            <span key={idx} className="bcn-0"></span>
-                                        ))}
-                                </div>
+                                     <MultipleContainer />
                             );
                         default:
                             return <InfoIcon className="fcn-0" width={size} height={size} />;
