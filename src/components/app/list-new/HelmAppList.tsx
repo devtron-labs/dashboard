@@ -162,9 +162,15 @@ export default function HelmAppList({
         }
 
         if (externalAppData.result.errored) {
-            _externalAppFetchErrors.push(
-                externalAppData.result.errorMsg || 'Some error occured while fetching external apps',
-            );
+            var _cluster = masterFilters.clusters.find(cluster => {
+                return cluster.key == _clusterId
+            })
+            let _errorMsg = "";
+            if(_cluster){
+                _errorMsg = `Error in getting external helm apps from cluster "${_cluster.label}". ERROR: `;
+            }
+            _errorMsg = _errorMsg + (externalAppData.result.errorMsg || 'Some error occured while fetching external helm apps');
+            _externalAppFetchErrors.push(_errorMsg);
             setExternalHelmListFetchErrors([..._externalAppFetchErrors]);
         }
 
