@@ -89,8 +89,8 @@ function LogsComponent({ selectedTab, isDeleted }) {
         }))
 
         let selectedContainer = podContainerOptions.containerOptions.find(_co => _co.selected)?.name ?? ''
-
-        let containerOptions = pods[0].containers.map((_containerName) => ({
+        let containers = new Set(pods.flatMap(_pod => _pod.containers ?? []))
+        let containerOptions = [...containers].sort().map((_containerName) => ({
             name: _containerName,
             selected: _containerName == selectedContainer,
         }));
@@ -533,7 +533,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
             {podContainerOptions.containerOptions.filter(_co => _co.selected).length == 0 && (
                 <div className="no-pod no-pod--container ">
                     <MessageUI
-                        icon={MsgUIType.NO_CONTAINER}
+                        icon={MsgUIType.MULTI_CONTAINER}
                         msg={`${
                             (podContainerOptions?.containerOptions ?? []).length > 0
                                 ? 'Select a container to view logs'
@@ -594,12 +594,11 @@ function getInitialPodContainerOptions(
                 return { name: _pod.name, selected: false }
             }),
         );
-        const containers = _allPods[0].containers.sort()
-        const containerOptions = containers.map((_container, index) => {
-                return { name: _container, selected: index == 0 }
+        let containers = new Set(_allPods.flatMap(_pod => _pod.containers ?? []))
+        const containerOptions = [...containers].sort().map((_container, index) => {
+                return { name: _container, selected: false }
             });
-        console.log(podOptions)
-        console.log(containerOptions)
+        
         return {
             containerOptions: containerOptions,
             podOptions: podOptions,
