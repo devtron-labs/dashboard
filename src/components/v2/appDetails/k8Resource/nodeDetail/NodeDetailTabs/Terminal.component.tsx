@@ -54,7 +54,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
             <MessageUI msg="This resource no longer exists" size={32} />
         </div>
     ) : (
-        <div>
+        <div className="terminal-view-container">
             <div className="flex left bcn-0 pt-4 pb-4 pl-20 border-top">
                 <Tippy
                     className="default-tt"
@@ -155,7 +155,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                         onChange={(selected) => {
                             setSelectedtTerminalType(selected as any);
                             setTerminalCleared(true);
-                            setSocketConnection('CONNECTING');
+                            setSocketConnection('DISCONNECTING');
                         }}
                         styles={{
                             ...multiSelectStyles,
@@ -190,7 +190,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                 </div>
             </div>
 
-            <div style={{ minHeight: '600px', background: '#0b0f22', flex: 1 }}>
+            <div className="terminal-view-wrapper">
                 <TerminalView
                     nodeName={params.podName}
                     containerName={selectedContainerName}
