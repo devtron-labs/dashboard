@@ -8,9 +8,7 @@ import AppDetails from './AppDetails';
 export default function Index() {
     return (
         <div>
-            <AppDetails 
-            // environments={otherEnvsResult?.result}
-            />
+            <AppDetails />
         </div>
     )
 }
@@ -72,15 +70,6 @@ export function EnvSelector({ environments, disabled }) {
         </>
     );
  }
-// // const params = useParams<{ appId: string; envId: string }>();
-// const [
-//     otherEnvsLoading,
-//     otherEnvsResult,
-//     otherEnvsError,
-//     reloadAppOtherEnv,
-//     setState,
-//     syncOtherEnvState,
-// ] = useAsync(() => getAppOtherEnvironment(params.appId), [params.appId]);
 
 
 

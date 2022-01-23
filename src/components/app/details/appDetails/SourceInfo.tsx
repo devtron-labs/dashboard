@@ -9,7 +9,6 @@ import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-d
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg';
 import { useParams } from 'react-router'
 import { Nodes } from '../../types';
-// import { ExampleComponent } from 'devtron_external_app'
 
 export function SourceInfo({ appDetails, setDetailed = null, environments, showCommitInfo = null, showHibernateModal = null }) {
 
@@ -35,7 +34,6 @@ export function SourceInfo({ appDetails, setDetailed = null, environments, showC
             style={{ border: '1px solid var(--N200)' }}
         >
             <div className="flex left w-100 pl-20 pr-20 pb-10">
-                {/* <ExampleComponent /> */}
                 <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
                 {appDetails?.lastDeployedBy && appDetails?.lastDeployedTime && (
                     <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
