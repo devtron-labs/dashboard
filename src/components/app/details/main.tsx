@@ -17,24 +17,31 @@ import AboutAppInfoModal from './AboutAppInfoModal';
 import { validateTags, TAG_VALIDATION_MESSAGE, createOption, handleKeyDown } from '../appLabelCommon'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg';
+import { EnvType } from '../../v2/appDetails/appDetails.type';
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'));
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'));
 const CIDetails = lazy(() => import('./cIDetails/CIDetails'));
 const AppDetails = lazy(() => import('./appDetails/AppDetails'));
+const IndexComponent = lazy(() => import('../../v2/index'));
+
 const CDDetails = lazy(() => import('./cdDetails/CDDetails'));
 const TestRunList = lazy(() => import('./testViewer/TestRunList'));
 
-export default function AppDetailsPage() {
+export default function AppDetailsPage({ isV2 }) {
     const { path } = useRouteMatch();
     const { appId } = useParams<{ appId }>();
 
     return <div className="app-details-page">
-        <AppHeader />
+        {!isV2 && <AppHeader />}
         <ErrorBoundary>
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>
-                    <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={(props) => <AppDetails />} />
+                    {isV2 ?
+                        <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={(props) => <IndexComponent envType={EnvType.APPLICATION} />} />
+                        :
+                        <Route path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} render={(props) => <AppDetails />} />
+                    }
                     <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView />} />
                     <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?`}>
                         <CIDetails key={appId} />
@@ -246,9 +253,9 @@ export function AppHeader() {
                     onClick={(event) => {
                         ReactGA.event({
                             category: 'App',
-                            action: 'Trigger Clicked',
+                            action: 'Build & Deploy Clicked',
                         });
-                    }}>Trigger
+                    }}>Build & Deploy
                 </NavLink>
             </li>
             <li className="tab-list__tab">

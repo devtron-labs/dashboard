@@ -3,13 +3,15 @@ import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor';
 import { useJsonYaml, Select, RadioGroup, Progressing, useWindowSize, copyToClipboard } from '../common'
 import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
+import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg';
 import YAML from 'yaml'
 import './codeEditor.scss';
 import ReactGA from 'react-ga';
 import { editor } from 'monaco-editor';
 
-interface WarningProps { text: string }
 
+interface WarningProps { text: string }
+interface ErrorBarProps { text: string }
 interface InformationProps { text: string }
 
 interface CodeEditorInterface {
@@ -31,11 +33,15 @@ interface CodeEditorInterface {
     shebang?: string | JSX.Element;
     diffView?: boolean;
     loading?: boolean;
+    customLoader?: JSX.Element;
     theme?: string;
+    original?: string;
+    focus?: boolean;
 }
 
 interface CodeEditorHeaderInterface {
     children?: any;
+    hideDefaultSplitHeader?: boolean;
 }
 interface CodeEditorComposition {
     Header?: React.FC<any>;
@@ -44,6 +50,7 @@ interface CodeEditorComposition {
     ValidationError?: React.FC<any>;
     Clipboard?: React.FC<any>;
     Warning?: React.FC<{ text: string }>;
+    ErrorBar?: React.FC<{ text: string }>;
     Information?: React.FC<InformationProps>
 }
 interface CodeEditorHeaderComposition {
@@ -79,7 +86,7 @@ interface CodeEditorState {
     height: string;
     noParsing: boolean;
 }
-const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, loading, theme=""}) {
+const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus}) {
     const editorRef = useRef(null)
     const monacoRef = useRef(null)
     const { width, height: windowHeight } = useWindowSize()
@@ -102,7 +109,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     }, [])
     const initialState = {
         mode,
-        theme: 'vs',
+        theme: theme || 'vs',
         code: value,
         height: height.toString(),
         diffMode: diffView,
@@ -111,7 +118,18 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     const [state, dispatch] = useReducer(memoisedReducer, initialState)
     const [nativeObject, json, yaml, error] = useJsonYaml(state.code, tabSize, state.mode, !state.noParsing)
     const [, originalJson, originlaYaml, originalError] = useJsonYaml(defaultValue, tabSize, state.mode, !state.noParsing)
-   
+    editor.defineTheme('vs-dark--dt', {
+        base: 'vs-dark',
+        inherit: true,
+        rules: [
+            //@ts-ignore
+            { background: '#0B0F22' }
+        ],
+        colors: {
+            'editor.background': '#0B0F22',
+        }
+    });
+
     function editorDidMount(editor, monaco) {
         editorRef.current = editor
         monacoRef.current = monaco
@@ -198,6 +216,16 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         }
     }, [height])
 
+    useEffect(() => {
+      dispatch({ type: 'setDiff', value: diffView })
+    }, [diffView])
+
+    useEffect(() => {
+      if(focus){
+        editorRef.current.focus();
+      }
+    }, [focus]);
+
     function handleOnChange(newValue, e) {
         dispatch({ type: 'setCode', value: newValue })
     }
@@ -226,8 +254,8 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         <CodeEditorContext.Provider value={{ dispatch, state, handleLanguageChange, error, defaultValue, height }}>
             {children}
             {loading ?
-                <CodeEditorPlaceholder />
-                :
+                <CodeEditorPlaceholder customLoader={customLoader} />
+             :
                 <>
                     {shebang && <div className="shebang">{shebang}</div>}
                     {state.diffMode ?
@@ -260,11 +288,11 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     );
 })
 
-const Header: React.FC<CodeEditorHeaderInterface> & CodeEditorHeaderComposition = ({ children }) => {
+const Header: React.FC<CodeEditorHeaderInterface> & CodeEditorHeaderComposition = ({ children, hideDefaultSplitHeader }) => {
     const { defaultValue } = useCodeEditorContext()
     return <div className="code-editor__header flex left">
         {children}
-        {defaultValue && <SplitPane />}
+        {!hideDefaultSplitHeader && defaultValue && <SplitPane />}
     </div>
 }
 
@@ -318,6 +346,15 @@ const Warning: React.FC<WarningProps> = function (props) {
     return <div className="code-editor__warning">{props.text}</div>
 }
 
+const ErrorBar: React.FC<ErrorBarProps> = function (props) {
+    return (
+        <div className="code-editor__error">
+            <ErrorIcon className="code-editor__information-info-icon" />
+            {props.text}
+        </div>
+    );
+};
+
 const Information: React.FC<InformationProps> = function (props) {
     return <div className="code-editor__information">
         <Info className="code-editor__information-info-icon" />
@@ -344,8 +381,13 @@ function SplitPane({ }) {
     )
 }
 //TODO: CodeEditor should be composed of CodeEditorPlaceholder
-function CodeEditorPlaceholder({ className = "", style = {} }) {
-    const { height } = useCodeEditorContext()
+function CodeEditorPlaceholder({ className = "", style = {}, customLoader }): JSX.Element {
+    const { height } = useCodeEditorContext();
+
+    if (customLoader) {
+        return customLoader;
+    }
+
     return (
         <div className={`code-editor code-editor--placeholder disabled ${className}`} style={{ ...style }}>
             <div className="flex" style={{ height: height || '100%' }}>
@@ -354,7 +396,7 @@ function CodeEditorPlaceholder({ className = "", style = {} }) {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 CodeEditor.LanguageChanger = LanguageChanger
@@ -363,6 +405,7 @@ CodeEditor.ValidationError = ValidationError
 CodeEditor.Clipboard = Clipboard
 CodeEditor.Header = Header
 CodeEditor.Warning = Warning;
+CodeEditor.ErrorBar = ErrorBar;
 CodeEditor.Information = Information;
 
 export default CodeEditor

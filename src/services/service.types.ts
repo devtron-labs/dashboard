@@ -141,3 +141,33 @@ export interface HostURLConfig {
 export interface HostURLConfigResponse extends ResponseType {
     result?: HostURLConfig;
 }
+
+export interface ClusterEnvironmentDetailList extends ResponseType {
+    result?: ClusterEnvironmentDetail[]
+}
+
+export interface ClusterEnvironmentDetail {
+    id: number, //envId
+    environment_name : string,
+    active: boolean,
+    cluster_id : number
+    cluster_name : string,
+    namespace : string
+}
+
+export interface EnvironmentListHelmResponse extends ResponseType{
+    result?: EnvironmentListHelmResult[]
+}
+
+export interface EnvironmentListHelmResult {
+    clusterId : number,
+    clusterName : string,
+    environments : EnvironmentHelmResult[]
+}
+
+export interface EnvironmentHelmResult {
+    environmentId : number,
+    environmentName: string,
+    namespace: string,
+    environmentIdentifier: string
+}

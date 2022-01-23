@@ -696,6 +696,7 @@ export function useJsonYaml(value, tabSize = 4, language = 'json', shouldRun = f
 
     return [nativeObject, json, yaml, error];
 }
+
 export function useEventSource(url: string, deps: any[], shouldRun, onMessage: (...args) => void, maxLength = 10000): EventSource {
     useWhyDidYouUpdate('props ', { url, deps, shouldRun, onMessage, maxLength });
     const eventSourceRef = useRef(null);

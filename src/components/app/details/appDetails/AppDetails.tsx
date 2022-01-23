@@ -470,6 +470,7 @@ const NodeDetails: React.FC<{
         if (!selectedNode) return
         if ((params.tab === NodeDetailTabs.LOGS) || (params.tab === NodeDetailTabs.TERMINAL) && (params.kind === Nodes.Pod || searchParams.kind === Nodes.Pod)) {
             const containers = nodes.nodes[Nodes.Pod].has(selectedNode) ? nodes.nodes[Nodes.Pod].get(selectedNode).containers : []
+
             const container = (containers || []).find(c => c !== 'envoy');
             if (container) {
                 selectContainer(container);
@@ -874,7 +875,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                         className={`toggle-logs mr-8 ${logsPaused ? 'play' : 'stop'}`}
                         onClick={(e) => handleLogsPause(!logsPaused)}
                     >
-                        {logsPaused ? <PlayButton /> : <StopButton className="stop-btn fcr-5" />}
+                        {logsPaused ? <PlayButton className='icon-dim-20'/> : <StopButton className="stop-btn fcr-5" />}
                     </div>
                 </Tippy>
 

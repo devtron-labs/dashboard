@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { DeployedChartProps, DeployedChartState } from '../charts.types';
-import { ViewType } from '../../../config';
+import { URLS, ViewType } from '../../../config';
 import { Link, withRouter } from 'react-router-dom';
 import { ErrorScreenManager, LazyImage, Progressing } from '../../common';
 import { UpdateWarn } from '../../common/DeprecatedUpdateWarn';
@@ -120,7 +120,9 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
 
     renderCard(chart) {
         let { icon, chartName, appName, appStoreApplicationName, environmentName, deployedAt, installedAppId, environmentId, deprecated } = chart;
-        return <Link key={appName} className="chart-grid-item white-card chart-grid-item--deployed" to={`deployments/${installedAppId}/env/${environmentId}`}>
+        return <Link key={appName} className="chart-grid-item white-card chart-grid-item--deployed" 
+        to={`deployments/${installedAppId}/env/${environmentId}/${URLS.APP_DETAILS}`}
+        >
             <div className="chart-grid-item__flexbox">
                 <div className="chart-grid-item__icon-wrapper">
                     <LazyImage className="chart-grid-item__icon" src={icon} onError={this.handleImageError} />

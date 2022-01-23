@@ -43,7 +43,7 @@
 }
 
 .flex-justify {
-    justify-content: space-between;
+    justify-content: space-between !important;
 }
 
 .flex-wrap {
@@ -273,6 +273,17 @@ $color-suffix: 00;
 .lh-1-43 {
     line-height: 1.43;
 }
+
+.lh-1-33{
+    line-height: 1.33;
+ }
+ 
+.lh-1-25{
+    line-height: 1.25;
+ }
+ .lh-1-5{
+    line-height: 1.5;
+ }
 
 .divider {
     border-top: 1px solid #d0d4d9;

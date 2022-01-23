@@ -21,6 +21,7 @@
 }
 
 .healthy,
+.deployed,
 .synced,
 .sync.ok,
 .deploy-success {
@@ -51,6 +52,10 @@
 }
 
 .progressing,
+.uninstalling,
+.pending-install,
+.pending-upgrade,
+.pending-rollback,
 .deploy-init,
 .request-accepted,
 .git-success,
@@ -63,7 +68,8 @@
     background-image: url('../assets/icons/ic-hibernate-2.svg');
 }
 
-.failed {
+.failed,
+.superseded {
     background-image: url('../assets/icons/appstatus/ic-appstatus-failed.svg');
 }
 

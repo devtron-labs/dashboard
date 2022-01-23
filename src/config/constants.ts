@@ -74,6 +74,7 @@ export const Routes = {
     ACTIVE_ENVIRONMENT: 'env/active',
     ENVIRONMENT_LIST: 'list/environments',
     ENVIRONMENT_LIST_MIN: 'env/autocomplete',
+    ENVIRONMENT_LIST_MIN_HELM_PROJECTS: 'env/autocomplete/helm',
 
     REFRESH_MATERIAL: 'app/ci-pipeline/refresh-material',
     APPLICATIONS: 'api/v1/applications',
@@ -108,6 +109,17 @@ export const Routes = {
     APP_CREATE_ENV_SECRET: 'config/environment/cs',
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
     APP_META_INFO: 'app/meta/info',
+    CLUSTER_ENV_MAPPING: 'env',
+    APP_VERSION: '/version',
+    HELM_RELEASE_INFO_API: 'application/release-info',
+    HELM_RELEASE_DEPLOYMENT_HISTORY_API: 'application/deployment-history',
+    HELM_RELEASE_APP_DETAIL_API: 'application/app',
+    MANIFEST: 'k8s/resource',
+    DESIRED_MANIFEST: 'application/desired-manifest',
+    EVENTS: 'k8s/events',
+    LOGS: 'k8s/pods/logs',
+    DELETE_RESOURCE: 'k8s/resource/delete',
+    CREATE_RESOURCE: 'k8s/resource/create',
 };
 
 export const ViewType = {
@@ -162,6 +174,7 @@ export const SourceTypeMap = {
 export const Moment12HourFormat = "ddd, DD MMM YYYY, hh:mm A";
 
 export const DOCUMENTATION = {
+    HOME_PAGE: 'https://docs.devtron.ai',
     APP_CREATE: 'https://docs.devtron.ai/user-guide/creating-application',
     APP_CREATE_ENV: 'https://docs.devtron.ai/user-guide/creating-application/environment-overrides',
     APP_CREATE_CI_CONFIG: 'https://docs.devtron.ai/user-guide/creating-application/docker-build-configuration',
@@ -173,6 +186,7 @@ export const DOCUMENTATION = {
     BULK_UPDATE: 'https://docs.devtron.ai/user-guide/bulk-update',
     CHART_DEPLOY: 'https://docs.devtron.ai/user-guide/deploy-chart',
     CHART_LIST: 'https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts',
+    SECURITY: 'https://docs.devtron.ai/user-guide/security-features',
     GLOBAL_CONFIG_GITOPS: 'https://docs.devtron.ai/user-guide/global-configurations/gitops',
     GLOBAL_CONFIG_GIT: 'https://docs.devtron.ai/user-guide/global-configurations/git-accounts',
     GLOBAL_CONFIG_DOCKER: 'https://docs.devtron.ai/user-guide/global-configurations/docker-registries',
@@ -182,4 +196,40 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_PROJECT: 'https://docs.devtron.ai/global-configurations/projects',
     GLOBAL_CONFIG_SSO: 'https://docs.devtron.ai/user-guide/global-configurations/sso-login',
     GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/user-guide/global-configurations/user-access',
+    HYPERION_TO_FULL_MODE: 'https://docs.devtron.ai/hyperion/setup/upgrade-to-devtron.md',
+    HYPERION: 'https://docs.devtron.ai/#hyperion'
 }
+
+// APP LIST STARTS
+export const AppListConstants = {
+    CREATE_DEVTRON_APP_URL: 'create-d-app',
+    AppTabs : {
+        DEVTRON_APPS: 'Devtron Apps',
+        HELM_APPS: 'Helm Apps'
+    },
+    AppType : {
+        DEVTRON_APPS: 'd',
+        HELM_APPS: 'h'
+    },
+    FilterType : {
+        PROJECT: 'team',
+        CLUTSER: 'cluster',
+        NAMESPACE: 'namespace',
+        ENVIRONMENT: 'environment'
+    }
+}
+// APP LIST ENDS
+
+export enum SERVER_MODE {
+    EA_ONLY = 'EA_ONLY',
+    FULL = 'FULL',
+}
+
+export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE;
+
+export enum ACCESS_TYPE_MAP {
+  DEVTRON_APPS = '', // devtron app work flow
+  HELM_APPS = 'helm-app', //helm app work flow
+}
+
+export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned';

@@ -1,0 +1,86 @@
+.app-status-card {
+    min-width: 150px;
+    min-height: 92px;
+}
+
+.app-status-detail-modal {
+    margin: auto;
+    margin-right: 0;
+    height: 100%;
+    overflow: scroll;
+}
+
+.config-error-wrap {
+    word-wrap: break-word;
+}
+
+.table__padding-left {
+    padding-left: 20px !important;
+}
+
+.table__padding-row {
+    padding-right: 20px !important;
+}
+
+.text-capitalize {
+    text-transform: capitalize;
+}
+
+.f-healthy,
+.f-deployed,
+.f-synced,
+.f-sync.ok,
+.f-running,
+.f-scalingreplicasetdown {
+    color: var(--green);
+}
+
+.f-suspended,
+.f-switchedtoactiveservice {
+    color: var(--orange);
+}
+
+.f-degraded,
+.f-sync.failed,
+.f-failed,
+.f-imagepullbackoff,
+.f-errimagepull,
+.f-superseded,
+.f-outofsync {
+    color: var(--R500);
+}
+
+.f-progressing,
+.f-inprogress,
+.f-uninstalling,
+.f-pending-install,
+.f-pending-upgrade,
+.f-pending-rollback,
+.initiated {
+    color: var(--yellow);
+}
+
+.f-missing,
+.f-unknown {
+    color: var(--N700);
+}
+
+.kind-name {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: 1fr;
+
+    .ellipsis-left {
+        text-align: left;
+    }
+}
+
+.app-status-detail__header{
+    position: absolute;
+    width: 100%;
+}
+
+.app-status-detail__body{
+    padding-top: 76px;
+}

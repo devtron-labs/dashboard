@@ -1,0 +1,9 @@
+.k8-resources-node-tree{
+    width: 270px;
+    min-height: 532px;
+    overflow-y: auto;
+}
+.resource-node-wrapper{
+    min-height: 600px;
+    height: calc(100vh - 288px);
+}

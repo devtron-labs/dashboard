@@ -137,7 +137,7 @@ function DiscoverChartList() {
             }
             const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts)
             await deployChartGroup(project.id, deployableCharts)
-            let url = `${URLS.CHARTS}/deployed`;
+            let url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`;
             history.push(url);
             toast.success('Deployment initiated')
         }

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Children, Component } from 'react';
 import { AppListViewType } from '../../config';
 import noapps from '../../../../assets/img/empty-applist@2x.png';
 import noresult from '../../../../assets/img/empty-noresult@2x.png';
@@ -35,7 +35,7 @@ export class Empty extends Component<EmptyProps>{
         </div>
     }
 
-    renderNoResultsView() {
+    renderNoResultsView(children) {
         return <div style={{ height: "calc(100vh - 250px)" }}>
             <EmptyState>
                 <EmptyState.Image>
@@ -50,12 +50,15 @@ export class Empty extends Component<EmptyProps>{
                         {this.props.buttonLabel}
                     </button>
                 </EmptyState.Button>
+                  {children && children}
             </EmptyState>
+         
+
         </div>
     }
 
     render() {
-        if (this.props.view === AppListViewType.NO_RESULT) return this.renderNoResultsView();
+        if (this.props.view === AppListViewType.NO_RESULT) return this.renderNoResultsView(this.props.children);
         else return this.renderNoAppsView();
     }
 }

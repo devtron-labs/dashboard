@@ -96,8 +96,8 @@ a:focus {
     grid-template-rows: 1fr;
     background-color: var(--N000);
     color: var(--N900);
-    box-shadow: 0 4px 8px -2px rgba(0, 56, 112, 0.2);
     z-index: var(--page-header-index);
+    border-bottom: 1px solid var(--N200);
 }
 
 .page-header--tabs {
@@ -807,7 +807,6 @@ button.anchor {
 }
 
 .saved-filter__clear-btn--dark {
-    width: 130px;
     height: 36px;
     background-color: var(--white);
     color: var(--B500);
@@ -815,7 +814,7 @@ button.anchor {
     border-radius: 4px;
     margin: auto 6px;
     font-weight: 600;
-    padding: 8px;
+    padding: 6px 12px;
 }
 
 .saved-filter__clear-btn--dark:hover {
@@ -868,6 +867,14 @@ button.anchor {
     display: block;
     width: 100%;
     height: 100%;
+}
+
+.details-loader {
+    width: 100vw;
+}
+
+.details-loader.details-loader-height {
+    height: calc(100vh - 80px);
 }
 
 .configuration-list {
@@ -1487,12 +1494,12 @@ button.anchor {
 }
 
 .saved-filter__clear-btn {
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1;
     margin-left: 10px;
-    color: #72767a;
-    border: none;
-    padding: 6px;
+    color: var(--B500);
+    border: 1px solid var(--B500);
+    padding: 6px 12px;
     margin: 2px;
     background-color: var(--white);
 }
@@ -1595,16 +1602,31 @@ button.anchor {
     width: 400px;
 }
 
+.w-250{
+    width: 250px;
+}
+
+.w-600{
+    width: 600px;
+}
+
 .h-0{
     height: 0px;
 }
 
 .border-top{
-    border-top: solid 1px var(--N100);
+    border-top: solid 1px var(--N200);
 }
 
 .border-bottom{
-    border-bottom: solid 1px var(--N200);
+    border-bottom: solid 2px var(--N200);
+}
+
+.border-right{
+    border-right: solid 1px var(--N200);
+}
+.border-left{
+    border-left: solid 1px var(--N200);
 }
 
 .box-shadow{
@@ -1623,9 +1645,49 @@ button.anchor {
     align-items: flex-start !important;
 }
 
+.align-center{
+    text-align: center !important;
+}
+
+.lh-20{
+   line-height: 20px;
+}
+
+.pl-16{
+    padding-left: 16px !important;
+}
+
 .text__subtitle {
     font-size: 13px;
     font-weight: 600;
     color: var(--n-900);
     line-height: 1.5;
+}
+
+.lh-n{
+    line-height: normal !important;
+}
+
+.h-32{
+    height: 32px !important;
+}
+
+.fw-n{
+    font-weight: normal !important;
+}
+
+.h-8 {
+    height : 8px;
+}
+
+.hide-section {
+    display: none;
+}
+
+.text-center{
+    text-align: center;
+}
+
+.m-auto{
+    margin: auto;
 }

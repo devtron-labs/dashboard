@@ -348,6 +348,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
             return;
         }
         event.data.result.forEach((log: string) => subject.publish(log));
+        
         if (event.data.readyState) {
             setReadyState(event.data.readyState);
         }
@@ -373,6 +374,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
             return
         }
         let pods = getPods();
+        
         workerRef.current = new WebWorker(sseWorker);
         workerRef.current['addEventListener' as any]('message', handleMessage);
         workerRef.current['postMessage' as any]({

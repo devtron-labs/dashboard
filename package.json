@@ -21,6 +21,7 @@
         "monaco-yaml": "^2.1.0",
         "object-hash": "^2.2.0",
         "patternfly-react": "^2.30.3",
+        "posthog-js": "^1.11.3",
         "prop-types": "^15.7.1",
         "query-string": "^6.8.2",
         "react": "^16.11.0",
@@ -35,6 +36,7 @@
         "react-toastify": "^6.1.0",
         "react-virtualized": "^9.21.1",
         "recharts": "^1.8.5",
+        "rxjs": "^7.4.0",
         "xterm": "4.5.0",
         "xterm-addon-fit": "0.3.0",
         "xterm-addon-search": "0.6.0",
@@ -43,7 +45,6 @@
         "yamljs": "^0.3.0"
     },
     "scripts": {
-        "precommit": "yarn eslint",
         "lint": "eslint src/**/*.tsx",
         "lint-fix": "eslint --fix src/**/*.tsx",
         "start": "react-app-rewired start",
@@ -110,5 +111,10 @@
         "setupFilesAfterEnv": [
             "jest-extended"
         ]
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "yarn eslint"
+        }
     }
 }

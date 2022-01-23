@@ -79,7 +79,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
             chartRepoName: chartName,
             chartId: appStoreId,
             chartName: name,
-            version: versions.get(selectedVersion).version,
+            version: versions.get(selectedVersion)?.version,
             deprecated: deprecated,
         }
     ]);
@@ -89,7 +89,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
             chartRepoName: chartName,
             chartId: appStoreId,
             chartName: name,
-            version: versions.get(selectedVersion).version,
+            version: versions.get(selectedVersion)?.version,
             deprecated: deprecated,
         },
     );
@@ -190,7 +190,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 };
                 const { result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId } } = await installChart(payload);
                 toast.success('Deployment initiated');
-                push(`/chart-store/deployments/${newInstalledAppId}/env/${newEnvironmentId}`)
+                push(`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}`)
             }
         }
         catch (err) {
@@ -401,7 +401,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
     }, []);
     return (<>
-        <div className={`deploy-chart-container ${readmeCollapsed ? 'readmeCollapsed' : 'readmeOpen'}`}>
+        <div className={`deploy-chart-container ${readmeCollapsed ? 'readmeCollapsed' : 'readmeOpen'} ${isUpdate ? '' : 'update_deploy-chart-container_header'}`}>
             <div className="header-container flex column">
                 <div className="title">{chartName}/ {name}</div>
                 <div className="border" />

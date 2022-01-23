@@ -1,0 +1,15 @@
+.app-page-header {
+    all: unset;
+    margin: unset;
+    border-bottom: unset;
+    padding: 0 24px;
+    display: grid;
+    grid-template-rows: 40px 40px;
+    grid-template-columns: unset;
+    background-color: var(--N000);
+    color: var(--N900);
+    z-index: var(--page-header-index);
+    border-bottom: 1px solid var(--N200);
+    position: sticky;
+    top: 0;
+}
