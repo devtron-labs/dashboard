@@ -46,23 +46,23 @@ export class AppListView extends Component<AppListViewProps>{
                 <div className="app-list__header">
                     <div className="app-list__cell--icon"></div>
                     <div className="app-list__cell app-list__cell--name ">
-                        <button className="app-list__cell-header text-uppercase" onClick={e => { e.preventDefault(); this.props.sort('appNameSort') }}>App name
+                        <button className="app-list__cell-header" onClick={e => { e.preventDefault(); this.props.sort('appNameSort') }}>App name
                             {this.props.sortRule.key == SortBy.APP_NAME ? <span className={icon}></span> : <span className="sort-col"></span>}
                         </button>
                     </div>
-                    <div className="app-list__cell app-list__cell--env text-uppercase">
+                    <div className="app-list__cell app-list__cell--env">
                         <span className="app-list__cell-header mr-4">Environment</span>
                         <Tippy className="default-tt" arrow={true} placement="top" content="Environment is a unique combination of cluster and namespace">
                             <HelpOutlineIcon className="icon-dim-20"/>
                         </Tippy>
                     </div>
-                    <div className="app-list__cell app-list__cell--cluster text-uppercase">
+                    <div className="app-list__cell app-list__cell--cluster">
                         <span className="app-list__cell-header">Cluster</span>
                     </div>
-                    <div className="app-list__cell app-list__cell--namespace text-uppercase">
+                    <div className="app-list__cell app-list__cell--namespace">
                         <span className="app-list__cell-header">Namespace</span>
                     </div>
-                    <div className="app-list__cell app-list__cell--time text-uppercase">
+                    <div className="app-list__cell app-list__cell--time">
                         <span className="app-list__cell-header">Last deployed at</span>
                     </div>
                     <div className="app-list__cell app-list__cell--action"></div>
