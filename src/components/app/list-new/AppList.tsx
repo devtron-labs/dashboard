@@ -347,7 +347,7 @@ export default function AppList() {
             query[key] = qs[key];
         })
         query["orderBy"] = key;
-        query["sortOrder"] = query["sortOrder"] == OrderBy.ASC ? OrderBy.DESC : OrderBy.ASC;
+        query["sortOrder"] = query["sortOrder"] == OrderBy.DESC ? OrderBy.ASC : OrderBy.DESC;
         let queryStr = queryString.stringify(query);
         let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()}?${queryStr}`;
         history.push(url);
