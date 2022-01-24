@@ -188,7 +188,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
             case 'Compare':
                 setActiveManifestEditorData(manifest);
                 break;
-            case 'Desired manifest':
+            case 'Helm generated manifest':
                 return setTimeout(() => {
                     setActiveManifestEditorData(desiredManifest);
                 }, 0);
@@ -224,7 +224,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                             <div className="flex left pl-20 pr-20 border-bottom manifest-tabs-row">
                                 {tabs.map((tab: iLink, index) => {
                                     return (!showDesiredAndCompareManifest &&
-                                        (tab.name == 'Desired manifest' || tab.name == 'Compare')) ||
+                                        (tab.name == 'Helm generated manifest' || tab.name == 'Compare')) ||
                                         (isResourceMissing && tab.name == 'Compare') ? (
                                         <></>
                                     ) : (
@@ -292,7 +292,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                 {activeTab === 'Compare' && (
                                     <CodeEditor.Header hideDefaultSplitHeader={true}>
                                         <div className="split-header">
-                                            <div className="left-pane">Desired manifest</div>
+                                            <div className="left-pane">Helm generated manifest </div>
                                             <div className="right-pane">Live manifest</div>
                                         </div>
                                     </CodeEditor.Header>

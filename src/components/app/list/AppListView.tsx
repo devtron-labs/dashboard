@@ -51,7 +51,7 @@ export class AppListView extends Component<AppListViewProps>{
                         </button>
                     </div>
                     <div className="app-list__cell app-list__cell--env">
-                        <span className="app-list__cell-header">Environment</span>
+                        <span className="app-list__cell-header mr-4">Environment</span>
                         <Tippy className="default-tt" arrow={true} placement="top" content="Environment is a unique combination of cluster and namespace">
                             <HelpOutlineIcon className="icon-dim-20"/>
                         </Tippy>
