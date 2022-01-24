@@ -45,7 +45,7 @@ export class AppListView extends Component<AppListViewProps>{
             return <div className="app-list">
                 <div className="app-list__header">
                     <div className="app-list__cell--icon"></div>
-                    <div className="app-list__cell app-list__cell--name ">
+                    <div className="app-list__cell app-list__cell--name">
                         <button className="app-list__cell-header" onClick={e => { e.preventDefault(); this.props.sort('appNameSort') }}>App name
                             {this.props.sortRule.key == SortBy.APP_NAME ? <span className={icon}></span> : <span className="sort-col"></span>}
                         </button>
