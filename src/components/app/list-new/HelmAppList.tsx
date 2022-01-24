@@ -347,18 +347,6 @@ export default function HelmAppList({
     function renderApplicationList() {
         return (
             <>
-                {serverMode == SERVER_MODE.FULL &&
-                    <div className="bcn-0">
-                        <div className="h-8"></div>
-                        <div className="helm-permission-message-strip above-header-message flex left">
-                            <span className="mr-8 flex">
-                                <AlertTriangleIcon className="icon-dim-20 icon"/>
-                            </span>
-                            <span>Permissions for helm apps are now managed separately under user access. Please request permission from super-admin if required.</span>
-                        </div>
-                    </div>
-                }
-
                 {!clusterIdsCsv && (
                     <div className="bcn-0">
                         <div className="h-8"></div>
@@ -519,19 +507,43 @@ export default function HelmAppList({
         );
     }
 
+    function renderHelmPermissionMessageStrip() {
+        return (
+            <>
+                <div className="h-8"></div>
+                <div className="helm-permission-message-strip above-header-message flex left">
+                            <span className="mr-8 flex">
+                                <AlertTriangleIcon className="icon-dim-20 icon"/>
+                            </span>
+                    <span>Permissions for helm apps are now managed separately under user access. Please request permission from super-admin if required.</span>
+                </div>
+            </>
+        )
+    }
+
+    function renderNoApplicationState() {
+        if (_isAnyFilterationAppliedExceptClusterAndNs() && !clusterIdsCsv) {
+            return askToClearFiltersWithSelectClusterTip();
+        }else if (_isOnlyAllClusterFilterationApplied()) {
+            return askToConnectAClusterForNoResult();
+        } else if (_isAnyFilterationApplied()) {
+            return askToClearFilters();
+        } else if (!clusterIdsCsv) {
+            return askToSelectClusterId();
+        } else {
+            return renderAllCheckModal();
+        }
+    }
+
     function renderFullModeApplicationListContainer() {
         if (!sseConnection && filteredHelmAppsList.length == 0) {
-            if (_isAnyFilterationAppliedExceptClusterAndNs() && !clusterIdsCsv) {
-                return askToClearFiltersWithSelectClusterTip();
-            }else if (_isOnlyAllClusterFilterationApplied()) {
-                return askToConnectAClusterForNoResult();
-            } else if (_isAnyFilterationApplied()) {
-                return askToClearFilters();
-            } else if (!clusterIdsCsv) {
-                return askToSelectClusterId();
-            } else {
-                return renderAllCheckModal();
-            }
+            return (<>
+                    {serverMode == SERVER_MODE.FULL &&
+                        renderHelmPermissionMessageStrip()
+                    }
+                    {renderNoApplicationState()}
+                </>
+                )
         } else {
             return renderApplicationList();
         }
