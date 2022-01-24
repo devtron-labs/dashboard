@@ -305,7 +305,7 @@ export default function HelmAppList({
                     {sseConnection && <span>App/Release name</span>}
                     {!sseConnection && (
                         <button
-                            className="app-list__cell-header"
+                            className="app-list__cell-header text-uppercase"
                             onClick={(e) => {
                                 e.preventDefault();
                                 sortApplicationList('appNameSort');
@@ -321,7 +321,7 @@ export default function HelmAppList({
                     )}
                 </div>
                 <div className="app-list__cell app-list__cell--env">
-                    <span className="app-list__cell-header">Environment</span>
+                    <span className="app-list__cell-header text-uppercase">Environment</span>
                     <Tippy
                         className="default-tt"
                         arrow={true}
@@ -332,13 +332,13 @@ export default function HelmAppList({
                     </Tippy>
                 </div>
                 <div className="app-list__cell app-list__cell--cluster">
-                    <span className="app-list__cell-header">Cluster</span>
+                    <span className="app-list__cell-header text-uppercase">Cluster</span>
                 </div>
                 <div className="app-list__cell app-list__cell--namespace">
-                    <span className="app-list__cell-header">Namespace</span>
+                    <span className="app-list__cell-header text-uppercase">Namespace</span>
                 </div>
                 <div className="app-list__cell app-list__cell--time">
-                    <span className="app-list__cell-header">Last deployed at</span>
+                    <span className="app-list__cell-header text-uppercase">Last deployed at</span>
                 </div>
             </div>
         );
