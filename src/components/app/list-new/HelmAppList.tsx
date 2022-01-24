@@ -321,7 +321,7 @@ export default function HelmAppList({
                     )}
                 </div>
                 <div className="app-list__cell app-list__cell--env">
-                    <span className="app-list__cell-header text-uppercase">Environment</span>
+                    <span className="app-list__cell-header mr-4 text-uppercase">Environment</span>
                     <Tippy
                         className="default-tt"
                         arrow={true}
