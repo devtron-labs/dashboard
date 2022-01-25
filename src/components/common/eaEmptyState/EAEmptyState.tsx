@@ -24,7 +24,7 @@ function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefi
             <div className="ea-empty__wrapper cn-9 text-center">
                 <div className="fs-20 fw-6 mb-8">{title}</div>
                 <div className="fs-14 m-auto w-600">{msg}</div>
-                <div className="pt-20">
+                <div className='pt-20'>
                     <a
                         href={knowMoreLink}
                         target="_blank"
@@ -46,42 +46,28 @@ function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefi
                                     <img
                                         className="ea-empty-img"
                                         src={appDetailEmpty}
-                                        width="600"
-                                        height="375"
+                                        width="800"
                                         alt="no apps found"
                                     />
                                 );
                             case EAEmptyStateType.HELMCHARTS:
                                 return (
-                                    <img
-                                        className="ea-empty-img"
-                                        src={chartsEmpty}
-                                        width="600"
-                                        height="375"
-                                        alt="no apps found"
-                                    />
+                                    <img className="ea-empty-img" src={chartsEmpty} width="600" height="375" alt="no apps found" />
                                 );
                             case EAEmptyStateType.BULKEDIT:
                                 return (
                                     <img
                                         className="ea-empty-img"
                                         src={appDetailEmpty}
-                                        width="600"
-                                        height="375"
+                                        width="800"
                                         alt="no apps found"
                                     />
                                 );
                             case EAEmptyStateType.DEPLOYMENTGROUPS:
-                                return <img src={appDetailEmpty} alt="no apps found" width="600" height="375" />;
+                                return <img src={appDetailEmpty} alt="no apps found" width="800" />;
                             case EAEmptyStateType.SECURITY:
                                 return (
-                                    <img
-                                        className="ea-empty-img"
-                                        src={securityEmpty}
-                                        width="600"
-                                        height="375"
-                                        alt="no apps found"
-                                    />
+                                    <img className="ea-empty-img" src={securityEmpty} width="800" alt="no apps found" />
                                 );
                         }
                     })()}
