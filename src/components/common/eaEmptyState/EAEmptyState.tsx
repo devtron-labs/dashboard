@@ -52,7 +52,7 @@ function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefi
                                 );
                             case EAEmptyStateType.HELMCHARTS:
                                 return (
-                                    <img className="ea-empty-img" src={chartsEmpty} width="600" height="375" alt="no apps found" />
+                                    <img className="ea-empty-img" src={chartsEmpty}  width="800" alt="no apps found" />
                                 );
                             case EAEmptyStateType.BULKEDIT:
                                 return (
