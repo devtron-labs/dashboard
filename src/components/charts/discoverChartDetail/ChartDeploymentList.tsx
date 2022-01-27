@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { showError, Progressing, PopupMenu, ConfirmationDialog, Td } from '../../common';
 import moment from 'moment';
 import { get } from '../../../services/api';
-import { AppListConstants, Routes, URLS, ViewType } from '../../../config';
+import { Routes, URLS, ViewType } from '../../../config';
 import { deleteInstalledChart } from '../charts.service';
 import { toast } from 'react-toastify';
 import AppNotDeployedIcon from '../../../assets/img/app-not-configured.png';
