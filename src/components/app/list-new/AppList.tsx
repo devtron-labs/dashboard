@@ -301,22 +301,30 @@ export default function AppList() {
         let query = {};
         keys.map((key) => {
             query[key] = qs[key];
-        })
+        });
         query['offset'] = 0;
-        let queryParamType = (filterType == AppListConstants.FilterType.CLUTSER || filterType == AppListConstants.FilterType.NAMESPACE) ? 'namespace' : filterType;
+        let queryParamType =
+            filterType === AppListConstants.FilterType.CLUTSER || filterType === AppListConstants.FilterType.NAMESPACE
+                ? 'namespace'
+                : filterType;
         let appliedFilters = query[queryParamType];
-        let arr = appliedFilters.split(",");
-        if(filterType == AppListConstants.FilterType.CLUTSER) {
+        let arr = appliedFilters.split(',');
+        if (filterType === AppListConstants.FilterType.CLUTSER) {
             arr = arr.filter((item) => !item.startsWith(val.toString()));
-        }else{
+        } else {
             arr = arr.filter((item) => item != val.toString());
         }
-        query[queryParamType] = arr.toString();
-        if (query[queryParamType] == "") delete query[queryParamType];
+        query[queryParamType] =
+            filterType === AppListConstants.FilterType.NAMESPACE && !arr.toString()
+                ? val.split('_')[0]
+                : arr.toString();
+        if (query[queryParamType] == '') delete query[queryParamType];
         let queryStr = queryString.stringify(query);
-        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()}?${queryStr}`;
+        let url = `${
+            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
+        }?${queryStr}`;
         history.push(url);
-    }
+    };
 
     const removeAllFilters = (): void => {
         let qs = queryString.parse(location.search);
