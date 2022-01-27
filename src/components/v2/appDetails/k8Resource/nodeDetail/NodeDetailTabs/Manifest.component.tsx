@@ -4,7 +4,11 @@ import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json';
 import { iLink } from '../../../../utils/tabUtils/link.type';
 import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg';
-import { EA_MANIFEST_EDIT_MODE_INFO_TEXT, EA_MANIFEST_INFO_TEXT, NodeDetailTab } from '../nodeDetail.type';
+import {
+    EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
+    EA_MANIFEST_SECRET_INFO_TEXT,
+    NodeDetailTab,
+} from '../nodeDetail.type';
 import {
     createResource,
     getDesiredManifestResource,
@@ -14,7 +18,7 @@ import {
 import CodeEditor from '../../../../../CodeEditor/CodeEditor';
 import IndexStore from '../../../index.store';
 import MessageUI, { MsgUIType } from '../../../../common/message.ui';
-import { AppType } from '../../../appDetails.type';
+import { AppType, NodeType } from '../../../appDetails.type';
 import YAML from 'yaml';
 import { toast } from 'react-toastify';
 import { showError, ToastBody } from '../../../../../common';
@@ -45,7 +49,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
         )[0];
         setShowInfoText(
             !selectedResource.group &&
-                selectedResource.kind === 'Secret' &&
+                selectedResource.kind === NodeType.Secret &&
                 appDetails.appType === AppType.EXTERNAL_HELM_CHART,
         );
 
@@ -305,7 +309,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                             >
                                 {activeTab === 'Compare' && (
                                     <>
-                                        {showInfoText && <CodeEditor.Information text={EA_MANIFEST_INFO_TEXT} />}
+                                        {showInfoText && <CodeEditor.Information text={EA_MANIFEST_SECRET_INFO_TEXT} />}
                                         <CodeEditor.Header hideDefaultSplitHeader={true}>
                                             <div className="split-header">
                                                 <div className="left-pane">Helm generated manifest </div>
@@ -318,8 +322,8 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                     <CodeEditor.Information
                                         text={
                                             isEditmode && activeTab === 'Live manifest'
-                                                ? EA_MANIFEST_EDIT_MODE_INFO_TEXT
-                                                : EA_MANIFEST_INFO_TEXT
+                                                ? EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT
+                                                : EA_MANIFEST_SECRET_INFO_TEXT
                                         }
                                     />
                                 )}
