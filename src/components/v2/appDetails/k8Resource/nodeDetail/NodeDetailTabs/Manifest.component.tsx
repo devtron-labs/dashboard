@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import {useLocation, useHistory} from 'react-router';
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router';
 import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json';
 import { iLink } from '../../../../utils/tabUtils/link.type';
 import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
-import { useParams, useRouteMatch } from 'react-router';
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg';
-import { NodeDetailTab } from '../nodeDetail.type';
+import { EA_MANIFEST_EDIT_MODE_INFO_TEXT, EA_MANIFEST_INFO_TEXT, NodeDetailTab } from '../nodeDetail.type';
 import {
     createResource,
     getDesiredManifestResource,
@@ -38,15 +37,23 @@ function ManifestComponent({ selectedTab, isDeleted }) {
     const [isEditmode, setIsEditmode] = useState(false);
     const [showDesiredAndCompareManifest, setShowDesiredAndCompareManifest] = useState(false);
     const [isResourceMissing, setIsResourceMissing] = useState(false);
+    const [showInfoText, setShowInfoText] = useState(false);
 
     useEffect(() => {
         const selectedResource = appDetails.resourceTree.nodes.filter(
             (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
         )[0];
+        setShowInfoText(
+            !selectedResource.group &&
+                selectedResource.kind === 'Secret' &&
+                appDetails.appType === AppType.EXTERNAL_HELM_CHART,
+        );
 
-        let _isResourceMissing = appDetails.appType === AppType.EXTERNAL_HELM_CHART && selectedResource.health?.status === 'Missing';
+        let _isResourceMissing =
+            appDetails.appType === AppType.EXTERNAL_HELM_CHART && selectedResource.health?.status === 'Missing';
         setIsResourceMissing(_isResourceMissing);
-        let _showDesiredAndCompareManifest = appDetails.appType === AppType.EXTERNAL_HELM_CHART && !selectedResource.parentRefs?.length;
+        let _showDesiredAndCompareManifest =
+            appDetails.appType === AppType.EXTERNAL_HELM_CHART && !selectedResource.parentRefs?.length;
         setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest);
 
         setLoading(true);
@@ -58,7 +65,8 @@ function ManifestComponent({ selectedTab, isDeleted }) {
         try {
             Promise.all([
                 !_isResourceMissing && getManifestResource(appDetails, params.podName, params.nodeType),
-                _showDesiredAndCompareManifest && getDesiredManifestResource(appDetails, params.podName, params.nodeType),
+                _showDesiredAndCompareManifest &&
+                    getDesiredManifestResource(appDetails, params.podName, params.nodeType),
             ])
                 .then((response) => {
                     let _manifest;
@@ -129,9 +137,15 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                 .catch((err) => {
                     setLoading(false);
                     if (err.code === 403) {
-                        toast.info(<ToastBody title="Access denied" subtitle="You don't have access to perform this action." />, {
-                          className: 'devtron-toast unauthorized',
-                        });
+                        toast.info(
+                            <ToastBody
+                                title="Access denied"
+                                subtitle="You don't have access to perform this action."
+                            />,
+                            {
+                                className: 'devtron-toast unauthorized',
+                            },
+                        );
                     } else if (err.code === 500) {
                         const error = err['errors'] && err['errors'][0];
                         if (error && error.code && error.userMessage) {
@@ -215,7 +229,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
             <MessageUI msg="This resource no longer exists" size={32} />
         </div>
     ) : (
-        <div style={{ background: '#0B0F22', flex: 1, minHeight:'600px' }}>
+        <div style={{ background: '#0B0F22', flex: 1, minHeight: '600px' }}>
             {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
             {!error && (
                 <>
@@ -290,12 +304,24 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                 focus={isEditmode}
                             >
                                 {activeTab === 'Compare' && (
-                                    <CodeEditor.Header hideDefaultSplitHeader={true}>
-                                        <div className="split-header">
-                                            <div className="left-pane">Helm generated manifest </div>
-                                            <div className="right-pane">Live manifest</div>
-                                        </div>
-                                    </CodeEditor.Header>
+                                    <>
+                                        {showInfoText && <CodeEditor.Information text={EA_MANIFEST_INFO_TEXT} />}
+                                        <CodeEditor.Header hideDefaultSplitHeader={true}>
+                                            <div className="split-header">
+                                                <div className="left-pane">Helm generated manifest </div>
+                                                <div className="right-pane">Live manifest</div>
+                                            </div>
+                                        </CodeEditor.Header>
+                                    </>
+                                )}
+                                {activeTab !== 'Compare' && showInfoText && (
+                                    <CodeEditor.Information
+                                        text={
+                                            isEditmode && activeTab === 'Live manifest'
+                                                ? EA_MANIFEST_EDIT_MODE_INFO_TEXT
+                                                : EA_MANIFEST_INFO_TEXT
+                                        }
+                                    />
                                 )}
                                 {activeTab === 'Live manifest' && errorText && <CodeEditor.ErrorBar text={errorText} />}
                             </CodeEditor>
