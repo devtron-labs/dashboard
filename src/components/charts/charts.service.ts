@@ -215,3 +215,8 @@ export function validateAppNames(payload: appName[]): Promise<AppNameValidated> 
 export function getChartsByKeyword(input: string) {
     return get(`app-store/search?chartName=${input}`);
 }
+
+export function deleteChartGroup(): Promise<any> {
+    const URL = `${Routes.CHART_GROUP}/delete`;
+    return trash(URL);
+}
