@@ -4,11 +4,7 @@ import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json';
 import { iLink } from '../../../../utils/tabUtils/link.type';
 import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg';
-import {
-    EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
-    EA_MANIFEST_SECRET_INFO_TEXT,
-    NodeDetailTab,
-} from '../nodeDetail.type';
+import { NodeDetailTab } from '../nodeDetail.type';
 import {
     createResource,
     getDesiredManifestResource,
@@ -23,6 +19,7 @@ import YAML from 'yaml';
 import { toast } from 'react-toastify';
 import { showError, ToastBody } from '../../../../../common';
 import { appendRefetchDataToUrl } from '../../../../../util/URLUtil';
+import { EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT, EA_MANIFEST_SECRET_INFO_TEXT } from '../../../../Constants';
 
 function ManifestComponent({ selectedTab, isDeleted }) {
     const location = useLocation();
