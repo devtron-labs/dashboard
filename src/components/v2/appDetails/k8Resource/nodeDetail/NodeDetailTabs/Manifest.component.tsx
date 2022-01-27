@@ -304,18 +304,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                 customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} size={24} />}
                                 focus={isEditmode}
                             >
-                                {activeTab === 'Compare' && (
-                                    <>
-                                        {showInfoText && <CodeEditor.Information text={EA_MANIFEST_SECRET_INFO_TEXT} />}
-                                        <CodeEditor.Header hideDefaultSplitHeader={true}>
-                                            <div className="split-header">
-                                                <div className="left-pane">Helm generated manifest </div>
-                                                <div className="right-pane">Live manifest</div>
-                                            </div>
-                                        </CodeEditor.Header>
-                                    </>
-                                )}
-                                {activeTab !== 'Compare' && showInfoText && (
+                                {showInfoText && (
                                     <CodeEditor.Information
                                         text={
                                             isEditmode && activeTab === 'Live manifest'
@@ -323,6 +312,14 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                                 : EA_MANIFEST_SECRET_INFO_TEXT
                                         }
                                     />
+                                )}
+                                {activeTab === 'Compare' && (
+                                    <CodeEditor.Header hideDefaultSplitHeader={true}>
+                                        <div className="split-header">
+                                            <div className="left-pane">Helm generated manifest </div>
+                                            <div className="right-pane">Live manifest</div>
+                                        </div>
+                                    </CodeEditor.Header>
                                 )}
                                 {activeTab === 'Live manifest' && errorText && <CodeEditor.ErrorBar text={errorText} />}
                             </CodeEditor>
