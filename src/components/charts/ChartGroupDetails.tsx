@@ -161,12 +161,12 @@ export default function ChartGroupDetails() {
                     <div className="page-header__title">{state.name}</div>
                 </div>
                 <div className="page-header__cta-container flex">
-                    <button className="cta delete" type="button" onClick={() => handleDelete()}>
-                        Delete
-                    </button>
-                    <button type="button" className="cta flex cancel" onClick={redirectToConfigure}>
+                    <button type="button" className="cta flex cancel mr-16" onClick={redirectToConfigure}>
                         <Pencil className="mr-5" />
                         Edit
+                    </button>
+                    <button className="cta delete" type="button" onClick={() => handleDelete()}>
+                        Delete
                     </button>
                 </div>
             </div>
