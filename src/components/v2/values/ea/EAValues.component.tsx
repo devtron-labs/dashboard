@@ -20,7 +20,7 @@ function ExternalAppValues({appId}) {
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
     const [readmeCollapsed, toggleReadmeCollapsed] = useState(true);
     const [releaseInfo, setReleaseInfo] = useState<ReleaseInfo>(undefined);
-    const [deleteAppConfirmation, toggleDeleteAppConfirmation] = useState(false);
+    const [showDeleteAppConfirmationDialog, setShowDeleteAppConfirmationDialog] = useState(false);
     const [modifiedValuesYaml, setModifiedValuesYaml] = useState("");
 
     // component load
@@ -45,7 +45,7 @@ function ExternalAppValues({appId}) {
             return;
         }
         setDeleteInProgress(true);
-        toggleDeleteAppConfirmation(false);
+        setShowDeleteAppConfirmationDialog(false);
         deleteApplicationRelease(appId)
             .then(() => {
                 setDeleteInProgress(false);
@@ -129,7 +129,7 @@ function ExternalAppValues({appId}) {
             </div>
             <div className="cta-container">
                 <button className="cta delete" disabled={isUpdateInProgress || isDeleteInProgress}
-                        onClick={e => toggleDeleteAppConfirmation(true)}>
+                        onClick={e => setShowDeleteAppConfirmationDialog(true)}>
                     { isDeleteInProgress ?
                         <div className="flex">
                             <span>Deleting</span>
@@ -155,8 +155,8 @@ function ExternalAppValues({appId}) {
                     }
                 </button>
             </div>
-            { deleteAppConfirmation &&
-                <DeleteDialog title={`Delete application '${releaseInfo.deployedAppDetail.appName}' ?`} delete={() => deleteApplication()} closeDelete={() => toggleDeleteAppConfirmation(false)}>
+            { showDeleteAppConfirmationDialog &&
+                <DeleteDialog title={`Delete application '${releaseInfo.deployedAppDetail.appName}' ?`} delete={() => deleteApplication()} closeDelete={() => setShowDeleteAppConfirmationDialog(false)}>
                     <DeleteDialog.Description >
                         <p>This will delete all resources associated with this application.</p>
                         <p>Deleted applications cannot be restored.</p>
