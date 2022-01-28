@@ -16,6 +16,10 @@ export interface HelmAppDetailResponse extends ResponseType {
     result?: HelmAppDetail
 }
 
+export interface UninstallReleaseResponse extends ResponseType {
+    result?: ActionResponse
+}
+
 export interface ReleaseInfo {
     deployedAppDetail: HelmApp
     defaultValues: string,
@@ -43,6 +47,10 @@ export interface HelmAppDetail {
     chartMetadata: ChartMetadata,
     resourceTreeResponse: ResourceTree,
     environmentDetails: AppEnvironmentDetail
+}
+
+export interface ActionResponse {
+    success: boolean
 }
 
 interface DeployedAt {
@@ -77,4 +85,9 @@ export const getDeploymentHistory = (appId: string): Promise<HelmAppDeploymentHi
 export const getAppDetail = (appId: string): Promise<HelmAppDetailResponse> => {
     let url = `${Routes.HELM_RELEASE_APP_DETAIL_API}?appId=${appId}`
     return get(url);
+}
+
+export const deleteApplicationRelease = (appId: string): Promise<UninstallReleaseResponse> => {
+    let url = `${Routes.HELM_RELEASE_APP_DELETE_API}?appId=${appId}`
+    return trash(url);
 }

@@ -120,6 +120,7 @@ export const Routes = {
     LOGS: 'k8s/pods/logs',
     DELETE_RESOURCE: 'k8s/resource/delete',
     CREATE_RESOURCE: 'k8s/resource/create',
+    HELM_RELEASE_APP_DELETE_API: 'application/delete',
 };
 
 export const ViewType = {
