@@ -14,7 +14,6 @@ export enum EAEmptyStateType {
 }
 
 function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefined }) {
-
     return (
         <div>
             {headerText && (
@@ -25,6 +24,20 @@ function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefi
             <div className="ea-empty__wrapper cn-9 text-center">
                 <div className="fs-20 fw-6 mb-8">{title}</div>
                 <div className="fs-14 m-auto w-600">{msg}</div>
+                <div className='pt-20'>
+                    <a
+                        href={knowMoreLink}
+                        target="_blank"
+                        className="empty__know-more-btn cursor saved-filter__clear-btn saved-filter__clear-btn--dark mr-16"
+                    >
+                        Know more
+                    </a>
+                    <a target="_blank" href={DOCUMENTATION.HYPERION_TO_FULL_MODE}>
+                        <button type="button" className="cta empty__install-btn">
+                            Upgrade to Devtron full experience
+                        </button>
+                    </a>
+                </div>
                 <div className="m-tb-20">
                     {(() => {
                         switch (stateType) {
@@ -39,7 +52,7 @@ function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefi
                                 );
                             case EAEmptyStateType.HELMCHARTS:
                                 return (
-                                    <img className="ea-empty-img" src={chartsEmpty} width="800" alt="no apps found" />
+                                    <img className="ea-empty-img" src={chartsEmpty}  width="800" alt="no apps found" />
                                 );
                             case EAEmptyStateType.BULKEDIT:
                                 return (
@@ -58,20 +71,6 @@ function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefi
                                 );
                         }
                     })()}
-                </div>
-                <div>
-                    <a
-                        href={knowMoreLink}
-                        target="_blank"
-                        className="empty__know-more-btn cursor saved-filter__clear-btn saved-filter__clear-btn--dark mr-16"
-                    >
-                        Know more
-                    </a>
-                    <a target="_blank" href={DOCUMENTATION.HYPERION_TO_FULL_MODE}>
-                        <button type="button" className="cta empty__install-btn">
-                            Check how to install
-                        </button>
-                    </a>
                 </div>
             </div>
         </div>

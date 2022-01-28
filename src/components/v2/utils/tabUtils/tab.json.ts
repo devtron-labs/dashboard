@@ -35,7 +35,7 @@ export const ManifestTabJSON = [
         isDisabled: false
     },
     {
-        name: "Desired manifest",
+        name: "Helm generated manifest",
         isSelected: false,
         isDisabled: false
     }
