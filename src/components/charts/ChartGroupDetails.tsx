@@ -151,6 +151,7 @@ export default function ChartGroupDetails() {
             setDeleting(false);
         }
     }
+    
     return (
         <div className="chart-group-details-page">
             <div className="page-header">

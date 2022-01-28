@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getGitHostList, getGitProviderList } from '../../services/service';
-import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig } from './gitProvider.service'
+import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service'
 import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ErrorScreenManager } from '../common'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
@@ -26,7 +26,7 @@ export default function GitProvider({ ...props }) {
     const [isErrorLoading, setIsErrorLoading] = useState(false)
     const [errors, setErrors] = useState([])
     const [showGitProviderConfigModal, setGitProviderConfigModal] = useState(false)
-    // const [collapsed, toggleCollapse] = useState(true);
+
     async function getInitData() {
         try {
             const { result: providers = [] } = await getGitProviderList()
@@ -227,6 +227,8 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         hostName: { value: gitHost.value, error: '' },
         sshInput: { value: sshPrivateKey, error: '' }
     })
+    const [deleting, setDeleting] = useState(false);
+    const [confirmation, toggleConfirmation] = useState(false);
 
     function customHandleChange(e) {
         let _name = e.target.name;
@@ -355,11 +357,33 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
         return true
     }
 
+    async function handleDelete() {
+        setDeleting(true);
+        try {
+            await deleteGitProvider();
+            toast.success('Successfully deleted');
+        } catch (err) {
+            // if (err.code != 403) {
+            //     toggleConfirmation(false);
+            // } else {
+            showError(err);
+            // }
+        } finally {
+            setDeleting(false);
+        }
+    }
     return (
         <>
             <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
                 <div className="mb-16">
-                    <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
+                    <CustomInput
+                        autoComplete="off"
+                        value={state.name.value}
+                        onChange={handleOnChange}
+                        name="name"
+                        error={state.name.error}
+                        label="Name*"
+                    />
                 </div>
                 <div className="form__row form__row--two-third">
                     <div>
@@ -382,14 +406,14 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                                             position: 'relative',
                                             paddingBottom: '0px',
                                             maxHeight: '176px',
-                                        }
-                                    }
+                                        };
+                                    },
                                 }}
                                 components={{
                                     IndicatorSeparator: null,
                                     DropdownIndicator,
                                     MenuList,
-                                    Option
+                                    Option,
                                 }}
                                 onChange={(e) => handleGithostChange(e)}
                                 isDisabled={gitHostId}
@@ -398,54 +422,106 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
 
                         <div className="cr-5 fs-11">{gitHost.error}</div>
                     </div>
-                    <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
+                    <CustomInput
+                        autoComplete="off"
+                        value={state.url.value}
+                        onChange={handleOnChange}
+                        name="url"
+                        error={state.url.error}
+                        label="URL*"
+                    />
                 </div>
                 <div className="form__label">Authentication type*</div>
-                <div className={` form__row--auth-type  ${!id ? 'pointer' : ''}`} >
-                    {
-                        AuthType.map(({ label: Lable, value }) =>
-                        <div className={` ${canSelectAuth(value) ? 'pointer' : 'wrapper-pointer-disabled'}` } onChange={handleOnChange} style={{borderRight: "1px solid #d6d4d9", height: "48px"}}>
-                            <Tippy className={` default-tt ${canSelectAuth(value) ? 'w-0 h-0' : 'w-200'}`} arrow={false} placement="bottom" content={`${canSelectAuth(value) ? '' : TippyMessage.authMessage}`}>
-                                    <label key={value} className={`${canSelectAuth(value) ? 'pointer' : 'pointer-disabled'} flex left ` } >
-                                        <input type="radio" name="auth" value={value} checked={value === state.auth.value} /> {Lable}
-                                    </label>
-                           </Tippy>
-                           </div>
-
-                           )
-                        }
-
+                <div className={` form__row--auth-type  ${!id ? 'pointer' : ''}`}>
+                    {AuthType.map(({ label: Lable, value }) => (
+                        <div
+                            className={` ${canSelectAuth(value) ? 'pointer' : 'wrapper-pointer-disabled'}`}
+                            onChange={handleOnChange}
+                            style={{ borderRight: '1px solid #d6d4d9', height: '48px' }}
+                        >
+                            <Tippy
+                                className={` default-tt ${canSelectAuth(value) ? 'w-0 h-0' : 'w-200'}`}
+                                arrow={false}
+                                placement="bottom"
+                                content={`${canSelectAuth(value) ? '' : TippyMessage.authMessage}`}
+                            >
+                                <label
+                                    key={value}
+                                    className={`${canSelectAuth(value) ? 'pointer' : 'pointer-disabled'} flex left `}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="auth"
+                                        value={value}
+                                        checked={value === state.auth.value}
+                                    />{' '}
+                                    {Lable}
+                                </label>
+                            </Tippy>
+                        </div>
+                    ))}
                 </div>
-                <div className="flex fs-12 left pt-4 mb-20" style={{ color: "#6b778c" }}>
+                <div className="flex fs-12 left pt-4 mb-20" style={{ color: '#6b778c' }}>
                     <Warn className="icon-dim-16 mr-4 " />
-                            Once configured, authentication type cannot be switched from HTTPS (user auth/anonymous) to SSH or vice versa.
+                    Once configured, authentication type cannot be switched from HTTPS (user auth/anonymous) to SSH or
+                    vice versa.
                 </div>
                 {state.auth.error && <div className="form__error">{state.auth.error}</div>}
-                {
-                    state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
-                        <CustomInput value={customState.username.value} onChange={customHandleChange} name="username" error={customState.username.error} label="Username*" />
+                {state.auth.value === 'USERNAME_PASSWORD' && (
+                    <div className="form__row form__row--two-third">
+                        <CustomInput
+                            value={customState.username.value}
+                            onChange={customHandleChange}
+                            name="username"
+                            error={customState.username.error}
+                            label="Username*"
+                        />
                         <div>
-                            <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password/Auth token*" />
-                            <div className="flex fs-12 left pt-4 mb-20" style={{ color: "#6b778c" }}>
+                            <ProtectedInput
+                                value={customState.password.value}
+                                onChange={customHandleChange}
+                                name="password"
+                                error={customState.password.error}
+                                label="Password/Auth token*"
+                            />
+                            <div className="flex fs-12 left pt-4 mb-20" style={{ color: '#6b778c' }}>
                                 <Warn className="icon-dim-16 mr-4 " />
                                 If using Github, use token instead of password.
                             </div>
                         </div>
                     </div>
-                }
-                {
-                    state.auth.value === 'SSH' && <div className="form__row ">
+                )}
+                {state.auth.value === 'SSH' && (
+                    <div className="form__row ">
                         <div className="form__label">Private SSH key*</div>
-                        <textarea placeholder="Enter key text" className="form__input w-100" style={{ height: "100px", backgroundColor: "#f7fafc" }} onChange={customHandleChange} name="sshInput" value={customState.sshInput.value} />
+                        <textarea
+                            placeholder="Enter key text"
+                            className="form__input w-100"
+                            style={{ height: '100px', backgroundColor: '#f7fafc' }}
+                            onChange={customHandleChange}
+                            name="sshInput"
+                            value={customState.sshInput.value}
+                        />
                         {customState.sshInput.error && <div className="form__error">{customState.sshInput.error}</div>}
                     </div>
-                }
-                <div className="form__row form__buttons">
-                    <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
-                    <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
+                )}
+                <div className="form__row form__buttons content-space">
+                    <div>
+                        <button className="cta delete" type="button" onClick={() => handleDelete()}>
+                            Delete
+                        </button>
+                    </div>
+                    <div>
+                        <button className="cta cancel" type="button" onClick={(e) => toggleCollapse((t) => !t)}>
+                            Cancel
+                        </button>
+                        <button className="cta" type="submit" disabled={loading}>
+                            {loading ? <Progressing /> : id ? 'Update' : 'Save'}
+                        </button>
+                    </div>
                 </div>
             </form>
         </>
-    )
+    );
 }
 
