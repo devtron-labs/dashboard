@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ReactComponent as PlayButton } from '../../../../assets/icons/ic-play.svg';
 import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg';
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
-import { useParams, useRouteMatch, useLocation, useHistory } from 'react-router';
+import { useParams, useRouteMatch, useLocation } from 'react-router';
 import { NodeDetailTab } from '../nodeDetail.type';
 import { getLogsURL } from '../nodeDetail.api';
 import IndexStore from '../../../index.store';
@@ -22,175 +22,144 @@ import { ReactComponent as Question } from '../../../../assets/icons/ic-question
 import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancelled.svg';
 import MessageUI, { MsgUIType } from '../../../../common/message.ui';
 
-const subject: Subject<string> = new Subject();
-const commandLineParser = require('command-line-parser');
+const subject: Subject<string> = new Subject()
+const commandLineParser = require('command-line-parser')
 
 interface PodContainerOptions {
-    podOptions: Array<{ name: string; selected: boolean }>;
-    containerOptions: Array<{ name: string; selected: boolean }>;
-    grepTokens?: any;
+    podOptions: Array<{ name: string; selected: boolean }>
+    containerOptions: Array<{ name: string; selected: boolean }>
 }
 
 interface LogState {
-    selectedPods: Array<string>;
-    selectedContainer: string;
-    grepTokens?: any;
+    selectedPodOption: string
+    selectedContainerOption: string
+    grepTokens?: any
 }
 
 function LogsComponent({ selectedTab, isDeleted }) {
-    const location = useLocation();
-    const key = useKeyDown();
-    const { url } = useRouteMatch();
-    const params = useParams<{ actionName: string; podName: string; nodeType: string }>();
+    const location = useLocation()
+    const key = useKeyDown()
+    const { url } = useRouteMatch()
+    const params = useParams<{ actionName: string; podName: string; nodeType: string }>()
 
-    const [logsPaused, setLogsPaused] = useState(false);
-    const [tempSearch, setTempSearch] = useState<string>('');
-    const [highlightString, setHighlightString] = useState('');
-    const [logsCleared, setLogsCleared] = useState(false);
-    const [readyState, setReadyState] = useState(null);
+    const [logsPaused, setLogsPaused] = useState(false)
+    const [tempSearch, setTempSearch] = useState<string>('')
+    const [highlightString, setHighlightString] = useState('')
+    const [logsCleared, setLogsCleared] = useState(false)
+    const [readyState, setReadyState] = useState(null)
 
-    const logsPausedRef = useRef(false);
-    const workerRef = useRef(null);
+    const logsPausedRef = useRef(false)
+    const workerRef = useRef(null)
 
-    const appDetails = IndexStore.getAppDetails();
+    const appDetails = IndexStore.getAppDetails()
 
-    const isLogAnalyzer = !params.podName;
+    const isLogAnalyzer = !params.podName
 
-    const [podContainerOptions, setPodContainerOptions] = useState(() =>
-        getInitialPodContainerOptions(isLogAnalyzer, params, location),
-    );
-
-    const getSelectedPodList = (selectedOption: string): Array<PodMetaData> => {
-        let pods: Array<PodMetaData>;
-        onLogsCleared();
-        switch (selectedOption) {
-            case 'All pods':
-                pods = IndexStore.getAllPods();
-                break;
-            case 'All new pods':
-                pods = IndexStore.getAllNewPods();
-                break;
-            case 'All old pods':
-                pods = IndexStore.getAllNewPods();
-                break;
-            default:
-                pods = IndexStore.getAllPods().filter((_pod) => _pod.name == selectedOption);
-                break;
-        }
-        return pods
-    };
+    const [logState, setLogState] = useState(() =>
+        getInitialPodContainerSelection(isLogAnalyzer, params, location)
+    )
 
     const handlePodSelection = (selectedOption: string) => {
         let pods = getSelectedPodList(selectedOption)
+        let containers = new Set(pods[0].containers ?? [])
+        let selectedContainer = containers.has(logState.selectedContainerOption)? logState.selectedContainerOption: ''
 
-        let podOptions = podContainerOptions.podOptions.map(_po =>  ({
-            name: _po.name,
-            selected: _po.name == selectedOption
-        }))
-
-        let selectedContainer = podContainerOptions.containerOptions.find(_co => _co.selected)?.name ?? ''
-
-        let containerOptions = pods[0].containers.map((_containerName) => ({
-            name: _containerName,
-            selected: _containerName == selectedContainer,
-        }));
-
-        setPodContainerOptions({
-            podOptions: podOptions,
-            containerOptions: containerOptions,
-            grepTokens: podContainerOptions.grepTokens
-        });
-    };
+        setLogState({
+            selectedPodOption: selectedOption,
+            selectedContainerOption: selectedContainer,
+            grepTokens: logState.grepTokens
+        })
+    }
 
     const handleContainerChange = (selectedContainer: string) => {
-        setPodContainerOptions({
-            podOptions: podContainerOptions.podOptions,
-            containerOptions: podContainerOptions.containerOptions.map(_co => ({name: _co.name, selected: _co.name == selectedContainer})),
-            grepTokens: podContainerOptions.grepTokens
-        });
-    };
+        setLogState({
+            selectedPodOption: logState.selectedPodOption,
+            selectedContainerOption: selectedContainer,
+            grepTokens: logState.grepTokens
+        })
+    }
 
     const handleSearchTextChange = (searchText: string) => {
         if (!searchText) {
-            setPodContainerOptions({
-                podOptions: podContainerOptions.podOptions,
-                containerOptions: podContainerOptions.containerOptions,
+            setLogState({
+                selectedPodOption: logState.selectedPodOption,
+                selectedContainerOption: logState.selectedContainerOption,
                 grepTokens: undefined
-            });
-            return;
+            })
+            return
         }
-        const pipes = parsePipes(searchText);
-        const tokens = pipes.map((p) => getGrepTokens(p));
+        const pipes = parsePipes(searchText)
+        const tokens = pipes.map((p) => getGrepTokens(p))
         if (tokens.some((t) => !t)) {
-            toast.warn('Expression is invalid.');
-            return;
+            toast.warn('Expression is invalid.')
+            return
         }
-        setPodContainerOptions({
-            podOptions: podContainerOptions.podOptions,
-            containerOptions: podContainerOptions.containerOptions,
+        setLogState({
+            selectedPodOption: logState.selectedPodOption,
+            selectedContainerOption: logState.selectedContainerOption,
             grepTokens: tokens
-        });
-    };
+        })
+    }
 
     const parsePipes = (expression: string): Array<string> => {
-        const pipes = expression.split(/[\|\s]*grep[\s]*/).filter((p) => !!p);
-        return pipes;
-    };
+        const pipes = expression.split(/[\|\s]*grep[\s]*/).filter((p) => !!p)
+        return pipes
+    }
 
     const getGrepTokens = (expression) => {
         const options = commandLineParser({
             args: expression.replace(/[\s]+/, ' ').replace('"', '').split(' '),
             booleanKeys: ['v'],
             allowEmbeddedValues: true,
-        });
-        let { _args, A = 0, B = 0, C = 0, a = 0, b = 0, c = 0, v = false } = options;
+        })
+        let { _args, A = 0, B = 0, C = 0, a = 0, b = 0, c = 0, v = false } = options
         if (C || c) {
-            A = C || c;
-            B = C || c;
+            A = C || c
+            B = C || c
         }
         if (_args) {
-            return { _args: _args[0], a: Number(A || a), b: Number(B || b), v };
-        } else return null;
-    };
+            return { _args: _args[0], a: Number(A || a), b: Number(B || b), v }
+        } else return null
+    }
 
     const handleMessage = (event: any) => {
-        if (!event || !event.data || !event.data.result) return;
+        if (!event || !event.data || !event.data.result) return
 
         if (logsPausedRef.current) {
-            return;
+            return
         }
 
-        event.data.result.forEach((log: string) => subject.publish(log));
+        event.data.result.forEach((log: string) => subject.publish(log))
 
         if (event.data.readyState) {
-            setReadyState(event.data.readyState);
+            setReadyState(event.data.readyState)
         }
-    };
+    }
 
     const stopWorker = () => {
         if (workerRef.current) {
             try {
-                workerRef.current.postMessage({ type: 'stop' });
-                workerRef.current.terminate();
+                workerRef.current.postMessage({ type: 'stop' })
+                workerRef.current.terminate()
             } catch (err) {}
         }
-    };
+    }
 
     const handleLogsPause = () => {
-        setLogsPaused(!logsPaused);
-    };
+        setLogsPaused(!logsPaused)
+    }
 
     const onLogsCleared = () => {
-        setLogsCleared(true);
-        setTimeout(() => setLogsCleared(false), 100);
-    };
+        setLogsCleared(true)
+        setTimeout(() => setLogsCleared(false), 100)
+    }
 
     const fetchLogs = () => {
         if (podContainerOptions.podOptions.length == 0 || podContainerOptions.containerOptions.length == 0) {
             return
         }
-        workerRef.current = new WebWorker(sseWorker);
-        workerRef.current['addEventListener' as any]('message', handleMessage);
+        workerRef.current = new WebWorker(sseWorker)
+        workerRef.current['addEventListener' as any]('message', handleMessage)
 
         let pods = podContainerOptions.podOptions.filter(_pod => _pod.selected).flatMap(_pod => getSelectedPodList(_pod.name))
 
@@ -199,8 +168,8 @@ function LogsComponent({ selectedTab, isDeleted }) {
         let podsWithContainers = pods.flatMap(_pod => _pod.containers?.map(_c => [_pod.name, _c])).filter(_pwc => containers.includes(_pwc[1]))
 
         let urls = podsWithContainers.map((_pwc) => {
-            return getLogsURL(appDetails, _pwc[0], Host, _pwc[1]);
-        });
+            return getLogsURL(appDetails, _pwc[0], Host, _pwc[1])
+        })
 
         if (urls.length == 0) {
             return
@@ -208,52 +177,55 @@ function LogsComponent({ selectedTab, isDeleted }) {
 
         workerRef.current['postMessage' as any]({
             type: 'start',
-            payload: { urls: urls, grepTokens: podContainerOptions.grepTokens, timeout: 300, pods: podsWithContainers.map(_pwc => _pwc[0]) },
-        });
-    };
+            payload: { urls: urls, grepTokens: logState.grepTokens, timeout: 300, pods: podsWithContainers.map(_pwc => _pwc[0]) },
+        })
+    }
 
     const handleLogsSearch = (e) => {
-        e.preventDefault();
+        e.preventDefault()
         if (e.key === 'Enter' || e.keyCode === 13) {
-            handleSearchTextChange(e.target.value as string);
-            const { length, [length - 1]: highlightString } = e.target.value.split(' ');
-            setHighlightString(highlightString);
+            handleSearchTextChange(e.target.value as string)
+            const { length, [length - 1]: highlightString } = e.target.value.split(' ')
+            setHighlightString(highlightString)
         }
-    };
+    }
 
     useEffect(() => {
-        logsPausedRef.current = logsPaused;
-    }, [logsPaused]);
+        logsPausedRef.current = logsPaused
+    }, [logsPaused])
 
     useEffect(() => {
-        const combo = key.join();
+        const combo = key.join()
         if (combo === 'Control,c') {
-            handleLogsPause();
+            handleLogsPause()
         }
-    }, [key.join()]);
+    }, [key.join()])
 
     const handleLogSearchSubmit = (e) => {
-        e.preventDefault();
-    };
+        e.preventDefault()
+    }
 
     useEffect(() => {
         if (selectedTab) {
-            selectedTab(NodeDetailTab.LOGS, url);
+            selectedTab(NodeDetailTab.LOGS, url)
         }
-        setPodContainerOptions(
-            getInitialPodContainerOptions(isLogAnalyzer, params, location)
+        setLogState(
+            getInitialPodContainerSelection(isLogAnalyzer, params, location)
         )
-    }, [params.podName]);
+        //TODO: reset pauseLog and grepToken
+    }, [params.podName])
 
     useEffect(() => {
         //Values are already set once we reach here
         //selected pods, containers, searchText
-        onLogsCleared();
-        stopWorker();
-        fetchLogs();
+        onLogsCleared()
+        stopWorker()
+        fetchLogs()
 
-        return () => stopWorker();
-    }, [podContainerOptions]);
+        return () => stopWorker()
+    }, [logState])
+
+    let podContainerOptions = getPodContainerOptions(isLogAnalyzer, params, location, logState)
 
     return isDeleted ? (
         <div>
@@ -284,7 +256,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                         <Tippy className="default-tt" arrow={false} placement="bottom" content={'Clear'}>
                             <Abort
                                 onClick={(e) => {
-                                    onLogsCleared();
+                                    onLogsCleared()
                                 }}
                                 className="icon-dim-20 ml-8 cursor"
                             />
@@ -363,7 +335,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                             )
                                         }
                                         onChange={(selected) => {
-                                            handleContainerChange((selected as any).value as string);
+                                            handleContainerChange((selected as any).value as string)
                                         }}
                                         styles={{
                                             ...multiSelectStyles,
@@ -387,14 +359,6 @@ function LogsComponent({ selectedTab, isDeleted }) {
                             </React.Fragment>
                         )}
                     </div>
-                    {/* <div > */}
-                    {/* <input
-                            type="text"
-                            onKeyUp={handleLogsSearch}
-                            className="w-100 bcn-1 en-2 bw-1 br-4 pl-12 pr-12 pt-4 pb-4"
-                            placeholder="grep -A 10 -B 20 'Server Error'| grep 500 "
-                            name="log_search_input"
-                        /> */}
 
                     <form
                         className="col-6 flex flex-justify left w-100 bcn-1 en-2 bw-1 br-4 pl-12 pr-12"
@@ -410,14 +374,14 @@ function LogsComponent({ selectedTab, isDeleted }) {
                             name="log_search_input"
                             placeholder='grep -A 10 -B 20 "Server Error" | grep 500'
                         />
-                        {podContainerOptions.grepTokens && (
+                        {logState.grepTokens && (
                             <CloseImage
                                 className="icon-dim-20 pointer"
                                 onClick={(e) => {
-                                    e.preventDefault();
-                                    handleSearchTextChange('');
-                                    setHighlightString('');
-                                    setTempSearch('');
+                                    e.preventDefault()
+                                    handleSearchTextChange('')
+                                    setHighlightString('')
+                                    setTempSearch('')
                                 }}
                             />
                         )}
@@ -515,16 +479,49 @@ function LogsComponent({ selectedTab, isDeleted }) {
                 </div>
             )}
         </React.Fragment>
-    );
+    )
 }
 
-function getInitialPodContainerOptions(
+export function getSelectedPodList(selectedOption: string): Array<PodMetaData> {
+    let pods: Array<PodMetaData>
+    switch (selectedOption) {
+        case 'All pods':
+            pods = IndexStore.getAllPods()
+            break
+        case 'All new pods':
+            pods = IndexStore.getAllNewPods()
+            break
+        case 'All old pods':
+            pods = IndexStore.getAllNewPods()
+            break
+        default:
+            if (selectedOption.startsWith('All new')) {
+                let name = selectedOption.replace('All new ', '')
+                let podNames = new Set(IndexStore.getPodsForRootNode(name).map(_po => _po.name))
+                pods = IndexStore.getAllPods().filter(_po => podNames.has(_po.name))
+            } else if (selectedOption.startsWith('All old')) {
+                let name = selectedOption.replace('All old ', '')
+                let podNames = new Set(IndexStore.getPodsForRootNode(name).map(_po => _po.name))
+                pods = IndexStore.getAllPods().filter(_po => podNames.has(_po.name))
+            } else if (selectedOption.startsWith('All')) {
+                let name = selectedOption.replace('All ', '')
+                let podNames = new Set(IndexStore.getPodsForRootNode(name).map(_po => _po.name))
+                pods = IndexStore.getAllPods().filter(_po => podNames.has(_po.name))
+            } else {
+                pods = IndexStore.getAllPods().filter((_pod) => _pod.name == selectedOption)
+            }
+            break
+    }
+    return pods
+}
+
+function getPodContainerOptions(
     isLogAnalyzer: boolean,
     params: { actionName: string; podName: string; nodeType: string },
-    location: any,
+    location: any, logState: LogState
 ): PodContainerOptions {
     if (!isLogAnalyzer) {
-        let _selectedContainerName: string = new URLSearchParams(location.search).get('container');
+        let _selectedContainerName: string = new URLSearchParams(location.search).get('container')
         let containers = IndexStore.getAllPods()
             .filter((_pod) => _pod.name == params.podName)
             .flatMap((_pod) => _pod.containers).sort()
@@ -536,27 +533,28 @@ function getInitialPodContainerOptions(
             } as PodContainerOptions
         }
 
-        _selectedContainerName = _selectedContainerName ?? containers[0] as string
+        _selectedContainerName = (logState.selectedContainerOption ?? _selectedContainerName) ?? containers[0] as string
 
         let containerOptions = containers
             .map((_container) => {
-                return { name: _container, selected: _container == _selectedContainerName };
-            });
+                return { name: _container, selected: _container == _selectedContainerName }
+            })
 
         return {
             containerOptions: containerOptions,
             podOptions: [{name: params.podName, selected: true}],
-        } as PodContainerOptions;
+        } as PodContainerOptions
     } else {
-        let rootNamesOfPods = IndexStore.getPodsRootParentNameAndStatus()
-        let additionalPodOptions = rootNamesOfPods.map((rn, index) => ({ name: 'All '+ rn[0], selected: index == 0 }))
+        //build pod options
+        let rootNamesOfPods = IndexStore.getPodsRootParentNameAndStatus().flatMap(_ps => _ps[0].split("/").splice(-1))
+        let additionalPodOptions = rootNamesOfPods.map((rn, index) => ({ name: 'All '+ rn, selected: index == 0 }))
 
         if (IndexStore.getEnvDetails().envType === EnvType.APPLICATION) {
             additionalPodOptions.concat(
                 rootNamesOfPods.flatMap((rn, index) => (
                 [
-                    { name: 'All new ' + rn[0], selected: false },
-                    { name: 'All old ' + rn[0], selected: false }
+                    { name: 'All new ' + rn, selected: false },
+                    { name: 'All old ' + rn, selected: false }
                 ]
                 ))
             )
@@ -572,17 +570,74 @@ function getInitialPodContainerOptions(
             _allPods.map((_pod) => {
                 return { name: _pod.name, selected: false }
             }),
-        );
-        const containers = _allPods[0].containers.sort()
+        )
+        if (logState.selectedPodOption) {
+            podOptions.forEach(_po => _po.selected = _po.name.toLowerCase() == logState.selectedPodOption.toLowerCase())
+        }
+
+        //build container Options
+        let _allSelectedPods = getSelectedPodList(logState.selectedPodOption)
+        const containers = (_allSelectedPods[0].containers ?? []).sort()
         const containerOptions = containers.map((_container, index) => {
                 return { name: _container, selected: index == 0 }
-            });
-        console.log(podOptions)
-        console.log(containerOptions)
+            })
+        if (logState.selectedContainerOption) {
+            containerOptions.forEach(_co => _co.selected = _co.name.toLowerCase() == logState.selectedContainerOption.toLowerCase())
+        }
         return {
             containerOptions: containerOptions,
             podOptions: podOptions,
-        } as PodContainerOptions;
+        } as PodContainerOptions
+    }
+}
+
+function getInitialPodContainerSelection(
+    isLogAnalyzer: boolean,
+    params: { actionName: string; podName: string; nodeType: string },
+    location: any,
+): LogState {
+    if (!isLogAnalyzer) {
+        let _selectedContainerName: string = new URLSearchParams(location.search).get('container')
+        let containers = IndexStore.getAllPods()
+            .filter((_pod) => _pod.name == params.podName)
+            .flatMap((_pod) => _pod.containers).sort()
+
+        if (containers.length == 0) {
+            return {
+                selectedContainerOption: "",
+                selectedPodOption: "",
+            } as LogState
+        }
+
+        _selectedContainerName = _selectedContainerName ?? containers[0] as string
+
+        _selectedContainerName = containers
+            .find(_co => _co == _selectedContainerName) ?? ""
+
+        return {
+            selectedContainerOption: _selectedContainerName,
+            selectedPodOption: params.podName,
+        } as LogState
+    } else {
+        let rootNamesOfPods = IndexStore.getPodsRootParentNameAndStatus().flatMap(_ps => _ps[0].split("/").splice(-1)).sort()
+        let additionalPodOptions = rootNamesOfPods.map((rn, index) => ({ name: 'All '+ rn, selected: index == 0 }))
+
+        const _selectedPodOption = additionalPodOptions.find(_po => _po.selected)?.name ?? ""
+
+        const _allSelectedPods = getSelectedPodList(_selectedPodOption)
+        if (_allSelectedPods.length == 0) {
+            return {
+                selectedContainerOption: "",
+                selectedPodOption: "",
+            } as LogState
+        }
+
+        let containers = new Set(_allSelectedPods.flatMap(_po => _po.containers ?? []))
+        const _selectedContainerOption = [...containers].sort().find((_container, index) => index == 0 ) ?? ""
+        return {
+            selectedContainerOption: _selectedContainerOption,
+            selectedPodOption: _selectedPodOption,
+        } as LogState
     }
 }
 
@@ -593,4 +648,4 @@ function getFirstOrNull<T>(arr : Array<T>): T | null {
     return null
 }
 
-export default LogsComponent;
+export default LogsComponent
