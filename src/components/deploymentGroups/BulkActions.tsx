@@ -22,7 +22,7 @@ export default function BulkActions({ ...props }) {
                         'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'
                     }
                     stateType={EAEmptyStateType.BULKEDIT}
-                    knowMoreLink={DOCUMENTATION.BULK_UPDATE}
+                    knowMoreLink={DOCUMENTATION.HOME_PAGE}
                     headerText="Deployment Groups"
                 />
             </div>

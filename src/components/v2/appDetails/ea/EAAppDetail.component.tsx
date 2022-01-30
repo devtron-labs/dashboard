@@ -9,6 +9,7 @@ import AppDetailsComponent from '../AppDetails.component';
 import moment from 'moment'
 import * as queryString from 'query-string';
 import '../../lib/bootstrap-grid.min.css';
+import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../../../util/URLUtil';
 
 function ExternalAppDetail({appId, appName}) {
     const location = useLocation();
@@ -17,6 +18,7 @@ function ExternalAppDetail({appId, appName}) {
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
 
     let initTimer = null;
+    let isAPICallInProgress = false;
 
     // component load
     useEffect(() => {
@@ -27,20 +29,24 @@ function ExternalAppDetail({appId, appName}) {
             }
         };
     }, []);
-
+    
 
     useEffect(() => {
-        if(_checkIfToRefetchData()){
+        if(checkIfToRefetchData(location)){
             setTimeout(() => {
                 _getAndSetAppDetail();
-                _deleteRefetchDataFromUrl();
+                deleteRefetchDataFromUrl(history, location);
             } , 5000);
         }
     }, [location.search]);
 
     const _init = () => {
-        _getAndSetAppDetail();
-        initTimer = setTimeout(_init, 30000);
+        if(!isAPICallInProgress){
+            _getAndSetAppDetail();
+        }
+        initTimer = setTimeout(() => {
+            _init();
+        }, 30000);
     }
 
     const _convertToGenericAppDetailModel = (helmAppDetail : HelmAppDetail) : AppDetails =>  {
@@ -63,34 +69,20 @@ function ExternalAppDetail({appId, appName}) {
         return genericAppDetail
     }
 
-    const _checkIfToRefetchData = () : boolean => {
-        const queryParams = new URLSearchParams(location.search)
-        if (queryParams.has('refetchData')){
-            return true;
-        }
-        return false;
-    }
-
-    const _deleteRefetchDataFromUrl = () => {
-        if(_checkIfToRefetchData()){
-            const queryParams = new URLSearchParams(location.search);
-            queryParams.delete('refetchData');
-            history.replace({
-                search: queryParams.toString(),
-            })
-        }
-    }
-
     const _getAndSetAppDetail = () => {
+        isAPICallInProgress = true;
         getAppDetail(appId)
             .then((appDetailResponse: HelmAppDetailResponse) => {
                 IndexStore.publishAppDetails(_convertToGenericAppDetailModel(appDetailResponse.result));
                 setIsLoading(false);
+                isAPICallInProgress = false;
+                setErrorResponseCode(undefined);
             })
             .catch((errors: ServerErrors) => {
                 showError(errors);
                 setErrorResponseCode(errors.code);
                 setIsLoading(false);
+                isAPICallInProgress = false;
             });
     }
 

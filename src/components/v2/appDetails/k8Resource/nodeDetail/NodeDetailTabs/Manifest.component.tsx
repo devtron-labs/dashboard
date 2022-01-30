@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import {useLocation, useHistory} from 'react-router';
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router';
 import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json';
 import { iLink } from '../../../../utils/tabUtils/link.type';
 import { TabActions, useTab } from '../../../../utils/tabUtils/useTab';
-import { useParams, useRouteMatch } from 'react-router';
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg';
 import { NodeDetailTab } from '../nodeDetail.type';
 import {
@@ -15,10 +14,12 @@ import {
 import CodeEditor from '../../../../../CodeEditor/CodeEditor';
 import IndexStore from '../../../index.store';
 import MessageUI, { MsgUIType } from '../../../../common/message.ui';
-import { AppType } from '../../../appDetails.type';
+import { AppType, NodeType } from '../../../appDetails.type';
 import YAML from 'yaml';
 import { toast } from 'react-toastify';
 import { showError, ToastBody } from '../../../../../common';
+import { appendRefetchDataToUrl } from '../../../../../util/URLUtil';
+import { EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT, EA_MANIFEST_SECRET_INFO_TEXT } from '../../../../Constants';
 
 function ManifestComponent({ selectedTab, isDeleted }) {
     const location = useLocation();
@@ -37,15 +38,23 @@ function ManifestComponent({ selectedTab, isDeleted }) {
     const [isEditmode, setIsEditmode] = useState(false);
     const [showDesiredAndCompareManifest, setShowDesiredAndCompareManifest] = useState(false);
     const [isResourceMissing, setIsResourceMissing] = useState(false);
+    const [showInfoText, setShowInfoText] = useState(false);
 
     useEffect(() => {
         const selectedResource = appDetails.resourceTree.nodes.filter(
             (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
         )[0];
+        setShowInfoText(
+            !selectedResource.group &&
+                selectedResource.kind === NodeType.Secret &&
+                appDetails.appType === AppType.EXTERNAL_HELM_CHART,
+        );
 
-        let _isResourceMissing = appDetails.appType === AppType.EXTERNAL_HELM_CHART && selectedResource.health?.status === 'Missing';
+        let _isResourceMissing =
+            appDetails.appType === AppType.EXTERNAL_HELM_CHART && selectedResource.health?.status === 'Missing';
         setIsResourceMissing(_isResourceMissing);
-        let _showDesiredAndCompareManifest = appDetails.appType === AppType.EXTERNAL_HELM_CHART && !selectedResource.parentRefs?.length;
+        let _showDesiredAndCompareManifest =
+            appDetails.appType === AppType.EXTERNAL_HELM_CHART && !selectedResource.parentRefs?.length;
         setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest);
 
         setLoading(true);
@@ -57,7 +66,8 @@ function ManifestComponent({ selectedTab, isDeleted }) {
         try {
             Promise.all([
                 !_isResourceMissing && getManifestResource(appDetails, params.podName, params.nodeType),
-                _showDesiredAndCompareManifest && getDesiredManifestResource(appDetails, params.podName, params.nodeType),
+                _showDesiredAndCompareManifest &&
+                    getDesiredManifestResource(appDetails, params.podName, params.nodeType),
             ])
                 .then((response) => {
                     let _manifest;
@@ -128,9 +138,15 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                 .catch((err) => {
                     setLoading(false);
                     if (err.code === 403) {
-                        toast.info(<ToastBody title="Access denied" subtitle="You don't have access to perform this action." />, {
-                          className: 'devtron-toast unauthorized',
-                        });
+                        toast.info(
+                            <ToastBody
+                                title="Access denied"
+                                subtitle="You don't have access to perform this action."
+                            />,
+                            {
+                                className: 'devtron-toast unauthorized',
+                            },
+                        );
                     } else if (err.code === 500) {
                         const error = err['errors'] && err['errors'][0];
                         if (error && error.code && error.userMessage) {
@@ -157,21 +173,13 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                     setIsResourceMissing(false);
                 }
                 setLoading(false);
-                _refetchAppDetailData();
+                appendRefetchDataToUrl(history, location);
             })
             .catch((err) => {
                 setLoading(false);
                 showError(err);
             });
     };
-
-    const _refetchAppDetailData = () => {
-        const queryParams = new URLSearchParams(location.search);
-        queryParams.append('refetchData', 'true');
-        history.replace({
-            search: queryParams.toString(),
-        })
-    }
 
     const handleCancel = () => {
         setIsEditmode(false);
@@ -195,7 +203,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
             case 'Compare':
                 setActiveManifestEditorData(manifest);
                 break;
-            case 'Desired manifest':
+            case 'Helm generated manifest':
                 return setTimeout(() => {
                     setActiveManifestEditorData(desiredManifest);
                 }, 0);
@@ -222,7 +230,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
             <MessageUI msg="This resource no longer exists" size={32} />
         </div>
     ) : (
-        <div style={{ background: '#0B0F22', flex: 1 }}>
+        <div style={{ background: '#0B0F22', flex: 1, minHeight: '600px' }}>
             {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
             {!error && (
                 <>
@@ -231,7 +239,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                             <div className="flex left pl-20 pr-20 border-bottom manifest-tabs-row">
                                 {tabs.map((tab: iLink, index) => {
                                     return (!showDesiredAndCompareManifest &&
-                                        (tab.name == 'Desired manifest' || tab.name == 'Compare')) ||
+                                        (tab.name == 'Helm generated manifest' || tab.name == 'Compare')) ||
                                         (isResourceMissing && tab.name == 'Compare') ? (
                                         <></>
                                     ) : (
@@ -296,10 +304,19 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                 customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} size={24} />}
                                 focus={isEditmode}
                             >
+                                {showInfoText && (
+                                    <CodeEditor.Information
+                                        text={
+                                            isEditmode && activeTab === 'Live manifest'
+                                                ? EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT
+                                                : EA_MANIFEST_SECRET_INFO_TEXT
+                                        }
+                                    />
+                                )}
                                 {activeTab === 'Compare' && (
                                     <CodeEditor.Header hideDefaultSplitHeader={true}>
                                         <div className="split-header">
-                                            <div className="left-pane">Desired manifest</div>
+                                            <div className="left-pane">Helm generated manifest </div>
                                             <div className="right-pane">Live manifest</div>
                                         </div>
                                     </CodeEditor.Header>

@@ -22,8 +22,9 @@ export class Filter extends Component<FilterProps, FilterState>{
     }
 
     componentWillReceiveProps(nextProps) {
+        let _searchKey = this._getSearchKey();
         let list = JSON.parse(JSON.stringify(nextProps.list));
-        let filteredList = list.filter(item => item[this.props.labelKey].search(this.state.searchStr.toLocaleLowerCase()) != -1);
+        let filteredList = list.filter(item => item[_searchKey].search(this.state.searchStr.toLocaleLowerCase()) != -1);
         this.setState({ list, filteredList });
     }
 
@@ -36,9 +37,10 @@ export class Filter extends Component<FilterProps, FilterState>{
     }
 
     handleSearch = (event): void => {
+        let _searchKey = this._getSearchKey();
         let searchStr = event.target.value;
         let filteredList = this.state.list.filter((item) => {
-            if (item[this.props.labelKey].search(searchStr.toLocaleLowerCase()) != -1) {
+            if (item[_searchKey].search(searchStr.toLocaleLowerCase()) != -1) {
                 return {
                     key: item.key,
                     label: item.label,
@@ -94,6 +96,11 @@ export class Filter extends Component<FilterProps, FilterState>{
         if(this.props.onShowHideFilterContent){
             this.props.onShowHideFilterContent(show);
         }
+    }
+
+    _getSearchKey = () : string => {
+        let _searchKey = this.props.searchKey || this.props.labelKey;
+        return _searchKey;
     }
 
     render() {

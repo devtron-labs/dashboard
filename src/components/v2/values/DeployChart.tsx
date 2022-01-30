@@ -178,11 +178,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
 				await updateChart(payload)
 				toast.success('Deployment initiated')
 				setLoading(false)
-				let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}`;
+				let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`;
 				history.push(_url);
-				console.log(url)
 				onHide(true)
-			
 			}
 
 			else {
@@ -198,7 +196,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
 				};
 				const { result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId } } = await installChart(payload);
 				toast.success('Deployment initiated');
-                push(`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}`)
+                push(`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}?refetchData=true`)
 			}
 		}
 		catch (err) {
@@ -411,10 +409,15 @@ const DeployChart: React.FC<DeployChartProps> = ({
 		}
 	}, []);
 	return (<>
-		<div className={`deploy-chart-container bcn-0 ${readmeCollapsed ? 'readmeCollapsed' : 'readmeOpen'}`} style={{height: 'calc(100vh - 90px)'}}>
-			<div className="header-container flex column">
-				<div className="border" />
-			</div>
+		<div className={`deploy-chart-container bcn-0 ${readmeCollapsed ? 'readmeCollapsed' : 'readmeOpen'} `}  style={{height: 'calc(100vh - 90px)'}}>
+		<div className="header-container flex column">
+              {
+			  !isUpdate ? <>
+			  <div className="title">{chartName}/ {name}</div>
+                <div className="border" /> 
+				</> : ''
+				}
+            </div>
 			<ReadmeColumn readmeCollapsed={readmeCollapsed} toggleReadmeCollapsed={toggleReadmeCollapsed} readme={readme} />
 			<div className="deploy-chart-body">
 				<div className="overflown" ref={deployChartForm}>

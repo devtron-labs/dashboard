@@ -253,9 +253,9 @@ export function AppHeader() {
                     onClick={(event) => {
                         ReactGA.event({
                             category: 'App',
-                            action: 'Trigger Clicked',
+                            action: 'Build & Deploy Clicked',
                         });
-                    }}>Trigger
+                    }}>Build & Deploy
                 </NavLink>
             </li>
             <li className="tab-list__tab">

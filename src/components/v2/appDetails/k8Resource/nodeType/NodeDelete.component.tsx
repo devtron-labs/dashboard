@@ -14,6 +14,7 @@ import './nodeType.scss';
 import { deleteResource } from '../../appDetails.api';
 import { NodeType } from '../../appDetails.type';
 import AppDetailsStore from '../../appDetails.store';
+import { appendRefetchDataToUrl } from '../../../../util/URLUtil';
 
 function NodeDeleteComponent({ nodeDetails, appDetails }) {
     const { path } = useRouteMatch();
@@ -77,19 +78,10 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
             const appDetailsTabs = _tabs.filter((_tab) => _tab.name === nodeDetails.name);
 
             appDetailsTabs.forEach((_tab) => AppDetailsStore.removeAppDetailsTabByIdentifier(_tab.title));
-            _refetchAppDetailData();
+            appendRefetchDataToUrl(history, location);
         } catch (err) {
             showError(err);
         }
-    }
-
-    // TODO : move it to some common place, so that recreateResource in manifest can also use that common function.
-    const _refetchAppDetailData = () => {
-        const queryParams = new URLSearchParams(location.search);
-        queryParams.append('refetchData', 'true');
-        history.replace({
-            search: queryParams.toString(),
-        })
     }
 
     return (

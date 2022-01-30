@@ -21,6 +21,7 @@ import { EnvType, PodMetaData } from '../../../appDetails.type';
 import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg';
 import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancelled.svg';
 import MessageUI, { MsgUIType } from '../../../../common/message.ui';
+import { Option } from '../../../../common/ReactSelect.utils';
 
 const subject: Subject<string> = new Subject()
 const commandLineParser = require('command-line-parser')
@@ -294,18 +295,32 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                                     border: '0px',
                                                     backgroundColor: 'transparent',
                                                     minHeight: '24px !important',
+                                                    cursor: 'pointer',
                                                 }),
                                                 singleValue: (base, state) => ({
                                                     ...base,
                                                     fontWeight: 600,
                                                     color: '#06c',
+                                                    direction: 'rtl',
+                                                    marginLeft: 0
                                                 }),
                                                 indicatorsContainer: (provided, state) => ({
                                                     ...provided,
                                                 }),
+                                                option: (base, state) => ({
+                                                    ...base,
+                                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                                    color: 'var(--N900)',
+                                                    textOverflow: 'ellipsis',
+                                                    overflow: 'hidden',
+                                                    whiteSpace: 'nowrap',
+                                                    direction: 'rtl',
+                                                    cursor: 'pointer',
+                                                }),
                                             }}
                                             components={{
                                                 IndicatorSeparator: null,
+                                                Option,
                                             }}
                                         />
                                     </div>
@@ -345,14 +360,26 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                                 border: '0px',
                                                 backgroundColor: 'transparent',
                                                 minHeight: '24px !important',
+                                                cursor: 'pointer',
                                             }),
                                             singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
                                             indicatorsContainer: (provided, state) => ({
                                                 ...provided,
                                             }),
+                                            option: (base, state) => ({
+                                                ...base,
+                                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                                color: 'var(--N900)',
+                                                textOverflow: 'ellipsis',
+                                                overflow: 'hidden',
+                                                whiteSpace: 'nowrap',
+                                                direction: 'rtl',
+                                                cursor: 'pointer',
+                                            }),
                                         }}
                                         components={{
                                             IndicatorSeparator: null,
+                                            Option,
                                         }}
                                     />
                                 </div>
@@ -407,7 +434,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
             </div>
             {podContainerOptions.containerOptions.filter(_co => _co.selected).length > 0 && podContainerOptions.podOptions.filter(_po => _po.selected).length > 0 && (
                 <div
-                    style={{ gridColumn: '1 / span 2', background: '#0b0f22' }}
+                    style={{ gridColumn: '1 / span 2', background: '#0b0f22', minHeight: '600px' }}
                     className="flex column log-viewer-container"
                 >
                     <div
@@ -468,7 +495,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
             {podContainerOptions.containerOptions.filter(_co => _co.selected).length == 0 && (
                 <div className="no-pod no-pod--container ">
                     <MessageUI
-                        icon={MsgUIType.NO_CONTAINER}
+                        icon={MsgUIType.MULTI_CONTAINER}
                         msg={`${
                             (podContainerOptions?.containerOptions ?? []).length > 0
                                 ? 'Select a container to view logs'

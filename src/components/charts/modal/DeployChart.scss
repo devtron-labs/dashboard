@@ -187,3 +187,7 @@
 .update-chart path {
     fill: var(--Y700)
 }
+
+.update_deploy-chart-container_header {
+    grid-template-rows: 60px 1fr 64px;
+}

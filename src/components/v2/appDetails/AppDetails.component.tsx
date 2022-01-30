@@ -78,97 +78,100 @@ const AppDetailsComponent = () => {
 
             <SyncErrorComponent appStreamData={streamData} />
 
-            <div className="resource-tree-wrapper flexbox pl-20 pr-20" style={{outline: 'none'}} tabIndex={0} ref={tabRef}>
-                <ul className="tab-list">
-                    {applicationObjectTabs.map((tab: ApplicationObject, index: number) => {
-                        return (
-                            <>
-                                <li
-                                    key={index + 'tab'}
-                                    id={`${params.nodeType}_${tab.name}`}
-                                    className="flex left ellipsis-right "
-                                >
-                                    <Tippy
-                                        className={`${
-                                            tab.name === AppDetailsTabs.log_analyzer ||
-                                            tab.name === AppDetailsTabs.k8s_Resources
-                                                ? 'hide-section'
-                                                : ''
-                                        } default-tt `}
-                                        arrow={false}
-                                        placement="top"
-                                        content={
-                                            tab.name !== AppDetailsTabs.log_analyzer &&
-                                            tab.name !== AppDetailsTabs.k8s_Resources &&
-                                            tab.title
-                                        }
-                                    >
-                                        <div className="flex">
-                                            <div
+            {
+                appDetails.resourceTree?.nodes?.length > 0 &&
+                <>
+                    <div className="resource-tree-wrapper flexbox pl-20 pr-20" style={{outline: 'none'}} tabIndex={0} ref={tabRef}>
+                        <ul className="tab-list">
+                            {applicationObjectTabs.map((tab: ApplicationObject, index: number) => {
+                                return (
+                                    <>
+                                        <li
+                                            key={index + 'tab'}
+                                            id={`${params.nodeType}_${tab.name}`}
+                                            className="flex left ellipsis-right "
+                                        >
+                                            <Tippy
                                                 className={`${
-                                                    tab.isSelected ? 'resource-tree-tab bcn-0 cn-9' : ''
-                                                } flex left pl-12 pt-8 pb-8 pr-12 `}
+                                                    tab.name === AppDetailsTabs.log_analyzer ||
+                                                    tab.name === AppDetailsTabs.k8s_Resources
+                                                        ? 'hide-section'
+                                                        : ''
+                                                } default-tt `}
+                                                arrow={false}
+                                                placement="top"
+                                                content={
+                                                    tab.name !== AppDetailsTabs.log_analyzer &&
+                                                    tab.name !== AppDetailsTabs.k8s_Resources &&
+                                                    tab.title
+                                                }
                                             >
-                                                <NavLink
-                                                    to={`${tab.url}`}
-                                                    className={`resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 no-decor `}
-                                                >
+                                                <div className="flex">
                                                     <div
-                                                        className={`flex left ${tab.isSelected ? 'cn-9' : ''} ${
-                                                            tab.isDeleted && 'tab-list__deleted cr-5'
-                                                        }`}
+                                                        className={`${
+                                                            tab.isSelected ? 'resource-tree-tab bcn-0 cn-9' : ''
+                                                        } flex left pl-12 pt-8 pb-8 pr-12 `}
                                                     >
-                                                        {tab.title === AppDetailsTabs.log_analyzer ? (
-                                                            <span className="icon-dim-16 resource-tree__tab-hover fcb-9">
-                                                                {' '}
-                                                                <LogAnalyzerIcon />
-                                                            </span>
-                                                        ) : (
-                                                            ''
-                                                        )}
-                                                        {tab.title === AppDetailsTabs.k8s_Resources ? (
-                                                            <span className="icon-dim-16 resource-tree__tab-hover fcn-9 ">
-                                                                {' '}
-                                                                <K8ResourceIcon />
-                                                            </span>
-                                                        ) : (
-                                                            ''
-                                                        )}
-                                                        <span
-                                                            className={`${
-                                                                tab.name !== AppDetailsTabs.k8s_Resources &&
-                                                                tab.name !== AppDetailsTabs.log_analyzer
-                                                                    ? 'mr-8'
-                                                                    : 'ml-8 text-capitalize '
-                                                            } fs-12 `}
+                                                        <NavLink
+                                                            to={`${tab.url}`}
+                                                            className={`resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 no-decor `}
                                                         >
+                                                            <div
+                                                                className={`flex left ${tab.isSelected ? 'cn-9' : ''} ${
+                                                                    tab.isDeleted && 'tab-list__deleted cr-5'
+                                                                }`}
+                                                            >
+                                                                {tab.title === AppDetailsTabs.log_analyzer ? (
+                                                                    <span className="icon-dim-16 resource-tree__tab-hover fcb-9">
+                                                                {' '}
+                                                                        <LogAnalyzerIcon />
+                                                            </span>
+                                                                ) : (
+                                                                    ''
+                                                                )}
+                                                                {tab.title === AppDetailsTabs.k8s_Resources ? (
+                                                                    <span className="icon-dim-16 resource-tree__tab-hover fcn-9 ">
+                                                                {' '}
+                                                                        <K8ResourceIcon />
+                                                            </span>
+                                                                ) : (
+                                                                    ''
+                                                                )}
+                                                                <span
+                                                                    className={`${
+                                                                        tab.name !== AppDetailsTabs.k8s_Resources &&
+                                                                        tab.name !== AppDetailsTabs.log_analyzer
+                                                                            ? 'mr-8'
+                                                                            : 'ml-8 text-capitalize '
+                                                                    } fs-12 `}
+                                                                >
                                                             {tab.name}
                                                         </span>
-                                                    </div>
-                                                </NavLink>
+                                                            </div>
+                                                        </NavLink>
 
-                                                {tab.name !== AppDetailsTabs.log_analyzer &&
-                                                    tab.name !== AppDetailsTabs.k8s_Resources && (
-                                                        <div className="resource-tab__close-wrapper flex br-5">
-                                                            <Cross
-                                                                onClick={(e) => handleCloseTab(e, tab.title)}
-                                                                className="icon-dim-16 cursor"
-                                                            />
-                                                        </div>
-                                                    )}
-                                            </div>
-                                             <div
-                                                className={` ${!tab.isSelected || !(tab.isSelected && index - 1) ? 'resource-tree-tab__border' : '' }`}
-                                            ></div>
-                                        </div>
-                                    </Tippy>
-                                </li>
-                            </>
-                        );
-                    })}
-                </ul>
-            </div>
-            <Switch>
+                                                        {tab.name !== AppDetailsTabs.log_analyzer &&
+                                                        tab.name !== AppDetailsTabs.k8s_Resources && (
+                                                            <div className="resource-tab__close-wrapper flex br-5">
+                                                                <Cross
+                                                                    onClick={(e) => handleCloseTab(e, tab.title)}
+                                                                    className="icon-dim-16 cursor"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div
+                                                        className={` ${!tab.isSelected || !(tab.isSelected && index - 1) ? 'resource-tree-tab__border' : '' }`}
+                                                    ></div>
+                                                </div>
+                                            </Tippy>
+                                        </li>
+                                    </>
+                                );
+                            })}
+                        </ul>
+                    </div>
+                    <Switch>
                 <Route
                     path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/group/:resourceName`}
                     render={() => {
@@ -181,45 +184,47 @@ const AppDetailsComponent = () => {
                         );
                     }}
                 />
-                <Route
-                    path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/:podName`}
-                    render={() => {
-                        return <NodeDetailComponent />;
-                    }}
-                />
-                <Route
-                    path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType`}
-                    render={() => {
-                        return (
-                            <K8ResourceComponent
-                                clickedNodes={clickedNodes}
-                                registerNodeClick={registerNodeClick}
-                                handleFocusTabs={handleFocusTabs}
-                            />
-                        );
-                    }}
-                />
-                <Route
-                    path={`${path}/${URLS.APP_DETAILS_K8}`}
-                    render={() => {
-                        return (
-                            <K8ResourceComponent
-                                clickedNodes={clickedNodes}
-                                registerNodeClick={registerNodeClick}
-                                handleFocusTabs={handleFocusTabs}
-                            />
-                        );
-                    }}
-                />
-                <Route
-                    exact
-                    path={`${path}/${URLS.APP_DETAILS_LOG}`}
-                    render={() => {
-                        return <LogAnalyzerComponent />;
-                    }}
-                />
-                <Redirect to={`${path}/${URLS.APP_DETAILS_K8}`} />
-            </Switch>
+                        <Route
+                            path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/:podName`}
+                            render={() => {
+                                return <NodeDetailComponent />;
+                            }}
+                        />
+                        <Route
+                            path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType`}
+                            render={() => {
+                                return (
+                                    <K8ResourceComponent
+                                        clickedNodes={clickedNodes}
+                                        registerNodeClick={registerNodeClick}
+                                        handleFocusTabs={handleFocusTabs}
+                                    />
+                                );
+                            }}
+                        />
+                        <Route
+                            path={`${path}/${URLS.APP_DETAILS_K8}`}
+                            render={() => {
+                                return (
+                                    <K8ResourceComponent
+                                        clickedNodes={clickedNodes}
+                                        registerNodeClick={registerNodeClick}
+                                        handleFocusTabs={handleFocusTabs}
+                                    />
+                                );
+                            }}
+                        />
+                        <Route
+                            exact
+                            path={`${path}/${URLS.APP_DETAILS_LOG}`}
+                            render={() => {
+                                return <LogAnalyzerComponent />;
+                            }}
+                        />
+                        <Redirect to={`${path}/${URLS.APP_DETAILS_K8}`} />
+                    </Switch>
+                </>
+            }
         </div>
     );
 };

@@ -65,7 +65,7 @@ export function ChartDeploymentList({ chartId }) {
 
 
 export function DeploymentRow({ installedAppId, appName, status, environmentId, environmentName, deployedBy, deployedAt }) {
-    const link = `${URLS.CHARTS}/deployments/${installedAppId}/env/${environmentId}`;
+    const link = `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${installedAppId}/env/${environmentId}`;
     const [confirmation, toggleConfirmation] = useState(false)
     const [deleting, setDeleting] = useState(false);
     const [showForceDeleteDialog, setForceDeleteDialog] = useState(false)

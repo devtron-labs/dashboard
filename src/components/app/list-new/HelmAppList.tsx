@@ -3,7 +3,7 @@ import { ServerErrors } from '../../../modals/commonTypes';
 import { OrderBy, SortBy } from '../list/types';
 import { buildClusterVsNamespace, getDevtronInstalledHelmApps, AppListResponse, HelmApp } from './AppListService';
 import { showError, Progressing, ErrorScreenManager, LazyImage, handleUTCTime, useEventSource } from '../../common';
-import { Host, SERVER_MODE, URLS } from '../../../config';
+import { Host, SERVER_MODE, URLS, DOCUMENTATION } from '../../../config';
 import { AppListViewType } from '../config';
 import { Link } from 'react-router-dom';
 import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg';
@@ -18,7 +18,7 @@ import { ReactComponent as InfoFillPurple } from '../../../assets/icons/ic-info-
 import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg';
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg';
 import { ReactComponent as AlertTriangleIcon } from '../../../assets/icons/ic-alert-triangle.svg';
-import emptyImage from '../../../assets/img/empty-noresult@2x.png';
+import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png';
 import '../list/list.css';
 
 export default function HelmAppList({
@@ -162,9 +162,15 @@ export default function HelmAppList({
         }
 
         if (externalAppData.result.errored) {
-            _externalAppFetchErrors.push(
-                externalAppData.result.errorMsg || 'Some error occured while fetching external apps',
-            );
+            var _cluster = masterFilters.clusters.find(cluster => {
+                return cluster.key == _clusterId
+            })
+            let _errorMsg = "";
+            if(_cluster){
+                _errorMsg = `Error in getting external helm apps from cluster "${_cluster.label}". ERROR: `;
+            }
+            _errorMsg = _errorMsg + (externalAppData.result.errorMsg || 'Some error occured while fetching external helm apps');
+            _externalAppFetchErrors.push(_errorMsg);
             setExternalHelmListFetchErrors([..._externalAppFetchErrors]);
         }
 
@@ -315,7 +321,7 @@ export default function HelmAppList({
                     )}
                 </div>
                 <div className="app-list__cell app-list__cell--env">
-                    <span className="app-list__cell-header">Environment</span>
+                    <span className="app-list__cell-header mr-4">Environment</span>
                     <Tippy
                         className="default-tt"
                         arrow={true}
@@ -341,18 +347,6 @@ export default function HelmAppList({
     function renderApplicationList() {
         return (
             <>
-                {serverMode == SERVER_MODE.FULL &&
-                    <div className="bcn-0">
-                        <div className="h-8"></div>
-                        <div className="helm-permission-message-strip above-header-message flex left">
-                            <span className="mr-8 flex">
-                                <AlertTriangleIcon className="icon-dim-20 icon"/>
-                            </span>
-                            <span>Permissions for helm apps are now managed separately under user access. Please request permission from super-admin if required.</span>
-                        </div>
-                    </div>
-                }
-
                 {!clusterIdsCsv && (
                     <div className="bcn-0">
                         <div className="h-8"></div>
@@ -362,7 +356,7 @@ export default function HelmAppList({
                             </span>
                             <span>
                                 To view helm charts deployed from outside devtron, please select a cluster from above
-                                filters. <a className="learn-more__href cursor">Learn more</a>{' '}
+                                filters. <a className="learn-more__href cursor" target="_blank" href={DOCUMENTATION.HYPERION}>Learn more</a>
                             </span>
                         </div>
                     </div>
@@ -498,7 +492,7 @@ export default function HelmAppList({
         return (
             <div style={{ height: 'calc(100vh - 150px)' }}>
                 <EmptyState>
-                    <img src={emptyImage} width="250" height="250" alt="Please connect cluster" />
+                    <img src={noChartInClusterImage} width="250" height="250" alt="Please connect cluster" />
                     <h2 className="fs-16 fw-4 c-9">No helm charts found in connected clusters</h2>
                     <p className="text-left" style={{ width: '450px' }}>
                         Connect a kubernetes cluster containing helm apps to view them here.
@@ -513,19 +507,43 @@ export default function HelmAppList({
         );
     }
 
+    function renderHelmPermissionMessageStrip() {
+        return (
+            <>
+                <div className="h-8"></div>
+                <div className="helm-permission-message-strip above-header-message flex left">
+                            <span className="mr-8 flex">
+                                <AlertTriangleIcon className="icon-dim-20 icon"/>
+                            </span>
+                    <span>Permissions for helm apps are now managed separately under user access. Please request permission from super-admin if required.</span>
+                </div>
+            </>
+        )
+    }
+
+    function renderNoApplicationState() {
+        if (_isAnyFilterationAppliedExceptClusterAndNs() && !clusterIdsCsv) {
+            return askToClearFiltersWithSelectClusterTip();
+        }else if (_isOnlyAllClusterFilterationApplied()) {
+            return askToConnectAClusterForNoResult();
+        } else if (_isAnyFilterationApplied()) {
+            return askToClearFilters();
+        } else if (!clusterIdsCsv) {
+            return askToSelectClusterId();
+        } else {
+            return renderAllCheckModal();
+        }
+    }
+
     function renderFullModeApplicationListContainer() {
         if (!sseConnection && filteredHelmAppsList.length == 0) {
-            if (_isAnyFilterationAppliedExceptClusterAndNs() && !clusterIdsCsv) {
-                return askToClearFiltersWithSelectClusterTip();
-            }else if (_isOnlyAllClusterFilterationApplied()) {
-                return askToConnectAClusterForNoResult();
-            } else if (_isAnyFilterationApplied()) {
-                return askToClearFilters();
-            } else if (!clusterIdsCsv) {
-                return askToSelectClusterId();
-            } else {
-                return renderAllCheckModal();
-            }
+            return (<>
+                    {serverMode == SERVER_MODE.FULL &&
+                        renderHelmPermissionMessageStrip()
+                    }
+                    {renderNoApplicationState()}
+                </>
+                )
         } else {
             return renderApplicationList();
         }

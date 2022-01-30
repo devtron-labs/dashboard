@@ -12,10 +12,11 @@ import { multiSelectStyles } from '../../../../common/ReactSelectCustomization';
 import { SocketConnectionType } from './node.type';
 import TerminalView from './terminal/Terminal';
 import MessageUI from '../../../../common/message.ui';
+import { SingleSelectOption as Option } from '../../../../../common';
 
 const shellTypes = [
-    { label: 'bash', value: 'bash' },
     { label: 'sh', value: 'sh' },
+    { label: 'bash', value: 'bash' },
     { label: 'powershell', value: 'powershell' },
     { label: 'cmd', value: 'cmd' },
 ];
@@ -53,7 +54,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
             <MessageUI msg="This resource no longer exists" size={32} />
         </div>
     ) : (
-        <div>
+        <div className="terminal-view-container">
             <div className="flex left bcn-0 pt-4 pb-4 pl-20 border-top">
                 <Tippy
                     className="default-tt"
@@ -114,20 +115,32 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                         }}
                         styles={{
                             ...multiSelectStyles,
-                            menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
+                            menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', width: '150%' }),
                             control: (base, state) => ({
                                 ...base,
                                 border: '0px',
                                 backgroundColor: 'transparent',
                                 minHeight: '24px !important',
+                                cursor: 'pointer',
                             }),
-                            singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
+                            singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c', direction: 'rtl', marginLeft: 0 }),
                             indicatorsContainer: (provided, state) => ({
                                 ...provided,
                             }),
+                            option: (base, state) => ({
+                              ...base,
+                              backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                              color: 'var(--N900)',
+                              textOverflow: 'ellipsis',
+                              overflow: 'hidden',
+                              whiteSpace: 'nowrap',
+                              direction: 'rtl',
+                              cursor: 'pointer',
+                          }),
                         }}
                         components={{
                             IndicatorSeparator: null,
+                            Option,
                         }}
                     />
                 </div>
@@ -142,7 +155,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                         onChange={(selected) => {
                             setSelectedtTerminalType(selected as any);
                             setTerminalCleared(true);
-                            setSocketConnection('CONNECTING');
+                            setSocketConnection('DISCONNECTING');
                         }}
                         styles={{
                             ...multiSelectStyles,
@@ -152,20 +165,32 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                                 border: '0px',
                                 backgroundColor: 'transparent',
                                 minHeight: '24px !important',
+                                cursor: 'pointer',
                             }),
                             singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
                             indicatorsContainer: (provided, state) => ({
                                 ...provided,
                             }),
+                            option: (base, state) => ({
+                              ...base,
+                              backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                              color: 'var(--N900)',
+                              textOverflow: 'ellipsis',
+                              overflow: 'hidden',
+                              whiteSpace: 'nowrap',
+                              direction: 'rtl',
+                              cursor: 'pointer',
+                          }),
                         }}
                         components={{
                             IndicatorSeparator: null,
+                            Option,
                         }}
                     />
                 </div>
             </div>
 
-            <div style={{ minHeight: '600px', background: '#0b0f22', flex: 1 }}>
+            <div className="terminal-view-wrapper">
                 <TerminalView
                     nodeName={params.podName}
                     containerName={selectedContainerName}

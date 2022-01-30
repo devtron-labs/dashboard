@@ -174,6 +174,7 @@ export const SourceTypeMap = {
 export const Moment12HourFormat = "ddd, DD MMM YYYY, hh:mm A";
 
 export const DOCUMENTATION = {
+    HOME_PAGE: 'https://docs.devtron.ai',
     APP_CREATE: 'https://docs.devtron.ai/user-guide/creating-application',
     APP_CREATE_ENV: 'https://docs.devtron.ai/user-guide/creating-application/environment-overrides',
     APP_CREATE_CI_CONFIG: 'https://docs.devtron.ai/user-guide/creating-application/docker-build-configuration',
@@ -195,6 +196,8 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_PROJECT: 'https://docs.devtron.ai/global-configurations/projects',
     GLOBAL_CONFIG_SSO: 'https://docs.devtron.ai/user-guide/global-configurations/sso-login',
     GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/user-guide/global-configurations/user-access',
+    HYPERION_TO_FULL_MODE: 'https://docs.devtron.ai/hyperion/setup/upgrade-to-devtron.md',
+    HYPERION: 'https://docs.devtron.ai/#hyperion'
 }
 
 // APP LIST STARTS

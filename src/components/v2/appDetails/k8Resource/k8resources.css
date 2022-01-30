@@ -5,5 +5,5 @@
 }
 .resource-node-wrapper{
     min-height: 600px;
-    height: calc(100vh - 288px)
+    height: calc(100vh - 288px);
 }

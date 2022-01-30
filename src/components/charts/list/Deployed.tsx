@@ -122,7 +122,6 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         let { icon, chartName, appName, appStoreApplicationName, environmentName, deployedAt, installedAppId, environmentId, deprecated } = chart;
         return <Link key={appName} className="chart-grid-item white-card chart-grid-item--deployed" 
         to={`deployments/${installedAppId}/env/${environmentId}/${URLS.APP_DETAILS}`}
-        // to={`deployments/${installedAppId}/env/${environmentId}/${URLS.APP_DETAILS_K8}`}
         >
             <div className="chart-grid-item__flexbox">
                 <div className="chart-grid-item__icon-wrapper">

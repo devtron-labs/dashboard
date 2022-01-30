@@ -10,7 +10,7 @@ import EmptyState from '../../EmptyState/EmptyState';
 import {getInitData, buildClusterVsNamespace} from './AppListService'
 import {ServerErrors} from '../../../modals/commonTypes';
 import {AppListViewType} from '../config';
-import {URLS, AppListConstants, SERVER_MODE} from '../../../config';
+import {URLS, AppListConstants, SERVER_MODE, DOCUMENTATION} from '../../../config';
 import {ReactComponent as Clear} from '../../../assets/icons/ic-error.svg';
 import DevtronAppListContainer from '../list/DevtronAppListContainer';
 import HelmAppList from './HelmAppList';
@@ -73,7 +73,9 @@ export default function AppList() {
             setProjectListRes(initData.projectsRes);
             setEnvironmentListRes(initData.environmentListRes);
             setMasterFilters(initData.filters);
-            applyClusterSelectionFilterOnPageLoadIfSingle(initData.filters.clusters, _currentTab);
+            if(serverMode == SERVER_MODE.EA_ONLY){
+                applyClusterSelectionFilterOnPageLoadIfSingle(initData.filters.clusters, _currentTab);
+            }
             setDataStateType(AppListViewType.LIST);
         }).catch((errors: ServerErrors) => {
             showError(errors);
@@ -299,22 +301,30 @@ export default function AppList() {
         let query = {};
         keys.map((key) => {
             query[key] = qs[key];
-        })
+        });
         query['offset'] = 0;
-        let queryParamType = (filterType == AppListConstants.FilterType.CLUTSER || filterType == AppListConstants.FilterType.NAMESPACE) ? 'namespace' : filterType;
+        let queryParamType =
+            filterType === AppListConstants.FilterType.CLUTSER || filterType === AppListConstants.FilterType.NAMESPACE
+                ? 'namespace'
+                : filterType;
         let appliedFilters = query[queryParamType];
-        let arr = appliedFilters.split(",");
-        if(filterType == AppListConstants.FilterType.CLUTSER) {
+        let arr = appliedFilters.split(',');
+        if (filterType === AppListConstants.FilterType.CLUTSER) {
             arr = arr.filter((item) => !item.startsWith(val.toString()));
-        }else{
+        } else {
             arr = arr.filter((item) => item != val.toString());
         }
-        query[queryParamType] = arr.toString();
-        if (query[queryParamType] == "") delete query[queryParamType];
+        query[queryParamType] =
+            filterType === AppListConstants.FilterType.NAMESPACE && !arr.toString()
+                ? val.split('_')[0]
+                : arr.toString();
+        if (query[queryParamType] == '') delete query[queryParamType];
         let queryStr = queryString.stringify(query);
-        let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()}?${queryStr}`;
+        let url = `${
+            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
+        }?${queryStr}`;
         history.push(url);
-    }
+    };
 
     const removeAllFilters = (): void => {
         let qs = queryString.parse(location.search);
@@ -345,7 +355,7 @@ export default function AppList() {
             query[key] = qs[key];
         })
         query["orderBy"] = key;
-        query["sortOrder"] = query["sortOrder"] == OrderBy.ASC ? OrderBy.DESC : OrderBy.ASC;
+        query["sortOrder"] = query["sortOrder"] == OrderBy.DESC ? OrderBy.ASC : OrderBy.DESC;
         let queryStr = queryString.stringify(query);
         let url = `${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()}?${queryStr}`;
         history.push(url);
@@ -444,6 +454,7 @@ export default function AppList() {
                             showPulsatingDot={showPulsatingDot}/>
                     <Filter list={masterFilters.namespaces.filter(namespace => namespace.toShow)}
                             labelKey="label"
+                            searchKey="actualName"
                             buttonText="Namespace"
                             searchable multi
                             placeholder="Search Namespace"
@@ -619,7 +630,7 @@ export default function AppList() {
                                 title={'Create, build, deploy and debug custom apps'}
                                 msg={'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'}
                                 stateType={EAEmptyStateType.DEVTRONAPPS}
-                                knowMoreLink={``}
+                                knowMoreLink={DOCUMENTATION.HOME_PAGE}
                             />
                         </div>
                     }
