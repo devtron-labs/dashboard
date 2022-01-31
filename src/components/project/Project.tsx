@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { ButtonWithLoader } from '../../components/common';
+import { ButtonWithLoader, showError } from '../../components/common';
 import folder from '../../assets/icons/ic-folder.svg';
+import { toast } from 'react-toastify';
 
 export interface ProjectProps {
     id: number;
@@ -19,7 +20,7 @@ export interface ProjectProps {
 export class Project extends Component<ProjectProps>  {
 
     renderCollapsedView() {
-        return <div className="white-card white-card--add-new-item mb-16">
+        return <div className="project__row white-card white-card--add-new-item mb-16">
             <img src={folder} alt="" className="icon-dim-24 mr-16" />
             <span className="project-title">{this.props.name}</span>
         </div>
@@ -32,6 +33,23 @@ export class Project extends Component<ProjectProps>  {
         }, true);
         return isValid;
     }
+
+    // async handleDelete() {
+    //     setDeleting(true);
+    //     try {
+    //         await deleteProjectTeam();
+    //         toast.success('Successfully deleted');
+    //     } catch (err) {
+    //         // if (err.code != 403) {
+    //         //     toggleConfirmation(false);
+    //         // } else {
+    //         showError(err);
+    //         // }
+    //     } finally {
+    //         setDeleting(false);
+    //     }
+    // }
+
 
     renderForm() {
         let isValid = this.props.isValid;
@@ -53,6 +71,7 @@ export class Project extends Component<ProjectProps>  {
                         {errorMessage.name}
                     </span>}
                 </label>
+                <div>
                 <div className="form__buttons">
                     <button type="button" className="cta cancel mr-16" onClick={this.props.onCancel} >
                         Cancel
@@ -63,6 +82,7 @@ export class Project extends Component<ProjectProps>  {
                         onClick={(event) => { event.preventDefault(); this.props.saveProject(this.props.index) }}>
                         Save
                 </ButtonWithLoader>
+                </div>
                 </div>
             </form >
         </div>

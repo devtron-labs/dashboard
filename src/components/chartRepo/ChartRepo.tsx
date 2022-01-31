@@ -11,7 +11,6 @@ import { DOCUMENTATION } from '../../config';
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm';
 import "./chartRepo.scss";
 
-
 export default function ChartRepo() {
     const [loading, result, error, reload] = useAsync(getChartRepoList)
     const [fetching, setFetching] = useState(false);
