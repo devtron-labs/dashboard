@@ -13,6 +13,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg';
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg';
 import { types } from 'util';
+import DeleteComponent from '../../util/DeleteComponent';
 
 const DockerRegistryType = [
     { label: 'docker hub', value: 'docker-hub' },
@@ -322,48 +323,21 @@ function DockerForm({
         },
     ];
 
-    async function handleDelete() {
-
-        let payload = {
-            id: state.id.value,
-            pluginId: 'cd.go.artifact.docker.registry',
-            registryType: state.registryType.value,
-            isDefault: Isdefault,
-            registryUrl: customState.registryUrl.value,
-            ...(state.registryType.value === 'ecr'
-                ? {
-                      awsAccessKeyId: customState.awsAccessKeyId.value,
-                      awsSecretAccessKey: customState.awsSecretAccessKey.value,
-                      awsRegion: customState.awsRegion.value,
-                  }
-                : {}),
-            ...(state.registryType.value === 'docker-hub'
-                ? { username: customState.username.value, password: customState.password.value }
-                : {}),
-            ...(state.registryType.value === 'other'
-                ? {
-                      username: customState.username.value,
-                      password: customState.password.value,
-                      connection: state.advanceSelect.value,
-                      cert: state.advanceSelect.value !== CERTTYPE.SECURE_WITH_CERT ? '' : state.certInput.value,
-                  }
-                : {}),
-                active: true
-        };
-        setDeleting(true);
-        try {
-            await deleteDockerReg(payload);
-            toast.success('Successfully deleted');
-        } catch (err) {
-            // if (err.code != 403) {
-            //     toggleConfirmation(false);
-            // } else {
-            showError(err);
-            // }
-        } finally {
-            setDeleting(false);
-        }
-    }
+    let payload = {
+        id: state.id.value,
+        pluginId: 'cd.go.artifact.docker.registry',
+        registryType: state.registryType.value,
+        isDefault: Isdefault,
+        registryUrl: customState.registryUrl.value,
+        awsAccessKeyId: customState.awsAccessKeyId.value || '',
+        awsSecretAccessKey: customState.awsSecretAccessKey.value || '',
+        awsRegion: customState.awsRegion.value || '',
+        username: customState.username.value || '',
+        password: customState.password.value,
+        connection: state.advanceSelect.value,
+        cert: state.advanceSelect.value !== CERTTYPE.SECURE_WITH_CERT ? '' : state.certInput.value,
+        active: true,
+    };
 
     return (
         <form onSubmit={(e) => handleOnSubmit(e)} className="docker-form" autoComplete="off">
@@ -618,13 +592,7 @@ function DockerForm({
             </div>
             <div className={`${id ? 'mb-20 flex content-space' : ''}`}>
                 <div>
-                    <button
-                        className="cta delete"
-                        type="button"
-                        onClick={
-                            () => handleDelete()
-                        }
-                    >
+                    <button className="cta delete" type="button" onClick={() => toggleConfirmation(true)}>
                         Delete
                     </button>
                 </div>
@@ -637,6 +605,18 @@ function DockerForm({
                     </button>
                 </div>
             </div>
+
+            {confirmation && (
+                <DeleteComponent
+                    setDeleting={setDeleting}
+                    deleteComponent={deleteDockerReg}
+                    payload={payload}
+                    title={id}
+                    toggleConfirmation={toggleConfirmation}
+                    component={'chart repository'}
+                    confirmationDialogDescription={'Some applications are currently using this container registry. Please change the container registry in use and try again.'}
+                />
+            )}
         </form>
     );
 }
