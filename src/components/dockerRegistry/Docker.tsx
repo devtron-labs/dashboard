@@ -590,12 +590,14 @@ function DockerForm({
                     </Tippy>
                 </label>
             </div>
-            <div className={`${id ? 'mb-20 flex content-space' : ''}`}>
-                <div>
-                    <button className="cta delete" type="button" onClick={() => toggleConfirmation(true)}>
-                        Delete
-                    </button>
-                </div>
+            <div className={`flex ${id ? 'content-space' : 'right'} mb-20 `}>
+                {id && (
+                    <div>
+                        <button className="cta delete" type="button" onClick={() => toggleConfirmation(true)}>
+                            {deleting ? <Progressing /> : 'Delete'}
+                        </button>
+                    </div>
+                )}
                 <div>
                     <button className="cta mr-16 cancel" type="button" onClick={(e) => toggleCollapse((t) => !t)}>
                         Cancel
@@ -614,7 +616,9 @@ function DockerForm({
                     title={id}
                     toggleConfirmation={toggleConfirmation}
                     component={'chart repository'}
-                    confirmationDialogDescription={'Some applications are currently using this container registry. Please change the container registry in use and try again.'}
+                    confirmationDialogDescription={
+                        'Some applications are currently using this container registry. Please change the container registry in use and try again.'
+                    }
                 />
             )}
         </form>
