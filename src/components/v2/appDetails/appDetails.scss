@@ -66,6 +66,10 @@
 
 .resource-tree__tab-hover:hover {
     color: #0066cc !important;
+} 
+
+.resource-tree__tab-hover:hover div:not(.cn-9) .resource-tree__tab-hover svg path {
+    fill: #0066cc;
 }
 
 .tab-list__deleted {
