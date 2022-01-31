@@ -1,26 +1,24 @@
 import { Routes } from '../../config';
-import { post, put, get, trash } from '../../services/api';
+import { post, put, get } from '../../services/api';
 
 export const getGitProviderConfig = (id: number): Promise<any> => {
     const URL = `${Routes.GIT_PROVIDER}/${id}`;
     return get(URL);
-}
+};
 
 export const updateGitProviderConfig = (request: any, id: number) => {
     const URL = `${Routes.GIT_PROVIDER}`;
     return put(URL, request);
-}
+};
 
 export const saveGitProviderConfig = (request: any, id: any) => {
     const URL = `${Routes.GIT_PROVIDER}`;
     return post(URL, request);
-}
-
+};
 
 export function getGitHost(id: number | string): Promise<any> {
     const URL = `${Routes.GIT_HOST}/${id}`;
     return get(URL);
-    
 }
 
 export function saveGitHost(payload): Promise<any> {
@@ -28,7 +26,7 @@ export function saveGitHost(payload): Promise<any> {
     return post(URL, payload);
 }
 
-export function deleteGitProvider(): Promise<any> {
-    const URL = `${Routes.CHART_GROUP}/delete`;
-    return trash(URL);
+export function deleteGitProvider(request): Promise<any> {
+    const URL = `${Routes.GIT_PROVIDER}/delete`;
+    return post(URL, request);
 }
