@@ -323,9 +323,36 @@ function DockerForm({
     ];
 
     async function handleDelete() {
+
+        let payload = {
+            id: state.id.value,
+            pluginId: 'cd.go.artifact.docker.registry',
+            registryType: state.registryType.value,
+            isDefault: Isdefault,
+            registryUrl: customState.registryUrl.value,
+            ...(state.registryType.value === 'ecr'
+                ? {
+                      awsAccessKeyId: customState.awsAccessKeyId.value,
+                      awsSecretAccessKey: customState.awsSecretAccessKey.value,
+                      awsRegion: customState.awsRegion.value,
+                  }
+                : {}),
+            ...(state.registryType.value === 'docker-hub'
+                ? { username: customState.username.value, password: customState.password.value }
+                : {}),
+            ...(state.registryType.value === 'other'
+                ? {
+                      username: customState.username.value,
+                      password: customState.password.value,
+                      connection: state.advanceSelect.value,
+                      cert: state.advanceSelect.value !== CERTTYPE.SECURE_WITH_CERT ? '' : state.certInput.value,
+                  }
+                : {}),
+                active: true
+        };
         setDeleting(true);
         try {
-            await deleteDockerReg();
+            await deleteDockerReg(payload);
             toast.success('Successfully deleted');
         } catch (err) {
             // if (err.code != 403) {
