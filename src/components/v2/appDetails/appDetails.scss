@@ -75,3 +75,11 @@
 .tab-list__deleted {
     text-decoration: line-through;
 }
+
+/* Start: Container height fixes */
+.resource-node-wrapper .no-pod.no-pod--container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+/* End: Container height fixes */
