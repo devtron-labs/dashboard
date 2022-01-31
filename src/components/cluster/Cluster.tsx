@@ -2,7 +2,7 @@ import React, { useState, useMemo, Component } from 'react'
 import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback, Toggle } from '../common';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
-import { getClusterList, saveCluster, updateCluster, saveEnvironment, updateEnvironment, getEnvironmentList, getCluster, retryClusterInstall } from './cluster.service';
+import { getClusterList, saveCluster, updateCluster, saveEnvironment, updateEnvironment, getEnvironmentList, getCluster, retryClusterInstall, deleteCluster, deleteEnvironment } from './cluster.service';
 import { ResizableTextarea } from '../configMaps/ConfigMap'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
@@ -248,6 +248,8 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
     const isDefaultCluster = (): boolean => {
         return id == 1;
     }
+    const [deleting, setDeleting] = useState(false);
+    const [confirmation, toggleConfirmation] = useState(false);
 
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -304,6 +306,22 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                 validator: { error: 'endpoint is required', regex: /^.*$/ }
             }
         }, onValidation);
+
+        async function handleDelete() {
+            setDeleting(true);
+            try {
+                await deleteCluster();
+                toast.success('Successfully deleted');
+            } catch (err) {
+                // if (err.code != 403) {
+                //     toggleConfirmation(false);
+                // } else {
+                showError(err);
+                // }
+            } finally {
+                setDeleting(false);
+            }
+        }
 
     async function onValidation() {
 
@@ -382,6 +400,7 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
             setPrometheusAuthenticationType({ type: AuthenticationType.BASIC });
         }
     }
+    
 
     return <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
         <div className="flex left mb-20">
@@ -451,9 +470,17 @@ function ClusterForm({ id, cluster_name, server_url, active, config, environment
                     <span className="form__label">TLS Certificate</span>
                     <ResizableTextarea className="resizable-textarea__with-max-height w-100" name="tlsClientCert" value={state.tlsClientCert.value} onChange={handleOnChange} />
                 </div> </div>}
-        <div className="form__buttons">
-            <button className="cta cancel" type="button" onClick={e => toggleEditMode(t => !t)}>Cancel</button>
-            <button className="cta">{loading ? <Progressing /> : 'Save cluster'}</button>
+        <div className={`form__buttons ${id ? 'content-space' : ''} `}>
+           {id && <div>
+                <button className="cta delete" type="button" onClick={() => handleDelete()}>
+                    Delete
+                </button>
+            </div>
+            }
+            <div className='right'>
+                <button className="cta cancel" type="button" onClick={e => toggleEditMode(t => !t)}>Cancel</button>
+                <button className="cta">{loading ? <Progressing /> : 'Save cluster'}</button>
+            </div>
         </div>
     </form>
 }
@@ -492,6 +519,8 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
                 validator: { error: 'token is required', regex: /[^]+/ }
             },
         }, onValidation);
+        const [deleting, setDeleting] = useState(false);
+        const [confirmation, toggleConfirmation] = useState(false);
 
     async function onValidation() {
         if (!state.namespace.value && !ignore) {
@@ -520,6 +549,22 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
         }
         finally {
             setLoading(false)
+        }
+    }
+
+    async function handleDelete() {
+        setDeleting(true);
+        try {
+            await deleteEnvironment();
+            toast.success('Successfully deleted');
+        } catch (err) {
+            // if (err.code != 403) {
+            //     toggleConfirmation(false);
+            // } else {
+            showError(err);
+            // }
+        } finally {
+            setDeleting(false);
         }
     }
 
@@ -558,7 +603,13 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
                     </div>
                 </div>
             </div>
-            <div className="form__buttons">
+            <div className={`form__buttons ${id ? 'content-space' : ''}`}>
+            {id && <div>
+                <button className="cta delete" type="button" onClick={() => handleDelete()}>
+                    Delete
+                </button>
+            </div>
+            }
                 <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
             </div>
         </form>
