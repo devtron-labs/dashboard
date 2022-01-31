@@ -553,9 +553,18 @@ function Environment({ environment_name, namespace, id, cluster_id, handleClose,
     }
 
     async function handleDelete() {
+        let payload = {
+            id,
+            environment_name: state.environment_name.value,
+            cluster_id,
+            prometheus_endpoint,
+            namespace: state.namespace.value || "",
+            active: true,
+            default: state.isProduction.value === 'true',
+        }
         setDeleting(true);
         try {
-            await deleteEnvironment();
+            await deleteEnvironment(payload);
             toast.success('Successfully deleted');
         } catch (err) {
             // if (err.code != 403) {
