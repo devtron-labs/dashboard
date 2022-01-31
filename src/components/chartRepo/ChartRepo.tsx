@@ -3,7 +3,7 @@ import { showError, useForm, useEffectAfterMount, useAsync, Progressing } from '
 import { toast } from 'react-toastify'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react';
-import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoConfiguration, reSyncChartRepo } from './chartRepo.service';
+import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoConfiguration, reSyncChartRepo, deleteChartRepo } from './chartRepo.service';
 import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg';
@@ -140,6 +140,8 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         }, onClickSave);
 
     const customHandleChange = e => setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } }))
+    const [deleting, setDeleting] = useState(false);
+    const [confirmation, toggleConfirmation] = useState(false);
 
     const chartRepoPayload = {
         id: id || 0,
@@ -231,6 +233,22 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         }
     }
 
+    async function handleDelete() {
+        setDeleting(true);
+        try {
+            await deleteChartRepo();
+            toast.success('Successfully deleted');
+        } catch (err) {
+            // if (err.code != 403) {
+            //     toggleConfirmation(false);
+            // } else {
+            showError(err);
+            // }
+        } finally {
+            setDeleting(false);
+        }
+    }
+
     return (
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
             < ValidateForm
@@ -261,9 +279,18 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
                 <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
             </div>}
-            <div className="form__row form__buttons">
+            <div className={`form__row form__buttons ${id ? 'content-space' : ''}`}>
+                   {
+                       id && <div>
+                        <button className="cta delete" type="button" onClick={() => handleDelete()}>
+                            Delete
+                        </button>
+                    </div>
+                   } 
+                   <div>
                 <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
                 <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
+                </div>
             </div>
         </form>
     )

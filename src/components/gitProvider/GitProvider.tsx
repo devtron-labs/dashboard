@@ -372,6 +372,7 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
             setDeleting(false);
         }
     }
+    
     return (
         <>
             <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
@@ -505,12 +506,14 @@ function GitForm({ id = null, name = "", active = false, url = "", gitHostId, au
                         {customState.sshInput.error && <div className="form__error">{customState.sshInput.error}</div>}
                     </div>
                 )}
-                <div className="form__row form__buttons content-space">
-                    <div>
+                <div className={`form__row form__buttons ${id ? 'content-space' : ''}`}>
+                   {
+                       id && <div>
                         <button className="cta delete" type="button" onClick={() => handleDelete()}>
                             Delete
                         </button>
                     </div>
+                   } 
                     <div>
                         <button className="cta cancel" type="button" onClick={(e) => toggleCollapse((t) => !t)}>
                             Cancel
