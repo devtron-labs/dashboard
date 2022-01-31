@@ -9,7 +9,7 @@ import slack from '../../assets/img/slack-logo.svg';
 import ses from '../../assets/icons/ic-aws-ses.svg';
 import { ViewType } from '../../config/constants';
 import EmptyState from '../EmptyState/EmptyState';
-
+import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 export interface ConfigurationTabState {
     view: string;
     showSlackConfigModal: boolean;
@@ -155,11 +155,22 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                             </div>
                             <div className="ses-config-table__access-key truncate-text">{sesConfig.accessKeyId}</div>
                             <div className="ses-config-table__email truncate-text">{sesConfig.email}</div>
-                            <div className="ses-config-table__action">
+                            <div className="ses-config-table__action flexbox">
                                 <button type="button" className="transparent align-right" onClick={(event) => {
                                     this.setState({ showSESConfigModal: true, sesConfigId: sesConfig.id });
                                 }}>
                                     <Edit className="icon-dim-20" />
+                                </button>
+                                <button type="button" className="transparent align-right" onClick={() => {
+                                // <DeleteComponent 
+                                // setDeleting={this.state.deleting}
+                                //  deleteComponent={deleteNotification}
+                                //   toggleConfirmation={this.state.confirmation}
+                                //   statusCode={this.state.statusCode}
+                                // />
+                            }}
+                                >
+                                 <Trash className="scn-5 icon-dim-20" />
                                 </button>
                             </div>
                         </td>

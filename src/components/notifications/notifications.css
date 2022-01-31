@@ -13,6 +13,14 @@
     box-shadow: inset 0 -1px 0 0 var(--N100);
 }
 
+.pipeline-list__row:hover {
+    background-color: #edf1f5;
+ }
+
+.pipeline-list__row:hover .pipeline-list__hover{
+    visibility: visible;
+}
+
 .pipeline-list__row--selected {
     background-color: var(--B100);
 }
@@ -67,6 +75,11 @@
 .pipeline-list__recipients {
     width: 30%;
     padding: 10px;
+}
+
+.pipeline-list__hover{
+    width: 10%;
+    visibility: hidden;
 }
 
 .notification-page__header {

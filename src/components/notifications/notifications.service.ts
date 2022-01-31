@@ -431,3 +431,8 @@ export function getAddNotificationInitData(): Promise<{
         };
     })
 }
+ 
+export function deleteNotification(): Promise<any> {
+    const URL = `${Routes.NOTIFIER}/channel/delete`;
+    return trash(URL);
+}
