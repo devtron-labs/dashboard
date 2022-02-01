@@ -21,6 +21,7 @@ import { isGitopsConfigured } from '../../services/service';
 import { ConfirmationDialog } from '../common';
 import warn from '../../assets/icons/ic-warning.svg';
 import { NavLink } from 'react-router-dom';
+import DeleteComponent from '../../util/DeleteComponent';
 
 export default function ChartGroupDetails() {
     const { groupId } = useParams<{ groupId }>();
@@ -135,21 +136,8 @@ export default function ChartGroupDetails() {
         }
     }
 
-    async function handleDelete() {
-        setDeleting(true);
-        try {
-            await deleteChartGroup();
-            toast.success('Successfully deleted');
-            reloadChartGroupDetails();
-        } catch (err) {
-            // if (err.code != 403) {
-            //     toggleConfirmation(false);
-            // } else {
-            showError(err);
-            // }
-        } finally {
-            setDeleting(false);
-        }
+    let payload = {
+         
     }
     
     return (
@@ -166,8 +154,8 @@ export default function ChartGroupDetails() {
                         <Pencil className="mr-5" />
                         Edit
                     </button>
-                    <button className="cta delete" type="button" onClick={() => handleDelete()}>
-                        Delete
+                    <button className="cta delete" type="button" onClick={() => toggleConfirmation(true)}>
+                        {deleting ? <Progressing /> : 'Delete'}
                     </button>
                 </div>
             </div>
@@ -259,6 +247,19 @@ export default function ChartGroupDetails() {
                         </div>
                     </div>
                 )}
+                 {confirmation && (
+                <DeleteComponent
+                    setDeleting={setDeleting}
+                    deleteComponent={deleteChartGroup}
+                    payload={payload}
+                    title={state.name}
+                    toggleConfirmation={toggleConfirmation}
+                    component={'chart group'}
+                    confirmationDialogDescription={
+                        ''
+                    }
+                />
+            )}
             </div>
             {showDeployModal ? (
                 <ChartGroupBasicDeploy
