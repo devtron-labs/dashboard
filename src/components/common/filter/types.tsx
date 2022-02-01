@@ -22,6 +22,9 @@ export interface FilterProps {
     showPulsatingDot? : boolean;
     searchKey?: string;
     loading?: boolean;
+    errored?: boolean;
+    errorMessage?: string;
+    errorCallbackFunction?: () => void;
 }
 
 export interface FilterState {

@@ -31,6 +31,7 @@ export default function AppList() {
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState("");
     const [lastDataSync, setLastDataSync] = useState(false);
     const [fetchingNamespaces, setFetchingNamespaces] = useState(false);
+    const [fetchingNamespacesErrored, setFetchingNamespacesErrored] = useState(false);
 
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({});
     const [currentTab, setCurrentTab] = useState(undefined);
@@ -232,16 +233,7 @@ export default function AppList() {
                 // check if cluster selection is changed
                 if(_oldClusterIdsCsv != _newClusterIdsCsv) {
                     // fetch namespaces
-                    setFetchingNamespaces(true);
-                    let _clusterVsNamespaceMap = buildClusterVsNamespace(payload.namespaces.join(','));
-                    getNamespaces(_newClusterIdsCsv, _clusterVsNamespaceMap).then((_namespaces) => {
-                        _masterFilters.namespaces = _namespaces;
-                        setMasterFilters(_masterFilters);
-                        setFetchingNamespaces(false);
-                    }).catch((errors: ServerErrors) => {
-                        showError(errors);
-                        setFetchingNamespaces(false);
-                    })
+                    _fetchAndSetNamespaces(payload, _newClusterIdsCsv, _masterFilters)
                 }
             }else{
                 // if all clusters are unselected, then reset namespaces
@@ -251,6 +243,27 @@ export default function AppList() {
         }
 
         return payload;
+    }
+
+    const _forceFetchAndSetNamespaces = () => {
+        let _clusterIdsCsv = _getClusterIdsFromRequestUrl(parsedPayloadOnUrlChange);
+        _fetchAndSetNamespaces(parsedPayloadOnUrlChange, _clusterIdsCsv, masterFilters)
+    }
+
+    const _fetchAndSetNamespaces = (_parsedPayloadOnUrlChange : any, _clusterIdsCsv : string, _masterFilters : any) => {
+        // fetch namespaces
+        setFetchingNamespaces(true);
+        setFetchingNamespacesErrored(false);
+        let _clusterVsNamespaceMap = buildClusterVsNamespace(_parsedPayloadOnUrlChange.namespaces.join(','));
+        getNamespaces(_clusterIdsCsv, _clusterVsNamespaceMap).then((_namespaces) => {
+            _masterFilters.namespaces = _namespaces;
+            setMasterFilters(_masterFilters);
+            setFetchingNamespaces(false);
+            setFetchingNamespacesErrored(false);
+        }).catch((errors: ServerErrors) => {
+            setFetchingNamespaces(false);
+            setFetchingNamespacesErrored(true);
+        })
     }
 
     const _getClusterIdsFromRequestUrl = (parsedPayload : any) : string => {
@@ -512,7 +525,10 @@ export default function AppList() {
                             disableTooltipMessage={"Select a cluster first"}
                             isLabelHtml={true}
                             onShowHideFilterContent={onShowHideFilterContent}
-                            loading={fetchingNamespaces} />
+                            loading={fetchingNamespaces}
+                            errored={fetchingNamespacesErrored}
+                            errorMessage={"Could not load namespaces"}
+                            errorCallbackFunction={_forceFetchAndSetNamespaces}    />
                 </div>
             </div>
     }

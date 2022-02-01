@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { FilterProps, FilterState } from './types';
 import { Progressing } from '../../common';
+import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg';
 import './filter.css';
 import Tippy from '@tippyjs/react';
 
@@ -160,6 +161,17 @@ export class Filter extends Component<FilterProps, FilterState>{
                     <div className={classNames} ref={node => this.node = node}>
                         {
                             this.props.loading ? <Progressing /> :
+                                this.props.errored ?
+                                    <div className="flex w-100 h-100 column">
+                                        <div className="mr-8 flex">
+                                            <ErrorExclamationIcon className="icon-dim-20" />
+                                        </div>
+                                        <div className="flex">{this.props.errorMessage}</div>
+                                        <div className="flex">
+                                            <button className="btn btn-link p-0 fw-6 cb-5" onClick={() => {this.props.errorCallbackFunction();}}>Retry</button>
+                                        </div>
+                                    </div>
+                                :
                                 <>
                                     {this.props.searchable && <input type="text" placeholder={this.props.placeholder} className="filter__search" onChange={this.handleSearch} value={this.state.searchStr} />}
                                     <div className="filter__options">
