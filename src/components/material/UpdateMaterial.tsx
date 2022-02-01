@@ -209,7 +209,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             cancel={this.cancel}
             isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
             handleSubmoduleCheckbox={this.handleSubmoduleCheckbox}
-
+            appId= {this.props.appId}
         />
     }
 }

@@ -10,3 +10,8 @@ export function updateMaterial(request) {
     const URL = `${Routes.GIT_MATERIAL}`;
     return put(URL, request);
 }
+
+export function deleteMaterial(request): Promise<any>{
+    const URL = `${Routes.GIT_MATERIAL}/delete`;
+    return post(URL, request)
+}
