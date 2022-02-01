@@ -10,6 +10,7 @@ import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg';
 import { DOCUMENTATION } from '../../config';
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm';
 import "./chartRepo.scss";
+import DeleteComponent from '../../util/DeleteComponent';
 
 export default function ChartRepo() {
     const [loading, result, error, reload] = useAsync(getChartRepoList)
@@ -232,20 +233,17 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         }
     }
 
-    async function handleDelete() {
-        setDeleting(true);
-        try {
-            await deleteChartRepo();
-            toast.success('Successfully deleted');
-        } catch (err) {
-            // if (err.code != 403) {
-            //     toggleConfirmation(false);
-            // } else {
-            showError(err);
-            // }
-        } finally {
-            setDeleting(false);
-        }
+    let payload = {
+        id: id || 0,
+        name: state.name.value,
+        url: state.url.value,
+        authMode: state.auth.value,
+        active: true,
+        username: customState.username.value, 
+        password: customState.password.value,
+        accessToken: customState.accessToken.value,
+        default: true,
+        sshKey:""
     }
 
     return (
@@ -281,8 +279,8 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             <div className={`form__row form__buttons ${id ? 'content-space' : ''}`}>
                    {
                        id && <div>
-                        <button className="cta delete" type="button" onClick={() => handleDelete()}>
-                            Delete
+                       <button className="cta delete" type="button" onClick={() => toggleConfirmation(true)}>
+                            {deleting ? <Progressing /> : 'Delete'}
                         </button>
                     </div>
                    } 
@@ -291,6 +289,19 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                 <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
                 </div>
             </div>
+            {confirmation && (
+                <DeleteComponent
+                    setDeleting={setDeleting}
+                    deleteComponent={deleteChartRepo}
+                    payload={payload}
+                    title={state.name?.value}
+                    toggleConfirmation={toggleConfirmation}
+                    component={'chart repository'}
+                    confirmationDialogDescription={
+                        'Some deployed helm apps are using this repository.'
+                    }
+                />
+            )}
         </form>
     )
 }

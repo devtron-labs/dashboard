@@ -615,7 +615,7 @@ function DockerForm({
                     payload={payload}
                     title={id}
                     toggleConfirmation={toggleConfirmation}
-                    component={'chart repository'}
+                    component={'container registry'}
                     confirmationDialogDescription={
                         'Some applications are currently using this container registry. Please change the container registry in use and try again.'
                     }

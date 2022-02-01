@@ -1,5 +1,5 @@
 import { Routes } from '../../config';
-import { post, put, get, trash } from '../../services/api';
+import { post, get } from '../../services/api';
 
 export const getChartProviderConfig = (id: number): Promise<any> => {
     const URL = `${Routes.CHART_LIST}/${id}`;
@@ -26,7 +26,7 @@ export const reSyncChartRepo = ():Promise<any> => {
     return post(URL, undefined);
 }
 
-export function deleteChartRepo(): Promise<any>{
-    const URL = `${Routes.ENVIRONMENT}/delete`;
-    return trash(URL); 
+export function deleteChartRepo(request): Promise<any>{
+    const URL = `${Routes.CHART_AVAILABLE}/${Routes.CHART_REPO}/delete`;
+    return post(URL, request);
 }

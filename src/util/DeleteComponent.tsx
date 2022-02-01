@@ -35,7 +35,7 @@ function DeleteComponent({
         return (
             <ConfirmationDialog className='confirmation-dialog__body--w-360'>
                 <ConfirmationDialog.Icon src={info} />
-                <ConfirmationDialog.Body title={`Cannot delete ${component}`} />
+                <ConfirmationDialog.Body title={`Cannot delete ${component} '${title}'`} />
                 <p className="fs-13 cn-7 ">{confirmationDialogDescription}</p>
                 <ConfirmationDialog.ButtonGroup>
                     <button
@@ -55,7 +55,7 @@ function DeleteComponent({
 
     return (
         <div>
-            <DeleteDialog title={title} delete={handleDelete} closeDelete={() => toggleConfirmation(false)}>
+            <DeleteDialog title={`Delete ${component} '${title}'`} delete={handleDelete} closeDelete={() => toggleConfirmation(false)}>
                 <DeleteDialog.Description>
                     <p>Are you sure you want to delete this {component}? </p>
                 </DeleteDialog.Description>
