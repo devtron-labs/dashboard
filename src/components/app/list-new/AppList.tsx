@@ -7,7 +7,7 @@ import {ReactComponent as ChartIcon} from '../../../assets/icons/ic-charts.svg';
 import {ReactComponent as AddIcon} from '../../../assets/icons/ic-add.svg';
 import InstallDevtronFullImage from '../../../assets/img/install-devtron-full@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
-import {getInitData, buildClusterVsNamespace} from './AppListService'
+import {getInitData, buildClusterVsNamespace, getNamespaces} from './AppListService'
 import {ServerErrors} from '../../../modals/commonTypes';
 import {AppListViewType} from '../config';
 import {URLS, AppListConstants, SERVER_MODE, DOCUMENTATION} from '../../../config';
@@ -30,6 +30,7 @@ export default function AppList() {
     const [errorResponseCode, setErrorResponseCode] = useState(0);
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState("");
     const [lastDataSync, setLastDataSync] = useState(false);
+    const [fetchingNamespaces, setFetchingNamespaces] = useState(false);
 
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({});
     const [currentTab, setCurrentTab] = useState(undefined);
@@ -221,7 +222,40 @@ export default function AppList() {
             offset: offset,
             size: +pageSize,
         }
+
+        // check whether to fetch namespaces from backend if any cluster is selected and not same as old
+        // do it only for non page load, as on pageload getInitData is handling this logic
+        if (dataStateType == AppListViewType.LIST){
+            let _oldClusterIdsCsv = _getClusterIdsFromRequestUrl(parsedPayloadOnUrlChange);
+            let _newClusterIdsCsv = _getClusterIdsFromRequestUrl(payload);
+            if(_newClusterIdsCsv) {
+                // check if cluster selection is changed
+                if(_oldClusterIdsCsv != _newClusterIdsCsv) {
+                    // fetch namespaces
+                    setFetchingNamespaces(true);
+                    let _clusterVsNamespaceMap = buildClusterVsNamespace(payload.namespaces.join(','));
+                    getNamespaces(_newClusterIdsCsv, _clusterVsNamespaceMap).then((_namespaces) => {
+                        _masterFilters.namespaces = _namespaces;
+                        setMasterFilters(_masterFilters);
+                        setFetchingNamespaces(false);
+                    }).catch((errors: ServerErrors) => {
+                        showError(errors);
+                        setFetchingNamespaces(false);
+                    })
+                }
+            }else{
+                // if all clusters are unselected, then reset namespaces
+                _masterFilters.namespaces = [];
+                setMasterFilters(_masterFilters);
+            }
+        }
+
         return payload;
+    }
+
+    const _getClusterIdsFromRequestUrl = (parsedPayload : any) : string => {
+        let _namespaces = parsedPayload["namespaces"] || [];
+        return [...buildClusterVsNamespace(_namespaces.join(',')).keys()].join(',');
     }
 
     const buildDevtronAppListUrl = () : string => {
@@ -442,6 +476,20 @@ export default function AppList() {
                             type={AppListConstants.FilterType.PROJECT}
                             applyFilter={applyFilter}
                             onShowHideFilterContent={onShowHideFilterContent} />
+                    {
+                        serverMode == SERVER_MODE.FULL &&
+                        <>
+                            <span className="filter-divider"></span>
+                            <Filter list={masterFilters.environments}
+                                    labelKey="label"
+                                    buttonText="Environment"
+                                    searchable multi
+                                    placeholder="Search Environment"
+                                    type={AppListConstants.FilterType.ENVIRONMENT}
+                                    applyFilter={applyFilter}
+                                    onShowHideFilterContent={onShowHideFilterContent} />
+                        </>
+                    }
                     <span className="filter-divider"></span>
                     <Filter list={masterFilters.clusters}
                             labelKey="label"
@@ -463,21 +511,8 @@ export default function AppList() {
                             isDisabled={!_isAnyClusterFilterApplied}
                             disableTooltipMessage={"Select a cluster first"}
                             isLabelHtml={true}
-                            onShowHideFilterContent={onShowHideFilterContent} />
-                    {
-                        serverMode == SERVER_MODE.FULL &&
-                        <>
-                            <span className="filter-divider"></span>
-                            <Filter list={masterFilters.environments}
-                                    labelKey="label"
-                                    buttonText="Environment"
-                                    searchable multi
-                                    placeholder="Search Environment"
-                                    type={AppListConstants.FilterType.ENVIRONMENT}
-                                    applyFilter={applyFilter}
-                                    onShowHideFilterContent={onShowHideFilterContent} />
-                        </>
-                    }
+                            onShowHideFilterContent={onShowHideFilterContent}
+                            loading={fetchingNamespaces} />
                 </div>
             </div>
     }

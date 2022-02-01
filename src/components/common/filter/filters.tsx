@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { FilterProps, FilterState } from './types';
+import { Progressing } from '../../common';
 import './filter.css';
 import Tippy from '@tippyjs/react';
 
@@ -157,13 +158,18 @@ export class Filter extends Component<FilterProps, FilterState>{
                 <>
                     {this.state.show ? <div className="transparent-div" onClick={this.handleClick}></div> : null}
                     <div className={classNames} ref={node => this.node = node}>
-                        {this.props.searchable && <input type="text" placeholder={this.props.placeholder} className="filter__search" onChange={this.handleSearch} value={this.state.searchStr} />}
-                        <div className="filter__options">
-                            {filterOptions}
-                        </div>
-                        {this.props.multi && <button type="button" className="filter__apply" disabled={isDisable} onClick={() => { this.applyFilter(); }}>
-                            Apply Filter
-                        </button>}
+                        {
+                            this.props.loading ? <Progressing /> :
+                                <>
+                                    {this.props.searchable && <input type="text" placeholder={this.props.placeholder} className="filter__search" onChange={this.handleSearch} value={this.state.searchStr} />}
+                                    <div className="filter__options">
+                                        {filterOptions}
+                                    </div>
+                                    {this.props.multi && <button type="button" className="filter__apply" disabled={isDisable} onClick={() => { this.applyFilter(); }}>
+                                        Apply Filter
+                                    </button>}
+                                </>
+                        }
                     </div>
                 </>
             }
