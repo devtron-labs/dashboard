@@ -92,8 +92,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     payload={this.getMaterialPayload()}
                     title={this.props.material.name}
                     toggleConfirmation={this.toggleConfirmation}
-                    component={'chart repository'}
-                    confirmationDialogDescription={'Some deployed helm apps are using this repository.'}
+                    component={'git repository'}
+                    confirmationDialogDescription={`${this.props.isMultiGit ? 
+                    'Checkout path for this repository is being used in docker build config. Please change checkout path in use and try again.' : 
+                    'Some build pipelines are currently using this git repositry. Please delete the build pipelines and try again.'}`}
                 />
             );
         }
