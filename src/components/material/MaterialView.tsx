@@ -71,7 +71,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         }
     }
 
-     getMaterialPayload = () => {
+    getMaterialPayload = () => {
        return{ appId: this.props.appId,
         material : {
             id: this.props.material.id,

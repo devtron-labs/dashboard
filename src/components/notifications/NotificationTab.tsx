@@ -135,14 +135,10 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         })
     }
 
-    toggleConfirmation = () => {
+    toggleConfirmation = (confirmation) => {
         this.setState({
-            confirmation: true 
+            confirmation 
            })
-    }
-
-    deleteComponent = () => {
-
     }
 
     getHostURLConfig() {
@@ -530,16 +526,9 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                             </div>
                         </td>
                         <td className="pipeline-list__hover flex">
-                                <button type="button" className="transparent align-right" onClick={() => {
-                                // <DeleteComponent 
-                                // setDeleting={this.state.deleting}
-                                //  deleteComponent={deleteNotification}
-                                //   toggleConfirmation={this.state.confirmation}
-                                //   statusCode={this.state.statusCode}
-                                // />
-                            }}
-                                >
+                                <button type="button" className="transparent align-right" onClick={(event) => { this.setState({ showDeleteDialog: !this.state.showDeleteDialog }) }}  >
                                  <Trash className="scn-5 icon-dim-20" />
+                                 {console.log('hi')}
                                 </button>
                             </td>
                     </tr>
@@ -615,6 +604,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             {this.renderBody()}
             {this.renderDeleteDialog()}
             {this.remderModifyRecipients()}
+            {this.state.confirmation ? this.renderDeleteDialog() : null }
         </div>
     }
 }

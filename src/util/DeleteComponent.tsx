@@ -22,8 +22,8 @@ function DeleteComponent({
             toast.success('Successfully deleted');
             toggleConfirmation(false);
         } catch (serverError) {
+            showError(serverError);
             if (serverError instanceof ServerErrors && serverError.code === 500) {
-                showError(serverError);
                 setConfirmationDialogModal(true);
             }
         } finally {
