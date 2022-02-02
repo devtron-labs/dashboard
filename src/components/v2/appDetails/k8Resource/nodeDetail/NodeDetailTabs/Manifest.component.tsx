@@ -33,7 +33,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
     const [desiredManifest, setDesiredManifest] = useState('');
     const appDetails = IndexStore.getAppDetails();
     const [loading, setLoading] = useState(true);
-    const [loadingMsg, setLoadingMsg] = useState('');
+    const [loadingMsg, setLoadingMsg] = useState('Fetching manifest');
     const [error, setError] = useState(false);
     const [errorText, setErrorText] = useState('');
     const [isEditmode, setIsEditmode] = useState(false);
@@ -304,13 +304,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                 readOnly={activeTab !== 'Live manifest' || !isEditmode}
                                 onChange={handleEditorValueChange}
                                 loading={loading}
-                                customLoader={
-                                    <MessageUI
-                                        msg={`${loadingMsg || 'Fetching manifest'}`}
-                                        icon={MsgUIType.LOADING}
-                                        size={24}
-                                    />
-                                }
+                                customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
                                 focus={isEditmode}
                             >
                                 {showInfoText && (
