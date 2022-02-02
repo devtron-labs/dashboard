@@ -1,4 +1,4 @@
-import { post, put } from '../../services/api';
+import { post, put, trash } from '../../services/api';
 import { Routes } from '../../config';
 
 export function createMaterial(request) {
@@ -12,6 +12,6 @@ export function updateMaterial(request) {
 }
 
 export function deleteMaterial(request): Promise<any>{
-    const URL = `${Routes.GIT_MATERIAL}/delete`;
-    return post(URL, request)
+    const URL = `${Routes.GIT_MATERIAL}`;
+    return trash(URL, request)
 }

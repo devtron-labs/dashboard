@@ -1,4 +1,4 @@
-import { get, post } from '../../services/api';
+import { get, post, trash } from '../../services/api';
 import { Routes } from '../../config';
 
 export function createProject(project) {
@@ -26,6 +26,6 @@ export function getProjectList() {
 }
 
 export function deleteProject(request) {
-    const URL = `${Routes.PROJECT}/delete`;
-    return post(URL, request);
+    const URL = `${Routes.PROJECT}`;
+    return trash(URL, request);
 }

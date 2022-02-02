@@ -217,6 +217,6 @@ export function getChartsByKeyword(input: string) {
 }
 
 export function deleteChartGroup(request): Promise<any> {
-    const URL = `${Routes.CHART_GROUP}/delete`;
-    return post(URL, request);
+    const URL = `${Routes.CHART_GROUP}`;
+    return trash(URL, request);
 }

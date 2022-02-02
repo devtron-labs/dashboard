@@ -17,6 +17,6 @@ export function updateRegistryConfig(request, id: string): Promise<any> {
 }
 
 export function deleteDockerReg(request):Promise<any>{
-    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/delete`;
-    return post(URL, request);
+    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}`;
+    return trash(URL, request);
 }
