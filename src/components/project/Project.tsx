@@ -34,23 +34,6 @@ export class Project extends Component<ProjectProps>  {
         return isValid;
     }
 
-    // async handleDelete() {
-    //     setDeleting(true);
-    //     try {
-    //         await deleteProjectTeam();
-    //         toast.success('Successfully deleted');
-    //     } catch (err) {
-    //         // if (err.code != 403) {
-    //         //     toggleConfirmation(false);
-    //         // } else {
-    //         showError(err);
-    //         // }
-    //     } finally {
-    //         setDeleting(false);
-    //     }
-    // }
-
-
     renderForm() {
         let isValid = this.props.isValid;
         let errorMessage = this.props.errorMessage;
