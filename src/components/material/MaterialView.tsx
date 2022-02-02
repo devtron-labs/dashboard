@@ -28,10 +28,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
       }
     }
     
-    toggleConfirmation = (confirmation) => {
-        this.setState({
-            confirmation 
-        })
+    toggleConfirmation = () => {
+        this.setState((prevState)=>{
+           return{ confirmation: !prevState.confirmation}
+           })
     }
 
     setDeleting = () => {
@@ -243,7 +243,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             <div className={`form__buttons ${this.props.material.id ? 'content-space' : ''}`}>
                     {this.props.material.id && (
                         <div>
-                            <button className="cta delete" type="button" onClick={() => this.toggleConfirmation(true)}>
+                            <button className="cta delete" type="button" onClick={() => this.toggleConfirmation()}>
                                 {this.state.deleting ? <Progressing /> : 'Delete'}
                             </button>
                         </div>

@@ -135,12 +135,6 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         })
     }
 
-    toggleConfirmation = (confirmation) => {
-        this.setState({
-            confirmation 
-           })
-    }
-
     getHostURLConfig() {
         getHostURLConfiguration().then((response) => {
             this.setState({ hostURLConfig: response.result, })
@@ -348,6 +342,17 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         })
     }
 
+    deleteNotification(): void {
+        let candidates = this.state.notificationList.filter(n => n.isSelected);
+        deleteNotifications(candidates).then((response) => {
+            this.setState({ showDeleteDialog: false });
+            this.getAllNotifications();
+            toast.success("Deleted Successfully");
+        }).catch((error) => {
+            showError(error)
+        })
+    }
+
     renderDeleteDialog() {
         if (this.state.showDeleteDialog) {
             let n = this.state.notificationList.filter(n => n.isSelected);
@@ -526,9 +531,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                             </div>
                         </td>
                         <td className="pipeline-list__hover flex">
-                                <button type="button" className="transparent align-right" onClick={(event) => { this.setState({ showDeleteDialog: !this.state.showDeleteDialog }) }}  >
+                                <button type="button" id="row.id" className="transparent align-right" onClick={(event) => { this.setState({ showDeleteDialog: !this.state.showDeleteDialog }) }}  >
                                  <Trash className="scn-5 icon-dim-20" />
-                                 {console.log('hi')}
                                 </button>
                             </td>
                     </tr>

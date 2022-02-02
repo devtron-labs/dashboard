@@ -109,7 +109,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                     this.setState({ showSlackConfigModal: true, slackConfigId: slackConfig.id });
                                 }}>
                                     <Edit className="icon-dim-20" />
-                                    <button type="button" className="transparent align-right" onClick={() => {this.toggleConfirmation(true, this.state.slackConfigId); this.setState({slackConfigId: slackConfig.id})}}
+                                    <button type="button" className="transparent align-right" onClick={() => {this.toggleConfirmation(this.state.slackConfigId); this.setState({slackConfigId: slackConfig.id})}}
                                 >
                                  <Trash className="scn-5 icon-dim-20" />
                                 </button>
@@ -137,9 +137,9 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         </div>
     }
 
-    toggleConfirmation = (confirmation, sesConfigId) => {
-        this.setState({
-            confirmation : confirmation,
+    toggleConfirmation = (sesConfigId) => {
+        this.setState((prevState)=>{
+           return{ confirmation: !prevState.confirmation}
            })
     }
 
@@ -234,7 +234,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                 }}>
                                     <Edit className="icon-dim-20" />
                                 </button>
-                                <button type="button" className="transparent align-right" onClick={() => {this.setConfigId(sesConfig.id); this.toggleConfirmation(true, this.state.sesConfigId)}}
+                                <button type="button" className="transparent align-right" onClick={() => {this.setConfigId(sesConfig.id); this.toggleConfirmation(this.state.sesConfigId)}}
                                 >
                                  <Trash className="scn-5 icon-dim-20" />
                                 </button>

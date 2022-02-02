@@ -79,6 +79,11 @@ export default function ChartGroupDetails() {
             .catch((error) => {
                 showError(error);
             });
+            let response
+             getChartGroups().then((res) => (
+                  response = res.result.groups.filter((grp)=> grp.id === groupId)
+                ))
+
     }, []);
 
     function handleOnDeployTo() {
@@ -248,6 +253,7 @@ export default function ChartGroupDetails() {
                     </div>
                 )}
                  {confirmation && (
+                     
                 <DeleteComponent
                     setDeleting={setDeleting}
                     deleteComponent={deleteChartGroup}
