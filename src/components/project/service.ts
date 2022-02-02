@@ -24,3 +24,8 @@ export function getProjectList() {
         }
     })
 }
+
+export function deleteProject(request) {
+    const URL = `${Routes.PROJECT}/delete`;
+    return post(URL, request);
+}

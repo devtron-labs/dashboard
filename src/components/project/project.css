@@ -5,3 +5,16 @@
     letter-spacing: normal;
     color: var(--N900);
 }
+
+.project__row:hover{
+    box-shadow: 0 2px 4px -1px rgb(0 56 112 / 30%);
+}
+
+.project__row__trash{
+    display: none;
+ }
+
+.project__row:hover .project__row__trash{
+   display: block;
+   color: blue;
+}
