@@ -122,6 +122,7 @@ export const Routes = {
     CREATE_RESOURCE: 'k8s/resource/create',
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
     HELM_RELEASE_APP_UPDATE_API: 'application/update',
+    NAMESPACE: 'env/namespace',
 };
 
 export const ViewType = {
