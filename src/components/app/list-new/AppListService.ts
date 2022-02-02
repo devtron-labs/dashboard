@@ -94,14 +94,11 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
         // set filter clusters starts
         if(clusterListRes.result && Array.isArray(clusterListRes.result)){
             clusterListRes.result.forEach((cluster : Cluster) => {
-                let _clusterId = cluster.id;
-                let _clusterName = cluster.cluster_name;
-                let _isClusterSelected = filterApplied.clusterVsNamespaceMap.has(_clusterId.toString());
                 filters.clusters.push({
-                    key: _clusterId,
-                    label: _clusterName.toLocaleLowerCase(),
+                    key: cluster.id,
+                    label: cluster.cluster_name.toLocaleLowerCase(),
                     isSaved: true,
-                    isChecked: _isClusterSelected
+                    isChecked: filterApplied.clusterVsNamespaceMap.has(cluster.id.toString())
                 })
             })
         }
