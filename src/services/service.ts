@@ -2,7 +2,7 @@ import { get, post } from './api';
 import { ACCESS_TYPE_MAP, Routes } from '../config';
 import { sortCallback } from '../components/common/helpers/util';
 import moment from 'moment';
-import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions, ClusterEnvironmentDetailList, EnvironmentListHelmResponse } from './service.types';
+import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions, ClusterEnvironmentDetailList, EnvironmentListHelmResponse, ClusterListResponse } from './service.types';
 import { Chart } from '../components/charts/charts.types';
 import { fetchWithFullRoute } from './fetchWithFullRoute';
 
@@ -364,5 +364,15 @@ export function getClusterNamespaceMapping(): Promise<ClusterEnvironmentDetailLi
 
 export function getVersionConfig() {
     const URL = `${Routes.APP_VERSION}`;
+    return get(URL);
+}
+
+export function getClusterListMinWithoutAuth() : Promise<ClusterListResponse> {
+    const URL = `${Routes.CLUSTER}/autocomplete?auth=false`;
+    return get(URL);
+}
+
+export function getNamespaceListMin(clusterIdsCsv : string) : Promise<EnvironmentListHelmResponse> {
+    const URL = `${Routes.NAMESPACE}/autocomplete?ids=${clusterIdsCsv}`;
     return get(URL);
 }

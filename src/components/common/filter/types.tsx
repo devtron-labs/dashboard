@@ -21,6 +21,10 @@ export interface FilterProps {
     onShowHideFilterContent?: (show : boolean) => void;
     showPulsatingDot? : boolean;
     searchKey?: string;
+    loading?: boolean;
+    errored?: boolean;
+    errorMessage?: string;
+    errorCallbackFunction?: () => void;
 }
 
 export interface FilterState {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { VisibleModal, showError, Progressing, VulnerabilityType, ScanVulnerabilitiesTable } from '../index';
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
-import { ViewType } from '../../../config';
+import { ViewType, URLS } from '../../../config';
 import { getLastExecutionByImageScanDeploy } from '../../../services/service';
 import EmptyState from '../../EmptyState/EmptyState';
 import NoVulnerabilities from '../../../assets/img/ic-vulnerability-not-found.svg'
@@ -100,7 +100,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
     renderScannedObjectInfo() {
         let link = `/app/${this.state.appId}/details/${this.state.envId}`;
         if (this.state.objectType === 'chart') {
-            link = `/chart-store/deployments/${this.state.appId}/env/${this.state.envId}/Pod`;
+            link = `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${this.state.appId}/env/${this.state.envId}`;
         }
         return <div className="scanned-object">
             <div className="flexbox flex-justify">
