@@ -15,8 +15,8 @@ import MessageUI from '../../../../common/message.ui';
 import { SingleSelectOption as Option } from '../../../../../common';
 
 const shellTypes = [
-    { label: 'bash', value: 'bash' },
     { label: 'sh', value: 'sh' },
+    { label: 'bash', value: 'bash' },
     { label: 'powershell', value: 'powershell' },
     { label: 'cmd', value: 'cmd' },
 ];

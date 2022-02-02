@@ -171,3 +171,13 @@ export interface EnvironmentHelmResult {
     namespace: string,
     environmentIdentifier: string
 }
+
+export interface ClusterListResponse extends ResponseType {
+    result?: Cluster[]
+}
+
+export interface Cluster {
+    id: number,
+    cluster_name : string,
+    active: boolean
+}

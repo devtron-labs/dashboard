@@ -16,6 +16,14 @@ export interface HelmAppDetailResponse extends ResponseType {
     result?: HelmAppDetail
 }
 
+export interface UninstallReleaseResponse extends ResponseType {
+    result?: ActionResponse
+}
+
+export interface UpdateReleaseResponse extends ResponseType {
+    result?: ActionResponse
+}
+
 export interface ReleaseInfo {
     deployedAppDetail: HelmApp
     defaultValues: string,
@@ -45,6 +53,10 @@ export interface HelmAppDetail {
     environmentDetails: AppEnvironmentDetail
 }
 
+export interface ActionResponse {
+    success: boolean
+}
+
 interface DeployedAt {
     seconds : number,
     nanos: number
@@ -64,6 +76,11 @@ interface HelmReleaseStatus {
     description: string
 }
 
+export interface UpdateApplicationRequest {
+    appId: string,
+    valuesYaml: string
+}
+
 export const getReleaseInfo = (appId: string): Promise<ReleaseInfoResponse> => {
     let url = `${Routes.HELM_RELEASE_INFO_API}?appId=${appId}`
     return get(url);
@@ -77,4 +94,14 @@ export const getDeploymentHistory = (appId: string): Promise<HelmAppDeploymentHi
 export const getAppDetail = (appId: string): Promise<HelmAppDetailResponse> => {
     let url = `${Routes.HELM_RELEASE_APP_DETAIL_API}?appId=${appId}`
     return get(url);
+}
+
+export const deleteApplicationRelease = (appId: string): Promise<UninstallReleaseResponse> => {
+    let url = `${Routes.HELM_RELEASE_APP_DELETE_API}?appId=${appId}`
+    return trash(url);
+}
+
+export const updateApplicationRelease = (requestPayload: UpdateApplicationRequest): Promise<UpdateReleaseResponse> => {
+    let url = `${Routes.HELM_RELEASE_APP_UPDATE_API}`
+    return put(url, requestPayload);
 }

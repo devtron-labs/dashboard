@@ -27,7 +27,7 @@ import { ClusterInstallStatus } from './ClusterInstallStatus';
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type';
 import { useHistory } from 'react-router';
 import { toast } from 'react-toastify';
-import { DOCUMENTATION, SERVER_MODE, ViewType } from '../../config';
+import { DOCUMENTATION, SERVER_MODE, ViewType, URLS } from '../../config';
 import { getEnvName } from './cluster.util';
 import Reload from '../Reload/Reload';
 import DeleteComponent from '../../util/DeleteComponent';
@@ -248,7 +248,7 @@ function Cluster({
     }
 
     function redirectToChartDeployment(appId, envId): void {
-        history.push(`/chart-store/deployments/${appId}/env/${envId}`);
+        history.push(`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`);
     }
 
     async function callRetryClusterInstall() {
