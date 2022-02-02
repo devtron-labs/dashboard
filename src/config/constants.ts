@@ -110,7 +110,7 @@ export const Routes = {
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
     APP_META_INFO: 'app/meta/info',
     CLUSTER_ENV_MAPPING: 'env',
-    APP_VERSION: '/version',
+    APP_VERSION: 'version',
     HELM_RELEASE_INFO_API: 'application/release-info',
     HELM_RELEASE_DEPLOYMENT_HISTORY_API: 'application/deployment-history',
     HELM_RELEASE_APP_DETAIL_API: 'application/app',
@@ -122,6 +122,7 @@ export const Routes = {
     CREATE_RESOURCE: 'k8s/resource/create',
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
     HELM_RELEASE_APP_UPDATE_API: 'application/update',
+    NAMESPACE: 'env/namespace',
 };
 
 export const ViewType = {
