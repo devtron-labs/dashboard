@@ -5,6 +5,7 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import DeleteComponent from '../../util/DeleteComponent';
 import { deleteProject } from './service';
 import './project.css'
+import { DeleteComponentsName, DC_PROJECT_CONFIRMATION_MESSAGE } from '../../config/constantMessaging';
 
 export interface ProjectProps {
     id: number;
@@ -18,6 +19,7 @@ export interface ProjectProps {
     index: number;
     isValid: { name: boolean };
     errorMessage: { name: string };
+    reload: () => void
 }
 
 export interface ProjectState {
@@ -34,9 +36,10 @@ export class Project extends Component<ProjectProps, ProjectState>  {
            confirmation: false,
         }
       }
-    toggleConfirmation = (confirmation) => {
-        this.setState({
-            confirmation : confirmation,
+      
+    toggleConfirmation = () => {
+        this.setState((prevState)=>{
+           return{ confirmation: !prevState.confirmation}
            })
     }
 
@@ -63,9 +66,9 @@ export class Project extends Component<ProjectProps, ProjectState>  {
                     payload={this.getProjectPayload()}
                     title={this.props.name}
                     toggleConfirmation={this.toggleConfirmation}
-                    component={'project'}
-                    confirmationDialogDescription={`Please delete applications assigned to this project and try again.`}
-                />
+                    component={DeleteComponentsName.Project}
+                    confirmationDialogDescription={DC_PROJECT_CONFIRMATION_MESSAGE}
+                    reload={this.props.reload} />
             );
         }
     }
@@ -75,7 +78,7 @@ export class Project extends Component<ProjectProps, ProjectState>  {
         return <div className="project__row white-card white-card--add-new-item mb-16">
             <img src={folder} alt="" className="icon-dim-24 mr-16" />
             <span className="project-title">{this.props.name}</span>
-            <button type="button" className="project__row__trash transparent align-right" onClick={() => { this.toggleConfirmation(true)}}>
+            <button type="button" className="project__row__trash transparent align-right" onClick={() => { this.toggleConfirmation()}}>
                  <Trash className="scn-5 icon-dim-20" />
              </button>
              {this.deleteComponenet()}

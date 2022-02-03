@@ -16,5 +16,4 @@
 
 .project__row:hover .project__row__trash{
    display: block;
-   color: blue;
 }

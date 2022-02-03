@@ -19,6 +19,7 @@ import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.sv
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 import { ServerError } from '../../modals/commonTypes';
 import DeleteComponent from '../../util/DeleteComponent';
+import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
 
 export default function GitProvider({ ...props }) {
     const [loading, result, error, reload] = useAsync(getGitProviderList);
@@ -664,10 +665,9 @@ function GitForm({
                     payload={payload}
                     title={state.name.value}
                     toggleConfirmation={toggleConfirmation}
-                    component={'git account'}
-                    confirmationDialogDescription={
-                        'Some applications are currently using this git account. Please change the git account in use and try again.'
-                    }
+                    component={DeleteComponentsName.GitProvider}
+                    confirmationDialogDescription={DC_GIT_PROVIDER_CONFIRMATION_MESSAGE}
+                    reload={reload}
                 />
             )}
             </form>

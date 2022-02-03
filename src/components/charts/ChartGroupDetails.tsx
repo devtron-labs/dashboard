@@ -22,6 +22,7 @@ import { ConfirmationDialog } from '../common';
 import warn from '../../assets/icons/ic-warning.svg';
 import { NavLink } from 'react-router-dom';
 import DeleteComponent from '../../util/DeleteComponent';
+import { DeleteComponentsName } from '../../config/constantMessaging';
 
 export default function ChartGroupDetails() {
     const { groupId } = useParams<{ groupId }>();
@@ -70,15 +71,23 @@ export default function ChartGroupDetails() {
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
 
-    useEffect(() => {
+    const reload = () => {
         isGitopsConfigured()
-            .then((response) => {
-                let isGitOpsConfigAvailable = response.result && response.result.exists;
-                setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
-            })
-            .catch((error) => {
-                showError(error);
-            });
+        .then((response) => {
+            let isGitOpsConfigAvailable = response.result && response.result.exists;
+            setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
+        })
+        .catch((error) => {
+            showError(error);
+        });
+        let response
+         getChartGroups().then((res) => (
+              response = res.result.groups.filter((grp)=> grp.id === groupId)
+            ))
+    }
+
+    useEffect(() => {
+        reload()
     }, []);
 
     function handleOnDeployTo() {
@@ -136,8 +145,30 @@ export default function ChartGroupDetails() {
         }
     }
 
-    let payload = {
-         
+     function deleteComponent(id){
+        let payload = {
+            name: state.name,
+            description: state.description,
+            id: id,
+            chartGroupEntries: state.charts,
+        };
+
+        if (confirmation) {
+            return (
+                <DeleteComponent
+                    setDeleting={setDeleting}
+                    deleteComponent={deleteChartGroup}
+                    payload={payload}
+                    title={state.name}
+                    toggleConfirmation={toggleConfirmation}
+                    component={DeleteComponentsName.ChartGroup}
+                    confirmationDialogDescription={''}
+                    redirectTo={true}
+                    url={`${URLS.CHARTS}/discover`}
+                    reload={reload}
+                />
+            );
+        }
     }
     
     return (
@@ -247,19 +278,7 @@ export default function ChartGroupDetails() {
                         </div>
                     </div>
                 )}
-                 {confirmation && (
-                <DeleteComponent
-                    setDeleting={setDeleting}
-                    deleteComponent={deleteChartGroup}
-                    payload={payload}
-                    title={state.name}
-                    toggleConfirmation={toggleConfirmation}
-                    component={'chart group'}
-                    confirmationDialogDescription={
-                        ''
-                    }
-                />
-            )}
+                {deleteComponent(1)}
             </div>
             {showDeployModal ? (
                 <ChartGroupBasicDeploy

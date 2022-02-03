@@ -31,6 +31,7 @@ import { DOCUMENTATION, SERVER_MODE, ViewType, URLS } from '../../config';
 import { getEnvName } from './cluster.util';
 import Reload from '../Reload/Reload';
 import DeleteComponent from '../../util/DeleteComponent';
+import { DC_CLUSTER_CONFIRMATION_MESSAGE, DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
 
 const PrometheusWarningInfo = () => {
     return (
@@ -387,6 +388,7 @@ function Cluster({
             </article>
             {environment && (
                 <Environment
+                    reload={reload}
                     cluster_name={cluster_name}
                     {...environment}
                     handleClose={handleClose}
@@ -740,10 +742,9 @@ function ClusterForm({
                     payload={payload}
                     title={cluster_name}
                     toggleConfirmation={toggleConfirmation}
-                    component={'cluster'}
-                    confirmationDialogDescription={
-                        'Please delete environments on this cluster and try again.'
-                    }
+                    component={DeleteComponentsName.Cluster}
+                    confirmationDialogDescription={DC_CLUSTER_CONFIRMATION_MESSAGE}
+                    reload={reload()}
                 />
             )}
         </form>
@@ -760,6 +761,7 @@ function Environment({
     prometheus_endpoint,
     isProduction,
     isNamespaceMandatory = true,
+    reload
 }) {
     const [loading, setLoading] = useState(false);
     const [ignore, setIngore] = useState(false);
@@ -936,8 +938,9 @@ function Environment({
                         payload={payload}
                         title={state.name?.value}
                         toggleConfirmation={toggleConfirmation}
-                        component={'environment'}
-                        confirmationDialogDescription={'Please delete applications deployed on this environment and try again.'}
+                        component={DeleteComponentsName.Environment}
+                        confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
+                        reload={reload}
                     />
                 )}
             </form>

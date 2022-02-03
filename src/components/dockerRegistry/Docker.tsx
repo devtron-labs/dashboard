@@ -14,6 +14,7 @@ import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg';
 import { types } from 'util';
 import DeleteComponent from '../../util/DeleteComponent';
+import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
 
 const DockerRegistryType = [
     { label: 'docker hub', value: 'docker-hub' },
@@ -615,10 +616,9 @@ function DockerForm({
                     payload={payload}
                     title={id}
                     toggleConfirmation={toggleConfirmation}
-                    component={'container registry'}
-                    confirmationDialogDescription={
-                        'Some applications are currently using this container registry. Please change the container registry in use and try again.'
-                    }
+                    component={DeleteComponentsName.ContainerRegistry}
+                    confirmationDialogDescription={DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE}
+                    reload={reload}
                 />
             )}
         </form>

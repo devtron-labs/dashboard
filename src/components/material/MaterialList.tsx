@@ -25,7 +25,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         this.refreshMaterials = this.refreshMaterials.bind(this);
     }
 
-    componentDidMount() {
+    reload = () => {
         Promise.all([getSourceConfig(this.props.match.params.appId), getGitProviderListAuth(this.props.match.params.appId)]).then(([sourceConfigRes, providersRes]) => {
             let materials = sourceConfigRes.result.material || [];
             let providers = providersRes.result;
@@ -44,6 +44,10 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             showError(error);
             this.setState({ view: ViewType.ERROR });
         })
+    }
+
+    componentDidMount() {
+        this.reload()
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -119,7 +123,9 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                     refreshMaterials={this.refreshMaterials}
                     isGitProviderValid={this.isGitProviderValid}
                     isCheckoutPathValid={this.isCheckoutPathValid}
-                    isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked} />
+                    isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked} 
+                    reload = {this.reload}
+                    />
                 {this.state.materials.map((mat) => {
                     return <UpdateMaterial key={mat.name}
                         appId={Number(this.props.match.params.appId)}
@@ -129,7 +135,8 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                         refreshMaterials={this.refreshMaterials}
                         isGitProviderValid={this.isGitProviderValid}
                         isCheckoutPathValid={this.isCheckoutPathValid}
-                        isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked} />
+                        isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
+                        reload = {this.reload} />
                 })}
             </div>
         }

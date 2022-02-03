@@ -31,19 +31,23 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         this.addProject = this.addProject.bind(this);
     }
 
-    componentDidMount() {
-        getProjectList().then((response) => {
-            this.setState({
-                view: ViewType.FORM,
-                code: response.code,
-                projects: response.result.reverse()
-            })
-        }).catch((errors) => {
-            if (Array.isArray(errors.error)) {
-                errors.error.map((err) => toast.error(err.userMessage));
-                this.setState({ view: ViewType.ERROR, code: errors.code, loadingData: false })
-            }
+ reload = () => {
+    getProjectList().then((response) => {
+        this.setState({
+            view: ViewType.FORM,
+            code: response.code,
+            projects: response.result.reverse()
         })
+    }).catch((errors) => {
+        if (Array.isArray(errors.error)) {
+            errors.error.map((err) => toast.error(err.userMessage));
+            this.setState({ view: ViewType.ERROR, code: errors.code, loadingData: false })
+        }
+    })
+ }
+
+    componentDidMount() {
+        this.reload()
     }
 
     handleChange(event, index: number, key: 'name'): void {
@@ -107,6 +111,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             isCollapsed={project.isCollapsed}
             index={index}
             loadingData={this.state.loadingData}
+            reload={this.reload}
         />
     }
 

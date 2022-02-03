@@ -17,6 +17,7 @@ import Tippy from '@tippyjs/react';
 import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers';
 import DeleteComponent from '../../util/DeleteComponent';
 import {deleteMaterial} from './material.service';
+import { DeleteComponentsName, DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE, DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE } from '../../config/constantMessaging';
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
 
     constructor(props) {
@@ -28,10 +29,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
       }
     }
     
-    toggleConfirmation = (confirmation) => {
-        this.setState({
-            confirmation 
-        })
+    toggleConfirmation = () => {
+        this.setState((prevState)=>{
+           return{ confirmation: !prevState.confirmation}
+           })
     }
 
     setDeleting = () => {
@@ -92,10 +93,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     payload={this.getMaterialPayload()}
                     title={this.props.material.name}
                     toggleConfirmation={this.toggleConfirmation}
-                    component={'git repository'}
-                    confirmationDialogDescription={`${this.props.isMultiGit ? 
-                    'Checkout path for this repository is being used in docker build config. Please change checkout path in use and try again.' : 
-                    'Some build pipelines are currently using this git repositry. Please delete the build pipelines and try again.'}`}
+                    component={DeleteComponentsName.MaterialView}
+                    confirmationDialogDescription={this.props.isMultiGit ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE}
+                    reload={this.props.reload}
                 />
             );
         }
@@ -243,7 +243,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             <div className={`form__buttons ${this.props.material.id ? 'content-space' : ''}`}>
                     {this.props.material.id && (
                         <div>
-                            <button className="cta delete" type="button" onClick={() => this.toggleConfirmation(true)}>
+                            <button className="cta delete" type="button" onClick={() => this.toggleConfirmation()}>
                                 {this.state.deleting ? <Progressing /> : 'Delete'}
                             </button>
                         </div>
