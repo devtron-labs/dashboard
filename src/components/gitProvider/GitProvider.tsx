@@ -496,7 +496,7 @@ function GitForm({
         id: id || 0,
         name: state.name.value,
         url: state.url.value,
-        gitHostId: gitHost?.value?.value || '',
+        gitHostId: gitHost?.value?.value || 0,
         authMode: state.auth.value || '',
         active,
         username: customState.username.value || '', 
@@ -643,7 +643,7 @@ function GitForm({
                     {id && (
                         <div>
                             <div>
-                                <button className="cta delete" type="button" onClick={() => toggleConfirmation(true)}>
+                                <button className={`cta delete ml-0`} type="button" onClick={() => toggleConfirmation(true)}>
                                     {deleting ? <Progressing /> : 'Delete'}
                                 </button>
                             </div>

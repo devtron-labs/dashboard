@@ -723,7 +723,7 @@ function ClusterForm({
             <div className={`form__buttons ${id ? 'content-space' : ''} `}>
                 {id && (
                     <div>
-                        <button className="cta delete" type="button" onClick={() => toggleConfirmation(true)}>
+                        <button className="cta delete ml-0" type="button" onClick={() => toggleConfirmation(true)}>
                             {deleting ? <Progressing /> : 'Delete'}
                         </button>
                     </div>

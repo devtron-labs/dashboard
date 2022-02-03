@@ -15,10 +15,12 @@ function DeleteComponent({
     confirmationDialogDescription,
     redirectTo = false,
     url = '',
-    reload
+    reload,
+    configuration = '',
 }) {
     const [showConfirmationDialogModal, setConfirmationDialogModal] = useState(false);
     const { push } = useHistory();
+
     async function handleDelete() {
         setDeleting(true);
         try {
@@ -67,7 +69,7 @@ function DeleteComponent({
                 closeDelete={() => toggleConfirmation(false)}
             >
                 <DeleteDialog.Description>
-                    <p>Are you sure you want to delete this {component}? </p>
+                    <p>Are you sure you want to delete this {configuration ? configuration : component}? </p>
                 </DeleteDialog.Description>
             </DeleteDialog>
         );

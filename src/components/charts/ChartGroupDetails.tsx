@@ -151,7 +151,7 @@ export default function ChartGroupDetails() {
         let payload = {
             name: state.name,
             description: state.description,
-            id: groupId,
+            id: parseInt(groupId),
             chartGroupEntries: state.charts,
             installedChartData:chartGroupInstalled?.result?.installedChartData 
         };
