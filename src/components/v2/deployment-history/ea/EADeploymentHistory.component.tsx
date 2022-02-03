@@ -1,30 +1,43 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { toast } from 'react-toastify';
-import { showError, Progressing, ErrorScreenManager,  } from '../../../common';
+import React, { useState, useEffect } from 'react';
+import { showError, Progressing, ErrorScreenManager } from '../../../common';
 import docker from '../../../../assets/icons/misc/docker.svg';
-import { getDeploymentHistory, HelmAppDeploymentHistoryResponse, HelmAppDeploymentHistory, HelmAppDeploymentDetail } from '../../../external-apps/ExternalAppService';
+import {
+    getDeploymentHistory,
+    HelmAppDeploymentHistoryResponse,
+    HelmAppDeploymentDetail,
+    getDeploymentDetail,
+    HelmAppDeploymentDetails,
+} from '../../../external-apps/ExternalAppService';
 import { ServerErrors } from '../../../../modals/commonTypes';
-import {Moment12HourFormat} from '../../../../config';
-import CodeEditor from '../../../CodeEditor/CodeEditor'
-import moment from 'moment'
+import { Moment12HourFormat } from '../../../../config';
+import CodeEditor from '../../../CodeEditor/CodeEditor';
+import moment from 'moment';
 import Tippy from '@tippyjs/react';
 import '../../../app/details/cIDetails/ciDetails.scss';
-import './ea-deployment-history.scss'
+import YAML from 'yaml';
+import './ea-deployment-history.scss';
 
-function ExternalAppDeploymentHistory({appId}) {
+function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
     const [isLoading, setIsLoading] = useState(true);
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
     const [deploymentHistoryArr, setDeploymentHistoryArr] = useState<HelmAppDeploymentDetail[]>([]);
     const [selectedDeploymentHistoryIndex, setSelectedDeploymentHistoryIndex] = useState<number>(0);
     const [selectedDeploymentTabIndex, setSelectedDeploymentTabIndex] = useState<number>(0);
+    const [deploymentDetails, setDeploymentDetails] = useState<Record<number, HelmAppDeploymentDetails>>();
+    const [selectedDeploymentDetails, setSelectedDeploymentDetails] = useState<HelmAppDeploymentDetails>();
+    const [loadingYaml, setLoadingYaml] = useState(false);
 
-    const deploymentTabs: string[] = new Array("Source", "Applied YAML");
+    const deploymentTabs: string[] = ['Source', 'values.yaml', 'Helm generated manifest'];
 
     // component load
     useEffect(() => {
         getDeploymentHistory(appId)
             .then((deploymentHistoryResponse: HelmAppDeploymentHistoryResponse) => {
-                setDeploymentHistoryArr(deploymentHistoryResponse.result?.deploymentHistory?.sort((a , b) => b.deployedAt.seconds - a.deployedAt.seconds) || []);
+                setDeploymentHistoryArr(
+                    deploymentHistoryResponse.result?.deploymentHistory?.sort(
+                        (a, b) => b.deployedAt.seconds - a.deployedAt.seconds,
+                    ) || [],
+                );
                 setIsLoading(false);
             })
             .catch((errors: ServerErrors) => {
@@ -34,19 +47,47 @@ function ExternalAppDeploymentHistory({appId}) {
             });
     }, []);
 
-    function changeDeployment(index: number){
-        if(selectedDeploymentHistoryIndex == index){
+    function changeDeployment(index: number) {
+        if (selectedDeploymentHistoryIndex == index) {
             return;
         }
 
+        setSelectedDeploymentTabIndex(0); // Resetting  the deployment tab selection on version change.
         setSelectedDeploymentHistoryIndex(index);
     }
 
-    function changeDeploymentTab(index: number){
-        if(selectedDeploymentTabIndex == index){
+    function changeDeploymentTab(index: number) {
+        if (selectedDeploymentTabIndex === index) {
             return;
         }
 
+        if (index === 1 || index === 2) {
+            const history = deploymentHistoryArr[selectedDeploymentHistoryIndex];
+            const details = deploymentDetails && deploymentDetails[history.version];
+            setSelectedDeploymentDetails(details);
+
+            if (!loadingYaml && typeof details === 'undefined') {
+                setLoadingYaml(true);
+                getDeploymentDetail(appId, history.version)
+                    .then(({ result }) => {
+                        setDeploymentDetails({
+                            [history.version]: {
+                                manifest: result.manifest,
+                                valuesYaml: result.valuesYaml,
+                            },
+                            ...deploymentDetails,
+                        });
+                        setSelectedDeploymentDetails({
+                            manifest: result.manifest,
+                            valuesYaml: result.valuesYaml,
+                        });
+                        setLoadingYaml(false);
+                    })
+                    .catch((e) => {
+                        setLoadingYaml(false);
+                    });
+            }
+        }
         setSelectedDeploymentTabIndex(index);
     }
 
@@ -104,6 +145,35 @@ function ExternalAppDeploymentHistory({appId}) {
         </ul>
     }
 
+    function renderCodeEditor(): JSX.Element {
+        if (loadingYaml) {
+            return <Progressing pageLoader />;
+        }
+
+        return (
+            (selectedDeploymentTabIndex === 1 || selectedDeploymentTabIndex === 2) &&
+            deploymentDetails &&
+            selectedDeploymentDetails && (
+                <div className="bcn-0 border-btm">
+                    <CodeEditor
+                        value={
+                            selectedDeploymentTabIndex === 1
+                                ? YAML.stringify(JSON.parse(selectedDeploymentDetails.valuesYaml), {
+                                      indent: 2,
+                                  })
+                                : selectedDeploymentDetails.manifest
+                        }
+                        noParsing
+                        mode="yaml"
+                        height={700}
+                        readOnly={true}
+                        loading={loadingYaml}
+                    ></CodeEditor>
+                </div>
+            )
+        );
+    }
+
     function renderSelectedDeploymentTabData() {
         let deployment = deploymentHistoryArr[selectedDeploymentHistoryIndex];
         let chartMetadata = deployment.chartMetadata;
@@ -150,19 +220,9 @@ function ExternalAppDeploymentHistory({appId}) {
                         </div>
                     </div>
                 }
-                {
-                    selectedDeploymentTabIndex == 1 &&
-                    <div className="bcn-0 border-btm">
-                        <CodeEditor
-                            value={deployment.manifest}
-                            noParsing
-                            mode="yaml"
-                            readOnly={true}>
-                        </CodeEditor>
-                    </div>
-                }
+                {renderCodeEditor()}
             </div>
-        )
+        );
     }
 
     function renderSelectedDeploymentDetailHeader(){
