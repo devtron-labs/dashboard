@@ -321,28 +321,67 @@ export default function AppList() {
         history.push(url);
     }
 
-    const applyFilter = (type: string, list: FilterOption[], selectedAppTab : string = undefined): void => {
+    const getAppliedFilters = (ids: (string | number)[], filterType: string, query: Record<string, string>): string => {
+        if (
+            !query ||
+            Object.keys(query).length <= 0 ||
+            typeof query[AppListConstants.FilterType.NAMESPACE] === 'undefined'
+        ) {
+            return ids.toString();
+        }
+
+        let appliedFilters = query[AppListConstants.FilterType.NAMESPACE].split(',');
+        let checkedItemIds = ids.toString().split(',');
+        let updatedAppliedFilters = [];
+
+        checkedItemIds.forEach((id) => {
+            const filterdIds = appliedFilters.filter(
+                (item) =>
+                    id.toString() === item ||
+                    (filterType === AppListConstants.FilterType.CLUTSER && item.startsWith(`${id}_`)),
+            );
+            updatedAppliedFilters.push(filterdIds.length > 0 ? filterdIds : id);
+        });
+
+        if (filterType === AppListConstants.FilterType.NAMESPACE) {
+            appliedFilters.forEach((filter) => {
+                if (!checkedItemIds.some((itemId) => itemId.startsWith(`${filter.split('_')[0]}_`))) {
+                    updatedAppliedFilters.push(filter.split('_')[0]);
+                }
+            });
+        }
+
+        return Array.from(new Set<string>(updatedAppliedFilters.filter((filter) => filter !== ''))).toString();
+    };
+
+    const applyFilter = (type: string, list: FilterOption[], selectedAppTab: string = undefined): void => {
         let qs = queryString.parse(location.search);
         let keys = Object.keys(qs);
         let query = {};
         keys.map((key) => {
             query[key] = qs[key];
-        })
+        });
 
-        let queryParamType = (type == AppListConstants.FilterType.CLUTSER || type == AppListConstants.FilterType.NAMESPACE) ? 'namespace' : type;
-        let checkedItems = list.filter(item => item.isChecked);
-        let ids = checkedItems.map(item => item.key);
-        let str = ids.toString();
-        query[queryParamType] = str;
+        let queryParamType =
+            type == AppListConstants.FilterType.CLUTSER || type == AppListConstants.FilterType.NAMESPACE
+                ? 'namespace'
+                : type;
+        let checkedItems = list.filter((item) => item.isChecked);
+        let ids = checkedItems.map((item) => item.key);
+
+        query[queryParamType] = getAppliedFilters(ids, type, query);
         query['offset'] = 0;
         let queryStr = queryString.stringify(query);
         let _currentTab = selectedAppTab || currentTab;
-        let url = `${_currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()}?${queryStr}`;
+        let url = `${
+            _currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
+        }?${queryStr}`;
         history.push(url);
-    }
+    };
 
     const removeFilter = (filter, filterType: string): void => {
-        let val = filter.key;
+        let val = filter.key.toString();
+        let clustId = val.split('_')[0];
         let qs = queryString.parse(location.search);
         let keys = Object.keys(qs);
         let query = {};
@@ -357,14 +396,21 @@ export default function AppList() {
         let appliedFilters = query[queryParamType];
         let arr = appliedFilters.split(',');
         if (filterType === AppListConstants.FilterType.CLUTSER) {
-            arr = arr.filter((item) => !item.startsWith(val.toString()));
+            arr = arr.filter((item) => !item.startsWith(val));
         } else {
-            arr = arr.filter((item) => item != val.toString());
+            arr = arr.filter((item) => item !== val);
+
+            if (
+                filterType === AppListConstants.FilterType.NAMESPACE &&
+                !arr.some((item) => item.startsWith(`${clustId}_`))
+            ) {
+                arr.push(clustId);
+            }
         }
+
         query[queryParamType] =
-            filterType === AppListConstants.FilterType.NAMESPACE && !arr.toString()
-                ? val.split('_')[0]
-                : arr.toString();
+            filterType === AppListConstants.FilterType.NAMESPACE && !arr.toString() ? clustId : arr.toString();
+
         if (query[queryParamType] == '') delete query[queryParamType];
         let queryStr = queryString.stringify(query);
         let url = `${
