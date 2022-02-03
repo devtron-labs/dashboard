@@ -16,6 +16,7 @@ import Tippy from '@tippyjs/react';
 import '../../../app/details/cIDetails/ciDetails.scss';
 import YAML from 'yaml';
 import './ea-deployment-history.scss';
+import MessageUI from '../../common/message.ui';
 
 function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
     const [isLoading, setIsLoading] = useState(true);
@@ -26,6 +27,7 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
     const [deploymentDetails, setDeploymentDetails] = useState<Record<number, HelmAppDeploymentDetails>>();
     const [selectedDeploymentDetails, setSelectedDeploymentDetails] = useState<HelmAppDeploymentDetails>();
     const [loadingYaml, setLoadingYaml] = useState(false);
+    const [errorLoadingYaml, setErrorLoadingYaml] = useState(false);
 
     const deploymentTabs: string[] = ['Source', 'values.yaml', 'Helm generated manifest'];
 
@@ -52,8 +54,36 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
             return;
         }
 
-        setSelectedDeploymentTabIndex(0); // Resetting  the deployment tab selection on version change.
         setSelectedDeploymentHistoryIndex(index);
+
+        // Resetting the deployment tab selection, loading & error states on version change.
+        setSelectedDeploymentTabIndex(0);
+        setLoadingYaml(false);
+        setErrorLoadingYaml(false);
+    }
+
+    function fetchDeploymentDetail(version: number): void {
+        setLoadingYaml(true);
+        getDeploymentDetail(appId, version)
+            .then(({ result }) => {
+                setDeploymentDetails({
+                    [version]: {
+                        manifest: result.manifest,
+                        valuesYaml: result.valuesYaml,
+                    },
+                    ...deploymentDetails,
+                });
+                setSelectedDeploymentDetails({
+                    manifest: result.manifest,
+                    valuesYaml: result.valuesYaml,
+                });
+                setLoadingYaml(false);
+                setErrorLoadingYaml(false);
+            })
+            .catch((e) => {
+                setLoadingYaml(false);
+                setErrorLoadingYaml(true);
+            });
     }
 
     function changeDeploymentTab(index: number) {
@@ -67,25 +97,7 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
             setSelectedDeploymentDetails(details);
 
             if (!loadingYaml && typeof details === 'undefined') {
-                setLoadingYaml(true);
-                getDeploymentDetail(appId, history.version)
-                    .then(({ result }) => {
-                        setDeploymentDetails({
-                            [history.version]: {
-                                manifest: result.manifest,
-                                valuesYaml: result.valuesYaml,
-                            },
-                            ...deploymentDetails,
-                        });
-                        setSelectedDeploymentDetails({
-                            manifest: result.manifest,
-                            valuesYaml: result.valuesYaml,
-                        });
-                        setLoadingYaml(false);
-                    })
-                    .catch((e) => {
-                        setLoadingYaml(false);
-                    });
+                fetchDeploymentDetail(history.version);
             }
         }
         setSelectedDeploymentTabIndex(index);
@@ -145,13 +157,30 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
         </ul>
     }
 
-    function renderCodeEditor(): JSX.Element {
-        if (loadingYaml) {
-            return <Progressing pageLoader />;
+    function renderCodeEditor(): JSX.Element | null {
+        if (selectedDeploymentTabIndex !== 1 && selectedDeploymentTabIndex !== 2) {
+            return null;
+        } else if (loadingYaml && !errorLoadingYaml) {
+            return <Progressing theme="white" pageLoader />;
+        } else if (!loadingYaml && errorLoadingYaml) {
+            return (
+                <MessageUI
+                    iconClassName="error-exclamation-icon"
+                    theme="white"
+                    msg="There was an error loading the file."
+                    msgStyle={{ color: '#767D84', marginTop: '0' }}
+                    size={24}
+                    isShowActionButton={true}
+                    actionButtonText="Retry"
+                    onActionButtonClick={() => {
+                        fetchDeploymentDetail(deploymentHistoryArr[selectedDeploymentHistoryIndex]?.version);
+                    }}
+                    actionButtonStyle={{ color: '#0066cc', textDecoration: 'none' }}
+                />
+            );
         }
 
         return (
-            (selectedDeploymentTabIndex === 1 || selectedDeploymentTabIndex === 2) &&
             deploymentDetails &&
             selectedDeploymentDetails && (
                 <div className="bcn-0 border-btm">
