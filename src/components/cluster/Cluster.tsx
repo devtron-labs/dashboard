@@ -936,7 +936,7 @@ function Environment({
                         setDeleting={setDeleting}
                         deleteComponent={deleteEnvironment}
                         payload={payload}
-                        title={state.name?.value}
+                        title={state.environment_name.value}
                         toggleConfirmation={toggleConfirmation}
                         component={DeleteComponentsName.Environment}
                         confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}

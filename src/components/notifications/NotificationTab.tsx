@@ -3,7 +3,7 @@ import EmptyState from '../EmptyState/EmptyState';
 import EmptyImage from '../../assets/img/ic-empty-notifications.png';
 import Tippy from '@tippyjs/react';
 import Reload from '../Reload/Reload';
-import { PopupMenu, Checkbox, Progressing, showError, DeleteDialog, Pagination } from '../common';
+import { PopupMenu, Checkbox, Progressing, showError, Pagination, DeleteDialog } from '../common';
 import { getNotificationConfigurations, deleteNotifications, updateNotificationEvents, getChannelsAndEmailsFilteredByEmail, deleteNotification } from './notifications.service';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg';
@@ -356,7 +356,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     renderDeleteDialog() {
         if (this.state.showDeleteDialog) {
             let n = this.state.notificationList.filter(n => n.isSelected);
-            return <DeleteDialog title={`${n.length} configuration(s)`}
+            return <DeleteDialog 
+                title={`Delete ${n.length} notification configuration(s)`}
                 description={`Recipients will stop recieving notifications for selected pipilines.`}
                 closeDelete={() => { this.setState({ showDeleteDialog: false }) }}
                 delete={() => { this.deleteNotifications(); }}
@@ -531,9 +532,11 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                             </div>
                         </td>
                         <td className="pipeline-list__hover flex">
+                             <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
                                 <button type="button" id="row.id" className="transparent align-right" onClick={(event) => { this.setState({ showDeleteDialog: !this.state.showDeleteDialog }) }}  >
                                  <Trash className="scn-5 icon-dim-20" />
                                 </button>
+                            </Tippy>
                             </td>
                     </tr>
                 })}
