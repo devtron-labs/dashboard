@@ -19,6 +19,7 @@ export interface ProjectProps {
     index: number;
     isValid: { name: boolean };
     errorMessage: { name: string };
+    reload: () => void
 }
 
 export interface ProjectState {
@@ -66,7 +67,8 @@ export class Project extends Component<ProjectProps, ProjectState>  {
                     title={this.props.name}
                     toggleConfirmation={this.toggleConfirmation}
                     component={DeleteComponentsName.Project}
-                    confirmationDialogDescription={DC_PROJECT_CONFIRMATION_MESSAGE} />
+                    confirmationDialogDescription={DC_PROJECT_CONFIRMATION_MESSAGE}
+                    reload={this.props.reload} />
             );
         }
     }

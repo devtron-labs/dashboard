@@ -95,6 +95,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     toggleConfirmation={this.toggleConfirmation}
                     component={DeleteComponentsName.MaterialView}
                     confirmationDialogDescription={this.props.isMultiGit ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE}
+                    reload={this.props.reload}
                 />
             );
         }

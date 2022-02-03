@@ -71,20 +71,23 @@ export default function ChartGroupDetails() {
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
 
-    useEffect(() => {
+    const reload = () => {
         isGitopsConfigured()
-            .then((response) => {
-                let isGitOpsConfigAvailable = response.result && response.result.exists;
-                setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
-            })
-            .catch((error) => {
-                showError(error);
-            });
-            let response
-             getChartGroups().then((res) => (
-                  response = res.result.groups.filter((grp)=> grp.id === groupId)
-                ))
+        .then((response) => {
+            let isGitOpsConfigAvailable = response.result && response.result.exists;
+            setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
+        })
+        .catch((error) => {
+            showError(error);
+        });
+        let response
+         getChartGroups().then((res) => (
+              response = res.result.groups.filter((grp)=> grp.id === groupId)
+            ))
+    }
 
+    useEffect(() => {
+        reload()
     }, []);
 
     function handleOnDeployTo() {
@@ -162,6 +165,7 @@ export default function ChartGroupDetails() {
                     confirmationDialogDescription={''}
                     redirectTo={true}
                     url={`${URLS.CHARTS}/discover`}
+                    reload={reload}
                 />
             );
         }

@@ -189,6 +189,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                     toggleConfirmation={this.toggleConfirmation}
                     component={this.state.showSlackConfigModal ? DeleteComponentsName.SlackConfigurationTab : DeleteComponentsName.SesConfigurationTab}
                     confirmationDialogDescription={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
+                    reload = {this.getAllChannelConfigs}
                 />
             );
         }

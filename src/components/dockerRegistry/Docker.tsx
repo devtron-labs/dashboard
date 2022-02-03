@@ -618,6 +618,7 @@ function DockerForm({
                     toggleConfirmation={toggleConfirmation}
                     component={DeleteComponentsName.ContainerRegistry}
                     confirmationDialogDescription={DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE}
+                    reload={reload}
                 />
             )}
         </form>

@@ -71,6 +71,7 @@ export interface MaterialViewProps {
     isWorkflowEditorUnlocked : boolean;
     handleSubmoduleCheckbox:(event) => void;
     appId?: number;
+    reload: ()=> void;
 }
 
 export interface MaterialViewState {

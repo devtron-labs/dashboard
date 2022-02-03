@@ -234,19 +234,6 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         }
     }
 
-    let payload = {
-        id: id || 0,
-        name: state.name.value,
-        url: state.url.value,
-        authMode: state.auth.value,
-        active: true,
-        username: customState.username.value, 
-        password: customState.password.value,
-        accessToken: customState.accessToken.value,
-        default: true,
-        sshKey:""
-    }
-
     return (
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
             < ValidateForm
@@ -294,11 +281,12 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                 <DeleteComponent
                     setDeleting={setDeleting}
                     deleteComponent={deleteChartRepo}
-                    payload={payload}
+                    payload={chartRepoPayload}
                     title={state.name?.value}
                     toggleConfirmation={toggleConfirmation}
                     component={DeleteComponentsName.ChartRepository}
                     confirmationDialogDescription={DC_CHART_REPO_CONFIRMATION_MESSAGE}
+                    reload={reload}
                 />
             )}
         </form>

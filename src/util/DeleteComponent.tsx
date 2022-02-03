@@ -13,18 +13,21 @@ function DeleteComponent({
     component,
     payload,
     confirmationDialogDescription,
-    redirectTo=false,
-    url=''
+    redirectTo = false,
+    url = '',
+    reload
 }) {
     const [showConfirmationDialogModal, setConfirmationDialogModal] = useState(false);
-    const { push } = useHistory()
+    const { push } = useHistory();
     async function handleDelete() {
         setDeleting(true);
         try {
             await deleteComponent(payload);
             toast.success('Successfully deleted');
-            redirectTo && push(url)
+            redirectTo && push(url);
             toggleConfirmation(false);
+            setDeleting(false);
+            reload()
         } catch (serverError) {
             showError(serverError);
             if (serverError instanceof ServerErrors && serverError.code === 500) {
@@ -32,12 +35,13 @@ function DeleteComponent({
             }
         } finally {
             setDeleting(false);
+            toggleConfirmation(false);
         }
     }
 
     const confirmationDialogModal = () => {
         return (
-            <ConfirmationDialog className='confirmation-dialog__body--w-360'>
+            <ConfirmationDialog className="confirmation-dialog__body--w-360">
                 <ConfirmationDialog.Icon src={info} />
                 <ConfirmationDialog.Body title={`Cannot delete ${component} '${title}'`} />
                 <p className="fs-13 cn-7 ">{confirmationDialogDescription}</p>
@@ -57,14 +61,22 @@ function DeleteComponent({
         );
     };
 
-    return (
-        <div>
-            <DeleteDialog title={`Delete ${component} '${title}'`} delete={handleDelete} closeDelete={() => toggleConfirmation(false)}>
+    const renderDeleteDialog = () => {
+        return (
+            <DeleteDialog
+                title={`Delete ${component} '${title}'`}
+                delete={handleDelete}
+                closeDelete={() => toggleConfirmation(false)}
+            >
                 <DeleteDialog.Description>
                     <p>Are you sure you want to delete this {component}? </p>
                 </DeleteDialog.Description>
             </DeleteDialog>
-
+        );
+    };
+    return (
+        <div>
+            {renderDeleteDialog()}
             {showConfirmationDialogModal && confirmationDialogModal()}
         </div>
     );
