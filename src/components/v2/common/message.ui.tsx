@@ -35,7 +35,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
     isShowActionButton,
     actionButtonText,
     onActionButtonClick,
-}) => {
+}: MsgUIProps) => {
     return (
         <div
             className={`text-center ${theme || 'dark'}-background w-100 `}
