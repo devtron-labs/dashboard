@@ -28,11 +28,12 @@ function DeleteComponent({
             toast.success('Successfully deleted');
             toggleConfirmation(false);
             setDeleting(false);
-            // redirectTo ? push(url) : reload();
+            redirectTo ? push(url) : reload();
         } catch (serverError) {
             showError(serverError);
             if (serverError instanceof ServerErrors && serverError.code === 500) {
                 setConfirmationDialogModal(true);
+                setDeleting(false);
             }
         } finally {
             setDeleting(false);
