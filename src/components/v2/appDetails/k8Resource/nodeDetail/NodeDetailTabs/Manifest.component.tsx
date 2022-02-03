@@ -19,7 +19,7 @@ import YAML from 'yaml';
 import { toast } from 'react-toastify';
 import { showError, ToastBody } from '../../../../../common';
 import { appendRefetchDataToUrl } from '../../../../../util/URLUtil';
-import { EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT, EA_MANIFEST_SECRET_INFO_TEXT } from '../../../../Constants';
+import { EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT, EA_MANIFEST_SECRET_INFO_TEXT } from '../../../../../../config/constantMessaging';
 
 function ManifestComponent({ selectedTab, isDeleted }) {
     const location = useLocation();

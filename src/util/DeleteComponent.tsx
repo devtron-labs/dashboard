@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import { ConfirmationDialog, DeleteDialog, showError } from '../components/common';
 import { ServerErrors } from '../modals/commonTypes';
 import info from '../assets/icons/ic-info-filled.svg';
+import { useHistory } from 'react-router';
 
 function DeleteComponent({
     setDeleting,
@@ -12,14 +13,17 @@ function DeleteComponent({
     component,
     payload,
     confirmationDialogDescription,
+    redirectTo=false,
+    url=''
 }) {
     const [showConfirmationDialogModal, setConfirmationDialogModal] = useState(false);
-
+    const { push } = useHistory()
     async function handleDelete() {
         setDeleting(true);
         try {
             await deleteComponent(payload);
             toast.success('Successfully deleted');
+            redirectTo && push(url)
             toggleConfirmation(false);
         } catch (serverError) {
             showError(serverError);

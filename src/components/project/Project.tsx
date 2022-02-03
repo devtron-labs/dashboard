@@ -5,6 +5,7 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import DeleteComponent from '../../util/DeleteComponent';
 import { deleteProject } from './service';
 import './project.css'
+import { DeleteComponentsName, DC_PROJECT_CONFIRMATION_MESSAGE } from '../../config/constantMessaging';
 
 export interface ProjectProps {
     id: number;
@@ -64,9 +65,8 @@ export class Project extends Component<ProjectProps, ProjectState>  {
                     payload={this.getProjectPayload()}
                     title={this.props.name}
                     toggleConfirmation={this.toggleConfirmation}
-                    component={'project'}
-                    confirmationDialogDescription={`Please delete applications assigned to this project and try again.`}
-                />
+                    component={DeleteComponentsName.Project}
+                    confirmationDialogDescription={DC_PROJECT_CONFIRMATION_MESSAGE} />
             );
         }
     }

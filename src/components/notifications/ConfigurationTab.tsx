@@ -11,6 +11,7 @@ import { ViewType } from '../../config/constants';
 import EmptyState from '../EmptyState/EmptyState';
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import DeleteComponent from '../../util/DeleteComponent';
+import { DC_CONFIGURATION_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
 export interface ConfigurationTabState {
     view: string;
     showSlackConfigModal: boolean;
@@ -186,8 +187,8 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                     payload={payload}
                     title={config.name || config.slackChannel}
                     toggleConfirmation={this.toggleConfirmation}
-                    component={this.state.showSlackConfigModal ? 'slack' : 'ses'}
-                    confirmationDialogDescription="This configuration is being used in some notifications. Please delete notifications using this configuration and try again."
+                    component={this.state.showSlackConfigModal ? DeleteComponentsName.SlackConfigurationTab : DeleteComponentsName.SesConfigurationTab}
+                    confirmationDialogDescription={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
                 />
             );
         }

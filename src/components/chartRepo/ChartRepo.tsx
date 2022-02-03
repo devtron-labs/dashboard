@@ -11,6 +11,7 @@ import { DOCUMENTATION } from '../../config';
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm';
 import "./chartRepo.scss";
 import DeleteComponent from '../../util/DeleteComponent';
+import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
 
 export default function ChartRepo() {
     const [loading, result, error, reload] = useAsync(getChartRepoList)
@@ -296,10 +297,8 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                     payload={payload}
                     title={state.name?.value}
                     toggleConfirmation={toggleConfirmation}
-                    component={'chart repository'}
-                    confirmationDialogDescription={
-                        'Some deployed helm apps are using this repository.'
-                    }
+                    component={DeleteComponentsName.ChartRepository}
+                    confirmationDialogDescription={DC_CHART_REPO_CONFIRMATION_MESSAGE}
                 />
             )}
         </form>

@@ -31,6 +31,7 @@ import { DOCUMENTATION, SERVER_MODE, ViewType, URLS } from '../../config';
 import { getEnvName } from './cluster.util';
 import Reload from '../Reload/Reload';
 import DeleteComponent from '../../util/DeleteComponent';
+import { DC_CLUSTER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
 
 const PrometheusWarningInfo = () => {
     return (
@@ -740,10 +741,8 @@ function ClusterForm({
                     payload={payload}
                     title={cluster_name}
                     toggleConfirmation={toggleConfirmation}
-                    component={'cluster'}
-                    confirmationDialogDescription={
-                        'Please delete environments on this cluster and try again.'
-                    }
+                    component={DeleteComponentsName.Cluster}
+                    confirmationDialogDescription={DC_CLUSTER_CONFIRMATION_MESSAGE}
                 />
             )}
         </form>
