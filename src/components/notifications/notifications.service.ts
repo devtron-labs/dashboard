@@ -243,11 +243,18 @@ export function updateNotificationRecipients(notificationList, savedRecipient, n
     return put(URL, payload);
 }
 
-export function deleteNotifications(requestBody): Promise<DeleteNotificationResponseType> {
+export function deleteNotifications(requestBody, singleDeletedId): Promise<DeleteNotificationResponseType> {
     const URL = `${Routes.NOTIFIER}`;
-    let payload = {
-        id: requestBody.map((e) => e.id)
-    }
+    let payload;
+     if(singleDeletedId){
+        payload = {
+            id: [singleDeletedId]
+        } 
+     } else {
+        payload = {
+            id: requestBody.map((e) => e.id)
+        }
+     }
     return trash(URL, payload);
 }
 

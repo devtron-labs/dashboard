@@ -44,6 +44,7 @@ export interface NotificationConfiguration {
         application: { id: number, name: string }[],
         environment: { id: number, name: string }[],
     };
+    singleDeletedId: number
 }
 
 export interface NotificationTabState {
@@ -78,6 +79,7 @@ export interface NotificationTabState {
     hostURLConfig: HostURLConfig;
     deleting: boolean;
     confirmation: boolean;
+    singleDeletedId: number;
 }
 
 export class NotificationTab extends Component<any, NotificationTabState> {
@@ -116,7 +118,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             },
             hostURLConfig: undefined,
            deleting: false,
-           confirmation: false
+           confirmation: false,
+           singleDeletedId: 0
         }
         this.updateNotificationEvents = this.updateNotificationEvents.bind(this);
         this.changePageSize = this.changePageSize.bind(this);
@@ -332,19 +335,9 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     }
 
     deleteNotifications(): void {
-        let candidates = this.state.notificationList.filter(n => n.isSelected);
-        deleteNotifications(candidates).then((response) => {
-            this.setState({ showDeleteDialog: false });
-            this.getAllNotifications();
-            toast.success("Deleted Successfully");
-        }).catch((error) => {
-            showError(error)
-        })
-    }
 
-    deleteNotification(): void {
         let candidates = this.state.notificationList.filter(n => n.isSelected);
-        deleteNotifications(candidates).then((response) => {
+        deleteNotifications(candidates, this.state.singleDeletedId).then((response) => {
             this.setState({ showDeleteDialog: false });
             this.getAllNotifications();
             toast.success("Deleted Successfully");
@@ -355,7 +348,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     renderDeleteDialog() {
         if (this.state.showDeleteDialog) {
-            let n = this.state.notificationList.filter(n => n.isSelected);
+            let n = this.state.singleDeletedId ? [this.state.singleDeletedId] : this.state.notificationList.filter(n => n.isSelected);
             return <DeleteDialog 
                 title={`Delete ${n.length} notification configuration(s)`}
                 description={`Recipients will stop recieving notifications for selected pipilines.`}
@@ -532,8 +525,13 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                             </div>
                         </td>
                         <td className="pipeline-list__hover flex">
-                             <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
-                                <button type="button" id="row.id" className="transparent align-right" onClick={(event) => { this.setState({ showDeleteDialog: !this.state.showDeleteDialog }) }}  >
+                             <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
+                                <button type="button" className="transparent align-right" onClick={(event) => { 
+                                    this.setState({ 
+                                        showDeleteDialog: !this.state.showDeleteDialog,
+                                        singleDeletedId: row.id
+                                    });
+                                     }}  >
                                  <Trash className="scn-5 icon-dim-20" />
                                 </button>
                             </Tippy>
