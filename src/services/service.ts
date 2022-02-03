@@ -263,7 +263,7 @@ export function getLastExecutionMinByAppAndEnv(appId: number | string, envId: nu
 }
 
 export function getChartRepoList(): Promise<ResponseType> {
-    const URL = `${Routes.CHART_LIST}`;
+    const URL = `${Routes.CHART_REPO}/${Routes.CHART_LIST_SUBPATH}`;
     return get(URL);
 }
 
