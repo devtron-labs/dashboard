@@ -7,7 +7,32 @@ import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclama
 import YAML from 'yaml'
 import './codeEditor.scss';
 import ReactGA from 'react-ga';
-import { editor } from 'monaco-editor';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import 'monaco-editor';
+// @ts-ignore
+import 'monaco-yaml/lib/esm/monaco.contribution';
+// @ts-ignore
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import EditorWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worker';
+// @ts-ignore
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import YamlWorker from 'worker-loader!monaco-yaml/lib/esm/yaml.worker';
+
+import useResourceYamlSchema from './useResourceYamlSchema';
+
+// @ts-ignore
+window.MonacoEnvironment = {
+    // @ts-ignore
+    getWorker(workerId, label) {
+        if (label === 'yaml') {
+            return new YamlWorker();
+        }
+        return new EditorWorker();
+    },
+};
+
+// @ts-ignore
+const { yaml } = monaco.languages || {};
 
 
 interface WarningProps { text: string }
@@ -116,9 +141,9 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         noParsing: ['json', 'yaml'].includes(mode) ? noParsing : true
     }
     const [state, dispatch] = useReducer(memoisedReducer, initialState)
-    const [nativeObject, json, yaml, error] = useJsonYaml(state.code, tabSize, state.mode, !state.noParsing)
+    const [nativeObject, json, yamlCode, error] = useJsonYaml(state.code, tabSize, state.mode, !state.noParsing)
     const [, originalJson, originlaYaml, originalError] = useJsonYaml(defaultValue, tabSize, state.mode, !state.noParsing)
-    editor.defineTheme('vs-dark--dt', {
+    monaco.editor.defineTheme('vs-dark--dt', {
         base: 'vs-dark',
         inherit: true,
         rules: [
@@ -129,7 +154,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             'editor.background': '#0B0F22',
         }
     });
-
+    useResourceYamlSchema(yaml, focus);
     function editorDidMount(editor, monaco) {
         editorRef.current = editor
         monacoRef.current = monaco
@@ -232,10 +257,10 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
 
     function handleLanguageChange(mode: 'json' | 'yaml') {
         dispatch({ type: 'changeLanguage', value: mode })
-        dispatch({ type: 'setCode', value: mode === 'json' ? json : yaml })
+        dispatch({ type: 'setCode', value: mode === 'json' ? json : yamlCode })
     }
 
-    const options: editor.IEditorConstructionOptions = {
+    const options: monaco.editor.IEditorConstructionOptions = {
         selectOnLineNumbers: true,
         roundedSelection: false,
         readOnly,
