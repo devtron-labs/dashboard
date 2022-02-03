@@ -145,15 +145,14 @@ export default function ChartGroupDetails() {
         }
     }
 
-     function deleteComponent(id){
+     function deleteComponent(){
         let payload = {
             name: state.name,
             description: state.description,
-            id: id,
+            id: groupId,
             chartGroupEntries: state.charts,
         };
 
-        if (confirmation) {
             return (
                 <DeleteComponent
                     setDeleting={setDeleting}
@@ -168,7 +167,7 @@ export default function ChartGroupDetails() {
                     reload={reload}
                 />
             );
-        }
+    
     }
     
     return (
@@ -191,6 +190,7 @@ export default function ChartGroupDetails() {
                 </div>
             </div>
             <div className="chart-group-details-page__body">
+                {console.log(state.charts)}
                 {state.loading && <Progressing pageLoader />}
                 {!state.loading && (
                     <div className="deploy-and-details-view summary-show">
@@ -278,7 +278,7 @@ export default function ChartGroupDetails() {
                         </div>
                     </div>
                 )}
-                {deleteComponent(1)}
+                {confirmation && deleteComponent()}
             </div>
             {showDeployModal ? (
                 <ChartGroupBasicDeploy

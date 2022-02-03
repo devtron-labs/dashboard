@@ -24,10 +24,9 @@ function DeleteComponent({
         try {
             await deleteComponent(payload);
             toast.success('Successfully deleted');
-            redirectTo && push(url);
             toggleConfirmation(false);
             setDeleting(false);
-            reload()
+            // redirectTo ? push(url) : reload();
         } catch (serverError) {
             showError(serverError);
             if (serverError instanceof ServerErrors && serverError.code === 500) {
@@ -35,7 +34,6 @@ function DeleteComponent({
             }
         } finally {
             setDeleting(false);
-            toggleConfirmation(false);
         }
     }
 

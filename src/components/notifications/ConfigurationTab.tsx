@@ -25,6 +25,7 @@ export interface ConfigurationTabState {
     confirmation: boolean;
     sesConfig: any;
     slackConfig: any;
+    showDeleteSlackConfigModal: boolean;
 }
 
 export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
@@ -42,7 +43,8 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             deleting: false,
             confirmation: false,
             sesConfig: {},
-            slackConfig: {}
+            slackConfig: {},
+            showDeleteSlackConfigModal: false
         }
         this.getAllChannelConfigs = this.getAllChannelConfigs.bind(this);
     }
@@ -110,10 +112,10 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                     this.setState({ showSlackConfigModal: true, slackConfigId: slackConfig.id });
                                 }}>
                                     <Edit className="icon-dim-20" />
-                                    <button type="button" className="transparent align-right" onClick={() => {this.toggleConfirmation(this.state.slackConfigId); this.setState({slackConfigId: slackConfig.id})}}
+                                </button>
+                                <button type="button" className="transparent align-right" onClick={() => {this.deleteClickHandler(slackConfig.id, "SLACK_CONFIG")}}
                                 >
                                  <Trash className="scn-5 icon-dim-20" />
-                                </button>
                                 </button>
                             </div>
                         </td>
@@ -138,66 +140,32 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         </div>
     }
 
-    toggleConfirmation = (sesConfigId) => {
-        this.setState((prevState)=>{
-           return{ confirmation: !prevState.confirmation}
-           })
-    }
-
     setDeleting = () => {
         this.setState({
             deleting: true
         })
     }
-    
-    getSESConfig(sesConfigId){
-        getSESConfiguration(sesConfigId).then((response) => {
-            this.setState({sesConfig: response.result})
-        }).catch((error) => {
-            showError(error)
-        })
+
+    toggleConfirmation = (confirmation) => {
+        this.setState({
+            confirmation,
+            ...(!confirmation && { showDeleteSlackConfigModal: false }),
+        });
     }
 
-    getSlackConfig(slackConfigId){
-        getSlackConfiguration(slackConfigId).then((response) => {
-           console.log(response)
-            this.setState({slackConfig: response.result})
-        }).catch((error) => {
-            showError(error)
-        })
-    }
-
-    deleteComponenet = () => {
-        let payload;
-        let config;
-
-        if (this.state.showSlackConfigModal) {
-            config = this.state.slackConfigurationList.find(slack => slack.id === this.state.slackConfigId)
-            payload = this.state.slackConfigId
-        } else {
-            config = this.state.sesConfigurationList.find(ses => ses.id === this.state.sesConfigId)
-            payload = this.state.sesConfig
+    deleteClickHandler = async (configId, type) => {
+        try {
+            if (type === "SLACK_CONFIG") {
+                const { result } = await getSlackConfiguration(configId);
+                this.setState({ slackConfigId: configId, slackConfig: result, confirmation: true, showDeleteSlackConfigModal: true });
+            } else if(type === "SES_CONFIG"){
+                const { result } = await getSESConfiguration(configId);
+                this.setState({ sesConfigId: configId, sesConfig: result, confirmation: true });
+            }
+        } catch (e) {
+            showError(e);
         }
-        if (this.state.confirmation) {
-
-            return (
-                <DeleteComponent
-                    setDeleting={this.setDeleting}
-                    deleteComponent={deleteNotification}
-                    payload={payload}
-                    title={config.name || config.slackChannel}
-                    toggleConfirmation={this.toggleConfirmation}
-                    component={this.state.showSlackConfigModal ? DeleteComponentsName.SlackConfigurationTab : DeleteComponentsName.SesConfigurationTab}
-                    confirmationDialogDescription={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
-                    reload = {this.getAllChannelConfigs}
-                />
-            );
-        }
-    }
-
-    setConfigId = (sesConfigId) => {
-        this.setState({sesConfigId: sesConfigId })
-    }
+    };
 
     renderSESConfigurationTable() {
         if (this.state.view === ViewType.LOADING) {
@@ -236,7 +204,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                 }}>
                                     <Edit className="icon-dim-20" />
                                 </button>
-                                <button type="button" className="transparent align-right" onClick={() => {this.setConfigId(sesConfig.id); this.toggleConfirmation(this.state.sesConfigId)}}
+                                <button type="button" className="transparent align-right" onClick={() => {this.deleteClickHandler(sesConfig.id, "SES_CONFIG")}}
                                 >
                                  <Trash className="scn-5 icon-dim-20" />
                                 </button>
@@ -244,7 +212,17 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                         </td>
                     })}
                 </tr>
-                {this.deleteComponenet()}
+                { this.state.confirmation &&   
+                <DeleteComponent
+                    setDeleting={this.setDeleting}
+                    deleteComponent={deleteNotification}
+                    payload={this.state.showDeleteSlackConfigModal ? this.state.slackConfig : this.state.sesConfig}
+                    title={this.state.showDeleteSlackConfigModal ? this.state.slackConfig.configName : this.state.sesConfig.configName }
+                    toggleConfirmation={this.toggleConfirmation}
+                    component={this.state.showDeleteSlackConfigModal ? DeleteComponentsName.SlackConfigurationTab : DeleteComponentsName.SesConfigurationTab}
+                    confirmationDialogDescription={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
+                    reload = {this.getAllChannelConfigs}
+                />}
             </tbody>
         </table>
     }
