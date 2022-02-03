@@ -87,6 +87,8 @@ export default function ChartGroupDetails() {
     }
 
     useEffect(() => {
+       let res = state.charts
+        {console.log(state.charts)}
         reload()
     }, []);
 
@@ -151,6 +153,7 @@ export default function ChartGroupDetails() {
             description: state.description,
             id: groupId,
             chartGroupEntries: state.charts,
+            installedChartData:chartGroupInstalled?.result?.installedChartData 
         };
 
             return (
@@ -190,7 +193,6 @@ export default function ChartGroupDetails() {
                 </div>
             </div>
             <div className="chart-group-details-page__body">
-                {console.log(state.charts)}
                 {state.loading && <Progressing pageLoader />}
                 {!state.loading && (
                     <div className="deploy-and-details-view summary-show">

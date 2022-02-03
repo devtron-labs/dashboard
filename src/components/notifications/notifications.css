@@ -185,8 +185,9 @@
 
 .slack-config-table__action,
 .ses-config-table__action {
-    flex-basis: 15%;
     display: none;
+    margin: auto;
+    margin-right: 0;
 }
 
 .configuration-tab__table-row:hover {
@@ -200,7 +201,7 @@
 
 .configuration-tab__table-row:hover .slack-config-table__action,
 .configuration-tab__table-row:hover .ses-config-table__action {
-    display: block;
+    display: flex;
     background-color: var(--window-bg);
 }
 

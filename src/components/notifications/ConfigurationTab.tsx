@@ -198,7 +198,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                             </div>
                             <div className="ses-config-table__access-key truncate-text">{sesConfig.accessKeyId}</div>
                             <div className="ses-config-table__email truncate-text">{sesConfig.email}</div>
-                            <div className="ses-config-table__action flexbox">
+                            <div className="ses-config-table__action">
                                 <button type="button" className="transparent align-right" onClick={(event) => {
                                     this.setState({ showSESConfigModal: true, sesConfigId: sesConfig.id });
                                 }}>
