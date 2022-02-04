@@ -18,7 +18,7 @@ function DeleteComponent({
     reload,
     configuration = '',
 }) {
-    const [showConfirmationDialogModal, setConfirmationDialogModal] = useState(false);
+    const [showCannotDeleteDialogModal, setCannotDeleteDialogModal] = useState(false);
     const { push } = useHistory();
 
     async function handleDelete() {
@@ -28,32 +28,33 @@ function DeleteComponent({
             toast.success('Successfully deleted');
             toggleConfirmation(false);
             setDeleting(false);
-            redirectTo ? push(url) : reload();
+            if (redirectTo) {
+                push(url);
+            } else {
+                reload();
+            }
         } catch (serverError) {
             if (serverError instanceof ServerErrors && serverError.code === 500) {
-                setDeleting(false);
-                setConfirmationDialogModal(true);
+                setCannotDeleteDialogModal(true);
             }
         } finally {
             setDeleting(false);
         }
     }
 
-    const confirmationDialogModal = () => {
+    const handleConfirmation = () => {
+        setCannotDeleteDialogModal(false);
+        toggleConfirmation(false);
+    };
+
+    const renderCannotDeleteDialogModal = () => {
         return (
             <ConfirmationDialog className="confirmation-dialog__body--w-360">
                 <ConfirmationDialog.Icon src={info} />
                 <ConfirmationDialog.Body title={`Cannot delete ${component} '${title}'`} />
                 <p className="fs-13 cn-7 ">{confirmationDialogDescription}</p>
                 <ConfirmationDialog.ButtonGroup>
-                    <button
-                        type="button"
-                        className="cta"
-                        onClick={() => {
-                            toggleConfirmation(false);
-                            setConfirmationDialogModal(true);
-                        }}
-                    >
+                    <button type="button" className="cta" onClick={handleConfirmation}>
                         Okay
                     </button>
                 </ConfirmationDialog.ButtonGroup>
@@ -76,8 +77,8 @@ function DeleteComponent({
     };
     return (
         <div>
-            {renderDeleteDialog()}
-            {showConfirmationDialogModal && confirmationDialogModal()}
+            {!showCannotDeleteDialogModal && renderDeleteDialog()}
+            {showCannotDeleteDialogModal && renderCannotDeleteDialogModal()}
         </div>
     );
 }

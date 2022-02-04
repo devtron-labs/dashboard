@@ -141,7 +141,7 @@ export default function ChartGroupDetails() {
         }
     }
 
-     function deleteComponent(){
+     function getDeleteComponent(){
         let payload = {
             name: state.name,
             description: state.description,
@@ -274,7 +274,7 @@ export default function ChartGroupDetails() {
                         </div>
                     </div>
                 )}
-                {confirmation && deleteComponent()}
+                {confirmation && getDeleteComponent()}
             </div>
             {showDeployModal ? (
                 <ChartGroupBasicDeploy

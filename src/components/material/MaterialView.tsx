@@ -37,7 +37,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
 
     setDeleting = () => {
         this.setState({
-            deleting: true
+            deleting: !this.state.deleting
         })
     }
 
@@ -82,23 +82,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             fetchSubmodules: this.props.material.fetchSubmodules ? true : false
         }
     }
-    }
-
-    deleteComponenet = () => {
-        if (this.state.confirmation) {
-            return (
-                <DeleteComponent
-                    setDeleting={this.setDeleting}
-                    deleteComponent={deleteMaterial}
-                    payload={this.getMaterialPayload()}
-                    title={this.props.material.name}
-                    toggleConfirmation={this.toggleConfirmation}
-                    component={DeleteComponentsName.MaterialView}
-                    confirmationDialogDescription={this.props.isMultiGit ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE}
-                    reload={this.props.reload}
-                />
-            );
-        }
     }
 
     renderForm() {
@@ -255,7 +238,18 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             {this.props.isLoading ? <Progressing /> : 'Save'}
                         </button>
                 </div>
-             {this.deleteComponenet()}
+             {this.state.confirmation &&
+              <DeleteComponent
+                    setDeleting={this.setDeleting}
+                    deleteComponent={deleteMaterial}
+                    payload={this.getMaterialPayload()}
+                    title={this.props.material.name}
+                    toggleConfirmation={this.toggleConfirmation}
+                    component={DeleteComponentsName.MaterialView}
+                    confirmationDialogDescription={this.props.isMultiGit ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE}
+                    reload={this.props.reload}
+          />
+             }
         </form>
     }
 
