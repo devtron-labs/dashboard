@@ -31,8 +31,8 @@ function DeleteComponent({
             redirectTo ? push(url) : reload();
         } catch (serverError) {
             if (serverError instanceof ServerErrors && serverError.code === 500) {
-                setConfirmationDialogModal(true);
                 setDeleting(false);
+                setConfirmationDialogModal(true);
             }
         } finally {
             setDeleting(false);

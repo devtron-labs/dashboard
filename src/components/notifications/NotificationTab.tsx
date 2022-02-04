@@ -609,7 +609,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             {this.renderBody()}
             {this.renderDeleteDialog()}
             {this.remderModifyRecipients()}
-            {this.state.confirmation ? this.renderDeleteDialog() : null }
+            {this.state.confirmation && this.renderDeleteDialog()}
         </div>
     }
 }

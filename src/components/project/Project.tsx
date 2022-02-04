@@ -57,32 +57,34 @@ export class Project extends Component<ProjectProps, ProjectState>  {
         }
     }
 
-    deleteComponenet = () => {
-        if (this.state.confirmation) {
-            return (
-                <DeleteComponent
-                    setDeleting={this.setDeleting}
-                    deleteComponent={deleteProject}
-                    payload={this.getProjectPayload()}
-                    title={this.props.name}
-                    toggleConfirmation={this.toggleConfirmation}
-                    component={DeleteComponentsName.Project}
-                    confirmationDialogDescription={DC_PROJECT_CONFIRMATION_MESSAGE}
-                    reload={this.props.reload} />
-            );
-        }
-    }
-
-
     renderCollapsedView() {
-        return <div className="project__row white-card white-card--add-new-item mb-16">
-            <img src={folder} alt="" className="icon-dim-24 mr-16" />
-            <span className="project-title">{this.props.name}</span>
-            <button type="button" className="project__row__trash transparent align-right" onClick={() => { this.toggleConfirmation()}}>
-                 <Trash className="scn-5 icon-dim-20" />
-             </button>
-             {this.deleteComponenet()}
-        </div>
+        return (
+            <div className="project__row white-card white-card--add-new-item mb-16">
+                <img src={folder} alt="" className="icon-dim-24 mr-16" />
+                <span className="project-title">{this.props.name}</span>
+                <button
+                    type="button"
+                    className="project__row__trash transparent align-right"
+                    onClick={() => {
+                        this.toggleConfirmation();
+                    }}
+                >
+                    <Trash className="scn-5 icon-dim-20" />
+                </button>
+                {this.state.confirmation && (
+                    <DeleteComponent
+                        setDeleting={this.setDeleting}
+                        deleteComponent={deleteProject}
+                        payload={this.getProjectPayload()}
+                        title={this.props.name}
+                        toggleConfirmation={this.toggleConfirmation}
+                        component={DeleteComponentsName.Project}
+                        confirmationDialogDescription={DC_PROJECT_CONFIRMATION_MESSAGE}
+                        reload={this.props.reload}
+                    />
+                )}
+            </div>
+        );
     }
 
     isFormValid() {
@@ -134,6 +136,8 @@ export class Project extends Component<ProjectProps, ProjectState>  {
         if (this.props.isCollapsed) {
             return this.renderCollapsedView();
         }
-        else return this.renderForm();
+        else{ 
+            return this.renderForm();
+        }
     }
 }

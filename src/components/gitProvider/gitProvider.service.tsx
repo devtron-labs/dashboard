@@ -27,6 +27,5 @@ export function saveGitHost(payload): Promise<any> {
 }
 
 export function deleteGitProvider(request): Promise<any> {
-    const URL = `${Routes.GIT_PROVIDER}`;
-    return trash(URL, request);
+    return trash(`${Routes.GIT_PROVIDER}`, request);
 }

@@ -240,15 +240,12 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     </Checkbox>
                 </div>
             </label>
-            <div className={`form__buttons ${this.props.material.id ? 'content-space' : ''}`}>
+            <div className={`form__buttons`}>
                     {this.props.material.id && (
-                        <div>
-                            <button className="cta delete" type="button" onClick={() => this.toggleConfirmation()}>
+                            <button className="cta delete m-auto ml-0" type="button" onClick={() => this.toggleConfirmation()}>
                                 {this.state.deleting ? <Progressing /> : 'Delete'}
                             </button>
-                        </div>
                     )}
-                    <div>
                         {this.props.isMultiGit ? (
                             <button type="button" className="cta cancel mr-16" onClick={this.props.cancel}>
                                 Cancel
@@ -257,7 +254,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         <button type="button" className="cta" disabled={this.props.isLoading} onClick={this.props.save}>
                             {this.props.isLoading ? <Progressing /> : 'Save'}
                         </button>
-                    </div>
                 </div>
              {this.deleteComponenet()}
         </form>

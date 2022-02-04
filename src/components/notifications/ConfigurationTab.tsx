@@ -29,6 +29,11 @@ export interface ConfigurationTabState {
     showDeleteSlackConfigModal: boolean;
 }
 
+const enum ChannelConfigType {
+    SLACK= 'slack',
+    SES= 'ses'
+}
+
 export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     constructor(props) {
         super(props);
@@ -131,7 +136,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                             type="button"
                                             className="transparent align-right"
                                             onClick={() => {
-                                                this.deleteClickHandler(slackConfig.id, 'SLACK_CONFIG');
+                                                this.deleteClickHandler(slackConfig.id, DeleteComponentsName.SlackConfigurationTab);
                                             }}
                                         >
                                             <Trash className="scn-5 icon-dim-20" />
@@ -176,22 +181,27 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
 
     deleteClickHandler = async (configId, type) => {
         try {
-            if (type === "SLACK_CONFIG") {
+            if (type === DeleteComponentsName.SlackConfigurationTab) {
                 const { result } = await getSlackConfiguration(configId, true);
-                this.setState({ slackConfigId: configId, 
+                this.setState({
+                    slackConfigId: configId,
                     slackConfig: {
                         ...result,
-                    channel: 'slack'
-                }, confirmation: true, showDeleteSlackConfigModal: true });
-            } else if(type === "SES_CONFIG"){
+                        channel: DeleteComponentsName.SlackConfigurationTab,
+                    },
+                    confirmation: true,
+                    showDeleteSlackConfigModal: true,
+                });
+            } else if (type === DeleteComponentsName.SesConfigurationTab) {
                 const { result } = await getSESConfiguration(configId);
                 this.setState({
-                     sesConfigId: configId, 
-                     sesConfig: {
-                         ...result,
-                         channel: 'ses'
-                        }, 
-                     confirmation: true });
+                    sesConfigId: configId,
+                    sesConfig: {
+                        ...result,
+                        channel: DeleteComponentsName.SesConfigurationTab,
+                    },
+                    confirmation: true,
+                });
             }
         } catch (e) {
             showError(e);
@@ -252,7 +262,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                             type="button"
                                             className="transparent align-right"
                                             onClick={() => {
-                                                this.deleteClickHandler(sesConfig.id, 'SES_CONFIG');
+                                                this.deleteClickHandler(sesConfig.id, DeleteComponentsName.SesConfigurationTab);
                                             }}
                                         >
                                             <Trash className="scn-5 icon-dim-20" />

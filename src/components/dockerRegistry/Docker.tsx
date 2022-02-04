@@ -591,13 +591,11 @@ function DockerForm({
                     </Tippy>
                 </label>
             </div>
-            <div className={`flex ${id ? 'content-space' : 'right'} mb-20 `}>
+            <div className={`flex right mb-20`}>
                 {id && (
-                    <div>
-                        <button className="cta delete" type="button" onClick={() => toggleConfirmation(true)}>
-                            {deleting ? <Progressing /> : 'Delete'}
-                        </button>
-                    </div>
+                    <button className="cta delete m-auto ml-0" type="button" onClick={() => toggleConfirmation(true)}>
+                        {deleting ? <Progressing /> : 'Delete'}
+                    </button>
                 )}
                 <div>
                     <button className="cta mr-16 cancel" type="button" onClick={(e) => toggleCollapse((t) => !t)}>

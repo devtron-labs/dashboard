@@ -267,7 +267,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             <div className={`form__row form__buttons`}>
                    {
                        id && 
-                       <button className="cta delete m-auto ml-0" type="button" onClick={() => toggleConfirmation(true)}>
+                       <button className="cta delete m-auto chart_repo__delete-button" type="button" onClick={() => toggleConfirmation(true)}>
                             {deleting ? <Progressing /> : 'Delete'}
                         </button>
                    } 

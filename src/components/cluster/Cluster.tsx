@@ -720,20 +720,16 @@ function ClusterForm({
                     </div>{' '}
                 </div>
             )}
-            <div className={`form__buttons ${id ? 'content-space' : ''} `}>
+            <div className={`form__buttons`}>
                 {id && (
-                    <div>
-                        <button className="cta delete ml-0" type="button" onClick={() => toggleConfirmation(true)}>
-                            {deleting ? <Progressing /> : 'Delete'}
-                        </button>
-                    </div>
-                )}
-                <div className="right">
-                    <button className="cta cancel" type="button" onClick={(e) => toggleEditMode((t) => !t)}>
-                        Cancel
+                    <button style={{margin: 'auto', marginLeft: 0 }} className="cta delete" type="button" onClick={() => toggleConfirmation(true)}>
+                        {deleting ? <Progressing /> : 'Delete'}
                     </button>
-                    <button className="cta">{loading ? <Progressing /> : 'Save cluster'}</button>
-                </div>
+                )}
+                <button className="cta cancel" type="button" onClick={(e) => toggleEditMode((t) => !t)}>
+                    Cancel
+                </button>
+                <button className="cta">{loading ? <Progressing /> : 'Save cluster'}</button>
             </div>
             {confirmation && (
                 <DeleteComponent
@@ -744,7 +740,7 @@ function ClusterForm({
                     toggleConfirmation={toggleConfirmation}
                     component={DeleteComponentsName.Cluster}
                     confirmationDialogDescription={DC_CLUSTER_CONFIRMATION_MESSAGE}
-                    reload={reload()}
+                    reload={reload}
                 />
             )}
         </form>
@@ -919,13 +915,11 @@ function Environment({
                         </div>
                     </div>
                 </div>
-                <div className={`form__buttons ${id ? 'content-space' : ''}`}>
+                <div className={`form__buttons`}>
                     {id && (
-                        <div>
-                            <button className="cta delete" type="button" onClick={() => toggleConfirmation(true)}>
+                            <button className="cta delete m-auto ml-0" type="button" onClick={() => toggleConfirmation(true)}>
                                 {deleting ? <Progressing /> : 'Delete'}
                             </button>
-                        </div>
                     )}
                     <button className="cta" type="submit" disabled={loading}>
                         {loading ? <Progressing /> : id ? 'Update' : 'Save'}

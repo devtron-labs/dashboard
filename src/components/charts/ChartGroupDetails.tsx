@@ -80,15 +80,9 @@ export default function ChartGroupDetails() {
         .catch((error) => {
             showError(error);
         });
-        let response
-         getChartGroups().then((res) => (
-              response = res.result.groups.filter((grp)=> grp.id === groupId)
-            ))
     }
 
     useEffect(() => {
-       let res = state.charts
-        {console.log(state.charts)}
         reload()
     }, []);
 

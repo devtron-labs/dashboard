@@ -639,37 +639,31 @@ function GitForm({
                         {customState.sshInput.error && <div className="form__error">{customState.sshInput.error}</div>}
                     </div>
                 )}
-                <div className={`form__row form__buttons ${id ? 'content-space' : ''}`}>
+                <div className={`form__row form__buttons`}>
                     {id && (
-                        <div>
-                            <div>
-                                <button className={`cta delete ml-0`} type="button" onClick={() => toggleConfirmation(true)}>
-                                    {deleting ? <Progressing /> : 'Delete'}
-                                </button>
-                            </div>
-                        </div>
+                        <button className={`cta delete m-auto ml-0`} type="button" onClick={() => toggleConfirmation(true)}>
+                            {deleting ? <Progressing /> : 'Delete'}
+                        </button>
                     )}
-                    <div>
-                        <button className="cta cancel" type="button" onClick={(e) => toggleCollapse((t) => !t)}>
-                            Cancel
-                        </button>
-                        <button className="cta" type="submit" disabled={loading}>
-                            {loading ? <Progressing /> : id ? 'Update' : 'Save'}
-                        </button>
-                    </div>
+                    <button className="cta cancel" type="button" onClick={(e) => toggleCollapse((t) => !t)}>
+                        Cancel
+                    </button>
+                    <button className="cta" type="submit" disabled={loading}>
+                        {loading ? <Progressing /> : id ? 'Update' : 'Save'}
+                    </button>
                 </div>
                 {confirmation && (
-                <DeleteComponent
-                    setDeleting={setDeleting}
-                    deleteComponent={deleteGitProvider}
-                    payload={payload}
-                    title={state.name.value}
-                    toggleConfirmation={toggleConfirmation}
-                    component={DeleteComponentsName.GitProvider}
-                    confirmationDialogDescription={DC_GIT_PROVIDER_CONFIRMATION_MESSAGE}
-                    reload={reload}
-                />
-            )}
+                    <DeleteComponent
+                        setDeleting={setDeleting}
+                        deleteComponent={deleteGitProvider}
+                        payload={payload}
+                        title={state.name.value}
+                        toggleConfirmation={toggleConfirmation}
+                        component={DeleteComponentsName.GitProvider}
+                        confirmationDialogDescription={DC_GIT_PROVIDER_CONFIRMATION_MESSAGE}
+                        reload={reload}
+                    />
+                )}
             </form>
         </>
     );

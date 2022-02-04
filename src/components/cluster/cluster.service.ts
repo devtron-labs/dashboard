@@ -61,11 +61,9 @@ export const getEnvironmentList = (): Promise<any> => {
 };
 
 export function deleteCluster(request): Promise<any> {
-    const URL = `${Routes.CLUSTER}`;
-    return trash(URL, request);
+    return trash(`${Routes.CLUSTER}`, request);
 }
 
 export function deleteEnvironment(request): Promise<any>{
-    const URL = `${Routes.ENVIRONMENT}`;
-    return trash(URL, request); 
+    return trash(`${Routes.ENVIRONMENT}`, request); 
 }
