@@ -281,11 +281,11 @@ export function getSESConfiguration(sesConfigId: number): Promise<SESConfigRespo
     return get(URL);
 }
 
-export function getSlackConfiguration(slackConfigId: number, isTeamId?: boolean): Promise<ResponseType> {
+export function getSlackConfiguration(slackConfigId: number, isDeleteComponent?: boolean): Promise<ResponseType> {
     return getChannelConfigs().then((response) => {
         let list = response.result.slackConfigs || [];
         let config = list.find(config => config.id === slackConfigId);
-        if( isTeamId ){
+        if( isDeleteComponent ){
             return {
                 ...response,
                 result: config
