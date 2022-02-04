@@ -264,18 +264,15 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
                 <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
             </div>}
-            <div className={`form__row form__buttons ${id ? 'content-space' : ''}`}>
+            <div className={`form__row form__buttons`}>
                    {
-                       id && <div>
-                       <button className="cta delete ml-0" type="button" onClick={() => toggleConfirmation(true)}>
+                       id && 
+                       <button className="cta delete m-auto ml-0" type="button" onClick={() => toggleConfirmation(true)}>
                             {deleting ? <Progressing /> : 'Delete'}
                         </button>
-                    </div>
                    } 
-                   <div>
                 <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
                 <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
-                </div>
             </div>
             {confirmation && (
                 <DeleteComponent

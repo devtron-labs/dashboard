@@ -281,16 +281,23 @@ export function getSESConfiguration(sesConfigId: number): Promise<SESConfigRespo
     return get(URL);
 }
 
-export function getSlackConfiguration(slackConfigId: number): Promise<ResponseType> {
+export function getSlackConfiguration(slackConfigId: number, isTeamId?: boolean): Promise<ResponseType> {
     return getChannelConfigs().then((response) => {
         let list = response.result.slackConfigs || [];
         let config = list.find(config => config.id === slackConfigId);
-        return {
-            ...response,
-            result: {
-                configName: config.configName,
-                webhookUrl: config.webhookUrl,
-                projectId: config.teamId,
+        if( isTeamId ){
+            return {
+                ...response,
+                result: config
+            }
+        } else{
+            return {
+                ...response,
+                    result: {
+                        configName: config.configName,
+                        webhookUrl: config.webhookUrl,
+                        projectId: config.teamId,
+                    }  
             }
         }
     })

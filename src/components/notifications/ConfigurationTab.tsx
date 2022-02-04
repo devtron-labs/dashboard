@@ -4,7 +4,7 @@ import { SlackConfigModal } from './SlackConfigModal';
 import { SESConfigModal } from './SESConfigModal';
 import { ReactComponent as Edit } from '../../assets/icons/ic-edit.svg';
 import { showError, Progressing } from '../common';
-import { deleteNotification, getSESConfiguration, getSlackAndSESConfigs, getSlackConfiguration } from './notifications.service';
+import { deleteNotification, getChannelConfigs, getSESConfiguration, getSlackAndSESConfigs, getSlackConfiguration } from './notifications.service';
 import slack from '../../assets/img/slack-logo.svg';
 import ses from '../../assets/icons/ic-aws-ses.svg';
 import { ViewType } from '../../config/constants';
@@ -177,12 +177,21 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     deleteClickHandler = async (configId, type) => {
         try {
             if (type === "SLACK_CONFIG") {
-                const { result } = await getSlackConfiguration(configId);
+                const { result } = await getSlackConfiguration(configId, true);
                 this.setState({ slackConfigId: configId, 
-                    slackConfig: result, confirmation: true, showDeleteSlackConfigModal: true });
+                    slackConfig: {
+                        ...result,
+                    channel: 'slack'
+                }, confirmation: true, showDeleteSlackConfigModal: true });
             } else if(type === "SES_CONFIG"){
                 const { result } = await getSESConfiguration(configId);
-                this.setState({ sesConfigId: configId, sesConfig: result, confirmation: true });
+                this.setState({
+                     sesConfigId: configId, 
+                     sesConfig: {
+                         ...result,
+                         channel: 'ses'
+                        }, 
+                     confirmation: true });
             }
         } catch (e) {
             showError(e);
