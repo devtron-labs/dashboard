@@ -140,7 +140,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         //updates defaultComponents and agentInstallationStatus
         try {
             const { result } = await getClusterList();
-            console.log(result)
             let clusters = result
                 ? result.map((c) => {
                       return {

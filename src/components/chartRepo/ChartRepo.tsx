@@ -264,7 +264,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
                 <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
             </div>}
-            <div className={`form__row form__buttons`}>
+            <div className="form__row form__buttons">
                    {
                        id && 
                        <button className="cta delete m-auto chart_repo__delete-button" type="button" onClick={() => toggleConfirmation(true)}>
