@@ -5,8 +5,8 @@ import {
     getDeploymentHistory,
     HelmAppDeploymentHistoryResponse,
     HelmAppDeploymentDetail,
-    getDeploymentDetail,
-    HelmAppDeploymentDetails,
+    getDeploymentManifestDetails,
+    HelmAppDeploymentManifestDetail,
 } from '../../../external-apps/ExternalAppService';
 import { ServerErrors } from '../../../../modals/commonTypes';
 import { Moment12HourFormat } from '../../../../config';
@@ -18,16 +18,21 @@ import YAML from 'yaml';
 import './ea-deployment-history.scss';
 import MessageUI from '../../common/message.ui';
 
+interface DeploymentManifestDetail extends HelmAppDeploymentManifestDetail {
+    loading?: boolean;
+    error?: boolean;
+    isApiCallTriggered?: boolean;
+}
+
+const initDeploymentManifestDetails = new Map<number, DeploymentManifestDetail>();
+
 function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
     const [isLoading, setIsLoading] = useState(true);
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
     const [deploymentHistoryArr, setDeploymentHistoryArr] = useState<HelmAppDeploymentDetail[]>([]);
     const [selectedDeploymentHistoryIndex, setSelectedDeploymentHistoryIndex] = useState<number>(0);
     const [selectedDeploymentTabIndex, setSelectedDeploymentTabIndex] = useState<number>(0);
-    const [deploymentDetails, setDeploymentDetails] = useState<Record<number, HelmAppDeploymentDetails>>();
-    const [selectedDeploymentDetails, setSelectedDeploymentDetails] = useState<HelmAppDeploymentDetails>();
-    const [loadingYaml, setLoadingYaml] = useState(false);
-    const [errorLoadingYaml, setErrorLoadingYaml] = useState(false);
+    const [deploymentManifestDetails, setDeploymentManifestDetails] = useState<Map<number, DeploymentManifestDetail>>();
 
     const deploymentTabs: string[] = ['Source', 'values.yaml', 'Helm generated manifest'];
 
@@ -41,6 +46,12 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
                     ) || [],
                 );
                 setIsLoading(false);
+
+                // Init deployment manifest details map
+                deploymentHistoryResponse.result?.deploymentHistory?.forEach(({ version }) => {
+                    initDeploymentManifestDetails.set(version, { loading: true });
+                });
+                setDeploymentManifestDetails(initDeploymentManifestDetails);
             })
             .catch((errors: ServerErrors) => {
                 showError(errors);
@@ -58,32 +69,36 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
 
         // Resetting the deployment tab selection, loading & error states on version change.
         setSelectedDeploymentTabIndex(0);
-        setLoadingYaml(false);
-        setErrorLoadingYaml(false);
     }
 
-    function fetchDeploymentDetail(version: number): void {
-        setLoadingYaml(true);
-        getDeploymentDetail(appId, version)
-            .then(({ result }) => {
-                setDeploymentDetails({
-                    [version]: {
-                        manifest: result.manifest,
-                        valuesYaml: result.valuesYaml,
-                    },
-                    ...deploymentDetails,
-                });
-                setSelectedDeploymentDetails({
-                    manifest: result.manifest,
-                    valuesYaml: result.valuesYaml,
-                });
-                setLoadingYaml(false);
-                setErrorLoadingYaml(false);
-            })
-            .catch((e) => {
-                setLoadingYaml(false);
-                setErrorLoadingYaml(true);
+    async function fetchDeploymentDetail(version: number): Promise<void> {
+        try {
+            const { result } = await getDeploymentManifestDetails(appId, version);
+            initDeploymentManifestDetails.set(version, {
+                manifest: result.manifest,
+                valuesYaml: result.valuesYaml,
+                loading: false,
+                error: false,
+                isApiCallTriggered: true,
             });
+            setDeploymentManifestDetails(new Map<number, DeploymentManifestDetail>(initDeploymentManifestDetails));
+        } catch (e) {
+            initDeploymentManifestDetails.set(version, {
+                loading: false,
+                error: true,
+                isApiCallTriggered: true,
+            });
+            setDeploymentManifestDetails(new Map<number, DeploymentManifestDetail>(initDeploymentManifestDetails));
+        }
+    }
+
+    function updateDeploymentManifestDetails(version: number): void {
+        initDeploymentManifestDetails.set(version, {
+            loading: true,
+            isApiCallTriggered: true,
+        });
+        setDeploymentManifestDetails(new Map<number, DeploymentManifestDetail>(initDeploymentManifestDetails));
+        fetchDeploymentDetail(version);
     }
 
     function changeDeploymentTab(index: number) {
@@ -92,12 +107,11 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
         }
 
         if (index === 1 || index === 2) {
-            const history = deploymentHistoryArr[selectedDeploymentHistoryIndex];
-            const details = deploymentDetails && deploymentDetails[history.version];
-            setSelectedDeploymentDetails(details);
+            const version = deploymentHistoryArr[selectedDeploymentHistoryIndex]?.version;
+            const selectedDeploymentManifestDetail = initDeploymentManifestDetails.get(version);
 
-            if (!loadingYaml && typeof details === 'undefined') {
-                fetchDeploymentDetail(history.version);
+            if (!selectedDeploymentManifestDetail.isApiCallTriggered || selectedDeploymentManifestDetail.error) {
+                updateDeploymentManifestDetails(version);
             }
         }
         setSelectedDeploymentTabIndex(index);
@@ -160,9 +174,14 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
     function renderCodeEditor(): JSX.Element | null {
         if (selectedDeploymentTabIndex !== 1 && selectedDeploymentTabIndex !== 2) {
             return null;
-        } else if (loadingYaml && !errorLoadingYaml) {
+        }
+
+        const version = deploymentHistoryArr[selectedDeploymentHistoryIndex]?.version;
+        const selectedDeploymentManifestDetail = deploymentManifestDetails.get(version);
+
+        if (selectedDeploymentManifestDetail.loading && !selectedDeploymentManifestDetail.error) {
             return <Progressing theme="white" pageLoader />;
-        } else if (!loadingYaml && errorLoadingYaml) {
+        } else if (!selectedDeploymentManifestDetail.loading && selectedDeploymentManifestDetail.error) {
             return (
                 <MessageUI
                     iconClassName="error-exclamation-icon"
@@ -173,7 +192,7 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
                     isShowActionButton={true}
                     actionButtonText="Retry"
                     onActionButtonClick={() => {
-                        fetchDeploymentDetail(deploymentHistoryArr[selectedDeploymentHistoryIndex]?.version);
+                        updateDeploymentManifestDetails(version);
                     }}
                     actionButtonStyle={{ color: '#0066cc', textDecoration: 'none' }}
                 />
@@ -181,22 +200,21 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
         }
 
         return (
-            deploymentDetails &&
-            selectedDeploymentDetails && (
+            selectedDeploymentManifestDetail.manifest &&
+            selectedDeploymentManifestDetail.valuesYaml && (
                 <div className="bcn-0 border-btm">
                     <CodeEditor
                         value={
                             selectedDeploymentTabIndex === 1
-                                ? YAML.stringify(JSON.parse(selectedDeploymentDetails.valuesYaml), {
+                                ? YAML.stringify(JSON.parse(selectedDeploymentManifestDetail.valuesYaml), {
                                       indent: 2,
                                   })
-                                : selectedDeploymentDetails.manifest
+                                : selectedDeploymentManifestDetail.manifest
                         }
                         noParsing
                         mode="yaml"
                         height={700}
                         readOnly={true}
-                        loading={loadingYaml}
                     ></CodeEditor>
                 </div>
             )

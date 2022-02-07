@@ -12,12 +12,12 @@ export interface HelmAppDeploymentHistoryResponse extends ResponseType {
     result?: HelmAppDeploymentHistory
 }
 
-export interface HelmAppDeploymentDetails {
-    manifest: string;
-    valuesYaml: string;
+export interface HelmAppDeploymentManifestDetail {
+    manifest?: string;
+    valuesYaml?: string;
 }
-export interface HelmAppDeploymentDetailResponse extends ResponseType {
-    result?: HelmAppDeploymentDetails;
+export interface HelmAppDeploymentManifestDetailResponse extends ResponseType {
+    result?: HelmAppDeploymentManifestDetail;
 }
 
 export interface HelmAppDetailResponse extends ResponseType {
@@ -99,9 +99,12 @@ export const getDeploymentHistory = (appId: string): Promise<HelmAppDeploymentHi
     return get(url);
 }
 
-export const getDeploymentDetail = (appId: string, version: number): Promise<HelmAppDeploymentDetailResponse> => {
+export const getDeploymentManifestDetails = (
+    appId: string,
+    version: number,
+): Promise<HelmAppDeploymentManifestDetailResponse> => {
     return get(`${Routes.HELM_RELEASE_DEPLOYMENT_DETAIL_API}?appId=${appId}&version=${version}`);
-}
+};
 
 export const getAppDetail = (appId: string): Promise<HelmAppDetailResponse> => {
     let url = `${Routes.HELM_RELEASE_APP_DETAIL_API}?appId=${appId}`
