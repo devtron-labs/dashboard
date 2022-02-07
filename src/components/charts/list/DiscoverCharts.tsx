@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Progressing, Select, mapByKey, showError, BreadCrumb, useBreadcrumb, ConditionalWrap, ConfirmationDialog } from '../../common';
 import { Switch, Route, NavLink } from 'react-router-dom';
 import { useHistory, useLocation, useRouteMatch } from 'react-router';
@@ -17,7 +17,7 @@ import { ChartGroupEntry, Chart } from '../charts.types'
 import { toast } from 'react-toastify';
 import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy';
 import CreateChartGroup from '../modal/CreateChartGroup'
-import { DOCUMENTATION, URLS } from '../../../config';
+import { DOCUMENTATION, URLS, SERVER_MODE } from '../../../config';
 import { Prompt } from 'react-router';
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import Tippy from '@tippyjs/react'
@@ -28,6 +28,7 @@ import warn from '../../../assets/icons/ic-warning.svg';
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
 import ChartHeaderFilter from '../ChartHeaderFilters';
 import { QueryParams } from '../charts.util';
+import { mainContext } from '../../common/navigation/NavigationRoutes';
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -45,6 +46,7 @@ export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[
 }
 
 function DiscoverChartList() {
+    const { serverMode } = useContext(mainContext);
     const location = useLocation();
     const history = useHistory();
     const match = useRouteMatch();
@@ -80,12 +82,14 @@ function DiscoverChartList() {
 
     useEffect(() => {
         window.addEventListener('beforeunload', reloadCallback);
-        isGitopsConfigured().then((response) => {
-            let isGitOpsConfigAvailable = response.result && response.result.exists;
-            setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
-        }).catch((error) => {
-            showError(error);
-        })
+        if(serverMode == SERVER_MODE.FULL){
+            isGitopsConfigured().then((response) => {
+                let isGitOpsConfigAvailable = response.result && response.result.exists;
+                setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
+            }).catch((error) => {
+                showError(error);
+            })
+        }
         return () => {
             window.removeEventListener('beforeunload', reloadCallback);
         }
@@ -210,14 +214,17 @@ function DiscoverChartList() {
                         {state.charts.length === 0 && <ChartDetailNavigator />}
                     </>
                 </ConditionalWrap>
+
                 <div className="page-header__cta-container flex">
-                    {state.charts.length === 0 && (
+                    {
+                        serverMode == SERVER_MODE.FULL && state.charts.length === 0 &&
                         <button type="button" className="cta flex"
-                            onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}>
+                                onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}>
                             <Add className="icon-dim-18 mr-5" />Create Group
                         </button>
-                    )}
+                    }
                 </div>
+
             </div>
             <Prompt when={isLeavingPageNotAllowed.current} message={'Your changes will be lost. Do you want to leave without deploying?'} />
             {state.loading || chartListLoading ? <Progressing pageLoader /> : null}
@@ -268,7 +275,10 @@ function DiscoverChartList() {
                                     handleNameChange={handleNameChange}
                                     discardValuesYamlChanges={discardValuesYamlChanges}
                                 /> </> : <>
-                                <ChartGroupListMin chartGroups={state.chartGroups.slice(0, 4)} />
+                                {
+                                    serverMode == SERVER_MODE.FULL &&
+                                    <ChartGroupListMin chartGroups={state.chartGroups.slice(0, 4)} />
+                                }
                                 <ChartListHeader chartRepoList={state.chartRepos}
                                     setSelectedChartRepo={setSelectedChartRepo}
                                     charts={state.charts}
@@ -286,7 +296,7 @@ function DiscoverChartList() {
                                         showCheckBoxOnHoverOnly={state.charts.length === 0}
                                         addChart={addChart}
                                         subtractChart={subtractChart}
-                                        onClick={(chartId) => state.charts.length === 0 ? history.push(`${url}/chart/${chart.id}`) : selectChart(chartId)}
+                                        onClick={(chartId) => state.charts.length === 0 ? (serverMode == SERVER_MODE.FULL ? history.push(`${url}/chart/${chart.id}`) : history.push(`${url}/chart/${chart.id}/deploy-chart`))  : selectChart(chartId)}
                                     />)}
                                 </div>
                             </>}

@@ -19,29 +19,12 @@ export default function Charts () {
     const { path } = useRouteMatch();
     const {serverMode} = useContext(mainContext);
 
-    const renderEmptyStateForEAOnlyMode = () => {
-        return (
-            <div style={{ height: 'calc(100vh - 250px)' }}>
-                <EAEmptyState
-                    title={'Deploy third-party helm charts'}
-                    msg={'Deploy and manage helm apps from public and private repositories.'}
-                    stateType={EAEmptyStateType.HELMCHARTS}
-                    knowMoreLink={DOCUMENTATION.CHART_LIST}
-                    headerText="Chart Store"
-                />
-            </div>
-        );
-    };
-    
-    return serverMode === SERVER_MODE.EA_ONLY ? (
-        renderEmptyStateForEAOnlyMode()
-    ) : (
-        <Switch>
-            <Route path={`${path}/deployments/:appId(\\d+)/env/:envId(\\d+)`} component={DeploymentDetail} />
-            <Route path={`${path}/discover`} component={DiscoverCharts} />
-            <Redirect to={`${path}/discover`} />
-        </Switch>
-    );
+    return <Switch>
+        <Route path={`${path}/deployments/:appId(\\d+)/env/:envId(\\d+)`} component={DeploymentDetail} />
+        <Route path={`${path}/discover`} component={DiscoverCharts} />
+        <Redirect to={`${path}/discover`} />
+    </Switch>
+
 }
 
 export function GenericChartsHeader({ children = null }) {

@@ -1,13 +1,11 @@
 import React from 'react';
 import appDetailEmpty from '../../../assets/img/ic-empty-ea-app-detail.png';
-import chartsEmpty from '../../../assets/img/ic-empty-ea-charts.png';
 import securityEmpty from '../../../assets/img/ic-empty-ea--security.png';
 import { DOCUMENTATION } from '../../../config';
 import './eaEmptyState.css';
 
 export enum EAEmptyStateType {
     DEVTRONAPPS = 'devtron_apps',
-    HELMCHARTS = 'helm_charts',
     SECURITY = 'security',
     DEPLOYMENTGROUPS = 'deployment_groups',
     BULKEDIT = 'bulk_edit',
@@ -49,10 +47,6 @@ function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefi
                                         width="800"
                                         alt="no apps found"
                                     />
-                                );
-                            case EAEmptyStateType.HELMCHARTS:
-                                return (
-                                    <img className="ea-empty-img" src={chartsEmpty}  width="800" alt="no apps found" />
                                 );
                             case EAEmptyStateType.BULKEDIT:
                                 return (

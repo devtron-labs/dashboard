@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import Tippy from '@tippyjs/react';
 import { Chart } from '../charts.types';
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg';
 import { LazyImage, noop, ConditionalWrap } from '../../common';
 import { ReactComponent as Minus } from '../../../assets/icons/ic-minus.svg';
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg';
-import Tippy from '@tippyjs/react';
+import { SERVER_MODE } from '../../../config';
 import { DeprecatedWarn } from "../../common/DeprecatedUpdateWarn";
+import { mainContext } from '../../common/navigation/NavigationRoutes';
 
 interface AllChartSelectProps {
     chart: Chart;
@@ -32,6 +34,7 @@ interface Checkbox extends AllChartSelectProps {
 export type ChartSelectProps = Stepper | Checkbox
 
 const ChartSelect: React.FC<ChartSelectProps> = ({ chart, selectChart, addChart, subtractChart, selectedCount = 0, showCheckBoxOnHoverOnly, onClick }) => {
+    const { serverMode } = useContext(mainContext);
 
     function handleImageError(e) {
         const target = e.target as HTMLImageElement;
@@ -46,7 +49,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({ chart, selectChart, addChart,
             <div className="chart-grid-item__icon-wrapper">
                 <LazyImage className="chart-grid-item__icon" src={chart.icon} onError={handleImageError} />
             </div>
-            {addChart && subtractChart
+            {serverMode == SERVER_MODE.FULL && addChart && subtractChart
                 ? <div className={`chart-grid__check ${showCheckBoxOnHoverOnly ? 'chart-grid__check--hidden' : ''} devtron-stepper`}>
                     <ConditionalWrap condition={selectedCount > 0}
                         wrap={children => <Tippy className="default-tt" arrow={false} placement="top" content={"Remove charts from selection"}>
