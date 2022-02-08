@@ -12,6 +12,14 @@ export interface HelmAppDeploymentHistoryResponse extends ResponseType {
     result?: HelmAppDeploymentHistory
 }
 
+export interface HelmAppDeploymentManifestDetail {
+    manifest?: string;
+    valuesYaml?: string;
+}
+export interface HelmAppDeploymentManifestDetailResponse extends ResponseType {
+    result?: HelmAppDeploymentManifestDetail;
+}
+
 export interface HelmAppDetailResponse extends ResponseType {
     result?: HelmAppDetail
 }
@@ -37,11 +45,10 @@ export interface HelmAppDeploymentHistory {
 }
 
 export interface HelmAppDeploymentDetail {
-    chartMetadata: ChartMetadata,
-    manifest: string,
-    dockerImages: string[],
-    version: number,
-    deployedAt: DeployedAt
+    chartMetadata: ChartMetadata;
+    dockerImages: string[];
+    version: number;
+    deployedAt: DeployedAt;
 }
 
 export interface HelmAppDetail {
@@ -90,6 +97,13 @@ export const getDeploymentHistory = (appId: string): Promise<HelmAppDeploymentHi
     let url = `${Routes.HELM_RELEASE_DEPLOYMENT_HISTORY_API}?appId=${appId}`
     return get(url);
 }
+
+export const getDeploymentManifestDetails = (
+    appId: string,
+    version: number,
+): Promise<HelmAppDeploymentManifestDetailResponse> => {
+    return get(`${Routes.HELM_RELEASE_DEPLOYMENT_DETAIL_API}?appId=${appId}&version=${version}`);
+};
 
 export const getAppDetail = (appId: string): Promise<HelmAppDetailResponse> => {
     let url = `${Routes.HELM_RELEASE_APP_DETAIL_API}?appId=${appId}`
