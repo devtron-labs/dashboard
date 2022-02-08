@@ -12,8 +12,11 @@ export enum MsgUIType {
 export interface MsgUIProps {
     msg: string;
     icon?: MsgUIType;
+    theme?: 'white' | 'dark';
+    iconClassName?: string;
     bodyStyle?: any;
     msgStyle?: any;
+    actionButtonStyle?: any;
     size: number;
     isShowActionButton?: boolean;
     actionButtonText?: string;
@@ -23,24 +26,27 @@ export interface MsgUIProps {
 const MessageUI: React.FC<MsgUIProps> = ({
     msg,
     icon,
+    theme,
+    iconClassName,
     bodyStyle,
     msgStyle,
+    actionButtonStyle,
     size = 24,
     isShowActionButton,
     actionButtonText,
     onActionButtonClick,
-}) => {
+}: MsgUIProps) => {
     return (
         <div
-            className="text-center dark-background w-100 "
-            style={{ ...bodyStyle, paddingTop: '200px', minHeight: '600px', flex: '1' }}
+            className={`text-center ${theme || 'dark'}-background w-100 `}
+            style={{ paddingTop: '200px', minHeight: '600px', flex: '1', ...bodyStyle }}
         >
             <div>
                 {(() => {
                     switch (icon) {
                         case MsgUIType.LOADING:
                             return (
-                                <div className="fcn-0">
+                                <div className={`fcn-0 ${iconClassName || ''}`}>
                                     <Progressing />
                                 </div>
                             );
@@ -52,20 +58,25 @@ const MessageUI: React.FC<MsgUIProps> = ({
                                 />
                             );
                         case MsgUIType.MULTI_CONTAINER:
-                            return <MultipleContainer />;
+                            return <MultipleContainer className={iconClassName || ''} />;
                         default:
-                            return <InfoIcon className="fcn-0" width={size} height={size} />;
+                            return <InfoIcon className={`fcn-0 ${iconClassName || ''}`} width={size} height={size} />;
                     }
                 })()}
             </div>
-            <div className="fs-14" style={{ ...msgStyle, marginTop: '8px', color: 'white' }}>
+            <div className="fs-14" style={{ marginTop: '8px', color: 'white', ...msgStyle }}>
                 {msg}
             </div>
             {isShowActionButton && (
                 <div
                     className="cursor"
                     onClick={onActionButtonClick}
-                    style={{ fontSize: '14px', textDecoration: 'underline', color: 'var(--B300)' }}
+                    style={{
+                        fontSize: '14px',
+                        textDecoration: 'underline',
+                        color: 'var(--B300)',
+                        ...actionButtonStyle,
+                    }}
                 >
                     {actionButtonText}
                 </div>
