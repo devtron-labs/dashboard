@@ -21,10 +21,8 @@ import MessageUI from '../../common/message.ui';
 interface DeploymentManifestDetail extends HelmAppDeploymentManifestDetail {
     loading?: boolean;
     error?: boolean;
-    isApiCallTriggered?: boolean;
+    isApiCallInProgress?: boolean;
 }
-
-const initDeploymentManifestDetails = new Map<number, DeploymentManifestDetail>();
 
 function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
     const [isLoading, setIsLoading] = useState(true);
@@ -40,18 +38,19 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
     useEffect(() => {
         getDeploymentHistory(appId)
             .then((deploymentHistoryResponse: HelmAppDeploymentHistoryResponse) => {
-                setDeploymentHistoryArr(
+                let _deploymentHistoryArr =
                     deploymentHistoryResponse.result?.deploymentHistory?.sort(
                         (a, b) => b.deployedAt.seconds - a.deployedAt.seconds,
-                    ) || [],
-                );
-                setIsLoading(false);
+                    ) || [];
+                setDeploymentHistoryArr(_deploymentHistoryArr);
 
-                // Init deployment manifest details map
-                deploymentHistoryResponse.result?.deploymentHistory?.forEach(({ version }) => {
-                    initDeploymentManifestDetails.set(version, { loading: true });
+                // init deployment manifest details map
+                let _deploymentManifestDetails = new Map<number, DeploymentManifestDetail>();
+                _deploymentHistoryArr.forEach(({ version }) => {
+                    _deploymentManifestDetails.set(version, { loading: true });
                 });
-                setDeploymentManifestDetails(initDeploymentManifestDetails);
+                setDeploymentManifestDetails(_deploymentManifestDetails);
+                setIsLoading(false);
             })
             .catch((errors: ServerErrors) => {
                 showError(errors);
@@ -71,34 +70,28 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
         setSelectedDeploymentTabIndex(0);
     }
 
-    async function fetchDeploymentDetail(version: number): Promise<void> {
+    async function checkAndFetchDeploymentDetail(
+        version: number,
+        forceFetchDeploymentManifest?: boolean,
+    ): Promise<void> {
+        let _selectedDeploymentManifestDetail = deploymentManifestDetails.get(version);
+
+        if (
+            _selectedDeploymentManifestDetail.isApiCallInProgress ||
+            (!_selectedDeploymentManifestDetail.loading && !_selectedDeploymentManifestDetail.error) ||
+            (!forceFetchDeploymentManifest && _selectedDeploymentManifestDetail.error)
+        ) {
+            return;
+        }
+
+        _onFetchingDeploymentManifest(version, _selectedDeploymentManifestDetail);
+
         try {
             const { result } = await getDeploymentManifestDetails(appId, version);
-            initDeploymentManifestDetails.set(version, {
-                manifest: result.manifest,
-                valuesYaml: result.valuesYaml,
-                loading: false,
-                error: false,
-                isApiCallTriggered: true,
-            });
-            setDeploymentManifestDetails(new Map<number, DeploymentManifestDetail>(initDeploymentManifestDetails));
+            _onDeploymentManifestResponse(version, _selectedDeploymentManifestDetail, result);
         } catch (e) {
-            initDeploymentManifestDetails.set(version, {
-                loading: false,
-                error: true,
-                isApiCallTriggered: true,
-            });
-            setDeploymentManifestDetails(new Map<number, DeploymentManifestDetail>(initDeploymentManifestDetails));
+            _onDeploymentManifestResponse(version, _selectedDeploymentManifestDetail);
         }
-    }
-
-    function updateDeploymentManifestDetails(version: number): void {
-        initDeploymentManifestDetails.set(version, {
-            loading: true,
-            isApiCallTriggered: true,
-        });
-        setDeploymentManifestDetails(new Map<number, DeploymentManifestDetail>(initDeploymentManifestDetails));
-        fetchDeploymentDetail(version);
     }
 
     function changeDeploymentTab(index: number) {
@@ -107,15 +100,48 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
         }
 
         if (index === 1 || index === 2) {
-            const version = deploymentHistoryArr[selectedDeploymentHistoryIndex]?.version;
-            const selectedDeploymentManifestDetail = initDeploymentManifestDetails.get(version);
-
-            if (!selectedDeploymentManifestDetail.isApiCallTriggered || selectedDeploymentManifestDetail.error) {
-                updateDeploymentManifestDetails(version);
-            }
+            const version = deploymentHistoryArr[selectedDeploymentHistoryIndex].version;
+            checkAndFetchDeploymentDetail(version);
         }
+
         setSelectedDeploymentTabIndex(index);
     }
+
+    const _onFetchingDeploymentManifest = (
+        version: number,
+        _selectedDeploymentManifestDetail: DeploymentManifestDetail,
+    ) => {
+        _selectedDeploymentManifestDetail.loading = true;
+        _selectedDeploymentManifestDetail.error = false;
+        _selectedDeploymentManifestDetail.isApiCallInProgress = true;
+
+        let _deploymentManifestDetail = new Map<number, DeploymentManifestDetail>(deploymentManifestDetails);
+        _deploymentManifestDetail.set(version, _selectedDeploymentManifestDetail);
+
+        setDeploymentManifestDetails(_deploymentManifestDetail);
+    };
+
+    const _onDeploymentManifestResponse = (
+        version: number,
+        _selectedDeploymentManifestDetail: DeploymentManifestDetail,
+        result?: HelmAppDeploymentManifestDetail,
+    ) => {
+        if (result) {
+            _selectedDeploymentManifestDetail.manifest = result.manifest;
+            _selectedDeploymentManifestDetail.valuesYaml = result.valuesYaml;
+            _selectedDeploymentManifestDetail.error = false;
+        } else {
+            _selectedDeploymentManifestDetail.error = true;
+        }
+
+        _selectedDeploymentManifestDetail.loading = false;
+        _selectedDeploymentManifestDetail.isApiCallInProgress = false;
+
+        let _deploymentManifestDetail = new Map<number, DeploymentManifestDetail>(deploymentManifestDetails);
+        _deploymentManifestDetail.set(version, _selectedDeploymentManifestDetail);
+
+        setDeploymentManifestDetails(_deploymentManifestDetail);
+    };
 
     function renderDeploymentCards() {
         return <>
@@ -192,7 +218,7 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
                     isShowActionButton={true}
                     actionButtonText="Retry"
                     onActionButtonClick={() => {
-                        updateDeploymentManifestDetails(version);
+                        checkAndFetchDeploymentDetail(version, true);
                     }}
                     actionButtonStyle={{ color: '#0066cc', textDecoration: 'none' }}
                 />
@@ -342,4 +368,4 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
     )
 };
 
-export default ExternalAppDeploymentHistory
+export default ExternalAppDeploymentHistory;
