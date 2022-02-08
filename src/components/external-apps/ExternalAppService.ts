@@ -45,11 +45,10 @@ export interface HelmAppDeploymentHistory {
 }
 
 export interface HelmAppDeploymentDetail {
-    chartMetadata: ChartMetadata,
-    manifest: string,
-    dockerImages: string[],
-    version: number,
-    deployedAt: DeployedAt
+    chartMetadata: ChartMetadata;
+    dockerImages: string[];
+    version: number;
+    deployedAt: DeployedAt;
 }
 
 export interface HelmAppDetail {
