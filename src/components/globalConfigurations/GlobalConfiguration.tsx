@@ -38,6 +38,7 @@ export default function GlobalConfiguration(props) {
         chartStageCompleted: 0,
     });
     const {serverMode, setServerMode} =  useContext(mainContext);
+
     useEffect(() => {
       serverMode !== SERVER_MODE.EA_ONLY  && getHostURLConfig();
       serverMode !== SERVER_MODE.EA_ONLY  && fetchCheckList();
@@ -54,6 +55,15 @@ export default function GlobalConfiguration(props) {
             setIsHostURLConfig(response.result);
         }).catch((error) => {
 
+        })
+    }
+
+    function handleChecklistUpdate(itemName){
+        const list = checkList
+        list.appChecklist[itemName] = 1
+        setCheckList({
+            ...checkList,
+            ...list,
         })
     }
 
@@ -97,7 +107,7 @@ export default function GlobalConfiguration(props) {
                 <section className="global-configuration__component-wrapper">
                     <Suspense fallback={<Progressing pageLoader />}>
                         <ErrorBoundary>
-                            <Body getHostURLConfig={getHostURLConfig} checkList={checkList} serverMode={serverMode}/>
+                            <Body getHostURLConfig={getHostURLConfig} checkList={checkList} serverMode={serverMode} fetchCheckList={getAppCheckList} handleChecklistUpdate={handleChecklistUpdate}/>
                         </ErrorBoundary>
                     </Suspense>
                 </section>
@@ -141,19 +151,19 @@ function NavItem({ hostURLConfig, serverMode}) {
     </div>
 }
 
-function Body({ getHostURLConfig, checkList, serverMode}) {
+function Body({ getHostURLConfig, checkList, serverMode, fetchCheckList, handleChecklistUpdate}) {
     const location = useLocation();
 
     return <Switch location={location}>
         <Route path={URLS.GLOBAL_CONFIG_HOST_URL} render={(props) => {
             return <div className="flexbox h-100">
-                <HostURLConfiguration {...props} refreshGlobalConfig={getHostURLConfig} />
+                <HostURLConfiguration {...props} refreshGlobalConfig={getHostURLConfig} handleChecklistUpdate={handleChecklistUpdate}/>
                 <GlobalConfigCheckList {...checkList} {...props} />
             </div>
         }} />
         <Route path={URLS.GLOBAL_CONFIG_GITOPS} render={(props) => {
             return <div className="flexbox h-100">
-                <GitOpsConfiguration {...props} />
+                <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
                 <GlobalConfigCheckList {...checkList} {...props} />
             </div>
         }} />
@@ -177,7 +187,7 @@ function Body({ getHostURLConfig, checkList, serverMode}) {
         }} />
         <Route path={URLS.GLOBAL_CONFIG_DOCKER} render={(props) => {
             return <div className="flexbox h-100">
-                <Docker {...props} />
+                <Docker {...props} getAppCheckList={getAppCheckList} handleChecklistUpdate={handleChecklistUpdate}/>
                 <GlobalConfigCheckList {...checkList} {...props} />
             </div>
         }} />

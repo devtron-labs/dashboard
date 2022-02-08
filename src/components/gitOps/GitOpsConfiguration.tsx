@@ -279,6 +279,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 toast.success("Configuration validated and saved successfully");
                 this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, isFormEdited: false, deleteRepoError : resp.deleteRepoFailed});
                 this.fetchGitOpsConfigurationList();
+                this.props.handleChecklistUpdate('gitOps')
             } else {
                 this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, saveLoading: false, isFormEdited: false, validationError : errorMap || [], deleteRepoError : resp.deleteRepoFailed});
                 toast.error("Configuration validation failed");
