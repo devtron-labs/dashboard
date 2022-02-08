@@ -123,7 +123,7 @@ function NavItem({ hostURLConfig, serverMode}) {
     ];
 
     const ConfigOptional = [
-        { name: 'Chart repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: true },
+        { name: 'Chart repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: false },
         { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin, isAvailableInEA: true },
         { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup, isAvailableInEA: true },
         { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier, isAvailableInEA: false },
