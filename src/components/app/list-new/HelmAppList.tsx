@@ -1,8 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { ServerErrors } from '../../../modals/commonTypes';
+import {useLocation, useHistory, useParams} from 'react-router';
+import * as queryString from 'query-string';
 import { OrderBy, SortBy } from '../list/types';
 import { buildClusterVsNamespace, getDevtronInstalledHelmApps, AppListResponse, HelmApp } from './AppListService';
-import { showError, Progressing, ErrorScreenManager, LazyImage, handleUTCTime, useEventSource } from '../../common';
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    Pagination,
+    LazyImage,
+    handleUTCTime,
+    useEventSource,
+} from '../../common';
 import { Host, SERVER_MODE, URLS, DOCUMENTATION } from '../../../config';
 import { AppListViewType } from '../config';
 import { Link } from 'react-router-dom';
@@ -29,7 +39,7 @@ export default function HelmAppList({
     setFetchingExternalAppsState,
     updateLastDataSync,
     setShowPulsatingDotState,
-    masterFilters
+    masterFilters,
 }) {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING);
     const [errorResponseCode, setErrorResponseCode] = useState(0);
@@ -41,7 +51,19 @@ export default function HelmAppList({
     const [clusterIdsCsv, setClusterIdsCsv] = useState('');
     const [sseConnection, setSseConnection] = useState<EventSource>(undefined);
     const [externalHelmListFetchErrors, setExternalHelmListFetchErrors] = useState<string[]>([]);
-
+    const location=useLocation();
+    const history=useHistory();
+    const params = new URLSearchParams(location.search)
+    
+    const [pageSize, changePageSize] = useState<number>(payloadParsedFromUrl.size);
+    const [changepage, changePage] = useState<number>(1);
+    const pageVisited:number = Math.abs(changepage - 1) * pageSize;
+    
+    
+    useEffect(()=>{
+        changePage(1)
+    },[pageSize])
+    
     // component load
     useEffect(() => {
         init();
@@ -162,14 +184,15 @@ export default function HelmAppList({
         }
 
         if (externalAppData.result.errored) {
-            var _cluster = masterFilters.clusters.find(cluster => {
-                return cluster.key == _clusterId
-            })
-            let _errorMsg = "";
-            if(_cluster){
+            var _cluster = masterFilters.clusters.find((cluster) => {
+                return cluster.key == _clusterId;
+            });
+            let _errorMsg = '';
+            if (_cluster) {
                 _errorMsg = `Error in getting external helm apps from cluster "${_cluster.label}". ERROR: `;
             }
-            _errorMsg = _errorMsg + (externalAppData.result.errorMsg || 'Some error occured while fetching external helm apps');
+            _errorMsg =
+                _errorMsg + (externalAppData.result.errorMsg || 'Some error occured while fetching external helm apps');
             _externalAppFetchErrors.push(_errorMsg);
             setExternalHelmListFetchErrors([..._externalAppFetchErrors]);
         }
@@ -271,8 +294,8 @@ export default function HelmAppList({
     }
 
     function _isOnlyAllClusterFilterationApplied() {
-        let _isAllClusterSelected = !masterFilters.clusters.some(_cluster => !_cluster.isChecked);
-        let _isAnyNamespaceSelected = masterFilters.namespaces.some(_namespace => _namespace.isChecked);
+        let _isAllClusterSelected = !masterFilters.clusters.some((_cluster) => !_cluster.isChecked);
+        let _isAnyNamespaceSelected = masterFilters.namespaces.some((_namespace) => _namespace.isChecked);
         return !_isAnyFilterationAppliedExceptClusterAndNs() && _isAllClusterSelected && !_isAnyNamespaceSelected;
     }
 
@@ -356,7 +379,10 @@ export default function HelmAppList({
                             </span>
                             <span>
                                 To view helm charts deployed from outside devtron, please select a cluster from above
-                                filters. <a className="learn-more__href cursor" target="_blank" href={DOCUMENTATION.HYPERION}>Learn more</a>
+                                filters.{' '}
+                                <a className="learn-more__href cursor" target="_blank" href={DOCUMENTATION.HYPERION}>
+                                    Learn more
+                                </a>
                             </span>
                         </div>
                     </div>
@@ -381,7 +407,7 @@ export default function HelmAppList({
                 })}
 
                 {filteredHelmAppsList.length > 0 && renderHeaders()}
-                {filteredHelmAppsList.map((app) => {
+                {filteredHelmAppsList.slice(pageVisited, pageVisited + payloadParsedFromUrl.size).map((app) => {
                     return (
                         <React.Fragment key={app.appId}>
                             <Link to={_buildAppDetailUrl(app)} className="app-list__row">
@@ -466,12 +492,15 @@ export default function HelmAppList({
                 clickHandler={clearAllFilters}
             >
                 {showTipToSelectCluster && (
-                    <div className='mt-18'>
-                        <p className="bcb-1 cn-9 fs-13 pt-10 pb-10 pl-16 pr-16 eb-2 bw-1 br-4 cluster-tip flex left top" style={{ width: '300px' }}>
+                    <div className="mt-18">
+                        <p
+                            className="bcb-1 cn-9 fs-13 pt-10 pb-10 pl-16 pr-16 eb-2 bw-1 br-4 cluster-tip flex left top"
+                            style={{ width: '300px' }}
+                        >
                             <span>
-                                <InfoFill className="icon-dim-20"/>
+                                <InfoFill className="icon-dim-20" />
                             </span>
-                            <div className="ml-12 cn-9" style={{textAlign:'start'}}>
+                            <div className="ml-12 cn-9" style={{ textAlign: 'start' }}>
                                 <span className="fw-6">Tip </span>
                                 <span>
                                     Select a cluster from above filters to see apps deployed from outside devtron.
@@ -512,19 +541,22 @@ export default function HelmAppList({
             <>
                 <div className="h-8"></div>
                 <div className="helm-permission-message-strip above-header-message flex left">
-                            <span className="mr-8 flex">
-                                <AlertTriangleIcon className="icon-dim-20 icon"/>
-                            </span>
-                    <span>Permissions for helm apps are now managed separately under user access. Please request permission from super-admin if required.</span>
+                    <span className="mr-8 flex">
+                        <AlertTriangleIcon className="icon-dim-20 icon" />
+                    </span>
+                    <span>
+                        Permissions for helm apps are now managed separately under user access. Please request
+                        permission from super-admin if required.
+                    </span>
                 </div>
             </>
-        )
+        );
     }
 
     function renderNoApplicationState() {
         if (_isAnyFilterationAppliedExceptClusterAndNs() && !clusterIdsCsv) {
             return askToClearFiltersWithSelectClusterTip();
-        }else if (_isOnlyAllClusterFilterationApplied()) {
+        } else if (_isOnlyAllClusterFilterationApplied()) {
             return askToConnectAClusterForNoResult();
         } else if (_isAnyFilterationApplied()) {
             return askToClearFilters();
@@ -537,13 +569,12 @@ export default function HelmAppList({
 
     function renderFullModeApplicationListContainer() {
         if (!sseConnection && filteredHelmAppsList.length == 0) {
-            return (<>
-                    {serverMode == SERVER_MODE.FULL &&
-                        renderHelmPermissionMessageStrip()
-                    }
+            return (
+                <>
+                    {serverMode == SERVER_MODE.FULL && renderHelmPermissionMessageStrip()}
                     {renderNoApplicationState()}
                 </>
-                )
+            );
         } else {
             return renderApplicationList();
         }
@@ -551,6 +582,41 @@ export default function HelmAppList({
 
     function renderOnlyEAModeApplicationListContainer() {
         return renderFullModeApplicationListContainer();
+    }
+
+    function renderfullPagination() {
+        return renderPagination();
+    }
+    
+
+    
+    useEffect(()=>{
+        params.set('pageSize',pageSize.toString())
+        if (params.has('pn') !==true ){ 
+            params.append('pn',changepage.toString())
+        }
+        else{
+            params.set('pn', pageVisited.toString())
+        }
+        let url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}?${params.toString()}`;
+        history.push(url)
+
+    },[pageSize,pageVisited]);
+
+    
+
+    function renderPagination() {
+        if (filteredHelmAppsList.length > 20) {
+            return (
+                <Pagination
+                    size={filteredHelmAppsList.length}
+                    pageSize={pageSize}
+                    offset={pageVisited}
+                    changePage={changePage}
+                    changePageSize={changePageSize}
+                />
+            );
+        }
     }
 
     return (
@@ -569,6 +635,8 @@ export default function HelmAppList({
                 <div className="">
                     {serverMode == SERVER_MODE.FULL && renderFullModeApplicationListContainer()}
                     {serverMode == SERVER_MODE.EA_ONLY && renderOnlyEAModeApplicationListContainer()}
+                    {serverMode == SERVER_MODE.FULL && renderfullPagination()}
+                    {serverMode == SERVER_MODE.EA_ONLY && renderPagination()}
                 </div>
             )}
         </>
