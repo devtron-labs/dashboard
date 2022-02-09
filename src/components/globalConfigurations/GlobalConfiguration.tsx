@@ -58,11 +58,11 @@ export default function GlobalConfiguration(props) {
         })
     }
 
-    function handleChecklistUpdate(itemName){
-        const list = checkList
-        list.appChecklist[itemName] = 1
+    function handleChecklistUpdate(itemName: string): void {
+        const list = checkList;
+        list.appStageCompleted += 1;
+        list.appChecklist[itemName] = 1;
         setCheckList({
-            ...checkList,
             ...list,
         })
     }
