@@ -34,8 +34,6 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
             let appChecklist = response.result.appChecklist;
             let chartChecklist = response.result.chartChecklist;
             let appStageArray: number[] = Object.values(appChecklist);
-            console.log(appChecklist)
-
             let chartStageArray: number[] = Object.values(chartChecklist);
             let appStageCompleted: number = appStageArray.reduce((item, sum) => {
                 sum = sum + item;
