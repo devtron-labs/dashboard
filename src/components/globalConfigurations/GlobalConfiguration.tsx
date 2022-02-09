@@ -151,7 +151,7 @@ function NavItem({ hostURLConfig, serverMode}) {
     </div>
 }
 
-function Body({ getHostURLConfig, checkList, serverMode, fetchCheckList, handleChecklistUpdate}) {
+function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate}) {
     const location = useLocation();
 
     return <Switch location={location}>
