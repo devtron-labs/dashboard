@@ -54,19 +54,17 @@ export default function HelmAppList({
     const location=useLocation();
     const history=useHistory();
     const params = new URLSearchParams(location.search)
-    
-    const [pageSize, changePageSize] = useState<number>(payloadParsedFromUrl.size);
-    const [changepage, changePage] = useState<number>(1);
-    const pageVisited:number = Math.abs(changepage - 1) * pageSize;
-    
-    
-    useEffect(()=>{
-        changePage(1)
-    },[pageSize])
+    const [pageSize, setPageSize] = useState<number>(payloadParsedFromUrl.size);
+    const [offset, setOffset] = useState<number>(0);
     
     // component load
     useEffect(() => {
         init();
+
+        if (params.has('hOffset')) {
+            setOffset(parseInt(params.get('hOffset')));
+        }
+
     }, []);
 
     // it means filter/sorting has been applied
@@ -407,7 +405,7 @@ export default function HelmAppList({
                 })}
 
                 {filteredHelmAppsList.length > 0 && renderHeaders()}
-                {filteredHelmAppsList.slice(pageVisited, pageVisited + payloadParsedFromUrl.size).map((app) => {
+                {filteredHelmAppsList.slice(offset, offset + pageSize).map((app) => {
                     return (
                         <React.Fragment key={app.appId}>
                             <Link to={_buildAppDetailUrl(app)} className="app-list__row">
@@ -587,21 +585,26 @@ export default function HelmAppList({
     function renderfullPagination() {
         return renderPagination();
     }
-    
 
-    
-    useEffect(()=>{
-        params.set('pageSize',pageSize.toString())
-        if (params.has('pn') !==true ){ 
-            params.append('pn',changepage.toString())
-        }
-        else{
-            params.set('pn', pageVisited.toString())
-        }
-        let url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}?${params.toString()}`;
-        history.push(url)
+    function changePageSize(size: number): void {
+        params.set('pageSize', size.toString());
+        params.set('offset', '0');
+        params.set('hOffset', '0');
 
-    },[pageSize,pageVisited]);
+        setPageSize(size);
+        setOffset(0);
+
+        history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}?${params.toString()}`);
+    }
+
+    function changePage(pageNo: number): void {
+        const newOffset = pageSize * (pageNo - 1);
+
+        params.set('hOffset', newOffset.toString());
+        setOffset(newOffset);
+
+        history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}?${params.toString()}`);
+    }
 
     
 
@@ -611,7 +614,7 @@ export default function HelmAppList({
                 <Pagination
                     size={filteredHelmAppsList.length}
                     pageSize={pageSize}
-                    offset={pageVisited}
+                    offset={offset}
                     changePage={changePage}
                     changePageSize={changePageSize}
                 />
