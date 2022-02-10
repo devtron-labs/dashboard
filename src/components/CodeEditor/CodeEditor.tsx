@@ -134,8 +134,8 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         if (
             mode === 'yaml' &&
             editor &&
-            typeof editor.getModal === 'function' &&
-            typeof editor.getModal().updateOptions === 'function'
+            typeof editor.getModel === 'function' &&
+            typeof editor.getModel().updateOptions === 'function'
         ) {
             editor.getModel().updateOptions({ tabSize: 2 });
         }
