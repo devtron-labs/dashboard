@@ -75,10 +75,10 @@ export default function AppList() {
             setProjectListRes(initData.projectsRes);
             setEnvironmentListRes(initData.environmentListRes);
             setMasterFilters(initData.filters);
+            setDataStateType(AppListViewType.LIST);
             if(serverMode == SERVER_MODE.EA_ONLY){
                 applyClusterSelectionFilterOnPageLoadIfSingle(initData.filters.clusters, _currentTab);
             }
-            setDataStateType(AppListViewType.LIST);
         }).catch((errors: ServerErrors) => {
             showError(errors);
             setDataStateType(AppListViewType.ERROR);
