@@ -30,7 +30,6 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
 
     componentDidMount() {
         getAppCheckList().then((response) => {
-
             let appChecklist = response.result.appChecklist;
             let chartChecklist = response.result.chartChecklist;
             let appStageArray: number[] = Object.values(appChecklist);

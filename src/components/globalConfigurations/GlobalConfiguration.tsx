@@ -190,7 +190,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate})
         }} />
         <Route path={URLS.GLOBAL_CONFIG_DOCKER} render={(props) => {
             return <div className="flexbox h-100">
-                <Docker {...props} getAppCheckList={getAppCheckList} handleChecklistUpdate={handleChecklistUpdate}/>
+                <Docker {...props} handleChecklistUpdate={handleChecklistUpdate}/>
                 <GlobalConfigCheckList {...checkList} {...props} />
             </div>
         }} />
