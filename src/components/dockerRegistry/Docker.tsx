@@ -203,8 +203,8 @@ function DockerForm({
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }));
     }
 
-    async function onSave() {
-        let payload = {
+    const getRegistryPayload = () => {
+        return {
             id: state.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
             registryType: state.registryType.value,
@@ -228,12 +228,16 @@ function DockerForm({
                       cert: state.advanceSelect.value !== CERTTYPE.SECURE_WITH_CERT ? '' : state.certInput.value,
                   }
                 : {}),
-        };
+        }
+    }
+
+    async function onSave() {
+        let payload = getRegistryPayload()
 
         const api = id ? updateRegistryConfig : saveRegistryConfig;
         try {
             toggleLoading(true);
-            const { result } = await api(payload, id);
+            await api(payload, id);
             if (!id) {
                 toggleCollapse(true);
             }
@@ -323,22 +327,6 @@ function DockerForm({
             tippy: 'This will enable insecure registry communication',
         },
     ];
-
-    let payload = {
-        id: state.id.value,
-        pluginId: 'cd.go.artifact.docker.registry',
-        registryType: state.registryType.value,
-        isDefault: Isdefault,
-        registryUrl: customState.registryUrl.value,
-        awsAccessKeyId: customState.awsAccessKeyId.value || '',
-        awsSecretAccessKey: customState.awsSecretAccessKey.value || '',
-        awsRegion: customState.awsRegion.value || '',
-        username: customState.username.value || '',
-        password: customState.password.value,
-        connection: state.advanceSelect.value,
-        cert: state.advanceSelect.value !== CERTTYPE.SECURE_WITH_CERT ? '' : state.certInput.value,
-        active: true,
-    };
 
     return (
         <form onSubmit={(e) => handleOnSubmit(e)} className="docker-form" autoComplete="off">
@@ -611,7 +599,7 @@ function DockerForm({
                 <DeleteComponent
                     setDeleting={setDeleting}
                     deleteComponent={deleteDockerReg}
-                    payload={payload}
+                    payload={getRegistryPayload()}
                     title={id}
                     toggleConfirmation={toggleConfirmation}
                     component={DeleteComponentsName.ContainerRegistry}

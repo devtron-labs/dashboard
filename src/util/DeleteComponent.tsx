@@ -12,7 +12,7 @@ function DeleteComponent({
     title,
     component,
     payload,
-    confirmationDialogDescription,
+    confirmationDialogDescription =  '',
     redirectTo = false,
     url = '',
     reload,
@@ -34,6 +34,7 @@ function DeleteComponent({
                 reload();
             }
         } catch (serverError) {
+            setDeleting(false);
             if (serverError instanceof ServerErrors && serverError.code === 500) {
                 setCannotDeleteDialogModal(true);
             }

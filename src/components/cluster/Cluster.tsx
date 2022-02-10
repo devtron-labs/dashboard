@@ -492,8 +492,8 @@ function ClusterForm({
         onValidation,
     );
 
-    async function onValidation() {
-        let payload = {
+    const getClusterPayload = () => {
+         return {
             id,
             cluster_name: state.cluster_name.value,
             config: { bearer_token: state.token.value },
@@ -504,7 +504,11 @@ function ClusterForm({
                 password: prometheusToggleEnabled ? state.password.value : '',
             },
         };
-
+    }
+    
+    async function onValidation() {
+        let payload = getClusterPayload()
+     
         if (state.url.value.endsWith('/')) {
             payload['server_url'] = state.url.value.slice(0, -1);
         } else {
@@ -567,19 +571,20 @@ function ClusterForm({
     };
 
     let payload = {
-            id,
-            cluster_name,
-            server_url,
-            prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
-            active,
-            config: { bearer_token: state.token.value },
-            prometheusAuth: {
-                userName: prometheusToggleEnabled ? state.userName.value : '',
-                password: prometheusToggleEnabled ? state.password.value : '',
-            },
-            defaultClusterComponent: defaultClusterComponent,
-            k8sversion: '',
-    }
+        id,
+        cluster_name,
+        config: { bearer_token: state.token.value },
+        active,
+        prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
+        prometheusAuth: {
+            userName: prometheusToggleEnabled ? state.userName.value : '',
+            password: prometheusToggleEnabled ? state.password.value : '',
+        },
+        server_url,
+
+        defaultClusterComponent: defaultClusterComponent,
+        k8sversion: '',
+}
 
     return (
         <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
@@ -716,7 +721,7 @@ function ClusterForm({
                             value={state.tlsClientCert.value}
                             onChange={handleOnChange}
                         />
-                    </div>{' '}
+                    </div>
                 </div>
             )}
             <div className={`form__buttons`}>
@@ -796,12 +801,8 @@ function Environment({
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
 
-    async function onValidation() {
-        if (!state.namespace.value && !ignore) {
-            setIngoreError('Enter a namespace or select ignore namespace');
-            return;
-        }
-        let payload = {
+    const getEnvironmentPayload = () => {
+        return {
             id,
             environment_name: state.environment_name.value,
             cluster_id,
@@ -810,6 +811,13 @@ function Environment({
             active: true,
             default: state.isProduction.value === 'true',
         };
+    }
+    async function onValidation() {
+        if (!state.namespace.value && !ignore) {
+            setIngoreError('Enter a namespace or select ignore namespace');
+            return;
+        }
+        let payload = getEnvironmentPayload()
 
         const api = id ? updateEnvironment : saveEnvironment;
         try {
@@ -823,18 +831,6 @@ function Environment({
             setLoading(false);
         }
     }
-
-    let payload = {
-        id,
-        cluster_name,
-        cluster_id,
-        environment_name: state.environment_name.value,
-        active: true,
-        default: state.isProduction.value === 'true',
-        prometheus_endpoint,
-        namespace: state.namespace.value || '',
-        isClusterCdActive: true
-    };
 
     return (
         <VisibleModal className="environment-create-modal" close={handleClose}>
@@ -928,7 +924,7 @@ function Environment({
                     <DeleteComponent
                         setDeleting={setDeleting}
                         deleteComponent={deleteEnvironment}
-                        payload={payload}
+                        payload={getEnvironmentPayload()}
                         title={state.environment_name.value}
                         toggleConfirmation={toggleConfirmation}
                         component={DeleteComponentsName.Environment}

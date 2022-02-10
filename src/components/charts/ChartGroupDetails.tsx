@@ -158,7 +158,6 @@ export default function ChartGroupDetails() {
                     title={state.name}
                     toggleConfirmation={toggleConfirmation}
                     component={DeleteComponentsName.ChartGroup}
-                    confirmationDialogDescription={''}
                     redirectTo={true}
                     url={`${URLS.CHARTS}/discover`}
                     reload={reload}
@@ -296,7 +295,7 @@ export default function ChartGroupDetails() {
                 />
             ) : null}
 
-            {showGitOpsWarningModal ? (
+            {showGitOpsWarningModal && (
                 <ConfirmationDialog>
                     <ConfirmationDialog.Icon src={warn} />
                     <ConfirmationDialog.Body title="GitOps configuration required">
@@ -319,7 +318,7 @@ export default function ChartGroupDetails() {
                         </NavLink>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
-            ) : null}
+            )}
         </div>
     );
 }

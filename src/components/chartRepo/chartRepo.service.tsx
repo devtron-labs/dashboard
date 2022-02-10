@@ -26,6 +26,6 @@ export const reSyncChartRepo = ():Promise<any> => {
     return post(URL, undefined);
 }
 
-export function deleteChartRepo(request): Promise<any>{
+export function deleteChartRepo(request){
     return trash(`${Routes.CHART_AVAILABLE}/${Routes.CHART_REPO}`, request);
 }
