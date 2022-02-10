@@ -3,7 +3,6 @@
 SENTRY_ORG=devtron-labs
 SENTRY_PROJECT=dashboard
 
-
 BIN="./node_modules/@sentry/cli/bin/sentry-cli"
 yarn build
 VERSION=`$BIN releases propose-version`
