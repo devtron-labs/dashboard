@@ -25,7 +25,6 @@ import { getHostURLConfiguration } from '../../services/service';
 import { HostURLConfig } from '../../services/service.types';
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
-import DeleteComponent from '../../util/DeleteComponent';
 export interface NotificationConfiguration {
     id: number;
     pipelineId?: number;
@@ -374,7 +373,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             return <div className="block mt-20 mb-20">
                 <Tippy placement="top" content="Delete" >
                     <Delete className="icon-dim-24 mr-20 notification-tab__option"
-                        onClick={(event) => { this.setState({ showDeleteDialog: !this.state.showDeleteDialog }) }} />
+                        onClick={(event) => { this.setState({ showDeleteDialog: !this.state.showDeleteDialog, singleDeletedId: 0 }) }} />
                 </Tippy>
                 <PopupMenu onToggleCallback={(isOpen) => {
                     if (isOpen) {
