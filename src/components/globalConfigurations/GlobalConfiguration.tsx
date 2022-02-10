@@ -58,13 +58,18 @@ export default function GlobalConfiguration(props) {
         })
     }
 
-    function handleChecklistUpdate(itemName: string): void {
+    function handleChecklistUpdate(itemName: string, ): void {
         const list = checkList;
-        list.appStageCompleted += 1;
-        list.chartStageCompleted += 1;
-        list.appChecklist[itemName] = 1;
-        list.chartChecklist[itemName] = 1;
+        
+        if( list.appChecklist.hasOwnProperty(itemName) && !list.appChecklist[itemName] ){
+            list.appStageCompleted += 1;
+             list.appChecklist[itemName] = 1;
+        }
 
+        if( list.chartChecklist.hasOwnProperty(itemName) && !list.chartChecklist[itemName] ){
+            list.chartStageCompleted += 1;
+            list.chartChecklist[itemName] = 1;
+        }
         setCheckList({
             ...list,
         })
