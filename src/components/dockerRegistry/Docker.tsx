@@ -585,14 +585,12 @@ function DockerForm({
                         {deleting ? <Progressing /> : 'Delete'}
                     </button>
                 )}
-                <div>
                     <button className="cta mr-16 cancel" type="button" onClick={(e) => toggleCollapse((t) => !t)}>
                         Cancel
                     </button>
                     <button className="cta" type="submit" disabled={loading}>
                         {loading ? <Progressing /> : 'Save'}
                     </button>
-                </div>
             </div>
 
             {confirmation && (
