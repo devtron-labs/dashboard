@@ -131,7 +131,7 @@ export default function App() {
 
 		if (!navigator.serviceWorker) return
 		function onUpdate(reg) {
-			const updateToastBody = <UpdateToast onClick={e => update()} text="A new version of Devtron is now available." buttonText="Update" />
+			const updateToastBody = <UpdateToast onClick={e => update()} text="You are viewing an outdated version of Devtron UI." buttonText="Reload" />
 			if (toast.isActive(updateToastRef.current)) {
 				toast.update(updateToastRef.current, { render: updateToastBody })
 			}
@@ -155,7 +155,7 @@ export default function App() {
 				}
 			}, 1000 * 60, reg)
 			if (reg.waiting) {
-				const updateToastBody = <UpdateToast onClick={e => update()} text="A new version of Devtron is now available." buttonText="Update" />
+				const updateToastBody = <UpdateToast onClick={e => update()} text="You are viewing an outdated version of Devtron UI." buttonText="Reload" />
 				if (toast.isActive(updateToastRef.current)) {
 					toast.update(updateToastRef.current, { render: updateToastBody })
 				}
