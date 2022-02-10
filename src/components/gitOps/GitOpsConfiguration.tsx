@@ -276,10 +276,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             let resp = response.result
             let errorMap = resp.stageErrorMap;
             if (errorMap != null && Object.keys(errorMap).length == 0) {
+                this.props.handleChecklistUpdate('gitOps')
                 toast.success("Configuration validated and saved successfully");
                 this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, isFormEdited: false, deleteRepoError : resp.deleteRepoFailed});
                 this.fetchGitOpsConfigurationList();
-                this.props.handleChecklistUpdate('gitOps')
             } else {
                 this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, saveLoading: false, isFormEdited: false, validationError : errorMap || [], deleteRepoError : resp.deleteRepoFailed});
                 toast.error("Configuration validation failed");

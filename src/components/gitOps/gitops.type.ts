@@ -56,5 +56,5 @@ export interface GitOpsState {
 }
 
 export interface GitOpsProps extends RouteComponentProps<{}> { 
-    handleChecklistUpdate: (prop) => void
+    handleChecklistUpdate: (string) => void
 }

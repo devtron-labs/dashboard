@@ -61,7 +61,10 @@ export default function GlobalConfiguration(props) {
     function handleChecklistUpdate(itemName: string): void {
         const list = checkList;
         list.appStageCompleted += 1;
+        list.chartStageCompleted += 1;
         list.appChecklist[itemName] = 1;
+        list.chartChecklist[itemName] = 1;
+
         setCheckList({
             ...list,
         })
@@ -107,7 +110,7 @@ export default function GlobalConfiguration(props) {
                 <section className="global-configuration__component-wrapper">
                     <Suspense fallback={<Progressing pageLoader />}>
                         <ErrorBoundary>
-                            <Body getHostURLConfig={getHostURLConfig} checkList={checkList} serverMode={serverMode} fetchCheckList={getAppCheckList} handleChecklistUpdate={handleChecklistUpdate}/>
+                            <Body getHostURLConfig={getHostURLConfig} checkList={checkList} serverMode={serverMode} handleChecklistUpdate={handleChecklistUpdate}/>
                         </ErrorBoundary>
                     </Suspense>
                 </section>
