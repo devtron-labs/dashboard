@@ -576,7 +576,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
             setError("")
             return
         }
-        setYaml(YAML.stringify(keyValueArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v }), {}), { indent: 4 }))
+        setYaml(YAML.stringify(keyValueArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v }), {}), { indent: 2 }))
     }, [keyValueArray])
 
     function handleYamlChange(yamlConfig) {
@@ -593,7 +593,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
             let errorneousKeys = []
             let tempArray = Object.keys(obj).reduce((agg, k) => {
                 if (!k && !obj[k]) return agg
-                let v = obj[k] && ['object', 'number'].includes(typeof obj[k]) ? YAML.stringify(obj[k], { indent: 4 }) : obj[k]
+                let v = obj[k] && ['object', 'number'].includes(typeof obj[k]) ? YAML.stringify(obj[k], { indent: 2 }) : obj[k]
                 let keyErr: string;
                 if (k && keyPattern.test(k)) {
                     keyErr = ''
