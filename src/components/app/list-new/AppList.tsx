@@ -322,14 +322,14 @@ export default function AppList() {
     }
 
     /**
-     * This function will return filters to be applied for filter types - CLUSTER & NAMESPACE
+     * This function will return filters to be applied for filter types - CLUSTER & NAMESPACE (query param - namespace)
      *
      * @param ids - currently selected/checked items from filters list
      * @param filterType - type of filter
      * @param query - current query params
      * @returns string - filters to be applied
      */
-    const getAppliedFilters = (ids: (string | number)[], filterType: string, query: Record<string, string>): string => {
+    const getUpdatedFiltersOnNamespaceChange = (ids: (string | number)[], filterType: string, query: Record<string, string>): string => {
         /**
          * Step 1: Return currently selected/checked items from filters list as string if
          * - There are no query params
@@ -410,7 +410,7 @@ export default function AppList() {
 
         query[queryParamType] =
             queryParamType === AppListConstants.FilterType.NAMESPACE
-                ? getAppliedFilters(ids, type, query)
+                ? getUpdatedFiltersOnNamespaceChange(ids, type, query)
                 : ids.toString();
         query['offset'] = 0;
         let queryStr = queryString.stringify(query);
