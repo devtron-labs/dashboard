@@ -52,17 +52,12 @@ export default function HelmAppList({
     const [externalHelmListFetchErrors, setExternalHelmListFetchErrors] = useState<string[]>([]);
     const location = useLocation();
     const history = useHistory();
-    const params = new URLSearchParams(location.search)
-    const [pageSize, setPageSize] = useState<number>(payloadParsedFromUrl.size);
-    const [offset, setOffset] = useState<number>(0);
+    const params = new URLSearchParams(location.search);
     
     // component load
     useEffect(() => {
         init();
 
-        if (params.has('hOffset')) {
-            setOffset(parseInt(params.get('hOffset')));
-        }
 
     }, []);
 
@@ -225,7 +220,6 @@ export default function HelmAppList({
         let _search = payloadParsedFromUrl.appNameSearch;
         let _sortBy = payloadParsedFromUrl.sortBy;
         let _sortOrder = payloadParsedFromUrl.sortOrder;
-
         let _filteredHelmAppsList = [...devtronInstalledHelmAppsList, ...externalHelmAppsList];
 
         // apply project filter
@@ -400,7 +394,7 @@ export default function HelmAppList({
                 })}
 
                 {filteredHelmAppsList.length > 0 && renderHeaders()}
-                {filteredHelmAppsList.slice(offset, offset + pageSize).map((app) => {
+                {filteredHelmAppsList.slice(payloadParsedFromUrl.hOffset, payloadParsedFromUrl.hOffset + payloadParsedFromUrl.size ).map((app) => {
                     return (
                         <React.Fragment key={app.appId}>
                             <Link to={_buildAppDetailUrl(app)} className="app-list__row">
@@ -573,21 +567,17 @@ export default function HelmAppList({
         params.set('offset', '0');
         params.set('hOffset', '0');
 
-        setPageSize(size);
-        setOffset(0);
 
         history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}?${params.toString()}`);
     }
 
     function changePage(pageNo: number): void {
-        const newOffset = pageSize * (pageNo - 1);
+        const newOffset = payloadParsedFromUrl.size * (pageNo - 1);
 
         params.set('hOffset', newOffset.toString());
-        setOffset(newOffset);
 
         history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}?${params.toString()}`);
     }
-
     
 
     function renderPagination() {
@@ -595,8 +585,8 @@ export default function HelmAppList({
             return (
                 <Pagination
                     size={filteredHelmAppsList.length}
-                    pageSize={pageSize}
-                    offset={offset}
+                    pageSize={payloadParsedFromUrl.size}
+                    offset={payloadParsedFromUrl.hOffset}
                     changePage={changePage}
                     changePageSize={changePageSize}
                 />
