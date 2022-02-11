@@ -699,7 +699,7 @@ export default function AppList() {
                     {
                         params.appType == AppListConstants.AppType.HELM_APPS &&
                         <>
-                            <HelmAppList serverMode={serverMode} payloadParsedFromUrl={parsedPayloadOnUrlChange} sortApplicationList={sortApplicationList} clearAllFilters={removeAllFilters} setFetchingExternalAppsState={setFetchingExternalAppsState} updateLastDataSync={updateLastDataSync} setShowPulsatingDotState={setShowPulsatingDotState} masterFilters={masterFilters}/>
+                            <HelmAppList serverMode={serverMode} payloadParsedFromUrl={parsedPayloadOnUrlChange} sortApplicationList={sortApplicationList} clearAllFilters={removeAllFilters} fetchingExternalApps={fetchingExternalApps} setFetchingExternalAppsState={setFetchingExternalAppsState} updateLastDataSync={updateLastDataSync} setShowPulsatingDotState={setShowPulsatingDotState} masterFilters={masterFilters}/>
                             {
                                 fetchingExternalApps &&
                                 <div className="mt-16">

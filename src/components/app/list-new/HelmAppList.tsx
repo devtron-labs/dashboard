@@ -35,6 +35,7 @@ export default function HelmAppList({
     payloadParsedFromUrl,
     sortApplicationList,
     clearAllFilters,
+    fetchingExternalApps,
     setFetchingExternalAppsState,
     updateLastDataSync,
     setShowPulsatingDotState,
@@ -579,10 +580,10 @@ export default function HelmAppList({
         history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}?${params.toString()}`);
     }
     
-
-    function renderPagination() {
-        if (filteredHelmAppsList.length > 20) {
-            return (
+    function renderPagination(): JSX.Element {
+        return (
+            filteredHelmAppsList.length > 20 &&
+            !fetchingExternalApps && (
                 <Pagination
                     size={filteredHelmAppsList.length}
                     pageSize={payloadParsedFromUrl.size}
@@ -590,8 +591,8 @@ export default function HelmAppList({
                     changePage={changePage}
                     changePageSize={changePageSize}
                 />
-            );
-        }
+            )
+        );
     }
 
     return (
