@@ -36,7 +36,7 @@ export default function AppList() {
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({});
     const [currentTab, setCurrentTab] = useState(undefined);
     const [showCreateNewAppSelectionModal, setShowCreateNewAppSelectionModal] = useState(false);
-    
+
     // API master data
     const [appCheckListRes, setAppCheckListRes] = useState({});
     const [projectListRes, setProjectListRes] = useState({result : []});
@@ -462,7 +462,7 @@ export default function AppList() {
                     </button>
                 }
                 {showCreateNewAppSelectionModal && renderAppCreateSelectionModal()}
-                </div>
+            </div>
     }
 
     function renderMasterFilters() {

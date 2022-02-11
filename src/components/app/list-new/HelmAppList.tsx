@@ -578,14 +578,6 @@ export default function HelmAppList({
         }
     }
 
-    function renderOnlyEAModeApplicationListContainer() {
-        return renderFullModeApplicationListContainer();
-    }
-
-    function renderfullPagination() {
-        return renderPagination();
-    }
-
     function changePageSize(size: number): void {
         params.set('pageSize', size.toString());
         params.set('offset', '0');
@@ -636,10 +628,12 @@ export default function HelmAppList({
             )}
             {dataStateType == AppListViewType.LIST && (
                 <div className="">
-                    {serverMode == SERVER_MODE.FULL && renderFullModeApplicationListContainer()}
-                    {serverMode == SERVER_MODE.EA_ONLY && renderOnlyEAModeApplicationListContainer()}
-                    {serverMode == SERVER_MODE.FULL && renderfullPagination()}
-                    {serverMode == SERVER_MODE.EA_ONLY && renderPagination()}
+                    {(serverMode == SERVER_MODE.FULL || serverMode == SERVER_MODE.EA_ONLY) && (
+                        <>
+                            {renderFullModeApplicationListContainer()}
+                            {renderPagination()}
+                        </>
+                    )}
                 </div>
             )}
         </>
