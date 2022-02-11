@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ServerErrors } from '../../../modals/commonTypes';
-import {useLocation, useHistory, useParams} from 'react-router';
-import * as queryString from 'query-string';
+import { useLocation, useHistory } from 'react-router';
 import { OrderBy, SortBy } from '../list/types';
 import { buildClusterVsNamespace, getDevtronInstalledHelmApps, AppListResponse, HelmApp } from './AppListService';
 import {
@@ -627,7 +626,7 @@ export default function HelmAppList({
                 </div>
             )}
             {dataStateType == AppListViewType.LIST && (
-                <div className="">
+                <div>
                     {(serverMode == SERVER_MODE.FULL || serverMode == SERVER_MODE.EA_ONLY) && (
                         <>
                             {renderFullModeApplicationListContainer()}
