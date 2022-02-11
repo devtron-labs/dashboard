@@ -321,7 +321,20 @@ export default function AppList() {
         history.push(url);
     }
 
+    /**
+     * This function will return filters to be applied for filter types - CLUSTER & NAMESPACE
+     *
+     * @param ids - currently selected/checked items from filters list
+     * @param filterType - type of filter
+     * @param query - current query params
+     * @returns string - filters to be applied
+     */
     const getAppliedFilters = (ids: (string | number)[], filterType: string, query: Record<string, string>): string => {
+        /**
+         * Step 1: Return currently selected/checked items from filters list as string if
+         * - There are no query params
+         * - There is no namespace query param i.e. this is the first time selecting the cluster filter
+         */
         if (
             !query ||
             Object.keys(query).length <= 0 ||
@@ -330,10 +343,23 @@ export default function AppList() {
             return ids.toString();
         }
 
+        /**
+         * Step 2: Create & init all required arrays
+         * - appliedFilters: Array of currently applied filters in query param
+         * - checkedItemIds: Array of currently selected/checked items from filters list
+         * - updatedAppliedFilters: Array of new filters to be applied
+         */
         let appliedFilters = query[AppListConstants.FilterType.NAMESPACE].split(',');
         let checkedItemIds = ids.toString().split(',');
         let updatedAppliedFilters = [];
 
+        /**
+         * Step 3: Iterate through checkedItemIds,
+         * - Filter appliedFilters array & get filteredIds,
+         *      - If filter is already applied & present in query param then keep it.
+         *      - If filter type is CLUSTER & already has a related namespace filter then keep it.
+         * - If filteredIds is empty (i.e. not matching above conditions), then push the item id in updatedAppliedFilters array.
+         */
         checkedItemIds.forEach((id) => {
             const filterdIds = appliedFilters.filter(
                 (item) =>
@@ -343,6 +369,13 @@ export default function AppList() {
             updatedAppliedFilters.push(filterdIds.length > 0 ? filterdIds : id);
         });
 
+        /**
+         * Step 4: If filterType is NAMESPACE,
+         * - Iterate through appliedFilters array
+         * - Check if there's any namespace present related to a cluster in checkedItemIds array,
+         *      - If yes then continue.
+         *      - If no then get the Cluster Id from applied filter & push it to updatedAppliedFilters array.
+         */
         if (filterType === AppListConstants.FilterType.NAMESPACE) {
             appliedFilters.forEach((filter) => {
                 if (!checkedItemIds.some((itemId) => itemId.startsWith(`${filter.split('_')[0]}_`))) {
@@ -351,6 +384,12 @@ export default function AppList() {
             });
         }
 
+        /**
+         * Step 5: Create array out of unique set of item ids & return as string.
+         * - Check & filter out empty items from updatedAppliedFilters array
+         * - Create a new Set out of filtered updatedAppliedFilters array to remove duplicate items.
+         * - Create array out of new Set (as Set doesn't have toString() equivalent) and return as string.
+         */
         return Array.from(new Set<string>(updatedAppliedFilters.filter((filter) => filter !== ''))).toString();
     };
 
@@ -364,12 +403,15 @@ export default function AppList() {
 
         let queryParamType =
             type == AppListConstants.FilterType.CLUTSER || type == AppListConstants.FilterType.NAMESPACE
-                ? 'namespace'
+                ? AppListConstants.FilterType.NAMESPACE
                 : type;
         let checkedItems = list.filter((item) => item.isChecked);
         let ids = checkedItems.map((item) => item.key);
 
-        query[queryParamType] = getAppliedFilters(ids, type, query);
+        query[queryParamType] =
+            queryParamType === AppListConstants.FilterType.NAMESPACE
+                ? getAppliedFilters(ids, type, query)
+                : ids.toString();
         query['offset'] = 0;
         let queryStr = queryString.stringify(query);
         let _currentTab = selectedAppTab || currentTab;
@@ -391,7 +433,7 @@ export default function AppList() {
         query['offset'] = 0;
         let queryParamType =
             filterType === AppListConstants.FilterType.CLUTSER || filterType === AppListConstants.FilterType.NAMESPACE
-                ? 'namespace'
+                ? AppListConstants.FilterType.NAMESPACE
                 : filterType;
         let appliedFilters = query[queryParamType];
         let arr = appliedFilters.split(',');
@@ -400,6 +442,10 @@ export default function AppList() {
         } else {
             arr = arr.filter((item) => item !== val);
 
+            /**
+             * Check if filterType is NAMESPACE & appliedFilters array doesn't contain any namespace
+             * related to a cluster then push Cluster Id to updatedAppliedFilters array (i.e. arr)
+             */
             if (
                 filterType === AppListConstants.FilterType.NAMESPACE &&
                 !arr.some((item) => item.startsWith(`${clustId}_`))
