@@ -50,8 +50,8 @@ export default function HelmAppList({
     const [clusterIdsCsv, setClusterIdsCsv] = useState('');
     const [sseConnection, setSseConnection] = useState<EventSource>(undefined);
     const [externalHelmListFetchErrors, setExternalHelmListFetchErrors] = useState<string[]>([]);
-    const location=useLocation();
-    const history=useHistory();
+    const location = useLocation();
+    const history = useHistory();
     const params = new URLSearchParams(location.search)
     const [pageSize, setPageSize] = useState<number>(payloadParsedFromUrl.size);
     const [offset, setOffset] = useState<number>(0);
@@ -181,15 +181,14 @@ export default function HelmAppList({
         }
 
         if (externalAppData.result.errored) {
-            var _cluster = masterFilters.clusters.find((cluster) => {
-                return cluster.key == _clusterId;
-            });
-            let _errorMsg = '';
-            if (_cluster) {
+            var _cluster = masterFilters.clusters.find(cluster => {
+                return cluster.key == _clusterId
+            })
+            let _errorMsg = "";
+            if(_cluster){
                 _errorMsg = `Error in getting external helm apps from cluster "${_cluster.label}". ERROR: `;
             }
-            _errorMsg =
-                _errorMsg + (externalAppData.result.errorMsg || 'Some error occured while fetching external helm apps');
+            _errorMsg = _errorMsg + (externalAppData.result.errorMsg || 'Some error occured while fetching external helm apps');
             _externalAppFetchErrors.push(_errorMsg);
             setExternalHelmListFetchErrors([..._externalAppFetchErrors]);
         }
@@ -291,8 +290,8 @@ export default function HelmAppList({
     }
 
     function _isOnlyAllClusterFilterationApplied() {
-        let _isAllClusterSelected = !masterFilters.clusters.some((_cluster) => !_cluster.isChecked);
-        let _isAnyNamespaceSelected = masterFilters.namespaces.some((_namespace) => _namespace.isChecked);
+        let _isAllClusterSelected = !masterFilters.clusters.some(_cluster => !_cluster.isChecked);
+        let _isAnyNamespaceSelected = masterFilters.namespaces.some(_namespace => _namespace.isChecked);
         return !_isAnyFilterationAppliedExceptClusterAndNs() && _isAllClusterSelected && !_isAnyNamespaceSelected;
     }
 
@@ -376,10 +375,7 @@ export default function HelmAppList({
                             </span>
                             <span>
                                 To view helm charts deployed from outside devtron, please select a cluster from above
-                                filters.{' '}
-                                <a className="learn-more__href cursor" target="_blank" href={DOCUMENTATION.HYPERION}>
-                                    Learn more
-                                </a>
+                                filters. <a className="learn-more__href cursor" target="_blank" href={DOCUMENTATION.HYPERION}>Learn more</a>
                             </span>
                         </div>
                     </div>
@@ -489,15 +485,12 @@ export default function HelmAppList({
                 clickHandler={clearAllFilters}
             >
                 {showTipToSelectCluster && (
-                    <div className="mt-18">
-                        <p
-                            className="bcb-1 cn-9 fs-13 pt-10 pb-10 pl-16 pr-16 eb-2 bw-1 br-4 cluster-tip flex left top"
-                            style={{ width: '300px' }}
-                        >
+                    <div className='mt-18'>
+                        <p className="bcb-1 cn-9 fs-13 pt-10 pb-10 pl-16 pr-16 eb-2 bw-1 br-4 cluster-tip flex left top" style={{ width: '300px' }}>
                             <span>
-                                <InfoFill className="icon-dim-20" />
+                                <InfoFill className="icon-dim-20"/>
                             </span>
-                            <div className="ml-12 cn-9" style={{ textAlign: 'start' }}>
+                            <div className="ml-12 cn-9" style={{textAlign:'start'}}>
                                 <span className="fw-6">Tip </span>
                                 <span>
                                     Select a cluster from above filters to see apps deployed from outside devtron.
@@ -538,22 +531,19 @@ export default function HelmAppList({
             <>
                 <div className="h-8"></div>
                 <div className="helm-permission-message-strip above-header-message flex left">
-                    <span className="mr-8 flex">
-                        <AlertTriangleIcon className="icon-dim-20 icon" />
-                    </span>
-                    <span>
-                        Permissions for helm apps are now managed separately under user access. Please request
-                        permission from super-admin if required.
-                    </span>
+                            <span className="mr-8 flex">
+                                <AlertTriangleIcon className="icon-dim-20 icon"/>
+                            </span>
+                    <span>Permissions for helm apps are now managed separately under user access. Please request permission from super-admin if required.</span>
                 </div>
             </>
-        );
+        )
     }
 
     function renderNoApplicationState() {
         if (_isAnyFilterationAppliedExceptClusterAndNs() && !clusterIdsCsv) {
             return askToClearFiltersWithSelectClusterTip();
-        } else if (_isOnlyAllClusterFilterationApplied()) {
+        }else if (_isOnlyAllClusterFilterationApplied()) {
             return askToConnectAClusterForNoResult();
         } else if (_isAnyFilterationApplied()) {
             return askToClearFilters();
@@ -566,12 +556,13 @@ export default function HelmAppList({
 
     function renderFullModeApplicationListContainer() {
         if (!sseConnection && filteredHelmAppsList.length == 0) {
-            return (
-                <>
-                    {serverMode == SERVER_MODE.FULL && renderHelmPermissionMessageStrip()}
+            return (<>
+                    {serverMode == SERVER_MODE.FULL &&
+                        renderHelmPermissionMessageStrip()
+                    }
                     {renderNoApplicationState()}
                 </>
-            );
+                )
         } else {
             return renderApplicationList();
         }
