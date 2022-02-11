@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactSelect, { components } from 'react-select';
 import { Progressing, Checkbox, multiSelectStyles } from '../common';
-import { MaterialViewProps } from './material.types';
+import { MaterialViewProps, MaterialViewState } from './material.types';
 import { NavLink } from 'react-router-dom';
 import { URLS } from '../../config';
 import error from '../../assets/icons/misc/errorInfo.svg';
@@ -15,8 +15,31 @@ import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.sv
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
 import Tippy from '@tippyjs/react';
 import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers';
+import DeleteComponent from '../../util/DeleteComponent';
+import {deleteMaterial} from './material.service';
+import { DeleteComponentsName, DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE, DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE } from '../../config/constantMessaging';
+export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
 
-export class MaterialView extends Component<MaterialViewProps, {}> {
+    constructor(props) {
+      super(props)
+    
+      this.state = {
+         deleting: false,
+         confirmation: false,
+      }
+    }
+    
+    toggleConfirmation = () => {
+        this.setState((prevState)=>{
+           return{ confirmation: !prevState.confirmation}
+           })
+    }
+
+    setDeleting = () => {
+        this.setState({
+            deleting: !this.state.deleting
+        })
+    }
 
     renderCollapsedView() {
         if ((this.props.material).id) {
@@ -47,6 +70,18 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
         if (key === "placeholder") {
             return res[0]?.authMode == "SSH" ? "e.g. git@github.com:abc/xyz.git" : "e.g. https://gitlab.com/abc/xyz.git"
         }
+    }
+
+    getMaterialPayload = () => {
+       return{ appId: this.props.appId,
+        material : {
+            id: this.props.material.id,
+            url: this.props.material.url,
+            checkoutPath: this.props.material.checkoutPath,
+            gitProviderId: this.props.material.gitProvider.id,
+            fetchSubmodules: this.props.material.fetchSubmodules ? true : false
+        }
+    }
     }
 
     renderForm() {
@@ -188,25 +223,37 @@ export class MaterialView extends Component<MaterialViewProps, {}> {
                     </Checkbox>
                 </div>
             </label>
-            <div className="form__buttons">
-                {this.props.isMultiGit ?
-                    <button type="button" className="cta cancel mr-16" onClick={this.props.cancel}>Cancel</button>
-                    : null}
-                <button type="button" className="cta" disabled={this.props.isLoading} onClick={this.props.save}>
-                    {this.props.isLoading ? <Progressing /> : "Save"}
-                </button>
-            </div>
+            <div className={`form__buttons`}>
+                    {this.props.material.id && (
+                            <button className="cta delete m-auto ml-0" type="button" onClick={() => this.toggleConfirmation()}>
+                                {this.state.deleting ? <Progressing /> : 'Delete'}
+                            </button>
+                    )}
+                        {this.props.isMultiGit ? (
+                            <button type="button" className="cta cancel mr-16" onClick={this.props.cancel}>
+                                Cancel
+                            </button>
+                        ) : null}
+                        <button type="button" className="cta" disabled={this.props.isLoading} onClick={this.props.save}>
+                            {this.props.isLoading ? <Progressing /> : 'Save'}
+                        </button>
+                </div>
+             {this.state.confirmation &&
+              <DeleteComponent
+                    setDeleting={this.setDeleting}
+                    deleteComponent={deleteMaterial}
+                    payload={this.getMaterialPayload()}
+                    title={this.props.material.name}
+                    toggleConfirmation={this.toggleConfirmation}
+                    component={DeleteComponentsName.MaterialView}
+                    confirmationDialogDescription={this.props.isMultiGit ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE}
+                    reload={this.props.reload}
+          />
+             }
         </form>
     }
 
     render() {
-        if (this.props.isCollapsed) {
-            return this.renderCollapsedView();
-        }
-        else {
-            return <>
-                {this.renderForm()}
-            </>
-        }
+       return this.props.isCollapsed ? this.renderCollapsedView()  : this.renderForm()
     }
 }

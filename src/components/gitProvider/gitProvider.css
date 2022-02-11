@@ -10,3 +10,7 @@
     opacity: 0.5;
     pointer-events: none;
 }
+
+.ml-0{
+    margin-left: 0 !important;
+}

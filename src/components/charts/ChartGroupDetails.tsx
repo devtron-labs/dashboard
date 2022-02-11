@@ -6,7 +6,13 @@ import useChartGroup from './useChartGroup';
 import { URLS } from '../../config';
 import { Progressing, showError, BreadCrumb, Pencil, useBreadcrumb, ConditionalWrap, useAsync } from '../common';
 import { getDeployableChartsFromConfiguredCharts } from './list/DiscoverCharts';
-import { deployChartGroup, getChartGroupInstallationDetails, deleteInstalledChart, getChartGroups } from './charts.service';
+import {
+    deployChartGroup,
+    getChartGroupInstallationDetails,
+    deleteInstalledChart,
+    getChartGroups,
+    deleteChartGroup,
+} from './charts.service';
 import { toast } from 'react-toastify';
 import ChartGroupBasicDeploy from './modal/ChartGroupBasicDeploy';
 import Tippy from '@tippyjs/react';
@@ -14,7 +20,9 @@ import AppSelector from '../AppSelector/AppSelector';
 import { isGitopsConfigured } from '../../services/service';
 import { ConfirmationDialog } from '../common';
 import warn from '../../assets/icons/ic-warning.svg';
-import { NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router-dom';
+import DeleteComponent from '../../util/DeleteComponent';
+import { DeleteComponentsName } from '../../config/constantMessaging';
 
 export default function ChartGroupDetails() {
     const { groupId } = useParams<{ groupId }>();
@@ -40,42 +48,49 @@ export default function ChartGroupDetails() {
                 'chart-store': null,
                 group: 'Chart groups',
                 ':groupId': {
-                    component: <AppSelector
-                        api={() => getChartGroups().then(res => ({ result: res.result.groups }))}
-                        primaryKey="groupId"
-                        primaryValue='name'
-                        matchedKeys={[]}
-                        apiPrimaryKey="id"
-                    />,
+                    component: (
+                        <AppSelector
+                            api={() => getChartGroups().then((res) => ({ result: res.result.groups }))}
+                            primaryKey="groupId"
+                            primaryValue="name"
+                            matchedKeys={[]}
+                            apiPrimaryKey="id"
+                        />
+                    ),
                     linked: false,
-                }
+                },
             },
         },
         [state.name],
     );
     const [showDeployModal, toggleDeployModal] = useState(false);
-    const [
-        chartGroupDetailsLoading,
-        chartGroupInstalled,
-        chartGroupDetailsError,
-        reloadChartGroupDetails,
-    ] = useAsync(() => getChartGroupInstallationDetails(groupId), [groupId]);
+    const [chartGroupDetailsLoading, chartGroupInstalled, chartGroupDetailsError, reloadChartGroupDetails] = useAsync(
+        () => getChartGroupInstallationDetails(groupId),
+        [groupId],
+    );
+    const [deleting, setDeleting] = useState(false);
+    const [confirmation, toggleConfirmation] = useState(false);
 
-    useEffect(() => {
-        isGitopsConfigured().then((response) => {
+    const getGitopsConfiguration = () => {
+        isGitopsConfigured()
+        .then((response) => {
             let isGitOpsConfigAvailable = response.result && response.result.exists;
             setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
-        }).catch((error) => {
-            showError(error);
         })
+        .catch((error) => {
+            showError(error);
+        });
+    }
+
+    useEffect(() => {
+        getGitopsConfiguration()
     }, []);
 
     function handleOnDeployTo() {
         if (isGitOpsConfigAvailable) {
-            toggleDeployModal(true)
-        }
-        else {
-            toggleGitOpsWarningModal(true)
+            toggleDeployModal(true);
+        } else {
+            toggleGitOpsWarningModal(true);
         }
     }
 
@@ -84,10 +99,9 @@ export default function ChartGroupDetails() {
             push(`${url}/deploy`, {
                 charts: state.charts,
                 configureChartIndex: state.charts.findIndex((chart) => chart.isEnabled),
-            })
-        }
-        else {
-            toggleGitOpsWarningModal(true)
+            });
+        } else {
+            toggleGitOpsWarningModal(true);
         }
     }
 
@@ -127,6 +141,31 @@ export default function ChartGroupDetails() {
         }
     }
 
+     function getDeleteComponent(){
+        let payload = {
+            name: state.name,
+            description: state.description,
+            id: parseInt(groupId),
+            chartGroupEntries: state.charts,
+            installedChartData:chartGroupInstalled?.result?.installedChartData 
+        };
+
+            return (
+                <DeleteComponent
+                    setDeleting={setDeleting}
+                    deleteComponent={deleteChartGroup}
+                    payload={payload}
+                    title={state.name}
+                    toggleConfirmation={toggleConfirmation}
+                    component={DeleteComponentsName.ChartGroup}
+                    redirectTo={true}
+                    url={`${URLS.CHARTS}/discover`}
+                    reload={getGitopsConfiguration}
+                />
+            );
+    
+    }
+    
     return (
         <div className="chart-group-details-page">
             <div className="page-header">
@@ -137,9 +176,12 @@ export default function ChartGroupDetails() {
                     <div className="page-header__title">{state.name}</div>
                 </div>
                 <div className="page-header__cta-container flex">
-                    <button type="button" className="cta flex cancel" onClick={redirectToConfigure}>
+                    <button type="button" className="cta flex cancel mr-16" onClick={redirectToConfigure}>
                         <Pencil className="mr-5" />
                         Edit
+                    </button>
+                    <button className="cta delete" type="button" onClick={() => toggleConfirmation(true)}>
+                        {deleting ? <Progressing /> : 'Delete'}
                     </button>
                 </div>
             </div>
@@ -216,11 +258,14 @@ export default function ChartGroupDetails() {
                                         >
                                             <div>{children}</div>
                                         </Tippy>
-                                    )}>
-                                    <button type="button"
+                                    )}
+                                >
+                                    <button
+                                        type="button"
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
                                         onClick={() => handleOnDeployTo()}
-                                        className="cta ellipsis-right w100">
+                                        className="cta ellipsis-right w100"
+                                    >
                                         {loading ? <Progressing /> : 'Deploy to ...'}
                                     </button>
                                 </ConditionalWrap>
@@ -228,6 +273,7 @@ export default function ChartGroupDetails() {
                         </div>
                     </div>
                 )}
+                {confirmation && getDeleteComponent()}
             </div>
             {showDeployModal ? (
                 <ChartGroupBasicDeploy
@@ -249,16 +295,30 @@ export default function ChartGroupDetails() {
                 />
             ) : null}
 
-            {showGitOpsWarningModal ? <ConfirmationDialog>
-                <ConfirmationDialog.Icon src={warn} />
-                <ConfirmationDialog.Body title="GitOps configuration required">
-                    <p className="">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p>
-                </ConfirmationDialog.Body>
-                <ConfirmationDialog.ButtonGroup>
-                    <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={() => toggleGitOpsWarningModal(false)}>Cancel</button>
-                    <NavLink className="cta sso__warn-button btn-confirm" to={`/global-config/gitops`}>Configure GitOps</NavLink>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog> : null}
+            {showGitOpsWarningModal && (
+                <ConfirmationDialog>
+                    <ConfirmationDialog.Icon src={warn} />
+                    <ConfirmationDialog.Body title="GitOps configuration required">
+                        <p className="">
+                            GitOps configuration is required to perform this action. Please configure GitOps and try
+                            again.
+                        </p>
+                    </ConfirmationDialog.Body>
+                    <ConfirmationDialog.ButtonGroup>
+                        <button
+                            type="button"
+                            tabIndex={3}
+                            className="cta cancel sso__warn-button"
+                            onClick={() => toggleGitOpsWarningModal(false)}
+                        >
+                            Cancel
+                        </button>
+                        <NavLink className="cta sso__warn-button btn-confirm" to={`/global-config/gitops`}>
+                            Configure GitOps
+                        </NavLink>
+                    </ConfirmationDialog.ButtonGroup>
+                </ConfirmationDialog>
+            )}
         </div>
     );
 }
