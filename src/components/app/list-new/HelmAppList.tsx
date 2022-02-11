@@ -226,18 +226,18 @@ export default function HelmAppList({
         let _sortBy = payloadParsedFromUrl.sortBy;
         let _sortOrder = payloadParsedFromUrl.sortOrder;
 
-        let _filteredDevtronInstalledHelmAppsList = [...devtronInstalledHelmAppsList, ...externalHelmAppsList];
+        let _filteredHelmAppsList = [...devtronInstalledHelmAppsList, ...externalHelmAppsList];
 
         // apply project filter
         if (_projects?.length) {
-            _filteredDevtronInstalledHelmAppsList = _filteredDevtronInstalledHelmAppsList.filter((app) =>
+            _filteredHelmAppsList = _filteredHelmAppsList.filter((app) =>
                 _projects.includes(app.projectId),
             );
         }
 
         // apply cluster_namespace filter with OR condition with environments
         if (_clusterVsNamespaces?.length || _environments?.length) {
-            _filteredDevtronInstalledHelmAppsList = _filteredDevtronInstalledHelmAppsList.filter((app) => {
+            _filteredHelmAppsList = _filteredHelmAppsList.filter((app) => {
                 let _includes = _environments.includes(app.environmentDetail.environmentId);
                 _clusterVsNamespaces.map((_clusterVsNamespace) => {
                     let _clusterId = _clusterVsNamespace.split('_')[0];
@@ -253,7 +253,7 @@ export default function HelmAppList({
 
         // handle search
         if (_search?.length) {
-            _filteredDevtronInstalledHelmAppsList = _filteredDevtronInstalledHelmAppsList.filter(
+            _filteredHelmAppsList = _filteredHelmAppsList.filter(
                 (app) =>
                     app.appName.toLowerCase().includes(_search.toLowerCase()) ||
                     app.chartName.toLowerCase().includes(_search.toLowerCase()),
@@ -262,19 +262,19 @@ export default function HelmAppList({
 
         // handle sort
         if (_sortOrder == OrderBy.ASC) {
-            _filteredDevtronInstalledHelmAppsList = _filteredDevtronInstalledHelmAppsList.sort((a, b) =>
+            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) =>
                 a.appName.localeCompare(b.appName),
             );
         } else {
-            _filteredDevtronInstalledHelmAppsList = _filteredDevtronInstalledHelmAppsList.sort((a, b) =>
+            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) =>
                 b.appName.localeCompare(a.appName),
             );
         }
 
         setSortBy(_sortBy);
         setSortOrder(_sortOrder);
-        setFilteredHelmAppsList(_filteredDevtronInstalledHelmAppsList);
-        setShowPulsatingDotState(_filteredDevtronInstalledHelmAppsList.length == 0 && !clusterIdsCsv);
+        setFilteredHelmAppsList(_filteredHelmAppsList);
+        setShowPulsatingDotState(_filteredHelmAppsList.length == 0 && !clusterIdsCsv);
     }
 
     function _isAnyFilterationAppliedExceptClusterAndNs() {
@@ -618,12 +618,8 @@ export default function HelmAppList({
             )}
             {dataStateType == AppListViewType.LIST && (
                 <div>
-                    {(serverMode == SERVER_MODE.FULL || serverMode == SERVER_MODE.EA_ONLY) && (
-                        <>
-                            {renderFullModeApplicationListContainer()}
-                            {renderPagination()}
-                        </>
-                    )}
+                    {renderFullModeApplicationListContainer()}
+                    {renderPagination()}
                 </div>
             )}
         </>
