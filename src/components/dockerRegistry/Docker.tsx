@@ -43,11 +43,11 @@ export default function Docker({ ...props }) {
                 Learn more
             </a>
         </h5>
-        {dockerRegistryList.map(docker => <CollapsedList reload={reload} {...docker} key={docker.id || Math.random().toString(36).substr(2, 5)} />)}
+        {dockerRegistryList.map(docker => <CollapsedList reload={reload} {...docker} key={docker.id || Math.random().toString(36).substr(2, 5)} handleChecklistUpdate={props.handleChecklistUpdate} />)}
     </section>
 }
 
-function CollapsedList({ id = "", pluginId = null, registryUrl = "", registryType = "", awsAccessKeyId = "", awsSecretAccessKey = "", awsRegion = "", isDefault = false, active = true, username = "", password = "", reload, connection = "", cert = "", ...rest }) {
+function CollapsedList({ id = "", pluginId = null, registryUrl = "", registryType = "", awsAccessKeyId = "", awsSecretAccessKey = "", awsRegion = "", isDefault = false, active = true, username = "", password = "", reload, connection = "", cert = "", handleChecklistUpdate, ...rest }) {
     const [collapsed, toggleCollapse] = useState(true)
     return (
         <article className={`collapsed-list collapsed-list--docker collapsed-list--${id ? 'update' : 'create dashed'}`}>
@@ -60,12 +60,12 @@ function CollapsedList({ id = "", pluginId = null, registryUrl = "", registryTyp
                 </div>
                 {id && <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
             </List>
-            {!collapsed && <DockerForm {...{ id, pluginId, registryUrl, registryType, awsAccessKeyId, awsSecretAccessKey, awsRegion, isDefault, active, username, password, reload, toggleCollapse, connection, cert }} />}
+            {!collapsed && <DockerForm {...{ id, pluginId, registryUrl, registryType, awsAccessKeyId, awsSecretAccessKey, awsRegion, isDefault, active, username, password, reload, toggleCollapse, connection, cert, handleChecklistUpdate}} />}
         </article>
     )
 }
 
-function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, awsSecretAccessKey, awsRegion, isDefault, active, username, password, reload, toggleCollapse, connection, cert, ...rest }) {
+function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, awsSecretAccessKey, awsRegion, isDefault, active, username, password, reload, toggleCollapse, connection, cert, handleChecklistUpdate, ...rest }) {
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             id: { value: id, error: "" },
@@ -112,7 +112,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
     function customHandleChange(e) {
         setCustomState(st => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
     }
-
+   
     async function onSave() {
         let payload = {
             id: state.id.value,
@@ -128,11 +128,12 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
         const api = id ? updateRegistryConfig : saveRegistryConfig
         try {
             toggleLoading(true)
-            const { result } = await api(payload, id)
+            await api(payload, id)
             if (!id) {
                 toggleCollapse(true);
             }
             await reload()
+            handleChecklistUpdate('docker')
             toast.success('Successfully saved.')
         } catch (err) {
             showError(err)
@@ -289,7 +290,7 @@ function DockerForm({ id, pluginId, registryUrl, registryType, awsAccessKeyId, a
                 </div>}
             <div className="form__row form__buttons  ">
                 <label htmlFor="" className="docker-default flex" onClick={isDefault ? () => { toast.success('Please mark another as default.') } : e => toggleDefault(t => !t)}>
-                    <input type="checkbox" name="default" checked={Isdefault} onChange={e => { }} />
+                    <input type="checkbox" name="default" checked={Isdefault} />
                     <div className="mr-4"> Set as default </div>
                     <Tippy className="default-tt" arrow={false} placement="top" content={
                         <span style={{ display: "block", width: "160px" }}> Default container registry is automatically selected while creating an application. </span>}>
