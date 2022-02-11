@@ -31,7 +31,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         this.addProject = this.addProject.bind(this);
     }
 
- reload = () => {
+ getProjectList = () => {
     getProjectList().then((response) => {
         this.setState({
             view: ViewType.FORM,
@@ -47,7 +47,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
  }
 
     componentDidMount() {
-        this.reload()
+        this.getProjectList()
     }
 
     handleChange(event, index: number, key: 'name'): void {
@@ -111,7 +111,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             isCollapsed={project.isCollapsed}
             index={index}
             loadingData={this.state.loadingData}
-            reload={this.reload}
+            reload={this.getProjectList}
         />
     }
 

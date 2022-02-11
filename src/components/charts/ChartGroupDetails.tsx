@@ -71,7 +71,7 @@ export default function ChartGroupDetails() {
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
 
-    const reload = () => {
+    const getGitopsConfiguration = () => {
         isGitopsConfigured()
         .then((response) => {
             let isGitOpsConfigAvailable = response.result && response.result.exists;
@@ -83,7 +83,7 @@ export default function ChartGroupDetails() {
     }
 
     useEffect(() => {
-        reload()
+        getGitopsConfiguration()
     }, []);
 
     function handleOnDeployTo() {
@@ -160,7 +160,7 @@ export default function ChartGroupDetails() {
                     component={DeleteComponentsName.ChartGroup}
                     redirectTo={true}
                     url={`${URLS.CHARTS}/discover`}
-                    reload={reload}
+                    reload={getGitopsConfiguration}
                 />
             );
     

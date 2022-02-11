@@ -25,7 +25,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         this.refreshMaterials = this.refreshMaterials.bind(this);
     }
 
-    reload = () => {
+    getGitProviderConfig = () => {
         Promise.all([getSourceConfig(this.props.match.params.appId), getGitProviderListAuth(this.props.match.params.appId)]).then(([sourceConfigRes, providersRes]) => {
             let materials = sourceConfigRes.result.material || [];
             let providers = providersRes.result;
@@ -47,7 +47,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     }
 
     componentDidMount() {
-        this.reload()
+        this.getGitProviderConfig()
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -124,7 +124,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                     isGitProviderValid={this.isGitProviderValid}
                     isCheckoutPathValid={this.isCheckoutPathValid}
                     isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked} 
-                    reload = {this.reload}
+                    reload = {this.getGitProviderConfig}
                     />
                 {this.state.materials.map((mat) => {
                     return <UpdateMaterial key={mat.name}
@@ -136,7 +136,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                         isGitProviderValid={this.isGitProviderValid}
                         isCheckoutPathValid={this.isCheckoutPathValid}
                         isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
-                        reload = {this.reload} />
+                        reload = {this.getGitProviderConfig} />
                 })}
             </div>
         }

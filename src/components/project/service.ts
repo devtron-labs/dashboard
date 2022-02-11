@@ -26,5 +26,5 @@ export function getProjectList() {
 }
 
 export function deleteProject(request) {
-    return trash(`${Routes.PROJECT}`, request);
+    return trash(Routes.PROJECT, request);
 }

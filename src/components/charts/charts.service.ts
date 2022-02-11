@@ -216,7 +216,6 @@ export function getChartsByKeyword(input: string) {
     return get(`app-store/search?chartName=${input}`);
 }
 
-export function deleteChartGroup(request): Promise<any> {
-    const URL = `${Routes.CHART_GROUP}`;
-    return trash(URL, request);
+export function deleteChartGroup(request){
+    return trash(Routes.CHART_GROUP, request);
 }
