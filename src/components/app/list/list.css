@@ -493,26 +493,3 @@
     background-color: var(--R100);
     border: solid 1px var(--R200);
 }
-
-/* Start: For hover state/behavior of Create App in AppList view */
-#visible-modal {
-    top: 45px;
-}
-
-#visible-modal .app-create-model-wrapper {
-    z-index: 21;
-    right: 20px;
-}
-
-#visible-modal .gap-fill-placeholder {
-    height: 15px;
-    width: 150px;
-    top: 42px;
-    right: 20px;
-    position: fixed;
-}
-
-#visible-modal.show-with-bg{
-    top:0px;
-}
-/* End: For hover state/behavior of Create App in AppList view */
