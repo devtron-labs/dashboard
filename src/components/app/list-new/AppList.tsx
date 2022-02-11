@@ -36,7 +36,7 @@ export default function AppList() {
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({});
     const [currentTab, setCurrentTab] = useState(undefined);
     const [showCreateNewAppSelectionModal, setShowCreateNewAppSelectionModal] = useState(false);
-
+    
     // API master data
     const [appCheckListRes, setAppCheckListRes] = useState({});
     const [projectListRes, setProjectListRes] = useState({result : []});
@@ -450,19 +450,28 @@ export default function AppList() {
     const onShowHideFilterContent = (show : boolean) : void => {
         setPageOverflowEnabled(!show);
     }
-
+  
+  
     function renderPageHeader() {
         return <div className="app-header__title">
-                <h1 className="app-header__text">Applications</h1>
+                <h1 className="app-header__text" >Applications</h1>
+                
                 {serverMode == SERVER_MODE.FULL &&
-                    <button type="button" className="cta h-32 lh-n"
-                            onClick={() => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)}>
+                    <button type="button" className="cta h-32 lh-n" 
+                    onMouseEnter={() => {
+                        setShowCreateNewAppSelectionModal(true);
+                    }}
+                    onMouseLeave={() => {
+                        setShowCreateNewAppSelectionModal(false);
+                    }}
+                            onClick={() => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)}
+                            >
                         Create new
                         <span className="round-button__icon"><i className="fa fa-caret-down" aria-hidden="true"></i></span>
                     </button>
                 }
                 {showCreateNewAppSelectionModal && renderAppCreateSelectionModal()}
-            </div>
+                </div>
     }
 
     function renderMasterFilters() {
@@ -628,6 +637,15 @@ export default function AppList() {
 
     function renderAppCreateSelectionModal() {
         return <Modal rootClassName="app-create-model-wrapper" onClick={ () => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)} >
+                <div
+                    onMouseEnter={() => {
+                        setShowCreateNewAppSelectionModal(true);
+                    }}
+                    onMouseLeave={() => {
+                        setShowCreateNewAppSelectionModal(false);
+                    }}
+                >
+                    <div className="gap-fill-placeholder" />
                 <div className="app-create-child c-pointer" onClick={openDevtronAppCreateModel}>
                     <AddIcon className="icon-dim-20 fcn-9"/>
                     <div className="ml-8">
@@ -641,6 +659,7 @@ export default function AppList() {
                         <strong>From Chart store</strong>
                         <div>Deploy apps using third party helm <br/> charts (eg. prometheus, redis etc.)</div>
                     </div>
+                </div>
                 </div>
         </Modal>
     }
