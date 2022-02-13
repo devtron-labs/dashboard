@@ -78,12 +78,17 @@ export class CDMaterial extends Component<CDMaterialProps> {
     return this.props.material.map((mat, index) => {
       let classes = `material-history material-history--cd ${mat.isSelected ? 'material-history-selected' : ''}`;
       return <div key={index} className={classes} >
+        <div>
+        {mat.latest ? <div className="bcv-1 pt-6 pb-6 pl-16 pr-16">
+            <span className='cn-9 fw-6'>Deployed on </span>{mat.tab}
+            </div> : null}
+        </div>
         <div className="material-history__top" style={{ 'cursor': `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
           onClick={(event) => { event.stopPropagation(); if (!mat.vulnerable) this.props.selectImage(index, this.props.materialType) }}>
-          <div>
-            <div className="commit-hash commit-hash--docker"><img src={docker} alt="" className="commit-hash__icon" />{mat.image}</div>
-            {mat.latest ? <span className="last-deployed-status">Running</span> : null}
-          </div>
+       {/* <div>  */}
+            {/* <div className="commit-hash commit-hash--docker"><img src={docker} alt="" className="commit-hash__icon" />{mat.image}</div>
+            {mat.latest ? <span className="last-deployed-status">Running</span> : null} */}
+          {/* </div>  */}
           {this.props.materialType === "none" ? null : <div className="material-history__info">
             <span className="trigger-modal__small-text">Deployed at:</span> <span>{mat.deployedTime}</span>
           </div>}
