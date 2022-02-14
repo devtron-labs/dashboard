@@ -80,7 +80,7 @@ export class CDMaterial extends Component<CDMaterialProps> {
       return <div key={index} className={classes} >
         <div>
         {mat.latest ? <div className="bcv-1 pt-6 pb-6 pl-16 pr-16">
-            <span className='cn-9 fw-6'>Deployed on </span>{mat.tab}
+            <span className='cn-9 fw-6'>Deployed on </span>
             </div> : null}
         </div>
         <div className="material-history__top" style={{ 'cursor': `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
