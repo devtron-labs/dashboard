@@ -314,7 +314,7 @@ function LogsComponent({
                                                     fontWeight: 600,
                                                     color: '#06c',
                                                     direction: 'rtl',
-                                                    marginLeft: '2px',
+                                                    marginLeft: 0,
                                                 }),
                                                 indicatorsContainer: (provided, state) => ({
                                                     ...provided,
@@ -372,7 +372,13 @@ function LogsComponent({
                                                 minHeight: '24px !important',
                                                 cursor: 'pointer',
                                             }),
-                                            singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
+                                            singleValue: (base, state) => ({
+                                                ...base,
+                                                fontWeight: 600,
+                                                color: '#06c',
+                                                direction: 'rtl',
+                                                marginLeft: 0,
+                                            }),
                                             indicatorsContainer: (provided, state) => ({
                                                 ...provided,
                                             }),
