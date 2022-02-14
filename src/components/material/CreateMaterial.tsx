@@ -14,6 +14,7 @@ interface CreateMaterialProps {
     isGitProviderValid;
     isCheckoutPathValid;
     isWorkflowEditorUnlocked: boolean;
+    reload: () => void
 }
 
 export class CreateMaterial extends Component<CreateMaterialProps, CreateMaterialState> {
@@ -235,6 +236,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 save={this.handleSaveButton}
                 cancel={this.cancel}
                 isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
+                reload = {this.props.reload}
             />
             {this.state.showSaveModal && this.renderSavePopupModal()}
         </>

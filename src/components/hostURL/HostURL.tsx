@@ -80,6 +80,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                 form: response.result,
             })
             this.props.refreshGlobalConfig();
+            this.props.handleChecklistUpdate('hostUrl')
         }).catch((error) => {
             showError(error);
             this.setState({

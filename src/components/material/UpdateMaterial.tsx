@@ -14,6 +14,7 @@ interface UpdateMaterialProps {
     isCheckoutPathValid;
     refreshMaterials: () => void;
     isWorkflowEditorUnlocked: boolean;
+    reload: () => void
 }
 export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMaterialState> {
 
@@ -209,7 +210,8 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             cancel={this.cancel}
             isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
             handleSubmoduleCheckbox={this.handleSubmoduleCheckbox}
-
+            appId= {this.props.appId}
+            reload = {this.props.reload}
         />
     }
 }

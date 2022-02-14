@@ -163,6 +163,14 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
         this.setState({ form, isValid });
     }
 
+    getPayload = () => {
+       return {
+            ...this.state.form,
+            region: this.state.form.region.value,
+            secretKey: this.state.secretKey,
+        };
+    }
+
     saveSESConfig(): void {
         let keys = Object.keys(this.state.isValid);
         let isFormValid = keys.reduce((isFormValid, key) => {
@@ -184,12 +192,8 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
             state.form.isError = false;
             this.setState(state);
         }
-        let payload = {
-            ...this.state.form,
-            region: this.state.form.region.value,
-            secretKey: this.state.secretKey,
-        };
-        let promise = this.props.sesConfigId ? updateSESConfiguration(payload) : saveSESConfiguration(payload);
+     
+        let promise = this.props.sesConfigId ? updateSESConfiguration(this.getPayload()) : saveSESConfiguration(this.getPayload());
         promise.then((response) => {
             let state = { ...this.state };
             state.form.isLoading = false;

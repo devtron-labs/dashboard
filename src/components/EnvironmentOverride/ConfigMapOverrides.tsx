@@ -234,7 +234,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
     function stringify(value) {
         if (!value) return value
         if (typeof value === 'object') {
-            return YAML.stringify(value, { indent: 4 })
+            return YAML.stringify(value, { indent: 2 })
         }
         if (typeof value === 'string') {
             return value
@@ -432,7 +432,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                     {yamlMode
                         ? <div className="yaml-container">
                             <CodeEditor
-                                value={state.duplicate ? yaml : YAML.stringify(defaultData, { indent: 4 })}
+                                value={state.duplicate ? yaml : YAML.stringify(defaultData, { indent: 2 })}
                                 mode="yaml"
                                 inline
                                 height={350}
@@ -502,10 +502,10 @@ export function Override({ external, overridden, onClick, loading = false, type 
 export function prettifyData(value) {
     switch (typeof value) {
         case 'object':
-            return YAML.stringify(value, { indent: 4 })
+            return YAML.stringify(value, { indent: 2 })
         case 'string':
             try {
-                return YAML.stringify(JSON.parse(value), { indent: 4 })
+                return YAML.stringify(JSON.parse(value), { indent: 2 })
             }
             catch (err) {
                 return value.toString()
