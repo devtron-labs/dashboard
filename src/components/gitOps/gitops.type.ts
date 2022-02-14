@@ -55,4 +55,6 @@ export interface GitOpsState {
     deleteRepoError: boolean;
 }
 
-export interface GitOpsProps extends RouteComponentProps<{}> { }
+export interface GitOpsProps extends RouteComponentProps<{}> { 
+    handleChecklistUpdate: (string) => void
+}

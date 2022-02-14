@@ -1099,6 +1099,7 @@ button.anchor {
         line-height: 1.43;
         color: var(--N000);
         font-size: 13px;
+        text-transform: none;
     }
 
     button {
@@ -1690,4 +1691,12 @@ button.anchor {
 
 .m-auto{
     margin: auto;
+}
+
+.dark-background {
+    background-color: #0b0f22;
+}
+
+.white-background {
+    background-color: #fff;
 }

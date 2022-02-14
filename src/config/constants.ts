@@ -110,9 +110,10 @@ export const Routes = {
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
     APP_META_INFO: 'app/meta/info',
     CLUSTER_ENV_MAPPING: 'env',
-    APP_VERSION: '/version',
+    APP_VERSION: 'version',
     HELM_RELEASE_INFO_API: 'application/release-info',
     HELM_RELEASE_DEPLOYMENT_HISTORY_API: 'application/deployment-history',
+    HELM_RELEASE_DEPLOYMENT_DETAIL_API: 'application/deployment-detail',
     HELM_RELEASE_APP_DETAIL_API: 'application/app',
     MANIFEST: 'k8s/resource',
     DESIRED_MANIFEST: 'application/desired-manifest',
@@ -120,6 +121,9 @@ export const Routes = {
     LOGS: 'k8s/pods/logs',
     DELETE_RESOURCE: 'k8s/resource/delete',
     CREATE_RESOURCE: 'k8s/resource/create',
+    HELM_RELEASE_APP_DELETE_API: 'application/delete',
+    HELM_RELEASE_APP_UPDATE_API: 'application/update',
+    NAMESPACE: 'env/namespace',
 };
 
 export const ViewType = {
@@ -196,7 +200,7 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_PROJECT: 'https://docs.devtron.ai/global-configurations/projects',
     GLOBAL_CONFIG_SSO: 'https://docs.devtron.ai/user-guide/global-configurations/sso-login',
     GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/user-guide/global-configurations/user-access',
-    HYPERION_TO_FULL_MODE: 'https://docs.devtron.ai/hyperion/setup/upgrade-to-devtron.md',
+    HYPERION_TO_FULL_MODE: 'https://docs.devtron.ai/hyperion/upgrade-to-devtron',
     HYPERION: 'https://docs.devtron.ai/#hyperion'
 }
 

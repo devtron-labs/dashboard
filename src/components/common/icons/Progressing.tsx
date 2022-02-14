@@ -5,12 +5,13 @@ interface ProgressingProps {
     loadingText?: string;
     size?: number;
     fullHeight?: boolean;
+    theme?: 'white' | 'default';
 }
 
-export function Progressing({ pageLoader, size }: ProgressingProps): JSX.Element {
+export function Progressing({ pageLoader, size, theme }: ProgressingProps): JSX.Element {
     const loaderSize = size ? `${size}px` : pageLoader ? '48px' : '20px';
     return (
-        <div className="loader">
+        <div className={`loader ${theme || 'default'}-background`}>
             <div style={{ width: loaderSize, height: loaderSize }}>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="loader__svg">
                     <g fill="none" fillRule="evenodd" strokeLinecap="round">
@@ -37,7 +38,9 @@ export function Progressing({ pageLoader, size }: ProgressingProps): JSX.Element
 
 export function DetailsProgressing({ loadingText, size = 24, fullHeight = false }: ProgressingProps): JSX.Element {
     return (
-        <div className={`details-loader bcn-0 flex column fs-14 fw-6 ${fullHeight ? 'h-100' : 'details-loader-height'}`}>
+        <div
+            className={`details-loader bcn-0 flex column fs-14 fw-6 ${fullHeight ? 'h-100' : 'details-loader-height'}`}
+        >
             <span style={{ width: `${size}px`, height: `${size}px` }}>
                 <Progressing size={size} />
             </span>

@@ -243,11 +243,18 @@ export function updateNotificationRecipients(notificationList, savedRecipient, n
     return put(URL, payload);
 }
 
-export function deleteNotifications(requestBody): Promise<DeleteNotificationResponseType> {
+export function deleteNotifications(requestBody, singleDeletedId): Promise<DeleteNotificationResponseType> {
     const URL = `${Routes.NOTIFIER}`;
-    let payload = {
-        id: requestBody.map((e) => e.id)
-    }
+    let payload;
+     if(singleDeletedId){
+        payload = {
+            id: [singleDeletedId]
+        } 
+     } else {
+        payload = {
+            id: requestBody.map((e) => e.id)
+        }
+     }
     return trash(URL, payload);
 }
 
@@ -274,16 +281,23 @@ export function getSESConfiguration(sesConfigId: number): Promise<SESConfigRespo
     return get(URL);
 }
 
-export function getSlackConfiguration(slackConfigId: number): Promise<ResponseType> {
+export function getSlackConfiguration(slackConfigId: number, isDeleteComponent?: boolean): Promise<ResponseType> {
     return getChannelConfigs().then((response) => {
         let list = response.result.slackConfigs || [];
         let config = list.find(config => config.id === slackConfigId);
-        return {
-            ...response,
-            result: {
-                configName: config.configName,
-                webhookUrl: config.webhookUrl,
-                projectId: config.teamId,
+        if( isDeleteComponent ){
+            return {
+                ...response,
+                result: config
+            }
+        } else{
+            return {
+                ...response,
+                    result: {
+                        configName: config.configName,
+                        webhookUrl: config.webhookUrl,
+                        projectId: config.teamId,
+                    }  
             }
         }
     })
@@ -430,4 +444,8 @@ export function getAddNotificationInitData(): Promise<{
             sesConfigOptions,
         };
     })
+}
+ 
+export function deleteNotification(request): Promise<any> {
+    return trash(`${Routes.NOTIFIER}/channel`, request);
 }
