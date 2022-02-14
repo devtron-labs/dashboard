@@ -98,6 +98,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             query[key] = qs[key];
         })
         query['offset'] = 0;
+        query['hOffset'] = 0;
         query['pageSize'] = size;
         let queryStr = queryString.stringify(query);
         let url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_DEVTRON}?${queryStr}`;
