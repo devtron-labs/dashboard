@@ -51,8 +51,6 @@ function NodeTreeComponent({
                 handleClickOnNodes(_kind, [parent.toLowerCase()]);
             }
         } else {
-            //FIXME: change this, it should not always be pod, it should be same as selected leafnode
-            //if none has been clicked till now go to pod if pod are present else to some other leaf node
             history.push(url.replace(/\/$/, '') + getRedirectURLExtension(clickedNodes, _treeNodes));
         }
     }, [url]);
@@ -81,7 +79,7 @@ function NodeTreeComponent({
                                 />
                                 <div className={`fs-14 fw-6 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 `}>
                                     {treeNode.name}
-                                    {!treeNode.isSelected && treeNode.status == 'degraded' && (
+                                    {!treeNode.isSelected && treeNode.status === 'degraded' && (
                                         <ErrorImage
                                             className="icon-dim-16 rotate"
                                             style={{ ['--rotateBy' as any]: '180deg', marginLeft: 'auto' }}
@@ -100,7 +98,7 @@ function NodeTreeComponent({
                                     }`}
                                 >
                                     {treeNode.name}
-                                    {treeNode.status == 'degraded' && (
+                                    {treeNode.status === 'degraded' && (
                                         <ErrorImage
                                             className="icon-dim-16 rotate"
                                             style={{ ['--rotateBy' as any]: '180deg', marginLeft: 'auto' }}
@@ -131,16 +129,16 @@ export function generateSelectedNodes(
     parents?: string[],
 ): Map<string, string> {
     let _nodeLowerCase = _node.toLowerCase();
-    // if (clickedNodes.has(_nodeLowerCase)) {
-    //     return
-    // }
-    //If parents length is zero then it is the aggregation key which is clicked
-    if ((parents ?? []).length == 0) {
-        //if aggregation key is clicked and there is no previous selection then we
-        //drill down till we reach node which is doesnt have child node
-        //currently at max only 3 levels are possible
-        if (clickedNodes.size == 0) {
-            let childNodes = _treeNodes.find((_tn) => _tn.name.toLowerCase() == _nodeLowerCase)?.childNodes;
+
+    // If parents length is zero then it is the aggregation key which is clicked
+    if ((parents ?? []).length === 0) {
+        /**
+         * If aggregation key is clicked and there is no previous selection then we
+         * drill down till we reach node which doesn't have child node.
+         * Currently at max only 3 levels are possible.
+         */
+        if (clickedNodes.size === 0) {
+            let childNodes = _treeNodes.find((_tn) => _tn.name.toLowerCase() === _nodeLowerCase)?.childNodes;
             if ((childNodes ?? []).length > 0) {
                 clickedNodes.set(childNodes[0].name.toLowerCase(), '');
                 if ((childNodes[0].childNodes ?? []).length > 0) {
@@ -154,33 +152,41 @@ export function generateSelectedNodes(
             clickedNodes.set(_nodeLowerCase, '');
         }
     } else {
-        //parents length 2 is possible only if this is pod that means click happened on child of pod node
-        //parent length 1 but node is not type pod means it is a leaf node
-        if (parents.length == 2 || (parents.length == 1 && _nodeLowerCase != NodeType.Pod.toLowerCase())) {
-            //remove if leaf node selected previouslf if any
+        /**
+         * 1. Parent's length 2 is possible only if type is Pod that means click happened on child of pod node
+         * 2. Parent length 1 but node is not type pod means it is a leaf node
+         */
+        if (parents.length === 2 || (parents.length === 1 && _nodeLowerCase !== NodeType.Pod.toLowerCase())) {
+            // remove if leaf node selected previously if any
             let _childNodes = _treeNodes.flatMap((_tn) => _tn.childNodes ?? []);
             let leafNode = _childNodes.find(
                 (_cn) =>
-                    clickedNodes.has(_cn.name.toLowerCase()) && _cn.name.toLowerCase() != NodeType.Pod.toLowerCase(),
+                    clickedNodes.has(_cn.name.toLowerCase()) && _cn.name.toLowerCase() !== NodeType.Pod.toLowerCase(),
             );
             if (leafNode) {
                 clickedNodes.delete(leafNode.name.toLowerCase());
             } else {
-                leafNode = _childNodes.find(
-                    (_cn) =>
-                        clickedNodes.has(_cn.name.toLowerCase()) &&
-                        _cn.name.toLowerCase() == NodeType.Pod.toLowerCase(),
-                );
+                /**
+                 * 1. First find the node of type Pod & it's either already present in clickedNodes map
+                 * or has childNodes array.
+                 * 2. Then find the child node present in clickedNodes map.
+                 * 3. At the end remove if leaf node selected previously.
+                 */
+                leafNode = _childNodes
+                    .find(
+                        (_cn) =>
+                            _cn.name.toLowerCase() === NodeType.Pod.toLowerCase() &&
+                            (clickedNodes.has(_cn.name.toLowerCase()) || _cn.childNodes?.length > 0),
+                    )
+                    ?.childNodes?.find((_cn) => clickedNodes.has(_cn.name.toLowerCase()));
+
                 if (leafNode) {
-                    leafNode = leafNode.childNodes?.find((_cn) => clickedNodes.has(_cn.name.toLowerCase()));
-                    if (leafNode) {
-                        clickedNodes.delete(leafNode.name.toLowerCase());
-                    }
+                    clickedNodes.delete(leafNode.name.toLowerCase());
                 }
             }
         }
         parents.forEach((_p) => clickedNodes.set(_p.toLowerCase(), ''));
-        if (parents.length == 1 && _nodeLowerCase == NodeType.Pod.toLowerCase() && clickedNodes.has(_nodeLowerCase)) {
+        if (parents.length === 1 && _nodeLowerCase === NodeType.Pod.toLowerCase() && clickedNodes.has(_nodeLowerCase)) {
             clickedNodes.delete(_nodeLowerCase);
         } else {
             clickedNodes.set(_nodeLowerCase, '');
@@ -190,19 +196,19 @@ export function generateSelectedNodes(
 }
 
 export function getRedirectURLExtension(clickedNodes: Map<string, string>, _treeNodes: iNode[]): string {
-    //User has yet not clicked anything
-    if (clickedNodes.size == 0) {
+    // User has yet not clicked anything
+    if (clickedNodes.size === 0) {
         let leafNode = _treeNodes
-            .filter((_tn) => _tn.name.toLowerCase() == AggregationKeys.Workloads.toLowerCase())
+            .filter((_tn) => _tn.name.toLowerCase() === AggregationKeys.Workloads.toLowerCase())
             .flatMap(
-                (_tn) => _tn.childNodes?.filter((_cn) => _cn.name.toLowerCase() == NodeType.Pod.toLowerCase()) ?? [],
+                (_tn) => _tn.childNodes?.filter((_cn) => _cn.name.toLowerCase() === NodeType.Pod.toLowerCase()) ?? [],
             )
             .flatMap((_cn) => _cn.childNodes ?? [])
-            .find((_cn, index) => index == 0);
+            .find((_cn, index) => index === 0);
         if (leafNode) {
             return '/pod/group/' + leafNode.name.toLowerCase();
         }
-        leafNode = _treeNodes.flatMap((_tn) => _tn.childNodes ?? []).find((_cn, index) => index == 0);
+        leafNode = _treeNodes.flatMap((_tn) => _tn.childNodes ?? []).find((_cn, index) => index === 0);
         if (leafNode) {
             return '/' + leafNode.name.toLowerCase();
         }
@@ -210,34 +216,36 @@ export function getRedirectURLExtension(clickedNodes: Map<string, string>, _tree
         let leafNodes = _treeNodes.flatMap(
             (_tn) => _tn.childNodes?.filter((_cn) => clickedNodes.has(_cn.name.toLowerCase())) ?? [],
         );
-        //more than one leafNodes click means user has clicked on pods as well as some other leaf node
-        //therefore details of non-pod leafnode should be shown
+        /**
+         * More than one leafNodes click means user has clicked on pods as well as some other leaf node
+         * therefore details of non-pod leaf node should be shown
+         */
         if (leafNodes.length > 1) {
-            let leafNode = leafNodes.find((_ln) => _ln.name.toLowerCase() != NodeType.Pod.toLowerCase());
+            let leafNode = leafNodes.find((_ln) => _ln.name.toLowerCase() !== NodeType.Pod.toLowerCase());
             if (leafNode) {
                 return '/' + leafNode.name.toLowerCase();
             }
-        } else if (leafNodes.length == 1) {
-            //case when clicked is a pod group
-            let leafPodNode = leafNodes.filter((_ln) => _ln.name.toLowerCase() == NodeType.Pod.toLowerCase());
+        } else if (leafNodes.length === 1) {
+            // case when clicked is a pod group
+            let leafPodNode = leafNodes.filter((_ln) => _ln.name.toLowerCase() === NodeType.Pod.toLowerCase());
             let leafNode = leafPodNode
                 .flatMap((_ln) => _ln.childNodes ?? [])
                 .find((_ln) => clickedNodes.has(_ln.name.toLowerCase()));
             if (leafNode) {
                 return '/pod/group/' + leafNode.name.toLowerCase();
             } else {
-                leafNode = leafPodNode.flatMap((_ln) => _ln.childNodes ?? []).find((_ln, index) => index == 0);
+                leafNode = leafPodNode.flatMap((_ln) => _ln.childNodes ?? []).find((_ln, index) => index === 0);
                 if (leafNode) {
                     return '/pod/group/' + leafNode.name.toLowerCase();
                 }
             }
-            //case when clicked is not pod group
-            leafNode = leafNodes.find((_ln) => _ln.name.toLowerCase() != NodeType.Pod.toLowerCase());
+            // case when clicked is not pod group
+            leafNode = leafNodes.find((_ln) => _ln.name.toLowerCase() !== NodeType.Pod.toLowerCase());
             if (leafNode) {
                 return '/' + leafNode.name.toLowerCase();
             }
         }
-        //handle the case when none match, its same as clickedNodes size 0
+        // handle the case when none match, its same as clickedNodes size 0
         return getRedirectURLExtension(new Map<string, string>(), _treeNodes);
     }
 }
