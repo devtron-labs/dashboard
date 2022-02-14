@@ -4,12 +4,15 @@ import { SlackConfigModal } from './SlackConfigModal';
 import { SESConfigModal } from './SESConfigModal';
 import { ReactComponent as Edit } from '../../assets/icons/ic-edit.svg';
 import { showError, Progressing } from '../common';
-import { getSlackAndSESConfigs } from './notifications.service';
+import { deleteNotification, getChannelConfigs, getSESConfiguration, getSlackAndSESConfigs, getSlackConfiguration } from './notifications.service';
 import slack from '../../assets/img/slack-logo.svg';
 import ses from '../../assets/icons/ic-aws-ses.svg';
 import { ViewType } from '../../config/constants';
 import EmptyState from '../EmptyState/EmptyState';
-
+import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
+import DeleteComponent from '../../util/DeleteComponent';
+import { DC_CONFIGURATION_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
+import Tippy from '@tippyjs/react';
 export interface ConfigurationTabState {
     view: string;
     showSlackConfigModal: boolean;
@@ -19,6 +22,16 @@ export interface ConfigurationTabState {
     sesConfigurationList: Array<{ id: number, name: string, accessKeyId: string, email: string, isDefault: boolean; }>;
     slackConfigurationList: Array<{ id: number, slackChannel: string; projectId: number; webhookUrl: string; }>;
     abortAPI: boolean;
+    deleting: boolean;
+    confirmation: boolean;
+    sesConfig: any;
+    slackConfig: any;
+    showDeleteSlackConfigModal: boolean;
+}
+
+const enum ChannelConfigType {
+    SLACK= 'slack',
+    SES= 'ses'
 }
 
 export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
@@ -33,6 +46,11 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             sesConfigurationList: [],
             slackConfigurationList: [],
             abortAPI: false,
+            deleting: false,
+            confirmation: false,
+            sesConfig: {},
+            slackConfig: {},
+            showDeleteSlackConfigModal: false
         }
         this.getAllChannelConfigs = this.getAllChannelConfigs.bind(this);
     }
@@ -92,17 +110,41 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             <tbody>
                 <tr className="mb-8">
                     {this.state.slackConfigurationList.map((slackConfig) => {
-                        return <td key={slackConfig.id} className="configuration-tab__table-row">
-                            <div className="slack-config-table__name truncate-text">{slackConfig.slackChannel}</div>
-                            <div className="slack-config-table__webhook truncate-text">{slackConfig.webhookUrl}</div>
-                            <div className="slack-config-table__action">
-                                <button type="button" className="transparent align-right" onClick={(event) => {
-                                    this.setState({ showSlackConfigModal: true, slackConfigId: slackConfig.id });
-                                }}>
-                                    <Edit className="icon-dim-20" />
-                                </button>
-                            </div>
-                        </td>
+                        return (
+                            <td key={slackConfig.id} className="configuration-tab__table-row">
+                                <div className="slack-config-table__name truncate-text">{slackConfig.slackChannel}</div>
+                                <div className="slack-config-table__webhook truncate-text">
+                                    {slackConfig.webhookUrl}
+                                </div>
+                                <div className="slack-config-table__action">
+                                    <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
+                                        <button
+                                            type="button"
+                                            className="transparent align-right mr-16"
+                                            onClick={(event) => {
+                                                this.setState({
+                                                    showSlackConfigModal: true,
+                                                    slackConfigId: slackConfig.id,
+                                                });
+                                            }}
+                                        >
+                                            <Edit className="icon-dim-20" />
+                                        </button>
+                                    </Tippy>
+                                    <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
+                                        <button
+                                            type="button"
+                                            className="transparent align-right"
+                                            onClick={() => {
+                                                this.deleteClickHandler(slackConfig.id, DeleteComponentsName.SlackConfigurationTab);
+                                            }}
+                                        >
+                                            <Trash className="scn-5 icon-dim-20" />
+                                        </button>
+                                    </Tippy>
+                                </div>
+                            </td>
+                        );
                     })}
                 </tr>
             </tbody>
@@ -123,6 +165,48 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             {this.renderSESConfigurationTable()}
         </div>
     }
+
+    setDeleting = () => {
+        this.setState({
+            deleting: true
+        })
+    }
+
+    toggleConfirmation = (confirmation) => {
+        this.setState({
+            confirmation,
+            ...(!confirmation && { showDeleteSlackConfigModal: false }),
+        });
+    }
+
+    deleteClickHandler = async (configId, type) => {
+        try {
+            if (type === DeleteComponentsName.SlackConfigurationTab) {
+                const { result } = await getSlackConfiguration(configId, true);
+                this.setState({
+                    slackConfigId: configId,
+                    slackConfig: {
+                        ...result,
+                        channel: DeleteComponentsName.SlackConfigurationTab,
+                    },
+                    confirmation: true,
+                    showDeleteSlackConfigModal: true,
+                });
+            } else if (type === DeleteComponentsName.SesConfigurationTab) {
+                const { result } = await getSESConfiguration(configId);
+                this.setState({
+                    sesConfigId: configId,
+                    sesConfig: {
+                        ...result,
+                        channel: DeleteComponentsName.SesConfigurationTab,
+                    },
+                    confirmation: true,
+                });
+            }
+        } catch (e) {
+            showError(e);
+        }
+    };
 
     renderSESConfigurationTable() {
         if (this.state.view === ViewType.LOADING) {
@@ -149,22 +233,58 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             <tbody>
                 <tr className="mb-8">
                     {this.state.sesConfigurationList.map((sesConfig) => {
-                        return <td key={sesConfig.id} className="configuration-tab__table-row">
-                            <div className="ses-config-table__name truncate-text">{sesConfig.name}
-                                {sesConfig.isDefault ? <span className="ses_config-table__tag">Default</span> : null}
-                            </div>
-                            <div className="ses-config-table__access-key truncate-text">{sesConfig.accessKeyId}</div>
-                            <div className="ses-config-table__email truncate-text">{sesConfig.email}</div>
-                            <div className="ses-config-table__action">
-                                <button type="button" className="transparent align-right" onClick={(event) => {
-                                    this.setState({ showSESConfigModal: true, sesConfigId: sesConfig.id });
-                                }}>
-                                    <Edit className="icon-dim-20" />
-                                </button>
-                            </div>
-                        </td>
+                        return (
+                            <td key={sesConfig.id} className="configuration-tab__table-row">
+                                <div className="ses-config-table__name truncate-text">
+                                    {sesConfig.name}
+                                    {sesConfig.isDefault ? (
+                                        <span className="ses_config-table__tag">Default</span>
+                                    ) : null}
+                                </div>
+                                <div className="ses-config-table__access-key truncate-text">
+                                    {sesConfig.accessKeyId}
+                                </div>
+                                <div className="ses-config-table__email truncate-text">{sesConfig.email}</div>
+                                <div className="ses-config-table__action">
+                                    <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
+                                        <button
+                                            type="button"
+                                            className="transparent align-right mr-16"
+                                            onClick={(event) => {
+                                                this.setState({ showSESConfigModal: true, sesConfigId: sesConfig.id });
+                                            }}
+                                        >
+                                            <Edit className="icon-dim-20" />
+                                        </button>
+                                    </Tippy>
+                                    <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
+                                        <button
+                                            type="button"
+                                            className="transparent align-right"
+                                            onClick={() => {
+                                                this.deleteClickHandler(sesConfig.id, DeleteComponentsName.SesConfigurationTab);
+                                            }}
+                                        >
+                                            <Trash className="scn-5 icon-dim-20" />
+                                        </button>
+                                    </Tippy>{' '}
+                                </div>
+                            </td>
+                        );
                     })}
                 </tr>
+                { this.state.confirmation &&   
+                <DeleteComponent
+                    setDeleting={this.setDeleting}
+                    deleteComponent={deleteNotification}
+                    payload={this.state.showDeleteSlackConfigModal ? this.state.slackConfig : this.state.sesConfig}
+                    title={this.state.showDeleteSlackConfigModal ? this.state.slackConfig.configName : this.state.sesConfig.configName }
+                    toggleConfirmation={this.toggleConfirmation}
+                    component={this.state.showDeleteSlackConfigModal ? DeleteComponentsName.SlackConfigurationTab : DeleteComponentsName.SesConfigurationTab}
+                    confirmationDialogDescription={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
+                    reload = {this.getAllChannelConfigs}
+                    configuration = 'configuration'
+                />}
             </tbody>
         </table>
     }
