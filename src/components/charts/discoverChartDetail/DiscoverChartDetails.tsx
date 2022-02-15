@@ -154,9 +154,8 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
 
     useEffect(() => {
         fetchVersions();
-        
+        getChartValuesList();
         if(serverMode == SERVER_MODE.FULL){
-            getChartValuesList();
             isGitopsConfigured().then((response) => {
                 let isGitOpsConfigAvailable = response.result && response.result.exists;
                 setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
@@ -246,6 +245,7 @@ const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartN
     const { redirectToChartValues, openManageValues, selectedVersion, selectVersion, chartValuesList, chartValues, setChartValues } = useDiscoverDetailsContext();
     const match = useRouteMatch();
     const { push } = useHistory();
+    const { serverMode } = useContext(mainContext);
 
     const handleImageError = (e) => {
         const target = e.target as HTMLImageElement
@@ -254,7 +254,7 @@ const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartN
     }
 
     function handleDeploy() {
-        if (isGitOpsConfigAvailable) {
+        if (serverMode == SERVER_MODE.EA_ONLY || isGitOpsConfigAvailable) {
             push(`${match.url}/deploy-chart`)
         }
         else {
