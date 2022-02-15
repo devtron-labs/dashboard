@@ -47,7 +47,12 @@ export default function AppList() {
     const [searchApplied, setSearchApplied] = useState(false);
 
     // filters
-    const [masterFilters, setMasterFilters] = useState({projects : [], clusters :[], namespaces : [], environments : []});
+    const [masterFilters, setMasterFilters] = useState({
+        projects: [],
+        environments: [],
+        clusters: [],
+        namespaces: [],
+    });
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false);
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false);
 
@@ -151,7 +156,7 @@ export default function AppList() {
             clusterVsNamespaceMap : _clusterVsNamespaceMap
         }
 
-        let _masterFilters = {projects :[], clusters :[], namespaces :[], environments : []};
+        let _masterFilters = { projects: [], environments: [], clusters: [], namespaces: [] };
 
         // set projects (check/uncheck)
         _masterFilters.projects = masterFilters.projects.map((project) => {
