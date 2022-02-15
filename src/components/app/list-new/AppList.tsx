@@ -329,27 +329,27 @@ export default function AppList() {
      * @param query - current query params
      * @returns string - filters to be applied
      */
-    const getUpdatedFiltersOnNamespaceChange = (ids: (string | number)[], filterType: string, query: Record<string, string>): string => {
+    const getUpdatedFiltersOnNamespaceChange = (
+        ids: (string | number)[],
+        filterType: string,
+        query: Record<string, string>,
+    ): string => {
         /**
          * Step 1: Return currently selected/checked items from filters list as string if
          * - There are no query params
          * - There is no namespace query param i.e. this is the first time selecting the cluster filter
          */
-        if (
-            !query ||
-            Object.keys(query).length <= 0 ||
-            typeof query[AppListConstants.FilterType.NAMESPACE] === 'undefined'
-        ) {
+        if (!query || Object.keys(query).length <= 0 || !query[AppListConstants.FilterType.NAMESPACE]) {
             return ids.toString();
         }
 
         /**
          * Step 2: Create & init all required arrays
-         * - appliedFilters: Array of currently applied filters in query param
+         * - currentlyAppliedFilters: Array of currently applied namespace filters in query param
          * - checkedItemIds: Array of currently selected/checked items from filters list
          * - updatedAppliedFilters: Array of new filters to be applied
          */
-        let appliedFilters = query[AppListConstants.FilterType.NAMESPACE].split(',');
+        let currentlyAppliedFilters = query[AppListConstants.FilterType.NAMESPACE].split(',');
         let checkedItemIds = ids.toString().split(',');
         let updatedAppliedFilters = [];
 
@@ -361,7 +361,7 @@ export default function AppList() {
          * - If filteredIds is empty (i.e. not matching above conditions), then push the item id in updatedAppliedFilters array.
          */
         checkedItemIds.forEach((id) => {
-            const filterdIds = appliedFilters.filter(
+            const filterdIds = currentlyAppliedFilters.filter(
                 (item) =>
                     id.toString() === item ||
                     (filterType === AppListConstants.FilterType.CLUTSER && item.startsWith(`${id}_`)),
@@ -377,7 +377,7 @@ export default function AppList() {
          *      - If no then get the Cluster Id from applied filter & push it to updatedAppliedFilters array.
          */
         if (filterType === AppListConstants.FilterType.NAMESPACE) {
-            appliedFilters.forEach((filter) => {
+            currentlyAppliedFilters.forEach((filter) => {
                 if (!checkedItemIds.some((itemId) => itemId.startsWith(`${filter.split('_')[0]}_`))) {
                     updatedAppliedFilters.push(filter.split('_')[0]);
                 }
