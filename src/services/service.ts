@@ -91,7 +91,7 @@ export function getProjectFilteredApps(
 }
 
 export function getAvailableCharts(queryString?: string, options?: APIOptions): Promise<{ code: number, result: Chart[] }> {
-    let url = `${Routes.CHART_AVAILABLE}/`;
+    let url = `${Routes.CHART_AVAILABLE}/discover`;
     if (queryString) {
         url = `${url}${queryString}`
     }
@@ -263,7 +263,7 @@ export function getLastExecutionMinByAppAndEnv(appId: number | string, envId: nu
 }
 
 export function getChartRepoList(): Promise<ResponseType> {
-    const URL = `${Routes.CHART_LIST}`;
+    const URL = `${Routes.CHART_REPO}/${Routes.CHART_LIST_SUBPATH}`;
     return get(URL);
 }
 
