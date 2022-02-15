@@ -1,8 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { ServerErrors } from '../../../modals/commonTypes';
+import { useLocation, useHistory } from 'react-router';
 import { OrderBy, SortBy } from '../list/types';
 import { buildClusterVsNamespace, getDevtronInstalledHelmApps, AppListResponse, HelmApp } from './AppListService';
-import { showError, Progressing, ErrorScreenManager, LazyImage, handleUTCTime, useEventSource } from '../../common';
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    Pagination,
+    LazyImage,
+    handleUTCTime,
+    useEventSource,
+} from '../../common';
 import { Host, SERVER_MODE, URLS, DOCUMENTATION } from '../../../config';
 import { AppListViewType } from '../config';
 import { Link } from 'react-router-dom';
@@ -26,10 +35,11 @@ export default function HelmAppList({
     payloadParsedFromUrl,
     sortApplicationList,
     clearAllFilters,
+    fetchingExternalApps,
     setFetchingExternalAppsState,
     updateLastDataSync,
     setShowPulsatingDotState,
-    masterFilters
+    masterFilters,
 }) {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING);
     const [errorResponseCode, setErrorResponseCode] = useState(0);
@@ -41,10 +51,15 @@ export default function HelmAppList({
     const [clusterIdsCsv, setClusterIdsCsv] = useState('');
     const [sseConnection, setSseConnection] = useState<EventSource>(undefined);
     const [externalHelmListFetchErrors, setExternalHelmListFetchErrors] = useState<string[]>([]);
-
+    const location = useLocation();
+    const history = useHistory();
+    const params = new URLSearchParams(location.search);
+    
     // component load
     useEffect(() => {
         init();
+
+
     }, []);
 
     // it means filter/sorting has been applied
@@ -206,19 +221,18 @@ export default function HelmAppList({
         let _search = payloadParsedFromUrl.appNameSearch;
         let _sortBy = payloadParsedFromUrl.sortBy;
         let _sortOrder = payloadParsedFromUrl.sortOrder;
-
-        let _filteredDevtronInstalledHelmAppsList = [...devtronInstalledHelmAppsList, ...externalHelmAppsList];
+        let _filteredHelmAppsList = [...devtronInstalledHelmAppsList, ...externalHelmAppsList];
 
         // apply project filter
         if (_projects?.length) {
-            _filteredDevtronInstalledHelmAppsList = _filteredDevtronInstalledHelmAppsList.filter((app) =>
+            _filteredHelmAppsList = _filteredHelmAppsList.filter((app) =>
                 _projects.includes(app.projectId),
             );
         }
 
         // apply cluster_namespace filter with OR condition with environments
         if (_clusterVsNamespaces?.length || _environments?.length) {
-            _filteredDevtronInstalledHelmAppsList = _filteredDevtronInstalledHelmAppsList.filter((app) => {
+            _filteredHelmAppsList = _filteredHelmAppsList.filter((app) => {
                 let _includes = _environments.includes(app.environmentDetail.environmentId);
                 _clusterVsNamespaces.map((_clusterVsNamespace) => {
                     let _clusterId = _clusterVsNamespace.split('_')[0];
@@ -234,7 +248,7 @@ export default function HelmAppList({
 
         // handle search
         if (_search?.length) {
-            _filteredDevtronInstalledHelmAppsList = _filteredDevtronInstalledHelmAppsList.filter(
+            _filteredHelmAppsList = _filteredHelmAppsList.filter(
                 (app) =>
                     app.appName.toLowerCase().includes(_search.toLowerCase()) ||
                     app.chartName.toLowerCase().includes(_search.toLowerCase()),
@@ -243,19 +257,19 @@ export default function HelmAppList({
 
         // handle sort
         if (_sortOrder == OrderBy.ASC) {
-            _filteredDevtronInstalledHelmAppsList = _filteredDevtronInstalledHelmAppsList.sort((a, b) =>
+            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) =>
                 a.appName.localeCompare(b.appName),
             );
         } else {
-            _filteredDevtronInstalledHelmAppsList = _filteredDevtronInstalledHelmAppsList.sort((a, b) =>
+            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) =>
                 b.appName.localeCompare(a.appName),
             );
         }
 
         setSortBy(_sortBy);
         setSortOrder(_sortOrder);
-        setFilteredHelmAppsList(_filteredDevtronInstalledHelmAppsList);
-        setShowPulsatingDotState(_filteredDevtronInstalledHelmAppsList.length == 0 && !clusterIdsCsv);
+        setFilteredHelmAppsList(_filteredHelmAppsList);
+        setShowPulsatingDotState(_filteredHelmAppsList.length == 0 && !clusterIdsCsv);
     }
 
     function _isAnyFilterationAppliedExceptClusterAndNs() {
@@ -381,7 +395,7 @@ export default function HelmAppList({
                 })}
 
                 {filteredHelmAppsList.length > 0 && renderHeaders()}
-                {filteredHelmAppsList.map((app) => {
+                {filteredHelmAppsList.slice(payloadParsedFromUrl.hOffset, payloadParsedFromUrl.hOffset + payloadParsedFromUrl.size ).map((app) => {
                     return (
                         <React.Fragment key={app.appId}>
                             <Link to={_buildAppDetailUrl(app)} className="app-list__row">
@@ -549,8 +563,36 @@ export default function HelmAppList({
         }
     }
 
-    function renderOnlyEAModeApplicationListContainer() {
-        return renderFullModeApplicationListContainer();
+    function changePageSize(size: number): void {
+        params.set('pageSize', size.toString());
+        params.set('offset', '0');
+        params.set('hOffset', '0');
+
+
+        history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}?${params.toString()}`);
+    }
+
+    function changePage(pageNo: number): void {
+        const newOffset = payloadParsedFromUrl.size * (pageNo - 1);
+
+        params.set('hOffset', newOffset.toString());
+
+        history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}?${params.toString()}`);
+    }
+    
+    function renderPagination(): JSX.Element {
+        return (
+            filteredHelmAppsList.length > 20 &&
+            !fetchingExternalApps && (
+                <Pagination
+                    size={filteredHelmAppsList.length}
+                    pageSize={payloadParsedFromUrl.size}
+                    offset={payloadParsedFromUrl.hOffset}
+                    changePage={changePage}
+                    changePageSize={changePageSize}
+                />
+            )
+        );
     }
 
     return (
@@ -566,9 +608,9 @@ export default function HelmAppList({
                 </div>
             )}
             {dataStateType == AppListViewType.LIST && (
-                <div className="">
-                    {serverMode == SERVER_MODE.FULL && renderFullModeApplicationListContainer()}
-                    {serverMode == SERVER_MODE.EA_ONLY && renderOnlyEAModeApplicationListContainer()}
+                <div>
+                    {renderFullModeApplicationListContainer()}
+                    {renderPagination()}
                 </div>
             )}
         </>
