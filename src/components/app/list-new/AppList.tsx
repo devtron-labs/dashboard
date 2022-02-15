@@ -431,6 +431,7 @@ export default function AppList() {
 
     const removeFilter = (filter, filterType: string): void => {
         let val = filter.key.toString();
+        const clustId = val.split('_')[0]; // Specific to cluster & namespace filter removal
         let qs = queryString.parse(location.search);
         let keys = Object.keys(qs);
         let query = {};
@@ -449,7 +450,6 @@ export default function AppList() {
             arr = arr.filter((item) => !item.startsWith(val));
         } else {
             arr = arr.filter((item) => item !== val);
-            const clustId = val.split('_')[0];
 
             /**
              * Check if filterType is NAMESPACE & appliedFilters array doesn't contain any namespace
