@@ -11,4 +11,5 @@ export interface HostURLConfigState {
 
 export interface HostURLConfigProps extends RouteComponentProps<{}> {
     refreshGlobalConfig: () => void;
+    handleChecklistUpdate: (hostUrl) => void;
 }

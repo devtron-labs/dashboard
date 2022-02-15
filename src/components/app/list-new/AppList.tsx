@@ -75,10 +75,10 @@ export default function AppList() {
             setProjectListRes(initData.projectsRes);
             setEnvironmentListRes(initData.environmentListRes);
             setMasterFilters(initData.filters);
+            setDataStateType(AppListViewType.LIST);
             if(serverMode == SERVER_MODE.EA_ONLY){
                 applyClusterSelectionFilterOnPageLoadIfSingle(initData.filters.clusters, _currentTab);
             }
-            setDataStateType(AppListViewType.LIST);
         }).catch((errors: ServerErrors) => {
             showError(errors);
             setDataStateType(AppListViewType.ERROR);
@@ -203,6 +203,7 @@ export default function AppList() {
         let sortBy = params.orderBy || SortBy.APP_NAME;
         let sortOrder = params.sortOrder || OrderBy.ASC;
         let offset = +params.offset || 0;
+        let hOffset = +params.hOffset || 0;
         let pageSize: number = +params.pageSize || 20;
         let pageSizes = new Set([20, 40, 50]);
 
@@ -211,6 +212,9 @@ export default function AppList() {
         }
         if ((offset % pageSize != 0)) { //pageSize must be a multiple of offset
             offset = 0;
+        }
+        if ((hOffset % pageSize != 0)) { //pageSize must be a multiple of offset
+            hOffset = 0;
         }
 
         let payload = {
@@ -221,6 +225,7 @@ export default function AppList() {
             sortBy: sortBy,
             sortOrder: sortOrder,
             offset: offset,
+            hOffset: hOffset,
             size: +pageSize,
         }
 
@@ -311,9 +316,11 @@ export default function AppList() {
         if (_searchString){
             query['search'] = _searchString;
             query['offset'] = 0;
+            query['hOffset'] = 0;
         }else{
             delete query['search'];
             delete query['offset'];
+            delete query['hOffset'];
         }
 
         let queryStr = queryString.stringify(query);
@@ -413,6 +420,7 @@ export default function AppList() {
                 ? getUpdatedFiltersOnNamespaceChange(ids, type, query)
                 : ids.toString();
         query['offset'] = 0;
+        query['hOffset'] = 0;
         let queryStr = queryString.stringify(query);
         let _currentTab = selectedAppTab || currentTab;
         let url = `${
@@ -431,6 +439,7 @@ export default function AppList() {
             query[key] = qs[key];
         });
         query['offset'] = 0;
+        query['hOffset'] = 0;
         let queryParamType =
             filterType === AppListConstants.FilterType.CLUTSER || filterType === AppListConstants.FilterType.NAMESPACE
                 ? AppListConstants.FilterType.NAMESPACE
@@ -472,6 +481,8 @@ export default function AppList() {
         keys.map((key) => {
             query[key] = qs[key];
         })
+        query['offset'] = 0;
+        query['hOffset'] = 0;
         delete query['environment'];
         delete query['team'];
         delete query['namespace'];
@@ -780,7 +791,7 @@ export default function AppList() {
                     {
                         params.appType == AppListConstants.AppType.HELM_APPS &&
                         <>
-                            <HelmAppList serverMode={serverMode} payloadParsedFromUrl={parsedPayloadOnUrlChange} sortApplicationList={sortApplicationList} clearAllFilters={removeAllFilters} setFetchingExternalAppsState={setFetchingExternalAppsState} updateLastDataSync={updateLastDataSync} setShowPulsatingDotState={setShowPulsatingDotState} masterFilters={masterFilters}/>
+                            <HelmAppList serverMode={serverMode} payloadParsedFromUrl={parsedPayloadOnUrlChange} sortApplicationList={sortApplicationList} clearAllFilters={removeAllFilters} fetchingExternalApps={fetchingExternalApps} setFetchingExternalAppsState={setFetchingExternalAppsState} updateLastDataSync={updateLastDataSync} setShowPulsatingDotState={setShowPulsatingDotState} masterFilters={masterFilters}/>
                             {
                                 fetchingExternalApps &&
                                 <div className="mt-16">

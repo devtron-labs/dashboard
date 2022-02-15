@@ -3,14 +3,15 @@ import { showError, useForm, useEffectAfterMount, useAsync, Progressing } from '
 import { toast } from 'react-toastify'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react';
-import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoConfiguration, reSyncChartRepo } from './chartRepo.service';
+import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoConfiguration, reSyncChartRepo, deleteChartRepo } from './chartRepo.service';
 import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg';
 import { DOCUMENTATION } from '../../config';
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm';
 import "./chartRepo.scss";
-
+import DeleteComponent from '../../util/DeleteComponent';
+import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
 
 export default function ChartRepo() {
     const [loading, result, error, reload] = useAsync(getChartRepoList)
@@ -140,6 +141,8 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         }, onClickSave);
 
     const customHandleChange = e => setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } }))
+    const [deleting, setDeleting] = useState(false);
+    const [confirmation, toggleConfirmation] = useState(false);
 
     const chartRepoPayload = {
         id: id || 0,
@@ -262,9 +265,27 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                 <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
             </div>}
             <div className="form__row form__buttons">
+                   {
+                       id && 
+                       <button className="cta delete m-auto chart_repo__delete-button" type="button" onClick={() => toggleConfirmation(true)}>
+                            {deleting ? <Progressing /> : 'Delete'}
+                        </button>
+                   } 
                 <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
                 <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
             </div>
+            {confirmation && (
+                <DeleteComponent
+                    setDeleting={setDeleting}
+                    deleteComponent={deleteChartRepo}
+                    payload={chartRepoPayload}
+                    title={state.name?.value}
+                    toggleConfirmation={toggleConfirmation}
+                    component={DeleteComponentsName.ChartRepository}
+                    confirmationDialogDescription={DC_CHART_REPO_CONFIRMATION_MESSAGE}
+                    reload={reload}
+                />
+            )}
         </form>
     )
 }
