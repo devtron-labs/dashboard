@@ -528,6 +528,11 @@ function LogsComponent({
 
 export function getSelectedPodList(selectedOption: string): PodMetaData[] {
     let pods: PodMetaData[];
+    const handleDefaultForSelectedOption = (name: string): void => {
+        let podNames = new Set(IndexStore.getPodsForRootNode(name).map((_po) => _po.name));
+        pods = IndexStore.getAllPods().filter((_po) => podNames.has(_po.name));
+    };
+
     switch (selectedOption) {
         case 'All pods':
             pods = IndexStore.getAllPods();
@@ -540,17 +545,11 @@ export function getSelectedPodList(selectedOption: string): PodMetaData[] {
             break;
         default:
             if (selectedOption.startsWith('All new')) {
-                let name = selectedOption.replace('All new ', '');
-                let podNames = new Set(IndexStore.getPodsForRootNode(name).map((_po) => _po.name));
-                pods = IndexStore.getAllPods().filter((_po) => podNames.has(_po.name));
+                handleDefaultForSelectedOption(selectedOption.replace('All new ', ''));
             } else if (selectedOption.startsWith('All old')) {
-                let name = selectedOption.replace('All old ', '');
-                let podNames = new Set(IndexStore.getPodsForRootNode(name).map((_po) => _po.name));
-                pods = IndexStore.getAllPods().filter((_po) => podNames.has(_po.name));
+                handleDefaultForSelectedOption(selectedOption.replace('All old ', ''));
             } else if (selectedOption.startsWith('All')) {
-                let name = selectedOption.replace('All ', '');
-                let podNames = new Set(IndexStore.getPodsForRootNode(name).map((_po) => _po.name));
-                pods = IndexStore.getAllPods().filter((_po) => podNames.has(_po.name));
+                handleDefaultForSelectedOption(selectedOption.replace('All ', ''));
             } else {
                 pods = IndexStore.getAllPods().filter((_pod) => _pod.name == selectedOption);
             }
