@@ -329,34 +329,34 @@ export default function AppList() {
     }
 
     /**
-     * This function will return filters to be applied for filter types - CLUSTER & NAMESPACE
+     * This function will return filters to be applied for filter types - CLUSTER & NAMESPACE (query param - namespace)
      *
      * @param ids - currently selected/checked items from filters list
      * @param filterType - type of filter
      * @param query - current query params
      * @returns string - filters to be applied
      */
-    const getAppliedFilters = (ids: (string | number)[], filterType: string, query: Record<string, string>): string => {
+    const getUpdatedFiltersOnNamespaceChange = (
+        ids: (string | number)[],
+        filterType: string,
+        query: Record<string, string>,
+    ): string => {
         /**
          * Step 1: Return currently selected/checked items from filters list as string if
          * - There are no query params
          * - There is no namespace query param i.e. this is the first time selecting the cluster filter
          */
-        if (
-            !query ||
-            Object.keys(query).length <= 0 ||
-            typeof query[AppListConstants.FilterType.NAMESPACE] === 'undefined'
-        ) {
+        if (!query || Object.keys(query).length <= 0 || !query[AppListConstants.FilterType.NAMESPACE]) {
             return ids.toString();
         }
 
         /**
          * Step 2: Create & init all required arrays
-         * - appliedFilters: Array of currently applied filters in query param
+         * - currentlyAppliedFilters: Array of currently applied namespace filters in query param
          * - checkedItemIds: Array of currently selected/checked items from filters list
          * - updatedAppliedFilters: Array of new filters to be applied
          */
-        let appliedFilters = query[AppListConstants.FilterType.NAMESPACE].split(',');
+        let currentlyAppliedFilters = query[AppListConstants.FilterType.NAMESPACE].split(',');
         let checkedItemIds = ids.toString().split(',');
         let updatedAppliedFilters = [];
 
@@ -368,7 +368,7 @@ export default function AppList() {
          * - If filteredIds is empty (i.e. not matching above conditions), then push the item id in updatedAppliedFilters array.
          */
         checkedItemIds.forEach((id) => {
-            const filterdIds = appliedFilters.filter(
+            const filterdIds = currentlyAppliedFilters.filter(
                 (item) =>
                     id.toString() === item ||
                     (filterType === AppListConstants.FilterType.CLUTSER && item.startsWith(`${id}_`)),
@@ -384,7 +384,7 @@ export default function AppList() {
          *      - If no then get the Cluster Id from applied filter & push it to updatedAppliedFilters array.
          */
         if (filterType === AppListConstants.FilterType.NAMESPACE) {
-            appliedFilters.forEach((filter) => {
+            currentlyAppliedFilters.forEach((filter) => {
                 if (!checkedItemIds.some((itemId) => itemId.startsWith(`${filter.split('_')[0]}_`))) {
                     updatedAppliedFilters.push(filter.split('_')[0]);
                 }
@@ -417,7 +417,7 @@ export default function AppList() {
 
         query[queryParamType] =
             queryParamType === AppListConstants.FilterType.NAMESPACE
-                ? getAppliedFilters(ids, type, query)
+                ? getUpdatedFiltersOnNamespaceChange(ids, type, query)
                 : ids.toString();
         query['offset'] = 0;
         query['hOffset'] = 0;
@@ -431,7 +431,7 @@ export default function AppList() {
 
     const removeFilter = (filter, filterType: string): void => {
         let val = filter.key.toString();
-        let clustId = val.split('_')[0];
+        const clustId = val.split('_')[0]; // Specific to cluster & namespace filter removal
         let qs = queryString.parse(location.search);
         let keys = Object.keys(qs);
         let query = {};
