@@ -382,6 +382,16 @@ const TriggerOutput: React.FC<{
                                     Source code
                                 </NavLink>
                             </li>
+                            <li className="tab-list__tab">
+                                <NavLink
+                                    replace
+                                    className="tab-list__tab-link"
+                                    activeClassName="active"
+                                    to={`source-code`}
+                                >
+                                    Configuration
+                                </NavLink>
+                            </li>
                             {triggerDetails.stage !== 'DEPLOY' && (
                                 <li className="tab-list__tab">
                                     <NavLink
