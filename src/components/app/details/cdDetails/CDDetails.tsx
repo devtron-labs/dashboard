@@ -26,6 +26,7 @@ import Tippy from '@tippyjs/react'
 import {DetectBottom, TriggerDetails, GitChanges, Artifacts, BuildCardPopup} from '../cIDetails/CIDetails'
 import {History} from '../cIDetails/types'
 import {Moment12HourFormat} from '../../../../config';
+import DeploymentConfiguration from './DeploymentConfiguration';
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(["starting", "running", "pending"]);
 
@@ -387,7 +388,7 @@ const TriggerOutput: React.FC<{
                                     replace
                                     className="tab-list__tab-link"
                                     activeClassName="active"
-                                    to={`source-code`}
+                                    to={`configuration`}
                                 >
                                     Configuration
                                 </NavLink>
@@ -429,6 +430,7 @@ const HistoryLogs: React.FC<{triggerDetails: History, loading: boolean}> = ({ tr
                     </div>
                 </Route>}
                 <Route path={`${path}/source-code`} render={props => <GitChanges triggerDetails={triggerDetails} />} />
+                <Route path={`${path}/configuration`} render={props => <DeploymentConfiguration />} />
                 {triggerDetails.stage !== 'DEPLOY' && <Route path={`${path}/artifacts`} render={props => <Artifacts getArtifactPromise={()=>getCDBuildReport(appId, envId, pipelineId, triggerId)} triggerDetails={triggerDetails} />} />}
                 <Redirect to={triggerDetails.status.toLowerCase() === 'succeeded' ? `${path}/artifacts` : triggerDetails.stage === 'DEPLOY' ? `${path}/source-code` : `${path}/logs`} />
             </Switch>}
