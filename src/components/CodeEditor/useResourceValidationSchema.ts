@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-function useResourceValidationSchema(yaml: any, validatorSchema) {
+function useResourceValidationSchema(yaml: any, validatorSchema ,isKubernetes: boolean = true){
     useEffect(() => {
         if (!validatorSchema) return;
         yaml &&
@@ -9,9 +9,14 @@ function useResourceValidationSchema(yaml: any, validatorSchema) {
                 enableSchemaRequest: true,
                 hover: true,
                 completion: true,
-                isKubernetes: true,
+                isKubernetes: isKubernetes,
                 format: true,
-                schemas: [validatorSchema],
+                schemas:[
+                    {
+                        uri: 'https://devtron.ai/schema.json', // id of the first schema
+                        fileMatch: ['*'], // associate with our model
+                        schema: validatorSchema,
+                    }]
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [validatorSchema]);

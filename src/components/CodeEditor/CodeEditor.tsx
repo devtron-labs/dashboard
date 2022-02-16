@@ -23,7 +23,7 @@ import useResourceValidationSchema from './useResourceValidationSchema';
 // @ts-ignore
 window.MonacoEnvironment = {
     // @ts-ignore
-    getWorker(workerId, label) {
+    getWorker(workerId, label : string) :void{
         if (label === 'yaml') {
             return new YamlWorker();
         }
@@ -63,6 +63,7 @@ interface CodeEditorInterface {
     original?: string;
     focus?: boolean;
     validatorSchema?: any;
+    isKubernates?: boolean;
 }
 
 interface CodeEditorHeaderInterface {
@@ -112,7 +113,7 @@ interface CodeEditorState {
     height: string;
     noParsing: boolean;
 }
-const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema}) {
+const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema ,isKubernates}) {
     const editorRef = useRef(null)
     const monacoRef = useRef(null)
     const { width, height: windowHeight } = useWindowSize()
@@ -155,7 +156,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             'editor.background': '#0B0F22',
         }
     });
-    useResourceValidationSchema(yaml, validatorSchema);
+    useResourceValidationSchema(yaml, validatorSchema ,isKubernates);
     function editorDidMount(editor, monaco) {
         editorRef.current = editor
         monacoRef.current = monaco

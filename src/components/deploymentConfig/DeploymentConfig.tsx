@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate, toggleAppMetrics as updateAppMetrics } from './service';
 import { getChartReferences } from '../../services/service';
-import { Toggle, Progressing, ConfirmationDialog, useJsonYaml, isVersionLessThanOrEqualToTarget } from '../common';
+import { Toggle, Progressing, ConfirmationDialog,VisibleModal,useKeyDown,useSize, useJsonYaml, isVersionLessThanOrEqualToTarget } from '../common';
 import { useEffectAfterMount, showError } from '../common/helpers/Helpers'
 import { useParams } from 'react-router'
 import { toast } from 'react-toastify';
@@ -9,6 +9,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
 import ReactSelect from 'react-select';
 import { DOCUMENTATION } from '../../config';
+import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails';
 import './deploymentConfig.scss';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 
@@ -47,6 +48,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
     const [selectedChartRefId, selectChartRefId] = useState(0);
     const [selectedChart, selectChart] = useState<{ id: number, version: string, name: string; }>(null)
     const [template, setTemplate] = useState("")
+    const [schemas,setSchema] = useState()
     const [loading, setLoading] = useState(false)
     const [appMetricsLoading, setAppMetricsLoading] = useState(false)
     const [chartConfig, setChartConfig] = useState(null)
@@ -55,6 +57,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
     const [obj, json, yaml, error] = useJsonYaml(tempFormData, 4, 'yaml', true);
     const [chartConfigLoading, setChartConfigLoading] = useState(null)
     const [showConfirmation, toggleConfirmation] = useState(false)
+    const [showReadme, setReadme] = useState(false)
 
     useEffect(() => {
         initialise()
@@ -109,9 +112,10 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
     async function fetchDeploymentTemplate() {
         setChartConfigLoading(true)
         try {
-            const { result: { globalConfig: { defaultAppOverride, id, refChartTemplate, refChartTemplateVersion, isAppMetricsEnabled, chartRefId } } } = await getDeploymentTemplate(+appId, selectedChart.id)
+            const { result: { globalConfig: { defaultAppOverride, id, refChartTemplate, refChartTemplateVersion, isAppMetricsEnabled, chartRefId ,readme,schema} } } = await getDeploymentTemplate(+appId, selectedChart.id)
             setTemplate(defaultAppOverride)
-            setChartConfig({ id, refChartTemplate, refChartTemplateVersion, chartRefId })
+            setSchema(schema)
+            setChartConfig({ id, refChartTemplate, refChartTemplateVersion, chartRefId,readme})
             toggleAppMetrics(isAppMetricsEnabled)
             setTempFormData(JSON.stringify(defaultAppOverride, null, 2))
         }
@@ -169,6 +173,57 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
             toggleConfirmation(false)
         }
     }
+
+    function Readme({ readme, valuesYaml, handleClose,chartConfigLoading,setTempFormData }) {
+        const key = useKeyDown()
+        const { target, height} = useSize()
+        useEffect(() => {
+            if (key.join().includes('Escape')) {
+                handleClose()
+            }
+        }, [key.join()])
+        return (
+                
+            <div ref={target} className="advanced-config-readme">
+                <div className='container-top'>
+                    <div className='infobar'>
+                    <h5>Changes made to the yaml will be retained when you exit the README.</h5>
+                </div>
+                    <button className='cta' onClick={handleClose}>Done</button></div>
+                <div className='config-editor'>   
+                <div>
+                    
+                    <div className="readme">
+                        <h5>Readme</h5>
+                    </div>
+                    <div className="readmeEditor">
+                        <MarkDown markdown={readme} />
+                    </div>
+                    
+                </div>
+                <div className="codeEditor">
+                    <CodeEditor
+                        value={valuesYaml}
+                        height={724}
+                        
+                        onChange={(resp) => {
+                            setTempFormData(resp);
+                        }}
+                        mode="yaml"
+                        loading={chartConfigLoading}
+                    >
+                        <CodeEditor.Header>
+                            <CodeEditor.LanguageChanger />
+                            <CodeEditor.ValidationError />
+                        </CodeEditor.Header>
+                    </CodeEditor>
+                </div>
+                </div>
+            </div>
+        );
+    }
+
+
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
     let uniqueCharts = new Map<string, boolean>();
     let chartsWithUniqueNames = charts.filter(cv => {if (uniqueCharts.get(cv.name)) { return false } else { uniqueCharts.set(cv.name, true);  return true;}}).sort((a,b) => b.name.localeCompare(a.name));
@@ -273,10 +328,14 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                         value={tempFormData}
                         onChange={resp => { setTempFormData(resp) }}
                         mode="yaml"
+                        validatorSchema={schemas}
                         loading={chartConfigLoading}>
                         <CodeEditor.Header>
+                        <div className="flex" style={{ justifyContent: 'space-between', width: '100%' }}>
                             <CodeEditor.LanguageChanger />
                             <CodeEditor.ValidationError />
+                            <button className="cta small  cancel" type="button" onClick={e => setReadme(true)}>Readme</button>
+                            </div>
                         </CodeEditor.Header>
                     </CodeEditor>
                 </div>
@@ -284,6 +343,18 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                     <button className="cta" type="submit">{loading ? <Progressing /> : 'Save'}</button>
                 </div>
             </form>
+
+            {showReadme && <VisibleModal className="">
+                <Readme
+                    readme={chartConfig.readme}
+                    valuesYaml={tempFormData}
+                    handleClose={e => setReadme(false)}
+                    chartConfigLoading={chartConfigLoading}
+                    setTempFormData={resp => { setTempFormData(resp) }}
+                />
+            </VisibleModal>}
+
+
             {showConfirmation && <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warningIcon} />
                 <ConfirmationDialog.Body title="Retain overrides and update" />

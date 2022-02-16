@@ -46,3 +46,90 @@
 .deploymentConfig__warning{
     color: #6b778c;
 }
+
+
+
+.advanced-config-readme{
+    height: calc(100vh - 100px);
+    width: calc(100vw - 100px);
+    margin: 40px 50px 60px 50px;
+    background: white;
+    border-radius: 8px;
+    padding: 24px 24px 24px 24px;
+    display: grid;
+    grid-row-gap: 12px;
+
+    .container-top{
+        display:flex;
+    }
+    
+    .config-editor{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .infobar{
+        display: flex;
+        margin-right: 10px;
+        flex-grow: 1;
+        flex-direction: row;
+        align-items: center;
+        padding: 8px 16px;
+        height: 36px;
+        
+
+        background: #E5F2FF;
+        border: 1px solid #ABCFF3;
+        box-sizing: border-box;
+        border-radius: 4px;
+    }
+
+    button{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 94px;
+        height: 36px;
+    }
+
+    .readme{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 10px 16px;
+        width: auto;
+        height: 40px;
+        background: #EDF1F5;
+        border: 1px solid #D0D4D9;
+        border-bottom: 0px;
+        border-radius: 4px 0px 0px 0px;
+        
+        /* Inside auto layout */
+        
+        flex: none;
+        order: 0;
+        align-self: stretch;
+        flex-grow: 0;
+        margin: 0px 0px;
+    }
+
+    .readmeEditor{
+    
+        overflow-y: scroll;
+        background: #FFFFFF;
+        border: 1px solid #D0D4D9;
+        border-radius: 0px 0px 0px 4px;
+        height: calc(80vh - 70px);
+    }
+
+    .codeEditor{
+        background: #FFFFFF;
+        border: 1px solid #D0D4D9;
+        border-left: 0px;
+        border-radius: 0px 4px 4px 0px;
+        height: calc(90vh - 114px);
+        overflow: hidden;
+    }
+
+}
