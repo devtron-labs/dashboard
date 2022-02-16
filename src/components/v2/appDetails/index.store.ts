@@ -13,18 +13,13 @@ let _nodeFilter = {
 
 const publishFilteredNodes = () => {
     let filteredNodes = _nodesSubject.getValue().filter((_node: Node) => {
-        if (!_nodeFilter.filterType && !_nodeFilter.searchString) {
+        if (
+            (!_nodeFilter.filterType && !_nodeFilter.searchString) ||
+            _nodeFilter.filterType === 'ALL' ||
+            _nodeFilter.filterType.toLowerCase() === _node.health?.status?.toLowerCase()
+        ) {
             return true;
         }
-
-        if (_nodeFilter.filterType === 'ALL') {
-            return true;
-        }
-
-        if (_nodeFilter.filterType.toLowerCase() === _node.health?.status?.toLowerCase()) {
-            return true;
-        }
-
         return false;
     });
 
@@ -56,8 +51,6 @@ const IndexStore = {
     },
 
     publishAppDetails: (data: AppDetails) => {
-        console.log('setAppDetails', data);
-
         const _nodes = data.resourceTree.nodes || [];
 
         _appDetailsSubject.next({ ...data });
@@ -331,9 +324,10 @@ export function getPodsRootParentNameAndStatus(_nodes: Node[]): [string, string]
             );
             if ((_nodesById.get(_parent)?.parentRefs ?? []).length == 0) {
                 let selfNode = _nodesById.get(_parent);
-                if (selfNode) {
-                    rootParents.set(selfNode.group + '/' + selfNode.kind + '/' + selfNode.name, _status);
-                }
+                rootParents.set(
+                    selfNode ? selfNode.group + '/' + selfNode.kind + '/' + selfNode.name : _parent,
+                    _status,
+                );
             }
         });
         uniqueParents = _uniqueParents;
@@ -362,7 +356,9 @@ export const getPodsForRootNodeName = (_rootNode: string, _treeNodes: Node[]): i
         pods = pods.concat(rootNodes.filter((_n) => _n.kind.toLowerCase() == NodeType.Pod.toLowerCase()));
         rootNodes = rootNodes.flatMap((_n) => _n.childNodes ?? []);
     }
-    return pods;
+
+    // Using set to remove duplicate nodes from the pods array.
+    return Array.from(new Set<iNode>(pods));
 };
 
 export default IndexStore;

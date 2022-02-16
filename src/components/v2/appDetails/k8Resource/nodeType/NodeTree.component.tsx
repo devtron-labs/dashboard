@@ -189,6 +189,32 @@ export function generateSelectedNodes(
         if (parents.length === 1 && _nodeLowerCase === NodeType.Pod.toLowerCase() && clickedNodes.has(_nodeLowerCase)) {
             clickedNodes.delete(_nodeLowerCase);
         } else {
+            /**
+             * Start: TODO: Revisit this
+             * Deleting selection of nodes from clickedNodes if other leafNode is selected & currently
+             * selected node is not present under selected filter tab (i.e. Healthy, Progressing, etc.).
+             */
+            const _parentAggKeys = Object.values(AggregationKeys);
+            const _nodeTypes = Object.values(NodeType);
+
+            const _clickedNodes = Array.from(clickedNodes.keys()).filter(
+                (_node) =>
+                    !(
+                        _parentAggKeys.some((_p) => _p.toLowerCase() === _node.toLowerCase()) ||
+                        _node.toLowerCase() === NodeType.Pod.toLowerCase()
+                    ),
+            );
+
+            if (
+                _clickedNodes.length > 0 &&
+                _nodeLowerCase !== NodeType.Pod.toLowerCase() &&
+                _nodeTypes.some((_type) => _clickedNodes.includes(_type.toLowerCase()))
+            ) {
+                _clickedNodes.forEach((_node) => clickedNodes.delete(_node));
+            }
+            /** End: Revisit this */
+
+            // Adding the selected node in clickedNodes
             clickedNodes.set(_nodeLowerCase, '');
         }
     }
