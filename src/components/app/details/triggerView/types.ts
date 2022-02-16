@@ -14,6 +14,7 @@ export interface CDMaterialProps {
   selectImage: (index: number, materialType: string) => void;
   toggleSourceInfo: (materialIndex: number) => void;
   closeCDModal: () => void;
+  runningOnParentCd?: boolean
 }
 
 export interface CDMaterialType {
@@ -104,6 +105,7 @@ export interface NodeAttr {
   stageIndex?: number; //used for CDs
   sourceNodes?: Array<NodeAttr> //used for CI
   downstreamNodes?: Array<NodeAttr>
+  runningOnParentCd?: boolean
 }
 
 export interface DownStreams {
