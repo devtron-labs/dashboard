@@ -19,7 +19,7 @@ export const URLS = {
     APP_VALUES: 'values',        // for V2 router
     APP_DETAILS: 'details',
     APP_DEPLOYMNENT_HISTORY : 'deployments',
-    APP_DETAILS_K8: 'k8s-resources',// for V2 
+    APP_DETAILS_K8: 'k8s-resources',// for V2
     APP_DETAILS_LOG: 'log-analyzer',// for V2
     APP_DETAILS_DEFAULT: 'default-view',
     APP_TRIGGER: 'trigger',
@@ -145,4 +145,9 @@ interface StageStatusResponseItem {
 export function isCIPipelineCreated(responseArr: StageStatusResponseItem[]): boolean {
     let ciPipeline = responseArr.find((item) => item.stageName === 'CI_PIPELINE');
     return ciPipeline.status;
+}
+
+export function isCDPipelineCreated(responseArr: StageStatusResponseItem[]): boolean {
+    let cdPipeline = responseArr.find((item) => item.stageName === 'CD_PIPELINE');
+    return cdPipeline.status;
 }

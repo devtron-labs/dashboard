@@ -155,8 +155,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
     closePipeline = () => {
         const LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`;
         this.props.history.push(LINK);
-        //update isCipipeline in AppCompose
-        if (!this.props.isCiPipeline) this.props.respondOnSuccess();
+        //update isCDpipeline in AppCompose
+        if (!this.props.isCDPipeline) this.props.respondOnSuccess();
     }
 
     renderDeleteDialog = () => {

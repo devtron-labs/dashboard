@@ -84,6 +84,7 @@ export interface CDPipelineState {
     isAdvanced: boolean;
     forceDeleteDialogMessage: string;
     forceDeleteDialogTitle: string;
+    showSuccessScreen: boolean;
 }
 
 

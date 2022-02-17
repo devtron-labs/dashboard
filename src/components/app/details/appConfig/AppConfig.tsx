@@ -1,7 +1,7 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, useLocation, useRouteMatch, useHistory } from 'react-router';
 import { NavLink, Link, Route, Switch } from 'react-router-dom';
-import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, isCIPipelineCreated, ViewType, NavItem } from '../../../../config';
+import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, isCIPipelineCreated, ViewType, NavItem, isCDPipelineCreated } from '../../../../config';
 import { ErrorBoundary, Progressing, usePrevious, showError, DeleteDialog, ConfirmationDialog, useAsync, ErrorScreenManager } from '../../../common';
 import { getAppConfigStatus, getAppOtherEnvironment, getWorkflowList } from '../../../../services/service';
 import { deleteApp } from './appConfig.service';
@@ -41,6 +41,7 @@ export interface AppConfigState {
     isUnlocked: any,
     appName: string;
     isCiPipeline: boolean;
+    isCDPipeline: boolean;
     showDeleteConfirm: boolean;
     navItems: NavItem[],
     maximumAllowedUrl: string;
@@ -59,31 +60,57 @@ function isUnlocked(stage) {
     }
 }
 
+function getCompletedStep(isUnlocked) {
+    if (isUnlocked.workflowEditor) {
+        return 3;
+    } else if (isUnlocked.deploymentTemplate) {
+        return 2;
+    } else if (isUnlocked.dockerBuildConfig) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 function getNavItems(isUnlocked, appId): { navItems } {
+    const completedSteps = getCompletedStep(isUnlocked);
+    const completedPercent = completedSteps * 25;
     let navItems = [
         {
             title: 'Git Repository',
             href: `/app/${appId}/edit/materials`,
             stage: STAGE_NAME.GIT_MATERIAL,
             isLocked: !isUnlocked.material,
+            supportDocumentURL: 'https://docs.devtron.ai/devtron/setup/global-configurations/git-accounts',
+            flowCompletionPercent: completedPercent,
+            currentStep: completedSteps,
         },
         {
             title: 'Docker Build Config',
             href: `/app/${appId}/edit/docker-build-config`,
             stage: STAGE_NAME.CI_CONFIG,
             isLocked: !isUnlocked.dockerBuildConfig,
+            supportDocumentURL: 'https://docs.devtron.ai/devtron/setup/global-configurations/docker-registries',
+            flowCompletionPercent: completedPercent,
+            currentStep: completedSteps,
         },
         {
             title: 'Deployment Template',
             href: `/app/${appId}/edit/deployment-template`,
             stage: STAGE_NAME.DEPLOYMENT_TEMPLATE,
             isLocked: !isUnlocked.deploymentTemplate,
+            supportDocumentURL: 'https://docs.devtron.ai/devtron/user-guide/creating-application/deployment-template',
+            flowCompletionPercent: completedPercent,
+            currentStep: completedSteps,
         },
         {
             title: 'Workflow Editor',
             href: `/app/${appId}/edit/workflow`,
             stage: "WORKFLOW",
             isLocked: !isUnlocked.workflowEditor,
+            supportDocumentURL: 'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow',
+            flowCompletionPercent: completedPercent,
+            currentStep: completedSteps,
         },
         {
             title: 'ConfigMaps',
@@ -121,6 +148,7 @@ export default function AppConfig() {
         stageName: STAGE_NAME.LOADING,
         appName: '',
         isCiPipeline: false,
+        isCDPipeline: false,
         showDeleteConfirm: false,
         navItems: [],
         maximumAllowedUrl: '',
@@ -139,6 +167,8 @@ export default function AppConfig() {
             }
             let redirectUrl = navItems[index - 1].href;
             let isCiPipeline = isCIPipelineCreated(configStatusRes.result);
+            let isCDPipeline = isCDPipelineCreated(configStatusRes.result);
+
             setState({
                 view: ViewType.FORM,
                 stattusCode: 200,
@@ -147,6 +177,7 @@ export default function AppConfig() {
                 isUnlocked: configs,
                 stageName: lastConfiguredStage,
                 isCiPipeline,
+                isCDPipeline,
                 navItems,
                 maximumAllowedUrl: redirectUrl,
                 canDeleteApp: workflowRes.result.workflows.length === 0,
@@ -194,12 +225,14 @@ export default function AppConfig() {
             }
             let redirectUrl = navItems[index - 1].href;
             let isCiPipeline = isCIPipelineCreated(configStatusRes.result);
+            let isCDPipeline = isCDPipelineCreated(configStatusRes.result);
 
             setState(state => ({
                 ...state,
                 isUnlocked: configs,
                 stageName: lastConfiguredStage,
                 isCiPipeline,
+                isCDPipeline,
                 navItems,
                 maximumAllowedUrl: redirectUrl,
             }));
@@ -244,13 +277,14 @@ export default function AppConfig() {
     else if (state.view === ViewType.ERROR) return <ErrorScreenManager code={state.stattusCode} />
     else return <>
         <div className="app-compose" >
-            <div className="app-compose__nav flex column left top position-rel">
-                <Navigation deleteApp={showDeleteConfirmation} navItems={state.navItems} />
+            <div className={'app-compose__nav flex column left top position-rel ' + (state.isCDPipeline && 'hide-app-config-help')}>
+                <Navigation deleteApp={showDeleteConfirmation} navItems={state.navItems} isCDPipeline={state.isCDPipeline}/>
             </div>
             <div className="app-compose__main">
                 <AppComposeRouter navItems={state.navItems}
                     isUnlocked={state.isUnlocked}
                     isCiPipeline={state.isCiPipeline}
+                    isCDPipeline={state.isCDPipeline}
                     maxAllowedUrl={state.maximumAllowedUrl}
                     respondOnSuccess={respondOnSuccess}
                     getWorkflows={reloadWorkflows} />
@@ -280,35 +314,53 @@ const NextButton: React.FC<{ isCiPipeline: boolean; navItems, currentStageName, 
     return null;
 };
 
-function Navigation({ navItems, deleteApp }) {
+function Navigation({ navItems, deleteApp, isCDPipeline}) {
+const pathname = window.location.pathname;
+  const selectedNav = navItems.filter((navItem) => pathname.indexOf(navItem.href)>=0)[0];
+  //const showAppConfigHelp = navItems.filter((navItem) => navItem.stage === 'WORKFLOW')[0].isLocked;
+  //console.log(selectedNav, pathname);
     return (
         <>
+
+            {!isCDPipeline && <div className="help-container">
+                <div>{selectedNav.currentStep}/4 Completed</div>
+                <div className="progress-container">
+                    <div className="progress-tracker" style={{width: selectedNav.flowCompletionPercent +'%'}}></div>
+                </div>
+                <div className="fs-13 font-weight-600">{selectedNav.title}</div>
+                <div className="need-help font-weight-600">
+                    <a className="learn-more__href" href={selectedNav.supportDocumentURL} target="_blank" rel="noreferrer noopener">
+                        Need help?
+                    </a>
+                </div>
+            </div>}
             {navItems.map((item) => {
-                if (item.stage !== "ENV_OVERRIDE" || (item.stage === "ENV_OVERRIDE" && item.isLocked)) {
-                    return <NavLink key={item.title}
-                        onClick={(event) => {
-                            if (item.isLocked) event.preventDefault();
-                        }}
-                        className={'app-compose__nav-item'}
-                        to={item.href}>
-                        {item.title}
-                        {item.isLocked && <Lock className="app-compose__nav-icon icon-dim-20 mt-10" />}
-                    </NavLink>
-                }
-                else {
-                    return <EnvironmentOverrideRouter key={item.title} />
+                if (item.stage !== 'ENV_OVERRIDE' || (item.stage === 'ENV_OVERRIDE' && item.isLocked)) {
+                    return (
+                        <NavLink
+                            key={item.title}
+                            onClick={(event) => {
+                                if (item.isLocked) event.preventDefault();
+                            }}
+                            className={'app-compose__nav-item'}
+                            to={item.href}
+                        >
+                            {item.title}
+                            {item.isLocked && <Lock className="app-compose__nav-icon icon-dim-20 mt-10" />}
+                        </NavLink>
+                    );
+                } else {
+                    return <EnvironmentOverrideRouter key={item.title} />;
                 }
             })}
-            <button type="button"
-                className="cta delete cta-delete-app mt-8"
-                onClick={deleteApp}>
+            <button type="button" className="cta delete cta-delete-app mt-8" onClick={deleteApp}>
                 Delete Application
             </button>
         </>
     );
 }
 
-function AppComposeRouter({ isUnlocked, navItems, respondOnSuccess, isCiPipeline, getWorkflows, maxAllowedUrl }) {
+function AppComposeRouter({ isUnlocked, navItems, respondOnSuccess, isCiPipeline, getWorkflows, maxAllowedUrl, isCDPipeline }) {
     const { path } = useRouteMatch();
 
     return <ErrorBoundary>
@@ -352,7 +404,7 @@ function AppComposeRouter({ isUnlocked, navItems, respondOnSuccess, isCiPipeline
                         <Route path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
                             render={(props) => (
                                 <WorkflowEdit configStatus={1}
-                                    isCiPipeline={isCiPipeline}
+                                    isCDPipeline={isCDPipeline}
                                     respondOnSuccess={respondOnSuccess}
                                     getWorkflows={getWorkflows}
                                 />

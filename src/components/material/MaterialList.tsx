@@ -7,6 +7,7 @@ import { CreateMaterial } from './CreateMaterial';
 import { UpdateMaterial } from './UpdateMaterial';
 import { MaterialListProps, MaterialListState } from './material.types';
 import './material.css';
+import { ReactComponent as GitHub } from '../../assets/icons/ic-sample-app.svg';
 
 
 class MaterialList extends Component<MaterialListProps, MaterialListState> {
@@ -104,6 +105,33 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         </>
     }
 
+    renderSampleApp() {
+      if (this.state.materials.length) {
+          return '';
+      }
+      return (
+          <div className="sample-repo-container">
+              <span className="mr-8">
+                  <GitHub />{' '}
+              </span>
+              <div>
+                  <h1 className="sample-title">Looking to deploy a sample application?</h1>
+                  <span className="link-container">
+                      <a
+                          rel="noreferrer noopener"
+                          target="_blank"
+                          className="learn-more__href"
+                          href="https://github.com/devtron-labs/getting-started-nodejs"
+                      >
+                          {' '}
+                          Check git repository for a simple Node.js application
+                      </a>{' '}
+                  </span>
+              </div>
+          </div>
+      );
+    }
+
     render() {
         if (this.state.view == ViewType.LOADING) return <Progressing pageLoader />
         else if (this.state.view == ViewType.ERROR) {
@@ -112,6 +140,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         else {
             return <div className="form__app-compose">
                 {this.renderPageHeader()}
+                {this.renderSampleApp()}
                 <CreateMaterial key={this.state.materials.length}
                     appId={Number(this.props.match.params.appId)}
                     isMultiGit={this.state.materials.length > 0}

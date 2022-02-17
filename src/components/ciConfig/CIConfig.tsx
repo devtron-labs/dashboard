@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Select from '../common/Select/Select'
-import { Progressing, useForm, showError } from '../common'
+import { Progressing, useForm, showError, multiSelectStyles } from '../common'
 import { DOCUMENTATION, PATTERNS } from '../../config'
 import { saveCIConfig, updateCIConfig, getDockerRegistryMinAuth } from './service';
 import { getSourceConfig, getCIConfig } from '../../services/service';
@@ -12,6 +12,12 @@ import { NavLink } from 'react-router-dom';
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import './CIConfig.scss';
+import ReactSelect, { components } from 'react-select';
+import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
+import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
+import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
+import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
+import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 
 export default function CIConfig({ respondOnSuccess, ...rest }) {
     const [dockerRegistries, setDockerRegistries] = useState(null)
@@ -59,9 +65,11 @@ export default function CIConfig({ respondOnSuccess, ...rest }) {
 
 function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
     const [isCollapsed, setIsCollapsed] = useState(false)
+    const _selectedMaterial = ciConfig && ciConfig.dockerBuildConfig.gitMaterialId ? sourceConfig.material.find(material => material.id === ciConfig.dockerBuildConfig.gitMaterialId) : Array.isArray(sourceConfig.material) && (sourceConfig.material[0]);
+    const [selectedMaterial, setSelectedMaterial] = useState(_selectedMaterial)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
-            repository: { value: ciConfig && ciConfig.dockerBuildConfig.gitMaterialId ? sourceConfig.material.find(material => material.id === ciConfig.dockerBuildConfig.gitMaterialId).checkoutPath : Array.isArray(sourceConfig.material) && sourceConfig.material.length === 1 ? (sourceConfig.material[0].checkoutPath || "./") : "", error: "" },
+            repository: { value: _selectedMaterial.name, error: "" },
             dockerfile: { value: ciConfig ? ciConfig.dockerBuildConfig.dockerfileRelativePath : "Dockerfile", error: "" },
             registry: { value: ciConfig ? ciConfig.dockerRegistry : (Array.isArray(dockerRegistries) ? dockerRegistries.find(reg => reg.isDefault).id || "" : ""), error: "" },
             repository_name: { value: ciConfig ? ciConfig.dockerRepository : "", error: "" },
@@ -130,14 +138,14 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             dockerRepository: repository_name.value || "",
             beforeDockerBuild: [],
             dockerBuildConfig: {
-                dockerfilePath: `${repository.value}/${dockerfile.value}`.replace("//", "/"),
+                dockerfilePath: `${selectedMaterial.checkoutPath}/${dockerfile.value}`.replace("//", "/"),
                 args: args.reduce((agg, { k, v }) => {
                     if (k && v) agg[k] = v;
                     return agg
                 }, {}),
                 dockerfileRepository: repository.value,
                 dockerfileRelativePath: dockerfile.value.replace(/^\//, ""),
-                gitMaterialId: sourceConfig.material.find(material => material.checkoutPath === repository.value).id
+                gitMaterialId: selectedMaterial.id
             },
             afterDockerBuild: [],
             appName: '',
@@ -168,6 +176,11 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         setIsCollapsed(!isCollapsed)
     }
 
+    function handleFileLocationChange(selectedMaterial) {
+        setSelectedMaterial(selectedMaterial);
+        repository.value = selectedMaterial.name;
+    }
+
     const { repository, dockerfile, registry, repository_name, key, value } = state
     return (
         <div className="form__app-compose">
@@ -175,7 +188,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             <p className="form__subtitle">Required to execute CI pipelines for this application.
             <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}> Learn more</a> </span></p>
             <div className="white-card white-card__docker-config">
-                <div className="fs-16 fw-6 pb-16">Image store</div>
+                <div className="fs-14 fw-6 pb-16">Selected repository will be used to store container images for this application</div>
                 <div className="mb-4 form-row__docker">
                     <div className="form__field">
                         <label htmlFor="" className="form__label">Container registry*</label>
@@ -190,7 +203,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         {registry.error && <label className="form__error">{registry.error}</label>}
                     </div>
                     <div className="form__field">
-                        <label htmlFor="" className="form__label">Container Repository</label>
+                        <label htmlFor="" className="form__label">Container Repository (desired format: username/repo-name)</label>
                         <input
                             tabIndex={4}
                             type="text"
@@ -206,22 +219,74 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         {!ciConfig && <label className="form__error form__error--info">New repository will be created if not provided</label>}
                     </div>
                 </div>
-                <div className="fs-16 fw-6 pb-16">Checkout Path</div>
+                <div className="fs-14 fw-6 pb-16">Docker file location</div>
                 <div className="mb-4 form-row__docker">
                     <div className="form__field">
-                        <label className="form__label">Git checkout path*</label>
-                        <Select onChange={handleOnChange} name='repository' value={repository.value} tabIndex={1}>
-                            <Select.Button>{repository.value || "Select repository"}</Select.Button>
-                            {sourceConfig.material.map(config => <Select.Option key={config.id} value={config.checkoutPath || "./"}>{config.checkoutPath || "./"}</Select.Option>)}
-                        </Select>
+                        <label className="form__label">Select repository containing docker file</label>
+                        <ReactSelect className="m-0"
+                        tabIndex='1'
+                        isMulti={false}
+                        isClearable={false}
+                        options={sourceConfig.material}
+                        getOptionLabel={option => `${option.name}`}
+                        getOptionValue={option => `${option.checkoutPath}`}
+                        value={selectedMaterial}
+                        styles={{
+                            ...multiSelectStyles,
+                            menuList: (base) => {
+                                return {
+                                    ...base,
+                                    position: 'relative',
+                                    paddingBottom: '0px',
+                                    maxHeight: '250px',
+                                }
+                            }
+                        }}
+                        components={{
+                            IndicatorSeparator: null,
+                            Option: (props) => {
+                                return <components.Option {...props}>
+                                    {props.isSelected ? <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8" /> : <span className="inline-block icon-dim-16 mr-8"></span>}
+
+                                    {props.data.url.includes("gitlab") ? <GitLab className="mr-8 vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.url.includes("github") ? <GitHub className="mr-8 vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.url.includes("bitbucket") ? <BitBucket className="mr-8 vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.url.includes("gitlab") || props.data.url.includes("github") || props.data.url.includes("bitbucket") ? null : <Git className="mr-8 vertical-align-middle icon-dim-20" />}
+
+                                    {props.label}
+                                </components.Option>
+                            },
+                            Control: (props) => {
+                                let value = "";
+
+                                if (props.hasValue) {
+                                    value = props.getValue()[0].url;
+                                }
+                                let showGit = value && !value.includes("github") && !value.includes("gitlab") && !value.includes("bitbucket")
+                                return <components.Control {...props}>
+
+                                    {value.includes("github") ? <GitHub className="icon-dim-20 ml-8" /> : null}
+                                    {value.includes("gitlab") ? <GitLab className="icon-dim-20 ml-8" /> : null}
+                                    {value.includes("bitbucket") ? <BitBucket className="icon-dim-20 ml-8" /> : null}
+                                    {showGit ? <Git className="icon-dim-20 ml-8" /> : null}
+                                    {props.children}
+                                </components.Control>
+
+                            },
+                        }}
+
+                        onChange={(selected) => { handleFileLocationChange(selected) }}
+                    />
                         {repository.error && <label className="form__error">{repository.error}</label>}
                     </div>
                     <div className="form__field">
                         <label htmlFor="" className="form__label">Docker file path (relative)*</label>
+                        <div className="docker-flie-container">
+                        <span className="checkout-path-container">{selectedMaterial.checkoutPath}</span>
                         <input
                             tabIndex={2}
                             type="text"
-                            className="form__input"
+                            className="form__input file-name"
                             placeholder="Dockerfile"
                             name="dockerfile"
                             value={dockerfile.value}
@@ -229,15 +294,16 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                             autoFocus
                             autoComplete={"off"}
                         />
+                        </div>
                         {dockerfile.error && <label className="form__error">{dockerfile.error}</label>}
                     </div>
                 </div>
                 <hr className="mt-0 mb-20" />
                 <div onClick={toggleCollapse} className="flex left cursor">
                     <div>
-                        <div className="fs-16 fw-6 ">Advanced</div>
+                        <div className="fs-14 fw-6 ">Advanced (optional)</div>
                         <div className="form-row form-row__add-parameters">
-                            <label htmlFor="" className=" fs-14 fw-4 cn-7">Docker build arguments</label>
+                            <label htmlFor="" className="fs-13 fw-4 cn-7">Docker build arguments</label>
                         </div>
                     </div>
                     <span className="docker__dropdown ">

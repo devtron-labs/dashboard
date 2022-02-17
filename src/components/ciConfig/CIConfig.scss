@@ -32,6 +32,17 @@
         }
         .form__field {
             margin-bottom: 16px;
+            .docker-flie-container{
+              display: flex;
+              .checkout-path-container{
+                padding: 10px;
+                background: #D0D4D9;
+                border-radius: 4px 0 0 4px;
+              }
+              .file-name{
+                border-radius: 0 4px 4px 0;
+              }
+            }
         }
         .form__error {
             position: unset;

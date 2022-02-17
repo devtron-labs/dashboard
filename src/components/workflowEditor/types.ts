@@ -23,7 +23,7 @@ export interface WorkflowEditState {
 
 export interface WorkflowEditProps extends RouteComponentProps<{ appId: string, workflowId: string, ciPipelineId: string, cdPipelineId: string }> {
     configStatus: number;
-    isCiPipeline: boolean;
+    isCDPipeline: boolean;
     respondOnSuccess: () => void;
     getWorkflows: () => void;
 }
