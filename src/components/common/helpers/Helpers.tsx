@@ -681,7 +681,7 @@ export function useJsonYaml(value, tabSize = 4, language = 'json', shouldRun = f
         }
         if (obj && typeof obj === 'object') {
             setJson(JSON.stringify(obj, null, tabSize));
-            setYaml(YAML.stringify(obj, { indent: tabSize }));
+            setYaml(YAML.stringify(obj, { indent: 2 }));
             setNativeObject(obj);
             setError('');
         } else {

@@ -304,7 +304,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                         </div>
                         {isLogAnalyzer && podContainerOptions.podOptions.length > 0 && (
                             <React.Fragment>
-                                <div className="cn-6">Pods</div>
+                                <div className="cn-6 ml-8 mr-10 ">Pods</div>
                                 <div className="cn-6 flex left">
                                     <div style={{ minWidth: '200px' }}>
                                         <Select
@@ -326,7 +326,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                                 menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', width: '150%'}),
                                                 control: (base, state) => ({
                                                     ...base,
-                                                    border: '0px',
+                                                    borderColor: 'transparent',
                                                     backgroundColor: 'transparent',
                                                     minHeight: '24px !important',
                                                     cursor: 'pointer',
@@ -336,7 +336,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                                     fontWeight: 600,
                                                     color: '#06c',
                                                     direction: 'rtl',
-                                                    marginLeft: 0
+                                                    marginLeft: "2px"
                                                 }),
                                                 indicatorsContainer: (provided, state) => ({
                                                     ...provided,
@@ -364,9 +364,9 @@ function LogsComponent({ selectedTab, isDeleted }) {
 
                         {(podContainerOptions?.containerOptions ?? []).length > 0 && (
                             <React.Fragment>
-                                <div className="cn-6 ml-8">Container </div>
+                                <div className="cn-6 ml-8 mr-10">Container </div>
 
-                                <div style={{ minWidth: '145px' }}>
+                                <div style={{ minWidth: '150px' }}>
                                     <Select
                                         placeholder="Select Containers"
                                         options={podContainerOptions.containerOptions.map((_container) => ({
@@ -391,7 +391,7 @@ function LogsComponent({ selectedTab, isDeleted }) {
                                             menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', width: '150%'}),
                                             control: (base, state) => ({
                                                 ...base,
-                                                border: '0px',
+                                                borderColor: 'transparent',
                                                 backgroundColor: 'transparent',
                                                 minHeight: '24px !important',
                                                 cursor: 'pointer',
