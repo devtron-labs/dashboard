@@ -3,11 +3,16 @@ import { useParams } from 'react-router'
 import { getDeploymentTemplate, createDeploymentTemplate, updateDeploymentTemplate, deleteDeploymentTemplate, createNamespace, toggleAppMetrics, chartRefAutocomplete } from './service'
 import fileIcon from '../../assets/icons/ic-file.svg'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
+import arrowSquareOut from '../../assets/icons/misc/arrow-square-out.svg';
+import checkGreen from '../../assets/icons/misc/checkGreen.svg';
+import arrowSquareout from '../../assets/icons/misc/ArrowSquareOut.svg';
 import { Override } from './ConfigMapOverrides'
-import { Select, mapByKey, showError, not, Progressing, ConfirmationDialog, Info, useEffectAfterMount, useJsonYaml } from '../common'
+import { Select, mapByKey, showError, not, Progressing, ConfirmationDialog,VisibleModal, Info, useEffectAfterMount,useKeyDown,useSize, useJsonYaml } from '../common'
 import CodeEditor from '../CodeEditor/CodeEditor';
 import { toast } from 'react-toastify'
 import { OptApplicationMetrics } from '../deploymentConfig/DeploymentConfig'
+import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails';
+import '../deploymentConfig/deploymentConfig.scss';
 import warningIcon from '../../assets/img/warning-medium.svg'
 import YAML from 'yaml'
 
@@ -164,6 +169,8 @@ export default function DeploymentTemplateOverride({ parentState, setParentState
 
 function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initialise, handleAppMetrics, handleDelete, chartRefLoading }) {
     const [tempValue, setTempValue] = useState("")
+    const [showReadme, setReadme] = useState(false)
+    const [schemas,setSchema] = useState()
     const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
     const [loading, setLoading] = useState(false)
     const { appId, envId } = useParams<{ appId, envId }>()
@@ -243,12 +250,16 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                         defaultValue={state && state.data && state.duplicate ? YAML.stringify(state.data.globalConfig, { indent: 4 }) : ""}
                         mode="yaml"
                         tabSize={4}
+                        validatorSchema={state.schema}
                         readOnly={!state.duplicate}
                         loading={chartRefLoading}
                     >
-                        <CodeEditor.Header>
+                            <CodeEditor.Header>
+                            <div className="flex" style={{ justifyContent: 'space-between', width: '100%' }}>
                             <CodeEditor.LanguageChanger />
                             <CodeEditor.ValidationError />
+                            <button className="readme-button" type='button' onClick={e => setReadme(true)}>README<img src={arrowSquareOut} alt="add-worflow" className="icon-dim-18 mb-2 ml-4" /></button>
+                            </div>
                         </CodeEditor.Header>
                     </CodeEditor>
                 </div>
@@ -256,6 +267,19 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                     <button className="cta" disabled={!state.duplicate}>{loading ? <Progressing /> : 'Save'}</button>
                 </div>
             </form>
+            {showReadme && <VisibleModal className="">
+                <Readme
+                    value={state ? state.duplicate ? YAML.stringify(state.duplicate, { indent: 4 }) : YAML.stringify(state.data.globalConfig, { indent: 4 }) : ""}
+                    onChange={res => setTempValue(res)}
+                    defaultValue={state && state.data && state.duplicate ? YAML.stringify(state.data.globalConfig, { indent: 4 }) : ""}
+                    mode="yaml"
+                    tabSize={4}
+                    readOnly={!state.duplicate}
+                    loading={chartRefLoading}
+                    handleClose={e => setReadme(false)}
+                    readme={state.data.readme}
+                />
+            </VisibleModal>}
             {appMetricsEnvironmentVariableEnabled && <OptApplicationMetrics
                 currentVersion={state.charts.get(state.selectedChartRefId).version}
                 onChange={handleAppMetrics}
@@ -314,4 +338,52 @@ function NameSpace({ originalNamespace = "", chartRefId, id }) {
             </div>}
         </form>
     )
+}
+
+function Readme({ value,onChange,defaultValue,mode,tabSize,readOnly,loading,handleClose,readme}) {
+    const key = useKeyDown()
+    const { target ,height,width } = useSize()
+    useEffect(() => {
+        if (key.join().includes('Escape')) {
+            handleClose()
+        }
+    }, [key.join()])
+    return (
+            
+        <div ref={target} className="advanced-config-readme">
+            <div className='container-top'>
+                <div className='infobar'>
+                <h5><img src={checkGreen} alt="add-worflow" className="icon-dim-18 mr-5" />Changes made to the yaml will be retained when you exit the README.</h5>
+            </div>
+            <button className='cta' onClick={handleClose}><img src={arrowSquareout} alt="add-worflow" className="icon-dim-18 mt-3 mr-3" />Done</button></div>
+            <div className='config-editor'>   
+            <div>
+                <div className="readme">
+                    <h5>Readme</h5>
+                </div>
+                <div className="readmeEditor">
+                    <MarkDown markdown={readme} />
+                </div>
+                
+            </div>
+            <div className="codeEditor">
+                <CodeEditor
+                    value={value}
+                    onChange={onChange}
+                    defaultValue={defaultValue}
+                    mode={mode}
+                    height={600}
+                    tabSize={tabSize}
+                    readOnly={readOnly}
+                    loading={loading}
+                >
+                    <CodeEditor.Header>
+                        <CodeEditor.LanguageChanger />
+                        <CodeEditor.ValidationError />
+                    </CodeEditor.Header>
+                </CodeEditor>
+            </div>
+            </div>
+        </div>
+    );
 }
