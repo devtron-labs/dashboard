@@ -1,10 +1,13 @@
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
+import { AutoSizer } from 'react-virtualized';
+import { useThrottledEffect, copyToClipboard, VisibleModal } from '../../../../../../common';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import * as XtermWebfont from 'xterm-webfont';
 import SockJS from 'sockjs-client';
 import { SocketConnectionType } from '../node.type';
+import { ReactComponent as CheckIcon } from '../../../../../../../assets/icons/ic-check.svg';
 import { get } from '../../../../../../../services/api';
 import ReactGA from 'react-ga';
 
@@ -30,6 +33,12 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const [ga_session_duration, setGA_session_duration] = useState<moment.Moment>();
     const [isReconnection, setIsReconnection] = useState(false);
     const [firstMessageReceived, setFirstMessageReceived] = useState(false);
+    const [popupText, setPopupText] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (!popupText) return;
+        setTimeout(() => setPopupText(false), 2000);
+    }, [popupText]);
 
     const appDetails = IndexStore.getAppDetails();
 
@@ -46,7 +55,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 foreground: '#FFFFFF',
             },
         });
-
+        terminal.onSelectionChange(handleSelectionChange);
         fitAddon = new FitAddon();
         const webFontAddon = new XtermWebfont();
         terminal.loadAddon(fitAddon);
@@ -283,6 +292,13 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             });
     };
 
+    function handleSelectionChange() {
+        copyToClipboard(terminal.getSelection());
+        if (terminal.getSelection()) {
+            setPopupText(true);
+        }
+    }
+
     return (
         <div className="terminal-view">
             <div
@@ -321,7 +337,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     </React.Fragment>
                 )}
             </div>
-
+            
             <div>
                 <div id="terminal-id" className="pl-20"></div>
             </div>
@@ -331,6 +347,33 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     {terminalViewProps.socketConnection}
                 </p>
             )}
+            <AutoSizer>
+                {({ height, width }) => (
+                    <ResizableLogs showCopyToast={popupText} fitAddon={fitAddon} height={height} width={width} />
+                )}
+            </AutoSizer>
+        </div>
+    );
+}
+
+function ResizableLogs({ fitAddon, height, width, showCopyToast }) {
+    useThrottledEffect(
+        () => {
+            if (fitAddon) fitAddon.fit();
+        },
+        100,
+        [height, width],
+    );
+
+    return (
+        <div id="xterm-logs" style={{ height, width }}>
+            <span
+                className={`br-8 bcn-0 cn-9 clipboard-toast ${showCopyToast ? 'clipboard-toast--show' : ''}`}
+                style={{ zIndex: 9 }}
+            >
+                <CheckIcon className="icon-dim-24 scn-9" />
+                <div className="">Copied!</div>
+            </span>
         </div>
     );
 }
