@@ -158,6 +158,15 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     });
     useResourceValidationSchema(yaml, validatorSchema ,isKubernates);
     function editorDidMount(editor, monaco) {
+        if (
+            mode === 'yaml' &&
+            editor &&
+            typeof editor.getModel === 'function' &&
+            typeof editor.getModel().updateOptions === 'function'
+        ) {
+            editor.getModel().updateOptions({ tabSize: 2 });
+        }
+        
         editorRef.current = editor
         monacoRef.current = monaco
         if (inline) {
@@ -230,7 +239,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         }
         let final = value
         if (obj) {
-            final = state.mode === 'json' ? JSON.stringify(obj, null, tabSize) : YAML.stringify(obj, { indent: 4 })
+            final = state.mode === 'json' ? JSON.stringify(obj, null, tabSize) : YAML.stringify(obj, { indent: 2 })
         }
         dispatch({ type: 'setCode', value: final })
     }, [value, noParsing])

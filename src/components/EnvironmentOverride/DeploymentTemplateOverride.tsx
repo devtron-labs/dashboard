@@ -245,11 +245,10 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                 </div>
                 <div className="code-editor-container">
                     <CodeEditor
-                        value={state ? state.duplicate ? YAML.stringify(state.duplicate, { indent: 4 }) : YAML.stringify(state.data.globalConfig, { indent: 4 }) : ""}
+                        value={state ? state.duplicate ? YAML.stringify(state.duplicate, { indent: 2 }) : YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
                         onChange={res => setTempValue(res)}
-                        defaultValue={state && state.data && state.duplicate ? YAML.stringify(state.data.globalConfig, { indent: 4 }) : ""}
+                        defaultValue={state && state.data && state.duplicate ? YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
                         mode="yaml"
-                        tabSize={4}
                         validatorSchema={state.schema}
                         readOnly={!state.duplicate}
                         loading={chartRefLoading}

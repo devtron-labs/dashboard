@@ -1,5 +1,5 @@
 import { Routes } from '../../config';
-import { get, post, put } from '../../services/api';
+import { get, post, put, trash } from '../../services/api';
 import { ResponseType } from '../../services/service.types';
 
 export function getClusterList(): Promise<any> {
@@ -59,3 +59,11 @@ export const getEnvironmentList = (): Promise<any> => {
     const URL = `${Routes.ENVIRONMENT}`;
     return get(URL).then(response => response);
 };
+
+export function deleteCluster(request): Promise<any> {
+    return trash(Routes.CLUSTER, request);
+}
+
+export function deleteEnvironment(request): Promise<any>{
+    return trash(Routes.ENVIRONMENT, request); 
+}
