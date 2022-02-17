@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Select from '../common/Select/Select'
 import { Progressing, useForm, showError, multiSelectStyles } from '../common'
-import { DOCUMENTATION, PATTERNS } from '../../config'
+import { DOCUMENTATION, PATTERNS, REGISTRY_TYPE_MAP } from '../../config'
 import { saveCIConfig, updateCIConfig, getDockerRegistryMinAuth } from './service';
 import { getSourceConfig, getCIConfig } from '../../services/service';
 import { useParams } from 'react-router'
@@ -18,6 +18,10 @@ import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
+
+import { ReactComponent as Docker } from '../../assets/icons/misc/docker.svg';
+import { ReactComponent as Ecr } from '../../assets/icons/ic-folder.svg';
+import { ReactComponent as Other } from '../../assets/icons/ic-warning.svg';
 
 export default function CIConfig({ respondOnSuccess, ...rest }) {
     const [dockerRegistries, setDockerRegistries] = useState(null)
@@ -67,6 +71,9 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
     const [isCollapsed, setIsCollapsed] = useState(false)
     const _selectedMaterial = ciConfig && ciConfig.dockerBuildConfig.gitMaterialId ? sourceConfig.material.find(material => material.id === ciConfig.dockerBuildConfig.gitMaterialId) : Array.isArray(sourceConfig.material) && (sourceConfig.material[0]);
     const [selectedMaterial, setSelectedMaterial] = useState(_selectedMaterial)
+    const _selectedRegistry = Array.isArray(dockerRegistries) && dockerRegistries.find(reg => reg.isDefault);
+    const [selectedRegistry, setSelectedRegistry] = useState(_selectedRegistry)
+
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             repository: { value: _selectedMaterial.name, error: "" },
@@ -181,6 +188,11 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         repository.value = selectedMaterial.name;
     }
 
+    function handleRegistryChange(selectedRegistry) {
+      setSelectedRegistry(selectedRegistry);
+        registry.value = selectedRegistry.id;
+    }
+
     const { repository, dockerfile, registry, repository_name, key, value } = state
     return (
         <div className="form__app-compose">
@@ -192,23 +204,88 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                 <div className="mb-4 form-row__docker">
                     <div className="form__field">
                         <label htmlFor="" className="form__label">Container registry*</label>
-                        <Select onChange={handleOnChange} name="registry" value={registry.value} tabIndex={3}>
+                        {/* <Select onChange={handleOnChange} name="registry" value={registry.value} tabIndex={3}>
                             <Select.Button >{registry.value || 'Select registry'}</Select.Button>
                             {Array.isArray(dockerRegistries) && dockerRegistries.map(reg => <Select.Option value={reg.id} key={reg.id}>{reg.id}</Select.Option>)}
                             <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="cb-5 select__sticky-bottom block fw-5 anchor w-100 cursor no-decor">
                                 <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
                                 Add Container Registry
                             </NavLink>
-                        </Select>
+                        </Select> */}
+                        <ReactSelect className="m-0"
+                        tabIndex='1'
+                        isMulti={false}
+                        isClearable={false}
+                        options={dockerRegistries}
+                        getOptionLabel={option => `${option.id}`}
+                        getOptionValue={option => `${option.id}`}
+                        value={selectedRegistry}
+                        styles={{
+                            ...multiSelectStyles,
+                            menu: (base, state) => ({
+                                ...base,
+                                marginTop: 'auto',
+                            }),
+                            menuList: (base) => {
+                                return {
+                                    ...base,
+                                    position: 'relative',
+                                    paddingBottom: '0px',
+                                    maxHeight: '250px',
+                                }
+                            }
+                        }}
+                        components={{
+                            IndicatorSeparator: null,
+                            Option: (props) => {
+                                return <components.Option {...props}>
+                                    {props.isSelected ? <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8" /> : <span className="inline-block icon-dim-16 mr-8"></span>}
+
+                                    {props.data.registryType.includes("docker-hub") ? <Docker className="mr-8 vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.registryType.includes("ecr") ? <Ecr className="mr-8 vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.registryType.includes("docker-hub") || props.data.registryType.includes("ecr") ? null : <Other className="mr-8 vertical-align-middle icon-dim-20" />}
+
+                                    {props.label}
+                                </components.Option>
+                            },
+                            MenuList: (props) => {
+                              return <components.MenuList {...props}>
+                                  {props.children}
+                                  <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="cb-5 select__sticky-bottom block fw-5 anchor w-100 cursor no-decor" style={{backgroundColor: '#FFF'}}>
+                                <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
+                                Add Container Registry
+                            </NavLink>
+                              </components.MenuList>
+                          },
+                            Control: (props) => {
+                                let value = "";
+
+                                if (props.hasValue) {
+                                    value = props.getValue()[0].registryType;
+                                }
+                                let showOther = value && !value.includes("docker-hub") && !value.includes("ecr")
+                                return <components.Control {...props}>
+
+                                    {value.includes("docker-hub") ? <Docker className="icon-dim-20 ml-8" /> : null}
+                                    {value.includes("ecr") ? <Ecr className="icon-dim-20 ml-8" /> : null}
+                                    {showOther ? <Other className="icon-dim-20 ml-8" /> : null}
+                                    {props.children}
+                                </components.Control>
+
+                            },
+                        }}
+
+                        onChange={(selected) => { handleRegistryChange(selected) }}
+                    />
                         {registry.error && <label className="form__error">{registry.error}</label>}
                     </div>
                     <div className="form__field">
-                        <label htmlFor="" className="form__label">Container Repository (desired format: username/repo-name)</label>
+                        <label htmlFor="" className="form__label">Container Repository {REGISTRY_TYPE_MAP[selectedRegistry.registryType].desiredFormat}</label>
                         <input
                             tabIndex={4}
                             type="text"
                             className="form__input"
-                            placeholder="Enter repository name"
+                            placeholder={REGISTRY_TYPE_MAP[selectedRegistry.registryType].placeholderText}
                             name="repository_name"
                             value={repository_name.value}
                             onChange={handleOnChange}
@@ -233,6 +310,10 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         value={selectedMaterial}
                         styles={{
                             ...multiSelectStyles,
+                            menu: (base, state) => ({
+                                ...base,
+                                marginTop: 'auto',
+                            }),
                             menuList: (base) => {
                                 return {
                                     ...base,

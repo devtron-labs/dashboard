@@ -237,3 +237,21 @@ export enum ACCESS_TYPE_MAP {
 }
 
 export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned';
+
+export const REGISTRY_TYPE_MAP = {
+    ecr: {
+        imageName: 'ecr',
+        desiredFormat: '',
+        placeholderText: '',
+    },
+    'docker-hub': {
+        imageName: 'docker',
+        desiredFormat: '(desired format: username/repo_name)',
+        placeholderText: 'Eg. username/repo_name',
+    },
+    other: {
+        imageName: 'other',
+        desiredFormat: '',
+        placeholderText: '',
+    },
+};
