@@ -371,7 +371,7 @@ function Readme({ value,onChange,defaultValue,mode,tabSize,readOnly,loading,hand
                     onChange={onChange}
                     defaultValue={defaultValue}
                     mode={mode}
-                    height={600}
+                    height={500}
                     tabSize={tabSize}
                     readOnly={readOnly}
                     loading={loading}

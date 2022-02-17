@@ -360,7 +360,7 @@ function Readme({ readme, valuesYaml, handleClose,chartConfigLoading,setTempForm
             <div ref={target} className="codeEditor">
                 <CodeEditor
                     value={valuesYaml}
-                    height={600}
+                    height={500}
                     onChange={(resp) => {
                         setTempFormData(resp);
                     }}
