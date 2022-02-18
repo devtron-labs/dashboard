@@ -157,7 +157,7 @@ export const PATTERNS = {
     CONFIG_MAP_AND_SECRET_KEY: /^[-._a-zA-Z0-9]+$/,
     CONFIGMAP_AND_SECRET_NAME: /^[a-z0-9][a-z0-9-.]*[a-z0-9]$/,
     ALL_DIGITS_BETWEEN_0_AND_7: /^[0-7]*$/,
-    APP_LABEL_CHIP: /^.+:.+$/
+    APP_LABEL_CHIP: /^.+:.+$/,
 };
 
 export const TriggerType = {
@@ -175,7 +175,7 @@ export const SourceTypeMap = {
     WEBHOOK: 'WEBHOOK',
 };
 
-export const Moment12HourFormat = "ddd, DD MMM YYYY, hh:mm A";
+export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A';
 
 export const DOCUMENTATION = {
     HOME_PAGE: 'https://docs.devtron.ai',
@@ -186,7 +186,7 @@ export const DOCUMENTATION = {
     APP_CREATE_CONFIG_MAP: 'https://docs.devtron.ai/user-guide/creating-application/config-maps',
     APP_CREATE_SECRET: 'https://docs.devtron.ai/user-guide/creating-application/secrets',
     APP_CREATE_WORKFLOW: 'https://docs.devtron.ai/creating-application/workflow',
-    APP_CREATE_ENVIRONMENT_OVERRIDE: "https://docs.devtron.ai/user-guide/creating-application/environment-overrides",
+    APP_CREATE_ENVIRONMENT_OVERRIDE: 'https://docs.devtron.ai/user-guide/creating-application/environment-overrides',
     BULK_UPDATE: 'https://docs.devtron.ai/user-guide/bulk-update',
     CHART_DEPLOY: 'https://docs.devtron.ai/user-guide/deploy-chart',
     CHART_LIST: 'https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts',
@@ -201,27 +201,27 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_SSO: 'https://docs.devtron.ai/user-guide/global-configurations/sso-login',
     GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/user-guide/global-configurations/user-access',
     HYPERION_TO_FULL_MODE: 'https://docs.devtron.ai/hyperion/upgrade-to-devtron',
-    HYPERION: 'https://docs.devtron.ai/#hyperion'
-}
+    HYPERION: 'https://docs.devtron.ai/#hyperion',
+};
 
 // APP LIST STARTS
 export const AppListConstants = {
     CREATE_DEVTRON_APP_URL: 'create-d-app',
-    AppTabs : {
+    AppTabs: {
         DEVTRON_APPS: 'Devtron Apps',
-        HELM_APPS: 'Helm Apps'
+        HELM_APPS: 'Helm Apps',
     },
-    AppType : {
+    AppType: {
         DEVTRON_APPS: 'd',
-        HELM_APPS: 'h'
+        HELM_APPS: 'h',
     },
-    FilterType : {
+    FilterType: {
         PROJECT: 'team',
         CLUTSER: 'cluster',
         NAMESPACE: 'namespace',
-        ENVIRONMENT: 'environment'
-    }
-}
+        ENVIRONMENT: 'environment',
+    },
+};
 // APP LIST ENDS
 
 export enum SERVER_MODE {
@@ -232,56 +232,155 @@ export enum SERVER_MODE {
 export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE;
 
 export enum ACCESS_TYPE_MAP {
-  DEVTRON_APPS = '', // devtron app work flow
-  HELM_APPS = 'helm-app', //helm app work flow
+    DEVTRON_APPS = '', // devtron app work flow
+    HELM_APPS = 'helm-app', //helm app work flow
 }
 
 export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned';
 
 export const REGISTRY_TYPE_MAP = {
     ecr: {
-        imageClass: 'ecr',
+        value: 'ecr',
+        label: 'ECR',
         desiredFormat: '(desired format: repo-name)',
         placeholderText: 'Eg. repo_name',
+        id: {
+            label: 'Access key ID',
+            defaultValue: '',
+            placeholder: '',
+        },
+        password: {
+            label: 'Secret access key',
+            defaultValue: '',
+            placeholder: '',
+        },
     },
     'docker-hub': {
-        imageClass: 'docker',
+        value: 'docker-hub',
+        label: 'Docker',
         desiredFormat: '(desired format: username/repo-name)',
         placeholderText: 'Eg. username/repo_name',
+        id: {
+            label: 'Username',
+            defaultValue: '',
+            placeholder: '',
+        },
+        password: {
+            label: 'Token',
+            defaultValue: '',
+            placeholder: '',
+        },
     },
     other: {
-        imageClass: 'other',
+        value: 'other',
+        label: 'Other',
         desiredFormat: '',
         placeholderText: '',
+        id: {
+            label: 'Username',
+            defaultValue: '',
+            placeholder: '',
+        },
+        password: {
+            label: 'Password',
+            defaultValue: '',
+            placeholder: '',
+        },
     },
     acr: {
-        imageClass: 'azure',
+        value: 'azure',
+        label: 'Azure',
         desiredFormat: '(desired format: repo-name)',
         placeholderText: 'Eg. repo_name',
+        id: {
+            label: 'Username/registry name',
+            defaultValue: '',
+            placeholder: '',
+        },
+        password: {
+            label: 'Token',
+            defaultValue: '',
+            placeholder: '',
+        },
     },
     'artifact-registry': {
-        imageClass: 'google-artifact-registry',
+        value: 'artifact-registry',
+        label: 'Artifact Registry (GCP)',
         desiredFormat: '(desired format: project-id/artifacts-repo/repo-name)',
         placeholderText: 'Eg. project-id/artifacts-repo/repo-name',
+        id: {
+            label: 'Username',
+            defaultValue: '_json_key',
+            placeholder: '',
+        },
+        password: {
+            label: 'Service account JSON file',
+            defaultValue: '',
+            placeholder: 'paste json file content here',
+        },
     },
     gcr: {
-        imageClass: 'gcr',
+        value: 'gcr',
+        label: 'GCR',
         desiredFormat: '(desired format: project-id/repo-name)',
         placeholderText: 'Eg. project-id/repo_name',
+        id: {
+            label: 'Username',
+            defaultValue: '_json_key',
+            placeholder: '',
+        },
+        password: {
+            label: 'Service account JSON file',
+            defaultValue: '',
+            placeholder: 'paste json file content here',
+        },
     },
     quay: {
-        imageClass: 'quay',
+        value: 'quay',
+        label: 'Quay',
         desiredFormat: '(desired format: username/repo-name)',
         placeholderText: 'Eg. username/repo_name',
+        id: {
+            label: 'Username',
+            defaultValue: '',
+            placeholder: '',
+        },
+        password: {
+            label: 'Token',
+            defaultValue: '',
+            placeholder: '',
+        },
     },
     jfrog: {
-        imageClass: 'jfrog',
+        value: 'jfrog',
+        label: 'JFrog',
         desiredFormat: '(desired format: jfrog-repo-name/repo-name)',
         placeholderText: 'Eg. jfrog-repo-name/repo_name',
+        id: {
+            label: 'Email',
+            defaultValue: '',
+            placeholder: '',
+        },
+        password: {
+            label: 'API-Key',
+            defaultValue: '',
+            placeholder: '',
+        },
     },
     harbour: {
-        imageClass: 'harbour',
+        value: 'harbour',
+        label: 'Harbor',
         desiredFormat: '(desired format: username/repo-name)',
         placeholderText: 'Eg. username/repo_name',
+        id: {
+            label: 'Username',
+            defaultValue: '',
+            placeholder: '',
+        },
+        password: {
+            label: 'Password',
+            defaultValue: '',
+            placeholder: '',
+        },
     },
 };

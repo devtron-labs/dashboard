@@ -5,7 +5,7 @@ import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './ser
 import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration';
 import { toast } from 'react-toastify';
 import awsRegionList from '../common/awsRegionList.json';
-import { DOCUMENTATION } from '../../config';
+import { DOCUMENTATION, REGISTRY_TYPE_MAP } from '../../config';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
@@ -83,7 +83,7 @@ function CollapsedList({
                 {id ? (
                     <List.Logo>
                         {' '}
-                        <div className="docker list__logo git-logo"></div>
+                        <div className={'list__logo git-logo ' + REGISTRY_TYPE_MAP[registryType].value}></div>
                     </List.Logo>
                 ) : (
                     <List.Logo>
@@ -313,7 +313,7 @@ function DockerForm({
         onSave();
     }
 
-    let selectedDckerRegistryType = DockerRegistryType.find((type) => type.value === state.registryType.value);
+    let selectedDckerRegistryType = REGISTRY_TYPE_MAP[state.registryType.value];//DockerRegistryType.find((type) => type.value === state.registryType.value);
     let advanceRegistryOptions = [
         { label: 'Allow only secure connection', value: CERTTYPE.SECURE, tippy: '' },
         {
@@ -358,9 +358,9 @@ function DockerForm({
                         <Select.Button rootClassName="select-button--docker-register">
                             {selectedDckerRegistryType?.label || `Select Container Registry`}
                         </Select.Button>
-                        {DockerRegistryType.map((type) => (
-                            <Select.Option value={type.value} key={type.value}>
-                                {type.label}
+                        {Object.keys(REGISTRY_TYPE_MAP).map((key) => (
+                            <Select.Option value={REGISTRY_TYPE_MAP[key].value} key={REGISTRY_TYPE_MAP[key].value}>
+                                {REGISTRY_TYPE_MAP[key].label}
                             </Select.Option>
                         ))}
                     </Select>

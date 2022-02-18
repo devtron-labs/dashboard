@@ -18,14 +18,6 @@ import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 
-// import { ReactComponent as DockerHub } from '../../assets/icons/ic-dockerhub.svg';
-// import { ReactComponent as Ecr } from '../../assets/icons/ic-ecr.svg';
-// import { ReactComponent as Other } from '../../assets/icons/container.svg';
-// import { ReactComponent as Azure } from '../../assets/icons/ic-azure.svg';
-// import { ReactComponent as Quay } from '../../assets/icons/ic-quay.svg';
-// import { ReactComponent as GoogleContainerRegistry } from '../../assets/icons/ic-google-container-registry.svg';
-// import { ReactComponent as GoogleArtifactRegistry } from '../../assets/icons/ic-google-artifact-registry.svg';
-
 export default function CIConfig({ respondOnSuccess, ...rest }) {
     const [dockerRegistries, setDockerRegistries] = useState(null)
     const [sourceConfig, setSourceConfig] = useState(null)
@@ -236,14 +228,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                 return <components.Option {...props}>
                                     <div style={{display: 'flex'}}>
                                     {props.isSelected ? <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8 mt-4" /> : <span className="inline-block icon-dim-16 mr-8"></span>}
-                                    {/* {props.data.registryType.includes("docker-hub") ? <DockerHub className="mr-8 vertical-align-middle icon-dim-20" /> : null}
-                                    {props.data.registryType.includes("ecr") ? <Ecr className="mr-8 vertical-align-middle icon-dim-20" /> : null}
-                                    {props.data.registryType.includes("artifact-registry") ? <GoogleArtifactRegistry className="mr-8 vertical-align-middle icon-dim-20" /> : null}
-                                    {props.data.registryType.includes("acr") ? <Azure className="mr-8 vertical-align-middle icon-dim-20" /> : null}
-                                    {props.data.registryType.includes("quay") ? <Quay className="mr-8 vertical-align-middle icon-dim-20" /> : null}
-                                    {props.data.registryType.includes("gcr") ? <GoogleContainerRegistry className="mr-8 vertical-align-middle icon-dim-20" /> : null}
-                                    {props.data.registryType.includes("other")? <Other className="mr-8 vertical-align-middle icon-dim-20" />: null} */}
-                                    <div className={'registry-icon mr-5 ' + REGISTRY_TYPE_MAP[props.data.registryType].imageClass}></div>
+                                    <div className={'registry-icon mr-5 ' + REGISTRY_TYPE_MAP[props.data.registryType].value}></div>
                                     {props.label}
                                     </div>
                                 </components.Option>
@@ -263,14 +248,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                     value = props.getValue()[0].registryType;
                                 }
                                 return <components.Control {...props}>
-                                    {/* {value.includes("docker-hub") ? <DockerHub className="icon-dim-20 ml-8" /> : null}
-                                    {value.includes("ecr") ? <Ecr className="icon-dim-20 ml-8" /> : null}
-                                    {value.includes("artifact-registry") ? <GoogleArtifactRegistry className="icon-dim-20 ml-8" /> : null}
-                                    {value.includes("acr") ? <Azure className="icon-dim-20 ml-8" /> : null}
-                                    {value.includes("quay") ? <Quay className="icon-dim-20 ml-8" /> : null}
-                                    {value.includes("gcr") ? <GoogleContainerRegistry className="icon-dim-20 ml-8" /> : null}
-                                    {value.includes("other")? <Other className="icon-dim-20 ml-8" />: null} */}
-                                    <div className={'registry-icon ml-5 ' + REGISTRY_TYPE_MAP[value].imageClass}></div>
+                                    <div className={'registry-icon ml-5 ' + REGISTRY_TYPE_MAP[value].value}></div>
                                     {props.children}
                                 </components.Control>
 
