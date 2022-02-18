@@ -28,6 +28,10 @@ import ForceDeleteDialog from '../common/dialogs/ForceDeleteDialog';
 import { ConditionalWrap } from '../common/helpers/Helpers';
 import Tippy from '@tippyjs/react';
 import { NavLink } from 'react-router-dom';
+import { ReactComponent as SuccessIcon } from '../../assets/icons/ic-success-large.svg';
+import { ReactComponent as GotToBuildDeploy } from '../../assets/icons/go-to-buildanddeploy@2x.svg';
+import { ReactComponent as GoToEnvOverride } from '../../assets/icons/go-to-envoverride@2x.svg';
+
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -492,12 +496,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         let promise = (this.props.match.params.cdPipelineId) ? updateCDPipeline(request) : saveCDPipeline(request)
         promise.then(response => {
             if (response.result) {
-                toast.success(msg);
                 let pipelineConfigFromRes = response.result.pipelines[0];
                 this.updateStateFromResponse(pipelineConfigFromRes, this.state.environments);
                 this.setState({ showSuccessScreen: true });
-                //this.props.close();
-                //this.props.getWorkflows();
+                this.props.getWorkflows();
             }
         }).catch((error: ServerErrors) => {
             showError(error);
@@ -594,7 +596,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <div className="modal__body" style={{ width: '600px' }}>
                     <div className="success-header-container">
                         <div className="success-icon">
-                            <PrePostCD />
+                            <SuccessIcon />
                         </div>
                         <div>
                             <div className="success-title">Deployment pipeline created</div>
@@ -602,8 +604,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         </div>
                     </div>
                     <div className="flex left action-card">
-                        <div className="icon-dim-44 bcn-1 flex">
-                            <PrePostCD className="icon-dim-24" />
+                        <div className="icon-container">
+                            <GotToBuildDeploy />
                         </div>
                         <div className="ml-16 mr-16 flex-1">
                             <div className="action-title">Deploy this app on prod-devtroncd</div>
@@ -618,8 +620,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         </div>
                     </div>
                     <div className="flex left action-card">
-                        <div className="icon-dim-44 bcn-1 flex">
-                            <CD className="icon-dim-24" />
+                        <div className="icon-container">
+                            <GoToEnvOverride />
                         </div>
                         <div className="ml-16 mr-16 flex-1">
                             <div className="action-title">Override deployment configurations for prod-devtroncd</div>

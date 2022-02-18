@@ -148,9 +148,7 @@
 }
 
 .success-icon{
-  width: 50px;
-  text-align: center;
-  padding: 10px;
+  padding-right: 16px;
 }
 
 .success-title{
@@ -165,6 +163,9 @@
   margin-bottom: 20px;
 }
 
+.icon-container{
+  height: 60px;
+}
 .action-title{
   font-size: 13px;
   font-weight: 600;

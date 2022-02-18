@@ -19,9 +19,13 @@ import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 
-import { ReactComponent as Docker } from '../../assets/icons/misc/docker.svg';
-import { ReactComponent as Ecr } from '../../assets/icons/ic-folder.svg';
-import { ReactComponent as Other } from '../../assets/icons/ic-warning.svg';
+import { ReactComponent as DockerHub } from '../../assets/icons/ic-dockerhub.svg';
+import { ReactComponent as Ecr } from '../../assets/icons/ic-ecr.svg';
+import { ReactComponent as Other } from '../../assets/icons/container.svg';
+import { ReactComponent as Azure } from '../../assets/icons/ic-azure.svg';
+import { ReactComponent as Quay } from '../../assets/icons/ic-quay.svg';
+import { ReactComponent as GoogleContainerRegistry } from '../../assets/icons/ic-google-container-registry.svg';
+import { ReactComponent as GoogleArtifactRegistry } from '../../assets/icons/ic-google-artifact-registry.svg';
 
 export default function CIConfig({ respondOnSuccess, ...rest }) {
     const [dockerRegistries, setDockerRegistries] = useState(null)
@@ -204,14 +208,6 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                 <div className="mb-4 form-row__docker">
                     <div className="form__field">
                         <label htmlFor="" className="form__label">Container registry*</label>
-                        {/* <Select onChange={handleOnChange} name="registry" value={registry.value} tabIndex={3}>
-                            <Select.Button >{registry.value || 'Select registry'}</Select.Button>
-                            {Array.isArray(dockerRegistries) && dockerRegistries.map(reg => <Select.Option value={reg.id} key={reg.id}>{reg.id}</Select.Option>)}
-                            <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="cb-5 select__sticky-bottom block fw-5 anchor w-100 cursor no-decor">
-                                <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
-                                Add Container Registry
-                            </NavLink>
-                        </Select> */}
                         <ReactSelect className="m-0"
                         tabIndex='1'
                         isMulti={false}
@@ -240,11 +236,13 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                             Option: (props) => {
                                 return <components.Option {...props}>
                                     {props.isSelected ? <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8" /> : <span className="inline-block icon-dim-16 mr-8"></span>}
-
-                                    {props.data.registryType.includes("docker-hub") ? <Docker className="mr-8 vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.registryType.includes("docker-hub") ? <DockerHub className="mr-8 vertical-align-middle icon-dim-20" /> : null}
                                     {props.data.registryType.includes("ecr") ? <Ecr className="mr-8 vertical-align-middle icon-dim-20" /> : null}
-                                    {props.data.registryType.includes("docker-hub") || props.data.registryType.includes("ecr") ? null : <Other className="mr-8 vertical-align-middle icon-dim-20" />}
-
+                                    {props.data.registryType.includes("artifact-registry") ? <GoogleArtifactRegistry className="mr-8 vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.registryType.includes("acr") ? <Azure className="mr-8 vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.registryType.includes("quay") ? <Quay className="mr-8 vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.registryType.includes("gcr") ? <GoogleContainerRegistry className="mr-8 vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.registryType.includes("other")? <Other className="mr-8 vertical-align-middle icon-dim-20" />: null}
                                     {props.label}
                                 </components.Option>
                             },
@@ -259,16 +257,17 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                           },
                             Control: (props) => {
                                 let value = "";
-
                                 if (props.hasValue) {
                                     value = props.getValue()[0].registryType;
                                 }
-                                let showOther = value && !value.includes("docker-hub") && !value.includes("ecr")
                                 return <components.Control {...props}>
-
-                                    {value.includes("docker-hub") ? <Docker className="icon-dim-20 ml-8" /> : null}
+                                    {value.includes("docker-hub") ? <DockerHub className="icon-dim-20 ml-8" /> : null}
                                     {value.includes("ecr") ? <Ecr className="icon-dim-20 ml-8" /> : null}
-                                    {showOther ? <Other className="icon-dim-20 ml-8" /> : null}
+                                    {value.includes("artifact-registry") ? <GoogleArtifactRegistry className="icon-dim-20 ml-8" /> : null}
+                                    {value.includes("acr") ? <Azure className="icon-dim-20 ml-8" /> : null}
+                                    {value.includes("quay") ? <Quay className="icon-dim-20 ml-8" /> : null}
+                                    {value.includes("gcr") ? <GoogleContainerRegistry className="icon-dim-20 ml-8" /> : null}
+                                    {value.includes("other")? <Other className="icon-dim-20 ml-8" />: null}
                                     {props.children}
                                 </components.Control>
 
