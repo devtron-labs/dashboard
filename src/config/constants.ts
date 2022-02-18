@@ -244,6 +244,8 @@ export const REGISTRY_TYPE_MAP = {
         label: 'ECR',
         desiredFormat: '(desired format: repo-name)',
         placeholderText: 'Eg. repo_name',
+        gettingStartedLink: 'https://docs.aws.amazon.com/AmazonECR/latest/userguide/get-set-up-for-amazon-ecr.html',
+        defaultRegistryURL: '',
         id: {
             label: 'Access key ID',
             defaultValue: '',
@@ -260,6 +262,8 @@ export const REGISTRY_TYPE_MAP = {
         label: 'Docker',
         desiredFormat: '(desired format: username/repo-name)',
         placeholderText: 'Eg. username/repo_name',
+        gettingStartedLink: 'https://docs.docker.com/docker-hub/',
+        defaultRegistryURL: 'docker.io',
         id: {
             label: 'Username',
             defaultValue: '',
@@ -271,27 +275,13 @@ export const REGISTRY_TYPE_MAP = {
             placeholder: '',
         },
     },
-    other: {
-        value: 'other',
-        label: 'Other',
-        desiredFormat: '',
-        placeholderText: '',
-        id: {
-            label: 'Username',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Password',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
     acr: {
-        value: 'azure',
+        value: 'acr',
         label: 'Azure',
         desiredFormat: '(desired format: repo-name)',
         placeholderText: 'Eg. repo_name',
+        gettingStartedLink: 'https://docs.microsoft.com/en-us/azure/container-registry/',
+        defaultRegistryURL: '',
         id: {
             label: 'Username/registry name',
             defaultValue: '',
@@ -308,6 +298,8 @@ export const REGISTRY_TYPE_MAP = {
         label: 'Artifact Registry (GCP)',
         desiredFormat: '(desired format: project-id/artifacts-repo/repo-name)',
         placeholderText: 'Eg. project-id/artifacts-repo/repo-name',
+        gettingStartedLink: 'https://cloud.google.com/artifact-registry/docs/manage-repos?hl=en_US',
+        defaultRegistryURL: '',
         id: {
             label: 'Username',
             defaultValue: '_json_key',
@@ -324,6 +316,8 @@ export const REGISTRY_TYPE_MAP = {
         label: 'GCR',
         desiredFormat: '(desired format: project-id/repo-name)',
         placeholderText: 'Eg. project-id/repo_name',
+        gettingStartedLink: 'https://cloud.google.com/container-registry/docs/quickstart',
+        defaultRegistryURL: 'gcr.io',
         id: {
             label: 'Username',
             defaultValue: '_json_key',
@@ -340,6 +334,8 @@ export const REGISTRY_TYPE_MAP = {
         label: 'Quay',
         desiredFormat: '(desired format: username/repo-name)',
         placeholderText: 'Eg. username/repo_name',
+        gettingStartedLink: '',
+        defaultRegistryURL: 'quay.io',
         id: {
             label: 'Username',
             defaultValue: '',
@@ -356,6 +352,8 @@ export const REGISTRY_TYPE_MAP = {
         label: 'JFrog',
         desiredFormat: '(desired format: jfrog-repo-name/repo-name)',
         placeholderText: 'Eg. jfrog-repo-name/repo_name',
+        gettingStartedLink: '',
+        defaultRegistryURL: '',
         id: {
             label: 'Email',
             defaultValue: '',
@@ -372,6 +370,26 @@ export const REGISTRY_TYPE_MAP = {
         label: 'Harbor',
         desiredFormat: '(desired format: username/repo-name)',
         placeholderText: 'Eg. username/repo_name',
+        gettingStartedLink: '',
+        defaultRegistryURL: '',
+        id: {
+            label: 'Username',
+            defaultValue: '',
+            placeholder: '',
+        },
+        password: {
+            label: 'Password',
+            defaultValue: '',
+            placeholder: '',
+        },
+    },
+    other: {
+        value: 'other',
+        label: 'Other',
+        desiredFormat: '',
+        placeholderText: '',
+        gettingStartedLink: '',
+        defaultRegistryURL: '',
         id: {
             label: 'Username',
             defaultValue: '',

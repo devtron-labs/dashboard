@@ -228,7 +228,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                 return <components.Option {...props}>
                                     <div style={{display: 'flex'}}>
                                     {props.isSelected ? <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8 mt-4" /> : <span className="inline-block icon-dim-16 mr-8"></span>}
-                                    <div className={'registry-icon mr-5 ' + REGISTRY_TYPE_MAP[props.data.registryType].value}></div>
+                                    <div className={'registry-icon mr-5 ' + props.data.registryType}></div>
                                     {props.label}
                                     </div>
                                 </components.Option>
@@ -248,7 +248,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                     value = props.getValue()[0].registryType;
                                 }
                                 return <components.Control {...props}>
-                                    <div className={'registry-icon ml-5 ' + REGISTRY_TYPE_MAP[value].value}></div>
+                                    <div className={'registry-icon ml-5 ' + value}></div>
                                     {props.children}
                                 </components.Control>
 

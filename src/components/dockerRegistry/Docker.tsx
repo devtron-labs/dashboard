@@ -12,6 +12,7 @@ import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.s
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg';
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg';
+import { ReactComponent as InfoFilled } from '../../assets/icons/ic-info-filled.svg';
 import { types } from 'util';
 import DeleteComponent from '../../util/DeleteComponent';
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
@@ -83,7 +84,7 @@ function CollapsedList({
                 {id ? (
                     <List.Logo>
                         {' '}
-                        <div className={'list__logo git-logo ' + REGISTRY_TYPE_MAP[registryType].value}></div>
+                        <div className={'list__logo git-logo ' + registryType}></div>
                     </List.Logo>
                 ) : (
                     <List.Logo>
@@ -203,12 +204,20 @@ function DockerForm({
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }));
     }
 
-    function fetchAWSRegion(): string{
-      let awsRegion = '';
-      return awsRegion;
+    function fetchAWSRegion(): string {
+        const pattern = /(ecr.)[a-z]{2}-[a-z]*-[0-9]{1}/i;
+        let result = customState.registryUrl.value.match(pattern);
+        if (!result) {
+            setCustomState((st) => ({
+                ...st,
+                registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? 'Invalid URL' : 'Mandatory' },
+            }));
+            return '';
+        }
+        return result[0].split('ecr.')[1];
     }
 
-    const getRegistryPayload = () => {
+    const getRegistryPayload = (awsRegion?: string) => {
         return {
             id: state.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
@@ -219,7 +228,7 @@ function DockerForm({
                 ? {
                       awsAccessKeyId: customState.awsAccessKeyId.value,
                       awsSecretAccessKey: customState.awsSecretAccessKey.value,
-                      awsRegion: fetchAWSRegion(),
+                      awsRegion: awsRegion,
                   }
                 : {}),
             ...(state.registryType.value === 'docker-hub'
@@ -237,7 +246,12 @@ function DockerForm({
     }
 
     async function onSave() {
-        let payload = getRegistryPayload()
+        let awsRegion;
+        if (state.registryType.value === 'ecr') {
+            awsRegion = fetchAWSRegion();
+            if (!awsRegion) return;
+        }
+        let payload = getRegistryPayload(awsRegion);
 
         const api = id ? updateRegistryConfig : saveRegistryConfig;
         try {
@@ -359,6 +373,7 @@ function DockerForm({
                         rootClassName="w-100"
                         onChange={handleOnChange}
                         value={state.registryType.value}
+                        disabled={!!registryType}
                     >
                         <Select.Button rootClassName="select-button--docker-register">
                             {selectedDckerRegistryType?.label || `Select Container Registry`}
@@ -371,11 +386,24 @@ function DockerForm({
                     </Select>
                     {state.registryType.error && <div className="form__error">{state.registryType.error}</div>}
                 </div>
+                {selectedDckerRegistryType.gettingStartedLink && (
+                    <div style={{ paddingTop: '38px', display: 'flex' }}>
+                        <InfoFilled className="mr-5 form__icon--info" />
+                        <span>
+                            Don’t have {selectedDckerRegistryType.label} account?
+                            <a href={selectedDckerRegistryType.gettingStartedLink} target="_blank" className="ml-5">
+                                Getting started with {selectedDckerRegistryType.label}
+                            </a>
+                        </span>
+                    </div>
+                )}
+            </div>
+            <div className="form__row">
                 <CustomInput
                     name="registryUrl"
                     tabIndex={3}
                     label={state.registryType.value !== 'docker-hub' ? 'Registry URL*' : 'Registry URL'}
-                    value={customState.registryUrl.value}
+                    value={customState.registryUrl.value || selectedDckerRegistryType.defaultRegistryURL}
                     autoComplete="off"
                     helperText={
                         state.registryType.value === 'docker-hub'
@@ -384,7 +412,7 @@ function DockerForm({
                     }
                     error={customState.registryUrl.error}
                     onChange={customHandleChange}
-                    disabled={!!registryUrl}
+                    disabled={!!registryUrl || selectedDckerRegistryType.defaultRegistryURL}
                 />
             </div>
             {state.registryType.value === 'ecr' && (
@@ -590,12 +618,12 @@ function DockerForm({
                         {deleting ? <Progressing /> : 'Delete'}
                     </button>
                 )}
-                    <button className="cta mr-16 cancel" type="button" onClick={(e) => toggleCollapse((t) => !t)}>
-                        Cancel
-                    </button>
-                    <button className="cta" type="submit" disabled={loading}>
-                        {loading ? <Progressing /> : 'Save'}
-                    </button>
+                <button className="cta mr-16 cancel" type="button" onClick={(e) => toggleCollapse((t) => !t)}>
+                    Cancel
+                </button>
+                <button className="cta" type="submit" disabled={loading}>
+                    {loading ? <Progressing /> : 'Save'}
+                </button>
             </div>
 
             {confirmation && (
