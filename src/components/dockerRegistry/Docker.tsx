@@ -203,6 +203,11 @@ function DockerForm({
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }));
     }
 
+    function fetchAWSRegion(): string{
+      let awsRegion = '';
+      return awsRegion;
+    }
+
     const getRegistryPayload = () => {
         return {
             id: state.id.value,
@@ -214,7 +219,7 @@ function DockerForm({
                 ? {
                       awsAccessKeyId: customState.awsAccessKeyId.value,
                       awsSecretAccessKey: customState.awsSecretAccessKey.value,
-                      awsRegion: customState.awsRegion.value,
+                      awsRegion: fetchAWSRegion(),
                   }
                 : {}),
             ...(state.registryType.value === 'docker-hub'
@@ -253,14 +258,14 @@ function DockerForm({
     function onValidation() {
         if (state.registryType.value === 'ecr') {
             if (
-                !customState.awsRegion.value ||
+                //!customState.awsRegion.value ||
                 !customState.awsAccessKeyId.value ||
                 !customState.awsSecretAccessKey.value ||
                 !customState.registryUrl.value
             ) {
                 setCustomState((st) => ({
                     ...st,
-                    awsRegion: { ...st.awsRegion, error: st.awsRegion.value ? '' : 'Mandatory' },
+                    //awsRegion: { ...st.awsRegion, error: st.awsRegion.value ? '' : 'Mandatory' },
                     awsAccessKeyId: { ...st.awsAccessKeyId, error: st.awsAccessKeyId.value ? '' : 'Mandatory' },
                     awsSecretAccessKey: {
                         ...st.awsSecretAccessKey,
@@ -384,7 +389,7 @@ function DockerForm({
             </div>
             {state.registryType.value === 'ecr' && (
                 <>
-                    <div className="form__row">
+                    {/* <div className="form__row">
                         <div className="flex left column">
                             <label htmlFor="" className="form__label">
                                 AWS region*
@@ -411,7 +416,7 @@ function DockerForm({
                                 <div className="form__error">{customState.awsRegion.error}</div>
                             )}
                         </div>
-                    </div>
+                    </div> */}
                     <div className="form__row form__row--two-third">
                         <CustomInput
                             name="awsAccessKeyId"
