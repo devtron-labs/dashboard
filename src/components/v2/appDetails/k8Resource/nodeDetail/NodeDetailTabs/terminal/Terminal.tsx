@@ -1,7 +1,7 @@
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { AutoSizer } from 'react-virtualized';
-import { useThrottledEffect, copyToClipboard, VisibleModal } from '../../../../../../common';
+import { useThrottledEffect, copyToClipboard } from '../../../../../../common';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import * as XtermWebfont from 'xterm-webfont';
@@ -337,7 +337,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     </React.Fragment>
                 )}
             </div>
-            
+
             <div>
                 <div id="terminal-id" className="pl-20"></div>
             </div>
