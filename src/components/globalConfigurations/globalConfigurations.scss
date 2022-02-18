@@ -70,7 +70,7 @@
         top: 50%;
         transform: translateY(-50%);
     }
-    
+
     textarea {
         border-radius: 4px;
         border: solid 1px #d6dbdf;
@@ -167,6 +167,27 @@
 
         &.docker {
             background: url('../../assets/icons/git/docker.svg')
+        }
+        &.acr {
+            background: url('../../assets/icons/ic-azure.svg');
+        }
+        &.quay {
+            background: url('../../assets/icons/ic-quay.svg');
+        }
+
+        &.ecr {
+            background: url('../../assets/icons/ic-ecr.svg');
+        }
+
+        &.artifact-registry {
+            background: url('../../assets/icons/ic-google-artifact-registry.svg');
+        }
+
+        &.gcr {
+            background: url('../../assets/icons/ic-google-container-registry.svg');
+        }
+        &.other {
+            background: url('../../assets/icons/container.svg');
         }
     }
 }

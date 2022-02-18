@@ -32,16 +32,42 @@
         }
         .form__field {
             margin-bottom: 16px;
-            .docker-flie-container{
-              display: flex;
-              .checkout-path-container{
-                padding: 10px;
-                background: #D0D4D9;
-                border-radius: 4px 0 0 4px;
-              }
-              .file-name{
-                border-radius: 0 4px 4px 0;
-              }
+            .registry-icon,
+            .repository-icon {
+                width: 24px;
+                height: 24px;
+                &.docker {
+                    background: url('../../assets/icons/git/docker.svg')
+                }
+                &.acr {
+                    background: url('../../assets/icons/ic-azure.svg');
+                }
+                &.quay {
+                    background: url('../../assets/icons/ic-quay.svg');
+                }
+                &.ecr {
+                    background: url('../../assets/icons/ic-ecr.svg');
+                }
+                &.artifact-registry {
+                    background: url('../../assets/icons/ic-google-artifact-registry.svg');
+                }
+                &.gcr {
+                    background: url('../../assets/icons/ic-google-container-registry.svg');
+                }
+                &.other {
+                    background: url('../../assets/icons/container.svg');
+                }
+            }
+            .docker-flie-container {
+                display: flex;
+                .checkout-path-container {
+                    padding: 10px;
+                    background: #d0d4d9;
+                    border-radius: 4px 0 0 4px;
+                }
+                .file-name {
+                    border-radius: 0 4px 4px 0;
+                }
             }
         }
         .form__error {
@@ -70,7 +96,7 @@
         }
     }
 }
-.docker__dropdown{
+.docker__dropdown {
     margin: auto;
     margin-right: 0;
     margin-top: 0;

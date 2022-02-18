@@ -240,47 +240,47 @@ export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned';
 
 export const REGISTRY_TYPE_MAP = {
     ecr: {
-        imageName: 'Ecr',
+        imageClass: 'ecr',
         desiredFormat: '(desired format: repo-name)',
         placeholderText: 'Eg. repo_name',
     },
     'docker-hub': {
-        imageName: 'DockerHub',
+        imageClass: 'docker',
         desiredFormat: '(desired format: username/repo-name)',
         placeholderText: 'Eg. username/repo_name',
     },
     other: {
-        imageName: 'Other',
+        imageClass: 'other',
         desiredFormat: '',
         placeholderText: '',
     },
     acr: {
-        imageName: 'Azure',
+        imageClass: 'azure',
         desiredFormat: '(desired format: repo-name)',
         placeholderText: 'Eg. repo_name',
     },
     'artifact-registry': {
-        imageName: 'GoogleArtifactRegistry',
+        imageClass: 'google-artifact-registry',
         desiredFormat: '(desired format: project-id/artifacts-repo/repo-name)',
         placeholderText: 'Eg. project-id/artifacts-repo/repo-name',
     },
     gcr: {
-        imageName: 'GoogleContainerRegistry',
+        imageClass: 'gcr',
         desiredFormat: '(desired format: project-id/repo-name)',
         placeholderText: 'Eg. project-id/repo_name',
     },
     quay: {
-        imageName: 'GoogleContainerRegistry',
+        imageClass: 'quay',
         desiredFormat: '(desired format: username/repo-name)',
         placeholderText: 'Eg. username/repo_name',
     },
     jfrog: {
-        imageName: 'Jfrog',
+        imageClass: 'jfrog',
         desiredFormat: '(desired format: jfrog-repo-name/repo-name)',
         placeholderText: 'Eg. jfrog-repo-name/repo_name',
     },
     harbour: {
-        imageName: 'Harbour',
+        imageClass: 'harbour',
         desiredFormat: '(desired format: username/repo-name)',
         placeholderText: 'Eg. username/repo_name',
     },
