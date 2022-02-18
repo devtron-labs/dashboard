@@ -1,10 +1,9 @@
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { copyToClipboard } from '../../../../../../common';
-import {AutoSizer} from 'react-virtualized'
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
-import ResizableLogs from '../ResizableLogs';
+import CopyToast from '../CopyToast';
 import * as XtermWebfont from 'xterm-webfont';
 import SockJS from 'sockjs-client';
 import { SocketConnectionType } from '../node.type';
@@ -346,9 +345,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     {terminalViewProps.socketConnection}
                 </p>
             )}
-             <AutoSizer>
-            {({height, width})=><ResizableLogs showCopyToast={popupText} height={height} width={width} />}
-        </AutoSizer>
+             
+            <CopyToast showCopyToast={popupText}/>
         </div>
     );
 }

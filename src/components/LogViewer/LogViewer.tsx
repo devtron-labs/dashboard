@@ -1,8 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react'
 import {Scroller} from '../app/details/cIDetails/CIDetails'
-import {AutoSizer} from 'react-virtualized'
 import { copyToClipboard } from '../common'
-import ResizableLogs from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/ResizableLogs'
+import CopyToast from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CopyToast'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit';
 import * as XtermWebfont from 'xterm-webfont';
@@ -120,9 +119,8 @@ const LogViewer: React.FunctionComponent<logViewerInterface> = ({ subject, rootC
 
     return (
         <>
-        <AutoSizer>
-            {({height, width})=><ResizableLogs showCopyToast={popupText} height={height} width={width} />}
-        </AutoSizer>
+        
+        <CopyToast showCopyToast={popupText} />
         
         <Scroller
             scrollToBottom={scrollToBottom}
