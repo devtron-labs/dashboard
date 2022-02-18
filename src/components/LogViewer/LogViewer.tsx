@@ -1,15 +1,14 @@
 import React, {useEffect, useRef, useState} from 'react'
-import {List, AutoSizer, CellMeasurer, CellMeasurerCache} from 'react-virtualized'
 import {Scroller} from '../app/details/cIDetails/CIDetails'
-import {useThrottledEffect, copyToClipboard, VisibleModal} from '../common'
-
+import {AutoSizer} from 'react-virtualized'
+import { copyToClipboard } from '../common'
+import ResizableLogs from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/ResizableLogs'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit';
 import * as XtermWebfont from 'xterm-webfont';
 import { SearchAddon } from 'xterm-addon-search';
 import '../../../node_modules/xterm/css/xterm.css';
 import { Subject } from '../../util/Subject';
-import {ReactComponent as CheckIcon } from '../../assets/icons/appstatus/ic-check.svg';
 import './LogViewer.scss'
 
 
@@ -122,33 +121,15 @@ const LogViewer: React.FunctionComponent<logViewerInterface> = ({ subject, rootC
     return (
         <>
         <AutoSizer>
-            {({height, width})=><ResizableLogs showCopyToast={popupText} fitAddon={fitAddon} height={height} width={width}/>}
+            {({height, width})=><ResizableLogs showCopyToast={popupText} height={height} width={width} />}
         </AutoSizer>
+        
         <Scroller
             scrollToBottom={scrollToBottom}
             scrollToTop={scrollToTop}
             style={{position:'fixed', bottom:'30px', right:'30px', zIndex:'3'}}
         />
         </>
-    );
-}
-
-function ResizableLogs({fitAddon, height, width, showCopyToast}){
-    useThrottledEffect(
-        () => {
-            if (fitAddon.current) fitAddon.current.fit();
-        },
-        100,
-        [height, width],
-    );
-
-    return (
-        <div id="xterm-logs" style={{ height, width }}>
-            <span className={`br-8 bcn-0 cn-9 clipboard-toast ${showCopyToast ? 'clipboard-toast--show': ''}`}>
-                <CheckIcon className="icon-dim-24 scn-9"/>
-                <div className="">Copied!</div>
-            </span>
-        </div>
     );
 }
 

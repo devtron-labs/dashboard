@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
-import { useThrottledEffect, copyToClipboard, VisibleModal } from '../../../../../common';
+import { copyToClipboard } from '../../../../../common';
 import { Terminal } from 'xterm';
+import {AutoSizer} from 'react-virtualized';
 import { FitAddon } from 'xterm-addon-fit';
 import ResizableLogs from './ResizableLogs';
 import * as XtermWebfont from 'xterm-webfont';
 import { SearchAddon } from 'xterm-addon-search';
 import '../../../../../../../node_modules/xterm/css/xterm.css';
-import { ReactComponent as CheckIcon } from '../../../../assets/icons/ic-check.svg';
 import './nodeDetailTab.scss';
 import { Subject } from '../../../../../../util/Subject';
 import { Scroller } from '../../../../../app/details/cIDetails/CIDetails';
@@ -135,7 +134,9 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
 
     return (
         <>
-             <ResizableLogs showCopyToast={popupText} />
+            <AutoSizer>
+            {({height, width})=><ResizableLogs showCopyToast={popupText} height={height} width={width} />}
+        </AutoSizer>
             <Scroller
                 scrollToBottom={scrollToBottom}
                 scrollToTop={scrollToTop}
@@ -144,27 +145,5 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
         </>
     );
 };
-
-// function ResizableLogs({ fitAddon, height, width, showCopyToast }) {
-//     useThrottledEffect(
-//         () => {
-//             if (fitAddon.current) fitAddon.current.fit();
-//         },
-//         100,
-//         [height, width],
-//     );
-
-//     return (
-//         <div id="xterm-logs" style={{ height, width }}>
-//             <span
-//                 className={`br-8 bcn-0 cn-9 clipboard-toast ${showCopyToast ? 'clipboard-toast--show' : ''}`}
-//                 style={{ zIndex: 9 }}
-//             >
-//                 <CheckIcon className="icon-dim-24 scn-9" />
-//                 <div className="">Copied!</div>
-//             </span>
-//         </div>
-//     );
-// }
 
 export default LogViewerComponent;

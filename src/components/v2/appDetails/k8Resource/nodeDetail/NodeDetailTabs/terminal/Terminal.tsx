@@ -1,17 +1,15 @@
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { AutoSizer } from 'react-virtualized';
-import { useThrottledEffect, copyToClipboard } from '../../../../../../common';
+import { copyToClipboard } from '../../../../../../common';
+import {AutoSizer} from 'react-virtualized'
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import ResizableLogs from '../ResizableLogs';
 import * as XtermWebfont from 'xterm-webfont';
 import SockJS from 'sockjs-client';
 import { SocketConnectionType } from '../node.type';
-import { ReactComponent as CheckIcon } from '../../../../../../../assets/icons/ic-check.svg';
 import { get } from '../../../../../../../services/api';
 import ReactGA from 'react-ga';
-
 import './terminal.css';
 import IndexStore from '../../../../index.store';
 import { AppType } from '../../../../appDetails.type';
@@ -348,36 +346,11 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     {terminalViewProps.socketConnection}
                 </p>
             )}
-             <ResizableLogs showCopyToast={popupText} />
-            {/* <AutoSizer>
-                {({ height, width }) => (
-                    <ResizableLogs showCopyToast={popupText} fitAddon={fitAddon} />
-                )}
-            </AutoSizer> */}
+             <AutoSizer>
+            {({height, width})=><ResizableLogs showCopyToast={popupText} height={height} width={width} />}
+        </AutoSizer>
         </div>
     );
 }
-
-// function ResizableLogs({ fitAddon, height, width, showCopyToast }) {
-//     useThrottledEffect(
-//         () => {
-//             if (fitAddon) fitAddon.fit();
-//         },
-//         100,
-//         [height, width],
-//     );
-
-//     return (
-//         <div id="xterm-logs" style={{ height, width }}>
-//             <span
-//                 className={`br-8 bcn-0 cn-9 clipboard-toast ${showCopyToast ? 'clipboard-toast--show' : ''}`}
-//                 style={{ zIndex: 9 }}
-//             >
-//                 <CheckIcon className="icon-dim-24 scn-9" />
-//                 <div className="">Copied!</div>
-//             </span>
-//         </div>
-//     );
-// }
 
 export default TerminalView;
