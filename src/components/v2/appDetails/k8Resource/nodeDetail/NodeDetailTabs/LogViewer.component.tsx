@@ -3,6 +3,7 @@ import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtuali
 import { useThrottledEffect, copyToClipboard, VisibleModal } from '../../../../../common';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
+import ResizableLogs from './ResizableLogs';
 import * as XtermWebfont from 'xterm-webfont';
 import { SearchAddon } from 'xterm-addon-search';
 import '../../../../../../../node_modules/xterm/css/xterm.css';
@@ -134,11 +135,7 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
 
     return (
         <>
-            <AutoSizer>
-                {({ height, width }) => (
-                    <ResizableLogs showCopyToast={popupText} fitAddon={fitAddon} height={height} width={width} />
-                )}
-            </AutoSizer>
+             <ResizableLogs showCopyToast={popupText} fitAddon={fitAddon} />
             <Scroller
                 scrollToBottom={scrollToBottom}
                 scrollToTop={scrollToTop}
@@ -148,26 +145,26 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
     );
 };
 
-function ResizableLogs({ fitAddon, height, width, showCopyToast }) {
-    useThrottledEffect(
-        () => {
-            if (fitAddon.current) fitAddon.current.fit();
-        },
-        100,
-        [height, width],
-    );
+// function ResizableLogs({ fitAddon, height, width, showCopyToast }) {
+//     useThrottledEffect(
+//         () => {
+//             if (fitAddon.current) fitAddon.current.fit();
+//         },
+//         100,
+//         [height, width],
+//     );
 
-    return (
-        <div id="xterm-logs" style={{ height, width }}>
-            <span
-                className={`br-8 bcn-0 cn-9 clipboard-toast ${showCopyToast ? 'clipboard-toast--show' : ''}`}
-                style={{ zIndex: 9 }}
-            >
-                <CheckIcon className="icon-dim-24 scn-9" />
-                <div className="">Copied!</div>
-            </span>
-        </div>
-    );
-}
+//     return (
+//         <div id="xterm-logs" style={{ height, width }}>
+//             <span
+//                 className={`br-8 bcn-0 cn-9 clipboard-toast ${showCopyToast ? 'clipboard-toast--show' : ''}`}
+//                 style={{ zIndex: 9 }}
+//             >
+//                 <CheckIcon className="icon-dim-24 scn-9" />
+//                 <div className="">Copied!</div>
+//             </span>
+//         </div>
+//     );
+// }
 
 export default LogViewerComponent;
