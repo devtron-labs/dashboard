@@ -152,10 +152,7 @@ export default function CDDetails(){
         <>
             <div className={`ci-details ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
                 {showTemplate ? (
-                    <>
-                        <CompareWithBaseConfig />
-                        <HistoryDiff />
-                    </>
+                    <HistoryDiff />
                 ) : (
                     <>
                         <div className="ci-details__history">

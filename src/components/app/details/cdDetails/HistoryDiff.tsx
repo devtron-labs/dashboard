@@ -1,9 +1,11 @@
 import React from 'react';
 import './cdDetail.scss';
+import CompareWithBaseConfig from './CompareWithBaseConfig';
 
 function HistoryDiff() {
     return (
-        <>
+        <div className='history-diff__wrapper'>
+        <CompareWithBaseConfig />
             <div className="historical-diff__left">
                 Deployment Template
                 <div className="cg-5">2 changes</div>
@@ -40,7 +42,7 @@ function HistoryDiff() {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 
