@@ -27,6 +27,7 @@ import {DetectBottom, TriggerDetails, GitChanges, Artifacts, BuildCardPopup} fro
 import {History} from '../cIDetails/types'
 import {Moment12HourFormat} from '../../../../config';
 import DeploymentConfiguration from './DeploymentConfiguration';
+import HistoryDiff from './HistoryDiff';
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(["starting", "running", "pending"]);
 
@@ -46,6 +47,7 @@ export default function CDDetails(){
     useInterval(pollHistory, 30000)
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
     const keys = useKeyDown()
+    const [showTemplate, setShowTemplate] = useState(false)
 
     useEffect(()=>{
         if(!pathname.includes('/logs')) return
@@ -146,37 +148,85 @@ export default function CDDetails(){
     if (result && !(Array.isArray(result[1]?.pipelines))) return <AppNotConfigured text="No CD pipelines found." />
     if(!result || dependencyState[2] !== envId) return null
     return (
-    <>
-    <div className={`ci-details ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
-        <div className="ci-details__history">
-            {!fullScreenView && <>
-                <SelectEnvironment environments={result[0].result}/>
-                <div className="flex column top left" style={{overflowY:'auto'}}>
-                    {Array.from(triggerHistory)?.sort(([a,], [b,])=>(b-a))?.map(([triggerId, trigger], idx)=><DeploymentCard key={idx} triggerDetails={trigger}/>)}
-                    {hasMore && <DetectBottom callback={reloadNextAfterBottom}/>}
-                </div>
-            </>}
-        </div>
-        <div ref={ref} className="ci-details__body">
-            {!envId && <><div/><SelectEnvironmentView/></>}
-            {!!envId && triggerHistory?.size > 0 && 
-                <Route path={`${path.replace(":pipelineId(\\d+)?", ":pipelineId(\\d+)").replace(":envId(\\d+)?" , ":envId(\\d+)")}`}>
-                    <TriggerOutput fullScreenView={fullScreenView} syncState={syncState} triggerHistory={triggerHistory}/>
-                </Route>
-            }
+        <>
+            <div className={`ci-details ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
+                {showTemplate ? (
+                    <HistoryDiff />
 
-            {!!envId && triggerHistory?.size === 0 &&
-                <NoCDTriggersView environmentName={environment?.environmentName}/>
-            }
-            {pathname.includes('/logs') && <Tippy placement="top" arrow={false} className="default-tt" content={fullScreenView ? 'Exit fullscreen (f)' : 'Enter fullscreen (f)'}>
-                {fullScreenView ? <ZoomOut className="zoom zoom--out pointer" onClick={e => setFullScreenView(false)}/> : <ZoomIn className="zoom zoom--in pointer" onClick={e=>setFullScreenView(true)}/>}
-            </Tippy>}
+                ) : (
+                    <>
+                        <div className="ci-details__history">
+                            {!fullScreenView && (
+                                <>
+                                    <SelectEnvironment environments={result[0].result} />
+                                    <div className="flex column top left" style={{ overflowY: 'auto' }}>
+                                        {Array.from(triggerHistory)
+                                            ?.sort(([a], [b]) => b - a)
+                                            ?.map(([triggerId, trigger], idx) => (
+                                                <DeploymentCard key={idx} triggerDetails={trigger} />
+                                            ))}
+                                        {hasMore && <DetectBottom callback={reloadNextAfterBottom} />}
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                        <div ref={ref} className="ci-details__body">
+                            {!envId && (
+                                <>
+                                    <div />
+                                    <SelectEnvironmentView />
+                                </>
+                            )}
+                            {!!envId && triggerHistory?.size > 0 && (
+                                <Route
+                                    path={`${path
+                                        .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
+                                        .replace(':envId(\\d+)?', ':envId(\\d+)')}`}
+                                >
+                                    <TriggerOutput
+                                        fullScreenView={fullScreenView}
+                                        syncState={syncState}
+                                        triggerHistory={triggerHistory}
+                                        setShowTemplate={setShowTemplate}
+                                    />
+                                </Route>
+                            )}
 
-        </div>
-    </div>
-    {(scrollToTop || scrollToBottom) && <Scroller style={{ position: 'fixed', bottom: '25px', right: '32px' }} {...{ scrollToTop, scrollToBottom }} />}
-    </>
-    )
+                            {!!envId && triggerHistory?.size === 0 && (
+                                <NoCDTriggersView environmentName={environment?.environmentName} />
+                            )}
+                            {pathname.includes('/logs') && (
+                                <Tippy
+                                    placement="top"
+                                    arrow={false}
+                                    className="default-tt"
+                                    content={fullScreenView ? 'Exit fullscreen (f)' : 'Enter fullscreen (f)'}
+                                >
+                                    {fullScreenView ? (
+                                        <ZoomOut
+                                            className="zoom zoom--out pointer"
+                                            onClick={(e) => setFullScreenView(false)}
+                                        />
+                                    ) : (
+                                        <ZoomIn
+                                            className="zoom zoom--in pointer"
+                                            onClick={(e) => setFullScreenView(true)}
+                                        />
+                                    )}
+                                </Tippy>
+                            )}
+                        </div>
+                    </>
+                )}
+            </div>
+            {(scrollToTop || scrollToBottom) && (
+                <Scroller
+                    style={{ position: 'fixed', bottom: '25px', right: '32px' }}
+                    {...{ scrollToTop, scrollToBottom }}
+                />
+            )}
+        </>
+    );
 }
 
 const DeploymentCard:React.FC<{triggerDetails: History}> = ({triggerDetails})=>{
@@ -303,7 +353,8 @@ const TriggerOutput: React.FC<{
     fullScreenView: boolean;
     syncState: (triggerId: number, triggerDetails: History) => void;
     triggerHistory: Map<number, History>;
-}> = ({ fullScreenView, syncState, triggerHistory }) => {
+    setShowTemplate
+}> = ({ fullScreenView, syncState, triggerHistory, setShowTemplate }) => {
     const { appId, triggerId, envId, pipelineId } = useParams();
     const triggerDetails = triggerHistory.get(+triggerId);
     const [
@@ -409,12 +460,12 @@ const TriggerOutput: React.FC<{
                     </>
                 )}
             </div>
-            <HistoryLogs key={triggerDetails.id} triggerDetails={triggerDetails} loading={triggerDetailsLoading && !triggerDetailsResult}/>
+            <HistoryLogs key={triggerDetails.id} triggerDetails={triggerDetails} loading={triggerDetailsLoading && !triggerDetailsResult} setShowTemplate={setShowTemplate}/>
         </>
     );
 };
 
-const HistoryLogs: React.FC<{triggerDetails: History, loading: boolean}> = ({ triggerDetails, loading }) => {
+const HistoryLogs: React.FC<{triggerDetails: History, loading: boolean, setShowTemplate}> = ({ triggerDetails, loading, setShowTemplate }) => {
     let { path } = useRouteMatch();
     const {appId, pipelineId, triggerId, envId} = useParams()
     const [autoBottomScroll, setAutoBottomScroll] = useState<boolean>(triggerDetails.status.toLowerCase() !== 'succeeded')
@@ -430,7 +481,7 @@ const HistoryLogs: React.FC<{triggerDetails: History, loading: boolean}> = ({ tr
                     </div>
                 </Route>}
                 <Route path={`${path}/source-code`} render={props => <GitChanges triggerDetails={triggerDetails} />} />
-                <Route path={`${path}/configuration`} render={props => <DeploymentConfiguration />} />
+                <Route path={`${path}/configuration`} render={props => <DeploymentConfiguration setShowTemplate={setShowTemplate}/>} />
                 {triggerDetails.stage !== 'DEPLOY' && <Route path={`${path}/artifacts`} render={props => <Artifacts getArtifactPromise={()=>getCDBuildReport(appId, envId, pipelineId, triggerId)} triggerDetails={triggerDetails} />} />}
                 <Redirect to={triggerDetails.status.toLowerCase() === 'succeeded' ? `${path}/artifacts` : triggerDetails.stage === 'DEPLOY' ? `${path}/source-code` : `${path}/logs`} />
             </Switch>}
