@@ -135,7 +135,7 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
 
     return (
         <>
-             <ResizableLogs showCopyToast={popupText} fitAddon={fitAddon} />
+             <ResizableLogs showCopyToast={popupText} />
             <Scroller
                 scrollToBottom={scrollToBottom}
                 scrollToTop={scrollToTop}

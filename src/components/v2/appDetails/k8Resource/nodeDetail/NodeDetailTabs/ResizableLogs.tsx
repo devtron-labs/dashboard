@@ -4,46 +4,15 @@ import { ReactComponent as CheckIcon } from '../../../../assets/icons/ic-check.s
 import { AutoSizer } from 'react-virtualized';
 import '../../../../../../../node_modules/xterm/css/xterm.css';
 
-
-
-interface resize{
-    showCopyToast : boolean;
-    fitAddon: any;
-    fromPage? :string;
+interface Resize {
+    showCopyToast: boolean;
 }
 
-function ResizableLogs({showCopyToast,fitAddon,fromPage}:resize){
-    
-    return(
-    <AutoSizer>
-                {({ height, width }) => (
-                    <Resizable  height={height} width={width} />
-                )}
-            </AutoSizer>
-    )
-
-    
-    function Resizable({  height, width }) {
-        
-        useThrottledEffect(
-            () => {
-
-                if (fitAddon)
-                {
-                    if( fromPage === "terminal"){
-                        fitAddon.fit();  
-                    }  
-                    else{
-                        fitAddon.current.fit();  
-                    }
-                }     
-            },
-            100,
-            [height, width],
-        );
-        
+function ResizableLogs({ showCopyToast }: Resize) {
+    return <Resizable />;
+    function Resizable() {
         return (
-            <div id="xterm-logs" style={{ height, width }}>
+            <div id="xterm-logs">
                 <span
                     className={`br-8 bcn-0 cn-9 clipboard-toast ${showCopyToast ? 'clipboard-toast--show' : ''}`}
                     style={{ zIndex: 9 }}

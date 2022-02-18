@@ -348,7 +348,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     {terminalViewProps.socketConnection}
                 </p>
             )}
-             <ResizableLogs showCopyToast={popupText} fitAddon={fitAddon}  fromPage="terminal" />
+             <ResizableLogs showCopyToast={popupText} />
             {/* <AutoSizer>
                 {({ height, width }) => (
                     <ResizableLogs showCopyToast={popupText} fitAddon={fitAddon} />
