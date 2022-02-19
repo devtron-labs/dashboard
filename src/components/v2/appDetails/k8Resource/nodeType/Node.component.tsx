@@ -64,26 +64,25 @@ function NodeComponent({handleFocusTabs}: {handleFocusTabs: () => void}) {
             setTableHeader(tableHeader);
             setFirstColWidth(_fcw);
 
+            let [_ignore, _selectedResource] = url.split("group/")
+            let _selectedNodes: Array<iNode>
+            if (_selectedResource) {
+                _selectedResource = _selectedResource.replace(/\/$/, '')
+                _selectedNodes =IndexStore.getPodsForRootNode(_selectedResource).sort((a,b) => a.name > b.name? 1: -1)
+            } else {
+                _selectedNodes = IndexStore.getiNodesByKind(params.nodeType).sort((a,b) => a.name > b.name? 1: -1)
+            }
+            let _healthyNodeCount = 0;
 
-                let [_ignore, _selectedResource] = url.split("group/")
-                let _selectedNodes: Array<iNode>
-                if (_selectedResource) {
-                    _selectedResource = _selectedResource.replace(/\/$/, '')
-                    _selectedNodes =IndexStore.getPodsForRootNode(_selectedResource).sort((a,b) => a.name > b.name? 1: -1)
-                } else {
-                    _selectedNodes = IndexStore.getiNodesByKind(params.nodeType).sort((a,b) => a.name > b.name? 1: -1)
+            _selectedNodes.forEach((node: Node) => {
+                if (node.health?.status.toLowerCase() === 'healthy') {
+                    _healthyNodeCount++;
                 }
-                let _healthyNodeCount = 0;
+            });
 
-                _selectedNodes.forEach((node: Node) => {
-                    if (node.health?.status.toLowerCase() === 'healthy') {
-                        _healthyNodeCount++;
-                    }
-                });
+            setSelectedNodes([..._selectedNodes]);
 
-                setSelectedNodes([..._selectedNodes]);
-
-                setSelectedHealthyNodeCount(_healthyNodeCount);
+            setSelectedHealthyNodeCount(_healthyNodeCount);
         }
     }, [params.nodeType, podType, url, filteredNodes]);
 

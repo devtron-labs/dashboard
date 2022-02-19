@@ -1,8 +1,5 @@
-import { func, node, string } from 'prop-types';
 import { BehaviorSubject } from 'rxjs';
 import { AppDetails, Node, EnvDetails, EnvType, NodeType, iNode } from './appDetails.type';
-import { mapByKey } from '../../common/helpers/Helpers';
-import { Filter } from '../../common/filter/filters';
 
 let _appDetailsSubject: BehaviorSubject<AppDetails> = new BehaviorSubject({} as AppDetails);
 let _nodesSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject([] as Node[]);
@@ -62,6 +59,8 @@ const IndexStore = {
         console.log('setAppDetails', data);
 
         const _nodes = data.resourceTree.nodes;
+
+        getiNodesByRootNodeWithChildNodes(_nodes, _nodes.filter(_n => (_n.parentRefs ?? []).length == 0).map(_n => _n as iNode))
 
         _appDetailsSubject.next({ ...data });
 
@@ -240,6 +239,7 @@ export function getiNodesByKindWithChildNodes(_nodes: Array<Node>, _kind: string
 export function getiNodesByRootNodeWithChildNodes(_nodes: Array<Node>, rootNodes: Array<iNode>): Array<iNode> {
     //if any node has childNode we have already processed this node during previous call to this node and there have been no api calls since then
     //hence reusing it. After api call this is unset and we will process again.
+
     if (rootNodes.some( _node => _node.childNodes)) {
         return rootNodes
     }
@@ -359,10 +359,10 @@ export function getPodsRootParentNameAndStatus(_nodes: Array<Node>): Array<[stri
 }
 
 export const reduceKindStatus = (aggregatedStatus: string, newStatus: string) => {
-    if (aggregatedStatus.toLowerCase() == "degraded" || newStatus.toLowerCase() == "degraded") {
+    if (aggregatedStatus?.toLowerCase() == "degraded" || newStatus?.toLowerCase() == "degraded") {
         return "degraded"
     }
-    if (aggregatedStatus.toLowerCase() == "progressing" || newStatus.toLowerCase() == "progressing") {
+    if (aggregatedStatus?.toLowerCase() == "progressing" || newStatus?.toLowerCase() == "progressing") {
         return "progressing"
     }
     return "healthy"
