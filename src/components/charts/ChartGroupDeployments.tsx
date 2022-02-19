@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg';
 import { ReactComponent as DownArrow } from '../../assets/icons/ic-chevron-down.svg';
 import { DeleteDialog, not } from '../common'
@@ -6,7 +7,7 @@ import moment from 'moment'
 import EmptyState from '../EmptyState/EmptyState';
 import NoDeploymentImg from '../../assets/img/app-not-configured.png';
 import { InstalledChartGroup, InstalledChart } from './charts.types';
-import { Link } from 'react-router-dom'
+import { URLS } from '../../config';
 import placeHolder from '../../assets/icons/ic-plc-chart.svg';
 
 interface ChartGroupDeploymentsProps {
@@ -86,7 +87,7 @@ const CollapsibleDeployment: React.FC<{ installedChartGroup: InstalledChartGroup
         </div>
         <div className={expandedRow}>
             {props.installedChartGroup.installedCharts.map((chart: InstalledChart, index) => {
-                return <Link to={`/chart-store/deployments/${chart.installedAppId}/env/${chart.environmentId}`} key={`${index} - ${chart.chartName}}`} className="chart-group-deployment__row">
+                return <Link to={`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${chart.installedAppId}/env/${chart.environmentId}`} key={`${index} - ${chart.chartName}}`} className="chart-group-deployment__row">
                     <div className="chart-group-deployment__cell chart-group-deployment__cell--first-child">
                         <img className="icon-dim-40 mr-16" onError={handleImageError} alt="chart" src={chart.icon || ""} />
                         <p className="chart-group-deployment-cell__chart-name ellipsis-right m-0">{chart.chartName}</p>

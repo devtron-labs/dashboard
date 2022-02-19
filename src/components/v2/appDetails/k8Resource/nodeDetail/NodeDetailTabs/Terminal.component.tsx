@@ -98,7 +98,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
 
                 <span className="cn-2 mr-8 ml-8" style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
 
-                <div className="cn-6">Container </div>
+                <div className="cn-6 ml-8 mr-10">Container </div>
 
                 <div style={{ minWidth: '145px' }}>
                     <Select
@@ -118,7 +118,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                             menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', width: '150%' }),
                             control: (base, state) => ({
                                 ...base,
-                                border: '0px',
+                                borderColor: 'transparent',
                                 backgroundColor: 'transparent',
                                 minHeight: '24px !important',
                                 cursor: 'pointer',
@@ -162,7 +162,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                             menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
                             control: (base, state) => ({
                                 ...base,
-                                border: '0px',
+                                borderColor: 'transparent',
                                 backgroundColor: 'transparent',
                                 minHeight: '24px !important',
                                 cursor: 'pointer',

@@ -9,11 +9,11 @@ interface RootObject {
     result?: any;
 }
 export function getChartVersionsMin(chartId: number | string) {
-    return get(`app-store/application/${chartId}/version/autocomplete`)
+    return get(`app-store/discover/application/${chartId}/version/autocomplete`)
 }
 
 export function getChartVersionDetails(versionId) {
-    return get(`app-store/application/${versionId}`)
+    return get(`app-store/discover/application/${versionId}`)
 }
 
 export function getChartVersionDetails2(versionId) {
@@ -173,7 +173,7 @@ export function updateChartGroupEntries(payload) {
 }
 
 export function getReadme(appStoreApplicationVersionId: number) {
-    return get(`app-store/application/readme/${appStoreApplicationVersionId}`)
+    return get(`app-store/discover/application/readme/${appStoreApplicationVersionId}`)
 }
 
 
@@ -213,5 +213,9 @@ export function validateAppNames(payload: appName[]): Promise<AppNameValidated> 
 }
 
 export function getChartsByKeyword(input: string) {
-    return get(`app-store/search?chartName=${input}`);
+    return get(`app-store/discover/search?chartName=${input}`);
+}
+
+export function deleteChartGroup(request){
+    return trash(Routes.CHART_GROUP, request);
 }

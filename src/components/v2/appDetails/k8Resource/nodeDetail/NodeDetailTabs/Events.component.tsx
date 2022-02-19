@@ -59,7 +59,7 @@ function EventsComponent({ selectedTab, isDeleted }) {
                                                     <th
                                                         key={`eh_${idx}`}
                                                         className={
-                                                            'cell-style capitalize ' +
+                                                            'cell-style text-uppercase ' +
                                                             head +
                                                             (idx === 0 && ' pad-left-20')
                                                         }
@@ -101,7 +101,7 @@ function EventsComponent({ selectedTab, isDeleted }) {
                             <MessageUI msg="Events not available" size={24} />
                         )}
 
-                        {loading && <MessageUI msg="fetching events" icon={MsgUIType.LOADING} size={24} />}
+                        {loading && <MessageUI msg="Fetching events" icon={MsgUIType.LOADING} size={24} />}
                     </React.Fragment>
                 )
             )}

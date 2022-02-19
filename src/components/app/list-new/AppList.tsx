@@ -7,7 +7,7 @@ import {ReactComponent as ChartIcon} from '../../../assets/icons/ic-charts.svg';
 import {ReactComponent as AddIcon} from '../../../assets/icons/ic-add.svg';
 import InstallDevtronFullImage from '../../../assets/img/install-devtron-full@2x.png';
 import EmptyState from '../../EmptyState/EmptyState';
-import {getInitData, buildClusterVsNamespace} from './AppListService'
+import {getInitData, buildClusterVsNamespace, getNamespaces} from './AppListService'
 import {ServerErrors} from '../../../modals/commonTypes';
 import {AppListViewType} from '../config';
 import {URLS, AppListConstants, SERVER_MODE, DOCUMENTATION} from '../../../config';
@@ -30,6 +30,8 @@ export default function AppList() {
     const [errorResponseCode, setErrorResponseCode] = useState(0);
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState("");
     const [lastDataSync, setLastDataSync] = useState(false);
+    const [fetchingNamespaces, setFetchingNamespaces] = useState(false);
+    const [fetchingNamespacesErrored, setFetchingNamespacesErrored] = useState(false);
 
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({});
     const [currentTab, setCurrentTab] = useState(undefined);
@@ -45,7 +47,12 @@ export default function AppList() {
     const [searchApplied, setSearchApplied] = useState(false);
 
     // filters
-    const [masterFilters, setMasterFilters] = useState({projects : [], clusters :[], namespaces : [], environments : []});
+    const [masterFilters, setMasterFilters] = useState({
+        projects: [],
+        environments: [],
+        clusters: [],
+        namespaces: [],
+    });
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false);
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false);
 
@@ -73,10 +80,10 @@ export default function AppList() {
             setProjectListRes(initData.projectsRes);
             setEnvironmentListRes(initData.environmentListRes);
             setMasterFilters(initData.filters);
+            setDataStateType(AppListViewType.LIST);
             if(serverMode == SERVER_MODE.EA_ONLY){
                 applyClusterSelectionFilterOnPageLoadIfSingle(initData.filters.clusters, _currentTab);
             }
-            setDataStateType(AppListViewType.LIST);
         }).catch((errors: ServerErrors) => {
             showError(errors);
             setDataStateType(AppListViewType.ERROR);
@@ -149,7 +156,7 @@ export default function AppList() {
             clusterVsNamespaceMap : _clusterVsNamespaceMap
         }
 
-        let _masterFilters = {projects :[], clusters :[], namespaces :[], environments : []};
+        let _masterFilters = { projects: [], environments: [], clusters: [], namespaces: [] };
 
         // set projects (check/uncheck)
         _masterFilters.projects = masterFilters.projects.map((project) => {
@@ -201,6 +208,7 @@ export default function AppList() {
         let sortBy = params.orderBy || SortBy.APP_NAME;
         let sortOrder = params.sortOrder || OrderBy.ASC;
         let offset = +params.offset || 0;
+        let hOffset = +params.hOffset || 0;
         let pageSize: number = +params.pageSize || 20;
         let pageSizes = new Set([20, 40, 50]);
 
@@ -209,6 +217,9 @@ export default function AppList() {
         }
         if ((offset % pageSize != 0)) { //pageSize must be a multiple of offset
             offset = 0;
+        }
+        if ((hOffset % pageSize != 0)) { //pageSize must be a multiple of offset
+            hOffset = 0;
         }
 
         let payload = {
@@ -219,9 +230,55 @@ export default function AppList() {
             sortBy: sortBy,
             sortOrder: sortOrder,
             offset: offset,
+            hOffset: hOffset,
             size: +pageSize,
         }
+
+        // check whether to fetch namespaces from backend if any cluster is selected and not same as old
+        // do it only for non page load, as on pageload getInitData is handling this logic
+        if (dataStateType == AppListViewType.LIST){
+            let _oldClusterIdsCsv = _getClusterIdsFromRequestUrl(parsedPayloadOnUrlChange);
+            let _newClusterIdsCsv = _getClusterIdsFromRequestUrl(payload);
+            if(_newClusterIdsCsv) {
+                // check if cluster selection is changed
+                if(_oldClusterIdsCsv != _newClusterIdsCsv) {
+                    // fetch namespaces
+                    _fetchAndSetNamespaces(payload, _newClusterIdsCsv, _masterFilters)
+                }
+            }else{
+                // if all clusters are unselected, then reset namespaces
+                _masterFilters.namespaces = [];
+                setMasterFilters(_masterFilters);
+            }
+        }
+
         return payload;
+    }
+
+    const _forceFetchAndSetNamespaces = () => {
+        let _clusterIdsCsv = _getClusterIdsFromRequestUrl(parsedPayloadOnUrlChange);
+        _fetchAndSetNamespaces(parsedPayloadOnUrlChange, _clusterIdsCsv, masterFilters)
+    }
+
+    const _fetchAndSetNamespaces = (_parsedPayloadOnUrlChange : any, _clusterIdsCsv : string, _masterFilters : any) => {
+        // fetch namespaces
+        setFetchingNamespaces(true);
+        setFetchingNamespacesErrored(false);
+        let _clusterVsNamespaceMap = buildClusterVsNamespace(_parsedPayloadOnUrlChange.namespaces.join(','));
+        getNamespaces(_clusterIdsCsv, _clusterVsNamespaceMap).then((_namespaces) => {
+            _masterFilters.namespaces = _namespaces;
+            setMasterFilters(_masterFilters);
+            setFetchingNamespaces(false);
+            setFetchingNamespacesErrored(false);
+        }).catch((errors: ServerErrors) => {
+            setFetchingNamespaces(false);
+            setFetchingNamespacesErrored(true);
+        })
+    }
+
+    const _getClusterIdsFromRequestUrl = (parsedPayload : any) : string => {
+        let _namespaces = parsedPayload["namespaces"] || [];
+        return [...buildClusterVsNamespace(_namespaces.join(',')).keys()].join(',');
     }
 
     const buildDevtronAppListUrl = () : string => {
@@ -264,9 +321,11 @@ export default function AppList() {
         if (_searchString){
             query['search'] = _searchString;
             query['offset'] = 0;
+            query['hOffset'] = 0;
         }else{
             delete query['search'];
             delete query['offset'];
+            delete query['hOffset'];
         }
 
         let queryStr = queryString.stringify(query);
@@ -274,28 +333,110 @@ export default function AppList() {
         history.push(url);
     }
 
-    const applyFilter = (type: string, list: FilterOption[], selectedAppTab : string = undefined): void => {
+    /**
+     * This function will return filters to be applied for filter types - CLUSTER & NAMESPACE (query param - namespace)
+     *
+     * @param ids - currently selected/checked items from filters list
+     * @param filterType - type of filter
+     * @param query - current query params
+     * @returns string - filters to be applied
+     */
+    const getUpdatedFiltersOnNamespaceChange = (
+        ids: (string | number)[],
+        filterType: string,
+        query: Record<string, string>,
+    ): string => {
+        /**
+         * Step 1: Return currently selected/checked items from filters list as string if
+         * - There are no query params
+         * - There is no namespace query param i.e. this is the first time selecting the cluster filter
+         */
+        if (!query || Object.keys(query).length <= 0 || !query[AppListConstants.FilterType.NAMESPACE]) {
+            return ids.toString();
+        }
+
+        /**
+         * Step 2: Create & init all required arrays
+         * - currentlyAppliedFilters: Array of currently applied namespace filters in query param
+         * - checkedItemIds: Array of currently selected/checked items from filters list
+         * - updatedAppliedFilters: Array of new filters to be applied
+         */
+        let currentlyAppliedFilters = query[AppListConstants.FilterType.NAMESPACE].split(',');
+        let checkedItemIds = ids.toString().split(',');
+        let updatedAppliedFilters = [];
+
+        /**
+         * Step 3: Iterate through checkedItemIds,
+         * - Filter appliedFilters array & get filteredIds,
+         *      - If filter is already applied & present in query param then keep it.
+         *      - If filter type is CLUSTER & already has a related namespace filter then keep it.
+         * - If filteredIds is empty (i.e. not matching above conditions), then push the item id in updatedAppliedFilters array.
+         */
+        checkedItemIds.forEach((id) => {
+            const filterdIds = currentlyAppliedFilters.filter(
+                (item) =>
+                    id.toString() === item ||
+                    (filterType === AppListConstants.FilterType.CLUTSER && item.startsWith(`${id}_`)),
+            );
+            updatedAppliedFilters.push(filterdIds.length > 0 ? filterdIds : id);
+        });
+
+        /**
+         * Step 4: If filterType is NAMESPACE,
+         * - Iterate through appliedFilters array
+         * - Check if there's any namespace present related to a cluster in checkedItemIds array,
+         *      - If yes then continue.
+         *      - If no then get the Cluster Id from applied filter & push it to updatedAppliedFilters array.
+         */
+        if (filterType === AppListConstants.FilterType.NAMESPACE) {
+            currentlyAppliedFilters.forEach((filter) => {
+                if (!checkedItemIds.some((itemId) => itemId.startsWith(`${filter.split('_')[0]}_`))) {
+                    updatedAppliedFilters.push(filter.split('_')[0]);
+                }
+            });
+        }
+
+        /**
+         * Step 5: Create array out of unique set of item ids & return as string.
+         * - Check & filter out empty items from updatedAppliedFilters array
+         * - Create a new Set out of filtered updatedAppliedFilters array to remove duplicate items.
+         * - Create array out of new Set (as Set doesn't have toString() equivalent) and return as string.
+         */
+        return Array.from(new Set<string>(updatedAppliedFilters.filter((filter) => filter !== ''))).toString();
+    };
+
+    const applyFilter = (type: string, list: FilterOption[], selectedAppTab: string = undefined): void => {
         let qs = queryString.parse(location.search);
         let keys = Object.keys(qs);
         let query = {};
         keys.map((key) => {
             query[key] = qs[key];
-        })
+        });
 
-        let queryParamType = (type == AppListConstants.FilterType.CLUTSER || type == AppListConstants.FilterType.NAMESPACE) ? 'namespace' : type;
-        let checkedItems = list.filter(item => item.isChecked);
-        let ids = checkedItems.map(item => item.key);
-        let str = ids.toString();
-        query[queryParamType] = str;
+        let queryParamType =
+            type == AppListConstants.FilterType.CLUTSER || type == AppListConstants.FilterType.NAMESPACE
+                ? AppListConstants.FilterType.NAMESPACE
+                : type;
+        let checkedItems = list.filter((item) => item.isChecked);
+        let ids = checkedItems.map((item) => item.key);
+
+        query[queryParamType] =
+            queryParamType === AppListConstants.FilterType.NAMESPACE
+                ? getUpdatedFiltersOnNamespaceChange(ids, type, query)
+                : ids.toString();
         query['offset'] = 0;
+        query['hOffset'] = 0;
         let queryStr = queryString.stringify(query);
         let _currentTab = selectedAppTab || currentTab;
-        let url = `${_currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()}?${queryStr}`;
+        let url = `${
+            _currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
+        }?${queryStr}`;
         history.push(url);
-    }
+    };
 
     const removeFilter = (filter, filterType: string): void => {
-        let val = filter.key;
+        let val = filter.key.toString();
+        const clustId = val.split('_')[0]; // Specific to cluster & namespace filter removal
         let qs = queryString.parse(location.search);
         let keys = Object.keys(qs);
         let query = {};
@@ -303,21 +444,33 @@ export default function AppList() {
             query[key] = qs[key];
         });
         query['offset'] = 0;
+        query['hOffset'] = 0;
         let queryParamType =
             filterType === AppListConstants.FilterType.CLUTSER || filterType === AppListConstants.FilterType.NAMESPACE
-                ? 'namespace'
+                ? AppListConstants.FilterType.NAMESPACE
                 : filterType;
         let appliedFilters = query[queryParamType];
         let arr = appliedFilters.split(',');
         if (filterType === AppListConstants.FilterType.CLUTSER) {
-            arr = arr.filter((item) => !item.startsWith(val.toString()));
+            arr = arr.filter((item) => !item.startsWith(val));
         } else {
-            arr = arr.filter((item) => item != val.toString());
+            arr = arr.filter((item) => item !== val);
+
+            /**
+             * Check if filterType is NAMESPACE & appliedFilters array doesn't contain any namespace
+             * related to a cluster then push Cluster Id to updatedAppliedFilters array (i.e. arr)
+             */
+            if (
+                filterType === AppListConstants.FilterType.NAMESPACE &&
+                !arr.some((item) => item.startsWith(`${clustId}_`))
+            ) {
+                arr.push(clustId);
+            }
         }
+
         query[queryParamType] =
-            filterType === AppListConstants.FilterType.NAMESPACE && !arr.toString()
-                ? val.split('_')[0]
-                : arr.toString();
+            filterType === AppListConstants.FilterType.NAMESPACE && !arr.toString() ? clustId : arr.toString();
+
         if (query[queryParamType] == '') delete query[queryParamType];
         let queryStr = queryString.stringify(query);
         let url = `${
@@ -333,6 +486,8 @@ export default function AppList() {
         keys.map((key) => {
             query[key] = qs[key];
         })
+        query['offset'] = 0;
+        query['hOffset'] = 0;
         delete query['environment'];
         delete query['team'];
         delete query['namespace'];
@@ -442,6 +597,20 @@ export default function AppList() {
                             type={AppListConstants.FilterType.PROJECT}
                             applyFilter={applyFilter}
                             onShowHideFilterContent={onShowHideFilterContent} />
+                    {
+                        serverMode == SERVER_MODE.FULL &&
+                        <>
+                            <span className="filter-divider"></span>
+                            <Filter list={masterFilters.environments}
+                                    labelKey="label"
+                                    buttonText="Environment"
+                                    searchable multi
+                                    placeholder="Search Environment"
+                                    type={AppListConstants.FilterType.ENVIRONMENT}
+                                    applyFilter={applyFilter}
+                                    onShowHideFilterContent={onShowHideFilterContent} />
+                        </>
+                    }
                     <span className="filter-divider"></span>
                     <Filter list={masterFilters.clusters}
                             labelKey="label"
@@ -463,21 +632,11 @@ export default function AppList() {
                             isDisabled={!_isAnyClusterFilterApplied}
                             disableTooltipMessage={"Select a cluster first"}
                             isLabelHtml={true}
-                            onShowHideFilterContent={onShowHideFilterContent} />
-                    {
-                        serverMode == SERVER_MODE.FULL &&
-                        <>
-                            <span className="filter-divider"></span>
-                            <Filter list={masterFilters.environments}
-                                    labelKey="label"
-                                    buttonText="Environment"
-                                    searchable multi
-                                    placeholder="Search Environment"
-                                    type={AppListConstants.FilterType.ENVIRONMENT}
-                                    applyFilter={applyFilter}
-                                    onShowHideFilterContent={onShowHideFilterContent} />
-                        </>
-                    }
+                            onShowHideFilterContent={onShowHideFilterContent}
+                            loading={fetchingNamespaces}
+                            errored={fetchingNamespacesErrored}
+                            errorMessage={"Could not load namespaces"}
+                            errorCallbackFunction={_forceFetchAndSetNamespaces}    />
                 </div>
             </div>
     }
@@ -637,7 +796,7 @@ export default function AppList() {
                     {
                         params.appType == AppListConstants.AppType.HELM_APPS &&
                         <>
-                            <HelmAppList serverMode={serverMode} payloadParsedFromUrl={parsedPayloadOnUrlChange} sortApplicationList={sortApplicationList} clearAllFilters={removeAllFilters} setFetchingExternalAppsState={setFetchingExternalAppsState} updateLastDataSync={updateLastDataSync} setShowPulsatingDotState={setShowPulsatingDotState} masterFilters={masterFilters}/>
+                            <HelmAppList serverMode={serverMode} payloadParsedFromUrl={parsedPayloadOnUrlChange} sortApplicationList={sortApplicationList} clearAllFilters={removeAllFilters} fetchingExternalApps={fetchingExternalApps} setFetchingExternalAppsState={setFetchingExternalAppsState} updateLastDataSync={updateLastDataSync} setShowPulsatingDotState={setShowPulsatingDotState} masterFilters={masterFilters}/>
                             {
                                 fetchingExternalApps &&
                                 <div className="mt-16">

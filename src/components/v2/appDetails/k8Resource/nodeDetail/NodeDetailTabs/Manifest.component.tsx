@@ -19,7 +19,7 @@ import YAML from 'yaml';
 import { toast } from 'react-toastify';
 import { showError, ToastBody } from '../../../../../common';
 import { appendRefetchDataToUrl } from '../../../../../util/URLUtil';
-import { EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT, EA_MANIFEST_SECRET_INFO_TEXT } from '../../../../Constants';
+import { EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT, EA_MANIFEST_SECRET_INFO_TEXT } from '../../../../../../config/constantMessaging';
 
 function ManifestComponent({ selectedTab, isDeleted }) {
     const location = useLocation();
@@ -33,6 +33,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
     const [desiredManifest, setDesiredManifest] = useState('');
     const appDetails = IndexStore.getAppDetails();
     const [loading, setLoading] = useState(true);
+    const [loadingMsg, setLoadingMsg] = useState('Fetching manifest');
     const [error, setError] = useState(false);
     const [errorText, setErrorText] = useState('');
     const [isEditmode, setIsEditmode] = useState(false);
@@ -115,6 +116,8 @@ function ManifestComponent({ selectedTab, isDeleted }) {
 
     const handleApplyChanges = () => {
         setLoading(true);
+        setLoadingMsg('Applying changes');
+
         let manifestString;
         try {
             manifestString = JSON.stringify(YAML.parse(modifiedManifest));
@@ -301,7 +304,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                 readOnly={activeTab !== 'Live manifest' || !isEditmode}
                                 onChange={handleEditorValueChange}
                                 loading={loading}
-                                customLoader={<MessageUI msg="fetching manifest" icon={MsgUIType.LOADING} size={24} />}
+                                customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
                                 focus={isEditmode}
                             >
                                 {showInfoText && (

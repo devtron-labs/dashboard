@@ -191,7 +191,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 ...pipelineConfigFromRes.strategies[i],
                 defaultConfig: this.allStrategies[pipelineConfigFromRes.strategies[i].deploymentTemplate],
                 jsonStr: JSON.stringify(pipelineConfigFromRes.strategies[i].config, null, 4),
-                selection: yamlJsParser.stringify(this.allStrategies[pipelineConfigFromRes.strategies[i].config], { indent: 4 }),
+                selection: yamlJsParser.stringify(this.allStrategies[pipelineConfigFromRes.strategies[i].config], { indent: 2 }),
                 isCollapsed: true,
             });
             strategies = strategies.filter(strategy => strategy.deploymentTemplate !== pipelineConfigFromRes.strategies[i].deploymentTemplate)
@@ -286,7 +286,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
         selection['defaultConfig'] = this.allStrategies[selection.deploymentTemplate];
         selection['jsonStr'] = JSON.stringify(this.allStrategies[selection.deploymentTemplate], null, 4);
-        selection['yamlStr'] = yamlJsParser.stringify(this.allStrategies[selection.deploymentTemplate], { indent: 4 });
+        selection['yamlStr'] = yamlJsParser.stringify(this.allStrategies[selection.deploymentTemplate], { indent: 2 });
         selection['isCollapsed'] = true;
 
         state.strategies = strategies;
@@ -316,7 +316,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         newSelection['isCollapsed'] = true;
         newSelection['default'] = true;
         newSelection['jsonStr'] = JSON.stringify(this.allStrategies[value], null, 4);
-        newSelection['yamlStr'] = yamlJsParser.stringify(this.allStrategies[value], { indent: 4 });
+        newSelection['yamlStr'] = yamlJsParser.stringify(this.allStrategies[value], { indent: 2 });
 
         let { pipelineConfig } = { ...this.state };
         pipelineConfig.strategies.push(newSelection);
@@ -417,7 +417,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             jsonStr = event.target.value;
             try {
                 json = JSON.parse(jsonStr);
-                yamlStr = yamlJsParser.stringify(json, { indent: 4 });
+                yamlStr = yamlJsParser.stringify(json, { indent: 2 });
             } catch (error) { }
         }
         else {

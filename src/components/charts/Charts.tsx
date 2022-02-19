@@ -32,7 +32,7 @@ export default function Charts () {
             </div>
         );
     };
-    
+
     return serverMode === SERVER_MODE.EA_ONLY ? (
         renderEmptyStateForEAOnlyMode()
     ) : (
@@ -42,6 +42,7 @@ export default function Charts () {
             <Redirect to={`${path}/discover`} />
         </Switch>
     );
+
 }
 
 export function GenericChartsHeader({ children = null }) {

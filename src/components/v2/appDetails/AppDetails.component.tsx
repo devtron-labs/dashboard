@@ -17,12 +17,11 @@ import IndexStore from './index.store';
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component';
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component';
 import SyncErrorComponent from './SyncError.component';
-import { Progressing, useEventSource } from '../../common';
+import { useEventSource } from '../../common';
 
 const AppDetailsComponent = () => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
     const { path, url } = useRouteMatch();
-    const [loading, setLoading] = useState(true);
     const history = useHistory();
 
     const [streamData, setStreamData] = useState<AppStreamData>(null);
@@ -172,18 +171,18 @@ const AppDetailsComponent = () => {
                         </ul>
                     </div>
                     <Switch>
-                <Route
-                    path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/group/:resourceName`}
-                    render={() => {
-                        return (
-                            <K8ResourceComponent
-                                clickedNodes={clickedNodes}
-                                registerNodeClick={registerNodeClick}
-                                handleFocusTabs={handleFocusTabs}
-                            />
-                        );
-                    }}
-                />
+                        <Route
+                            path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/group/:resourceName`}
+                            render={() => {
+                                return (
+                                    <K8ResourceComponent
+                                        clickedNodes={clickedNodes}
+                                        registerNodeClick={registerNodeClick}
+                                        handleFocusTabs={handleFocusTabs}
+                                    />
+                                );
+                            }}
+                        />
                         <Route
                             path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/:podName`}
                             render={() => {
