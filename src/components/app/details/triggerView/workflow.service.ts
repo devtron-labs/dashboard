@@ -284,6 +284,11 @@ export function processWorkflow(workflow: WorkflowResult, ciResponse: CiPipeline
                 delete node['sourceNodes'];
             }
             if (node.type == 'CD') {
+                node.downstreamNodes.forEach(dn => {
+                    dn.parentPipelineId = node.id
+                    dn.parentPipelineType = 'CD'
+                    dn.parentEnvironmentName = node.environmentName
+                })
                 node.preNode && finalWorkflow.push(node.preNode);
                 finalWorkflow.push(node);
                 node.postNode && finalWorkflow.push(node.postNode);
@@ -482,6 +487,8 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         preNode: undefined,
         postNode: undefined,
         downstreamNodes: new Array<NodeAttr>(),
+        parentPipelineId: String(cdPipeline.parentPipelineId),
+        parentPipelineType: cdPipeline.parentPipelineType,
     } as NodeAttr
     stageIndex++;
 

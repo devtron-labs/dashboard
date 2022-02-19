@@ -660,6 +660,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 selectImage={this.selectImage}
                 toggleSourceInfo={this.toggleSourceInfo}
                 runningOnParentCd={node.runningOnParentCd}
+                parentPipelineId={node.parentPipelineId}
+                parentPipelineType={node.parentPipelineType}
+                parentEnvironmentName={node.parentEnvironmentName}
             />
         }
     }
