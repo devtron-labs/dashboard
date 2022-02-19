@@ -4,8 +4,7 @@ import CompareWithBaseConfig from './CompareWithBaseConfig';
 
 function HistoryDiff() {
     return (
-        <div className='history-diff__wrapper'>
-        <CompareWithBaseConfig />
+        <div className='historical-diff__container'>
             <div className="historical-diff__left">
                 Deployment Template
                 <div className="cg-5">2 changes</div>

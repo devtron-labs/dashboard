@@ -1,6 +1,17 @@
-.history-diff__wrapper{
+.historical-diff{
     display: grid;
     grid-template-rows: 60px auto ;
+    height: 100%;
+    background-color: var(--white);
+}
+
+.historical-diff__container{
+    display: grid;
+    overflow: hidden;
+    flex-basis: 280px;
+    transition: flex-basis 0.3s;
+    grid-template-columns: 280px auto;
+    grid-template-rows: auto;
 }
 
 .deployment-diff__upper{

@@ -1,7 +1,7 @@
 import React from 'react';
 
 function CompareWithBaseConfig() {
-  return <div>
+  return <div className='border-bottom'>
       hi
   </div>;
 }

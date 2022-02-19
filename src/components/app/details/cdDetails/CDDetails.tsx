@@ -29,6 +29,8 @@ import {Moment12HourFormat} from '../../../../config';
 import DeploymentConfiguration from './DeploymentConfiguration';
 import HistoryDiff from './HistoryDiff';
 import CompareWithBaseConfig from './CompareWithBaseConfig';
+import './cdDetail.scss'
+
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(["starting", "running", "pending"]);
 
@@ -150,9 +152,12 @@ export default function CDDetails(){
     if(!result || dependencyState[2] !== envId) return null
     return (
         <>
-            <div className={`ci-details ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
+            <div className={`${ !showTemplate ? 'ci-details' : ''} ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
                 {showTemplate ? (
+                    <div className='historical-diff'>
+                    <CompareWithBaseConfig />
                     <HistoryDiff />
+                    </div >
                 ) : (
                     <>
                         <div className="ci-details__history">
