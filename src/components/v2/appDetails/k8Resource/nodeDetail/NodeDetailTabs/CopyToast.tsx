@@ -27,7 +27,6 @@ function CopyToast({ showCopyToast }) {
 }
 
 function handleSelectionChange(terminal, setPopupText) {
-    console.log(terminal);
     terminal.onSelectionChange(() => {
         copyToClipboard(terminal.getSelection());
         if (terminal.getSelection()) {
