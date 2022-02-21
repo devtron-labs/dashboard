@@ -4,7 +4,6 @@ import { getDockerRegistryList } from '../../services/service';
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service';
 import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration';
 import { toast } from 'react-toastify';
-import awsRegionList from '../common/awsRegionList.json';
 import { DOCUMENTATION, REGISTRY_TYPE_MAP } from '../../config';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg';
@@ -16,12 +15,6 @@ import { ReactComponent as InfoFilled } from '../../assets/icons/ic-info-filled.
 import { types } from 'util';
 import DeleteComponent from '../../util/DeleteComponent';
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
-
-const DockerRegistryType = [
-    { label: 'docker hub', value: 'docker-hub' },
-    { label: 'ecr', value: 'ecr' },
-    { label: 'other', value: 'other' },
-];
 
 enum CERTTYPE {
     SECURE = 'secure',
@@ -184,16 +177,10 @@ function DockerForm({
     const [toggleCollapsedAdvancedRegistry, setToggleCollapsedAdvancedRegistry] = useState(false);
     const [certError, setCertInputError] = useState('');
 
-    let awsRegionMap = awsRegionList.reduce((agg, curr) => {
-        agg.set(curr.value, curr.name);
-        return agg;
-    }, new Map());
-
     const [customState, setCustomState] = useState({
         awsAccessKeyId: { value: awsAccessKeyId, error: '' },
         awsSecretAccessKey: { value: awsSecretAccessKey, error: '' },
         registryUrl: { value: registryUrl, error: '' },
-        awsRegion: { value: awsRegion, error: '' },
         username: { value: username, error: '' },
         password: { value: password, error: '' },
     });
@@ -231,7 +218,11 @@ function DockerForm({
                       awsRegion: awsRegion,
                   }
                 : {}),
-            ...(state.registryType.value === 'docker-hub'
+            ...(state.registryType.value === 'docker-hub' ||
+            state.registryType.value === 'acr' ||
+            state.registryType.value === 'artifact-registry' ||
+            state.registryType.value === 'gcr' ||
+            state.registryType.value === 'quay'
                 ? { username: customState.username.value, password: customState.password.value }
                 : {}),
             ...(state.registryType.value === 'other'
@@ -272,14 +263,12 @@ function DockerForm({
     function onValidation() {
         if (state.registryType.value === 'ecr') {
             if (
-                //!customState.awsRegion.value ||
                 !customState.awsAccessKeyId.value ||
                 !customState.awsSecretAccessKey.value ||
                 !customState.registryUrl.value
             ) {
                 setCustomState((st) => ({
                     ...st,
-                    //awsRegion: { ...st.awsRegion, error: st.awsRegion.value ? '' : 'Mandatory' },
                     awsAccessKeyId: { ...st.awsAccessKeyId, error: st.awsAccessKeyId.value ? '' : 'Mandatory' },
                     awsSecretAccessKey: {
                         ...st.awsSecretAccessKey,
@@ -289,7 +278,12 @@ function DockerForm({
                 }));
                 return;
             }
-        } else if (state.registryType.value === 'docker-hub') {
+        } else if (state.registryType.value === 'docker-hub' ||
+        state.registryType.value === 'acr' ||
+        state.registryType.value === 'artifact-registry' ||
+        state.registryType.value === 'gcr' ||
+            state.registryType.value === 'quay'
+        ) {
             if (!customState.username.value || !customState.password.value) {
                 setCustomState((st) => ({
                     ...st,
@@ -416,56 +410,26 @@ function DockerForm({
                 />
             </div>
             {state.registryType.value === 'ecr' && (
-                <>
-                    {/* <div className="form__row">
-                        <div className="flex left column">
-                            <label htmlFor="" className="form__label">
-                                AWS region*
-                            </label>
-                            <Select
-                                tabIndex={4}
-                                rootClassName="form__input form__input--aws-region"
-                                name="awsRegion"
-                                onChange={customHandleChange}
-                                value={customState.awsRegion.value}
-                            >
-                                <Select.Button>
-                                    {customState.awsRegion.value
-                                        ? awsRegionMap.get(customState.awsRegion.value)
-                                        : 'Select AWS region'}
-                                </Select.Button>
-                                {Array.from(awsRegionMap).map(([value, name]) => (
-                                    <Select.Option value={value} key={value}>
-                                        {name}
-                                    </Select.Option>
-                                ))}
-                            </Select>
-                            {customState.awsRegion.error && (
-                                <div className="form__error">{customState.awsRegion.error}</div>
-                            )}
-                        </div>
-                    </div> */}
-                    <div className="form__row form__row--two-third">
-                        <CustomInput
-                            name="awsAccessKeyId"
-                            tabIndex={5}
-                            value={customState.awsAccessKeyId.value}
-                            error={customState.awsAccessKeyId.error}
-                            onChange={customHandleChange}
-                            label="Access key ID*"
-                            autoComplete={'off'}
-                        />
-                        <ProtectedInput
-                            name="awsSecretAccessKey"
-                            tabIndex={6}
-                            value={customState.awsSecretAccessKey.value}
-                            error={customState.awsSecretAccessKey.error}
-                            onChange={customHandleChange}
-                            label="Secret access key*"
-                            type="password"
-                        />
-                    </div>
-                </>
+                <div className="form__row form__row--two-third">
+                    <CustomInput
+                        name="awsAccessKeyId"
+                        tabIndex={5}
+                        value={customState.awsAccessKeyId.value}
+                        error={customState.awsAccessKeyId.error}
+                        onChange={customHandleChange}
+                        label="Access key ID*"
+                        autoComplete={'off'}
+                    />
+                    <ProtectedInput
+                        name="awsSecretAccessKey"
+                        tabIndex={6}
+                        value={customState.awsSecretAccessKey.value}
+                        error={customState.awsSecretAccessKey.error}
+                        onChange={customHandleChange}
+                        label="Secret access key*"
+                        type="password"
+                    />
+                </div>
             )}
             {state.registryType.value === 'docker-hub' && (
                 <>
