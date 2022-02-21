@@ -73,7 +73,7 @@ export default function NavigationRoutes() {
                 const response = getVersionConfig();
                 const json = await response;
                 if (json.code == 200) {
-                    setServerMode(json.result.serverMode);
+                    setServerMode('EA_ONLY');
                     setPageState(ViewType.FORM);
                 }
             } catch (err) {

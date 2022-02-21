@@ -201,9 +201,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                         <div className="chart-detail-left">
                             <About {...chartInformation} chartYaml={chartYaml} />
                             <ReadmeRowHorizontal {...chartInformation} />
-                            { serverMode == SERVER_MODE.FULL &&
-                                <ChartDeploymentList chartId={chartId} />
-                            }
+                            <ChartDeploymentList chartId={chartId} />
                         </div>
                         <div className="chart-detail-right">
                             <Deployment

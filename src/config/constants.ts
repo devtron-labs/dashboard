@@ -98,6 +98,7 @@ export const Routes = {
     CHART_REPO: 'chart-repo',
     CHART_RESYNC: 'sync-charts',
     CHART_STORE_VALUES : 'values',
+    CHART_STORE_DEPLOYMENT : 'deployment',
     CHART_VALUES: 'template/values',
     CHART_VALUES_LIST_CATEGORIZED: 'application/values/list',
     CHART_VALUES_LIST_TEMPLATE: 'template/values/list',
