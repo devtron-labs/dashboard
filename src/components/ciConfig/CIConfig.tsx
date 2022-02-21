@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Select from '../common/Select/Select'
-import { Progressing, useForm, showError, multiSelectStyles } from '../common'
+import { Progressing, useForm, showError, multiSelectStyles, sortObjectArrayAlphabetically } from '../common'
 import { DOCUMENTATION, PATTERNS, REGISTRY_TYPE_MAP, URLS } from '../../config'
 import { saveCIConfig, updateCIConfig, getDockerRegistryMinAuth } from './service';
 import { getSourceConfig, getCIConfig } from '../../services/service';
@@ -32,7 +32,9 @@ export default function CIConfig({ respondOnSuccess, ...rest }) {
         try {
             setLoading(true)
             const [{ result: dockerRegistries }, { result: sourceConfig }, { result: ciConfig }] = await Promise.all([getDockerRegistryMinAuth(appId), getSourceConfig(appId), getCIConfig(+appId)])
+            Array.isArray(dockerRegistries) && sortObjectArrayAlphabetically(dockerRegistries, 'id');
             setDockerRegistries(dockerRegistries);
+            sourceConfig && Array.isArray(sourceConfig.material) && sortObjectArrayAlphabetically(sourceConfig.material, 'name');
             setSourceConfig(sourceConfig);
             setCIConfig(ciConfig)
             setLoading(false)
@@ -273,7 +275,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                             autoComplete={"off"}
                         />
                         {repository_name.error && <label className="form__error">{repository_name.error}</label>}
-                        {!ciConfig && <label className="form__error form__error--info">New repository will be created if not provided</label>}
+                        {!ciConfig && selectedRegistry.registryType === 'ecr' && <label className="form__error form__error--info">New repository will be created if not provided</label>}
                     </div>
                 </div>
                 <div className="fs-14 fw-6 pb-16">Docker file location</div>

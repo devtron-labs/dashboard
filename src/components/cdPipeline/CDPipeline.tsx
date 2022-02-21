@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { TriggerType, ViewType, URLS } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
-import { VisibleModal, Select, Progressing, ButtonWithLoader, showError, isEmpty, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, Checkbox, DeleteDialog, CHECKBOX_VALUE } from '../common';
+import { VisibleModal, Select, Progressing, ButtonWithLoader, showError, isEmpty, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, Checkbox, DeleteDialog, CHECKBOX_VALUE, sortObjectArrayAlphabetically } from '../common';
 import { toast } from 'react-toastify';
 import { Info } from '../common/icons/Icons'
 import { ErrorScreenManager } from '../common';
@@ -27,10 +27,6 @@ import dropdown from '../../assets/icons/ic-chevron-down.svg';
 import ForceDeleteDialog from '../common/dialogs/ForceDeleteDialog';
 import { ConditionalWrap } from '../common/helpers/Helpers';
 import Tippy from '@tippyjs/react';
-import { NavLink } from 'react-router-dom';
-import { ReactComponent as SuccessIcon } from '../../assets/icons/ic-success-large.svg';
-import { ReactComponent as GotToBuildDeploy } from '../../assets/icons/go-to-buildanddeploy@2x.svg';
-import { ReactComponent as GoToEnvOverride } from '../../assets/icons/go-to-envoverride@2x.svg';
 
 
 export const SwitchItemValues = {
@@ -98,7 +94,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             isAdvanced: false,
             forceDeleteDialogMessage: '',
             forceDeleteDialogTitle: '',
-            showSuccessScreen: false,
         }
         this.validationRules = new ValidationRules();
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this);
@@ -149,6 +144,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                     isClusterCdActive: env.isClusterCdActive,
                                 }
                             });
+                            sortObjectArrayAlphabetically(list, 'name');
                             this.setState({ environments: list })
                         }).catch((error) => {
                             showError(error)
@@ -183,6 +179,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     updateStateFromResponse(pipelineConfigFromRes, environments): void {
         let { pipelineConfig, strategies } = { ...this.state };
+        sortObjectArrayAlphabetically(environments, 'name');
         environments = environments.map((env) => {
             return {
                 ...env,
@@ -498,8 +495,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             if (response.result) {
                 let pipelineConfigFromRes = response.result.pipelines[0];
                 this.updateStateFromResponse(pipelineConfigFromRes, this.state.environments);
-                this.setState({ showSuccessScreen: true });
                 this.props.getWorkflows();
+                this.props.close(true, this.state.pipelineConfig.environmentId);
             }
         }).catch((error: ServerErrors) => {
             showError(error);
@@ -590,67 +587,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState({ showDeleteModal: false });
     }
 
-    renderSuccessPopup(){
-        return (
-            <VisibleModal className="">
-                <div className="modal__body" style={{ width: '600px' }}>
-                    <div className="success-header-container">
-                        <div className="success-icon">
-                            <SuccessIcon />
-                        </div>
-                        <div>
-                            <div className="success-title">Deployment pipeline created</div>
-                            <div className="fs-13">What do you want to do next?</div>
-                        </div>
-                    </div>
-                    <div className="flex left action-card">
-                        <div className="icon-container">
-                            <GotToBuildDeploy />
-                        </div>
-                        <div className="ml-16 mr-16 flex-1">
-                            <div className="action-title">Deploy this app on prod-devtroncd</div>
-                            <div>
-                                <NavLink
-                                    to={`${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_TRIGGER}`}
-                                    className="cb-5 no-decor"
-                                >
-                                    Go to Build & Deploy
-                                </NavLink>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex left action-card">
-                        <div className="icon-container">
-                            <GoToEnvOverride />
-                        </div>
-                        <div className="ml-16 mr-16 flex-1">
-                            <div className="action-title">Override deployment configurations for prod-devtroncd</div>
-                            <div>
-                                <NavLink
-                                    to={`${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${this.state.pipelineConfig.environmentId}`}
-                                    className="cb-5 no-decor"
-                                >
-                                    Go to environment override
-                                </NavLink>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="close-button-container">
-                        <button type="button" className="close-button cta" onClick={this.props.close}>
-                            Close
-                        </button>
-                    </div>
-                </div>
-            </VisibleModal>
-        );
-    }
 
     renderHeader() {
         let title = this.props.match.params.cdPipelineId ? "Edit deployment pipeline" : "Create deployment pipeline";
         return <>
             <div className="p-20 flex flex-align-center flex-justify">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">{title}</h2>
-                <button type="button" className="transparent flex icon-dim-24" onClick={this.props.close}>
+                <button type="button" className="transparent flex icon-dim-24" onClick={() => this.props.close()}>
                     <Close className="icon-dim-24" />
                 </button>
             </div>
@@ -829,7 +772,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         else {
             if (this.state.isAdvanced) {
                 return <button type="button" className="cta cta--workflow cancel mr-16"
-                    onClick={this.props.close}>Cancel
+                    onClick={() => this.props.close()}>Cancel
                 </button>
             }
             else {
@@ -996,9 +939,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     render() {
-      if(this.state.showSuccessScreen){
-        return this.renderSuccessPopup();
-      }
         return <VisibleModal className="">
             <form className="modal__body modal__body--ci br-0 modal__body--p-0" onSubmit={this.savePipeline}>
                 {this.renderHeader()}

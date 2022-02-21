@@ -186,3 +186,7 @@
   line-height: 20px;
   min-width: auto;
 }
+
+.transition-effect{
+  transition: all 3s;
+}

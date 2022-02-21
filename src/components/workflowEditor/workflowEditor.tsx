@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { WorkflowEditProps, WorkflowEditState } from './types';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config';
-import { Progressing, showError, ErrorScreenManager, DeleteDialog } from '../common';
+import { Progressing, showError, ErrorScreenManager, DeleteDialog, VisibleModal } from '../common';
 import { toast } from 'react-toastify';
 import { Workflow } from './Workflow';
 import { getCreateWorkflows } from '../app/details/triggerView/workflow.service';
@@ -21,6 +21,9 @@ import { isGitopsConfigured, getHostURLConfiguration } from '../../services/serv
 import { PipelineSelect } from './PipelineSelect';
 import './workflowEditor.css';
 import { NodeAttr } from '../app/details/triggerView/types';
+import { ReactComponent as SuccessIcon } from '../../assets/icons/ic-success-large.svg';
+import { ReactComponent as GotToBuildDeploy } from '../../assets/icons/go-to-buildanddeploy@2x.svg';
+import { ReactComponent as GoToEnvOverride } from '../../assets/icons/go-to-envoverride@2x.svg';
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
 
@@ -43,6 +46,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
             },
             workflowId: 0,
             allCINodesMap: undefined,
+            showSuccessScreen: false,
         }
     }
 
@@ -152,10 +156,16 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
         this.props.getWorkflows();
     }
 
-    closePipeline = () => {
+    closePipeline = (isShowSuccessCD?: boolean, environmentId?: number) => {
         const LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`;
         this.props.history.push(LINK);
         //update isCDpipeline in AppCompose
+        if(isShowSuccessCD){
+          setTimeout(()=>{
+            this.setState({ showSuccessScreen: true, environmentId: environmentId });
+          }, 700);
+        }
+
         if (!this.props.isCDPipeline) this.props.respondOnSuccess();
     }
 
@@ -168,61 +178,124 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                 delete={this.deleteWorkflow} />
         }
     }
+
+    closeSuccessPopup= () => {
+      this.setState({ showSuccessScreen: false });
+    }
+
+    renderSuccessPopup(){
+      return (
+          <VisibleModal className="transition-effect">
+              <div className="modal__body" style={{ width: '600px' }}>
+                  <div className="success-header-container">
+                      <div className="success-icon">
+                          <SuccessIcon />
+                      </div>
+                      <div>
+                          <div className="success-title">Deployment pipeline created</div>
+                          <div className="fs-13">What do you want to do next?</div>
+                      </div>
+                  </div>
+                  <div className="flex left action-card">
+                      <div className="icon-container">
+                          <GotToBuildDeploy />
+                      </div>
+                      <div className="ml-16 mr-16 flex-1">
+                          <div className="action-title">Deploy this app on prod-devtroncd</div>
+                          <div>
+                              <NavLink
+                                  to={`${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_TRIGGER}`}
+                                  className="cb-5 no-decor"
+                              >
+                                  Go to Build & Deploy
+                              </NavLink>
+                          </div>
+                      </div>
+                  </div>
+                  <div className="flex left action-card">
+                      <div className="icon-container">
+                          <GoToEnvOverride />
+                      </div>
+                      <div className="ml-16 mr-16 flex-1">
+                          <div className="action-title">Override deployment configurations for prod-devtroncd</div>
+                          <div>
+                              <NavLink
+                                  to={`${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${this.state.environmentId}`}
+                                  className="cb-5 no-decor"
+                              >
+                                  Go to environment override
+                              </NavLink>
+                          </div>
+                      </div>
+                  </div>
+                  <div className="close-button-container">
+                      <button type="button" className="close-button cta" onClick={this.closeSuccessPopup}>
+                          Close
+                      </button>
+                  </div>
+              </div>
+          </VisibleModal>
+      );
+  }
+
     //TODO: dynamic routes for ci-pipeline
     renderRouter() {
-        return <Switch>
-            <Route path={`${this.props.match.path}/edit`} render={(props) => {
-                return <AddWorkflow match={props.match} history={props.history} location={props.location}
-                    name={this.state.appName}
-                    onClose={this.closeAddWorkflow}
-                    getWorkflows={this.getWorkflows} />
-            }} />
-            <Route path={[URLS.APP_EXTERNAL_CI_CONFIG, URLS.APP_LINKED_CI_CONFIG, URLS.APP_CI_CONFIG].map(pipeline => `${this.props.match.path}/${pipeline}/:ciPipelineId/cd-pipeline/:cdPipelineId?`)}
-                render={(props) => {
-                    let cdNode = this.state.allDeploymentNodeMap.get(props.match.params.cdPipelineId);
-                    let downstreamNodeSize = (cdNode?.downstreams?.length ?? 0)
-                    return <CDPipeline match={props.match} history={props.history} location={props.location}
-                        appName={this.state.appName}
-                        close={this.closePipeline}
-                        downstreamNodeSize = {downstreamNodeSize}
-                        getWorkflows={this.getWorkflows} />
-                }}
-            />
-            <Route path={`${this.props.match.path}/ci-pipeline/:ciPipelineId?`} render={(props) => {
-                let ciNode = this.state.allCINodeMap.get(props.match.params.ciPipelineId);
-                let len = (ciNode && ciNode.downstreams ? ciNode && ciNode.downstreams.length : 0);
-                return <CIPipeline match={props.match} history={props.history} location={props.location}
-                    appName={this.state.appName}
-                    connectCDPipelines={len}
-                    close={this.closePipeline}
-                    getWorkflows={this.getWorkflows} />
-            }} />
-            <Route path={`${this.props.match.path}/external-ci/:ciPipelineId?`} render={(props) => {
-                let ciNode = this.state.allCINodeMap.get(props.match.params.ciPipelineId);
-                let len = (ciNode && ciNode.downstreams ? ciNode && ciNode.downstreams.length : 0);
-                return <ExternalCIPipeline match={props.match} history={props.history} location={props.location}
-                    appName={this.state.appName}
-                    connectCDPipelines={len}
-                    close={this.closePipeline}
-                    getWorkflows={this.getWorkflows} />
-            }} />
-            <Route path={`${this.props.match.path}/linked-ci/:ciPipelineId`} render={(props) => {
-                let ciNode = this.state.allCINodeMap.get(props.match.params.ciPipelineId);
-                let len = (ciNode && ciNode.downstreams ? ciNode && ciNode.downstreams.length : 0);
-                return <LinkedCIPipelineView match={props.match} history={props.history} location={props.location}
-                    appName={this.state.appName}
-                    connectCDPipelines={len}
-                    close={this.closePipeline}
-                    getWorkflows={this.getWorkflows} />
-            }} />
-            <Route path={`${this.props.match.path}/linked-ci`} render={(props) => {
-                return <LinkedCIPipeline match={props.match} history={props.history} location={props.location}
-                    appName={this.state.appName}
-                    connectCDPipelines={0}
-                    close={this.closePipeline}
-                    getWorkflows={this.getWorkflows} />
-            }} />
-        </Switch>
+        return <>
+          <Switch>
+              <Route path={`${this.props.match.path}/edit`} render={(props) => {
+                  return <AddWorkflow match={props.match} history={props.history} location={props.location}
+                      name={this.state.appName}
+                      onClose={this.closeAddWorkflow}
+                      getWorkflows={this.getWorkflows} />
+              }} />
+              <Route path={[URLS.APP_EXTERNAL_CI_CONFIG, URLS.APP_LINKED_CI_CONFIG, URLS.APP_CI_CONFIG].map(pipeline => `${this.props.match.path}/${pipeline}/:ciPipelineId/cd-pipeline/:cdPipelineId?`)}
+                  render={(props) => {
+                      let cdNode = this.state.allDeploymentNodeMap.get(props.match.params.cdPipelineId);
+                      let downstreamNodeSize = (cdNode?.downstreams?.length ?? 0)
+                      return <CDPipeline match={props.match} history={props.history} location={props.location}
+                          appName={this.state.appName}
+                          close={this.closePipeline}
+                          downstreamNodeSize = {downstreamNodeSize}
+                          getWorkflows={this.getWorkflows} />
+                  }}
+              />
+              <Route path={`${this.props.match.path}/ci-pipeline/:ciPipelineId?`} render={(props) => {
+                  let ciNode = this.state.allCINodeMap.get(props.match.params.ciPipelineId);
+                  let len = (ciNode && ciNode.downstreams ? ciNode && ciNode.downstreams.length : 0);
+                  return <CIPipeline match={props.match} history={props.history} location={props.location}
+                      appName={this.state.appName}
+                      connectCDPipelines={len}
+                      close={this.closePipeline}
+                      getWorkflows={this.getWorkflows} />
+              }} />
+              <Route path={`${this.props.match.path}/external-ci/:ciPipelineId?`} render={(props) => {
+                  let ciNode = this.state.allCINodeMap.get(props.match.params.ciPipelineId);
+                  let len = (ciNode && ciNode.downstreams ? ciNode && ciNode.downstreams.length : 0);
+                  return <ExternalCIPipeline match={props.match} history={props.history} location={props.location}
+                      appName={this.state.appName}
+                      connectCDPipelines={len}
+                      close={this.closePipeline}
+                      getWorkflows={this.getWorkflows} />
+              }} />
+              <Route path={`${this.props.match.path}/linked-ci/:ciPipelineId`} render={(props) => {
+                  let ciNode = this.state.allCINodeMap.get(props.match.params.ciPipelineId);
+                  let len = (ciNode && ciNode.downstreams ? ciNode && ciNode.downstreams.length : 0);
+                  return <LinkedCIPipelineView match={props.match} history={props.history} location={props.location}
+                      appName={this.state.appName}
+                      connectCDPipelines={len}
+                      close={this.closePipeline}
+                      getWorkflows={this.getWorkflows} />
+              }} />
+              <Route path={`${this.props.match.path}/linked-ci`} render={(props) => {
+                  return <LinkedCIPipeline match={props.match} history={props.history} location={props.location}
+                      appName={this.state.appName}
+                      connectCDPipelines={0}
+                      close={this.closePipeline}
+                      getWorkflows={this.getWorkflows} />
+              }} />
+          </Switch>
+            {this.state.showSuccessScreen && this.renderSuccessPopup()}
+        </>
     }
 
     renderNewBuildPipelineButton(openAtTop: boolean) {

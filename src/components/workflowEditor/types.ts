@@ -18,7 +18,9 @@ export interface WorkflowEditState {
     cIMenuPosition: {
         top: number;
         left: number;
-    }
+    };
+    showSuccessScreen: boolean;
+    environmentId?: number;
 }
 
 export interface WorkflowEditProps extends RouteComponentProps<{ appId: string, workflowId: string, ciPipelineId: string, cdPipelineId: string }> {

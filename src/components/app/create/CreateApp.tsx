@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Select, DialogForm, DialogFormSubmit, Progressing, showError, ErrorScreenManager } from '../../common';
+import { Select, DialogForm, DialogFormSubmit, Progressing, showError, ErrorScreenManager, sortObjectArrayAlphabetically } from '../../common';
 import { AddNewAppProps, AddNewAppState } from '../types';
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE } from '../../../config';
 import { ValidationRules } from './validationRules';
@@ -49,6 +49,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     async componentDidMount() {
         try {
             const [{ result: projects }, { result: apps }] = await Promise.all([getTeamListMin(), getAppListMin()])
+            sortObjectArrayAlphabetically(projects, 'name');
             this.setState({ view: ViewType.FORM, projects, apps: [{ id: 0, name: 'Blank App' }, ...apps] })
         }
         catch (err) {

@@ -25,7 +25,7 @@ export interface CDPipelineProps extends RouteComponentProps<{ appId: string, ci
     appName: string;
     downstreamNodeSize: number;
     getWorkflows: () => void;
-    close: () => void;
+    close: (isShowSuccessCD?: boolean, environmentId?: number) => void;
 }
 
 export interface CDStageType {
@@ -84,7 +84,6 @@ export interface CDPipelineState {
     isAdvanced: boolean;
     forceDeleteDialogMessage: string;
     forceDeleteDialogTitle: string;
-    showSuccessScreen: boolean;
 }
 
 
