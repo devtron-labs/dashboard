@@ -2,7 +2,7 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
-import CopyToast,{handleSelectionChange} from '../CopyToast';
+import CopyToast, { handleSelectionChange } from '../CopyToast';
 import * as XtermWebfont from 'xterm-webfont';
 import SockJS from 'sockjs-client';
 import { SocketConnectionType } from '../node.type';
@@ -338,7 +338,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 </p>
             )}
              
-            <CopyToast showCopyToast={popupText}/>
+            <CopyToast showCopyToast={popupText} />
         </div>
     );
 }

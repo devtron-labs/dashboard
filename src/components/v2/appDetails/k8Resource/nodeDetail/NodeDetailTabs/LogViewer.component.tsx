@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
-import CopyToast,{handleSelectionChange} from './CopyToast';
+import CopyToast, { handleSelectionChange } from './CopyToast';
 import * as XtermWebfont from 'xterm-webfont';
 import { SearchAddon } from 'xterm-addon-search';
 import '../../../../../../../node_modules/xterm/css/xterm.css';
@@ -103,6 +103,7 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
             unsubscribe();
         }
         [subscribed, unsubscribe] = subject.subscribe(function (log: string) {
+            fitAddon.current.fit();
             terminal.current.writeln(log.toString());
         });
         return () => {

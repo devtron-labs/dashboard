@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react'
 import {Scroller} from '../app/details/cIDetails/CIDetails'
-import CopyToast,{handleSelectionChange} from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CopyToast'
+import CopyToast,{ handleSelectionChange } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CopyToast'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit';
 import * as XtermWebfont from 'xterm-webfont';
@@ -97,6 +97,7 @@ const LogViewer: React.FunctionComponent<logViewerInterface> = ({ subject, rootC
             unsubscribe()
         }
         [subscribed, unsubscribe] = subject.subscribe(function(log: string) {
+            fitAddon.current.fit();
             terminal.current.writeln(log.toString())
         })
         return () => {
