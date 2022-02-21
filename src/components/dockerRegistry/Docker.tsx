@@ -233,8 +233,8 @@ function DockerForm({
                       cert: state.advanceSelect.value !== CERTTYPE.SECURE_WITH_CERT ? '' : state.certInput.value,
                   }
                 : {}),
-        }
-    }
+        };
+    };
 
     async function onSave() {
         let awsRegion;
@@ -278,10 +278,11 @@ function DockerForm({
                 }));
                 return;
             }
-        } else if (state.registryType.value === 'docker-hub' ||
-        state.registryType.value === 'acr' ||
-        state.registryType.value === 'artifact-registry' ||
-        state.registryType.value === 'gcr' ||
+        } else if (
+            state.registryType.value === 'docker-hub' ||
+            state.registryType.value === 'acr' ||
+            state.registryType.value === 'artifact-registry' ||
+            state.registryType.value === 'gcr' ||
             state.registryType.value === 'quay'
         ) {
             if (!customState.username.value || !customState.password.value) {
@@ -326,7 +327,7 @@ function DockerForm({
         onSave();
     }
 
-    let selectedDckerRegistryType = REGISTRY_TYPE_MAP[state.registryType.value];//DockerRegistryType.find((type) => type.value === state.registryType.value);
+    let selectedDckerRegistryType = REGISTRY_TYPE_MAP[state.registryType.value]; //DockerRegistryType.find((type) => type.value === state.registryType.value);
     let advanceRegistryOptions = [
         { label: 'Allow only secure connection', value: CERTTYPE.SECURE, tippy: '' },
         {
@@ -431,7 +432,11 @@ function DockerForm({
                     />
                 </div>
             )}
-            {state.registryType.value === 'docker-hub' && (
+            {(state.registryType.value === 'docker-hub' ||
+                state.registryType.value === 'acr' ||
+                state.registryType.value === 'artifact-registry' ||
+                state.registryType.value === 'gcr' ||
+                state.registryType.value === 'quay') && (
                 <>
                     <div className="form__row form__row--two-third">
                         <CustomInput
@@ -495,7 +500,7 @@ function DockerForm({
                     </a>
                 </div>
             )}
-            {toggleCollapsedAdvancedRegistry && (
+            {toggleCollapsedAdvancedRegistry && state.registryType.value === 'other' && (
                 <div className="form__row ml-3" style={{ width: '100%' }}>
                     {advanceRegistryOptions.map(({ label: Lable, value, tippy }) => (
                         <div>
