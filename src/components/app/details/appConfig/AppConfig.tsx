@@ -317,8 +317,6 @@ const NextButton: React.FC<{ isCiPipeline: boolean; navItems, currentStageName, 
 function Navigation({ navItems, deleteApp, isCDPipeline}) {
 const pathname = window.location.pathname;
   const selectedNav = navItems.filter((navItem) => pathname.indexOf(navItem.href)>=0)[0];
-  //const showAppConfigHelp = navItems.filter((navItem) => navItem.stage === 'WORKFLOW')[0].isLocked;
-  //console.log(selectedNav, pathname);
     return (
         <>
 
