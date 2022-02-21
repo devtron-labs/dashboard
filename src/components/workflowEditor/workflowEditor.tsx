@@ -159,13 +159,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
     closePipeline = (isShowSuccessCD?: boolean, environmentId?: number) => {
         const LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`;
         this.props.history.push(LINK);
-        //update isCDpipeline in AppCompose
         if(isShowSuccessCD){
           setTimeout(()=>{
             this.setState({ showSuccessScreen: true, environmentId: environmentId });
           }, 700);
         }
-
+        //update isCDpipeline in AppCompose
         if (!this.props.isCDPipeline) this.props.respondOnSuccess();
     }
 
@@ -184,6 +183,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
     }
 
     renderSuccessPopup(){
+      if (!this.state.showSuccessScreen) {
+          return '';
+      }
       return (
           <VisibleModal className="transition-effect">
               <div className="modal__body" style={{ width: '600px' }}>
@@ -240,8 +242,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
 
     //TODO: dynamic routes for ci-pipeline
     renderRouter() {
-        return <>
-          <Switch>
+        return <Switch>
               <Route path={`${this.props.match.path}/edit`} render={(props) => {
                   return <AddWorkflow match={props.match} history={props.history} location={props.location}
                       name={this.state.appName}
@@ -294,8 +295,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                       getWorkflows={this.getWorkflows} />
               }} />
           </Switch>
-            {this.state.showSuccessScreen && this.renderSuccessPopup()}
-        </>
     }
 
     renderNewBuildPipelineButton(openAtTop: boolean) {
@@ -383,6 +382,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                     {this.renderHostErrorMessage()}
                 </div>
                 {this.renderEmptyState()}
+                {this.renderSuccessPopup()}
             </>
         }
         else {
@@ -396,6 +396,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                 {this.renderNewBuildPipelineButton(false)}
                 {this.renderWorkflows()}
                 {this.renderDeleteDialog()}
+                {this.renderSuccessPopup()}
             </div>
         }
     }

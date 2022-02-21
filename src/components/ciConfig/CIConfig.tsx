@@ -253,10 +253,8 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                     <div className={'registry-icon ml-5 ' + value}></div>
                                     {props.children}
                                 </components.Control>
-
                             },
                         }}
-
                         onChange={(selected) => { handleRegistryChange(selected) }}
                     />
                         {registry.error && <label className="form__error">{registry.error}</label>}

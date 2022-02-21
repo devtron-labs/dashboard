@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TriggerType, ViewType, URLS } from '../../config';
+import { TriggerType, ViewType } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { VisibleModal, Select, Progressing, ButtonWithLoader, showError, isEmpty, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, Checkbox, DeleteDialog, CHECKBOX_VALUE, sortObjectArrayAlphabetically } from '../common';
@@ -40,7 +40,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     preStage;
     postStage;
     configMapAndSecrets = [];
-    url = '';
     constructor(props) {
         super(props);
         const urlParams = new URLSearchParams(this.props.location.search);
@@ -93,7 +92,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             showForceDeleteDialog: false,
             isAdvanced: false,
             forceDeleteDialogMessage: '',
-            forceDeleteDialogTitle: '',
+            forceDeleteDialogTitle: ''
         }
         this.validationRules = new ValidationRules();
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this);
@@ -495,8 +494,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             if (response.result) {
                 let pipelineConfigFromRes = response.result.pipelines[0];
                 this.updateStateFromResponse(pipelineConfigFromRes, this.state.environments);
-                this.props.getWorkflows();
                 this.props.close(true, this.state.pipelineConfig.environmentId);
+                this.props.getWorkflows();
             }
         }).catch((error: ServerErrors) => {
             showError(error);
@@ -586,7 +585,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     closeCDDeleteModal = () => {
         this.setState({ showDeleteModal: false });
     }
-
 
     renderHeader() {
         let title = this.props.match.params.cdPipelineId ? "Edit deployment pipeline" : "Create deployment pipeline";

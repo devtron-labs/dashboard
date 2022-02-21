@@ -93,3 +93,48 @@
 .pipeline-webhook__item:hover {
     background-color: var(--N100);
 }
+
+.success-header-container{
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.success-icon{
+  padding-right: 16px;
+}
+
+.success-title{
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.action-card{
+  border: 1px solid #D0D4D9;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.icon-container{
+  height: 60px;
+}
+.action-title{
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.action-link{
+  color: #0066CC;
+  font-size: 13px;
+}
+
+.close-button-container{
+  text-align: right;
+}
+
+.close-button{
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 20px;
+  min-width: auto;
+}
