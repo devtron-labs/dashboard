@@ -8,16 +8,6 @@ export default function ClusterListSelect({ selectEnvironment, environments, sel
         let length = props
             .getValue()
             .filter((opt) => opt.value && !opt.value.startsWith('#') && !opt.value.startsWith('*')).length;
-        let count = '';
-        let totalEnv = props.options.reduce((len, cluster) => {
-            len += cluster.options.length - 2;
-            return len;
-        }, 0);
-        if (length === totalEnv) {
-            count = 'All environments';
-        } else {
-            count = length + ' environment' + (length !== 1 ? 's' : '');
-        }
         const value = props.getValue()[0]?.label;
         return (
             <components.ValueContainer {...props}>
