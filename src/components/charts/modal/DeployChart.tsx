@@ -1,13 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Select, Page, DropdownIcon, Progressing, showError, useJsonYaml, DeleteDialog, sortCallback } from '../../common';
-import { getEnvironmentListMin, getTeamListMin } from '../../../services/service';
+import {
+    Select,
+    Page,
+    DropdownIcon,
+    Progressing,
+    showError,
+    useJsonYaml,
+    DeleteDialog,
+    sortCallback,
+    multiSelectStyles,
+} from '../../common';
+import { getEnvironmentListHelmApps, getEnvironmentListMin, getTeamListMin } from '../../../services/service';
 import { toast } from 'react-toastify';
 import { DeployChartProps } from './deployChart.types';
 import { MarkDown } from '../discoverChartDetail/DiscoverChartDetails'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg';
 import { useHistory, useParams } from 'react-router'
-import { URLS } from '../../../config'
-import { installChart, updateChart, deleteInstalledChart, getChartValuesCategorizedListParsed, getChartValues, getChartVersionsMin, getChartsByKeyword } from '../charts.service'
+import { ACCESS_TYPE_MAP, URLS } from '../../../config'
+import {
+    installChart,
+    updateChart,
+    deleteInstalledChart,
+    getChartValuesCategorizedListParsed,
+    getChartValues,
+    getChartVersionsMin,
+    getChartsByKeyword,
+} from '../charts.service';
 import { ChartValuesSelect } from '../util/ChartValueSelect';
 import { getChartValuesURL } from '../charts.helper';
 import { styles, menuList, DropdownIndicator } from '../charts.util';
@@ -15,10 +33,11 @@ import CodeEditor from '../../CodeEditor/CodeEditor'
 import AsyncSelect from 'react-select/async';
 import checkIcon from '../../../assets/icons/appstatus/ic-check.svg'
 import ReactGA from 'react-ga';
-import ReactSelect from 'react-select';
+import ReactSelect, { components } from 'react-select';
 import './DeployChart.scss';
 import { ServerErrors } from '../../../modals/commonTypes';
 import ForceDeleteDialog from '../../common/dialogs/ForceDeleteDialog';
+import ClusterListSelect from './ClusterListSelect';
 
 function mapById(arr) {
     if (!Array.isArray(arr)) {
@@ -63,7 +82,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const [selectedVersionUpdatePage, setSelectedVersionUpdatePage] = useState(versions.get(selectedVersion))
     const [selectedProject, selectProject] = useState<{ label: string; value: number }>()
     const [chartVersionsData, setChartVersionsData] = useState<{ version: string, id: number }[]>([]);
-    const [selectedEnvironment, selectEnvironment] = useState<{ label: string; value: number }>(undefined)
+    const [selectedEnvironment, selectEnvironment] = useState<{ label: string; value: string, namespace?: string; clusterName?: string }>(undefined)
     const [appName, setAppName] = useState(originalName)
     const [readmeCollapsed, toggleReadmeCollapsed] = useState(true)
     const [deleting, setDeleting] = useState(false)
@@ -111,11 +130,38 @@ const DeployChart: React.FC<DeployChartProps> = ({
     }
 
     const fetchEnvironments = async () => {
-        let response = await getEnvironmentListMin();
-        let envList = response.result ? response.result : [];
-        envList = envList.map((env) => { return { value: env.id, label: env.environment_name, active: env.active } });
-        envList = envList.sort((a, b) => sortCallback('label', a, b, true));
+        let response = await getEnvironmentListHelmApps(); //getEnvironmentListMin();
+        const envList = (response.result ? response.result : [])?.map((cluster) => ({
+          label: cluster.clusterName,
+          options: [
+              {
+                  label: 'All existing + future environments in ' + cluster.clusterName,
+                  value: '#' + cluster.clusterName,
+                  namespace: '',
+                  clusterName: '',
+              },
+              {
+                  label: 'All existing environments in ' + cluster.clusterName,
+                  value: '*' + cluster.clusterName,
+                  namespace: '',
+                  clusterName: '',
+              },
+              ...cluster.environments?.map((env) => ({
+                  label: env.environmentName,
+                  value: env.environmentIdentifier,
+                  namespace: env.namespace,
+                  clusterName: cluster.clusterName,
+              })),
+          ],
+      }));
+        //let envList = response.result ? response.result : [];
+        //envList = envList.map((env) => { return { value: env.id, label: env.environment_name, active: env.active } });
+        //envList = envList.sort((a, b) => sortCallback('label', a, b, true));
         setEnvironments(envList);
+        selectEnvironment({
+          label: 'demo1-new__prashant',
+          value: 'demo1-new__prashant',
+      });
     }
 
     function closeMe(event = null) {
@@ -400,6 +446,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
             fetchChartVersionsData(chartIdFromDeploymentDetail)
         }
     }, []);
+
     return (<>
         <div className={`deploy-chart-container ${readmeCollapsed ? 'readmeCollapsed' : 'readmeOpen'} ${isUpdate ? '' : 'update_deploy-chart-container_header'}`}>
             <div className="header-container flex column">
@@ -433,22 +480,16 @@ const DeployChart: React.FC<DeployChartProps> = ({
                             />
                         </label>
                         <div className="form__row form__row--w-100">
+                          {'    **Label:-'+selectedEnvironment?.label}
+                          {'    **Value:-'+selectedEnvironment?.value}
+                          {'    **Namespace:-'+selectedEnvironment?.namespace}
+                          {'    **Cluster:-'+selectedEnvironment?.clusterName}
                             <span className="form__label">Environment</span>
-                            <ReactSelect
-                                components={{
-                                    IndicatorSeparator: null,
-                                    DropdownIndicator
-                                }}
-                                isDisabled={!!isUpdate}
-                                placeholder="Select Environment"
-                                value={selectedEnvironment}
-                                styles={{
-                                    ...styles,
-                                    ...menuList,
-                                }}
-                                onChange={selectEnvironment}
-                                options={environments}
-                            />
+                                <ClusterListSelect
+                                    selectEnvironment={selectEnvironment}
+                                    environments={environments}
+                                    selectedEnvironment={selectedEnvironment}
+                                />
                         </div>
                         {isUpdate && deprecated &&
                             <div className="info__container--update-chart">
