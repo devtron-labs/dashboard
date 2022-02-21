@@ -442,11 +442,12 @@ function DockerForm({
                         <CustomInput
                             name="username"
                             tabIndex={5}
-                            value={customState.username.value}
+                            value={customState.username.value || selectedDckerRegistryType.id.defaultValue}
                             autoComplete={'off'}
                             error={customState.username.error}
                             onChange={customHandleChange}
                             label="Username*"
+                            disabled={selectedDckerRegistryType.id.defaultValue}
                         />
                         <ProtectedInput
                             name="password"
