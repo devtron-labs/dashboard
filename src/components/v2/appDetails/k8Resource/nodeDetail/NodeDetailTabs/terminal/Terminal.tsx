@@ -1,9 +1,8 @@
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { copyToClipboard } from '../../../../../../common';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
-import CopyToast from '../CopyToast';
+import CopyToast,{handleSelectionChange} from '../CopyToast';
 import * as XtermWebfont from 'xterm-webfont';
 import SockJS from 'sockjs-client';
 import { SocketConnectionType } from '../node.type';
@@ -53,7 +52,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 foreground: '#FFFFFF',
             },
         });
-        terminal.onSelectionChange(handleSelectionChange);
+        handleSelectionChange(terminal,setPopupText);
         fitAddon = new FitAddon();
         const webFontAddon = new XtermWebfont();
         terminal.loadAddon(fitAddon);
@@ -289,13 +288,6 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 console.log('error while getNewSession ', error);
             });
     };
-
-    function handleSelectionChange() {
-        copyToClipboard(terminal.getSelection());
-        if (terminal.getSelection()) {
-            setPopupText(true);
-        }
-    }
 
     return (
         <div className="terminal-view">

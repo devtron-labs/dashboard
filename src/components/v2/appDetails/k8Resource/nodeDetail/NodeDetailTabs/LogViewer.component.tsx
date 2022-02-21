@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { copyToClipboard } from '../../../../../common';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
-import CopyToast from './CopyToast';
+import CopyToast,{handleSelectionChange} from './CopyToast';
 import * as XtermWebfont from 'xterm-webfont';
 import { SearchAddon } from 'xterm-addon-search';
 import '../../../../../../../node_modules/xterm/css/xterm.css';
@@ -72,13 +71,6 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
         if (terminal.current) terminal.current.scrollToBottom();
     }
 
-    function handleSelectionChange() {
-        copyToClipboard(terminal.current.getSelection());
-        if (terminal.current.getSelection()) {
-            setPopupText(true);
-        }
-    }
-
     useEffect(() => {
         terminal.current = new Terminal({
             scrollback: 99999,
@@ -95,7 +87,7 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
             },
         });
         terminal.current.attachCustomKeyEventHandler(handleKeyPress);
-        terminal.current.onSelectionChange(handleSelectionChange);
+        handleSelectionChange(terminal.current,setPopupText);
         fitAddon.current = new FitAddon();
         webFontAddon.current = new XtermWebfont();
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { copyToClipboard } from '../../../../../common';
 import { ReactComponent as CheckIcon } from '../../../../assets/icons/ic-check.svg';
 import {AutoSizer} from 'react-virtualized';
 import '../../../../../../../node_modules/xterm/css/xterm.css';
@@ -7,6 +8,7 @@ import  './nodeDetailTab.scss';
 
 
 function CopyToast({ showCopyToast }) {
+    
     return (
         <AutoSizer>
             {({ height, width }) => (
@@ -24,4 +26,15 @@ function CopyToast({ showCopyToast }) {
     );
 }
 
+function handleSelectionChange(terminal, setPopupText) {
+    console.log(terminal);
+    terminal.onSelectionChange(() => {
+        copyToClipboard(terminal.getSelection());
+        if (terminal.getSelection()) {
+            setPopupText(true);
+        }
+    });
+}
+
 export default CopyToast;
+export {handleSelectionChange};
