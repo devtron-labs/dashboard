@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useHistory, useRouteMatch } from 'react-router'
 import { toast } from 'react-toastify';
 import { showError, Progressing, ErrorScreenManager, DeleteDialog } from '../../../common';
-import { getReleaseInfo, ReleaseInfoResponse, ReleaseInfo, deleteApplicationRelease, updateApplicationRelease, UpdateApplicationRequest } from '../../../external-apps/ExternalAppService';
+import { getReleaseInfo, ReleaseInfoResponse, ReleaseInfo, InstalledAppInfo, deleteApplicationRelease, updateApplicationRelease, UpdateApplicationRequest } from '../../../external-apps/ExternalAppService';
 import { deleteInstalledChart } from '../../../charts/charts.service';
 import { ServerErrors } from '../../../../modals/commonTypes';
 import ReadmeColumn  from '../common/ReadmeColumn.component';
@@ -23,7 +23,7 @@ function ExternalAppValues({appId}) {
     const [releaseInfo, setReleaseInfo] = useState<ReleaseInfo>(undefined);
     const [showDeleteAppConfirmationDialog, setShowDeleteAppConfirmationDialog] = useState(false);
     const [modifiedValuesYaml, setModifiedValuesYaml] = useState("");
-    const [installedAppId, setInstalledAppId] = useState<number>(0);
+    const [installedAppInfo, setInstalledAppInfo] = useState<InstalledAppInfo>(undefined);
 
     // component load
     useEffect(() => {
@@ -31,7 +31,7 @@ function ExternalAppValues({appId}) {
             .then((releaseInfoResponse: ReleaseInfoResponse) => {
                 let _releaseInfo = releaseInfoResponse.result.releaseInfo;
                 setReleaseInfo(_releaseInfo);
-                setInstalledAppId(releaseInfoResponse.result.installedAppInfo?.installedAppId)
+                setInstalledAppInfo(releaseInfoResponse.result.installedAppInfo);
                 setModifiedValuesYaml(YAML.stringify(JSON.parse(_releaseInfo.mergedValues)));
                 setIsLoading(false);
             })
@@ -63,8 +63,8 @@ function ExternalAppValues({appId}) {
     }
 
     const getDeleteApplicationApi = () : Promise<any> => {
-        if(installedAppId){
-            return deleteInstalledChart(installedAppId);
+        if(installedAppInfo && installedAppInfo.installedAppId){
+            return deleteInstalledChart(installedAppInfo.installedAppId);
         }else{
             return deleteApplicationRelease(appId);
         }
@@ -118,7 +118,7 @@ function ExternalAppValues({appId}) {
                         </label>
                         <label className="form__row form__row--w-100">
                             <span className="form__label">Environment</span>
-                            <input className="form__input" value={`${releaseInfo.deployedAppDetail.environmentDetail.clusterName}/${releaseInfo.deployedAppDetail.environmentDetail.namespace}`} autoFocus disabled={true} />
+                            <input className="form__input" value={`${installedAppInfo ? installedAppInfo.environmentName : releaseInfo.deployedAppDetail.environmentDetail.clusterName + "__" + releaseInfo.deployedAppDetail.environmentDetail.namespace}`} autoFocus disabled={true} />
                         </label>
                         <label className="form__row form__row--w-100">
                             <span className="form__label">Chart</span>

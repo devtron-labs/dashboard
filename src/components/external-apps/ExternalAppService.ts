@@ -21,7 +21,7 @@ export interface HelmAppDeploymentManifestDetailResponse extends ResponseType {
 }
 
 export interface HelmAppDetailResponse extends ResponseType {
-    result?: HelmAppDetail
+    result?: HelmAppDetailAndInstalledAppInfo
 }
 
 export interface UninstallReleaseResponse extends ResponseType {
@@ -30,6 +30,11 @@ export interface UninstallReleaseResponse extends ResponseType {
 
 export interface UpdateReleaseResponse extends ResponseType {
     result?: ActionResponse
+}
+
+export interface HelmAppDetailAndInstalledAppInfo {
+    appDetail : HelmAppDetail,
+    installedAppInfo : InstalledAppInfo,
 }
 
 export interface ReleaseAndInstalledAppInfo {
@@ -50,6 +55,7 @@ export interface InstalledAppInfo {
     installedAppId: number,
     environmentName: string,
     appOfferingMode: string
+    appStoreChartId: number
 }
 
 export interface HelmAppDeploymentHistory {
