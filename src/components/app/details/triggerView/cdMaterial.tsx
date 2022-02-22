@@ -73,26 +73,52 @@ export class CDMaterial extends Component<CDMaterialProps> {
     </div>
   }
 
+  renderSequentialCDCardTitle = (mat) => {
+    if (this.props.stageType === 'CD') {
+        if (mat.latest && mat.runningOnParentCd) {
+            return (
+                <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
+                    <span className="cn-9 fw-6">Deployed on </span>{' '}
+                    <span className="cv-5 fw-6">
+                        {this.props.envName} 
+                        {this.props.parentEnvironmentName ? (
+                            <>
+                                <span className="cn-9 fw-4" style={{ fontStyle: 'italic' }}>
+                                {' '} and  {' '}
+                                </span>
+                                {this.props.parentEnvironmentName}
+                            </>
+                        ) : (
+                            ''
+                        )}
+                    </span>
+                </div>
+            );
+        } else if (mat.latest) {
+            return (
+                <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
+                    <span className="cn-9 fw-6">Deployed on </span>
+                    <span className="cv-5 fw-6">{this.props.envName} </span>
+                </div>
+            );
+        }
+        if (!mat.latest && mat.runningOnParentCd) {
+            return (
+                <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
+                    <span className="cn-9 fw-6">Deployed on </span>
+                    <span className="cv-5 fw-6">{this.props.parentEnvironmentName}</span>
+                </div>
+            );
+        }
+    }
+  }
+
   renderMaterial() {
     let tabClasses = "transparent tab-list__tab-link tab-list__tab-link--vulnerability";
     return this.props.material.map((mat, index) => {
       let classes = `material-history material-history--cd ${mat.isSelected ? 'material-history-selected' : ''}`;
       return <div key={index} className={classes} >
-        <div>
-
-        {mat.latest && this.props.stageType === 'CD' ? <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
-            <span className='cn-9 fw-6'>Deployed on </span> <span className='cv-5 fw-6'>{this.props.envName} </span>
-            </div> : null
-            }  
-            {console.log(this.props)}
-        {mat.latest && this.props.runningOnParentCd ? <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
-            <span className='cn-9 fw-6'>Deployed on </span> <span className='cv-5 fw-6'>{this.props.envName} {this.props.parentEnvironmentName ? 
-            <>
-            <span className="cn-9 fw-4" style={{fontStyle: 'italic'}}>and</span> {this.props.parentEnvironmentName}
-            </> : ''}</span>
-            </div> : null
-            }
-        </div>
+        {this.renderSequentialCDCardTitle(mat)}
         <div className="material-history__top" style={{ 'cursor': `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
           onClick={(event) => { event.stopPropagation(); if (!mat.vulnerable) this.props.selectImage(index, this.props.materialType) }}>
           <div>  
