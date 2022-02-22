@@ -4,7 +4,7 @@ import { Scroller } from '../app/details/cIDetails/CIDetails'
 import { get } from '../../services/api';
 import { AppDetails } from '../app/types';
 import SockJS from 'sockjs-client';
-import CopyToast,{ handleSelectionChange } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CopyToast';
+import CopyToast, { handleSelectionChange } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CopyToast';
 import moment, { duration } from 'moment';
 import { AutoSizer } from 'react-virtualized'
 import { FitAddon } from 'xterm-addon-fit';
@@ -149,9 +149,9 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
     }
 
     handleName = states => {
-        this.setState({popupText:states});
+        this.setState({ popupText: states });
         if (!this.state.popupText) return;
-        setTimeout(() =>  this.setState({popupText: false}), 2000);
+        setTimeout(() => this.setState({ popupText: false }), 2000);
     }
 
     scrollToTop(e) {
@@ -186,7 +186,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
 
             this._fitAddon = new FitAddon();
             let webFontAddon = new XtermWebfont()
-            handleSelectionChange(this._terminal,this.handleName);
+            handleSelectionChange(this._terminal, this.handleName);
             this._terminal.loadAddon(this._fitAddon);
             this._terminal.loadAddon(webFontAddon);
             this._terminal.loadWebfontAndOpen(document.getElementById('terminal'));
