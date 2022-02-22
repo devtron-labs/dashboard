@@ -108,7 +108,6 @@ export interface NodeAttr {
   stageIndex?: number; //used for CDs
   sourceNodes?: Array<NodeAttr> //used for CI
   downstreamNodes?: Array<NodeAttr>
-  runningOnParentCd?: boolean;
   parentPipelineId?: string;
   parentPipelineType?: string;
   parentEnvironmentName?: string;
@@ -144,7 +143,6 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
   rollbackMaterialList: InputMaterials[];
   stageIndex: number;
   type: 'CD';
-  runningOnParentCd?: string;
   parentPipelineId?: string;
   parentPipelineType?: string;
   parentEnvironmentName?: string;
