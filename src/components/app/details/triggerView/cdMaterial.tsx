@@ -79,12 +79,19 @@ export class CDMaterial extends Component<CDMaterialProps> {
       let classes = `material-history material-history--cd ${mat.isSelected ? 'material-history-selected' : ''}`;
       return <div key={index} className={classes} >
         <div>
-        {mat.latest ? <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
+
+        {mat.latest && this.props.stageType === 'CD' ? <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
+            <span className='cn-9 fw-6'>Deployed on </span> <span className='cv-5 fw-6'>{this.props.envName} </span>
+            </div> : null
+            }  
+            {console.log(this.props)}
+        {mat.latest && this.props.runningOnParentCd ? <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
             <span className='cn-9 fw-6'>Deployed on </span> <span className='cv-5 fw-6'>{this.props.envName} {this.props.parentEnvironmentName ? 
             <>
             <span className="cn-9 fw-4" style={{fontStyle: 'italic'}}>and</span> {this.props.parentEnvironmentName}
             </> : ''}</span>
-            </div> : null}
+            </div> : null
+            }
         </div>
         <div className="material-history__top" style={{ 'cursor': `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
           onClick={(event) => { event.stopPropagation(); if (!mat.vulnerable) this.props.selectImage(index, this.props.materialType) }}>
