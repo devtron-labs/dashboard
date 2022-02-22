@@ -57,15 +57,15 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
         let filterApplied = {
             teams: new Set(payloadParsedFromUrl.teams),
             environments: new Set(payloadParsedFromUrl.environments),
-            clusterVsNamespaceMap : _clusterVsNamespaceMap
-        }
+            clusterVsNamespaceMap: _clusterVsNamespaceMap,
+        };
 
         let filters = {
             projects: [],
+            environments: [],
             clusters: [],
             namespaces: [],
-            environments: []
-        }
+        };
 
         // set filter projects starts
         filters.projects = projectsRes.result ? projectsRes.result.map((team) => {
