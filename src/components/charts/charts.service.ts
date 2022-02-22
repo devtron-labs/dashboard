@@ -25,7 +25,7 @@ export function getInstalledAppDetail(installedAppId, envId) {
 }
 
 export function installChart(request) {
-    return post(`app-store/application/install`, request);
+    return post(`app-store/deployment/application/install`, request);
 }
 
 export function updateChart(request) {
