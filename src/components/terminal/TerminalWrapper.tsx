@@ -4,13 +4,13 @@ import { Scroller } from '../app/details/cIDetails/CIDetails'
 import { get } from '../../services/api';
 import { AppDetails } from '../app/types';
 import SockJS from 'sockjs-client';
-import CopyToast from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CopyToast';
+import CopyToast,{ handleSelectionChange } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CopyToast';
 import moment, { duration } from 'moment';
 import { AutoSizer } from 'react-virtualized'
 import { FitAddon } from 'xterm-addon-fit';
 import * as XtermWebfont from 'xterm-webfont';
 import { SocketConnectionType } from '../app/details/appDetails/AppDetails';
-import { useThrottledEffect ,copyToClipboard } from '../common';
+import { useThrottledEffect } from '../common';
 import ReactGA from 'react-ga';
 import './terminal.css';
 
@@ -49,7 +49,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         this.scrollToTop = this.scrollToTop.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
         this.search = this.search.bind(this);
-        this.handleSelectionChange = this.handleSelectionChange.bind(this);
+        handleSelectionChange.bind(this);
     }
 
     componentDidMount() {
@@ -148,13 +148,10 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         })
     }
 
-    handleSelectionChange(e):void {
-            copyToClipboard(this._terminal.getSelection());
-            if (this._terminal.getSelection()) {
-                this.setState({popupText: true});
-                if (!this.state.popupText) return;
-                setTimeout(() =>  this.setState({popupText: false}), 2000);
-            }
+    handleName = states => {
+        this.setState({popupText:states});
+        if (!this.state.popupText) return;
+        setTimeout(() =>  this.setState({popupText: false}), 2000);
     }
 
     scrollToTop(e) {
@@ -189,7 +186,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
 
             this._fitAddon = new FitAddon();
             let webFontAddon = new XtermWebfont()
-            this._terminal.onSelectionChange(this.handleSelectionChange);
+            handleSelectionChange(this._terminal,this.handleName);
             this._terminal.loadAddon(this._fitAddon);
             this._terminal.loadAddon(webFontAddon);
             this._terminal.loadWebfontAndOpen(document.getElementById('terminal'));
