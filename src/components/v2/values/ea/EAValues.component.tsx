@@ -3,6 +3,7 @@ import { useHistory, useRouteMatch } from 'react-router'
 import { toast } from 'react-toastify';
 import { showError, Progressing, ErrorScreenManager, DeleteDialog } from '../../../common';
 import { getReleaseInfo, ReleaseInfoResponse, ReleaseInfo, deleteApplicationRelease, updateApplicationRelease, UpdateApplicationRequest } from '../../../external-apps/ExternalAppService';
+import { deleteInstalledChart } from '../../../charts/charts.service';
 import { ServerErrors } from '../../../../modals/commonTypes';
 import ReadmeColumn  from '../common/ReadmeColumn.component';
 import CodeEditor from '../../../CodeEditor/CodeEditor'
@@ -22,13 +23,15 @@ function ExternalAppValues({appId}) {
     const [releaseInfo, setReleaseInfo] = useState<ReleaseInfo>(undefined);
     const [showDeleteAppConfirmationDialog, setShowDeleteAppConfirmationDialog] = useState(false);
     const [modifiedValuesYaml, setModifiedValuesYaml] = useState("");
+    const [installedAppId, setInstalledAppId] = useState<number>(0);
 
     // component load
     useEffect(() => {
         getReleaseInfo(appId)
             .then((releaseInfoResponse: ReleaseInfoResponse) => {
-                let _releaseInfo = releaseInfoResponse.result;
+                let _releaseInfo = releaseInfoResponse.result.releaseInfo;
                 setReleaseInfo(_releaseInfo);
+                setInstalledAppId(releaseInfoResponse.result.installedAppInfo?.installedAppId)
                 setModifiedValuesYaml(YAML.stringify(JSON.parse(_releaseInfo.mergedValues)));
                 setIsLoading(false);
             })
@@ -46,7 +49,7 @@ function ExternalAppValues({appId}) {
         }
         setDeleteInProgress(true);
         setShowDeleteAppConfirmationDialog(false);
-        deleteApplicationRelease(appId)
+        getDeleteApplicationApi()
             .then(() => {
                 setDeleteInProgress(false);
                 toast.success('Successfully deleted.');
@@ -57,6 +60,14 @@ function ExternalAppValues({appId}) {
                 showError(errors);
                 setDeleteInProgress(false);
             });
+    }
+
+    const getDeleteApplicationApi = () : Promise<any> => {
+        if(installedAppId){
+            return deleteInstalledChart(installedAppId);
+        }else{
+            return deleteApplicationRelease(appId);
+        }
     }
 
     const updateApplication = () =>  {
