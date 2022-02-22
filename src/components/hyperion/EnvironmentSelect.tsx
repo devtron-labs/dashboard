@@ -8,7 +8,7 @@ export default function HyperionEnvironmentSelect({ selectEnvironment, environme
         let length = props
             .getValue()
             .filter((opt) => opt.value && !opt.value.startsWith('#') && !opt.value.startsWith('*')).length;
-        const value = props.getValue()[0]?.label;
+        const value = props.getValue()[0]?.clusterName + "/" + props.getValue()[0]?.namespace;
         return (
             <components.ValueContainer {...props}>
                 {length > 0 ? (

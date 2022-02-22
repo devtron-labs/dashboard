@@ -35,10 +35,10 @@ export function updateChart(request) {
 export function deleteInstalledChart(installedAppId, force?: boolean) {
     let URL
     if (force) {
-        URL = `app-store/application/delete/${installedAppId}?force=${force}`
+        URL = `app-store/deployment/application/delete/${installedAppId}?force=${force}`
     }
     else {
-        URL = `app-store/application/delete/${installedAppId}`
+        URL = `app-store/deployment/application/delete/${installedAppId}`
     }
     return trash(URL)
 }

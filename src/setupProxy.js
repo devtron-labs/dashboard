@@ -2,7 +2,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = function (app) {
     app.use("/orchestrator", createProxyMiddleware({
-        target: 'http://localhost:4040/',
+        target: 'http://54.152.66.206:32080//',
         changeOrigin: true,
         logLevel: 'info',
         secure: false,
