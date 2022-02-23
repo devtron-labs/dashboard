@@ -4,6 +4,7 @@ import { Scroller } from '../app/details/cIDetails/CIDetails'
 import { get } from '../../services/api';
 import { AppDetails } from '../app/types';
 import SockJS from 'sockjs-client';
+import CopyToast, { handleSelectionChange } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CopyToast';
 import moment, { duration } from 'moment';
 import { AutoSizer } from 'react-virtualized'
 import { FitAddon } from 'xterm-addon-fit';
@@ -29,6 +30,7 @@ interface TerminalViewState {
     sessionId: string | undefined;
     showReconnectMessage: boolean;
     firstMessageReceived: boolean;
+    popupText?: boolean;
 }
 export class TerminalView extends Component<TerminalViewProps, TerminalViewState>{
     _terminal;
@@ -42,10 +44,12 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
             sessionId: undefined,
             showReconnectMessage: false,
             firstMessageReceived: false,
+            popupText:false,
         }
         this.scrollToTop = this.scrollToTop.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
         this.search = this.search.bind(this);
+        handleSelectionChange.bind(this);
     }
 
     componentDidMount() {
@@ -144,6 +148,12 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         })
     }
 
+    handleName = states => {
+        this.setState({ popupText: states });
+        if (!this.state.popupText) return;
+        setTimeout(() => this.setState({ popupText: false }), 2000);
+    }
+
     scrollToTop(e) {
         this._terminal.scrollToTop();
     }
@@ -176,6 +186,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
 
             this._fitAddon = new FitAddon();
             let webFontAddon = new XtermWebfont()
+            handleSelectionChange(this._terminal, this.handleName);
             this._terminal.loadAddon(this._fitAddon);
             this._terminal.loadAddon(webFontAddon);
             this._terminal.loadWebfontAndOpen(document.getElementById('terminal'));
@@ -284,7 +295,8 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                     className={`ff-monospace pt-2 fs-13 pb-2 m-0 capitalize cg-4`} >
                     {this.props.socketConnection}
                 </p>}
-            </div>}
+                <CopyToast showCopyToast={this.state.popupText} />
+            </div>}        
         </AutoSizer>
     }
 }
