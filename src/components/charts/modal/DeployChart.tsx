@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Select, Page, DropdownIcon, Progressing, showError, useJsonYaml, DeleteDialog, sortCallback } from '../../common';
-import { getEnvironmentListMin, getTeamListMin } from '../../../services/service';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { Select, Page, DropdownIcon, Progressing, showError, useJsonYaml, DeleteDialog, sortCallback, multiSelectStyles } from '../../common';
+import { getEnvironmentListHelmApps, getEnvironmentListMin, getTeamListMin } from '../../../services/service';
 import { toast } from 'react-toastify';
 import { DeployChartProps } from './deployChart.types';
 import { MarkDown } from '../discoverChartDetail/DiscoverChartDetails'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg';
 import { useHistory, useParams } from 'react-router'
-import { URLS } from '../../../config'
+import { URLS, SERVER_MODE, ACCESS_TYPE_MAP } from '../../../config'
 import { installChart, updateChart, deleteInstalledChart, getChartValuesCategorizedListParsed, getChartValues, getChartVersionsMin, getChartsByKeyword } from '../charts.service'
 import { ChartValuesSelect } from '../util/ChartValueSelect';
 import { getChartValuesURL } from '../charts.helper';
@@ -15,10 +15,13 @@ import CodeEditor from '../../CodeEditor/CodeEditor'
 import AsyncSelect from 'react-select/async';
 import checkIcon from '../../../assets/icons/appstatus/ic-check.svg'
 import ReactGA from 'react-ga';
-import ReactSelect from 'react-select';
+import ReactSelect, { components } from 'react-select';
 import './DeployChart.scss';
 import { ServerErrors } from '../../../modals/commonTypes';
 import ForceDeleteDialog from '../../common/dialogs/ForceDeleteDialog';
+import { mainContext } from '../../common/navigation/NavigationRoutes';
+import HyperionEnvironmentSelect from '../../hyperion/EnvironmentSelect';
+import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api';
 
 function mapById(arr) {
     if (!Array.isArray(arr)) {
@@ -56,6 +59,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     installedAppVersionId = 0,
     chartValuesFromParent = { id: 0, name: '', chartVersion: '', kind: null, environmentName: "" },
     ...rest }) => {
+    const {serverMode} = useContext(mainContext);
     const [environments, setEnvironments] = useState([])
     const [projects, setProjects] = useState([])
     const [loading, setLoading] = useState(false);
@@ -63,7 +67,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const [selectedVersionUpdatePage, setSelectedVersionUpdatePage] = useState(versions.get(selectedVersion))
     const [selectedProject, selectProject] = useState<{ label: string; value: number }>()
     const [chartVersionsData, setChartVersionsData] = useState<{ version: string, id: number }[]>([]);
-    const [selectedEnvironment, selectEnvironment] = useState<{ label: string; value: number }>(undefined)
+    const [selectedEnvironment, selectEnvironment] = useState<{ label: string; value: string | number, namespace?: string; clusterName?: string; clusterId?: number }>(undefined)
     const [appName, setAppName] = useState(originalName)
     const [readmeCollapsed, toggleReadmeCollapsed] = useState(true)
     const [deleting, setDeleting] = useState(false)
@@ -111,11 +115,30 @@ const DeployChart: React.FC<DeployChartProps> = ({
     }
 
     const fetchEnvironments = async () => {
-        let response = await getEnvironmentListMin();
-        let envList = response.result ? response.result : [];
-        envList = envList.map((env) => { return { value: env.id, label: env.environment_name, active: env.active } });
-        envList = envList.sort((a, b) => sortCallback('label', a, b, true));
-        setEnvironments(envList);
+        if(serverMode == SERVER_MODE.FULL){
+            let response = await getEnvironmentListMin();
+            let envList = response.result ? response.result : [];
+            envList = envList.map((env) => { return { value: env.id, label: env.environment_name, active: env.active } });
+            envList = envList.sort((a, b) => sortCallback('label', a, b, true));
+            setEnvironments(envList);
+        }else{
+            // for hyperion
+            let response = await getEnvironmentListHelmApps();
+            const envList = (response.result ? response.result : [])?.map((cluster) => ({
+                label: cluster.clusterName,
+                options: [
+                    ...cluster.environments?.map((env) => ({
+                        label: env.environmentName,
+                        value: env.environmentIdentifier,
+                        namespace: env.namespace,
+                        clusterName: cluster.clusterName,
+                        clusterId: cluster.clusterId,
+                    })),
+                ],
+            }));
+            setEnvironments(envList);
+        }
+
     }
 
     function closeMe(event = null) {
@@ -147,10 +170,10 @@ const DeployChart: React.FC<DeployChartProps> = ({
     }
 
     const deploy = async (e) => {
-        if (!(selectedProject && selectedEnvironment)) {
+        if (!((serverMode == SERVER_MODE.EA_ONLY || selectedProject) && selectedEnvironment)) {
             return
         }
-        if (!environmentId && !teamId && !appName) {
+        if (!environmentId && (serverMode == SERVER_MODE.FULL && !teamId) && !appName) {
             toast.warn('App name should not be empty and spaces are not allowed.')
             return
         }
@@ -179,10 +202,12 @@ const DeployChart: React.FC<DeployChartProps> = ({
 
             else {
                 let payload = {
-                    teamId: selectedProject.value,
+                    teamId: serverMode == SERVER_MODE.FULL ? selectedProject.value : 0 ,
                     referenceValueId: chartValues.id,
                     referenceValueKind: chartValues.kind,
-                    environmentId: selectedEnvironment.value,
+                    environmentId: serverMode == SERVER_MODE.FULL ? selectedEnvironment.value : 0,
+                    clusterId: selectedEnvironment.clusterId,
+                    namespace: selectedEnvironment.namespace,
                     appStoreVersion: selectedVersion,
                     valuesOverride: obj,
                     valuesOverrideYaml: textRef,
@@ -190,7 +215,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 };
                 const { result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId } } = await installChart(payload);
                 toast.success('Deployment initiated');
-                push(`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}`)
+                push(_buildAppDetailUrl(newInstalledAppId, newEnvironmentId))
             }
         }
         catch (err) {
@@ -277,6 +302,14 @@ const DeployChart: React.FC<DeployChartProps> = ({
             setChartValues(chartValuesFromParent);
         }
     }, [chartValuesFromParent])
+
+    function _buildAppDetailUrl(newInstalledAppId : number, newEnvironmentId: number) {
+        if (serverMode == SERVER_MODE.EA_ONLY) {
+            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId(selectedEnvironment.clusterId, selectedEnvironment.namespace, appName)}/${appName}`;
+        } else {
+            return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}`;
+        }
+    }
 
     function setForceDeleteDialogData(serverError) {
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
@@ -392,7 +425,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     }
 
     let isUpdate = environmentId && teamId;
-    let isDisabled = isUpdate ? false : !(selectedEnvironment && selectedProject && selectedVersion && appName?.length);
+    let isDisabled = isUpdate ? false : !(selectedEnvironment && (serverMode == SERVER_MODE.EA_ONLY || selectedProject) && selectedVersion && appName?.length);
     let chartVersionObj = versions.get(selectedVersion);
     // fetch chart versions for update route
     useEffect(() => {
@@ -414,41 +447,56 @@ const DeployChart: React.FC<DeployChartProps> = ({
                             <span className="form__label">App Name</span>
                             <input autoComplete="off" tabIndex={1} placeholder="App name" className="form__input" value={appName} autoFocus disabled={!!isUpdate} onChange={e => setAppName(e.target.value)} />
                         </label>
-                        <label className="form__row form__row--w-100">
-                            <span className="form__label">Project</span>
-                            <ReactSelect
-                                components={{
-                                    IndicatorSeparator: null,
-                                    DropdownIndicator
-                                }}
-                                isDisabled={!!isUpdate}
-                                placeholder="Select Project"
-                                value={selectedProject}
-                                styles={{
-                                    ...styles,
-                                    ...menuList,
-                                }}
-                                onChange={selectProject}
-                                options={projects}
-                            />
-                        </label>
+                        {
+                            serverMode == SERVER_MODE.FULL &&
+                            <label className="form__row form__row--w-100">
+                                <span className="form__label">Project</span>
+                                <ReactSelect
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        DropdownIndicator
+                                    }}
+                                    isDisabled={!!isUpdate}
+                                    placeholder="Select Project"
+                                    value={selectedProject}
+                                    styles={{
+                                        ...styles,
+                                        ...menuList,
+                                    }}
+                                    onChange={selectProject}
+                                    options={projects}
+                                />
+                            </label>
+                        }
                         <div className="form__row form__row--w-100">
                             <span className="form__label">Environment</span>
-                            <ReactSelect
-                                components={{
-                                    IndicatorSeparator: null,
-                                    DropdownIndicator
-                                }}
-                                isDisabled={!!isUpdate}
-                                placeholder="Select Environment"
-                                value={selectedEnvironment}
-                                styles={{
-                                    ...styles,
-                                    ...menuList,
-                                }}
-                                onChange={selectEnvironment}
-                                options={environments}
-                            />
+                            {
+                                serverMode == SERVER_MODE.FULL &&
+                                <ReactSelect
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        DropdownIndicator
+                                    }}
+                                    isDisabled={!!isUpdate}
+                                    placeholder="Select Environment"
+                                    value={selectedEnvironment}
+                                    styles={{
+                                        ...styles,
+                                        ...menuList,
+                                    }}
+                                    onChange={selectEnvironment}
+                                    options={environments}
+                                />
+                            }
+                            {
+                                serverMode == SERVER_MODE.EA_ONLY &&
+                                <HyperionEnvironmentSelect
+                                    selectEnvironment={selectEnvironment}
+                                    environments={environments}
+                                    selectedEnvironment={selectedEnvironment}
+                                />
+                            }
+
                         </div>
                         {isUpdate && deprecated &&
                             <div className="info__container--update-chart">

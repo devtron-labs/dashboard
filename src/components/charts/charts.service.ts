@@ -25,7 +25,7 @@ export function getInstalledAppDetail(installedAppId, envId) {
 }
 
 export function installChart(request) {
-    return post(`app-store/application/install`, request);
+    return post(`app-store/deployment/application/install`, request);
 }
 
 export function updateChart(request) {
@@ -35,26 +35,26 @@ export function updateChart(request) {
 export function deleteInstalledChart(installedAppId, force?: boolean) {
     let URL
     if (force) {
-        URL = `app-store/application/delete/${installedAppId}?force=${force}`
+        URL = `app-store/deployment/application/delete/${installedAppId}?force=${force}`
     }
     else {
-        URL = `app-store/application/delete/${installedAppId}`
+        URL = `app-store/deployment/application/delete/${installedAppId}`
     }
     return trash(URL)
 }
 
 export function getChartValuesTemplateList(chartId: number | string): Promise<any> {
-    const URL = `${Routes.CHART_VALUES_LIST_TEMPLATE}/${chartId}`;
+    const URL = `${Routes.CHART_STORE}/${Routes.CHART_STORE_VALUES}/${Routes.CHART_VALUES_LIST_TEMPLATE}/${chartId}`;
     return get(URL);
 }
 
 export function getChartValuesCategorizedList(chartId: number | string, installedAppVersionId = null): Promise<any> {
     let URL;
     if (installedAppVersionId) {
-        URL = `${Routes.CHART_VALUES_LIST_CATEGORIZED}/${chartId}?installedAppVersionId=${installedAppVersionId}`;
+        URL = `${Routes.CHART_STORE}/${Routes.CHART_STORE_VALUES}/${Routes.CHART_VALUES_LIST_CATEGORIZED}/${chartId}?installedAppVersionId=${installedAppVersionId}`;
     }
     else {
-        URL = `${Routes.CHART_VALUES_LIST_CATEGORIZED}/${chartId}`;
+        URL = `${Routes.CHART_STORE}/${Routes.CHART_STORE_VALUES}/${Routes.CHART_VALUES_LIST_CATEGORIZED}/${chartId}`;
     }
     return get(URL);
 }
@@ -92,7 +92,7 @@ export function getChartValuesCategorizedListParsed(chartId: number | string, in
 }
 
 export function getChartValues(versionId: number | string, kind: 'DEFAULT' | 'TEMPLATE' | 'DEPLOYED' | 'EXISTING'): Promise<any> {
-    const URL = `${Routes.CHART_VALUES}?referenceId=${versionId}&kind=${kind}`;
+    const URL = `${Routes.CHART_STORE}/${Routes.CHART_STORE_VALUES}/${Routes.CHART_VALUES}?referenceId=${versionId}&kind=${kind}`;
     return get(URL);
 }
 
@@ -103,17 +103,17 @@ interface ChartValuesCreate {
 }
 
 export function createChartValues(request: ChartValuesCreate) {
-    const URL = `${Routes.CHART_VALUES}`;
+    const URL = `${Routes.CHART_STORE}/${Routes.CHART_STORE_VALUES}/${Routes.CHART_VALUES}`;
     return post(URL, request);
 }
 
 export function updateChartValues(request) {
-    const URL = `${Routes.CHART_VALUES}`;
+    const URL = `${Routes.CHART_STORE}/${Routes.CHART_STORE_VALUES}/${Routes.CHART_VALUES}`;
     return put(URL, request);
 }
 
 export function deleteChartValues(chartId: number): Promise<any> {
-    const URL = `${Routes.CHART_VALUES}/${chartId}`;
+    const URL = `${Routes.CHART_STORE}/${Routes.CHART_STORE_VALUES}/${Routes.CHART_VALUES}/${chartId}`;
     return trash(URL);
 }
 
