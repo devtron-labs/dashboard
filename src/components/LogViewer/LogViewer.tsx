@@ -1,15 +1,12 @@
 import React, {useEffect, useRef, useState} from 'react'
-import {List, AutoSizer, CellMeasurer, CellMeasurerCache} from 'react-virtualized'
 import {Scroller} from '../app/details/cIDetails/CIDetails'
-import {useThrottledEffect, copyToClipboard, VisibleModal} from '../common'
-
+import CopyToast,{ handleSelectionChange } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CopyToast'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit';
 import * as XtermWebfont from 'xterm-webfont';
 import { SearchAddon } from 'xterm-addon-search';
 import '../../../node_modules/xterm/css/xterm.css';
 import { Subject } from '../../util/Subject';
-import {ReactComponent as CheckIcon } from '../../assets/icons/appstatus/ic-check.svg';
 import './LogViewer.scss'
 
 
@@ -69,11 +66,6 @@ const LogViewer: React.FunctionComponent<logViewerInterface> = ({ subject, rootC
         if (terminal.current) terminal.current.scrollToBottom();
     }
 
-    function handleSelectionChange(){
-        copyToClipboard(terminal.current.getSelection())
-        setPopupText(true);
-    }
-
     useEffect(() => {
         terminal.current = new Terminal({
             scrollback: 99999,
@@ -89,7 +81,7 @@ const LogViewer: React.FunctionComponent<logViewerInterface> = ({ subject, rootC
             }
         })
         terminal.current.attachCustomKeyEventHandler(handleKeyPress)
-        terminal.current.onSelectionChange(handleSelectionChange)
+        handleSelectionChange(terminal.current,setPopupText)
         fitAddon.current = new FitAddon();
         webFontAddon.current = new XtermWebfont()
 
@@ -105,6 +97,7 @@ const LogViewer: React.FunctionComponent<logViewerInterface> = ({ subject, rootC
             unsubscribe()
         }
         [subscribed, unsubscribe] = subject.subscribe(function(log: string) {
+            fitAddon.current.fit();
             terminal.current.writeln(log.toString())
         })
         return () => {
@@ -121,34 +114,15 @@ const LogViewer: React.FunctionComponent<logViewerInterface> = ({ subject, rootC
 
     return (
         <>
-        <AutoSizer>
-            {({height, width})=><ResizableLogs showCopyToast={popupText} fitAddon={fitAddon} height={height} width={width}/>}
-        </AutoSizer>
+        
+        <CopyToast showCopyToast={popupText} />
+        
         <Scroller
             scrollToBottom={scrollToBottom}
             scrollToTop={scrollToTop}
             style={{position:'fixed', bottom:'30px', right:'30px', zIndex:'3'}}
         />
         </>
-    );
-}
-
-function ResizableLogs({fitAddon, height, width, showCopyToast}){
-    useThrottledEffect(
-        () => {
-            if (fitAddon.current) fitAddon.current.fit();
-        },
-        100,
-        [height, width],
-    );
-
-    return (
-        <div id="xterm-logs" style={{ height, width }}>
-            <span className={`br-8 bcn-0 cn-9 clipboard-toast ${showCopyToast ? 'clipboard-toast--show': ''}`}>
-                <CheckIcon className="icon-dim-24 scn-9"/>
-                <div className="">Copied!</div>
-            </span>
-        </div>
     );
 }
 
