@@ -14,6 +14,9 @@ export interface CDMaterialProps {
   selectImage: (index: number, materialType: string) => void;
   toggleSourceInfo: (materialIndex: number) => void;
   closeCDModal: () => void;
+  parentPipelineId?: string;
+  parentPipelineType?: string;
+  parentEnvironmentName?: string;
 }
 
 export interface CDMaterialType {
@@ -40,6 +43,7 @@ export interface CDMaterialType {
   isSelected: boolean;
   showSourceInfo: boolean;
   latest: boolean;
+  runningOnParentCd?: boolean;
 }
 
 interface VulnerabilityType {
@@ -104,6 +108,9 @@ export interface NodeAttr {
   stageIndex?: number; //used for CDs
   sourceNodes?: Array<NodeAttr> //used for CI
   downstreamNodes?: Array<NodeAttr>
+  parentPipelineId?: string;
+  parentPipelineType?: string;
+  parentEnvironmentName?: string;
 }
 
 export interface DownStreams {
@@ -136,6 +143,9 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
   rollbackMaterialList: InputMaterials[];
   stageIndex: number;
   type: 'CD';
+  parentPipelineId?: string;
+  parentPipelineType?: string;
+  parentEnvironmentName?: string;
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
