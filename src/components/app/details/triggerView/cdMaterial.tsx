@@ -73,17 +73,60 @@ export class CDMaterial extends Component<CDMaterialProps> {
     </div>
   }
 
+  renderSequentialCDCardTitle = (mat) => {
+    if (this.props.stageType !== 'CD') return;
+
+    if (mat.latest && mat.runningOnParentCd) {
+        return (
+            <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
+                <span className="cn-9 fw-6">Deployed on </span>{' '}
+                <span className="cv-5 fw-6">
+                    {this.props.parentEnvironmentName}
+                    {this.props.parentEnvironmentName ? (
+                        <>
+                            <span className="cn-9 fw-4" style={{ fontStyle: 'italic' }}>
+                                {' '}
+                                and{' '}
+                            </span>
+                            {this.props.envName}
+                        </>
+                    ) : (
+                        ''
+                    )}
+                </span>
+            </div>
+        );
+    } else if (mat.latest) {
+        return (
+            <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
+                <span className="cn-9 fw-6">Deployed on </span>
+                <span className="cv-5 fw-6">{this.props.envName} </span>
+            </div>
+        );
+    } else if (mat.runningOnParentCd) {
+        return (
+            <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
+                <span className="cn-9 fw-6">Deployed on </span>
+                <span className="cv-5 fw-6">{this.props.parentEnvironmentName}</span>
+            </div>
+        );
+    }
+  }
+
   renderMaterial() {
     let tabClasses = "transparent tab-list__tab-link tab-list__tab-link--vulnerability";
     return this.props.material.map((mat, index) => {
       let classes = `material-history material-history--cd ${mat.isSelected ? 'material-history-selected' : ''}`;
       return <div key={index} className={classes} >
+
+        {this.renderSequentialCDCardTitle(mat)}
+
         <div className="material-history__top" style={{ 'cursor': `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
           onClick={(event) => { event.stopPropagation(); if (!mat.vulnerable) this.props.selectImage(index, this.props.materialType) }}>
-          <div>
-            <div className="commit-hash commit-hash--docker"><img src={docker} alt="" className="commit-hash__icon" />{mat.image}</div>
-            {mat.latest ? <span className="last-deployed-status">Running</span> : null}
-          </div>
+          <div>  
+           <div className="commit-hash commit-hash--docker"><img src={docker} alt="" className="commit-hash__icon" />{mat.image}</div>
+           {this.props.stageType !== 'CD' && mat.latest  ? <span className="last-deployed-status">Last Run</span> : null}
+         </div>  
           {this.props.materialType === "none" ? null : <div className="material-history__info">
             <span className="trigger-modal__small-text">Deployed at:</span> <span>{mat.deployedTime}</span>
           </div>}
