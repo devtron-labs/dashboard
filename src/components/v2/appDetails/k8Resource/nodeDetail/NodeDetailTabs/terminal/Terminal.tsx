@@ -2,12 +2,12 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
+import CopyToast, { handleSelectionChange } from '../CopyToast';
 import * as XtermWebfont from 'xterm-webfont';
 import SockJS from 'sockjs-client';
 import { SocketConnectionType } from '../node.type';
 import { get } from '../../../../../../../services/api';
 import ReactGA from 'react-ga';
-
 import './terminal.css';
 import IndexStore from '../../../../index.store';
 import { AppType } from '../../../../appDetails.type';
@@ -30,6 +30,12 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const [ga_session_duration, setGA_session_duration] = useState<moment.Moment>();
     const [isReconnection, setIsReconnection] = useState(false);
     const [firstMessageReceived, setFirstMessageReceived] = useState(false);
+    const [popupText, setPopupText] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (!popupText) return;
+        setTimeout(() => setPopupText(false), 2000);
+    }, [popupText]);
 
     const appDetails = IndexStore.getAppDetails();
 
@@ -46,7 +52,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 foreground: '#FFFFFF',
             },
         });
-
+        handleSelectionChange(terminal,setPopupText);
         fitAddon = new FitAddon();
         const webFontAddon = new XtermWebfont();
         terminal.loadAddon(fitAddon);
@@ -331,6 +337,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     {terminalViewProps.socketConnection}
                 </p>
             )}
+             
+            <CopyToast showCopyToast={popupText} />
         </div>
     );
 }
