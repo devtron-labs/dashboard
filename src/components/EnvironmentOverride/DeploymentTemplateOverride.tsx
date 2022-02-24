@@ -170,10 +170,10 @@ export default function DeploymentTemplateOverride({ parentState, setParentState
 function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initialise, handleAppMetrics, handleDelete, chartRefLoading }) {
     const [tempValue, setTempValue] = useState("")
     const [showReadme, setReadme] = useState(false)
-    const [schemas,setSchema] = useState()
     const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
     const [loading, setLoading] = useState(false)
     const { appId, envId } = useParams<{ appId, envId }>()
+    
     async function handleSubmit(e) {
         e.preventDefault();
         if (!obj) {
@@ -214,6 +214,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
     }
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
     const chartName = state.charts.get(state.data.globalChartRefId)?.name;
+    console.log(state.data.readme)
     return (
         <>
             <form className="deployment-template-override-form" style={{ marginBottom: '16px' }} onSubmit={handleSubmit}>
@@ -245,21 +246,20 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                 </div>
                 <div className="code-editor-container">
                     <CodeEditor
-                        value={state ? state.duplicate ? YAML.stringify(state.duplicate, { indent: 2 }) : YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
-                        onChange={res => setTempValue(res)}
+                        value={tempValue? tempValue:state ? state.duplicate ? YAML.stringify(state.duplicate, { indent: 2 }) : YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
+                        onChange={setTempValue ? tempValue => {setTempValue(tempValue)}:() => { }}
                         defaultValue={state && state.data && state.duplicate ? YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
                         mode="yaml"
-                        validatorSchema={state.schema}
+                        validatorSchema={state.data.schema}
                         readOnly={!state.duplicate}
-                        loading={chartRefLoading}
-                    >
+                        loading={chartRefLoading}>    
+                        <div className='readme-container' >
                             <CodeEditor.Header>
-                            <div className="flex" style={{ justifyContent: 'space-between', width: '100%' }}>
-                            <CodeEditor.LanguageChanger />
-                            <CodeEditor.ValidationError />
-                            <button className="readme-button" type='button' onClick={e => setReadme(true)}>README<img src={arrowSquareOut} alt="add-worflow" className="icon-dim-18 mb-2 ml-4" /></button>
-                            </div>
-                        </CodeEditor.Header>
+                                <CodeEditor.LanguageChanger />
+                                <CodeEditor.ValidationError />
+                            </CodeEditor.Header>
+                             {state.data.readme && <button className="readme-button" type='button' onClick={e => setReadme(true)}>README<img src={arrowSquareOut} alt="add-worflow" className="icon-dim-18 mb-2 ml-4" /></button>}
+                        </div>
                     </CodeEditor>
                 </div>
                 <div className="form__buttons mt-12">
@@ -268,13 +268,10 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
             </form>
             {showReadme && <VisibleModal className="">
                 <Readme
-                    value={state ? state.duplicate ? YAML.stringify(state.duplicate, { indent: 4 }) : YAML.stringify(state.data.globalConfig, { indent: 4 }) : ""}
-                    onChange={res => setTempValue(res)}
-                    defaultValue={state && state.data && state.duplicate ? YAML.stringify(state.data.globalConfig, { indent: 4 }) : ""}
-                    mode="yaml"
-                    tabSize={4}
-                    readOnly={!state.duplicate}
-                    loading={chartRefLoading}
+                    state={state}
+                    tempValue={tempValue}
+                    chartRefLoading={chartRefLoading}
+                    onChange={setTempValue ? tempValue => {setTempValue(tempValue)}: () => { }}
                     handleClose={e => setReadme(false)}
                     readme={state.data.readme}
                 />
@@ -339,49 +336,64 @@ function NameSpace({ originalNamespace = "", chartRefId, id }) {
     )
 }
 
-function Readme({ value,onChange,defaultValue,mode,tabSize,readOnly,loading,handleClose,readme}) {
+function Readme({ tempValue,state,handleClose,readme,onChange,chartRefLoading}) {
     const key = useKeyDown()
-    const { target ,height,width } = useSize()
+    const [resp,setTempForm] = useState();
     useEffect(() => {
         if (key.join().includes('Escape')) {
             handleClose()
         }
     }, [key.join()])
+
+    const handle =()=>{
+        handleClose();
+        onChange(resp);
+    }
+
     return (
-            
-        <div ref={target} className="advanced-config-readme">
-            <div className='container-top'>
-                <div className='infobar'>
-                <h5><img src={checkGreen} alt="add-worflow" className="icon-dim-18 mr-5" />Changes made to the yaml will be retained when you exit the README.</h5>
-            </div>
-            <button className='cta' onClick={handleClose}><img src={arrowSquareout} alt="add-worflow" className="icon-dim-18 mt-3 mr-3" />Done</button></div>
-            <div className='config-editor'>   
-            <div>
-                <div className="readme">
-                    <h5>Readme</h5>
+        <div className="advanced-config-readme">
+            <div className="container-top">
+                <div className="infobar">
+                    <h5>
+                        <img src={checkGreen} alt="add-worflow" className="icon-dim-18 mr-5" />
+                        Changes made to the yaml will be retained when you exit the README.
+                    </h5>
                 </div>
-                <div className="readmeEditor">
-                    <MarkDown markdown={readme} />
+                <button className="cta" onClick={handle}>
+                    <img src={arrowSquareout} alt="add-worflow" className="icon-dim-18 mt-3 mr-3" />
+                    Done
+                </button>
+            </div>
+            <div className="config-editor">
+                <div>
+                    <div className="readme">
+                        <h5>Readme</h5>
+                    </div>
+                    <div className="readmeEditor">
+                        <MarkDown markdown={readme} />
+                    </div>
                 </div>
-                
-            </div>
-            <div className="codeEditor">
-                <CodeEditor
-                    value={value}
-                    onChange={onChange}
-                    defaultValue={defaultValue}
-                    mode={mode}
-                    height={500}
-                    tabSize={tabSize}
-                    readOnly={readOnly}
-                    loading={loading}
-                >
-                    <CodeEditor.Header>
-                        <CodeEditor.LanguageChanger />
-                        <CodeEditor.ValidationError />
-                    </CodeEditor.Header>
-                </CodeEditor>
-            </div>
+                <div className="codeEditor">
+                    <CodeEditor
+                        value={tempValue}
+                        onChange={setTempForm}
+                        defaultValue={
+                            state && state.data && state.duplicate
+                                ? YAML.stringify(state.data.globalConfig, { indent: 2 })
+                                : ''
+                        }
+                        mode="yaml"
+                        validatorSchema={state.data.schema}
+                        readOnly={!state.duplicate}
+                        loading={chartRefLoading}
+                        height={500}
+                    >
+                        <CodeEditor.Header>
+                            <CodeEditor.LanguageChanger />
+                            <CodeEditor.ValidationError />
+                        </CodeEditor.Header>
+                    </CodeEditor>
+                </div>
             </div>
         </div>
     );

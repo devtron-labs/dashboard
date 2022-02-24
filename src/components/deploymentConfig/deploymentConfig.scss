@@ -53,14 +53,22 @@
     font-weight: 600;
     font-size: 12px;
     color:#0066CC;
+    border-bottom: 1px solid var(--N200);
+    padding-right: 15px;
     outline: transparent;
+}
+
+.readme-container{
+    display: grid;
+    grid-template-columns: 1fr auto;
+    background: var(--N100);
 }
 
 .advanced-config-readme{
     height: calc(100vh - 100px);
     width: calc(100vw - 100px);
     margin: 40px 50px 60px 50px;
-    background: white;
+    background: var(--N000);
     border-radius: 8px;
     padding: 24px 24px 24px 24px;
     display: grid;
@@ -113,27 +121,18 @@
         border: 1px solid #D0D4D9;
         border-bottom: 0px;
         border-radius: 4px 0px 0px 0px;
-        
-        /* Inside auto layout */
-        
-        flex: none;
-        order: 0;
-        align-self: stretch;
-        flex-grow: 0;
-        margin: 0px 0px;
     }
 
     .readmeEditor{
-    
         overflow-y: scroll;
-        background: #FFFFFF;
+        background: var(--N000);
         border: 1px solid #D0D4D9;
         border-radius: 0px 0px 0px 4px;
         height: calc(100vh - 240px);
     }
 
     .codeEditor{
-        background: #FFFFFF;
+        background: var(--N000);
         border: 1px solid #D0D4D9;
         border-left: 0px;
         border-radius: 0px 4px 4px 0px;

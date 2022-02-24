@@ -61,6 +61,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
     const [chartConfigLoading, setChartConfigLoading] = useState(null)
     const [showConfirmation, toggleConfirmation] = useState(false)
     const [showReadme, setReadme] = useState(false)
+    const [showReadmeTab,setReadmeTab] = useState('')
 
     useEffect(() => {
         initialise()    
@@ -118,6 +119,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
             const { result: { globalConfig: { defaultAppOverride, id, refChartTemplate, refChartTemplateVersion, isAppMetricsEnabled, chartRefId ,readme,schema} } } = await getDeploymentTemplate(+appId, selectedChart.id)
             setTemplate(defaultAppOverride)
             setSchema(schema)
+            setReadmeTab(readme)
             setChartConfig({ id, refChartTemplate, refChartTemplateVersion, chartRefId,readme})
             toggleAppMetrics(isAppMetricsEnabled)
             setTempFormData(JSON.stringify(defaultAppOverride, null, 2))
@@ -284,13 +286,13 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                         mode="yaml"
                         validatorSchema={schemas}
                         loading={chartConfigLoading}>
+                        <div className='readme-container'>
                         <CodeEditor.Header>
-                        <div className="flex" style={{ justifyContent: 'space-between', width: '100%' }}>
                             <CodeEditor.LanguageChanger />
                             <CodeEditor.ValidationError />
-                             <button className="readme-button" type='button' onClick={e => setReadme(true)}>README<img src={arrowSquareOut} alt="add-worflow" className="icon-dim-18 mb-2 ml-4" /></button>
-                            </div>
                         </CodeEditor.Header>
+                        {showReadmeTab && <button className="readme-button" type='button' onClick={e => setReadme(true)}>README<img src={arrowSquareOut} alt="add-worflow" className="icon-dim-18 mb-2 ml-4" /></button>}
+                        </div>
                     </CodeEditor>
                 </div>
                 <div className="form__buttons">
@@ -300,7 +302,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
             {showReadme && <VisibleModal className="">
                 <Readme
                     valuesYaml={tempFormData}
-                    setTempFormData={resp => { setTempFormData(resp) }}
+                    setTempFormData={setTempFormData? tempFormData => { setTempFormData(tempFormData)}: ()=>{ }}
                     readme={chartConfig.readme}
                     handleClose={e => setReadme(false)}
                     chartConfigLoading={chartConfigLoading}
@@ -330,49 +332,57 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
 }
 
 
-function Readme({ readme, valuesYaml, handleClose,chartConfigLoading,setTempFormData }) {
+function Readme({ readme, valuesYaml, handleClose, chartConfigLoading, setTempFormData }) {
     const key = useKeyDown()
-    const { target ,height,width } = useSize()
-    
+    const [resp,setTempForm] = useState();
     useEffect(() => {
         if (key.join().includes('Escape')) {
             handleClose()
         }
     }, [key.join()])
+
+    const handle = () => {
+        handleClose();
+        setTempFormData(resp)
+    }
+
     return (
-            
         <div className="advanced-config-readme">
-            <div className='container-top'>
-                <div className='infobar'>
-                <h5><img src={checkGreen} alt="add-worflow" className="icon-dim-18 mr-5" />Changes made to the yaml will be retained when you exit the README.</h5>
-            </div>
-                <button className='cta' onClick={handleClose}><img src={arrowSquareout} alt="add-worflow" className="icon-dim-18 mt-3 mr-3" />Done</button></div>
-            <div className='config-editor'>   
-            <div>
-                <div className="readme">
-                    <h5>Readme</h5>
+            <div className="container-top">
+                <div className="infobar">
+                    <h5>
+                        <img src={checkGreen} alt="add-worflow" className="icon-dim-18 mr-5" />
+                        Changes made to the yaml will be retained when you exit the README.
+                    </h5>
                 </div>
-                <div className="readmeEditor">
-                    <MarkDown markdown={readme} />
+                <button className="cta" onClick={handle}>
+                    <img src={arrowSquareout} alt="add-worflow" className="icon-dim-18 mt-3 mr-3" />
+                    Done
+                </button>
+            </div>
+            <div className="config-editor">
+                <div>
+                    <div className="readme">
+                        <h5>Readme</h5>
+                    </div>
+                    <div className="readmeEditor">
+                        <MarkDown markdown={readme} />
+                    </div>
                 </div>
-                
-            </div>
-            <div ref={target} className="codeEditor">
-                <CodeEditor
-                    value={valuesYaml}
-                    height={500}
-                    onChange={(resp) => {
-                        setTempFormData(resp);
-                    }}
-                    mode="yaml"
-                    loading={chartConfigLoading}
-                >
-                    <CodeEditor.Header>
-                        <CodeEditor.LanguageChanger />
-                        <CodeEditor.ValidationError />
-                    </CodeEditor.Header>
-                </CodeEditor>
-            </div>
+                <div className="codeEditor">
+                    <CodeEditor
+                        value={valuesYaml}
+                        height={500}
+                        onChange={setTempForm}
+                        mode="yaml"
+                        loading={chartConfigLoading}
+                    >
+                        <CodeEditor.Header>
+                            <CodeEditor.LanguageChanger />
+                            <CodeEditor.ValidationError />
+                        </CodeEditor.Header>
+                    </CodeEditor>
+                </div>
             </div>
         </div>
     );
