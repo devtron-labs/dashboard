@@ -284,7 +284,7 @@ export function processWorkflow(workflow: WorkflowResult, ciResponse: CiPipeline
                 delete node['sourceNodes'];
             }
             if (node.type == 'CD') {
-                node.downstreamNodes.forEach(dn => {
+                node.downstreamNodes?.forEach(dn => {
                     dn.parentPipelineId = node.id
                     dn.parentPipelineType = 'CD'
                     dn.parentEnvironmentName = node.environmentName

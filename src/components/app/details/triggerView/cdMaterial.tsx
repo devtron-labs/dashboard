@@ -102,7 +102,7 @@ export class CDMaterial extends Component<CDMaterialProps> {
                 </div>
             );
         }
-        if (!mat.latest && mat.runningOnParentCd) {
+        else if (mat.runningOnParentCd) {
             return (
                 <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
                     <span className="cn-9 fw-6">Deployed on </span>
