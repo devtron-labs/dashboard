@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate, toggleAppMetrics as updateAppMetrics } from './service';
 import { getChartReferences } from '../../services/service';
-import { Toggle, Progressing, ConfirmationDialog,VisibleModal,useKeyDown,useSize, useJsonYaml, isVersionLessThanOrEqualToTarget } from '../common';
+import { Toggle, Progressing, ConfirmationDialog, VisibleModal, useJsonYaml, isVersionLessThanOrEqualToTarget } from '../common';
 import { useEffectAfterMount, showError } from '../common/helpers/Helpers'
+import ReadmeConfig from './ReadmeConfig';
 import { useParams } from 'react-router'
 import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
 import arrowSquareOut from '../../assets/icons/misc/arrow-square-out.svg';
-import arrowSquareout from '../../assets/icons/misc/ArrowSquareOut.svg';
-import checkGreen from '../../assets/icons/misc/checkGreen.svg';
 import ReactSelect from 'react-select';
 import { DOCUMENTATION } from '../../config';
-import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails';
 import './deploymentConfig.scss';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 
@@ -278,7 +276,6 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                         </>
                     }
                 </div>
-
                 <div className="form__row form__row--code-editor-container">
                     <CodeEditor
                         value={tempFormData}
@@ -288,7 +285,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                         loading={chartConfigLoading}>
                         <div className='readme-container'>
                         <CodeEditor.Header>
-                            <CodeEditor.LanguageChanger />
+                            <h5>YAML</h5>
                             <CodeEditor.ValidationError />
                         </CodeEditor.Header>
                         {showReadmeTab && <button className="readme-button" type='button' onClick={e => setReadme(true)}>README<img src={arrowSquareOut} alt="add-worflow" className="icon-dim-18 mb-2 ml-4" /></button>}
@@ -300,12 +297,14 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                 </div>
             </form>
             {showReadme && <VisibleModal className="">
-                <Readme
-                    valuesYaml={tempFormData}
-                    setTempFormData={setTempFormData? tempFormData => { setTempFormData(tempFormData)}: ()=>{ }}
+                <ReadmeConfig
+                    value={tempFormData}
+                    height={500}
+                    schema={schemas}
+                    onChange={resp => { setTempFormData(resp) }}
                     readme={chartConfig.readme}
                     handleClose={e => setReadme(false)}
-                    chartConfigLoading={chartConfigLoading}
+                    loading={chartConfigLoading}
                 />
             </VisibleModal>}
 
@@ -329,61 +328,4 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                 />}
         </>
     )
-}
-
-
-function Readme({ readme, valuesYaml, handleClose, chartConfigLoading, setTempFormData }) {
-    const key = useKeyDown()
-    const [resp,setTempForm] = useState();
-    useEffect(() => {
-        if (key.join().includes('Escape')) {
-            handleClose()
-        }
-    }, [key.join()])
-
-    const handle = () => {
-        handleClose();
-        setTempFormData(resp)
-    }
-
-    return (
-        <div className="advanced-config-readme">
-            <div className="container-top">
-                <div className="infobar">
-                    <h5>
-                        <img src={checkGreen} alt="add-worflow" className="icon-dim-18 mr-5" />
-                        Changes made to the yaml will be retained when you exit the README.
-                    </h5>
-                </div>
-                <button className="cta" onClick={handle}>
-                    <img src={arrowSquareout} alt="add-worflow" className="icon-dim-18 mt-3 mr-3" />
-                    Done
-                </button>
-            </div>
-            <div className="config-editor">
-                <div>
-                    <div className="readme">
-                        <h5>Readme</h5>
-                    </div>
-                    <div className="readmeEditor">
-                        <MarkDown markdown={readme} />
-                    </div>
-                </div>
-                <div className="codeEditor">
-                    <CodeEditor
-                        value={valuesYaml}
-                        height={500}
-                        onChange={setTempForm}
-                        mode="yaml"
-                        loading={chartConfigLoading}
-                    >
-                        <CodeEditor.Header>
-                            <CodeEditor.LanguageChanger />
-                            <CodeEditor.ValidationError />
-                        </CodeEditor.Header>
-                    </CodeEditor>
-                </div>
-            </div>
-        </div>
-    );
 }
