@@ -8,7 +8,7 @@ function CompareWithBaseConfig() {
     return (
         <div className="border-bottom ml-20 mr-20 mt-12 mb-12 flex left">
             <div>
-                <div>Compare with</div>
+                <div className='cn-6'>Compare with</div>
                 <ReactSelect
                     className="w-200"
                     components={{
@@ -24,7 +24,7 @@ function CompareWithBaseConfig() {
                 />
             </div>
             <div className="ml-16">
-                Base configuration
+                <span className='cn-6'>Base configuration</span>
                 <div>Mon, 17 Jun 2019, 11:32 AM</div>
             </div>
         </div>
