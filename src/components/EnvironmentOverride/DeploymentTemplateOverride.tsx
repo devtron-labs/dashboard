@@ -214,7 +214,6 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
     }
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
     const chartName = state.charts.get(state.data.globalChartRefId)?.name;
-    console.log(state.data.readme)
     return (
         <>
             <form className="deployment-template-override-form" style={{ marginBottom: '16px' }} onSubmit={handleSubmit}>
