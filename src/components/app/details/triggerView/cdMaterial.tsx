@@ -74,42 +74,42 @@ export class CDMaterial extends Component<CDMaterialProps> {
   }
 
   renderSequentialCDCardTitle = (mat) => {
-    if (this.props.stageType === 'CD') {
-        if (mat.latest && mat.runningOnParentCd) {
-            return (
-                <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
-                    <span className="cn-9 fw-6">Deployed on </span>{' '}
-                    <span className="cv-5 fw-6">
-                        {this.props.parentEnvironmentName} 
-                        {this.props.parentEnvironmentName ? (
-                            <>
-                                <span className="cn-9 fw-4" style={{ fontStyle: 'italic' }}>
-                                {' '} and  {' '}
-                                </span>
-                                {this.props.envName}
-                            </>
-                        ) : (
-                            ''
-                        )}
-                    </span>
-                </div>
-            );
-        } else if (mat.latest) {
-            return (
-                <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
-                    <span className="cn-9 fw-6">Deployed on </span>
-                    <span className="cv-5 fw-6">{this.props.envName} </span>
-                </div>
-            );
-        }
-        else if (mat.runningOnParentCd) {
-            return (
-                <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
-                    <span className="cn-9 fw-6">Deployed on </span>
-                    <span className="cv-5 fw-6">{this.props.parentEnvironmentName}</span>
-                </div>
-            );
-        }
+    if (this.props.stageType !== 'CD') return;
+
+    if (mat.latest && mat.runningOnParentCd) {
+        return (
+            <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
+                <span className="cn-9 fw-6">Deployed on </span>{' '}
+                <span className="cv-5 fw-6">
+                    {this.props.parentEnvironmentName}
+                    {this.props.parentEnvironmentName ? (
+                        <>
+                            <span className="cn-9 fw-4" style={{ fontStyle: 'italic' }}>
+                                {' '}
+                                and{' '}
+                            </span>
+                            {this.props.envName}
+                        </>
+                    ) : (
+                        ''
+                    )}
+                </span>
+            </div>
+        );
+    } else if (mat.latest) {
+        return (
+            <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
+                <span className="cn-9 fw-6">Deployed on </span>
+                <span className="cv-5 fw-6">{this.props.envName} </span>
+            </div>
+        );
+    } else if (mat.runningOnParentCd) {
+        return (
+            <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
+                <span className="cn-9 fw-6">Deployed on </span>
+                <span className="cv-5 fw-6">{this.props.parentEnvironmentName}</span>
+            </div>
+        );
     }
   }
 
