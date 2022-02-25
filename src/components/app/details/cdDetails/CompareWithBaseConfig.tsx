@@ -3,10 +3,12 @@ import ReactSelect from 'react-select';
 import { menuList } from '../../../charts/charts.util';
 import { DropdownIndicator } from '../appDetails/utils';
 import { styles } from '../metrics/deploymentMetrics.util';
+import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-forward.svg'
 
 function CompareWithBaseConfig() {
     return (
-        <div className="border-bottom ml-20 mr-20 mt-12 mb-12 flex left">
+        <div className="border-bottom pl-20 pr-20 pt-12 pb-12 flex left">
+            <a href=''><LeftIcon className="rotate icon-dim-20 mr-16" style={{ ['--rotateBy' as any]: '180deg' }}/></a>
             <div>
                 <div className='cn-6'>Compare with</div>
                 <ReactSelect
