@@ -5,7 +5,7 @@ import checkGreen from '../../assets/icons/misc/checkGreen.svg';
 import arrowSquareout from '../../assets/icons/misc/arrowSquareOut.svg';
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails';
 import './deploymentConfig.scss';
-import { modes } from '../../../src/config/constants';
+import { MODES } from '../../../src/config/constants';
 
 interface Readme {
     readme: any;
@@ -64,11 +64,11 @@ function ReadmeConfig({ readme, value, handleClose, loading, height, onChange, s
                         readOnly={readOnly}
                         validatorSchema={schema}
                         onChange={setTempForm}
-                        mode= "yaml"
+                        mode={MODES.YAML}
                         loading={loading}
                     >
                         <CodeEditor.Header>
-                        <h5>{modes.yaml.toUpperCase()}</h5>
+                        <h5>{MODES.YAML.toUpperCase()}</h5>
                             <CodeEditor.ValidationError />
                         </CodeEditor.Header>
                     </CodeEditor>

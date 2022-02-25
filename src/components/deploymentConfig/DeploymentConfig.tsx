@@ -13,7 +13,7 @@ import ReactSelect from 'react-select';
 import { DOCUMENTATION } from '../../config';
 import './deploymentConfig.scss';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
-import { modes } from '../../../src/config/constants';
+import { MODES } from '../../../src/config/constants';
 import YAML from 'yaml';
 
 export function OptApplicationMetrics({ currentVersion, onChange, opted, focus = false, loading, className = "", disabled = false }) {
@@ -282,12 +282,12 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                     <CodeEditor
                         value={tempFormData}
                         onChange={resp => { setTempFormData(resp) }}
-                        mode="yaml"
+                        mode={MODES.YAML}
                         validatorSchema={schemas}
                         loading={chartConfigLoading}>
                         <div className='readme-container'>
                         <CodeEditor.Header>
-                            <h5>{modes.yaml.toUpperCase()}</h5>
+                            <h5>{MODES.YAML.toUpperCase()}</h5>
                             <CodeEditor.ValidationError />
                         </CodeEditor.Header>
                         {readme && <button className="readme-button" type='button' onClick={e => setShowReadme(true)}>README<ArrowSquareOut className="icon-dim-18 scb-5 rotate " style={{ ['--rotateBy' as any]: '-90deg', marginLeft: '5px'  }}/></button>}

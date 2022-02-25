@@ -17,14 +17,14 @@ import EditorWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worke
 // @ts-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import YamlWorker from 'worker-loader!monaco-yaml/lib/esm/yaml.worker';
-import { modes } from '../../../src/config/constants';
+import { MODES } from '../../../src/config/constants';
 import useResourceValidationSchema from './useResourceValidationSchema';
 
 // @ts-ignore
 window.MonacoEnvironment = {
     // @ts-ignore
     getWorker(workerId, label : string) :void{
-        if (label === modes.yaml) {
+        if (label === MODES.YAML) {
             return new YamlWorker();
         }
         return new EditorWorker();

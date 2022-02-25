@@ -12,7 +12,7 @@ import { toast } from 'react-toastify'
 import { OptApplicationMetrics } from '../deploymentConfig/DeploymentConfig'
 import '../deploymentConfig/deploymentConfig.scss';
 import warningIcon from '../../assets/img/warning-medium.svg'
-import { modes } from '../../../src/config/constants';
+import { MODES } from '../../../src/config/constants';
 import YAML from 'yaml'
 
 export default function DeploymentTemplateOverride({ parentState, setParentState, ...props }) {
@@ -247,13 +247,13 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                         value={tempValue? tempValue:state ? state.duplicate ? YAML.stringify(state.duplicate, { indent: 2 }) : YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
                         onChange={ tempValue => {setTempValue(tempValue)}}
                         defaultValue={state && state.data && state.duplicate ? YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
-                        mode="yaml"
+                        mode={MODES.YAML}
                         validatorSchema={state.data.schema}
                         readOnly={!state.duplicate}
                         loading={chartRefLoading}>    
                         <div className='readme-container' >
                             <CodeEditor.Header>
-                                <h5>{modes.yaml.toUpperCase()}</h5>
+                                <h5>{MODES.YAML.toUpperCase()}</h5>
                                 <CodeEditor.ValidationError />
                             </CodeEditor.Header>
                             {state.data.readme && <button className="readme-button" type='button' onClick={e => setReadme(true)}>README<ArrowSquareOut className="icon-dim-18 scb-5 rotate " style={{ ['--rotateBy' as any]: '-90deg', marginLeft: '5px'  }}/></button>}
