@@ -230,6 +230,7 @@ function cdMaterialListModal(artifacts) {
             scanned: material.scanned,
             scanEnabled: material.scanEnabled,
             vulnerable: material.vulnerable,
+            runningOnParentCd: material?.runningOnParentCd,
             materialInfo: material.material_info ? material.material_info.map((mat) => {
                 return {
                     modifiedTime: mat.modifiedTime ? moment(mat.modifiedTime).format(Moment12HourFormat) : "",
