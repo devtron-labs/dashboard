@@ -8,11 +8,13 @@ import { useParams } from 'react-router'
 import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
-import arrowSquareOut from '../../assets/icons/misc/arrow-square-out.svg';
+import { ReactComponent as ArrowSquareOut }from '../../assets/icons/misc/arrowSquareOut.svg';
 import ReactSelect from 'react-select';
 import { DOCUMENTATION } from '../../config';
 import './deploymentConfig.scss';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
+import { modes } from '../../../src/config/constants';
+import YAML from 'yaml';
 
 export function OptApplicationMetrics({ currentVersion, onChange, opted, focus = false, loading, className = "", disabled = false }) {
     let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersion, [3, 7, 0]);
@@ -58,8 +60,8 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
     const [obj, json, yaml, error] = useJsonYaml(tempFormData, 4, 'yaml', true);
     const [chartConfigLoading, setChartConfigLoading] = useState(null)
     const [showConfirmation, toggleConfirmation] = useState(false)
-    const [showReadme, setReadme] = useState(false)
-    const [showReadmeTab,setReadmeTab] = useState('')
+    const [showReadme, setShowReadme] = useState(false)
+    const [readme,setReadme] = useState('')
 
     useEffect(() => {
         initialise()    
@@ -117,10 +119,10 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
             const { result: { globalConfig: { defaultAppOverride, id, refChartTemplate, refChartTemplateVersion, isAppMetricsEnabled, chartRefId ,readme,schema} } } = await getDeploymentTemplate(+appId, selectedChart.id)
             setTemplate(defaultAppOverride)
             setSchema(schema)
-            setReadmeTab(readme)
+            setReadme(readme)
             setChartConfig({ id, refChartTemplate, refChartTemplateVersion, chartRefId,readme})
             toggleAppMetrics(isAppMetricsEnabled)
-            setTempFormData(JSON.stringify(defaultAppOverride, null, 2))
+            setTempFormData(YAML.stringify(defaultAppOverride, null))
         }
         catch (err) {
             showError(err);
@@ -285,10 +287,10 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                         loading={chartConfigLoading}>
                         <div className='readme-container'>
                         <CodeEditor.Header>
-                            <h5>YAML</h5>
+                            <h5>{modes.yaml.toUpperCase()}</h5>
                             <CodeEditor.ValidationError />
                         </CodeEditor.Header>
-                        {showReadmeTab && <button className="readme-button" type='button' onClick={e => setReadme(true)}>README<img src={arrowSquareOut} alt="add-worflow" className="icon-dim-18 mb-2 ml-4" /></button>}
+                        {readme && <button className="readme-button" type='button' onClick={e => setShowReadme(true)}>README<ArrowSquareOut className="icon-dim-18 scb-5 rotate " style={{ ['--rotateBy' as any]: '-90deg', marginLeft: '5px'  }}/></button>}
                         </div>
                     </CodeEditor>
                 </div>
@@ -303,7 +305,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                     schema={schemas}
                     onChange={resp => { setTempFormData(resp) }}
                     readme={chartConfig.readme}
-                    handleClose={e => setReadme(false)}
+                    handleClose={e => setShowReadme(false)}
                     loading={chartConfigLoading}
                 />
             </VisibleModal>}

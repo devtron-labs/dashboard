@@ -4,7 +4,7 @@ import ReadmeConfig from '../deploymentConfig/ReadmeConfig'
 import { getDeploymentTemplate, createDeploymentTemplate, updateDeploymentTemplate, deleteDeploymentTemplate, createNamespace, toggleAppMetrics, chartRefAutocomplete } from './service'
 import fileIcon from '../../assets/icons/ic-file.svg'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
-import arrowSquareOut from '../../assets/icons/misc/arrow-square-out.svg';
+import { ReactComponent as ArrowSquareOut }from '../../assets/icons/misc/arrowSquareOut.svg';
 import { Override } from './ConfigMapOverrides'
 import { Select, mapByKey, showError, not, Progressing, ConfirmationDialog,VisibleModal, Info, useEffectAfterMount, useJsonYaml } from '../common'
 import CodeEditor from '../CodeEditor/CodeEditor';
@@ -12,6 +12,7 @@ import { toast } from 'react-toastify'
 import { OptApplicationMetrics } from '../deploymentConfig/DeploymentConfig'
 import '../deploymentConfig/deploymentConfig.scss';
 import warningIcon from '../../assets/img/warning-medium.svg'
+import { modes } from '../../../src/config/constants';
 import YAML from 'yaml'
 
 export default function DeploymentTemplateOverride({ parentState, setParentState, ...props }) {
@@ -252,10 +253,10 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                         loading={chartRefLoading}>    
                         <div className='readme-container' >
                             <CodeEditor.Header>
-                                <h5>YAML</h5>
+                                <h5>{modes.yaml.toUpperCase()}</h5>
                                 <CodeEditor.ValidationError />
                             </CodeEditor.Header>
-                            {state.data.readme && <button className="readme-button" type='button' onClick={e => setReadme(true)}>README<img src={arrowSquareOut} alt="add-worflow" className="icon-dim-18 mb-2 ml-4" /></button>}
+                            {state.data.readme && <button className="readme-button" type='button' onClick={e => setReadme(true)}>README<ArrowSquareOut className="icon-dim-18 scb-5 rotate " style={{ ['--rotateBy' as any]: '-90deg', marginLeft: '5px'  }}/></button>}
                         </div>
                     </CodeEditor>
                 </div>
@@ -270,7 +271,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                     onChange={tempValue => {setTempValue(tempValue)}}
                     handleClose={e => setReadme(false)}
                     schema={state.data.schema}
-                    mode="yaml"
+                    defaultValue={state && state.data && state.duplicate ? YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
                     height={500}
                     readOnly={!state.duplicate}
                     readme={state.data.readme}

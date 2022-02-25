@@ -49,6 +49,8 @@
 
 .readme-button{
     background-color: transparent;
+    display:flex;
+    align-items: center;
     border:transparent;
     font-weight: 600;
     font-size: 12px;
@@ -65,14 +67,17 @@
 }
 
 .advanced-config-readme{
-    height: calc(100vh - 100px);
+    height: 650px;
     width: calc(100vw - 100px);
-    margin: 40px 50px 60px 50px;
     background: var(--N000);
     border-radius: 8px;
     padding: 24px 24px 24px 24px;
     display: grid;
     grid-row-gap: 12px;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    position: relative;
 
     .container-top{
         display:flex;
@@ -84,8 +89,6 @@
     }
 
     .infobar{
-        display: flex;
-        margin-right: 10px;
         flex-grow: 1;
         flex-direction: row;
         align-items: center;
@@ -100,9 +103,6 @@
     }
 
     button{
-        display: flex;
-        flex-direction: row;
-        align-items: center;
         justify-content: space-evenly;
         width: 94px;
         height: 36px;
@@ -111,10 +111,8 @@
     }
 
     .readme{
-        display: flex;
         flex-direction: row;
         align-items: center;
-        padding: 10px 16px;
         width: auto;
         height: 40px;
         background: #EDF1F5;
@@ -128,7 +126,7 @@
         background: var(--N000);
         border: 1px solid #D0D4D9;
         border-radius: 0px 0px 0px 4px;
-        height: calc(100vh - 240px);
+        height: 510px;
     }
 
     .codeEditor{
@@ -136,7 +134,7 @@
         border: 1px solid #D0D4D9;
         border-left: 0px;
         border-radius: 0px 4px 4px 0px;
-        height: calc(100vh - 200px);
+        height: 550px;
         overflow: hidden;
     }
 

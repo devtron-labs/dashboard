@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useKeyDown } from '../common';
 import CodeEditor from '../CodeEditor/CodeEditor';
 import checkGreen from '../../assets/icons/misc/checkGreen.svg';
-import arrowSquareout from '../../assets/icons/misc/ArrowSquareOut.svg';
+import arrowSquareout from '../../assets/icons/misc/arrowSquareOut.svg';
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails';
 import './deploymentConfig.scss';
+import { modes } from '../../../src/config/constants';
 
-interface readme {
+interface Readme {
     readme: any;
     value: string;
     handleClose: any;
@@ -16,40 +17,39 @@ interface readme {
     schema?: any;
     readOnly?: boolean;
     defaultValue?: string;
-    mode?: "yaml" | "json" | "shell";
 }
 
-function ReadmeConfig({ readme, value, handleClose, loading, height, onChange, schema, readOnly, defaultValue, mode }:readme) {
+function ReadmeConfig({ readme, value, handleClose, loading, height, onChange, schema, readOnly, defaultValue }:Readme) {
     const key = useKeyDown();
-    const [resp, setTempForm] = useState();
+    const [tempForm, setTempForm] = useState();
     useEffect(() => {
         if (key.join().includes('Escape')) {
             handleClose();
         }
     }, [key.join()]);
 
-    const handle = () => {
+    const handleReadmeConfig = () => {
         handleClose();
-        onChange(resp);
+        onChange(tempForm);
     };
 
     return (
         <div className="advanced-config-readme">
             <div className="container-top">
-                <div className="infobar">
+                <div className="infobar flexbox mr-10">
                     <h5>
                         <img src={checkGreen} alt="add-worflow" className="icon-dim-18 mr-5" />
                         Changes made to the yaml will be retained when you exit the README.
                     </h5>
                 </div>
-                <button className="cta" onClick={handle}>
+                <button className="cta flex" onClick={handleReadmeConfig}>
                     <img src={arrowSquareout} alt="add-worflow" className="icon-dim-18 mt-3 mr-3" />
                     Done
                 </button>
             </div>
             <div className="config-editor">
                 <div>
-                    <div className="readme">
+                    <div className="readme pl-16 pt-10 pr-16 pb-10 flexbox">
                         <h5>Readme</h5>
                     </div>
                     <div className="readmeEditor">
@@ -64,11 +64,11 @@ function ReadmeConfig({ readme, value, handleClose, loading, height, onChange, s
                         readOnly={readOnly}
                         validatorSchema={schema}
                         onChange={setTempForm}
-                        mode={mode}
+                        mode= "yaml"
                         loading={loading}
                     >
                         <CodeEditor.Header>
-                            <h5>YAML</h5>
+                        <h5>{modes.yaml.toUpperCase()}</h5>
                             <CodeEditor.ValidationError />
                         </CodeEditor.Header>
                     </CodeEditor>

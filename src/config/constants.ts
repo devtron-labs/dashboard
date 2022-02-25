@@ -236,4 +236,10 @@ export enum ACCESS_TYPE_MAP {
   HELM_APPS = 'helm-app', //helm app work flow
 }
 
+export const modes = {
+    yaml:"yaml",
+    json:"json",
+    shell:"shell"
+}
+
 export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned';
