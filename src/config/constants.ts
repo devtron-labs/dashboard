@@ -247,12 +247,12 @@ export const REGISTRY_TYPE_MAP = {
         gettingStartedLink: 'https://docs.aws.amazon.com/AmazonECR/latest/userguide/get-set-up-for-amazon-ecr.html',
         defaultRegistryURL: '',
         id: {
-            label: 'Access key ID',
+            label: 'Access key ID*',
             defaultValue: '',
             placeholder: '',
         },
         password: {
-            label: 'Secret access key',
+            label: 'Secret access key*',
             defaultValue: '',
             placeholder: '',
         },
@@ -265,12 +265,12 @@ export const REGISTRY_TYPE_MAP = {
         gettingStartedLink: 'https://docs.docker.com/docker-hub/',
         defaultRegistryURL: 'docker.io',
         id: {
-            label: 'Username',
+            label: 'Username*',
             defaultValue: '',
             placeholder: '',
         },
         password: {
-            label: 'Token',
+            label: 'Token*',
             defaultValue: '',
             placeholder: '',
         },
@@ -283,12 +283,12 @@ export const REGISTRY_TYPE_MAP = {
         gettingStartedLink: 'https://docs.microsoft.com/en-us/azure/container-registry/',
         defaultRegistryURL: '',
         id: {
-            label: 'Username/registry name',
+            label: 'Username/Registry name*',
             defaultValue: '',
             placeholder: '',
         },
         password: {
-            label: 'Token',
+            label: 'Token*',
             defaultValue: '',
             placeholder: '',
         },
@@ -301,14 +301,14 @@ export const REGISTRY_TYPE_MAP = {
         gettingStartedLink: 'https://cloud.google.com/artifact-registry/docs/manage-repos?hl=en_US',
         defaultRegistryURL: '',
         id: {
-            label: 'Username',
+            label: 'Username*',
             defaultValue: '_json_key',
             placeholder: '',
         },
         password: {
-            label: 'Service account JSON file',
+            label: 'Service account JSON file*',
             defaultValue: '',
-            placeholder: 'paste json file content here',
+            placeholder: 'Paste json file content here',
         },
     },
     gcr: {
@@ -319,14 +319,14 @@ export const REGISTRY_TYPE_MAP = {
         gettingStartedLink: 'https://cloud.google.com/container-registry/docs/quickstart',
         defaultRegistryURL: 'gcr.io',
         id: {
-            label: 'Username',
+            label: 'Username*',
             defaultValue: '_json_key',
             placeholder: '',
         },
         password: {
-            label: 'Service account JSON file',
+            label: 'Service account JSON file*',
             defaultValue: '',
-            placeholder: 'paste json file content here',
+            placeholder: 'Paste json file content here',
         },
     },
     quay: {
@@ -337,12 +337,12 @@ export const REGISTRY_TYPE_MAP = {
         gettingStartedLink: '',
         defaultRegistryURL: 'quay.io',
         id: {
-            label: 'Username',
+            label: 'Username*',
             defaultValue: '',
             placeholder: '',
         },
         password: {
-            label: 'Token',
+            label: 'Token*',
             defaultValue: '',
             placeholder: '',
         },
@@ -373,7 +373,7 @@ export const REGISTRY_TYPE_MAP = {
     //     gettingStartedLink: '',
     //     defaultRegistryURL: '',
     //     id: {
-    //         label: 'Username',
+    //         label: 'Username*',
     //         defaultValue: '',
     //         placeholder: '',
     //     },
@@ -391,12 +391,12 @@ export const REGISTRY_TYPE_MAP = {
         gettingStartedLink: '',
         defaultRegistryURL: '',
         id: {
-            label: 'Username',
+            label: 'Username*',
             defaultValue: '',
             placeholder: '',
         },
         password: {
-            label: 'Password',
+            label: 'Password*',
             defaultValue: '',
             placeholder: '',
         },

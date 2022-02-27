@@ -260,12 +260,12 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         {registry.error && <label className="form__error">{registry.error}</label>}
                     </div>
                     <div className="form__field">
-                        <label htmlFor="" className="form__label">Container Repository {REGISTRY_TYPE_MAP[selectedRegistry.registryType].desiredFormat}</label>
+                        <label htmlFor="" className="form__label">Container Repository {REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.desiredFormat}</label>
                         <input
                             tabIndex={4}
                             type="text"
                             className="form__input"
-                            placeholder={REGISTRY_TYPE_MAP[selectedRegistry.registryType].placeholderText}
+                            placeholder={REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.placeholderText}
                             name="repository_name"
                             value={repository_name.value}
                             onChange={handleOnChange}

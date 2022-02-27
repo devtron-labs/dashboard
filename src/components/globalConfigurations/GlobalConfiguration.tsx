@@ -60,7 +60,7 @@ export default function GlobalConfiguration(props) {
 
     function handleChecklistUpdate(itemName: string): void {
         const list = checkList;
-        
+
         if (!list.appChecklist[itemName]) {
             list.appStageCompleted += 1;
             list.appChecklist[itemName] = 1;
@@ -278,7 +278,7 @@ export function CustomInput({ name, value, error, onChange, label, type = "text"
     </div>
 }
 
-export function ProtectedInput({ name, value, error, onChange, label, type = "text", tabIndex = 1, disabled = false, hidden = true, labelClassName = "" }) {
+export function ProtectedInput({ name, value, error, onChange, label, type = "text", tabIndex = 1, disabled = false, hidden = true, labelClassName = "", placeholder='' }) {
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
         toggleShown(!hidden)
@@ -290,7 +290,7 @@ export function ProtectedInput({ name, value, error, onChange, label, type = "te
             <div className="position-rel w-100">
                 <input type={shown ? 'text' : 'password'} tabIndex={tabIndex}
                     className={error ? "form__input form__input--error pl-42" : "form__input pl-42"}
-                    name={name}
+                    name={name} placeholder={placeholder}
                     onChange={e => { e.persist(); onChange(e) }}
                     value={value}
                     disabled={disabled} />

@@ -418,8 +418,9 @@ function DockerForm({
                         value={customState.awsAccessKeyId.value}
                         error={customState.awsAccessKeyId.error}
                         onChange={customHandleChange}
-                        label="Access key ID*"
+                        label={selectedDckerRegistryType.id.label}
                         autoComplete={'off'}
+                        placeholder={selectedDckerRegistryType.id.placeholder}
                     />
                     <ProtectedInput
                         name="awsSecretAccessKey"
@@ -427,8 +428,9 @@ function DockerForm({
                         value={customState.awsSecretAccessKey.value}
                         error={customState.awsSecretAccessKey.error}
                         onChange={customHandleChange}
-                        label="Secret access key*"
+                        label={selectedDckerRegistryType.password.label}
                         type="password"
+                        placeholder={selectedDckerRegistryType.password.placeholder}
                     />
                 </div>
             )}
@@ -446,8 +448,9 @@ function DockerForm({
                             autoComplete={'off'}
                             error={customState.username.error}
                             onChange={customHandleChange}
-                            label="Username*"
+                            label={selectedDckerRegistryType.id.label}
                             disabled={selectedDckerRegistryType.id.defaultValue}
+                            placeholder={selectedDckerRegistryType.id.placeholder}
                         />
                         <ProtectedInput
                             name="password"
@@ -455,7 +458,8 @@ function DockerForm({
                             value={customState.password.value}
                             error={customState.password.error}
                             onChange={customHandleChange}
-                            label="Password*"
+                            label={selectedDckerRegistryType.password.label}
+                            placeholder={selectedDckerRegistryType.password.placeholder}
                             type="password"
                         />
                     </div>
@@ -471,7 +475,8 @@ function DockerForm({
                             autoComplete={'off'}
                             error={customState.username.error}
                             onChange={customHandleChange}
-                            label="Username*"
+                            label={selectedDckerRegistryType.id.label}
+                            placeholder={selectedDckerRegistryType.id.placeholder}
                         />
                         <ProtectedInput
                             name="password"
@@ -479,7 +484,8 @@ function DockerForm({
                             value={customState.password.value}
                             error={customState.password.error}
                             onChange={customHandleChange}
-                            label="Password*"
+                            label={selectedDckerRegistryType.password.label}
+                            placeholder={selectedDckerRegistryType.password.placeholder}
                             type="password"
                         />
                     </div>
