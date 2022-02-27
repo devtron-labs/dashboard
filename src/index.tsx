@@ -45,7 +45,7 @@ if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.SENTRY
             }
             return breadcrumb
         },
-        dsn: window._env_.SENTRY_DSN || 'https://e6afdd3e57c74b24ac5ae7128391726e@o1147089.ingest.sentry.io/6232011',
+        dsn: window._env_.SENTRY_DSN || '',
         integrations: [new CaptureConsole({ levels: ['error'] })],
         ...(process.env.REACT_APP_GIT_SHA ? { release: `dashboard@${process.env.REACT_APP_GIT_SHA}` } : {}),
         environment: window._env_ && window._env_.SENTRY_ENV ? window._env_.SENTRY_ENV : 'staging',
@@ -57,6 +57,7 @@ if (!window || !window._env_ ) {
     window._env_ = {
         SENTRY_ENV: "staging",
         SENTRY_ENABLED: false,
+        SENTRY_DSN: "",
         HOTJAR_ENABLED: false,
         GA_ENABLED: false,
         APPLICATION_METRICS_ENABLED: false,
