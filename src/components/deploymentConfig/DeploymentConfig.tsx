@@ -290,7 +290,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                             <h5>{MODES.YAML.toUpperCase()}</h5>
                             <CodeEditor.ValidationError />
                         </CodeEditor.Header>
-                        {readme && <button className="readme-button pr-15 flexbox" type='button' onClick={e => setShowReadme(true)}>README<ArrowSquareOut className="icon-dim-18 scb-5 rotateBy--90 ml-5"/></button>}
+                        {readme && <div className="cb-5 fw-6 fs-13 flexbox pr-16 pt-10 cursor border-bottom-1px " onClick={e => setShowReadme(true)}>README<ArrowSquareOut className="icon-dim-18 scb-5 rotateBy--90 ml-5"/></div>}
                         </div>
                     </CodeEditor>
                 </div>

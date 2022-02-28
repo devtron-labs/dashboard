@@ -251,12 +251,12 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                         validatorSchema={state.data.schema}
                         readOnly={!state.duplicate}
                         loading={chartRefLoading}>    
-                        <div className='readme-container' >
+                        <div className='readme-container ' >
                             <CodeEditor.Header>
                                 <h5>{MODES.YAML.toUpperCase()}</h5>
                                 <CodeEditor.ValidationError />
                             </CodeEditor.Header>
-                            {state.data.readme && <button className="readme-button flexbox pr-15" type='button' onClick={e => setReadme(true)}>README<ArrowSquareOut className="icon-dim-18 scb-5 ml-5 rotateBy--90"/></button>}
+                            {state.data.readme && <div className="cb-5 fw-6 fs-13 flexbox pr-16 pt-10 cursor border-bottom-1px" onClick={e => setReadme(true)}>README<ArrowSquareOut className="icon-dim-18 scb-5 ml-5 rotateBy--90"/></div>}
                         </div>
                     </CodeEditor>
                 </div>

@@ -47,15 +47,8 @@
     color: #6b778c;
 }
 
-.readme-button{
-    background-color: transparent;
-    align-items: center;
-    border:transparent;
-    font-weight: 600;
-    font-size: 12px;
-    color:#0066CC;
+.border-bottom-1px{
     border-bottom: 1px solid var(--N200);
-    outline: transparent;
 }
 
 .readme-container{
@@ -87,20 +80,12 @@
 
     .infobar{
         flex-grow: 1;
-        flex-direction: row;
-        align-items: center;
-        height: 36px;
-        background: #E5F2FF;
-        border: 1px solid #ABCFF3;
-        box-sizing: border-box;
+        max-height: 36px;
     }
 
-    button{
-        justify-content: space-evenly;
-        width: 94px;
-        height: 36px;
-        font-weight: 600;
-        font-size: 13px;
+    .done-button{
+      font-size: 13px !important;
+      max-height: 36px;
     }
 
     .readme{

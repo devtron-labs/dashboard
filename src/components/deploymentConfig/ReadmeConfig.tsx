@@ -35,28 +35,26 @@ function ReadmeConfig({ readme, value, handleClose, loading, height, onChange, s
 
     return (
         <div className="advanced-config-readme pt-24 pb-24 pr-24 pl-24 br-8">
-            <div className="flexbox">
-                <div className="infobar flexbox br-4 mr-10 pt-8 pb-8 pr-16 pl-16">
-                    <h5>
-                        <img src={checkGreen} alt="add-worflow" className="icon-dim-18 mr-5" />
-                        Changes made to the yaml will be retained when you exit the README.
-                    </h5>
+            <div className="flex content-space ">
+                <div className="infobar flex left bcb-1 eb-2 bw-1 br-4 mr-10 pt-8 pb-8 pr-16 pl-16">
+                    <img src={checkGreen} alt="add-worflow" className="icon-dim-18 mr-5" />
+                    Changes made to the yaml will be retained when you exit the README.
                 </div>
-                <button className="cta flex" onClick={handleReadmeConfig}>
+                <button className="done-button cta flex fs-13" onClick={handleReadmeConfig}>
                     <img src={arrowSquareout} alt="add-worflow" className="icon-dim-18 mt-3 mr-3" />
                     Done
                 </button>
             </div>
             <div className="en-2 bw-1 br-4 config-editor">
-                <div className='readmeEditor'>
+                <div className="readmeEditor">
                     <div className="code-editor__header flex left">
                         <h5>Readme</h5>
                     </div>
-                    <div className='readme'>
+                    <div className="readme">
                         <MarkDown markdown={readme} />
                     </div>
                 </div>
-                <div className='bw-1 br-4 bcn-0'>
+                <div className="bw-1 br-4 bcn-0">
                     <CodeEditor
                         value={value}
                         defaultValue={defaultValue}
@@ -68,7 +66,7 @@ function ReadmeConfig({ readme, value, handleClose, loading, height, onChange, s
                         loading={loading}
                     >
                         <CodeEditor.Header>
-                        <h5>{MODES.YAML.toUpperCase()}</h5>
+                            <h5>{MODES.YAML.toUpperCase()}</h5>
                             <CodeEditor.ValidationError />
                         </CodeEditor.Header>
                     </CodeEditor>
