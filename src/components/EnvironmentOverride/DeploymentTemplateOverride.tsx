@@ -256,7 +256,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                                 <h5>{MODES.YAML.toUpperCase()}</h5>
                                 <CodeEditor.ValidationError />
                             </CodeEditor.Header>
-                            {state.data.readme && <button className="readme-button flexbox pr-15" type='button' onClick={e => setReadme(true)}>README<ArrowSquareOut className="icon-dim-18 scb-5 rotate " style={{ ['--rotateBy' as any]: '-90deg', marginLeft: '5px'  }}/></button>}
+                            {state.data.readme && <button className="readme-button flexbox pr-15" type='button' onClick={e => setReadme(true)}>README<ArrowSquareOut className="icon-dim-18 scb-5 ml-5 rotateBy--90"/></button>}
                         </div>
                     </CodeEditor>
                 </div>

@@ -64,6 +64,10 @@
     background: var(--N100);
 }
 
+.rotateBy--90{
+    transform: rotate(-90deg);
+}
+
 .advanced-config-readme{
     height: 650px;
     width: calc(100vw - 100px);
