@@ -112,7 +112,7 @@ interface CodeEditorState {
     height: string;
     noParsing: boolean;
 }
-const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema ,isKubernetes}) {
+const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema ,isKubernetes = true}) {
     const editorRef = useRef(null)
     const monacoRef = useRef(null)
     const { width, height: windowHeight } = useWindowSize()
@@ -155,7 +155,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             'editor.background': '#0B0F22',
         }
     });
-    useResourceValidationSchema(yaml, validatorSchema ,isKubernetes);
+    
     function editorDidMount(editor, monaco) {
         if (
             mode === 'yaml' &&
@@ -202,6 +202,26 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             }
         }
     };
+
+    useEffect(() => {
+        if (!validatorSchema) return;
+        yaml &&
+            yaml.yamlDefaults.setDiagnosticsOptions({
+                validate: true,
+                enableSchemaRequest: true,
+                hover: true,
+                completion: true,
+                isKubernetes: isKubernetes,
+                format: true,
+                schemas:[
+                    {
+                        uri: 'https://devtron.ai/schema.json', // id of the first schema
+                        fileMatch: ['*'], // associate with our model
+                        schema: validatorSchema,
+                    }]
+            });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [validatorSchema]);
 
     useEffect(() => {
         if (!editorRef.current) return
@@ -432,28 +452,6 @@ function CodeEditorPlaceholder({ className = "", style = {}, customLoader }): JS
             </div>
         </div>
     );
-}
-
-function useResourceValidationSchema(yaml: any, validatorSchema ,isKubernetes: boolean = true){
-    useEffect(() => {
-        if (!validatorSchema) return;
-        yaml &&
-            yaml.yamlDefaults.setDiagnosticsOptions({
-                validate: true,
-                enableSchemaRequest: true,
-                hover: true,
-                completion: true,
-                isKubernetes: isKubernetes,
-                format: true,
-                schemas:[
-                    {
-                        uri: 'https://devtron.ai/schema.json', // id of the first schema
-                        fileMatch: ['*'], // associate with our model
-                        schema: validatorSchema,
-                    }]
-            });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [validatorSchema]);
 }
 
 CodeEditor.LanguageChanger = LanguageChanger
