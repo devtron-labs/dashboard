@@ -248,7 +248,7 @@ function DockerForm({
     };
 
     async function onSave() {
-        let payload = getRegistryPayload(awsRegion);
+        let payload = getRegistryPayload();
 
         const api = id ? updateRegistryConfig : saveRegistryConfig;
         try {
