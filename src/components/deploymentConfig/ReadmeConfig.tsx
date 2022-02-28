@@ -34,9 +34,9 @@ function ReadmeConfig({ readme, value, handleClose, loading, height, onChange, s
     };
 
     return (
-        <div className="advanced-config-readme">
-            <div className="container-top">
-                <div className="infobar flexbox mr-10">
+        <div className="advanced-config-readme pt-24 pb-24 pr-24 pl-24 br-8">
+            <div className="flexbox">
+                <div className="infobar flexbox br-4 mr-10 pt-8 pb-8 pr-16 pl-16">
                     <h5>
                         <img src={checkGreen} alt="add-worflow" className="icon-dim-18 mr-5" />
                         Changes made to the yaml will be retained when you exit the README.
@@ -47,16 +47,16 @@ function ReadmeConfig({ readme, value, handleClose, loading, height, onChange, s
                     Done
                 </button>
             </div>
-            <div className="config-editor">
-                <div>
-                    <div className="readme pl-16 pt-10 pr-16 pb-10 flexbox">
+            <div className="en-2 bw-1 br-4 config-editor">
+                <div className='readmeEditor'>
+                    <div className="code-editor__header flex left">
                         <h5>Readme</h5>
                     </div>
-                    <div className="readmeEditor">
+                    <div className='readme'>
                         <MarkDown markdown={readme} />
                     </div>
                 </div>
-                <div className="codeEditor">
+                <div className='bw-1 br-4 bcn-0'>
                     <CodeEditor
                         value={value}
                         defaultValue={defaultValue}
