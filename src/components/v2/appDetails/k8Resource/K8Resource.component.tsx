@@ -1,22 +1,21 @@
 import React, { Dispatch, SetStateAction, useEffect } from 'react';
 import NodeTreeComponent from './nodeType/NodeTree.component';
 import FilterResource from './FilterResource';
-import './k8resources.css';
-import { useRouteMatch } from 'react-router';
 import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store';
 import NodeComponent from './nodeType/Node.component';
 import { useSharedState } from '../../utils/useSharedState';
 import IndexStore from '../index.store';
-import { URLS } from '../../../../config';
+import './k8resources.css';
 
-interface K8ResourceComponentProps {
+export default function K8ResourceComponent({
+    clickedNodes,
+    registerNodeClick,
+    handleFocusTabs,
+}: {
     clickedNodes: Map<string, string>;
     registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>;
     handleFocusTabs: () => void;
-}
-
-export default function K8ResourceComponent(props: K8ResourceComponentProps) {
-    const { url } = useRouteMatch();
+}) {
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable());
 
     useEffect(() => {
@@ -31,10 +30,10 @@ export default function K8ResourceComponent(props: K8ResourceComponentProps) {
             {nodes.length > 0 ? (
                 <div className="resource-node-wrapper d-flex">
                     <div className="k8-resources-node-tree pt-8 pl-16 border-right">
-                        <NodeTreeComponent />
+                        <NodeTreeComponent clickedNodes={clickedNodes} registerNodeClick={registerNodeClick} />
                     </div>
                     <div className="flex-grow-1 p-0">
-                        <NodeComponent handleFocusTabs={props.handleFocusTabs}/>
+                        <NodeComponent handleFocusTabs={handleFocusTabs} />
                     </div>
                 </div>
             ) : (
