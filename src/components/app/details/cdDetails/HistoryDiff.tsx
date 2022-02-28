@@ -1,62 +1,49 @@
 import React, { useState } from 'react';
+import { useRouteMatch } from 'react-router';
+import { NavLink, Redirect, Route, Switch } from 'react-router-dom';
 import CodeEditor from '../../../CodeEditor/CodeEditor';
+import { Progressing } from '../../../common';
+import { GitChanges, Artifacts } from '../cIDetails/CIDetails';
 import './cdDetail.scss';
 import CompareWithBaseConfig from './CompareWithBaseConfig';
+import DeploymentConfiguration from './DeploymentConfiguration';
+import DeploymentTemplateHistory from './DeploymentTemplateHistory';
+import { getCDBuildReport } from './service';
 
 function HistoryDiff() {
-    const [tempValue, setTempValue] = useState("")
+    const [tempValue, setTempValue] = useState('');
+    const [loading, setLoading] = useState(false)
+    let { path } = useRouteMatch();
+
+   const renderLeftHistoryConfiguration = () => {
+       return<><div>
+            <NavLink replace className="tab-list__tab-link" activeClassName="active" to={`deployment-template`}>
+                <div className="historical-diff__left">
+                    Deployment template
+                    <div className="cg-5">2 changes</div>
+                </div>
+            </NavLink>
+       </div>
+       </>
+
+    }
+
+    const renderRightHistoryConfiguration = () => {
+          
+            return <>
+                <div className="historical-diff__right ci-details__body bcn-1">
+                    {loading ? <Progressing pageLoader/>
+                    :<Switch>
+                        <Route path={`${path}/deployment-configuration`} render={props => <DeploymentTemplateHistory setTempValue={setTempValue}/>} />
+                    </Switch>}
+                </div>
+            </>
+    }
 
     return (
-        <div className='historical-diff__container'>
-            <div className="historical-diff__left">
-                Deployment Template
-                <div className="cg-5">2 changes</div>
-            </div>
-            <div className="historical-diff__right ci-details__body bcn-1 ">
-                <div className="en-2 bw-1 br-4 deployment-diff__upper bcn-0 mt-20 mb-16 mr-20 ml-20">
-                    <div className="pl-16 pr-16 pt-16">
-                        <div className="pb-16">
-                            <div className="cn-6">Chart version</div>
-                            <div className="cn-9">3.8.0</div>
-                        </div>
-                        <div className="pb-16">
-                            <div className="cn-6">Application metrics</div>
-                            <div className="cn-9">Disabled</div>
-                        </div>
-                        <div className="pb-16">
-                            <div className="cn-6">When do you want the pipeline to execute?</div>
-                            <div className="cn-9">Manual</div>
-                        </div>
-                    </div>
-                    <div className="pl-16 pr-16 pt-16">
-                        <div className="pb-16">
-                            <div className="cn-6">Chart version</div>
-                            <div className="cn-9">3.8.0</div>
-                        </div>
-                        <div className="pb-16">
-                            <div className="cn-6">Application metrics</div>
-                            <div className="cn-9">Disabled</div>
-                        </div>
-                        <div className="pb-16">
-                            <div className="cn-6">When do you want the pipeline to execute?</div>
-                            <div className="cn-9">Manual</div>
-                        </div>
-                    </div>
-                </div>
-                <div className="form__row form__row--code-editor-container en-2 bw-1 br-4 mr-20 ml-20">
-                    <div className= 'border-bottom br-4 pl-16 pr-16 pt-12 pb-12 fs-13 fw-6 cn-9 bcn-0'>
-                    values.yaml
-                    </div>
-                    <CodeEditor
-                        // value={tempValue? tempValue:state ? state.duplicate ? YAML.stringify(state.duplicate, { indent: 2 }) : YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
-                        onChange={ tempValue => {setTempValue(tempValue)}}
-                        // defaultValue={state && state.data && state.duplicate ? YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
-                        mode={'yaml'}
-                        // validatorSchema={state.data.schema}
-                        >
-                    </CodeEditor>
-                    </div>
-            </div>
+        <div className="historical-diff__container">
+           {renderLeftHistoryConfiguration}
+            {renderRightHistoryConfiguration}
         </div>
     );
 }
