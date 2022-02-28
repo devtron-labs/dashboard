@@ -44,6 +44,13 @@ function HistoryDiff() {
         <div className="historical-diff__container">
            {renderLeftHistoryConfiguration}
             {renderRightHistoryConfiguration}
+            <NavLink replace className="tab-list__tab-link" activeClassName="active" to={`deployment-template`}>
+                <div className="historical-diff__left">
+                    Deployment template
+                    <div className="cg-5">2 changes</div>
+                </div>
+            </NavLink>
+            <DeploymentTemplateHistory setTempValue={setTempValue}/>
         </div>
     );
 }
