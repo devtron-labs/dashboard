@@ -212,17 +212,10 @@ function DockerForm({
     function fetchAWSRegion(registryUrl: string): string {
         const pattern = /(ecr.)[a-z]{2}-[a-z]*-[0-9]{1}/i;
         let result = registryUrl.match(pattern);
-        if (!result) {
-            // setCustomState((st) => ({
-            //     ...st,
-            //     registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? 'Invalid URL' : 'Mandatory' },
-            // }));
-            return '';
-        }
-        return result[0].split('ecr.')[1];
+        return result ? result[0].split('ecr.')[1] : '';
     }
 
-    const getRegistryPayload = (awsRegion?: string) => {
+    const getRegistryPayload = () => {
         return {
             id: state.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
@@ -255,11 +248,6 @@ function DockerForm({
     };
 
     async function onSave() {
-        // let awsRegion;
-        // if (state.registryType.value === 'ecr') {
-        //     awsRegion = fetchAWSRegion();
-        //     if (!awsRegion) return;
-        // }
         let payload = getRegistryPayload(awsRegion);
 
         const api = id ? updateRegistryConfig : saveRegistryConfig;
@@ -281,12 +269,14 @@ function DockerForm({
     function onValidation() {
         if (state.registryType.value === 'ecr') {
             if (
+                !customState.awsRegion.value ||
                 !customState.awsAccessKeyId.value ||
                 !customState.awsSecretAccessKey.value ||
                 !customState.registryUrl.value
             ) {
                 setCustomState((st) => ({
                     ...st,
+                    awsRegion: { ...st.awsRegion, error: st.awsRegion.value ? '' : 'Mandatory' },
                     awsAccessKeyId: { ...st.awsAccessKeyId, error: st.awsAccessKeyId.value ? '' : 'Mandatory' },
                     awsSecretAccessKey: {
                         ...st.awsSecretAccessKey,
@@ -345,7 +335,7 @@ function DockerForm({
         onSave();
     }
 
-    let selectedDckerRegistryType = REGISTRY_TYPE_MAP[state.registryType.value]; //DockerRegistryType.find((type) => type.value === state.registryType.value);
+    let selectedDckerRegistryType = REGISTRY_TYPE_MAP[state.registryType.value];
     let advanceRegistryOptions = [
         { label: 'Allow only secure connection', value: CERTTYPE.SECURE, tippy: '' },
         {
