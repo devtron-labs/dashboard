@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import Select from '../common/Select/Select'
 import { Progressing, useForm, showError, multiSelectStyles, sortObjectArrayAlphabetically } from '../common'
 import { DOCUMENTATION, PATTERNS, REGISTRY_TYPE_MAP, URLS } from '../../config'
 import { saveCIConfig, updateCIConfig, getDockerRegistryMinAuth } from './service';

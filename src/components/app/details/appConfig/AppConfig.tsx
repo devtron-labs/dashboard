@@ -60,7 +60,7 @@ function isUnlocked(stage) {
     }
 }
 
-function getCompletedStep(isUnlocked) {
+function getCompletedStep(isUnlocked): number {
     if (isUnlocked.workflowEditor) {
         return 3;
     } else if (isUnlocked.deploymentTemplate) {
@@ -319,7 +319,6 @@ const pathname = window.location.pathname;
   const selectedNav = navItems.filter((navItem) => pathname.indexOf(navItem.href)>=0)[0];
     return (
         <>
-
             {!isCDPipeline && <div className="help-container">
                 <div>{selectedNav.currentStep}/4 Completed</div>
                 <div className="progress-container">

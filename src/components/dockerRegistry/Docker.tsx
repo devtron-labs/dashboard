@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { showError, useForm, Select, Progressing, useAsync, sortCallback, CustomInput, not } from '../common';
+import {
+    showError,
+    useForm,
+    Select,
+    Progressing,
+    useAsync,
+    sortCallback,
+    CustomInput,
+    not,
+    multiSelectStyles,
+} from '../common';
 import { getDockerRegistryList } from '../../services/service';
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service';
 import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration';
@@ -13,9 +23,10 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg';
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg';
 import { ReactComponent as InfoFilled } from '../../assets/icons/ic-info-filled.svg';
-import { types } from 'util';
+import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import DeleteComponent from '../../util/DeleteComponent';
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
+import ReactSelect, { components } from 'react-select';
 
 enum CERTTYPE {
     SECURE = 'secure',
@@ -178,7 +189,9 @@ function DockerForm({
     const [toggleCollapsedAdvancedRegistry, setToggleCollapsedAdvancedRegistry] = useState(false);
     const [certError, setCertInputError] = useState('');
     const [isRegionSelected, setIsRegionSelected] = useState(true);
-
+    const registryTypeList = Object.keys(REGISTRY_TYPE_MAP).map((key) => REGISTRY_TYPE_MAP[key]);
+    let _selectedDckerRegistryType = REGISTRY_TYPE_MAP[state.registryType.value || 'ecr'];
+    const [selectedDckerRegistryType, setSelectedDckerRegistryType] = useState(_selectedDckerRegistryType);
     let awsRegionMap = awsRegionList.reduce((agg, curr) => {
         agg.set(curr.value, curr.name);
         return agg;
@@ -219,24 +232,24 @@ function DockerForm({
         return {
             id: state.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
-            registryType: state.registryType.value,
+            registryType: selectedDckerRegistryType.value,
             isDefault: Isdefault,
             registryUrl: customState.registryUrl.value,
-            ...(state.registryType.value === 'ecr'
+            ...(selectedDckerRegistryType.value === 'ecr'
                 ? {
                       awsAccessKeyId: customState.awsAccessKeyId.value,
                       awsSecretAccessKey: customState.awsSecretAccessKey.value,
                       awsRegion: customState.awsRegion.value,
                   }
                 : {}),
-            ...(state.registryType.value === 'docker-hub' ||
-            state.registryType.value === 'acr' ||
-            state.registryType.value === 'artifact-registry' ||
-            state.registryType.value === 'gcr' ||
-            state.registryType.value === 'quay'
+            ...(selectedDckerRegistryType.value === 'docker-hub' ||
+            selectedDckerRegistryType.value === 'acr' ||
+            selectedDckerRegistryType.value === 'artifact-registry' ||
+            selectedDckerRegistryType.value === 'gcr' ||
+            selectedDckerRegistryType.value === 'quay'
                 ? { username: customState.username.value, password: customState.password.value }
                 : {}),
-            ...(state.registryType.value === 'other'
+            ...(selectedDckerRegistryType.value === 'other'
                 ? {
                       username: customState.username.value,
                       password: customState.password.value,
@@ -267,7 +280,7 @@ function DockerForm({
     }
 
     function onValidation() {
-        if (state.registryType.value === 'ecr') {
+        if (selectedDckerRegistryType.value === 'ecr') {
             if (
                 !customState.awsRegion.value ||
                 !customState.awsAccessKeyId.value ||
@@ -287,11 +300,11 @@ function DockerForm({
                 return;
             }
         } else if (
-            state.registryType.value === 'docker-hub' ||
-            state.registryType.value === 'acr' ||
-            state.registryType.value === 'artifact-registry' ||
-            state.registryType.value === 'gcr' ||
-            state.registryType.value === 'quay'
+            selectedDckerRegistryType.value === 'docker-hub' ||
+            selectedDckerRegistryType.value === 'acr' ||
+            selectedDckerRegistryType.value === 'artifact-registry' ||
+            selectedDckerRegistryType.value === 'gcr' ||
+            selectedDckerRegistryType.value === 'quay'
         ) {
             if (!customState.username.value || !customState.password.value) {
                 setCustomState((st) => ({
@@ -301,7 +314,7 @@ function DockerForm({
                 }));
                 return;
             }
-        } else if (state.registryType.value === 'other') {
+        } else if (selectedDckerRegistryType.value === 'other') {
             let error = false;
             if (
                 !customState.username.value ||
@@ -335,7 +348,6 @@ function DockerForm({
         onSave();
     }
 
-    let selectedDckerRegistryType = REGISTRY_TYPE_MAP[state.registryType.value];
     let advanceRegistryOptions = [
         { label: 'Allow only secure connection', value: CERTTYPE.SECURE, tippy: '' },
         {
@@ -370,23 +382,64 @@ function DockerForm({
                     <label htmlFor="" className="form__label w-100">
                         Registry type*
                     </label>
-                    <Select
-                        name="registryType"
-                        tabIndex={2}
-                        rootClassName="w-100"
-                        onChange={handleOnChange}
-                        value={state.registryType.value}
-                        disabled={!!registryType}
-                    >
-                        <Select.Button rootClassName="select-button--docker-register">
-                            {selectedDckerRegistryType?.label || `Select Container Registry`}
-                        </Select.Button>
-                        {Object.keys(REGISTRY_TYPE_MAP).map((key) => (
-                            <Select.Option value={REGISTRY_TYPE_MAP[key].value} key={REGISTRY_TYPE_MAP[key].value}>
-                                {REGISTRY_TYPE_MAP[key].label}
-                            </Select.Option>
-                        ))}
-                    </Select>
+                    <ReactSelect
+                        className="m-0 w100"
+                        tabIndex="1"
+                        isMulti={false}
+                        isClearable={false}
+                        options={registryTypeList}
+                        getOptionLabel={(option) => `${option.label}`}
+                        getOptionValue={(option) => `${option.value}`}
+                        value={selectedDckerRegistryType}
+                        styles={{
+                            ...multiSelectStyles,
+                            menu: (base, state) => ({
+                                ...base,
+                                marginTop: 'auto',
+                            }),
+                            menuList: (base) => {
+                                return {
+                                    ...base,
+                                    position: 'relative',
+                                    paddingBottom: '0px',
+                                    maxHeight: '250px',
+                                };
+                            },
+                        }}
+                        components={{
+                            IndicatorSeparator: null,
+                            Option: (props) => {
+                                return (
+                                    <components.Option {...props}>
+                                        <div style={{ display: 'flex' }}>
+                                            {props.isSelected ? (
+                                                <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8 mt-4" />
+                                            ) : (
+                                                <span className="inline-block icon-dim-16 mr-8"></span>
+                                            )}
+                                            <div className={'list__logo git-logo mr-5 ' + props.data.value}></div>
+                                            {props.label}
+                                        </div>
+                                    </components.Option>
+                                );
+                            },
+                            Control: (props) => {
+                                let value = '';
+                                if (props.hasValue) {
+                                    value = props.getValue()[0].value;
+                                }
+                                return (
+                                    <components.Control {...props}>
+                                        <div className={'list__logo git-logo ml-5 ' + value}></div>
+                                        {props.children}
+                                    </components.Control>
+                                );
+                            },
+                        }}
+                        onChange={(selected) => {
+                            setSelectedDckerRegistryType(selected);
+                        }}
+                    />
                     {state.registryType.error && <div className="form__error">{state.registryType.error}</div>}
                 </div>
                 {selectedDckerRegistryType.gettingStartedLink && (
@@ -405,11 +458,11 @@ function DockerForm({
                 <CustomInput
                     name="registryUrl"
                     tabIndex={3}
-                    label={state.registryType.value !== 'docker-hub' ? 'Registry URL*' : 'Registry URL'}
+                    label={selectedDckerRegistryType.value !== 'docker-hub' ? 'Registry URL*' : 'Registry URL'}
                     value={customState.registryUrl.value || selectedDckerRegistryType.defaultRegistryURL}
                     autoComplete="off"
                     helperText={
-                        state.registryType.value === 'docker-hub'
+                        selectedDckerRegistryType.value === 'docker-hub'
                             ? 'If registry exists on hub.docker.com then leave registry url empty'
                             : ''
                     }
@@ -418,7 +471,7 @@ function DockerForm({
                     disabled={!!registryUrl || selectedDckerRegistryType.defaultRegistryURL}
                 />
             </div>
-            {state.registryType.value === 'ecr' && (
+            {selectedDckerRegistryType.value === 'ecr' && (
                 <>
                     <div className="form__row">
                         <div className="flex left column">
@@ -473,11 +526,11 @@ function DockerForm({
                     </div>
                 </>
             )}
-            {(state.registryType.value === 'docker-hub' ||
-                state.registryType.value === 'acr' ||
-                state.registryType.value === 'artifact-registry' ||
-                state.registryType.value === 'gcr' ||
-                state.registryType.value === 'quay') && (
+            {(selectedDckerRegistryType.value === 'docker-hub' ||
+                selectedDckerRegistryType.value === 'acr' ||
+                selectedDckerRegistryType.value === 'artifact-registry' ||
+                selectedDckerRegistryType.value === 'gcr' ||
+                selectedDckerRegistryType.value === 'quay') && (
                 <>
                     <div className="form__row form__row--two-third">
                         <CustomInput
@@ -504,7 +557,7 @@ function DockerForm({
                     </div>
                 </>
             )}
-            {state.registryType.value === 'other' && (
+            {selectedDckerRegistryType.value === 'other' && (
                 <>
                     <div className="form__row form__row--two-third">
                         <CustomInput
@@ -530,8 +583,8 @@ function DockerForm({
                     </div>
                 </>
             )}
-            {state.registryType.value === 'other' && <hr className="cn-1 bcn-1 en-1" style={{ height: 0.5 }} />}
-            {state.registryType.value === 'other' && (
+            {selectedDckerRegistryType.value === 'other' && <hr className="cn-1 bcn-1 en-1" style={{ height: 0.5 }} />}
+            {selectedDckerRegistryType.value === 'other' && (
                 <div className={`form__buttons flex left ${toggleCollapsedAdvancedRegistry ? '' : 'mb-22'}`}>
                     <Dropdown
                         onClick={(e) => setToggleCollapsedAdvancedRegistry(not)}
@@ -546,7 +599,7 @@ function DockerForm({
                     </a>
                 </div>
             )}
-            {toggleCollapsedAdvancedRegistry && state.registryType.value === 'other' && (
+            {toggleCollapsedAdvancedRegistry && selectedDckerRegistryType.value === 'other' && (
                 <div className="form__row ml-3" style={{ width: '100%' }}>
                     {advanceRegistryOptions.map(({ label: Lable, value, tippy }) => (
                         <div>
