@@ -277,7 +277,7 @@ export default function AppConfig() {
     else if (state.view === ViewType.ERROR) return <ErrorScreenManager code={state.stattusCode} />
     else return <>
         <div className="app-compose" >
-            <div className={'app-compose__nav flex column left top position-rel ' + (state.isCDPipeline && 'hide-app-config-help')}>
+            <div className={`app-compose__nav flex column left top position-rel ${state.isCDPipeline ? 'hide-app-config-help': ''}`}>
                 <Navigation deleteApp={showDeleteConfirmation} navItems={state.navItems} isCDPipeline={state.isCDPipeline}/>
             </div>
             <div className="app-compose__main">
@@ -315,18 +315,18 @@ const NextButton: React.FC<{ isCiPipeline: boolean; navItems, currentStageName, 
 };
 
 function Navigation({ navItems, deleteApp, isCDPipeline}) {
-const pathname = window.location.pathname;
-  const selectedNav = navItems.filter((navItem) => pathname.indexOf(navItem.href)>=0)[0];
+  const location = useLocation();
+  const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href)>=0)[0];
     return (
         <>
             {!isCDPipeline && <div className="help-container">
-                <div>{selectedNav.currentStep}/4 Completed</div>
+                <div>{selectedNav?.currentStep}/4 Completed</div>
                 <div className="progress-container">
-                    <div className="progress-tracker" style={{width: selectedNav.flowCompletionPercent +'%'}}></div>
+                    <div className="progress-tracker" style={{width: selectedNav?.flowCompletionPercent +'%'}}></div>
                 </div>
-                <div className="fs-13 font-weight-600">{selectedNav.title}</div>
+                <div className="fs-13 font-weight-600">{selectedNav?.title}</div>
                 <div className="need-help font-weight-600">
-                    <a className="learn-more__href" href={selectedNav.supportDocumentURL} target="_blank" rel="noreferrer noopener">
+                    <a className="learn-more__href" href={selectedNav?.supportDocumentURL} target="_blank" rel="noreferrer noopener">
                         Need help?
                     </a>
                 </div>

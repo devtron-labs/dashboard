@@ -65,7 +65,7 @@ export default function CIConfig({ respondOnSuccess, ...rest }) {
 
 function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
     const [isCollapsed, setIsCollapsed] = useState(false)
-    const _selectedMaterial = ciConfig && ciConfig.dockerBuildConfig.gitMaterialId ? sourceConfig.material.find(material => material.id === ciConfig.dockerBuildConfig.gitMaterialId) : Array.isArray(sourceConfig.material) && (sourceConfig.material[0]);
+    const _selectedMaterial = ciConfig && ciConfig.dockerBuildConfig && ciConfig.dockerBuildConfig.gitMaterialId ? sourceConfig.material.find(material => material.id === ciConfig.dockerBuildConfig.gitMaterialId) : sourceConfig.material[0];
     const [selectedMaterial, setSelectedMaterial] = useState(_selectedMaterial)
     const _selectedRegistry = Array.isArray(dockerRegistries) && dockerRegistries.find(reg => reg.isDefault);
     const [selectedRegistry, setSelectedRegistry] = useState(_selectedRegistry)
@@ -264,7 +264,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                             tabIndex={4}
                             type="text"
                             className="form__input"
-                            placeholder={REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.placeholderText}
+                            placeholder={REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.placeholderText || 'Enter repository name'}
                             name="repository_name"
                             value={repository_name.value}
                             onChange={handleOnChange}
@@ -308,9 +308,9 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                 return <components.Option {...props}>
                                     {props.isSelected ? <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8" /> : <span className="inline-block icon-dim-16 mr-8"></span>}
 
-                                    {props.data.url.includes("gitlab") ? <GitLab className="mr-8 vertical-align-middle icon-dim-20" /> : null}
-                                    {props.data.url.includes("github") ? <GitHub className="mr-8 vertical-align-middle icon-dim-20" /> : null}
-                                    {props.data.url.includes("bitbucket") ? <BitBucket className="mr-8 vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.url.includes("gitlab") && <GitLab className="mr-8 vertical-align-middle icon-dim-20" />}
+                                    {props.data.url.includes("github") && <GitHub className="mr-8 vertical-align-middle icon-dim-20" />}
+                                    {props.data.url.includes("bitbucket") && <BitBucket className="mr-8 vertical-align-middle icon-dim-20" />}
                                     {props.data.url.includes("gitlab") || props.data.url.includes("github") || props.data.url.includes("bitbucket") ? null : <Git className="mr-8 vertical-align-middle icon-dim-20" />}
 
                                     {props.label}
@@ -325,10 +325,10 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                 let showGit = value && !value.includes("github") && !value.includes("gitlab") && !value.includes("bitbucket")
                                 return <components.Control {...props}>
 
-                                    {value.includes("github") ? <GitHub className="icon-dim-20 ml-8" /> : null}
-                                    {value.includes("gitlab") ? <GitLab className="icon-dim-20 ml-8" /> : null}
-                                    {value.includes("bitbucket") ? <BitBucket className="icon-dim-20 ml-8" /> : null}
-                                    {showGit ? <Git className="icon-dim-20 ml-8" /> : null}
+                                    {value.includes("github") && <GitHub className="icon-dim-20 ml-8" />}
+                                    {value.includes("gitlab") && <GitLab className="icon-dim-20 ml-8" />}
+                                    {value.includes("bitbucket") && <BitBucket className="icon-dim-20 ml-8" />}
+                                    {showGit && <Git className="icon-dim-20 ml-8" />}
                                     {props.children}
                                 </components.Control>
 

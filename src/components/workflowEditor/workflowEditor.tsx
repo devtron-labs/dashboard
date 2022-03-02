@@ -156,10 +156,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
         this.props.getWorkflows();
     }
 
-    closePipeline = (isShowSuccessCD?: boolean, environmentId?: number) => {
+    closePipeline = (showSuccessCD?: boolean, environmentId?: number) => {
         const LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`;
         this.props.history.push(LINK);
-        if(isShowSuccessCD){
+        if(showSuccessCD){
           setTimeout(()=>{
             this.setState({ showSuccessScreen: true, environmentId: environmentId });
           }, 700);

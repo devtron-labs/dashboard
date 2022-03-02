@@ -347,42 +347,6 @@ export const REGISTRY_TYPE_MAP = {
             placeholder: '',
         },
     },
-    // jfrog: {
-    //     value: 'jfrog',
-    //     label: 'JFrog',
-    //     desiredFormat: '(desired format: jfrog-repo-name/repo-name)',
-    //     placeholderText: 'Eg. jfrog-repo-name/repo_name',
-    //     gettingStartedLink: '',
-    //     defaultRegistryURL: '',
-    //     id: {
-    //         label: 'Email',
-    //         defaultValue: '',
-    //         placeholder: '',
-    //     },
-    //     password: {
-    //         label: 'API-Key',
-    //         defaultValue: '',
-    //         placeholder: '',
-    //     },
-    // },
-    // harbour: {
-    //     value: 'harbour',
-    //     label: 'Harbor',
-    //     desiredFormat: '(desired format: username/repo-name)',
-    //     placeholderText: 'Eg. username/repo_name',
-    //     gettingStartedLink: '',
-    //     defaultRegistryURL: '',
-    //     id: {
-    //         label: 'Username*',
-    //         defaultValue: '',
-    //         placeholder: '',
-    //     },
-    //     password: {
-    //         label: 'Password',
-    //         defaultValue: '',
-    //         placeholder: '',
-    //     },
-    // },
     other: {
         value: 'other',
         label: 'Other',
