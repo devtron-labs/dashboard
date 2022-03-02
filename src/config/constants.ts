@@ -237,14 +237,29 @@ export enum ACCESS_TYPE_MAP {
 }
 
 export enum MODES {
-    YAML = "yaml",
-    JSON = "json",
-    SHELL = "shell",
+    YAML = 'yaml',
+    JSON = 'json',
+    SHELL = 'shell',
 }
 
 export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned';
+export interface InputDetailType {
+    label: string;
+    defaultValue: string;
+    placeholder: string;
+}
+export interface RegistryTypeDetailType {
+    value: string;
+    label: string;
+    desiredFormat: string;
+    placeholderText: string;
+    gettingStartedLink: string;
+    defaultRegistryURL: string;
+    id: InputDetailType;
+    password: InputDetailType;
+}
 
-export const REGISTRY_TYPE_MAP = {
+export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
     ecr: {
         value: 'ecr',
         label: 'ECR',
