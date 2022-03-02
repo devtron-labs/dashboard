@@ -21,9 +21,7 @@ import { isGitopsConfigured, getHostURLConfiguration } from '../../services/serv
 import { PipelineSelect } from './PipelineSelect';
 import './workflowEditor.css';
 import { NodeAttr } from '../app/details/triggerView/types';
-import { ReactComponent as SuccessIcon } from '../../assets/icons/ic-success-with-light-background.svg';
-import { ReactComponent as GotToBuildDeploy } from '../../assets/icons/go-to-buildanddeploy@2x.svg';
-import { ReactComponent as GoToEnvOverride } from '../../assets/icons/go-to-envoverride@2x.svg';
+import CDSuccessModal from './CDSuccessModal';
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
 
@@ -182,64 +180,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
       this.setState({ showSuccessScreen: false });
     }
 
-    renderSuccessPopup(){
-      if (!this.state.showSuccessScreen) {
-          return '';
-      }
-      return (
-          <VisibleModal className="transition-effect">
-              <div className="modal__body" style={{ width: '600px' }}>
-                  <div className="success-header-container mb-20">
-                      <div className="pr-16">
-                          <SuccessIcon />
-                      </div>
-                      <div>
-                          <div className="fw-6 fs-16">Deployment pipeline created</div>
-                          <div className="fs-13">What do you want to do next?</div>
-                      </div>
-                  </div>
-                  <div className="flex left br-4 p-15 mb-20 action-card">
-                      <div className="icon-container">
-                          <GotToBuildDeploy />
-                      </div>
-                      <div className="ml-16 mr-16 flex-1">
-                          <div className="fw-6 fs-13">Deploy this app on prod-devtroncd</div>
-                          <div>
-                              <NavLink
-                                  to={`${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_TRIGGER}`}
-                                  className="cb-5 no-decor"
-                              >
-                                  Go to Build & Deploy
-                              </NavLink>
-                          </div>
-                      </div>
-                  </div>
-                  <div className="flex left br-4 p-15 mb-20 action-card">
-                      <div className="icon-container">
-                          <GoToEnvOverride />
-                      </div>
-                      <div className="ml-16 mr-16 flex-1">
-                          <div className="fw-6 fs-13">Override deployment configurations for prod-devtroncd</div>
-                          <div>
-                              <NavLink
-                                  to={`${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${this.state.environmentId}`}
-                                  className="cb-5 no-decor"
-                              >
-                                  Go to environment override
-                              </NavLink>
-                          </div>
-                      </div>
-                  </div>
-                  <div className="close-button-container">
-                      <button type="button" className="fw-6 fs-13 lh-20 cta" onClick={this.closeSuccessPopup}>
-                          Close
-                      </button>
-                  </div>
-              </div>
-          </VisibleModal>
-      );
-  }
-
     //TODO: dynamic routes for ci-pipeline
     renderRouter() {
         return <Switch>
@@ -382,7 +322,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                     {this.renderHostErrorMessage()}
                 </div>
                 {this.renderEmptyState()}
-                {this.renderSuccessPopup()}
+                {this.state.showSuccessScreen && (
+                        <CDSuccessModal
+                            appId={this.props.match.params.appId}
+                            envId={this.state.environmentId}
+                            closeSuccessPopup={this.closeSuccessPopup}
+                        />
+                    )}
             </>
         }
         else {
@@ -396,7 +342,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                 {this.renderNewBuildPipelineButton(false)}
                 {this.renderWorkflows()}
                 {this.renderDeleteDialog()}
-                {this.renderSuccessPopup()}
+                {this.state.showSuccessScreen && (
+                        <CDSuccessModal
+                            appId={this.props.match.params.appId}
+                            envId={this.state.environmentId}
+                            closeSuccessPopup={this.closeSuccessPopup}
+                        />
+                    )}
             </div>
         }
     }

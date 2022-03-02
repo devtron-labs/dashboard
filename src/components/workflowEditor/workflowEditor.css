@@ -94,14 +94,6 @@
     background-color: var(--N100);
 }
 
-.success-header-container{
-  display: flex;
-}
-
-.action-card{
-  border: 1px solid #D0D4D9;
-}
-
 .icon-container{
   height: 60px;
 }
