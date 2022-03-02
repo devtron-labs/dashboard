@@ -13,7 +13,7 @@ import { toast } from 'react-toastify';
 import './appConfig.scss';
 import { DOCUMENTATION } from '../../../../config';
 import { AppOtherEnvironment } from '../../../../services/service.types';
-import HelpBox from './HelpBox';
+import AppConfigurationCheckBox from './AppConfigurationCheckBox';
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'));
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'));
@@ -345,7 +345,7 @@ function Navigation({ navItems, deleteApp, isCDPipeline}: NavigationType) {
   const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href)>=0)[0];
     return (
         <>
-            {!isCDPipeline && <HelpBox selectedNav={selectedNav}/>}
+            {!isCDPipeline && <AppConfigurationCheckBox selectedNav={selectedNav}/>}
             {navItems.map((item) => {
                 if (item.stage !== 'ENV_OVERRIDE' || (item.stage === 'ENV_OVERRIDE' && item.isLocked)) {
                     return (

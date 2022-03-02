@@ -116,7 +116,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
       return (
           <div className="sample-repo-container">
               <span className="mr-8">
-                  <GitHub />{' '}
+                  <GitHub />
               </span>
               <div>
                   <h1 className="sample-title">Looking to deploy a sample application?</h1>
@@ -127,9 +127,8 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                           className="learn-more__href"
                           href={AppListConstants.SAMPLE_NODE_REPO_URL}
                       >
-                          {' '}
                           Check git repository for a simple Node.js application
-                      </a>{' '}
+                      </a>
                   </span>
               </div>
           </div>
