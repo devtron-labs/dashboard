@@ -20,7 +20,6 @@ function ValuesComponent() {
     useEffect(() => {
         getChartVersionDetails2(appDetails.appStoreInstalledAppVersionId)
             .then((res) => {
-                console.log('getChartVersionDetails2 result', res.result);
                 setInstalledConfig(res.result);
             })
             .catch((err) => {

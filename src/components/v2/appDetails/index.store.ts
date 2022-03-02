@@ -56,7 +56,6 @@ const IndexStore = {
     },
 
     publishAppDetails: (data: AppDetails) => {
-        console.log('setAppDetails', data);
 
         const _nodes = data.resourceTree.nodes || [];
 
