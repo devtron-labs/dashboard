@@ -1,7 +1,7 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, useLocation, useRouteMatch, useHistory } from 'react-router';
 import { NavLink, Link, Route, Switch } from 'react-router-dom';
-import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, isCIPipelineCreated, ViewType, NavItem, isCDPipelineCreated } from '../../../../config';
+import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, isCIPipelineCreated, ViewType, isCDPipelineCreated } from '../../../../config';
 import { ErrorBoundary, Progressing, usePrevious, showError, DeleteDialog, ConfirmationDialog, useAsync, ErrorScreenManager } from '../../../common';
 import { getAppConfigStatus, getAppOtherEnvironment, getWorkflowList } from '../../../../services/service';
 import { deleteApp } from './appConfig.service';
@@ -43,7 +43,7 @@ export interface AppConfigState {
     isCiPipeline: boolean;
     isCDPipeline: boolean;
     showDeleteConfirm: boolean;
-    navItems: NavItem[],
+    navItems: CustomNavItemsType[],
     maximumAllowedUrl: string;
     canDeleteApp: boolean;
 }
@@ -80,6 +80,15 @@ function getCompletedStep(isUnlocked: AppStageUnlockedType): number {
     } else {
         return 0;
     }
+}
+export interface CustomNavItemsType {
+    title: string;
+    href: string;
+    stage: string;
+    isLocked: boolean;
+    supportDocumentURL: string;
+    flowCompletionPercent: number;
+    currentStep: number;
 }
 
 function getNavItems(isUnlocked: AppStageUnlockedType, appId: number): { navItems } {
@@ -251,7 +260,7 @@ export default function AppConfig() {
         })
     }
 
-    function showDeleteConfirmation(e) {
+    function showDeleteConfirmation() {
         setState((state) => ({ ...state, showDeleteConfirm: true }));
     }
 
@@ -325,7 +334,7 @@ const NextButton: React.FC<{ isCiPipeline: boolean; navItems, currentStageName, 
 };
 
 interface NavigationType {
-  navItems: NavItem[];
+  navItems: CustomNavItemsType[];
   deleteApp: () => void;
   isCDPipeline: boolean;
 }
@@ -375,7 +384,7 @@ function Navigation({ navItems, deleteApp, isCDPipeline}: NavigationType) {
 
 interface AppComposeRouterType {
   isUnlocked: AppStageUnlockedType;
-  navItems: NavItem[];
+  navItems: CustomNavItemsType[];
   respondOnSuccess: () => void;
   isCiPipeline: boolean;
   getWorkflows: () => void;
