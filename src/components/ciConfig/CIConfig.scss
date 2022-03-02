@@ -32,32 +32,6 @@
         }
         .form__field {
             margin-bottom: 16px;
-            .registry-icon,
-            .repository-icon {
-                width: 24px;
-                height: 24px;
-                &.docker-hub {
-                    background: url('../../assets/icons/git/docker.svg')
-                }
-                &.acr {
-                    background: url('../../assets/icons/ic-azure.svg');
-                }
-                &.quay {
-                    background: url('../../assets/icons/ic-quay.svg');
-                }
-                &.ecr {
-                    background: url('../../assets/icons/ic-ecr.svg');
-                }
-                &.artifact-registry {
-                    background: url('../../assets/icons/ic-google-artifact-registry.svg');
-                }
-                &.gcr {
-                    background: url('../../assets/icons/ic-google-container-registry.svg');
-                }
-                &.other {
-                    background: url('../../assets/icons/container.svg');
-                }
-            }
             .docker-flie-container {
                 display: flex;
                 .checkout-path-container {

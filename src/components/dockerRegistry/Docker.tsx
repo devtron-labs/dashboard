@@ -88,7 +88,7 @@ function CollapsedList({
                 {id ? (
                     <List.Logo>
                         {' '}
-                        <div className={'list__logo git-logo ' + registryType}></div>
+                        <div className={'registry-icon ' + registryType}></div>
                     </List.Logo>
                 ) : (
                     <List.Logo>
@@ -362,7 +362,7 @@ function DockerForm({
                     ) : (
                         <span className="inline-block icon-dim-16 mr-8"></span>
                     )}
-                    <div className={'list__logo git-logo mr-5 ' + props.data.value}></div>
+                    <div className={'registry-icon git-logo mr-5 ' + props.data.value}></div>
                     {props.label}
                 </div>
             </components.Option>
@@ -375,7 +375,7 @@ function DockerForm({
         }
         return (
             <components.Control {...props}>
-                <div className={'list__logo git-logo ml-5 ' + value}></div>
+                <div className={'registry-icon git-logo ml-5 ' + value}></div>
                 {props.children}
             </components.Control>
         );
