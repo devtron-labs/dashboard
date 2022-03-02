@@ -47,8 +47,18 @@ export interface AppConfigState {
     maximumAllowedUrl: string;
     canDeleteApp: boolean;
 }
+
+export interface AppStageUnlockedType {
+  material: boolean;
+  dockerBuildConfig: boolean;
+  deploymentTemplate: boolean;
+  workflowEditor: boolean;
+  configmap: boolean;
+  secret: boolean;
+  envOverride: boolean;
+}
 //stage: last configured stage
-function isUnlocked(stage) {
+function isUnlocked(stage: string): AppStageUnlockedType {
     return {
         material: stage === STAGE_NAME.APP || stage === STAGE_NAME.GIT_MATERIAL || stage === STAGE_NAME.CI_CONFIG || stage === STAGE_NAME.CI_PIPELINE || stage === STAGE_NAME.DEPLOYMENT_TEMPLATE || stage === STAGE_NAME.CD_PIPELINE || stage === STAGE_NAME.CHART_ENV_CONFIG,
         dockerBuildConfig: stage === STAGE_NAME.GIT_MATERIAL || stage === STAGE_NAME.CI_CONFIG || stage === STAGE_NAME.CI_PIPELINE || stage === STAGE_NAME.DEPLOYMENT_TEMPLATE || stage === STAGE_NAME.CD_PIPELINE || stage === STAGE_NAME.CHART_ENV_CONFIG,
@@ -60,7 +70,7 @@ function isUnlocked(stage) {
     }
 }
 
-function getCompletedStep(isUnlocked): number {
+function getCompletedStep(isUnlocked: AppStageUnlockedType): number {
     if (isUnlocked.workflowEditor) {
         return 3;
     } else if (isUnlocked.deploymentTemplate) {
@@ -72,7 +82,7 @@ function getCompletedStep(isUnlocked): number {
     }
 }
 
-function getNavItems(isUnlocked, appId): { navItems } {
+function getNavItems(isUnlocked: AppStageUnlockedType, appId: number): { navItems } {
     const completedSteps = getCompletedStep(isUnlocked);
     const completedPercent = completedSteps * 25;
     let navItems = [
@@ -314,7 +324,13 @@ const NextButton: React.FC<{ isCiPipeline: boolean; navItems, currentStageName, 
     return null;
 };
 
-function Navigation({ navItems, deleteApp, isCDPipeline}) {
+interface NavigationType {
+  navItems: NavItem[];
+  deleteApp: () => void;
+  isCDPipeline: boolean;
+}
+
+function Navigation({ navItems, deleteApp, isCDPipeline}: NavigationType) {
   const location = useLocation();
   const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href)>=0)[0];
     return (
@@ -357,7 +373,17 @@ function Navigation({ navItems, deleteApp, isCDPipeline}) {
     );
 }
 
-function AppComposeRouter({ isUnlocked, navItems, respondOnSuccess, isCiPipeline, getWorkflows, maxAllowedUrl, isCDPipeline }) {
+interface AppComposeRouterType {
+  isUnlocked: AppStageUnlockedType;
+  navItems: NavItem[];
+  respondOnSuccess: () => void;
+  isCiPipeline: boolean;
+  getWorkflows: () => void;
+  maxAllowedUrl: string;
+  isCDPipeline: boolean;
+}
+
+function AppComposeRouter({ isUnlocked, navItems, respondOnSuccess, isCiPipeline, getWorkflows, maxAllowedUrl, isCDPipeline }: AppComposeRouterType) {
     const { path } = useRouteMatch();
 
     return <ErrorBoundary>
