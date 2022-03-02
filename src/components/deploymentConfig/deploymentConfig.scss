@@ -46,3 +46,56 @@
 .deploymentConfig__warning{
     color: #6b778c;
 }
+
+.border-bottom-1px{
+    border-bottom: 1px solid var(--N200);
+}
+
+.readme-container{
+    display: grid;
+    grid-template-columns: 1fr auto;
+    background: var(--N100);
+}
+
+.rotateBy--90{
+    transform: rotate(-90deg);
+}
+
+.advanced-config-readme{
+    height: 650px;
+    width: calc(100vw - 100px);
+    background: var(--N000);
+   
+    display: grid;
+    grid-row-gap: 12px;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    position: relative;
+    
+    .config-editor{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .infobar{
+        flex-grow: 1;
+        max-height: 36px;
+    }
+
+    .done-button{
+      font-size: 13px !important;
+      max-height: 36px;
+    }
+
+    .readme{
+        height: 500px;
+        overflow-y: scroll;
+    }
+
+    .readmeEditor{
+        background: var(--N000);
+        border-right: 1px solid #D0D4D9;
+        height: 550px;
+    }
+}
