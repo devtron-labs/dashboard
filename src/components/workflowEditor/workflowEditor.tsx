@@ -189,21 +189,21 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
       return (
           <VisibleModal className="transition-effect">
               <div className="modal__body" style={{ width: '600px' }}>
-                  <div className="success-header-container">
-                      <div className="success-icon">
+                  <div className="success-header-container mb-20">
+                      <div className="pr-16">
                           <SuccessIcon />
                       </div>
                       <div>
-                          <div className="success-title">Deployment pipeline created</div>
+                          <div className="fw-6 fs-16">Deployment pipeline created</div>
                           <div className="fs-13">What do you want to do next?</div>
                       </div>
                   </div>
-                  <div className="flex left action-card">
+                  <div className="flex left br-4 p-15 mb-20 action-card">
                       <div className="icon-container">
                           <GotToBuildDeploy />
                       </div>
                       <div className="ml-16 mr-16 flex-1">
-                          <div className="action-title">Deploy this app on prod-devtroncd</div>
+                          <div className="fw-6 fs-13">Deploy this app on prod-devtroncd</div>
                           <div>
                               <NavLink
                                   to={`${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_TRIGGER}`}
@@ -214,12 +214,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                           </div>
                       </div>
                   </div>
-                  <div className="flex left action-card">
+                  <div className="flex left br-4 p-15 mb-20 action-card">
                       <div className="icon-container">
                           <GoToEnvOverride />
                       </div>
                       <div className="ml-16 mr-16 flex-1">
-                          <div className="action-title">Override deployment configurations for prod-devtroncd</div>
+                          <div className="fw-6 fs-13">Override deployment configurations for prod-devtroncd</div>
                           <div>
                               <NavLink
                                   to={`${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${this.state.environmentId}`}
@@ -231,7 +231,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState>  {
                       </div>
                   </div>
                   <div className="close-button-container">
-                      <button type="button" className="close-button cta" onClick={this.closeSuccessPopup}>
+                      <button type="button" className="fw-6 fs-13 lh-20 cta" onClick={this.closeSuccessPopup}>
                           Close
                       </button>
                   </div>

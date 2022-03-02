@@ -333,6 +333,28 @@ const NextButton: React.FC<{ isCiPipeline: boolean; navItems, currentStageName, 
     return null;
 };
 
+function HelpBox({ selectedNav }: { selectedNav: CustomNavItemsType }) {
+    return (
+        <div className="help-container">
+            <div>{selectedNav?.currentStep}/4 Completed</div>
+            <div className="progress-container">
+                <div className="progress-tracker" style={{ width: selectedNav?.flowCompletionPercent + '%' }}></div>
+            </div>
+            <div className="fs-13 font-weight-600">{selectedNav?.title}</div>
+            <div className="need-help font-weight-600">
+                <a
+                    className="learn-more__href"
+                    href={selectedNav?.supportDocumentURL}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                >
+                    Need help?
+                </a>
+            </div>
+        </div>
+    );
+}
+
 interface NavigationType {
   navItems: CustomNavItemsType[];
   deleteApp: () => void;
@@ -344,18 +366,7 @@ function Navigation({ navItems, deleteApp, isCDPipeline}: NavigationType) {
   const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href)>=0)[0];
     return (
         <>
-            {!isCDPipeline && <div className="help-container">
-                <div>{selectedNav?.currentStep}/4 Completed</div>
-                <div className="progress-container">
-                    <div className="progress-tracker" style={{width: selectedNav?.flowCompletionPercent +'%'}}></div>
-                </div>
-                <div className="fs-13 font-weight-600">{selectedNav?.title}</div>
-                <div className="need-help font-weight-600">
-                    <a className="learn-more__href" href={selectedNav?.supportDocumentURL} target="_blank" rel="noreferrer noopener">
-                        Need help?
-                    </a>
-                </div>
-            </div>}
+            {!isCDPipeline && <HelpBox selectedNav={selectedNav}/>}
             {navItems.map((item) => {
                 if (item.stage !== 'ENV_OVERRIDE' || (item.stage === 'ENV_OVERRIDE' && item.isLocked)) {
                     return (
