@@ -199,7 +199,6 @@ function DockerForm({
     });
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
-
     function customHandleChange(e) {
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }));
     }
@@ -436,6 +435,7 @@ function DockerForm({
                         onChange={(selected) => {
                             setSelectedDckerRegistryType(selected);
                         }}
+                        isDisabled={!!state.id.value}
                     />
                     {state.registryType.error && <div className="form__error">{state.registryType.error}</div>}
                 </div>
@@ -465,7 +465,7 @@ function DockerForm({
                     }
                     error={customState.registryUrl.error}
                     onChange={customHandleChange}
-                    disabled={!!registryUrl || selectedDckerRegistryType.defaultRegistryURL}
+                    disabled={!!(registryUrl || selectedDckerRegistryType.defaultRegistryURL)}
                 />
             </div>
             {selectedDckerRegistryType.value === 'ecr' && (
@@ -507,7 +507,7 @@ function DockerForm({
                             error={customState.username.error}
                             onChange={customHandleChange}
                             label={selectedDckerRegistryType.id.label}
-                            disabled={selectedDckerRegistryType.id.defaultValue}
+                            disabled={!!selectedDckerRegistryType.id.defaultValue}
                             placeholder={selectedDckerRegistryType.id.placeholder}
                         />
                         <ProtectedInput

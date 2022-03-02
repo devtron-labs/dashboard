@@ -21,7 +21,7 @@ import { isGitopsConfigured, getHostURLConfiguration } from '../../services/serv
 import { PipelineSelect } from './PipelineSelect';
 import './workflowEditor.css';
 import { NodeAttr } from '../app/details/triggerView/types';
-import { ReactComponent as SuccessIcon } from '../../assets/icons/ic-success-large.svg';
+import { ReactComponent as SuccessIcon } from '../../assets/icons/ic-success-with-light-background.svg';
 import { ReactComponent as GotToBuildDeploy } from '../../assets/icons/go-to-buildanddeploy@2x.svg';
 import { ReactComponent as GoToEnvOverride } from '../../assets/icons/go-to-envoverride@2x.svg';
 
