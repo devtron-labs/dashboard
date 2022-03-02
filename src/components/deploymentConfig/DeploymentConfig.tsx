@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate, toggleAppMetrics as updateAppMetrics } from './service';
 import { getChartReferences } from '../../services/service';
-import { Toggle, Progressing, ConfirmationDialog, useJsonYaml, isVersionLessThanOrEqualToTarget } from '../common';
+import { Toggle, Progressing, ConfirmationDialog, VisibleModal, useJsonYaml, isVersionLessThanOrEqualToTarget } from '../common';
 import { useEffectAfterMount, showError } from '../common/helpers/Helpers'
+import ReadmeConfig from './ReadmeConfig';
 import { useParams } from 'react-router'
 import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as ArrowSquareOut }from '../../assets/icons/misc/arrowSquareOut.svg';
 import ReactSelect from 'react-select';
 import { DOCUMENTATION } from '../../config';
 import './deploymentConfig.scss';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
+import { MODES } from '../../../src/config/constants';
+import YAML from 'yaml';
 
 export function OptApplicationMetrics({ currentVersion, onChange, opted, focus = false, loading, className = "", disabled = false }) {
     let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersion, [3, 7, 0]);
@@ -47,6 +51,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
     const [selectedChartRefId, selectChartRefId] = useState(0);
     const [selectedChart, selectChart] = useState<{ id: number, version: string, name: string; }>(null)
     const [template, setTemplate] = useState("")
+    const [schemas,setSchema] = useState()
     const [loading, setLoading] = useState(false)
     const [appMetricsLoading, setAppMetricsLoading] = useState(false)
     const [chartConfig, setChartConfig] = useState(null)
@@ -55,9 +60,11 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
     const [obj, json, yaml, error] = useJsonYaml(tempFormData, 4, 'yaml', true);
     const [chartConfigLoading, setChartConfigLoading] = useState(null)
     const [showConfirmation, toggleConfirmation] = useState(false)
+    const [showReadme, setShowReadme] = useState(false)
+    const [readme,setReadme] = useState('')
 
     useEffect(() => {
-        initialise()
+        initialise()    
     }, [])
 
     // useEffectAfterMount(() => {
@@ -109,11 +116,13 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
     async function fetchDeploymentTemplate() {
         setChartConfigLoading(true)
         try {
-            const { result: { globalConfig: { defaultAppOverride, id, refChartTemplate, refChartTemplateVersion, isAppMetricsEnabled, chartRefId } } } = await getDeploymentTemplate(+appId, selectedChart.id)
+            const { result: { globalConfig: { defaultAppOverride, id, refChartTemplate, refChartTemplateVersion, isAppMetricsEnabled, chartRefId ,readme,schema} } } = await getDeploymentTemplate(+appId, selectedChart.id)
             setTemplate(defaultAppOverride)
-            setChartConfig({ id, refChartTemplate, refChartTemplateVersion, chartRefId })
+            setSchema(schema)
+            setReadme(readme)
+            setChartConfig({ id, refChartTemplate, refChartTemplateVersion, chartRefId,readme})
             toggleAppMetrics(isAppMetricsEnabled)
-            setTempFormData(JSON.stringify(defaultAppOverride, null, 2))
+            setTempFormData(YAML.stringify(defaultAppOverride, null))
         }
         catch (err) {
             showError(err);
@@ -169,6 +178,8 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
             toggleConfirmation(false)
         }
     }
+
+
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
     let uniqueCharts = new Map<string, boolean>();
     let chartsWithUniqueNames = charts.filter(cv => {if (uniqueCharts.get(cv.name)) { return false } else { uniqueCharts.set(cv.name, true);  return true;}}).sort((a,b) => b.name.localeCompare(a.name));
@@ -267,23 +278,39 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                         </>
                     }
                 </div>
-
                 <div className="form__row form__row--code-editor-container">
                     <CodeEditor
                         value={tempFormData}
                         onChange={resp => { setTempFormData(resp) }}
-                        mode="yaml"
+                        mode={MODES.YAML}
+                        validatorSchema={schemas}
                         loading={chartConfigLoading}>
+                        <div className='readme-container'>
                         <CodeEditor.Header>
-                            <CodeEditor.LanguageChanger />
+                            <h5>{MODES.YAML.toUpperCase()}</h5>
                             <CodeEditor.ValidationError />
                         </CodeEditor.Header>
+                        {readme && <div className="cb-5 fw-6 fs-13 flexbox pr-16 pt-10 cursor border-bottom-1px " onClick={e => setShowReadme(true)}>README<ArrowSquareOut className="icon-dim-18 scb-5 rotateBy--90 ml-5"/></div>}
+                        </div>
                     </CodeEditor>
                 </div>
                 <div className="form__buttons">
                     <button className="cta" type="submit">{loading ? <Progressing /> : 'Save'}</button>
                 </div>
             </form>
+            {showReadme && <VisibleModal className="">
+                <ReadmeConfig
+                    value={tempFormData}
+                    height={500}
+                    schema={schemas}
+                    onChange={resp => { setTempFormData(resp) }}
+                    readme={chartConfig.readme}
+                    handleClose={e => setShowReadme(false)}
+                    loading={chartConfigLoading}
+                />
+            </VisibleModal>}
+
+
             {showConfirmation && <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warningIcon} />
                 <ConfirmationDialog.Body title="Retain overrides and update" />
