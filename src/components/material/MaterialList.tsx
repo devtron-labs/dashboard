@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { getGitProviderListAuth, getSourceConfig } from '../../services/service';
 import { ErrorScreenManager, Progressing, showError, sortCallback } from '../common';
-import { AppConfigStatus, ViewType,  DOCUMENTATION, } from '../../config';
+import { AppConfigStatus, ViewType,  DOCUMENTATION, AppListConstants, } from '../../config';
 import { withRouter } from 'react-router';
 import { CreateMaterial } from './CreateMaterial';
 import { UpdateMaterial } from './UpdateMaterial';
@@ -125,7 +125,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                           rel="noreferrer noopener"
                           target="_blank"
                           className="learn-more__href"
-                          href="https://github.com/devtron-labs/getting-started-nodejs"
+                          href={AppListConstants.SAMPLE_NODE_REPO_URL}
                       >
                           {' '}
                           Check git repository for a simple Node.js application
@@ -152,7 +152,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                     refreshMaterials={this.refreshMaterials}
                     isGitProviderValid={this.isGitProviderValid}
                     isCheckoutPathValid={this.isCheckoutPathValid}
-                    isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked} 
+                    isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
                     reload = {this.getGitProviderConfig}
                     />
                 {this.state.materials.map((mat) => {

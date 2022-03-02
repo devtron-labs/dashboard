@@ -13,15 +13,26 @@ export class GlobalAllCheckModal extends Component {
             <img className="img-width pt-12 pl-16" src={Deploy} />
             <div className="pl-16 pr-16 pt-12 pb-12 fs-13">
                 <div className="cn-9">Create, build and deploy a custom application.</div>
-                <NavLink to={`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_DEVTRON}/${AppListConstants.CREATE_DEVTRON_APP_URL}`} className="no-decor cb-5 fw-6">Create App</NavLink>
+                <NavLink to={`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_DEVTRON}/${AppListConstants.CREATE_DEVTRON_APP_URL}`} className="no-decor cb-5 fw-6">Create Custom App</NavLink>
             </div>
         </div>
     }
+
+    renderSampleApplication() {
+      return <div className="bcn-0 mb-8 br-4">
+          <img className="img-width pt-12 pl-16" src={Sample} />
+          <div className="pl-16 pr-16 pt-12 pb-12 fs-13">
+              <div className="cn-9">Deploy a sample Node.js application.</div>
+              <a href={AppListConstants.SAMPLE_NODE_REPO_URL} target="_blank" rel="noopener noreferer"  className="no-decor cb-5 fw-6">Visit git repo</a>
+          </div>
+      </div>
+  }
 
     render() {
         return <div className="">
             <div className="cn-9 fw-6 fs-16 mb-8">Get started!</div>
             <div className="cn-9 mb-16 fs-13"> You’re all set to get started with Devtron.</div>
+            {this.renderSampleApplication()}
             {this.renderCustomAppDeploy()}
             <GlobalChartsCheck />
         </div>

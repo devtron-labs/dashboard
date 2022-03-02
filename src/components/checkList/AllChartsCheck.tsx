@@ -10,7 +10,7 @@ export class AllChartsCheck extends Component<{}, {}> {
             <img className="img-width pt-12 pb-12 pl-16 " src={img} />
             <div className="pl-20 fs-13">
                 <div className="pt-16 cn-9"> Deploy charts using Devtron.</div>
-                <NavLink to={`${URLS.CHARTS}/discover`} className="no-decor cb-5 fw-6">Discover charts</NavLink>
+                <NavLink to={`${URLS.CHARTS}/discover`} className="no-decor cb-5 fw-6">Discover Helm charts</NavLink>
             </div>
         </div>
         )
