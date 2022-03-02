@@ -354,6 +354,50 @@ function DockerForm({
         },
     ];
 
+    const registryOptions = (props) => {
+        return (
+            <components.Option {...props}>
+                <div style={{ display: 'flex' }}>
+                    {props.isSelected ? (
+                        <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8 mt-4" />
+                    ) : (
+                        <span className="inline-block icon-dim-16 mr-8"></span>
+                    )}
+                    <div className={'list__logo git-logo mr-5 ' + props.data.value}></div>
+                    {props.label}
+                </div>
+            </components.Option>
+        );
+    };
+    const registryControls = (props) => {
+        let value = '';
+        if (props.hasValue) {
+            value = props.getValue()[0].value;
+        }
+        return (
+            <components.Control {...props}>
+                <div className={'list__logo git-logo ml-5 ' + value}></div>
+                {props.children}
+            </components.Control>
+        );
+    };
+
+    const _multiSelectStyles = {
+        ...multiSelectStyles,
+        menu: (base, state) => ({
+            ...base,
+            marginTop: 'auto',
+        }),
+        menuList: (base) => {
+            return {
+                ...base,
+                position: 'relative',
+                paddingBottom: '0px',
+                maxHeight: '250px',
+            };
+        },
+    };
+
     return (
         <form onSubmit={(e) => handleOnSubmit(e)} className="docker-form" autoComplete="off">
             <div className="form__row">
@@ -383,50 +427,11 @@ function DockerForm({
                         getOptionLabel={(option) => `${option.label}`}
                         getOptionValue={(option) => `${option.value}`}
                         value={selectedDckerRegistryType}
-                        styles={{
-                            ...multiSelectStyles,
-                            menu: (base, state) => ({
-                                ...base,
-                                marginTop: 'auto',
-                            }),
-                            menuList: (base) => {
-                                return {
-                                    ...base,
-                                    position: 'relative',
-                                    paddingBottom: '0px',
-                                    maxHeight: '250px',
-                                };
-                            },
-                        }}
+                        styles={_multiSelectStyles}
                         components={{
                             IndicatorSeparator: null,
-                            Option: (props) => {
-                                return (
-                                    <components.Option {...props}>
-                                        <div style={{ display: 'flex' }}>
-                                            {props.isSelected ? (
-                                                <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8 mt-4" />
-                                            ) : (
-                                                <span className="inline-block icon-dim-16 mr-8"></span>
-                                            )}
-                                            <div className={'list__logo git-logo mr-5 ' + props.data.value}></div>
-                                            {props.label}
-                                        </div>
-                                    </components.Option>
-                                );
-                            },
-                            Control: (props) => {
-                                let value = '';
-                                if (props.hasValue) {
-                                    value = props.getValue()[0].value;
-                                }
-                                return (
-                                    <components.Control {...props}>
-                                        <div className={'list__logo git-logo ml-5 ' + value}></div>
-                                        {props.children}
-                                    </components.Control>
-                                );
-                            },
+                            Option: registryOptions,
+                            Control: registryControls,
                         }}
                         onChange={(selected) => {
                             setSelectedDckerRegistryType(selected);
