@@ -591,7 +591,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         return <>
             <div className="p-20 flex flex-align-center flex-justify">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">{title}</h2>
-                <button type="button" className="transparent flex icon-dim-24" onClick={() => this.props.close()}>
+                <button type="button" className="transparent flex icon-dim-24" onClick={() => {this.props.close()}}>
                     <Close className="icon-dim-24" />
                 </button>
             </div>
@@ -770,7 +770,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         else {
             if (this.state.isAdvanced) {
                 return <button type="button" className="cta cta--workflow cancel mr-16"
-                    onClick={() => this.props.close()}>Cancel
+                    onClick={() => {this.props.close()}}>Cancel
                 </button>
             }
             else {

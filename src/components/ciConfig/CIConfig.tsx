@@ -189,6 +189,108 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         registry.value = selectedRegistry.id;
     }
 
+    const _multiSelectStyles = {
+        ...multiSelectStyles,
+        menu: (base, state) => ({
+            ...base,
+            marginTop: 'auto',
+        }),
+        menuList: (base) => {
+            return {
+                ...base,
+                position: 'relative',
+                paddingBottom: '0px',
+                maxHeight: '250px',
+            };
+        },
+    };
+
+    const containerRegistryOption = (props) => {
+        return (
+            <components.Option {...props}>
+                <div style={{ display: 'flex' }}>
+                    {props.isSelected ? (
+                        <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8 mt-4" />
+                    ) : (
+                        <span className="inline-block icon-dim-16 mr-8"></span>
+                    )}
+                    <div className={'registry-icon mr-5 ' + props.data.registryType}></div>
+                    {props.label}
+                </div>
+            </components.Option>
+        );
+    };
+
+    const containerRegistryMenuList = (props) => {
+        return (
+            <components.MenuList {...props}>
+                {props.children}
+                <NavLink
+                    to={`${URLS.GLOBAL_CONFIG_DOCKER}`}
+                    className="cb-5 select__sticky-bottom block fw-5 anchor w-100 cursor no-decor"
+                    style={{ backgroundColor: '#FFF' }}
+                >
+                    <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
+                    Add Container Registry
+                </NavLink>
+            </components.MenuList>
+        );
+    };
+
+    const containerRegistryControls = (props) => {
+        let value = '';
+        if (props.hasValue) {
+            value = props.getValue()[0].registryType;
+        }
+        return (
+            <components.Control {...props}>
+                <div className={'registry-icon ml-5 ' + value}></div>
+                {props.children}
+            </components.Control>
+        );
+    };
+
+    const repositoryOption = (props) => {
+        return (
+            <components.Option {...props}>
+                {props.isSelected ? (
+                    <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8" />
+                ) : (
+                    <span className="inline-block icon-dim-16 mr-8"></span>
+                )}
+                {props.data.url.includes('gitlab') && <GitLab className="mr-8 vertical-align-middle icon-dim-20" />}
+                {props.data.url.includes('github') && <GitHub className="mr-8 vertical-align-middle icon-dim-20" />}
+                {props.data.url.includes('bitbucket') && (
+                    <BitBucket className="mr-8 vertical-align-middle icon-dim-20" />
+                )}
+                {props.data.url.includes('gitlab') ||
+                props.data.url.includes('github') ||
+                props.data.url.includes('bitbucket') ? null : (
+                    <Git className="mr-8 vertical-align-middle icon-dim-20" />
+                )}
+
+                {props.label}
+            </components.Option>
+        );
+    };
+
+    const repositoryControls = (props) => {
+        let value = '';
+        if (props.hasValue) {
+            value = props.getValue()[0].url;
+        }
+        let showGit = value && !value.includes('github') && !value.includes('gitlab') && !value.includes('bitbucket');
+        return (
+            <components.Control {...props}>
+                {value.includes('github') && <GitHub className="icon-dim-20 ml-8" />}
+                {value.includes('gitlab') && <GitLab className="icon-dim-20 ml-8" />}
+                {value.includes('bitbucket') && <BitBucket className="icon-dim-20 ml-8" />}
+                {showGit && <Git className="icon-dim-20 ml-8" />}
+                {props.children}
+            </components.Control>
+        );
+    };
+
     const { repository, dockerfile, registry, repository_name, key, value } = state
     return (
         <div className="form__app-compose">
@@ -208,51 +310,12 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         getOptionLabel={option => `${option.id}`}
                         getOptionValue={option => `${option.id}`}
                         value={selectedRegistry}
-                        styles={{
-                            ...multiSelectStyles,
-                            menu: (base, state) => ({
-                                ...base,
-                                marginTop: 'auto',
-                            }),
-                            menuList: (base) => {
-                                return {
-                                    ...base,
-                                    position: 'relative',
-                                    paddingBottom: '0px',
-                                    maxHeight: '250px',
-                                }
-                            }
-                        }}
+                        styles={_multiSelectStyles}
                         components={{
                             IndicatorSeparator: null,
-                            Option: (props) => {
-                                return <components.Option {...props}>
-                                    <div style={{display: 'flex'}}>
-                                    {props.isSelected ? <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8 mt-4" /> : <span className="inline-block icon-dim-16 mr-8"></span>}
-                                    <div className={'registry-icon mr-5 ' + props.data.registryType}></div>
-                                    {props.label}
-                                    </div>
-                                </components.Option>
-                            },
-                            MenuList: (props) => {
-                              return <components.MenuList {...props}>
-                                  {props.children}
-                                  <NavLink to={`${URLS.GLOBAL_CONFIG_DOCKER}`} className="cb-5 select__sticky-bottom block fw-5 anchor w-100 cursor no-decor" style={{backgroundColor: '#FFF'}}>
-                                <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
-                                Add Container Registry
-                            </NavLink>
-                              </components.MenuList>
-                          },
-                            Control: (props) => {
-                                let value = "";
-                                if (props.hasValue) {
-                                    value = props.getValue()[0].registryType;
-                                }
-                                return <components.Control {...props}>
-                                    <div className={'registry-icon ml-5 ' + value}></div>
-                                    {props.children}
-                                </components.Control>
-                            },
+                            Option: containerRegistryOption,
+                            MenuList: containerRegistryMenuList,
+                            Control: containerRegistryControls,
                         }}
                         onChange={(selected) => { handleRegistryChange(selected) }}
                     />
@@ -287,52 +350,11 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         getOptionLabel={option => `${option.name}`}
                         getOptionValue={option => `${option.checkoutPath}`}
                         value={selectedMaterial}
-                        styles={{
-                            ...multiSelectStyles,
-                            menu: (base, state) => ({
-                                ...base,
-                                marginTop: 'auto',
-                            }),
-                            menuList: (base) => {
-                                return {
-                                    ...base,
-                                    position: 'relative',
-                                    paddingBottom: '0px',
-                                    maxHeight: '250px',
-                                }
-                            }
-                        }}
+                        styles={_multiSelectStyles}
                         components={{
                             IndicatorSeparator: null,
-                            Option: (props) => {
-                                return <components.Option {...props}>
-                                    {props.isSelected ? <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8" /> : <span className="inline-block icon-dim-16 mr-8"></span>}
-
-                                    {props.data.url.includes("gitlab") && <GitLab className="mr-8 vertical-align-middle icon-dim-20" />}
-                                    {props.data.url.includes("github") && <GitHub className="mr-8 vertical-align-middle icon-dim-20" />}
-                                    {props.data.url.includes("bitbucket") && <BitBucket className="mr-8 vertical-align-middle icon-dim-20" />}
-                                    {props.data.url.includes("gitlab") || props.data.url.includes("github") || props.data.url.includes("bitbucket") ? null : <Git className="mr-8 vertical-align-middle icon-dim-20" />}
-
-                                    {props.label}
-                                </components.Option>
-                            },
-                            Control: (props) => {
-                                let value = "";
-
-                                if (props.hasValue) {
-                                    value = props.getValue()[0].url;
-                                }
-                                let showGit = value && !value.includes("github") && !value.includes("gitlab") && !value.includes("bitbucket")
-                                return <components.Control {...props}>
-
-                                    {value.includes("github") && <GitHub className="icon-dim-20 ml-8" />}
-                                    {value.includes("gitlab") && <GitLab className="icon-dim-20 ml-8" />}
-                                    {value.includes("bitbucket") && <BitBucket className="icon-dim-20 ml-8" />}
-                                    {showGit && <Git className="icon-dim-20 ml-8" />}
-                                    {props.children}
-                                </components.Control>
-
-                            },
+                            Option: repositoryOption,
+                            Control: repositoryControls,
                         }}
 
                         onChange={(selected) => { handleFileLocationChange(selected) }}
