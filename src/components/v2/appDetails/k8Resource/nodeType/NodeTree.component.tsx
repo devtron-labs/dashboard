@@ -51,7 +51,7 @@ function NodeTreeComponent({
                 handleClickOnNodes(_kind, [parent.toLowerCase()]);
             }
         } else {
-            history.push(url.replace(/\/$/, '') + getRedirectURLExtension(clickedNodes, _treeNodes));
+            history.replace(url.replace(/\/$/, '') + getRedirectURLExtension(clickedNodes, _treeNodes));
         }
     }, [url]);
 
