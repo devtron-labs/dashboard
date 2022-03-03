@@ -249,7 +249,7 @@ function DockerForm({
 
     async function onSave() {
         let awsRegion;
-        if (state.registryType.value === 'ecr') {
+        if (selectedDockerRegistryType.value === 'ecr') {
             awsRegion = fetchAWSRegion();
             if (!awsRegion) return;
         }
@@ -434,7 +434,7 @@ function DockerForm({
                         onChange={(selected) => {
                             setSelectedDockerRegistryType(selected);
                         }}
-                        isDisabled={!!state.id.value}
+                        isDisabled={!!id}
                     />
                     {state.registryType.error && <div className="form__error">{state.registryType.error}</div>}
                 </div>
