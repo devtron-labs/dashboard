@@ -556,6 +556,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         true,
                         this.state.pipelineConfig.environmentId,
                         this.state.pipelineConfig.environmentName,
+                        this.props.match.params.cdPipelineId
+                            ? 'Deployment pipeline updated'
+                            : 'Deployment pipeline created',
                     );
                     this.props.getWorkflows();
                 }

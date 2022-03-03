@@ -168,7 +168,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.props.getWorkflows();
     };
 
-    closePipeline = (showSuccessCD?: boolean, environmentId?: number, environmentName?: string) => {
+    closePipeline = (
+        showSuccessCD?: boolean,
+        environmentId?: number,
+        environmentName?: string,
+        successTitle?: string,
+    ) => {
         const LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`;
         this.props.history.push(LINK);
         if (showSuccessCD) {
@@ -177,6 +182,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     showSuccessScreen: true,
                     environmentId: environmentId,
                     environmentName: environmentName,
+                    successTitle: successTitle,
                 });
             }, 700);
         }
@@ -429,6 +435,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             envId={this.state.environmentId}
                             envName={this.state.environmentName}
                             closeSuccessPopup={this.closeSuccessPopup}
+                            successTitle={this.state.successTitle}
                         />
                     )}
                 </>
@@ -459,6 +466,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             envId={this.state.environmentId}
                             envName={this.state.environmentName}
                             closeSuccessPopup={this.closeSuccessPopup}
+                            successTitle={this.state.successTitle}
                         />
                     )}
                 </div>

@@ -22,6 +22,7 @@ export interface WorkflowEditState {
     showSuccessScreen: boolean;
     environmentId?: number;
     environmentName?: string;
+    successTitle?: string;
 }
 
 export interface WorkflowEditProps

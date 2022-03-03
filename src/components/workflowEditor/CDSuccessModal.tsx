@@ -11,9 +11,10 @@ interface CDSuccessModalType {
     envId: number;
     closeSuccessPopup: () => void;
     envName: string;
+    successTitle: string;
 }
 
-export default function CDSuccessModal({ appId, envId, closeSuccessPopup, envName }: CDSuccessModalType) {
+export default function CDSuccessModal({ appId, envId, closeSuccessPopup, envName, successTitle }: CDSuccessModalType) {
     return (
         <VisibleModal className="transition-effect">
             <div className="modal__body" style={{ width: '600px' }}>
@@ -22,7 +23,7 @@ export default function CDSuccessModal({ appId, envId, closeSuccessPopup, envNam
                         <SuccessIcon />
                     </div>
                     <div>
-                        <div className="fw-6 fs-16">Deployment pipeline created</div>
+                        <div className="fw-6 fs-16">{successTitle}</div>
                         <div className="fs-13">What do you want to do next?</div>
                     </div>
                 </div>
