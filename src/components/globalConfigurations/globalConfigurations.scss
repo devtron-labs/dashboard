@@ -64,7 +64,7 @@
         }
     }
 
-    .protected-input__toggle{
+    .protected-input__toggle {
         position: absolute;
         right: 10px;
         top: 50%;
@@ -162,7 +162,7 @@
     background: white;
     border-radius: 8px;
 
-    &>.list {
+    & > .list {
         border: unset;
         margin-bottom: unset;
         grid-template-columns: 1fr 24px;
@@ -170,7 +170,7 @@
     }
 
     &.cluster-list--create {
-        &>.list {
+        & > .list {
             grid-template-columns: 24px 1fr 24px;
         }
 
@@ -222,7 +222,6 @@
 }
 
 .collapsed-list {
-
     &.collapsed-list--git,
     &.collapsed-list--docker {
         border: 1px solid #d6dbdf;
@@ -270,7 +269,7 @@
             border-left: 1px solid #d6dbdf;
         }
 
-        input[type=radio] {
+        input[type='radio'] {
             margin: 0 8px 0 0;
         }
     }
@@ -306,7 +305,7 @@
             font-weight: normal;
             line-height: 18px;
 
-            input[type="checkbox"] {
+            input[type='checkbox'] {
                 height: 16px;
                 width: 16px;
                 border-radius: 3px;
@@ -335,7 +334,7 @@
 
         input,
         textarea {
-            width: 100%
+            width: 100%;
         }
 
         textarea {
@@ -351,7 +350,7 @@
     padding: 24px;
     margin: 5% auto auto auto;
 
-    .form__title+img {
+    .form__title + img {
         margin-left: auto;
         cursor: pointer;
     }
@@ -375,12 +374,12 @@
             width: 100%;
         }
 
-        input[type="radio"] {
+        input[type='radio'] {
             margin: 0 8px 0 8px;
             cursor: pointer;
         }
 
-        input:checked+span {
+        input:checked + span {
             color: var(--B500);
         }
 

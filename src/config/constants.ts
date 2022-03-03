@@ -94,11 +94,11 @@ export const Routes = {
     PIPELINE_CONFIG_MAP_UPDATE: 'configmap/update/pipelinelevel',
     CHART_INSTALLED: 'app-store/installed-app',
     CHART_AVAILABLE: 'app-store',
-    CHART_STORE : 'app-store',
+    CHART_STORE: 'app-store',
     CHART_REPO: 'chart-repo',
     CHART_RESYNC: 'sync-charts',
-    CHART_STORE_VALUES : 'values',
-    CHART_STORE_DEPLOYMENT : 'deployment',
+    CHART_STORE_VALUES: 'values',
+    CHART_STORE_DEPLOYMENT: 'deployment',
     CHART_VALUES: 'template/values',
     CHART_VALUES_LIST_CATEGORIZED: 'application/values/list',
     CHART_VALUES_LIST_TEMPLATE: 'template/values/list',
@@ -126,7 +126,7 @@ export const Routes = {
     CREATE_RESOURCE: 'k8s/resource/create',
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
     HELM_RELEASE_APP_UPDATE_API: 'application/update',
-    NAMESPACE: 'env/namespace'
+    NAMESPACE: 'env/namespace',
 };
 
 export const ViewType = {

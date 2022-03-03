@@ -13,7 +13,7 @@
 }
 
 .git__icon {
-  /*  background-image: url('../../assets/icons/git/git.svg');*/
+    /*  background-image: url('../../assets/icons/git/git.svg');*/
     margin-right: 10px;
     display: inline-block;
     width: 20px;
@@ -56,16 +56,16 @@
     grid-column-gap: 16px;
 }
 
-.sample-repo-container{
-    background-color: #F3F0FF;
-    border: 1px solid #C5BBFA;
+.sample-repo-container {
+    background-color: #f3f0ff;
+    border: 1px solid #c5bbfa;
     margin: 20px 0;
 }
 
 .sample-title {
-  margin: 0 0 4px 0;
+    margin: 0 0 4px 0;
 }
 
 .icon-container {
-  height: 40px;
+    height: 40px;
 }

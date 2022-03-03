@@ -94,14 +94,14 @@
     background-color: var(--N100);
 }
 
-.icon-container{
-  height: 60px;
+.icon-container {
+    height: 60px;
 }
 
-.close-button-container{
-  text-align: right;
+.close-button-container {
+    text-align: right;
 }
 
-.action-card:hover{
-  background: var(--N50);
+.action-card:hover {
+    background: var(--N50);
 }

@@ -443,7 +443,11 @@ function DockerForm({
                         <InfoFilled className="mr-5 form__icon--info" />
                         <span>
                             Don’t have {selectedDockerRegistryType.label} account?
-                            <a href={selectedDockerRegistryType.gettingStartedLink} target="_blank" className="ml-5 cb-5">
+                            <a
+                                href={selectedDockerRegistryType.gettingStartedLink}
+                                target="_blank"
+                                className="ml-5 cb-5"
+                            >
                                 Getting started with {selectedDockerRegistryType.label}
                             </a>
                         </span>

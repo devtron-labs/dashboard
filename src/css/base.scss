@@ -20,7 +20,8 @@
 }
 
 body {
-    font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell,
+        'Helvetica Neue', sans-serif;
     background: var(--window-bg);
 }
 
@@ -82,7 +83,7 @@ a:focus {
 #hubspot-messages-iframe-container iframe {
     right: unset !important;
     left: -10px !important;
-    bottom: -10px !important
+    bottom: -10px !important;
 }
 
 .page-header {
@@ -171,7 +172,6 @@ a:focus {
     text-transform: lowercase;
 }
 
-
 .text-uppercase {
     text-transform: uppercase;
 }
@@ -188,8 +188,7 @@ a:focus {
     z-index: 1;
 }
 
-@mixin tab-container($bgColor,
-    $color) {
+@mixin tab-container($bgColor, $color) {
     .tab {
         border-radius: 4px;
         background-color: transparent;
@@ -218,8 +217,7 @@ a:focus {
         flex-direction: column;
     }
 
-    @include tab-container(#2c3354,
-        white);
+    @include tab-container(#2c3354, white);
 }
 
 .h-100 {
@@ -235,7 +233,7 @@ a:focus {
 }
 
 .w-80 {
-    width: 80%
+    width: 80%;
 }
 
 .w-100 {
@@ -258,7 +256,7 @@ a:focus {
 
 .p-lr-20 {
     padding-left: 20px;
-    padding-right: 20px
+    padding-right: 20px;
 }
 
 .m-b-4 {
@@ -494,7 +492,6 @@ a:focus {
     }
 }
 
-
 button.anchor {
     outline: none;
     box-shadow: unset;
@@ -585,7 +582,6 @@ button.anchor {
 }
 
 .app-summary__status-name {
-
     &.f-healthy,
     &.f-synced,
     &.f-sync.ok,
@@ -618,7 +614,7 @@ button.anchor {
 
 .rotate {
     transform: rotate(var(--rotateBy));
-    transition: transform .3s;
+    transition: transform 0.3s;
 }
 
 .Toastify__toast-container--top-right {
@@ -695,7 +691,7 @@ button.anchor {
 .Toastify__toast--error {
     &.devtron-toast {
         &:before {
-            background-image: url('../assets/icons/misc/errorInfo.svg')
+            background-image: url('../assets/icons/misc/errorInfo.svg');
         }
     }
 }
@@ -914,7 +910,6 @@ button.anchor {
     }
 }
 
-
 .element-scroller {
     width: 40px;
     height: 80px;
@@ -1051,7 +1046,7 @@ button.anchor {
         @include striped-row(var(--window-bg));
 
         .app-status__icon {
-            @include app-status-icon(var(--window-bg))
+            @include app-status-icon(var(--window-bg));
         }
     }
 
@@ -1059,7 +1054,7 @@ button.anchor {
         @include striped-row(white);
 
         .app-status__icon {
-            @include app-status-icon(white)
+            @include app-status-icon(white);
         }
     }
 
@@ -1067,7 +1062,7 @@ button.anchor {
         @include striped-row(var(--B100));
 
         .app-status__icon {
-            @include app-status-icon(var(--B100))
+            @include app-status-icon(var(--B100));
         }
     }
 }
@@ -1119,23 +1114,23 @@ button.anchor {
     overflow: hidden;
     border-radius: 4px;
 
-    input+.radio__item-label {
+    input + .radio__item-label {
         border-radius: 0;
         border: 1px solid var(--N200);
     }
 
-    input[type=checkbox]:checked+.radio__item-label {
+    input[type='checkbox']:checked + .radio__item-label {
         border-radius: 0;
         border: 1px solid #2c3354;
     }
 
-    .radio:first-child input+.radio__item-label {
+    .radio:first-child input + .radio__item-label {
         border-top-left-radius: 4px;
         border-bottom-left-radius: 4px;
         border-right: unset;
     }
 
-    .radio:last-child input+.radio__item-label {
+    .radio:last-child input + .radio__item-label {
         border-top-right-radius: 4px;
         border-bottom-right-radius: 4px;
         border-left: unset;
@@ -1374,7 +1369,7 @@ button.anchor {
     vertical-align: bottom;
 }
 
-.tertiary-tab__radio input:checked~.tertiary-tab {
+.tertiary-tab__radio input:checked ~ .tertiary-tab {
     border: solid 1px var(--B500);
     background-color: var(--B100);
 }
@@ -1445,7 +1440,7 @@ button.anchor {
     color: var(--Y600);
     padding: 0 8px 0 8px;
     text-transform: capitalize;
-    background-color: var(--Y100)
+    background-color: var(--Y100);
 }
 
 .security-tab__table-row:hover .cve-cell:after {
@@ -1575,7 +1570,7 @@ button.anchor {
 }
 
 .hosturl__review:hover {
-    color: var(--B500)
+    color: var(--B500);
 }
 
 .artifact__add {
@@ -1587,74 +1582,74 @@ button.anchor {
     font-size: 14px;
 }
 
-.content-space{
+.content-space {
     justify-content: space-between !important;
 }
 
-.w-0{
+.w-0 {
     width: 0px;
 }
 
-.w-200{
+.w-200 {
     width: 200px;
 }
 
-.w-400{
+.w-400 {
     width: 400px;
 }
 
-.w-250{
+.w-250 {
     width: 250px;
 }
 
-.w-600{
+.w-600 {
     width: 600px;
 }
 
-.h-0{
+.h-0 {
     height: 0px;
 }
 
-.border-top{
+.border-top {
     border-top: solid 1px var(--N200);
 }
 
-.border-bottom{
+.border-bottom {
     border-bottom: solid 2px var(--N200);
 }
 
-.border-right{
+.border-right {
     border-right: solid 1px var(--N200);
 }
-.border-left{
+.border-left {
     border-left: solid 1px var(--N200);
 }
 
-.box-shadow{
+.box-shadow {
     box-shadow: inset 0 -1px 0 0 #d6dbdf;
 }
 
-.box-shadow-top{
+.box-shadow-top {
     box-shadow: inset 0 1px 0 0 #d6dbdf;
 }
 
-.cluster-error{
+.cluster-error {
     border: solid 1px #ffcb5d;
 }
 
-.align-start{
+.align-start {
     align-items: flex-start !important;
 }
 
-.align-center{
+.align-center {
     text-align: center !important;
 }
 
-.lh-20{
-   line-height: 20px;
+.lh-20 {
+    line-height: 20px;
 }
 
-.pl-16{
+.pl-16 {
     padding-left: 16px !important;
 }
 
@@ -1665,31 +1660,31 @@ button.anchor {
     line-height: 1.5;
 }
 
-.lh-n{
+.lh-n {
     line-height: normal !important;
 }
 
-.h-32{
+.h-32 {
     height: 32px !important;
 }
 
-.fw-n{
+.fw-n {
     font-weight: normal !important;
 }
 
 .h-8 {
-    height : 8px;
+    height: 8px;
 }
 
 .hide-section {
     display: none;
 }
 
-.text-center{
+.text-center {
     text-align: center;
 }
 
-.m-auto{
+.m-auto {
     margin: auto;
 }
 
@@ -1703,51 +1698,51 @@ button.anchor {
 
 .registry-icon,
 .repository-icon {
-  width: 24px;
-  height: 24px;
-  background: url('../assets/icons/container.svg');
+    width: 24px;
+    height: 24px;
+    background: url('../assets/icons/container.svg');
 
-  &.git {
-    background: url('../assets/icons/git/git.svg');
-  }
-  &.github {
-      background: url('../assets/icons/git/github.svg')
-  }
+    &.git {
+        background: url('../assets/icons/git/git.svg');
+    }
+    &.github {
+        background: url('../assets/icons/git/github.svg');
+    }
 
-  &.gitlab {
-      background: url('../assets/icons/git/gitlab.svg')
-  }
+    &.gitlab {
+        background: url('../assets/icons/git/gitlab.svg');
+    }
 
-  &.bitbucket {
-      background: url('../assets/icons/git/bitbucket.svg')
-  }
+    &.bitbucket {
+        background: url('../assets/icons/git/bitbucket.svg');
+    }
 
-  &.docker {
-      background: url('../assets/icons/git/docker.svg')
-  }
+    &.docker {
+        background: url('../assets/icons/git/docker.svg');
+    }
 
-  &.docker-hub {
-      background: url('../assets/icons/git/docker.svg')
-  }
-  &.acr {
-      background: url('../assets/icons/ic-azure.svg');
-  }
-  &.quay {
-      background: url('../assets/icons/ic-quay.svg');
-  }
+    &.docker-hub {
+        background: url('../assets/icons/git/docker.svg');
+    }
+    &.acr {
+        background: url('../assets/icons/ic-azure.svg');
+    }
+    &.quay {
+        background: url('../assets/icons/ic-quay.svg');
+    }
 
-  &.ecr {
-      background: url('../assets/icons/ic-ecr.svg');
-  }
+    &.ecr {
+        background: url('../assets/icons/ic-ecr.svg');
+    }
 
-  &.artifact-registry {
-      background: url('../assets/icons/ic-google-artifact-registry.svg');
-  }
+    &.artifact-registry {
+        background: url('../assets/icons/ic-google-artifact-registry.svg');
+    }
 
-  &.gcr {
-      background: url('../assets/icons/ic-google-container-registry.svg');
-  }
-  &.other {
-      background: url('../assets/icons/container.svg');
-  }
+    &.gcr {
+        background: url('../assets/icons/ic-google-container-registry.svg');
+    }
+    &.other {
+        background: url('../assets/icons/container.svg');
+    }
 }
