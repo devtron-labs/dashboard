@@ -311,18 +311,9 @@ function DockerForm({
             selectedDockerRegistryType.value === 'acr' ||
             selectedDockerRegistryType.value === 'artifact-registry' ||
             selectedDockerRegistryType.value === 'gcr' ||
-            selectedDockerRegistryType.value === 'quay'
+            selectedDockerRegistryType.value === 'quay' ||
+            selectedDockerRegistryType.value === 'other'
         ) {
-            if (!customState.username.value || !customState.password.value || !customState.registryUrl.value) {
-                setCustomState((st) => ({
-                    ...st,
-                    username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                    password: { ...st.password, error: st.password.value ? '' : 'Mandatory' },
-                    registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
-                }));
-                return;
-            }
-        } else if (selectedDockerRegistryType.value === 'other') {
             let error = false;
             if (!customState.username.value || !customState.password.value || !customState.registryUrl.value) {
                 setCustomState((st) => ({
@@ -333,7 +324,10 @@ function DockerForm({
                 }));
                 error = true;
             }
-            if (state.advanceSelect.value === CERTTYPE.SECURE_WITH_CERT) {
+            if (
+                selectedDockerRegistryType.value === 'other' &&
+                state.advanceSelect.value === CERTTYPE.SECURE_WITH_CERT
+            ) {
                 if (state.certInput.value === '') {
                     if (!toggleCollapsedAdvancedRegistry) {
                         setToggleCollapsedAdvancedRegistry(not);
