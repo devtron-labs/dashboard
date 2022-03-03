@@ -213,7 +213,7 @@ function DockerForm({
 
     function fetchAWSRegion(): string {
         const pattern = /(ecr.)[a-z]{2}-[a-z]*-[0-9]{1}/i;
-        let result = registryUrl.match(pattern);
+        let result = customState.registryUrl.value.match(pattern);
         if (!result) {
             setCustomState((st) => ({
                 ...st,
