@@ -32,6 +32,9 @@
         }
         .form__field {
             margin-bottom: 16px;
+            .bottom-0 {
+              bottom: 0;
+            }
             .docker-flie-container {
                 display: flex;
                 .checkout-path-container {

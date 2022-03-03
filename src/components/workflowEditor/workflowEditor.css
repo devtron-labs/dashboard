@@ -101,3 +101,7 @@
 .close-button-container{
   text-align: right;
 }
+
+.action-card:hover{
+  background: var(--N50);
+}

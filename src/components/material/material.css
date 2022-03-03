@@ -58,19 +58,14 @@
 
 .sample-repo-container{
     background-color: #F3F0FF;
-    padding: 16px;
-    border-radius: 4px;
     border: 1px solid #C5BBFA;
     margin: 20px 0;
-    display: flex;
 }
 
-.sample-title{
-  font-size: 14px;
-  font-weight: 600;
+.sample-title {
   margin: 0 0 4px 0;
 }
 
-.link-container{
-  color: #0066CC;
+.icon-container {
+  height: 40px;
 }

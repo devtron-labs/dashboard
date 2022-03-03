@@ -67,14 +67,14 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
     const [isCollapsed, setIsCollapsed] = useState(false)
     const _selectedMaterial = ciConfig && ciConfig.dockerBuildConfig && ciConfig.dockerBuildConfig.gitMaterialId ? sourceConfig.material.find(material => material.id === ciConfig.dockerBuildConfig.gitMaterialId) : sourceConfig.material[0];
     const [selectedMaterial, setSelectedMaterial] = useState(_selectedMaterial)
-    const _selectedRegistry = Array.isArray(dockerRegistries) && dockerRegistries.find(reg => reg.isDefault);
+    const _selectedRegistry = ciConfig && ciConfig.dockerRegistry ? dockerRegistries.find(reg => reg.id === ciConfig.dockerRegistry): dockerRegistries.find(reg => reg.isDefault);
     const [selectedRegistry, setSelectedRegistry] = useState(_selectedRegistry)
 
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             repository: { value: _selectedMaterial.name, error: "" },
             dockerfile: { value: ciConfig ? ciConfig.dockerBuildConfig.dockerfileRelativePath : "Dockerfile", error: "" },
-            registry: { value: ciConfig ? ciConfig.dockerRegistry : (Array.isArray(dockerRegistries) ? dockerRegistries.find(reg => reg.isDefault).id || "" : ""), error: "" },
+            registry: { value: _selectedRegistry?.id, error: "" },
             repository_name: { value: ciConfig ? ciConfig.dockerRepository : "", error: "" },
         },
         {
@@ -227,7 +227,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                 {props.children}
                 <NavLink
                     to={`${URLS.GLOBAL_CONFIG_DOCKER}`}
-                    className="cb-5 select__sticky-bottom block fw-5 anchor w-100 cursor no-decor"
+                    className="cb-5 select__sticky-bottom block fw-5 anchor w-100 cursor no-decor bottom-0"
                     style={{ backgroundColor: '#FFF' }}
                 >
                     <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />

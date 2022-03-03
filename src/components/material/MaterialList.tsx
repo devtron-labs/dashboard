@@ -114,13 +114,13 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
           return '';
       }
       return (
-          <div className="sample-repo-container">
-              <span className="mr-8">
+          <div className="sample-repo-container br-16 p-16 flexbox">
+              <span className="mr-16 icon-container">
                   <GitHub />
               </span>
               <div>
-                  <h1 className="sample-title">Looking to deploy a sample application?</h1>
-                  <span className="link-container">
+                  <h1 className="sample-title fs-14 fw-6">Looking to deploy a sample application?</h1>
+                  <span className="cb-5 fs-13">
                       <a
                           rel="noreferrer noopener"
                           target="_blank"
