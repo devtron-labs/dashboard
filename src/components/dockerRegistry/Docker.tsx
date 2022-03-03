@@ -298,14 +298,22 @@ function DockerForm({
                 }));
                 return;
             }
+        } else if (selectedDockerRegistryType.value === 'docker-hub') {
+            if (!customState.username.value || !customState.password.value) {
+                setCustomState((st) => ({
+                    ...st,
+                    username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
+                    password: { ...st.password, error: st.password.value ? '' : 'Mandatory' },
+                }));
+                return;
+            }
         } else if (
-            selectedDockerRegistryType.value === 'docker-hub' ||
             selectedDockerRegistryType.value === 'acr' ||
             selectedDockerRegistryType.value === 'artifact-registry' ||
             selectedDockerRegistryType.value === 'gcr' ||
             selectedDockerRegistryType.value === 'quay'
         ) {
-            if (!customState.username.value || !customState.password.value) {
+            if (!customState.username.value || !customState.password.value || !customState.registryUrl.value) {
                 setCustomState((st) => ({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
@@ -316,12 +324,7 @@ function DockerForm({
             }
         } else if (selectedDockerRegistryType.value === 'other') {
             let error = false;
-            if (
-                !customState.username.value ||
-                !customState.password.value ||
-                !customState.registryUrl.value ||
-                !customState.registryUrl.value
-            ) {
+            if (!customState.username.value || !customState.password.value || !customState.registryUrl.value) {
                 setCustomState((st) => ({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
