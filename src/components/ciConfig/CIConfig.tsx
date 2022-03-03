@@ -324,7 +324,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                     <div className="form__field">
                         <label htmlFor="" className="form__label">Container Repository {REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.desiredFormat}</label>
                         <input
-                            tabIndex={4}
+                            tabIndex={2}
                             type="text"
                             className="form__input"
                             placeholder={REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.placeholderText || 'Enter repository name'}
@@ -343,7 +343,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                     <div className="form__field">
                         <label className="form__label">Select repository containing docker file</label>
                         <ReactSelect className="m-0"
-                        tabIndex='1'
+                        tabIndex='3'
                         isMulti={false}
                         isClearable={false}
                         options={sourceConfig.material}
@@ -356,7 +356,6 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                             Option: repositoryOption,
                             Control: repositoryControls,
                         }}
-
                         onChange={(selected) => { handleFileLocationChange(selected) }}
                     />
                         {repository.error && <label className="form__error">{repository.error}</label>}
@@ -366,14 +365,13 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         <div className="docker-flie-container">
                         <span className="checkout-path-container">{selectedMaterial.checkoutPath}</span>
                         <input
-                            tabIndex={2}
+                            tabIndex={4}
                             type="text"
                             className="form__input file-name"
                             placeholder="Dockerfile"
                             name="dockerfile"
                             value={dockerfile.value}
                             onChange={handleOnChange}
-                            autoFocus
                             autoComplete={"off"}
                         />
                         </div>

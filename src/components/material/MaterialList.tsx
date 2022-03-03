@@ -114,7 +114,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
           return '';
       }
       return (
-          <div className="sample-repo-container br-16 p-16 flexbox">
+          <div className="sample-repo-container br-8 p-16 flexbox">
               <span className="mr-16 icon-container">
                   <GitHub />
               </span>
