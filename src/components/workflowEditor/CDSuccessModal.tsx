@@ -10,9 +10,10 @@ interface CDSuccessModalType {
     appId: string;
     envId: number;
     closeSuccessPopup: () => void;
+    envName: string;
 }
 
-export default function CDSuccessModal({ appId, envId, closeSuccessPopup }: CDSuccessModalType) {
+export default function CDSuccessModal({ appId, envId, closeSuccessPopup, envName }: CDSuccessModalType) {
     return (
         <VisibleModal className="transition-effect">
             <div className="modal__body" style={{ width: '600px' }}>
@@ -30,7 +31,7 @@ export default function CDSuccessModal({ appId, envId, closeSuccessPopup }: CDSu
                         <GotToBuildDeploy />
                     </div>
                     <div className="ml-16 mr-16 flex-1">
-                        <div className="fw-6 fs-13">Deploy this app on prod-devtroncd</div>
+                        <div className="fw-6 fs-13">Deploy this app on {envName}</div>
                         <div>
                             <NavLink to={`${URLS.APP}/${appId}/${URLS.APP_TRIGGER}`} className="cb-5 no-decor">
                                 Go to Build & Deploy
@@ -43,7 +44,7 @@ export default function CDSuccessModal({ appId, envId, closeSuccessPopup }: CDSu
                         <GoToEnvOverride />
                     </div>
                     <div className="ml-16 mr-16 flex-1">
-                        <div className="fw-6 fs-13">Override deployment configurations for prod-devtroncd</div>
+                        <div className="fw-6 fs-13">Override deployment configurations for {envName}</div>
                         <div>
                             <NavLink
                                 to={`${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`}

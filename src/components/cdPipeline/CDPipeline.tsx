@@ -494,7 +494,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             if (response.result) {
                 let pipelineConfigFromRes = response.result.pipelines[0];
                 this.updateStateFromResponse(pipelineConfigFromRes, this.state.environments);
-                this.props.close(true, this.state.pipelineConfig.environmentId);
+                this.props.close(true, this.state.pipelineConfig.environmentId, this.state.pipelineConfig.environmentName);
                 this.props.getWorkflows();
             }
         }).catch((error: ServerErrors) => {

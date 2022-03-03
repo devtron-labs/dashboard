@@ -25,7 +25,7 @@ export interface CDPipelineProps extends RouteComponentProps<{ appId: string, ci
     appName: string;
     downstreamNodeSize: number;
     getWorkflows: () => void;
-    close: (showSuccessCD?: boolean, environmentId?: number) => void;
+    close: (showSuccessCD?: boolean, environmentId?: number, environmentName?: string) => void;
 }
 
 export interface CDStageType {
@@ -53,6 +53,7 @@ export interface CDPipelineState {
     pipelineConfig: {
         id: number;
         environmentId: number;
+        environmentName?: string;
         ciPipelineId: number;
         triggerType: string;
         name: string;

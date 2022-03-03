@@ -21,6 +21,7 @@ export interface WorkflowEditState {
     };
     showSuccessScreen: boolean;
     environmentId?: number;
+    environmentName?: string;
 }
 
 export interface WorkflowEditProps extends RouteComponentProps<{ appId: string, workflowId: string, ciPipelineId: string, cdPipelineId: string }> {
