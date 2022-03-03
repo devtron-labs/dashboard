@@ -202,6 +202,15 @@ function DockerForm({
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }));
     }
 
+    const handleRegistryTypeChange = (selectedRegistry) => {
+        setSelectedDockerRegistryType(selectedRegistry);
+        setCustomState((st) => ({
+            ...st,
+            username: { value: selectedRegistry.id.defaultValue, error: '' },
+            registryUrl: { value: selectedRegistry.defaultRegistryURL, error: '' },
+        }));
+    };
+
     function fetchAWSRegion(): string {
         const pattern = /(ecr.)[a-z]{2}-[a-z]*-[0-9]{1}/i;
         let result = registryUrl.match(pattern);
@@ -301,6 +310,7 @@ function DockerForm({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
                     password: { ...st.password, error: st.password.value ? '' : 'Mandatory' },
+                    registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
                 }));
                 return;
             }
@@ -431,9 +441,7 @@ function DockerForm({
                             Option: registryOptions,
                             Control: registryControls,
                         }}
-                        onChange={(selected) => {
-                            setSelectedDockerRegistryType(selected);
-                        }}
+                        onChange={handleRegistryTypeChange}
                         isDisabled={!!id}
                     />
                     {state.registryType.error && <div className="form__error">{state.registryType.error}</div>}
