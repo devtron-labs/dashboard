@@ -414,7 +414,7 @@ export default function HelmAppList({
                                     <p className="truncate-text m-0">
                                         {app.environmentDetail.environmentName
                                             ? app.environmentDetail.environmentName
-                                            : '-'}
+                                            : app.environmentDetail.clusterName + "__" + app.environmentDetail.namespace}
                                     </p>
                                 </div>
                                 <div className="app-list__cell app-list__cell--cluster">

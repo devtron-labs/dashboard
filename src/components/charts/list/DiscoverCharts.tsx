@@ -296,7 +296,7 @@ function DiscoverChartList() {
                                         showCheckBoxOnHoverOnly={state.charts.length === 0}
                                         addChart={addChart}
                                         subtractChart={subtractChart}
-                                        onClick={(chartId) => state.charts.length === 0 ? (serverMode == SERVER_MODE.FULL ? history.push(`${url}/chart/${chart.id}`) : history.push(`${url}/chart/${chart.id}/deploy-chart`))  : selectChart(chartId)}
+                                        onClick={(chartId) => state.charts.length === 0 ? history.push(`${url}/chart/${chart.id}`)  : selectChart(chartId)}
                                     />)}
                                 </div>
                             </>}
