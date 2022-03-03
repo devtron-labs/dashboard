@@ -29,7 +29,6 @@ function ExternalAppDetail({appId, appName}) {
             }
         };
     }, []);
-    
 
     useEffect(() => {
         if(checkIfToRefetchData(location)){

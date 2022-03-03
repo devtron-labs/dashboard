@@ -8,6 +8,7 @@ import { BrowserRouter } from 'react-router-dom';
 interface customEnv {
     SENTRY_ENV?: string,
     SENTRY_ENABLED?: boolean,
+    SENTRY_DSN?: string;
     HOTJAR_ENABLED?: boolean;
     CLUSTER_NAME?: boolean;
     APPLICATION_METRICS_ENABLED?: boolean;
@@ -44,7 +45,7 @@ if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.SENTRY
             }
             return breadcrumb
         },
-        dsn: "https://b3d03492f33141fbac93dc79b54c4ddf@sentry.io/1762728",
+        dsn: window._env_.SENTRY_DSN || '',
         integrations: [new CaptureConsole({ levels: ['error'] })],
         ...(process.env.REACT_APP_GIT_SHA ? { release: `dashboard@${process.env.REACT_APP_GIT_SHA}` } : {}),
         environment: window._env_ && window._env_.SENTRY_ENV ? window._env_.SENTRY_ENV : 'staging',
@@ -56,6 +57,7 @@ if (!window || !window._env_ ) {
     window._env_ = {
         SENTRY_ENV: "staging",
         SENTRY_ENABLED: false,
+        SENTRY_DSN: "",
         HOTJAR_ENABLED: false,
         GA_ENABLED: false,
         APPLICATION_METRICS_ENABLED: false,

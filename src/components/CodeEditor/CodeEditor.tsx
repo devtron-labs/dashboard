@@ -7,7 +7,31 @@ import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclama
 import YAML from 'yaml'
 import './codeEditor.scss';
 import ReactGA from 'react-ga';
-import { editor } from 'monaco-editor';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import 'monaco-editor';
+// @ts-ignore
+import 'monaco-yaml/lib/esm/monaco.contribution';
+// @ts-ignore
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import EditorWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worker';
+// @ts-ignore
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import YamlWorker from 'worker-loader!monaco-yaml/lib/esm/yaml.worker';
+import { MODES } from '../../../src/config/constants';
+
+// @ts-ignore
+window.MonacoEnvironment = {
+    // @ts-ignore
+    getWorker(workerId, label : string) :void{
+        if (label === MODES.YAML) {
+            return new YamlWorker();
+        }
+        return new EditorWorker();
+    },
+};
+
+// @ts-ignore
+const { yaml } = monaco.languages || {};
 
 
 interface WarningProps { text: string }
@@ -37,6 +61,8 @@ interface CodeEditorInterface {
     theme?: string;
     original?: string;
     focus?: boolean;
+    validatorSchema?: any;
+    isKubernetes?: boolean;
 }
 
 interface CodeEditorHeaderInterface {
@@ -86,7 +112,7 @@ interface CodeEditorState {
     height: string;
     noParsing: boolean;
 }
-const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus}) {
+const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema ,isKubernetes = true}) {
     const editorRef = useRef(null)
     const monacoRef = useRef(null)
     const { width, height: windowHeight } = useWindowSize()
@@ -116,9 +142,9 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         noParsing: ['json', 'yaml'].includes(mode) ? noParsing : true
     }
     const [state, dispatch] = useReducer(memoisedReducer, initialState)
-    const [nativeObject, json, yaml, error] = useJsonYaml(state.code, tabSize, state.mode, !state.noParsing)
+    const [nativeObject, json, yamlCode, error] = useJsonYaml(state.code, tabSize, state.mode, !state.noParsing)
     const [, originalJson, originlaYaml, originalError] = useJsonYaml(defaultValue, tabSize, state.mode, !state.noParsing)
-    editor.defineTheme('vs-dark--dt', {
+    monaco.editor.defineTheme('vs-dark--dt', {
         base: 'vs-dark',
         inherit: true,
         rules: [
@@ -129,7 +155,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             'editor.background': '#0B0F22',
         }
     });
-
+    
     function editorDidMount(editor, monaco) {
         if (
             mode === 'yaml' &&
@@ -176,6 +202,26 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             }
         }
     };
+
+    useEffect(() => {
+        if (!validatorSchema) return;
+        yaml &&
+            yaml.yamlDefaults.setDiagnosticsOptions({
+                validate: true,
+                enableSchemaRequest: true,
+                hover: true,
+                completion: true,
+                isKubernetes: isKubernetes,
+                format: true,
+                schemas:[
+                    {
+                        uri: 'https://devtron.ai/schema.json', // id of the first schema
+                        fileMatch: ['*'], // associate with our model
+                        schema: validatorSchema,
+                    }]
+            });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [validatorSchema]);
 
     useEffect(() => {
         if (!editorRef.current) return
@@ -241,10 +287,10 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
 
     function handleLanguageChange(mode: 'json' | 'yaml') {
         dispatch({ type: 'changeLanguage', value: mode })
-        dispatch({ type: 'setCode', value: mode === 'json' ? json : yaml })
+        dispatch({ type: 'setCode', value: mode === 'json' ? json : yamlCode })
     }
 
-    const options: editor.IEditorConstructionOptions = {
+    const options: monaco.editor.IEditorConstructionOptions = {
         selectOnLineNumbers: true,
         roundedSelection: false,
         readOnly,

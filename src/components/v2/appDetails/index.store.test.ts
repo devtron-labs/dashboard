@@ -1,23 +1,27 @@
 import { getPodsRootParent, getiNodesByKind } from './index.store';
-import { nodesWithPodOnly, nodesWithDeployment, nodesWithStatefulSet, nodesWithMultiDeployment, nodesWithMultiDeploymentAndStatefulSet, statefulSeWithChildren, ndesWithMultiDeploymentResponse } from './index.store.data.test';
+import { nodesWithPodOnly, nodesWithDeployment, nodesWithStatefulSet, nodesWithMultiDeployment, nodesWithMultiDeploymentAndStatefulSet, statefulSeWithChildren, ndesWithMultiDeploymentResponse, nodesWithMultiDeploymentAndStatefulSetAndStatus } from './index.store.data.test';
 test('get pod root when root missing', () => {
     expect(getPodsRootParent(nodesWithPodOnly)).toStrictEqual([] as Array<string>)
 })
 
 test('get pod root as deployment', () => {
-    expect(getPodsRootParent(nodesWithDeployment)).toStrictEqual(["apps/v1/Deployment/Deployment"] as Array<string>)
+    expect(getPodsRootParent(nodesWithDeployment)).toStrictEqual([["apps/v1/Deployment/Deployment", ""]] as Array<[string, string]>)
 })
 
 test('get pod root as statefulset', () => {
-    expect(getPodsRootParent(nodesWithStatefulSet)).toStrictEqual(["apps/v1/StatefulSet/StatefulSet1"] as Array<string>)
+    expect(getPodsRootParent(nodesWithStatefulSet)).toStrictEqual([["apps/v1/StatefulSet/StatefulSet1", ""]] as Array<[string, string]>)
 })
 
 test('get pod root as 2 deployment', () => {
-    expect(getPodsRootParent(nodesWithMultiDeployment)).toStrictEqual(["apps/v1/Deployment/Deployment", "apps/v1/Deployment/Deployment2"] as Array<string>)
+    expect(getPodsRootParent(nodesWithMultiDeployment)).toStrictEqual([["apps/v1/Deployment/Deployment", ""], ["apps/v1/Deployment/Deployment2", ""]] as Array<[string, string]>)
 })
 
 test('get pod root as 2 deployment and statefulset', () => {
-    expect(getPodsRootParent(nodesWithMultiDeploymentAndStatefulSet)).toStrictEqual(["apps/v1/Deployment/Deployment", "apps/v1/Deployment/Deployment2","apps/v1/StatefulSet/StatefulSet1"] as Array<string>)
+    expect(getPodsRootParent(nodesWithMultiDeploymentAndStatefulSet)).toStrictEqual([["apps/v1/Deployment/Deployment", ""], ["apps/v1/Deployment/Deployment2", ""], ["apps/v1/StatefulSet/StatefulSet1", ""]] as Array<[string, string]>)
+})
+
+test('get pod root as 2 deployment and statefulset with status', () => {
+    expect(getPodsRootParent(nodesWithMultiDeploymentAndStatefulSetAndStatus)).toStrictEqual([["apps/v1/Deployment/Deployment", "degraded"], ["apps/v1/Deployment/Deployment2", ""], ["apps/v1/StatefulSet/StatefulSet1", ""]] as Array<[string, string]>)
 })
 
 test('get tree by kind for statefulset', () => {

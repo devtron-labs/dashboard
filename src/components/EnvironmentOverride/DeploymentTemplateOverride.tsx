@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useReducer, useCallback } from 'react'
 import { useParams } from 'react-router'
+import ReadmeConfig from '../deploymentConfig/ReadmeConfig'
 import { getDeploymentTemplate, createDeploymentTemplate, updateDeploymentTemplate, deleteDeploymentTemplate, createNamespace, toggleAppMetrics, chartRefAutocomplete } from './service'
 import fileIcon from '../../assets/icons/ic-file.svg'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as ArrowSquareOut }from '../../assets/icons/misc/arrowSquareOut.svg';
 import { Override } from './ConfigMapOverrides'
-import { Select, mapByKey, showError, not, Progressing, ConfirmationDialog, Info, useEffectAfterMount, useJsonYaml } from '../common'
+import { Select, mapByKey, showError, not, Progressing, ConfirmationDialog,VisibleModal, Info, useEffectAfterMount, useJsonYaml } from '../common'
 import CodeEditor from '../CodeEditor/CodeEditor';
 import { toast } from 'react-toastify'
 import { OptApplicationMetrics } from '../deploymentConfig/DeploymentConfig'
+import '../deploymentConfig/deploymentConfig.scss';
 import warningIcon from '../../assets/img/warning-medium.svg'
+import { MODES } from '../../../src/config/constants';
 import YAML from 'yaml'
 
 export default function DeploymentTemplateOverride({ parentState, setParentState, ...props }) {
@@ -164,9 +168,11 @@ export default function DeploymentTemplateOverride({ parentState, setParentState
 
 function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initialise, handleAppMetrics, handleDelete, chartRefLoading }) {
     const [tempValue, setTempValue] = useState("")
+    const [showReadme, setReadme] = useState(false)
     const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
     const [loading, setLoading] = useState(false)
     const { appId, envId } = useParams<{ appId, envId }>()
+    
     async function handleSubmit(e) {
         e.preventDefault();
         if (!obj) {
@@ -236,25 +242,41 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                         </Select>
                     </div>}
                 </div>
-                <div className="code-editor-container">
+                <div className="form__row form__row--code-editor-container">
                     <CodeEditor
-                        value={state ? state.duplicate ? YAML.stringify(state.duplicate, { indent: 2 }) : YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
-                        onChange={res => setTempValue(res)}
+                        value={tempValue? tempValue:state ? state.duplicate ? YAML.stringify(state.duplicate, { indent: 2 }) : YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
+                        onChange={ tempValue => {setTempValue(tempValue)}}
                         defaultValue={state && state.data && state.duplicate ? YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
-                        mode="yaml"
+                        mode={MODES.YAML}
+                        validatorSchema={state.data.schema}
                         readOnly={!state.duplicate}
-                        loading={chartRefLoading}
-                    >
-                        <CodeEditor.Header>
-                            <CodeEditor.LanguageChanger />
-                            <CodeEditor.ValidationError />
-                        </CodeEditor.Header>
+                        loading={chartRefLoading}>    
+                        <div className='readme-container ' >
+                            <CodeEditor.Header>
+                                <h5>{MODES.YAML.toUpperCase()}</h5>
+                                <CodeEditor.ValidationError />
+                            </CodeEditor.Header>
+                            {state.data.readme && <div className="cb-5 fw-6 fs-13 flexbox pr-16 pt-10 cursor border-bottom-1px" onClick={e => setReadme(true)}>README<ArrowSquareOut className="icon-dim-18 scb-5 ml-5 rotateBy--90"/></div>}
+                        </div>
                     </CodeEditor>
                 </div>
                 <div className="form__buttons mt-12">
                     <button className="cta" disabled={!state.duplicate}>{loading ? <Progressing /> : 'Save'}</button>
                 </div>
             </form>
+            {showReadme && <VisibleModal className="">
+                <ReadmeConfig
+                    value={tempValue? tempValue:state ? state.duplicate ? YAML.stringify(state.duplicate, { indent: 2 }) : YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
+                    loading={chartRefLoading}
+                    onChange={tempValue => {setTempValue(tempValue)}}
+                    handleClose={e => setReadme(false)}
+                    schema={state.data.schema}
+                    defaultValue={state && state.data && state.duplicate ? YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
+                    height={500}
+                    readOnly={!state.duplicate}
+                    readme={state.data.readme}
+                />
+            </VisibleModal>}
             {appMetricsEnvironmentVariableEnabled && <OptApplicationMetrics
                 currentVersion={state.charts.get(state.selectedChartRefId).version}
                 onChange={handleAppMetrics}
