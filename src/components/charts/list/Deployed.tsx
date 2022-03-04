@@ -321,7 +321,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     <span className='empty-height' style={{ height: "calc(100vh - 160px)" }}>
                         <EmptyState>
                             <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
-                            <EmptyState.Title><h4>No matching Charts</h4></EmptyState.Title>
+                            <EmptyState.Title><h4>No matching charts</h4></EmptyState.Title>
                             <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
                             <button type="button" onClick={this.handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
                         </EmptyState>
