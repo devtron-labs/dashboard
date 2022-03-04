@@ -210,7 +210,7 @@ export default function ChartGroupUpdate({ }) {
                                     title={'No matching charts'}
                                     subTitle={"We couldn't find any matching results"}
                                     onClickViewChartButton={handleViewAllCharts}
-                                    buttonText={'View connected chart repositories'} 
+                                    buttonText={'View all charts'} 
                                     heightToDeduct={'150px'}
                             />
                             </>

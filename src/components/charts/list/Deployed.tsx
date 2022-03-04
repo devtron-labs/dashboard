@@ -321,7 +321,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                             title={'No matching charts'}
                             subTitle={"We couldn't find any matching results"}
                             onClickViewChartButton={this.handleViewAllCharts}
-                            buttonText={'View connected chart repositories'} 
+                            buttonText={'View all charts'} 
                             heightToDeduct={'160px'}
                             /> 
                 </div>
