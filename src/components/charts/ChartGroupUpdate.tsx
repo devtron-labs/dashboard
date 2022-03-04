@@ -14,9 +14,8 @@ import { Prompt } from 'react-router';
 import { ReactComponent as SaveIcon } from '../../assets/icons/ic-save.svg'
 import AppSelector from '../AppSelector'
 import ChartHeaderFilters from './ChartHeaderFilters'
-import EmptyState from '../EmptyState/EmptyState';
-import emptyImage from '../../assets/img/empty-noresult@2x.png';
 import { QueryParams } from './charts.util';
+import ChartEmptyState from '../common/emptyState/ChartEmptyState'
 
 
 export default function ChartGroupUpdate({ }) {
@@ -207,14 +206,14 @@ export default function ChartGroupUpdate({ }) {
                                 setAppStoreName={setAppStoreName}
                                 handleCloseFilter={handleCloseFilter}
                             />
-                            <div style={{ height: "calc(100vh - 150px" }}>
-                                <EmptyState>
-                                    <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
-                                    <EmptyState.Title><h4>No matching charts</h4></EmptyState.Title>
-                                    <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
-                                    <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
-                                </EmptyState>
-                            </div></>
+                             <ChartEmptyState
+                                    title={'No matching charts'}
+                                    subTitle={"We couldn't find any matching results"}
+                                    onClickViewChartButton={handleViewAllCharts}
+                                    buttonText={'View connected chart repositories'} 
+                                    heightToDeduct={'150px'}
+                            />
+                            </>
                             : <>
                                 <ChartHeaderFilters
                                     chartRepoList={state.chartRepos}

@@ -13,8 +13,7 @@ import { AllCheckModal } from '../../checkList/AllCheckModal';
 import DeployedChartFilters from './DeployedChartFilters';
 import { showError } from '../../common';
 import { getChartRepoList, getEnvironmentListMin } from '../../../services/service'
-import emptyImage from '../../../assets/img/empty-noresult@2x.png';
-import EmptyState from '../../EmptyState/EmptyState';
+import ChartEmptyState from '../../common/emptyState/ChartEmptyState';
 
 const QueryParams = {
     ChartRepoId: 'chartRepoId',
@@ -318,15 +317,13 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                         selectedChartRepo={this.state.selectedChartRepo}
                         selectedEnvironment={this.state.selectedEnvironment}
                     />
-                    <span className='empty-height' style={{ height: "calc(100vh - 160px)" }}>
-                        <EmptyState>
-                            <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
-                            <EmptyState.Title><h4>No matching charts</h4></EmptyState.Title>
-                            <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
-                            <button type="button" onClick={this.handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
-                        </EmptyState>
-                    </span>
-                    { }
+                      <ChartEmptyState
+                            title={'No matching charts'}
+                            subTitle={"We couldn't find any matching results"}
+                            onClickViewChartButton={this.handleViewAllCharts}
+                            buttonText={'View connected chart repositories'} 
+                            heightToDeduct={'160px'}
+                            /> 
                 </div>
             }
         }

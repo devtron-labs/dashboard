@@ -241,23 +241,12 @@ function DiscoverChartList() {
                         handleNameChange={handleNameChange}
                         discardValuesYamlChanges={discardValuesYamlChanges}
                     /> : 
-                    <>
-                    <ChartEmptyState
+                     <ChartEmptyState
                             title={'No charts available right now'}
                             subTitle={'The connected chart repositories are syncing or no charts are available.'}
                             onClickViewChartButton={handleViewAllCharts}
-                            buttonText={'View connected chart repositories'} />
-{/*                             
-                            <span className='empty-height'>
-                                <EmptyState>
-                                    <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
-                                    <EmptyState.Title><h4></h4></EmptyState.Title>
-                                    <EmptyState.Subtitle></EmptyState.Subtitle>
-                                    <button type="button" className="cta ghosted mb-24 mt-10"></button>
-                                </EmptyState>
-                            </span> */}
-                            </>
-                            
+                            buttonText={'View connected chart repositories'}
+                            />
                         }
                 </div>
                     : <div className="discover-charts__body-details">
