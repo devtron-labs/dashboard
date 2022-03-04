@@ -208,7 +208,7 @@ export default function ChartGroupUpdate({ }) {
                             />
                              <ChartEmptyState
                                     onClickViewChartButton={handleViewAllCharts}
-                                    heightToDeduct={'150px'}
+                                    heightToDeduct={150}
                             />
                             </>
                             : <>

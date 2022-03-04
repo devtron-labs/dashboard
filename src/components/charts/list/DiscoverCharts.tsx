@@ -215,12 +215,12 @@ function DiscoverChartList() {
                 </ConditionalWrap>
 
                 <div className="page-header__cta-container flex">
-                    { chartList.length ?
+                    { chartList.length > 0 &&
                         serverMode == SERVER_MODE.FULL && state.charts.length === 0 &&
                         <button type="button" className="cta flex"
                                 onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}>
                             <Add className="icon-dim-18 mr-5" />Create Group
-                        </button> : ''
+                        </button>
                     }
                 </div>
 

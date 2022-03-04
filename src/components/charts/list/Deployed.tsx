@@ -319,7 +319,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     />
                       <ChartEmptyState
                             onClickViewChartButton={this.handleViewAllCharts}
-                            heightToDeduct={'160px'}
+                            heightToDeduct={160}
                             /> 
                 </div>
             }
