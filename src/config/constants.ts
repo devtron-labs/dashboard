@@ -276,7 +276,7 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
         registryURL: {
             label: 'Registry URL*',
             defaultValue: '',
-            placeholder: 'xxx.dkr.ecr.region.amazonaws.com',
+            placeholder: 'xxxxxxxxxxxx.dkr.ecr.region.amazonaws.com',
         },
         id: {
             label: 'Access key ID*',
