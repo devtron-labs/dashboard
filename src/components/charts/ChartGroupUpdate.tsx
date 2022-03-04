@@ -210,9 +210,9 @@ export default function ChartGroupUpdate({ }) {
                             <div style={{ height: "calc(100vh - 150px" }}>
                                 <EmptyState>
                                     <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
-                                    <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
+                                    <EmptyState.Title><h4>No matching Charts</h4></EmptyState.Title>
                                     <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
-                                    <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
+                                    <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View connected chart repositories</button>
                                 </EmptyState>
                             </div></>
                             : <>

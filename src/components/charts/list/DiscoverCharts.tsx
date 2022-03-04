@@ -190,7 +190,7 @@ function DiscoverChartList() {
     }
 
     function handleViewAllCharts() {
-        history.push(`${url}?${QueryParams.IncludeDeprecated}=1`);
+        history.push(`${match.url.split('/chart-store')[0]}${URLS.GLOBAL_CONFIG_CHART}`);
     }
 
     function handleCloseFilter() {
@@ -254,8 +254,8 @@ function DiscoverChartList() {
                             <span className='empty-height'>
                                 <EmptyState>
                                     <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
-                                    <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
-                                    <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
+                                    <EmptyState.Title><h4>No charts available right now</h4></EmptyState.Title>
+                                    <EmptyState.Subtitle>The connected chart repositories are syncing or no charts are available.</EmptyState.Subtitle>
                                     <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
                                 </EmptyState>
                             </span>
