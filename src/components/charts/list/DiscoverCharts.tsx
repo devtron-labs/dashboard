@@ -216,12 +216,12 @@ function DiscoverChartList() {
                 </ConditionalWrap>
 
                 <div className="page-header__cta-container flex">
-                    {
+                    { chartList.length ?
                         serverMode == SERVER_MODE.FULL && state.charts.length === 0 &&
                         <button type="button" className="cta flex"
                                 onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}>
                             <Add className="icon-dim-18 mr-5" />Create Group
-                        </button>
+                        </button> : ''
                     }
                 </div>
 
@@ -241,25 +241,16 @@ function DiscoverChartList() {
                         handleEnvironmentChange={handleEnvironmentChange}
                         handleNameChange={handleNameChange}
                         discardValuesYamlChanges={discardValuesYamlChanges}
-                    /> : <> <ChartListHeader chartRepoList={state.chartRepos}
-                        handleCloseFilter={handleCloseFilter}
-                        setSelectedChartRepo={setSelectedChartRepo}
-                        charts={state.charts}
-                        searchApplied={searchApplied}
-                        appStoreName={appStoreName}
-                        includeDeprecated={includeDeprecated}
-                        selectedChartRepo={selectedChartRepo}
-                        setAppStoreName={setAppStoreName}
-                    />
+                    /> : 
                             <span className='empty-height'>
                                 <EmptyState>
                                     <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
                                     <EmptyState.Title><h4>No charts available right now</h4></EmptyState.Title>
                                     <EmptyState.Subtitle>The connected chart repositories are syncing or no charts are available.</EmptyState.Subtitle>
-                                    <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
+                                    <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24 mt-10">View connected chart repositories</button>
                                 </EmptyState>
                             </span>
-                        </>}
+                        }
                 </div>
                     : <div className="discover-charts__body-details">
                         {typeof state.configureChartIndex === 'number'
