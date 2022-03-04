@@ -194,7 +194,13 @@ function DockerForm({
         awsSecretAccessKey: { value: awsSecretAccessKey, error: '' },
         registryUrl: { value: registryUrl, error: '' },
         username: { value: username, error: '' },
-        password: { value: password, error: '' },
+        password: {
+            value:
+                state.registryType.value === 'gcr' || state.registryType.value === 'artifact-registry'
+                    ? password.substring(1, password.length - 1)
+                    : password,
+            error: '',
+        },
     });
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
@@ -224,6 +230,15 @@ function DockerForm({
         return result[0].split('ecr.')[1];
     }
 
+    function isValidJson(inputString: string) {
+        try {
+            JSON.parse(inputString);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
     const getRegistryPayload = (awsRegion?: string) => {
         return {
             id: state.id.value,
@@ -238,10 +253,11 @@ function DockerForm({
                       awsRegion: awsRegion,
                   }
                 : {}),
+            ...(selectedDockerRegistryType.value === 'artifact-registry' || selectedDockerRegistryType.value === 'gcr'
+                ? { username: customState.username.value, password: `'${customState.password.value}'` }
+                : {}),
             ...(selectedDockerRegistryType.value === 'docker-hub' ||
             selectedDockerRegistryType.value === 'acr' ||
-            selectedDockerRegistryType.value === 'artifact-registry' ||
-            selectedDockerRegistryType.value === 'gcr' ||
             selectedDockerRegistryType.value === 'quay'
                 ? { username: customState.username.value, password: customState.password.value }
                 : {}),
@@ -308,9 +324,23 @@ function DockerForm({
                 return;
             }
         } else if (
-            selectedDockerRegistryType.value === 'acr' ||
             selectedDockerRegistryType.value === 'artifact-registry' ||
-            selectedDockerRegistryType.value === 'gcr' ||
+            selectedDockerRegistryType.value === 'gcr'
+        ) {
+            const isValidJsonFile = isValidJson(customState.password.value);
+            if (!customState.username.value || !customState.password.value || !isValidJsonFile) {
+                setCustomState((st) => ({
+                    ...st,
+                    username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
+                    password: {
+                        ...st.password,
+                        error: st.password.value ? (isValidJsonFile ? '' : 'Invalid JSON') : 'Mandatory',
+                    },
+                }));
+                return;
+            }
+        } else if (
+            selectedDockerRegistryType.value === 'acr' ||
             selectedDockerRegistryType.value === 'quay' ||
             selectedDockerRegistryType.value === 'other'
         ) {
@@ -463,17 +493,13 @@ function DockerForm({
                 <CustomInput
                     name="registryUrl"
                     tabIndex={3}
-                    label={selectedDockerRegistryType.value !== 'docker-hub' ? 'Registry URL*' : 'Registry URL'}
-                    value={customState.registryUrl.value || selectedDockerRegistryType.defaultRegistryURL}
+                    label={selectedDockerRegistryType.registryURL.label}
+                    value={customState.registryUrl.value || selectedDockerRegistryType.registryURL.defaultValue}
                     autoComplete="off"
-                    helperText={
-                        selectedDockerRegistryType.value === 'docker-hub'
-                            ? 'If registry exists on hub.docker.com then leave registry url empty'
-                            : ''
-                    }
                     error={customState.registryUrl.error}
                     onChange={customHandleChange}
                     disabled={!!(registryUrl || selectedDockerRegistryType.defaultRegistryURL)}
+                    placeholder={selectedDockerRegistryType.registryURL.placeholder}
                 />
             </div>
             {selectedDockerRegistryType.value === 'ecr' && (

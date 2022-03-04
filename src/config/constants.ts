@@ -260,6 +260,7 @@ export interface RegistryTypeDetailType {
     placeholderText: string;
     gettingStartedLink: string;
     defaultRegistryURL: string;
+    registryURL: InputDetailType;
     id: InputDetailType;
     password: InputDetailType;
 }
@@ -272,6 +273,11 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
         placeholderText: 'Eg. repo_name',
         gettingStartedLink: 'https://docs.aws.amazon.com/AmazonECR/latest/userguide/get-set-up-for-amazon-ecr.html',
         defaultRegistryURL: '',
+        registryURL: {
+            label: 'Registry URL*',
+            defaultValue: '',
+            placeholder: 'xxx.dkr.ecr.region.amazonaws.com',
+        },
         id: {
             label: 'Access key ID*',
             defaultValue: '',
@@ -290,13 +296,18 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
         placeholderText: 'Eg. username/repo_name',
         gettingStartedLink: 'https://docs.docker.com/docker-hub/',
         defaultRegistryURL: 'docker.io',
+        registryURL: {
+            label: 'Registry URL*',
+            defaultValue: 'docker.io',
+            placeholder: '',
+        },
         id: {
             label: 'Username*',
             defaultValue: '',
             placeholder: '',
         },
         password: {
-            label: 'Token*',
+            label: 'Password/Token (recommended)*',
             defaultValue: '',
             placeholder: '',
         },
@@ -306,15 +317,21 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
         label: 'Azure',
         desiredFormat: '(desired format: repo-name)',
         placeholderText: 'Eg. repo_name',
-        gettingStartedLink: 'https://docs.microsoft.com/en-us/azure/container-registry/',
+        gettingStartedLink:
+            'https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal',
         defaultRegistryURL: '',
+        registryURL: {
+            label: 'Registry url/Login server*',
+            defaultValue: '',
+            placeholder: 'xxx.azurecr.io',
+        },
         id: {
             label: 'Username/Registry name*',
             defaultValue: '',
             placeholder: '',
         },
         password: {
-            label: 'Token*',
+            label: 'Password*',
             defaultValue: '',
             placeholder: '',
         },
@@ -326,6 +343,11 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
         placeholderText: 'Eg. project-id/artifacts-repo/repo-name',
         gettingStartedLink: 'https://cloud.google.com/artifact-registry/docs/manage-repos?hl=en_US',
         defaultRegistryURL: '',
+        registryURL: {
+            label: 'Registry URL*',
+            defaultValue: '',
+            placeholder: 'region-docker.pkg.dev',
+        },
         id: {
             label: 'Username*',
             defaultValue: '_json_key',
@@ -344,6 +366,11 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
         placeholderText: 'Eg. project-id/repo_name',
         gettingStartedLink: 'https://cloud.google.com/container-registry/docs/quickstart',
         defaultRegistryURL: 'gcr.io',
+        registryURL: {
+            label: 'Registry URL*',
+            defaultValue: 'gcr.io',
+            placeholder: '',
+        },
         id: {
             label: 'Username*',
             defaultValue: '_json_key',
@@ -362,6 +389,11 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
         placeholderText: 'Eg. username/repo_name',
         gettingStartedLink: '',
         defaultRegistryURL: 'quay.io',
+        registryURL: {
+            label: 'Registry URL*',
+            defaultValue: 'quay.io',
+            placeholder: '',
+        },
         id: {
             label: 'Username*',
             defaultValue: '',
@@ -380,13 +412,18 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
         placeholderText: '',
         gettingStartedLink: '',
         defaultRegistryURL: '',
+        registryURL: {
+            label: 'Registry URL*',
+            defaultValue: '',
+            placeholder: '',
+        },
         id: {
             label: 'Username*',
             defaultValue: '',
             placeholder: '',
         },
         password: {
-            label: 'Password*',
+            label: 'Password/Token*',
             defaultValue: '',
             placeholder: '',
         },
