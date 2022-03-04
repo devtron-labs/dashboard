@@ -21,14 +21,13 @@ import { DOCUMENTATION, URLS, SERVER_MODE } from '../../../config';
 import { Prompt } from 'react-router';
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import Tippy from '@tippyjs/react'
-import emptyImage from '../../../assets/img/empty-noresult@2x.png';
-import EmptyState from '../../EmptyState/EmptyState';
 import { isGitopsConfigured } from '../../../services/service';
 import warn from '../../../assets/icons/ic-warning.svg';
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
 import ChartHeaderFilter from '../ChartHeaderFilters';
 import { QueryParams } from '../charts.util';
 import { mainContext } from '../../common/navigation/NavigationRoutes';
+import ChartEmptyState from '../../common/emptyState/ChartEmptyState';
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -242,14 +241,23 @@ function DiscoverChartList() {
                         handleNameChange={handleNameChange}
                         discardValuesYamlChanges={discardValuesYamlChanges}
                     /> : 
+                    <>
+                    <ChartEmptyState
+                            title={'No charts available right now'}
+                            subTitle={'The connected chart repositories are syncing or no charts are available.'}
+                            onClickViewChartButton={handleViewAllCharts}
+                            buttonText={'View connected chart repositories'} />
+{/*                             
                             <span className='empty-height'>
                                 <EmptyState>
                                     <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
-                                    <EmptyState.Title><h4>No charts available right now</h4></EmptyState.Title>
-                                    <EmptyState.Subtitle>The connected chart repositories are syncing or no charts are available.</EmptyState.Subtitle>
-                                    <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24 mt-10">View connected chart repositories</button>
+                                    <EmptyState.Title><h4></h4></EmptyState.Title>
+                                    <EmptyState.Subtitle></EmptyState.Subtitle>
+                                    <button type="button" className="cta ghosted mb-24 mt-10"></button>
                                 </EmptyState>
-                            </span>
+                            </span> */}
+                            </>
+                            
                         }
                 </div>
                     : <div className="discover-charts__body-details">
