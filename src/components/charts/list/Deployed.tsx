@@ -318,10 +318,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                         selectedEnvironment={this.state.selectedEnvironment}
                     />
                       <ChartEmptyState
-                            title={'No matching charts'}
-                            subTitle={"We couldn't find any matching results"}
                             onClickViewChartButton={this.handleViewAllCharts}
-                            buttonText={'View all charts'} 
                             heightToDeduct={'160px'}
                             /> 
                 </div>

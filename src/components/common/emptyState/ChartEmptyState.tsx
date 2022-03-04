@@ -3,10 +3,10 @@ import EmptyState from '../../EmptyState/EmptyState';
 import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 
 interface EmptyChartType {
-    title: string;
-    subTitle: string;
+    title?: string;
+    subTitle?: string;
     onClickViewChartButton: () => void;
-    buttonText: string;
+    buttonText?: string;
     heightToDeduct?: string;
 }
 
@@ -18,11 +18,11 @@ function ChartEmptyState({ title, subTitle, onClickViewChartButton, buttonText, 
                     <img src={emptyImage} alt="" />
                 </EmptyState.Image>
                 <EmptyState.Title>
-                    <h4>{title}</h4>
+                    <h4>{title || "No matching charts"}</h4>
                 </EmptyState.Title>
-                <EmptyState.Subtitle>{subTitle}</EmptyState.Subtitle>
+                <EmptyState.Subtitle>{subTitle || "We couldn't find any matching results"}</EmptyState.Subtitle>
                 <button type="button" onClick={onClickViewChartButton} className="cta ghosted mb-24 mt-10">
-                    {buttonText}
+                    {buttonText || "View all charts"}
                 </button>
             </EmptyState>
         </span>

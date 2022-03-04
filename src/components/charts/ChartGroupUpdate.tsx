@@ -207,10 +207,7 @@ export default function ChartGroupUpdate({ }) {
                                 handleCloseFilter={handleCloseFilter}
                             />
                              <ChartEmptyState
-                                    title={'No matching charts'}
-                                    subTitle={"We couldn't find any matching results"}
                                     onClickViewChartButton={handleViewAllCharts}
-                                    buttonText={'View all charts'} 
                                     heightToDeduct={'150px'}
                             />
                             </>
