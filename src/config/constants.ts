@@ -276,7 +276,7 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
         registryURL: {
             label: 'Registry URL*',
             defaultValue: '',
-            placeholder: 'xxxxxxxxxxxx.dkr.ecr.region.amazonaws.com',
+            placeholder: 'Eg. xxxxxxxxxxxx.dkr.ecr.region.amazonaws.com',
         },
         id: {
             label: 'Access key ID*',
@@ -323,7 +323,7 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
         registryURL: {
             label: 'Registry url/Login server*',
             defaultValue: '',
-            placeholder: 'xxx.azurecr.io',
+            placeholder: 'Eg. xxx.azurecr.io',
         },
         id: {
             label: 'Username/Registry name*',
@@ -346,7 +346,7 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
         registryURL: {
             label: 'Registry URL*',
             defaultValue: '',
-            placeholder: 'region-docker.pkg.dev',
+            placeholder: 'Eg. region-docker.pkg.dev',
         },
         id: {
             label: 'Username*',

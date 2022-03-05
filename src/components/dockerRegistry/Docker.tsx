@@ -502,37 +502,36 @@ function DockerForm({
                     placeholder={selectedDockerRegistryType.registryURL.placeholder}
                 />
             </div>
-            {selectedDockerRegistryType.value === 'ecr' && (
-                <div className="form__row form__row--two-third">
-                    <CustomInput
-                        name="awsAccessKeyId"
-                        tabIndex={5}
-                        value={customState.awsAccessKeyId.value}
-                        error={customState.awsAccessKeyId.error}
-                        onChange={customHandleChange}
-                        label={selectedDockerRegistryType.id.label}
-                        autoComplete={'off'}
-                        placeholder={selectedDockerRegistryType.id.placeholder}
-                    />
-                    <ProtectedInput
-                        name="awsSecretAccessKey"
-                        tabIndex={6}
-                        value={customState.awsSecretAccessKey.value}
-                        error={customState.awsSecretAccessKey.error}
-                        onChange={customHandleChange}
-                        label={selectedDockerRegistryType.password.label}
-                        type="password"
-                        placeholder={selectedDockerRegistryType.password.placeholder}
-                    />
-                </div>
-            )}
-            {(selectedDockerRegistryType.value === 'docker-hub' ||
-                selectedDockerRegistryType.value === 'acr' ||
-                selectedDockerRegistryType.value === 'artifact-registry' ||
-                selectedDockerRegistryType.value === 'gcr' ||
-                selectedDockerRegistryType.value === 'quay') && (
+            {selectedDockerRegistryType.value === 'ecr' ? (
                 <>
-                    <div className="form__row form__row--two-third">
+                    <div className="form__row">
+                        <CustomInput
+                            name="awsAccessKeyId"
+                            tabIndex={5}
+                            value={customState.awsAccessKeyId.value}
+                            error={customState.awsAccessKeyId.error}
+                            onChange={customHandleChange}
+                            label={selectedDockerRegistryType.id.label}
+                            autoComplete={'off'}
+                            placeholder={selectedDockerRegistryType.id.placeholder}
+                        />
+                    </div>
+                    <div className="form__row">
+                        <ProtectedInput
+                            name="awsSecretAccessKey"
+                            tabIndex={6}
+                            value={customState.awsSecretAccessKey.value}
+                            error={customState.awsSecretAccessKey.error}
+                            onChange={customHandleChange}
+                            label={selectedDockerRegistryType.password.label}
+                            type="password"
+                            placeholder={selectedDockerRegistryType.password.placeholder}
+                        />
+                    </div>
+                </>
+            ) : (
+                <>
+                    <div className="form__row">
                         <CustomInput
                             name="username"
                             tabIndex={5}
@@ -544,42 +543,41 @@ function DockerForm({
                             disabled={!!selectedDockerRegistryType.id.defaultValue}
                             placeholder={selectedDockerRegistryType.id.placeholder}
                         />
-                        <ProtectedInput
-                            name="password"
-                            tabIndex={6}
-                            value={customState.password.value}
-                            error={customState.password.error}
-                            onChange={customHandleChange}
-                            label={selectedDockerRegistryType.password.label}
-                            placeholder={selectedDockerRegistryType.password.placeholder}
-                            type="password"
-                        />
                     </div>
-                </>
-            )}
-            {selectedDockerRegistryType.value === 'other' && (
-                <>
-                    <div className="form__row form__row--two-third">
-                        <CustomInput
-                            name="username"
-                            tabIndex={5}
-                            value={customState.username.value}
-                            autoComplete={'off'}
-                            error={customState.username.error}
-                            onChange={customHandleChange}
-                            label={selectedDockerRegistryType.id.label}
-                            placeholder={selectedDockerRegistryType.id.placeholder}
-                        />
-                        <ProtectedInput
-                            name="password"
-                            tabIndex={6}
-                            value={customState.password.value}
-                            error={customState.password.error}
-                            onChange={customHandleChange}
-                            label={selectedDockerRegistryType.password.label}
-                            placeholder={selectedDockerRegistryType.password.placeholder}
-                            type="password"
-                        />
+                    <div className="form__row">
+                        {(selectedDockerRegistryType.value === 'docker-hub' ||
+                            selectedDockerRegistryType.value === 'acr' ||
+                            selectedDockerRegistryType.value === 'quay' ||
+                            selectedDockerRegistryType.value === 'other') && (
+                            <ProtectedInput
+                                name="password"
+                                tabIndex={6}
+                                value={customState.password.value}
+                                error={customState.password.error}
+                                onChange={customHandleChange}
+                                label={selectedDockerRegistryType.password.label}
+                                placeholder={selectedDockerRegistryType.password.placeholder}
+                                type="password"
+                            />
+                        )}
+                        {(selectedDockerRegistryType.value === 'artifact-registry' ||
+                            selectedDockerRegistryType.value === 'gcr') && (
+                            <>
+                                <label htmlFor="" className="form__label w-100">
+                                    {selectedDockerRegistryType.password.label}
+                                </label>
+                                <textarea
+                                    name="password"
+                                    tabIndex={6}
+                                    value={customState.password.value}
+                                    className="w-100 p-10"
+                                    rows={3}
+                                    onChange={customHandleChange}
+                                    placeholder={selectedDockerRegistryType.password.placeholder}
+                                />
+                                {state.password?.error && <div className="form__error">{state.password?.error}</div>}
+                            </>
+                        )}
                     </div>
                 </>
             )}
