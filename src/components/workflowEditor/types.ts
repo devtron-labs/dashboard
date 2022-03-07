@@ -7,7 +7,7 @@ export interface WorkflowEditState {
     code: number;
     workflows: any[];
     allCINodeMap: Map<string, NodeAttr>;
-    allDeploymentNodeMap: Map<string, NodeAttr>
+    allDeploymentNodeMap: Map<string, NodeAttr>;
     workflowId: number;
     appName: string;
     showDeleteDialog: boolean;
@@ -18,12 +18,17 @@ export interface WorkflowEditState {
     cIMenuPosition: {
         top: number;
         left: number;
-    }
+    };
+    showSuccessScreen: boolean;
+    environmentId?: number;
+    environmentName?: string;
+    successTitle?: string;
 }
 
-export interface WorkflowEditProps extends RouteComponentProps<{ appId: string, workflowId: string, ciPipelineId: string, cdPipelineId: string }> {
+export interface WorkflowEditProps
+    extends RouteComponentProps<{ appId: string; workflowId: string; ciPipelineId: string; cdPipelineId: string }> {
     configStatus: number;
-    isCiPipeline: boolean;
+    isCDPipeline: boolean;
     respondOnSuccess: () => void;
     getWorkflows: () => void;
 }
@@ -34,7 +39,7 @@ export interface AddWorkflowState {
     showError: boolean;
 }
 
-export interface AddWorkflowProps extends RouteComponentProps<{ appId: string, workflowId: string }> {
+export interface AddWorkflowProps extends RouteComponentProps<{ appId: string; workflowId: string }> {
     name: string;
     onClose: () => void;
     getWorkflows: () => void;
@@ -43,7 +48,7 @@ export interface AddWorkflowProps extends RouteComponentProps<{ appId: string, w
 export interface PipelineSelectProps {
     showMenu: boolean;
     workflowId?: number | string;
-    styles: { left: string; top: string; };
+    styles: { left: string; top: string };
     toggleCIMenu: (event) => void;
     addCIPipeline: (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI', workflowId?: number | string) => void;
 }
