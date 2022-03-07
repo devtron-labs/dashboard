@@ -17,11 +17,12 @@ import './nodeDetailTab.scss';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
 import { multiSelectStyles } from '../../../../common/ReactSelectCustomization';
-import { EnvType, PodMetaData } from '../../../appDetails.type';
+import { EnvType, LogSearchTermType, PodMetaData } from '../../../appDetails.type';
 import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg';
 import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancelled.svg';
 import MessageUI, { MsgUIType } from '../../../../common/message.ui';
 import { Option } from '../../../../common/ReactSelect.utils';
+import { AppDetailsTabs } from '../../../appDetails.store';
 
 const subject: Subject<string> = new Subject();
 const commandLineParser = require('command-line-parser');
@@ -41,13 +42,12 @@ interface LogState {
     grepTokens?: any;
 }
 
-function LogsComponent({
-    selectedTab,
-    isDeleted,
-}: {
+interface LogsComponentProps extends LogSearchTermType {
     selectedTab: (_tabName: string, _url?: string) => void;
     isDeleted: boolean;
-}) {
+}
+
+function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTerms }: LogsComponentProps) {
     const location = useLocation();
     const key = useKeyDown();
     const { url } = useRouteMatch();
@@ -198,12 +198,22 @@ function LogsComponent({
         });
     };
 
+    const handleCurrentSearchTerms = (searchTerm: string) => {
+        if (typeof setLogSearchTerms === 'function') {
+            setLogSearchTerms({
+                ...logSearchTerms,
+                [isLogAnalyzer ? AppDetailsTabs.log_analyzer : params.podName]: searchTerm,
+            });
+        }
+    };
+
     const handleLogsSearch = (e) => {
         e.preventDefault();
         if (e.key === 'Enter' || e.keyCode === 13) {
             handleSearchTextChange(e.target.value as string);
             const { length, [length - 1]: highlightString } = e.target.value.split(' ');
             setHighlightString(highlightString);
+            handleCurrentSearchTerms(e.target.value as string);
         }
     };
 
@@ -227,6 +237,17 @@ function LogsComponent({
             selectedTab(NodeDetailTab.LOGS, url);
         }
         setLogState(getInitialPodContainerSelection(isLogAnalyzer, params, location));
+
+        if (logSearchTerms) {
+            const currentSearchTerm = logSearchTerms[isLogAnalyzer ? AppDetailsTabs.log_analyzer : params.podName];
+
+            if (currentSearchTerm) {
+                setTempSearch(currentSearchTerm);
+                handleSearchTextChange(currentSearchTerm);
+                const { length, [length - 1]: highlightString } = currentSearchTerm.split(' ');
+                setHighlightString(highlightString);
+            }
+        }
         //TODO: reset pauseLog and grepToken
     }, [params.podName]);
 
@@ -425,6 +446,7 @@ function LogsComponent({
                                     handleSearchTextChange('');
                                     setHighlightString('');
                                     setTempSearch('');
+                                    handleCurrentSearchTerms('');
                                 }}
                             />
                         )}

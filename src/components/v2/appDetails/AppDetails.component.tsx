@@ -30,6 +30,7 @@ const AppDetailsComponent = () => {
         AppDetailsStore.getAppDetailsTabs(),
         AppDetailsStore.getAppDetailsTabsObservable(),
     );
+    const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>();
 
     const appDetails = IndexStore.getAppDetails();
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
@@ -54,6 +55,19 @@ const AppDetailsComponent = () => {
 
     const handleCloseTab = (e: any, tabIdentifier: string) => {
         e.stopPropagation();
+
+        // Clear pod related log search term on close tab action
+        if (logSearchTerms) {
+            const name =
+                tabIdentifier.toLowerCase().startsWith(NodeType.Pod.toLowerCase()) && tabIdentifier.split('/')[1];
+            if (name && logSearchTerms[name]) {
+                setLogSearchTerms({
+                    ...logSearchTerms,
+                    [name]: '',
+                });
+            }
+        }
+
         const pushURL = AppDetailsStore.removeAppDetailsTabByIdentifier(tabIdentifier);
         setTimeout(() => {
             if (pushURL) {
@@ -77,10 +91,14 @@ const AppDetailsComponent = () => {
 
             <SyncErrorComponent appStreamData={streamData} />
 
-            {
-                appDetails.resourceTree?.nodes?.length > 0 &&
+            {appDetails.resourceTree?.nodes?.length > 0 && (
                 <>
-                    <div className="resource-tree-wrapper flexbox pl-20 pr-20" style={{outline: 'none'}} tabIndex={0} ref={tabRef}>
+                    <div
+                        className="resource-tree-wrapper flexbox pl-20 pr-20"
+                        style={{ outline: 'none' }}
+                        tabIndex={0}
+                        ref={tabRef}
+                    >
                         <ul className="tab-list">
                             {applicationObjectTabs.map((tab: ApplicationObject, index: number) => {
                                 return (
@@ -122,17 +140,17 @@ const AppDetailsComponent = () => {
                                                             >
                                                                 {tab.title === AppDetailsTabs.log_analyzer ? (
                                                                     <span className="icon-dim-16 resource-tree__tab-hover fcb-9">
-                                                                {' '}
+                                                                        {' '}
                                                                         <LogAnalyzerIcon />
-                                                            </span>
+                                                                    </span>
                                                                 ) : (
                                                                     ''
                                                                 )}
                                                                 {tab.title === AppDetailsTabs.k8s_Resources ? (
                                                                     <span className="icon-dim-16 resource-tree__tab-hover fcn-9 ">
-                                                                {' '}
+                                                                        {' '}
                                                                         <K8ResourceIcon />
-                                                            </span>
+                                                                    </span>
                                                                 ) : (
                                                                     ''
                                                                 )}
@@ -144,23 +162,27 @@ const AppDetailsComponent = () => {
                                                                             : 'ml-8 text-capitalize '
                                                                     } fs-12 `}
                                                                 >
-                                                            {tab.name}
-                                                        </span>
+                                                                    {tab.name}
+                                                                </span>
                                                             </div>
                                                         </NavLink>
 
                                                         {tab.name !== AppDetailsTabs.log_analyzer &&
-                                                        tab.name !== AppDetailsTabs.k8s_Resources && (
-                                                            <div className="resource-tab__close-wrapper flex br-5">
-                                                                <Cross
-                                                                    onClick={(e) => handleCloseTab(e, tab.title)}
-                                                                    className="icon-dim-16 cursor"
-                                                                />
-                                                            </div>
-                                                        )}
+                                                            tab.name !== AppDetailsTabs.k8s_Resources && (
+                                                                <div className="resource-tab__close-wrapper flex br-5">
+                                                                    <Cross
+                                                                        onClick={(e) => handleCloseTab(e, tab.title)}
+                                                                        className="icon-dim-16 cursor"
+                                                                    />
+                                                                </div>
+                                                            )}
                                                     </div>
                                                     <div
-                                                        className={` ${!tab.isSelected || !(tab.isSelected && index - 1) ? 'resource-tree-tab__border' : '' }`}
+                                                        className={` ${
+                                                            !tab.isSelected || !(tab.isSelected && index - 1)
+                                                                ? 'resource-tree-tab__border'
+                                                                : ''
+                                                        }`}
                                                     ></div>
                                                 </div>
                                             </Tippy>
@@ -186,7 +208,12 @@ const AppDetailsComponent = () => {
                         <Route
                             path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/:podName`}
                             render={() => {
-                                return <NodeDetailComponent />;
+                                return (
+                                    <NodeDetailComponent
+                                        logSearchTerms={logSearchTerms}
+                                        setLogSearchTerms={setLogSearchTerms}
+                                    />
+                                );
                             }}
                         />
                         <Route
@@ -217,13 +244,18 @@ const AppDetailsComponent = () => {
                             exact
                             path={`${path}/${URLS.APP_DETAILS_LOG}`}
                             render={() => {
-                                return <LogAnalyzerComponent />;
+                                return (
+                                    <LogAnalyzerComponent
+                                        logSearchTerms={logSearchTerms}
+                                        setLogSearchTerms={setLogSearchTerms}
+                                    />
+                                );
                             }}
                         />
                         <Redirect to={`${path}/${URLS.APP_DETAILS_K8}`} />
                     </Switch>
                 </>
-            }
+            )}
         </div>
     );
 };

@@ -327,3 +327,8 @@ interface Sync {
     };
     revision: string;
 }
+
+export interface LogSearchTermType {
+    logSearchTerms?: Record<string, string>;
+    setLogSearchTerms?: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+}

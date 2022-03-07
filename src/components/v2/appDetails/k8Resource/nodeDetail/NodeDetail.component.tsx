@@ -9,11 +9,11 @@ import { NavLink, Route, Switch } from 'react-router-dom';
 import { useParams, useRouteMatch, useHistory } from 'react-router';
 import { NodeDetailTab } from './nodeDetail.type';
 import { getNodeDetailTabs } from './nodeDetail.util';
-import { NodeType } from '../../appDetails.type';
+import { LogSearchTermType, NodeType } from '../../appDetails.type';
 import AppDetailsStore from '../../appDetails.store';
 import { useSharedState } from '../../../utils/useSharedState';
 
-function NodeDetailComponent() {
+function NodeDetailComponent({ logSearchTerms, setLogSearchTerms }: LogSearchTermType) {
     const [applicationObjectTabs] = useSharedState(
         AppDetailsStore.getAppDetailsTabs(),
         AppDetailsStore.getAppDetailsTabsObservable(),
@@ -103,7 +103,14 @@ function NodeDetailComponent() {
                 <Route
                     path={`${path}/${NodeDetailTab.LOGS}`}
                     render={() => {
-                        return <LogsComponent selectedTab={handleSelectedTab} isDeleted={isDeleted} />;
+                        return (
+                            <LogsComponent
+                                selectedTab={handleSelectedTab}
+                                isDeleted={isDeleted}
+                                logSearchTerms={logSearchTerms}
+                                setLogSearchTerms={setLogSearchTerms}
+                            />
+                        );
                     }}
                 />
                 <Route
