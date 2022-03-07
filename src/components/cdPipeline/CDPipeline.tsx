@@ -552,10 +552,17 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 if (response.result) {
                     let pipelineConfigFromRes = response.result.pipelines[0];
                     this.updateStateFromResponse(pipelineConfigFromRes, this.state.environments);
+                    let envName = this.state.pipelineConfig.environmentName;
+                    if (!envName) {
+                        let selectedEnv: Environment = this.state.environments.find(
+                            (env) => env.id == this.state.pipelineConfig.environmentId,
+                        );
+                        envName = selectedEnv.name;
+                    }
                     this.props.close(
                         true,
                         this.state.pipelineConfig.environmentId,
-                        this.state.pipelineConfig.environmentName,
+                        envName,
                         this.props.match.params.cdPipelineId
                             ? 'Deployment pipeline updated'
                             : 'Deployment pipeline created',
