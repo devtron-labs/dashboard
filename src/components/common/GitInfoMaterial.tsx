@@ -48,7 +48,7 @@ export default function GitInfoMaterial({ context, material, title, pipelineId, 
         let anyCommit = (material.history && material.history.length > 0);
         if (material.isMaterialLoading || material.isRepoError || material.isBranchError || !anyCommit) { //Error or Empty State
             return <div className="select-material select-material--trigger-view">
-                <div className="select-material__empty-state-container" style={{ height: "auto", marginTop: "calc(100vh - 700px)" }}>
+                <div className="select-material__empty-state-container flex">
                     <EmptyStateCIMaterial
                         isRepoError={material.isRepoError}
                         isBranchError={material.isBranchError}
