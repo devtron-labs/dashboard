@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { showError, Progressing, PopupMenu, ConfirmationDialog, Td } from '../../common';
 import moment from 'moment';
 import { get } from '../../../services/api';
-import { Routes, URLS, ViewType } from '../../../config';
+import { Routes, URLS, ViewType, SERVER_MODE } from '../../../config';
 import { deleteInstalledChart } from '../charts.service';
 import { toast } from 'react-toastify';
 import AppNotDeployedIcon from '../../../assets/img/app-not-configured.png';
@@ -11,6 +11,7 @@ import trash from '../../../assets/icons/ic-delete.svg';
 import deleteIcon from '../../../assets/img/warning-medium.svg';
 import { ServerErrors } from '../../../modals/commonTypes';
 import ForceDeleteDialog from '../../common/dialogs/ForceDeleteDialog';
+import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api';
 
 export function ChartDeploymentList({ chartId }) {
     const [installs, setInstalls] = React.useState([]);
@@ -18,7 +19,7 @@ export function ChartDeploymentList({ chartId }) {
     const timerId = useRef(null)
 
     async function fetchDeployments() {
-        let URL = `${Routes.CHART_INSTALLED}/${chartId}`
+        let URL = `${Routes.CHART_STORE}/${Routes.CHART_STORE_DEPLOYMENT}/installed-app/${chartId}`
         try {
             const { result } = await get(URL)
             setInstalls(result || [])
@@ -64,8 +65,8 @@ export function ChartDeploymentList({ chartId }) {
 }
 
 
-export function DeploymentRow({ installedAppId, appName, status, environmentId, environmentName, deployedBy, deployedAt }) {
-    const link = `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${installedAppId}/env/${environmentId}`;
+export function DeploymentRow({ installedAppId, appName, status, environmentId, environmentName, deployedBy, deployedAt, appOfferingMode, clusterId, namespace }) {
+    const link = _buildAppDetailUrl();
     const [confirmation, toggleConfirmation] = useState(false)
     const [deleting, setDeleting] = useState(false);
     const [showForceDeleteDialog, setForceDeleteDialog] = useState(false)
@@ -78,6 +79,14 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
                 setForceDeleteDialogTitle(userMessage);
                 setForceDeleteDialogMessage(internalMessage);
             });
+        }
+    }
+
+    function _buildAppDetailUrl() {
+        if (appOfferingMode == SERVER_MODE.EA_ONLY) {
+            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId(clusterId, namespace, appName)}/${appName}`;
+        } else {
+            return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${installedAppId}/env/${environmentId}`;
         }
     }
 

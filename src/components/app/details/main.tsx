@@ -73,10 +73,12 @@ export function AppHeader() {
     const [labelTags, setLabelTags] = useState<{ tags: OptionType[], inputTagValue: string, tagError: string }>({ tags: [], inputTagValue: '', tagError: '' })
     const [result, setResult] = useState(undefined)
     const [isLoading, setIsLoading] = useState(false)
+    const [appName, setAppName] = useState('')
 
     const getAppMetaInfoRes = () => {
         setIsLoading(true)
         const res = getAppMetaInfo(appId).then((_result) => {
+          setAppName(_result?.result?.appName);
             let labelOptionRes = _result?.result?.labels?.map((_label) => {
                 return {
                     label: `${_label.key?.toString()}:${_label.value?.toString()}`,
@@ -183,14 +185,15 @@ export function AppHeader() {
             alias: {
                 ':appId(\\d+)': {
                     component: (
-                        <AppSelector
-                            primaryKey="appId"
-                            primaryValue="name"
-                            matchedKeys={[]}
-                            api={getAppListMin}
-                            apiPrimaryKey="id"
-                            onChange={handleAppChange}
-                        />
+                      //TODO: Enable appSelector with new changes for now show appName
+                        // <AppSelector
+                        //     primaryKey="appId"
+                        //     primaryValue="name"
+                        //     matchedKeys={[]}
+                        //     apiPrimaryKey="id"
+                        //     onChange={handleAppChange}
+                        // />
+                        <div>{appName}</div>
                     ),
                     linked: false,
                 },
@@ -200,7 +203,7 @@ export function AppHeader() {
                 },
             },
         },
-        [appId],
+        [appId, appName],
     );
 
     let newTag = labelTags.inputTagValue.split(',').map((e) => { e = e.trim(); return createOption(e) });

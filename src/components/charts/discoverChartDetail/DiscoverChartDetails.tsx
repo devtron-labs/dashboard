@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Route, Switch, NavLink } from 'react-router-dom';
 import { useRouteMatch, useLocation, useParams, useHistory, } from 'react-router'
 import { Select as DevtronSelect, OpaqueModal, useEffectAfterMount, List, showError, Progressing, useBreadcrumb, BreadCrumb } from '../../common';
-import { URLS } from '../../../config';
+import { URLS, SERVER_MODE } from '../../../config';
 import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service';
 import { getAvailableCharts } from '../../../services/service';
 import { DiscoverChartDetailsProps, DeploymentProps } from './types';
@@ -20,6 +20,7 @@ import AppSelector from '../../AppSelector';
 import { DeprecatedWarn } from "../../common/DeprecatedUpdateWarn";
 import { isGitopsConfigured } from '../../../services/service';
 import { ConfirmationDialog } from '../../common'
+import { mainContext } from '../../common/navigation/NavigationRoutes';
 import warn from '../../../assets/icons/ic-warning.svg';
 import './DiscoverChartDetails.scss';
 
@@ -42,6 +43,8 @@ function mapById(arr) {
 
 
 const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, history, location }) => {
+    const { serverMode } = useContext(mainContext);
+
     const [selectedVersion, selectVersion] = React.useState(null)
     const [availableVersions, setChartVersions] = React.useState(new Map())
     const [chartInformation, setInformation] = React.useState({ appStoreApplicationName: '', deprecated: false })
@@ -152,12 +155,14 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     useEffect(() => {
         fetchVersions();
         getChartValuesList();
-        isGitopsConfigured().then((response) => {
-            let isGitOpsConfigAvailable = response.result && response.result.exists;
-            setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
-        }).catch((error) => {
-            showError(error);
-        })
+        if(serverMode == SERVER_MODE.FULL){
+            isGitopsConfigured().then((response) => {
+                let isGitOpsConfigAvailable = response.result && response.result.exists;
+                setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
+            }).catch((error) => {
+                showError(error);
+            })
+        }
     }, [chartId])
 
     useEffectAfterMount(() => {
@@ -238,6 +243,7 @@ const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartN
     const { redirectToChartValues, openManageValues, selectedVersion, selectVersion, chartValuesList, chartValues, setChartValues } = useDiscoverDetailsContext();
     const match = useRouteMatch();
     const { push } = useHistory();
+    const { serverMode } = useContext(mainContext);
 
     const handleImageError = (e) => {
         const target = e.target as HTMLImageElement
@@ -246,7 +252,7 @@ const Deployment: React.FC<DeploymentProps> = ({ icon = "", chartId = "", chartN
     }
 
     function handleDeploy() {
-        if (isGitOpsConfigAvailable) {
+        if (serverMode == SERVER_MODE.EA_ONLY || isGitOpsConfigAvailable) {
             push(`${match.url}/deploy-chart`)
         }
         else {

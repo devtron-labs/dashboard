@@ -21,14 +21,13 @@ import { DOCUMENTATION, URLS, SERVER_MODE } from '../../../config';
 import { Prompt } from 'react-router';
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg';
 import Tippy from '@tippyjs/react'
-import emptyImage from '../../../assets/img/empty-noresult@2x.png';
-import EmptyState from '../../EmptyState/EmptyState';
 import { isGitopsConfigured } from '../../../services/service';
 import warn from '../../../assets/icons/ic-warning.svg';
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
 import ChartHeaderFilter from '../ChartHeaderFilters';
 import { QueryParams } from '../charts.util';
 import { mainContext } from '../../common/navigation/NavigationRoutes';
+import ChartEmptyState from '../../common/emptyState/ChartEmptyState';
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -190,7 +189,7 @@ function DiscoverChartList() {
     }
 
     function handleViewAllCharts() {
-        history.push(`${url}?${QueryParams.IncludeDeprecated}=1`);
+        history.push(`${match.url.split('/chart-store')[0]}${URLS.GLOBAL_CONFIG_CHART}`);
     }
 
     function handleCloseFilter() {
@@ -216,7 +215,7 @@ function DiscoverChartList() {
                 </ConditionalWrap>
 
                 <div className="page-header__cta-container flex">
-                    {
+                    { chartList.length > 0 &&
                         serverMode == SERVER_MODE.FULL && state.charts.length === 0 &&
                         <button type="button" className="cta flex"
                                 onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}>
@@ -241,25 +240,14 @@ function DiscoverChartList() {
                         handleEnvironmentChange={handleEnvironmentChange}
                         handleNameChange={handleNameChange}
                         discardValuesYamlChanges={discardValuesYamlChanges}
-                    /> : <> <ChartListHeader chartRepoList={state.chartRepos}
-                        handleCloseFilter={handleCloseFilter}
-                        setSelectedChartRepo={setSelectedChartRepo}
-                        charts={state.charts}
-                        searchApplied={searchApplied}
-                        appStoreName={appStoreName}
-                        includeDeprecated={includeDeprecated}
-                        selectedChartRepo={selectedChartRepo}
-                        setAppStoreName={setAppStoreName}
-                    />
-                            <span className='empty-height'>
-                                <EmptyState>
-                                    <EmptyState.Image><img src={emptyImage} alt="" /></EmptyState.Image>
-                                    <EmptyState.Title><h4>No  matching Charts</h4></EmptyState.Title>
-                                    <EmptyState.Subtitle>We couldn't find any matching results</EmptyState.Subtitle>
-                                    <button type="button" onClick={handleViewAllCharts} className="cta ghosted mb-24">View all charts</button>
-                                </EmptyState>
-                            </span>
-                        </>}
+                    /> : 
+                     <ChartEmptyState
+                            title={'No charts available right now'}
+                            subTitle={'The connected chart repositories are syncing or no charts are available.'}
+                            onClickViewChartButton={handleViewAllCharts}
+                            buttonText={'View connected chart repositories'}
+                            />
+                        }
                 </div>
                     : <div className="discover-charts__body-details">
                         {typeof state.configureChartIndex === 'number'
@@ -296,7 +284,7 @@ function DiscoverChartList() {
                                         showCheckBoxOnHoverOnly={state.charts.length === 0}
                                         addChart={addChart}
                                         subtractChart={subtractChart}
-                                        onClick={(chartId) => state.charts.length === 0 ? (serverMode == SERVER_MODE.FULL ? history.push(`${url}/chart/${chart.id}`) : history.push(`${url}/chart/${chart.id}/deploy-chart`))  : selectChart(chartId)}
+                                        onClick={(chartId) => state.charts.length === 0 ? history.push(`${url}/chart/${chart.id}`)  : selectChart(chartId)}
                                     />)}
                                 </div>
                             </>}
