@@ -53,6 +53,7 @@ export interface ReleaseInfo {
 export interface InstalledAppInfo {
     appId: number,
     installedAppId: number,
+    installedAppVersionId: number,
     environmentName: string,
     appOfferingMode: string
     appStoreChartId: number
