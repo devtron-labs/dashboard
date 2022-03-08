@@ -11,6 +11,6 @@ export function updateMaterial(request) {
     return put(URL, request);
 }
 
-export function deleteMaterial(request): Promise<any>{
-    return trash(`${Routes.GIT_MATERIAL}/delete`, request)
+export function deleteMaterial(request): Promise<any> {
+    return trash(`${Routes.GIT_MATERIAL}/delete`, request);
 }
