@@ -1,0 +1,32 @@
+
+.select__group{
+  border-bottom: 1px solid #d0d4d9;
+  .select__group-heading{
+    font-size: 12px;
+    font-weight: 600;
+    color: #596168;
+    text-transform: initial;
+  }
+}
+
+.select__option{
+  mark{
+    padding: 0;
+    background-color: #ffd597;
+    font-weight: 600;
+  }
+}
+
+.select--is-disabled{
+  pointer-events: auto !important;
+}
+
+.cluster-label-all{
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--n-900);
+}
+
+.margin-top-6px{
+  margin-top: 6px;
+}
