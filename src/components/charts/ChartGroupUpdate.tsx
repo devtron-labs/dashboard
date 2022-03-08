@@ -12,7 +12,7 @@ import { URLS } from '../../config';
 import { toast } from 'react-toastify'
 import { Prompt } from 'react-router';
 import { ReactComponent as SaveIcon } from '../../assets/icons/ic-save.svg'
-import AppSelector from '../AppSelector'
+import { ChartSelector } from '../AppSelector';
 import ChartHeaderFilters from './ChartHeaderFilters'
 import { QueryParams } from './charts.util';
 import ChartEmptyState from '../common/emptyState/ChartEmptyState'
@@ -42,7 +42,7 @@ export default function ChartGroupUpdate({ }) {
             alias: {
                 group: 'Chart Groups',
                 ':groupId': {
-                    component: <AppSelector
+                    component: <ChartSelector
                         api={() => getChartGroups().then(res => ({ result: res.result.groups }))}
                         primaryKey="groupId"
                         primaryValue='name'

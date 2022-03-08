@@ -1,12 +1,8 @@
 import React from 'react'
 import { NavLink, Link } from 'react-router-dom';
-import { URLS, Routes, AppListConstants} from '../../../config';
-import { BreadCrumb, useBreadcrumb } from '../../common';
+import { URLS, AppListConstants} from '../../../config';
 import ReactGA from 'react-ga';
-import AppSelector from '../../AppSelector';
-import { useParams, useRouteMatch, useHistory, generatePath } from 'react-router'
-import { get} from '../../../services/api';
-import { handleUTCTime} from '../../common';
+import { useParams, useRouteMatch, useHistory } from 'react-router'
 import  './header.css'
 
 function EAHeaderComponent() {

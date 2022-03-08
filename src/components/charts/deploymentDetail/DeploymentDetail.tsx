@@ -8,7 +8,7 @@ import { useParams, useHistory, useRouteMatch, Route, generatePath } from 'react
 import DeployChart from '../modal/DeployChart';
 import { URLS } from '../../../config';
 import './deploymentDetail.scss'
-import AppSelector from '../../AppSelector';
+import { ChartSelector } from '../../AppSelector';
 import { UpdateWarn } from '../../common/DeprecatedUpdateWarn';
 
 function mapById(arr) {
@@ -31,7 +31,7 @@ export default function AppDetail() {
             alias: {
                 ':appId(\\d+)': {
                     component: (
-                        <AppSelector
+                        <ChartSelector
                          //@ts-ignore
                             api={getInstalledCharts}
                             primaryKey="appId"

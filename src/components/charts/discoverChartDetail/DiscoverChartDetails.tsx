@@ -16,7 +16,7 @@ import { ChartDeploymentList } from './ChartDeploymentList';
 import { ChartValuesSelect } from '../util/ChartValueSelect';
 import { getManageValuesURL, getChartValuesURL } from '../charts.helper';
 import { getDiscoverChartDetailsURL } from '../charts.helper';
-import AppSelector from '../../AppSelector';
+import { ChartSelector } from '../../AppSelector';
 import { DeprecatedWarn } from "../../common/DeprecatedUpdateWarn";
 import { isGitopsConfigured } from '../../../services/service';
 import { ConfirmationDialog } from '../../common'
@@ -77,7 +77,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
             alias: {
                 ':chartId': {
                     component: (
-                        <AppSelector
+                        <ChartSelector
                             primaryKey="chartId"
                             primaryValue="name"
                             api={getAvailableCharts}

@@ -12,7 +12,7 @@ import { Prompt } from 'react-router';
 import { ReactComponent as LeftArrow } from '../../assets/icons/ic-arrow-left.svg';
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg';
 import Tippy from '@tippyjs/react';
-import AppSelector from '../AppSelector'
+import { ChartSelector } from '../AppSelector';
 
 export default function ChartGroupAdvanceDeploy() {
     const { groupId } = useParams();
@@ -28,7 +28,7 @@ export default function ChartGroupAdvanceDeploy() {
                 'chart-store': 'Chart store',
                 group: 'Chart groups',
                 ':groupId': {
-                    component: <AppSelector
+                    component: <ChartSelector
                         api={()=>getChartGroups().then(res=>({result: res.result.groups}))}
                         primaryKey="groupId"
                         primaryValue='name'
@@ -46,7 +46,7 @@ export default function ChartGroupAdvanceDeploy() {
 
     const {url, path} = useRouteMatch();
     const [deployed, setDeployed] = useState(false)
-    
+
     useEffectAfterMount(()=>{
         if(state.loading) return
         if (state.charts.length === 0) {
@@ -62,7 +62,7 @@ export default function ChartGroupAdvanceDeploy() {
             setProject({ id: (location?.state as any).projectId, error: "" })
         }
     },[state.chartGroupDetailsLoading])
-    
+
     const reloadCallback = useCallback((event) => {
         event.preventDefault();
         if (!isLeavingPageAllowed) {
@@ -99,7 +99,7 @@ export default function ChartGroupAdvanceDeploy() {
             await deployChartGroup(project.id, deployableCharts, Number(groupId));
             setDeployed(true)
             toast.success('Deployment initiated')
-            
+
         }
         catch (err) {
             showError(err)

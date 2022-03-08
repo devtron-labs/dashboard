@@ -4,7 +4,7 @@ import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, useAsync, showEr
 import { getAppListMin } from '../../../services/service';
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import { URLS } from '../../../config';
-import AppSelector from '../../AppSelector'
+import { AppSelector } from '../../AppSelector';
 import ReactGA from 'react-ga';
 import AppConfig from './appConfig/AppConfig';
 import './appDetails/appDetails.scss';
@@ -185,15 +185,11 @@ export function AppHeader() {
             alias: {
                 ':appId(\\d+)': {
                     component: (
-                      //TODO: Enable appSelector with new changes for now show appName
-                        // <AppSelector
-                        //     primaryKey="appId"
-                        //     primaryValue="name"
-                        //     matchedKeys={[]}
-                        //     apiPrimaryKey="id"
-                        //     onChange={handleAppChange}
-                        // />
-                        <div>{appName}</div>
+                        <AppSelector
+                            onChange={handleAppChange}
+                            appId={appId}
+                            appName={appName}
+                        />
                     ),
                     linked: false,
                 },

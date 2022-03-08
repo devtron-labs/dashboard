@@ -16,13 +16,13 @@ import {
 import { toast } from 'react-toastify';
 import ChartGroupBasicDeploy from './modal/ChartGroupBasicDeploy';
 import Tippy from '@tippyjs/react';
-import AppSelector from '../AppSelector/AppSelector';
 import { isGitopsConfigured } from '../../services/service';
 import { ConfirmationDialog } from '../common';
 import warn from '../../assets/icons/ic-warning.svg';
 import { NavLink } from 'react-router-dom';
 import DeleteComponent from '../../util/DeleteComponent';
 import { DeleteComponentsName } from '../../config/constantMessaging';
+import { ChartSelector } from '../AppSelector';
 
 export default function ChartGroupDetails() {
     const { groupId } = useParams<{ groupId }>();
@@ -49,7 +49,7 @@ export default function ChartGroupDetails() {
                 group: 'Chart groups',
                 ':groupId': {
                     component: (
-                        <AppSelector
+                        <ChartSelector
                             api={() => getChartGroups().then((res) => ({ result: res.result.groups }))}
                             primaryKey="groupId"
                             primaryValue="name"
@@ -147,7 +147,7 @@ export default function ChartGroupDetails() {
             description: state.description,
             id: parseInt(groupId),
             chartGroupEntries: state.charts,
-            installedChartData:chartGroupInstalled?.result?.installedChartData 
+            installedChartData:chartGroupInstalled?.result?.installedChartData
         };
 
             return (
@@ -163,9 +163,9 @@ export default function ChartGroupDetails() {
                     reload={getGitopsConfiguration}
                 />
             );
-    
+
     }
-    
+
     return (
         <div className="chart-group-details-page">
             <div className="page-header">

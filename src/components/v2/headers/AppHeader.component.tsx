@@ -1,12 +1,9 @@
-import Tippy from '@tippyjs/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { NavLink, match } from 'react-router-dom';
-import { handleInputChange } from 'react-select/src/utils';
+import { NavLink } from 'react-router-dom';
 import { URLS } from '../../../config';
-import { BreadCrumb, Info, showError, useBreadcrumb, VisibleModal } from '../../common';
+import { BreadCrumb, useBreadcrumb } from '../../common';
 import ReactGA from 'react-ga';
-import { getAppListMin } from '../../../services/service';
-import AppSelector from '../../AppSelector';
+import { AppSelector } from '../../AppSelector';
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router';
 import { getAppMetaInfo } from '../../app/service';
 import { OptionType } from './appHeader.type';
@@ -30,10 +27,12 @@ function AppHeaderComponent() {
     });
     const params = useParams<{ appId: string }>();
     const [envDetails] = useSharedState(IndexStore.getEnvDetails(), IndexStore.getEnvDetailsObservable());
+    const [appName, setAppName] = useState('')
 
     const getAppMetaInfoRes = () => {
         setIsLoading(true);
         const res = getAppMetaInfo(appId).then((_result) => {
+          setAppName(_result?.result?.appName);
             let labelOptionRes = _result?.result?.labels?.map((_label) => {
                 return {
                     label: `${_label.key?.toString()}:${_label.value?.toString()}`,
@@ -70,12 +69,9 @@ function AppHeaderComponent() {
                 ':appId(\\d+)': {
                     component: (
                         <AppSelector
-                            primaryKey="appId"
-                            primaryValue="name"
-                            matchedKeys={[]}
-                            api={getAppListMin}
-                            apiPrimaryKey="id"
                             onChange={handleAppChange}
+                            appId={appId}
+                            appName={appName}
                         />
                     ),
                     linked: false,
@@ -99,7 +95,7 @@ function AppHeaderComponent() {
                     <Info className="icon-dim-20 fcn-5" />
                 </Tippy>
             </div> */}
-                {/* {showInfoModal && 
+                {/* {showInfoModal &&
                 <VisibleModal className="app-status__material-modal"  >
                     <div className="modal__body br-8 bcn-0 p-20">
                         {/* <AboutAppInfoModal
@@ -113,7 +109,7 @@ function AppHeaderComponent() {
                             handleSubmit={handleSubmit}
                             handleTagsChange={handleTagsChange}
                             submitting={submitting}
-                        /> 
+                        />
                     </div>
                 </VisibleModal>}
                 */}
