@@ -429,3 +429,8 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
         },
     },
 };
+
+export const AppCreationType = {
+    Blank: 'BLANK',
+    Existing: 'EXISTING',
+};

@@ -21,18 +21,19 @@ export interface AddNewAppState {
     code: number;
     disableForm: boolean;
     projects: { id: number; name: string }[];
-    apps: any[];
     showErrors: boolean;
     form: {
         appName: string;
         appId: number;
         projectId: number;
         cloneId: number;
+        appCreationType: string;
     };
     labels: LabelTags;
     isValid: {
         projectId: boolean;
         appName: boolean;
+        cloneAppId: boolean;
     };
 }
 

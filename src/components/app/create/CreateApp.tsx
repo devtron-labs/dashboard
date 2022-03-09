@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import {
-    Select,
     DialogForm,
     DialogFormSubmit,
     Progressing,
     showError,
     ErrorScreenManager,
     sortObjectArrayAlphabetically,
+    multiSelectStyles,
 } from '../../common';
 import { AddNewAppProps, AddNewAppState } from '../types';
-import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE } from '../../../config';
+import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config';
 import { ValidationRules } from './validationRules';
-import { getTeamListMin, getAppListMin } from '../../../services/service';
+import { getTeamListMin } from '../../../services/service';
 import { createApp } from './service';
 import { toast } from 'react-toastify';
 import { ServerErrors } from '../../../modals/commonTypes';
@@ -20,17 +20,21 @@ import { TAG_VALIDATION_MESSAGE, validateTags, createOption, handleKeyDown } fro
 import TagLabelSelect from '../details/TagLabelSelect';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg';
+import ReactSelect from 'react-select';
+import AsyncSelect from 'react-select/async';
+import { getAppList } from '../service';
+import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup';
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules();
     _inputAppName: HTMLInputElement;
+    timeoutId;
     constructor(props) {
         super(props);
         this.state = {
             view: ViewType.FORM,
             code: 0,
             projects: [],
-            apps: [],
             disableForm: false,
             showErrors: false,
             form: {
@@ -38,6 +42,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 projectId: 0,
                 appName: '',
                 cloneId: 0,
+                appCreationType: AppCreationType.Blank,
             },
             labels: {
                 tags: [],
@@ -47,6 +52,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             isValid: {
                 projectId: false,
                 appName: false,
+                cloneAppId: true,
             },
         };
         this.createApp = this.createApp.bind(this);
@@ -56,9 +62,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
 
     async componentDidMount() {
         try {
-            const [{ result: projects }, { result: apps }] = await Promise.all([getTeamListMin(), getAppListMin()]);
-            sortObjectArrayAlphabetically(projects, 'name');
-            this.setState({ view: ViewType.FORM, projects, apps: [{ id: 0, name: 'Blank App' }, ...apps] });
+            const { result } = await getTeamListMin();
+            sortObjectArrayAlphabetically(result, 'name');
+            this.setState({ view: ViewType.FORM, projects: result });
         } catch (err) {
             this.setState({ view: ViewType.ERROR });
             showError(err);
@@ -109,7 +115,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.setState({ form, isValid });
     }
 
-    handleProject(item: number, appId): void {
+    handleProject(item: number): void {
         let { form, isValid } = { ...this.state };
         form.projectId = item;
         isValid.projectId = !!item;
@@ -202,10 +208,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             });
     }
 
-    handleClone(cloneId, appId) {
-        this.setState((state) => ({ ...state, form: { ...state.form, cloneId } }));
-    }
-
     redirectToArtifacts(appId): void {
         let url = getAppComposeURL(appId, APP_COMPOSE_STAGE.SOURCE_CONFIG);
         this.props.history.push(url);
@@ -226,11 +228,86 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         });
     };
 
+    noOptionsMessage(inputObj: { inputValue: string }): string {
+        if (inputObj && (inputObj.inputValue === '' || inputObj.inputValue.length < 3)) {
+            return 'Type 3 chars to see matching results';
+        }
+        return 'No matching results';
+    }
+
+    appListOptions = (inputValue: string): Promise<[]> =>
+        new Promise((resolve) => {
+            if (this.timeoutId) {
+                clearTimeout(this.timeoutId);
+            }
+            this.timeoutId = setTimeout(() => {
+                if (inputValue.length < 3) {
+                    resolve([]);
+                    return;
+                }
+                getAppList({
+                    appNameSearch: inputValue,
+                    sortBy: 'appNameSort',
+                    sortOrder: 'ASC',
+                    size: 50,
+                })
+                    .then((response) => {
+                        let appList = [];
+                        if (response.result && !!response.result.appContainers) {
+                            appList = response.result.appContainers.map((res) => ({
+                                value: res['appId'],
+                                label: res['appName'],
+                                ...res,
+                            }));
+                        }
+                        resolve(appList as []);
+                    })
+                    .catch((errors: ServerErrors) => {
+                        resolve([]);
+                        if (errors.code) {
+                            showError(errors);
+                        }
+                    });
+            }, 300);
+        });
+
+    changeTemplate = (appCreationType: string): void => {
+        let { form, isValid } = { ...this.state };
+        form.appCreationType = appCreationType;
+        isValid.cloneAppId = appCreationType === AppCreationType.Blank;
+        this.setState({ form, isValid });
+    };
+
+    handleCloneAppChange = ({ value }): void => {
+        let { form, isValid } = { ...this.state };
+        form.cloneId = value;
+        isValid.cloneAppId = !!value;
+        this.setState({ form, isValid });
+    };
+
+    _multiSelectStyles = {
+        ...multiSelectStyles,
+        menu: (base, state) => ({
+            ...base,
+            marginTop: 'auto',
+        }),
+        menuList: (base) => {
+            return {
+                ...base,
+                position: 'relative',
+                paddingBottom: '0px',
+                maxHeight: '250px',
+            };
+        },
+    };
+
     render() {
-        let errorObject = [this.rules.appName(this.state.form.appName), this.rules.team(this.state.form.projectId)];
+        let errorObject = [
+            this.rules.appName(this.state.form.appName),
+            this.rules.team(this.state.form.projectId),
+            this.rules.cloneApp(this.state.form.cloneId),
+        ];
         let showError = this.state.showErrors;
-        let provider = this.state.projects.find((project) => this.state.form.projectId === project.id);
-        let clone = this.state.apps.find((app) => this.state.form.cloneId === app.id);
         if (this.state.view === ViewType.LOADING) {
             return (
                 <DialogForm
@@ -309,21 +386,22 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     </label>
                     <div className="form__row">
                         <span className="form__label">Project*</span>
-                        <Select
-                            value={this.state.form.projectId}
-                            onChange={(e) => this.handleProject(e.target.value, this.state.form.appId)}
-                        >
-                            <Select.Button rootClassName="select-button--default">
-                                {provider ? provider.name : 'Select Project'}
-                            </Select.Button>
-                            {this.state.projects.map((team) => {
-                                return (
-                                    <Select.Option value={team.id} key={team.id}>
-                                        {team.name}
-                                    </Select.Option>
-                                );
-                            })}
-                        </Select>
+                        <ReactSelect
+                            className="m-0"
+                            tabIndex="3"
+                            isMulti={false}
+                            isClearable={false}
+                            options={this.state.projects}
+                            getOptionLabel={(option) => `${option.name}`}
+                            getOptionValue={(option) => `${option.id}`}
+                            styles={this._multiSelectStyles}
+                            components={{
+                                IndicatorSeparator: null,
+                            }}
+                            onChange={(selected) => {
+                                this.handleProject(selected.id);
+                            }}
+                        />
                         <span className="form__error">
                             {showError && !this.state.isValid.projectId ? (
                                 <>
@@ -334,24 +412,43 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         </span>
                     </div>
                     <div className="form__row clone-apps inline-block">
-                        <span className="form__label">Template</span>
-                        <Select
-                            value={clone ? clone.id : null}
-                            onChange={(e) => this.handleClone(e.target.value, this.state.form.appId)}
+                        <RadioGroup
+                            className="no-border"
+                            value={this.state.form.appCreationType}
+                            name="trigger-type"
+                            onChange={(event) => {
+                                this.changeTemplate(event.target.value);
+                            }}
                         >
-                            <Select.Button rootClassName="select-button--default">
-                                {clone ? clone.name : 'Select Clone'}
-                            </Select.Button>
-                            <Select.Search />
-                            {this.state.apps.map((app) => {
-                                return (
-                                    <Select.Option value={app.id} key={app.id} name={app.name}>
-                                        {app.name}
-                                    </Select.Option>
-                                );
-                            })}
-                        </Select>
+                            <RadioGroupItem value={AppCreationType.Blank}>Blank app</RadioGroupItem>
+                            <RadioGroupItem value={AppCreationType.Existing}>Clone an existing app</RadioGroupItem>
+                        </RadioGroup>
                     </div>
+                    {this.state.form.appCreationType === AppCreationType.Existing && (
+                        <div className="form__row clone-apps inline-block">
+                            <span className="form__label">Template</span>
+                            <AsyncSelect
+                                defaultOption
+                                loadOptions={this.appListOptions}
+                                noOptionsMessage={this.noOptionsMessage}
+                                onChange={this.handleCloneAppChange}
+                                styles={this._multiSelectStyles}
+                                components={{
+                                    IndicatorSeparator: null,
+                                    LoadingIndicator: null,
+                                }}
+                            />
+
+                            <span className="form__error">
+                                {showError && !this.state.isValid.cloneAppId ? (
+                                    <>
+                                        <Error className="form__icon form__icon--error" />
+                                        {errorObject[2].message}
+                                    </>
+                                ) : null}
+                            </span>
+                        </div>
+                    )}
                     <TagLabelSelect
                         validateTags={validateTags}
                         labelTags={this.state.labels}

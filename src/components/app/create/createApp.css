@@ -17,3 +17,17 @@ span.form__label {
     position: relative;
     top: 3px;
 }
+
+.no-border {
+  border: none;
+  display: inline-block;
+}
+
+.no-border .form__radio-item{
+  border: none;
+  min-width: 110px;
+}
+
+.no-border .form__radio-item .form__radio-item-content{
+  padding: 0;
+}

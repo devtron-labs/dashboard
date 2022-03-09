@@ -18,4 +18,10 @@ export class ValidationRules {
         if (found) return { isValid: true, message: '' };
         else return { isValid: false, message: 'This is a required field' };
     }
-} 
+
+    cloneApp = (cloneAppId: number): { isValid: boolean, message: string } => {
+        let found = !!cloneAppId;
+        if (found) return { isValid: true, message: '' };
+        else return { isValid: false, message: 'This is a required field' };
+    }
+}

@@ -32,12 +32,13 @@ export interface RadioGroupProps {
     name: string;
     disabled?: boolean;
     onChange: (event) => void;
+    className?: string;
 }
 
 export class RadioGroup extends Component<RadioGroupProps> {
 
     render() {
-        return <div className="form__radio-group">
+        return <div className={`form__radio-group ${this.props.className}`}>
             <RadioGroupContext.Provider value={{
                 name: this.props.name,
                 value: this.props.value,
