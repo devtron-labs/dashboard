@@ -1,15 +1,42 @@
+.create-app-modal {
+    width: 450px;
+    max-height: 90vh;
+    margin-top: 40px;
+}
+
+.separator {
+    width: 450px;
+    position: relative;
+    left: -21px;
+}
+
+.scrollable-content {
+    max-height: calc(90vh - 175px);
+    overflow: auto;
+    margin: 20px 0;
+}
+
 span.form__label {
     font-size: 12px;
     color: #404040;
 }
 
 .info__container--create-app {
-    margin-bottom: 16px;
-    padding: 16px;
+    padding: 10px 12px;
     align-items: start;
+    grid-template-columns: 20px 1fr auto;
+    grid-column-gap: 12px;
 }
 
-.form__text-field-info--create-app{
+.info__title {
+    display: inline;
+}
+
+.form-row {
+    margin-bottom: 16px;
+}
+
+.form__text-field-info--create-app {
     align-items: flex-start;
 }
 
@@ -19,15 +46,15 @@ span.form__label {
 }
 
 .no-border {
-  border: none;
-  display: inline-block;
+    border: none;
+    display: inline-block;
 }
 
-.no-border .form__radio-item{
-  border: none;
-  min-width: 110px;
+.no-border .form__radio-item {
+    border: none;
+    min-width: 110px;
 }
 
-.no-border .form__radio-item .form__radio-item-content{
-  padding: 0;
+.no-border .form__radio-item .form__radio-item-content {
+    padding: 0;
 }
