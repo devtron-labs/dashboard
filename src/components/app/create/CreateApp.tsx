@@ -348,7 +348,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 <DialogForm
                     title="Create application"
                     isLoading={this.state.disableForm}
-                    className="create-app-modal"
+                    className="create-app-modal p-0"
+                    headerClassName={'m-20'}
                     close={this.props.close}
                     onSave={(e) => {
                         e.preventDefault();
@@ -357,7 +358,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     closeOnESC={true}
                 >
                     <hr className="separator m-0" />
-                    <div className="scrollable-content">
+                    <div className="scrollable-content p-20">
                         <label className="form__row">
                             <span className="form__label">App Name*</span>
                             <input
@@ -475,7 +476,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         <div className="cr-5 fs-11">{this.state.labels.tagError}</div>
                     </div>
                     <hr className="separator m-0" />
-                    <div className="mt-10">
+                    <div className="footer">
                         <DialogFormSubmit tabIndex={3}>
                             {this.state.form.cloneId > 0 ? 'Clone App' : 'Create App'}
                         </DialogFormSubmit>

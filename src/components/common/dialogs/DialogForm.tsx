@@ -12,6 +12,7 @@ export interface DialogFormProps {
     closeOnESC?: boolean;
     close: (event) => void;
     onSave: (event) => void;
+    headerClassName?: string;
 }
 
 export class DialogForm extends Component<DialogFormProps> {
@@ -44,7 +45,7 @@ export class DialogForm extends Component<DialogFormProps> {
         }}>
             <VisibleModal className="">
                 <div className={`modal__body ${this.props.className}`}>
-                    <div className="modal__header">
+                    <div className={`modal__header ${this.props.headerClassName}`}>
                         <h1 className="modal__title">{this.props.title}</h1>
                         <button type="button" className="transparent" onClick={this.props.close}> <img src={close} alt="close" /></button>
                     </div>

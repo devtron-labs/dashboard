@@ -4,16 +4,17 @@
     margin-top: 40px;
 }
 
+.footer{
+  margin: 16px 20px;
+}
+
 .separator {
     width: 450px;
-    position: relative;
-    left: -21px;
 }
 
 .scrollable-content {
     max-height: calc(90vh - 175px);
     overflow: auto;
-    margin: 20px 0;
 }
 
 span.form__label {
@@ -57,4 +58,8 @@ span.form__label {
 
 .no-border .form__radio-item .form__radio-item-content {
     padding: 0;
+}
+
+.no-border .form__radio-item .form__radio-item-content .radio__title {
+    text-transform: none;
 }
