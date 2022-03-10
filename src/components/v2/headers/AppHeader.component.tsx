@@ -27,12 +27,12 @@ function AppHeaderComponent() {
     });
     const params = useParams<{ appId: string }>();
     const [envDetails] = useSharedState(IndexStore.getEnvDetails(), IndexStore.getEnvDetailsObservable());
-    const [appName, setAppName] = useState('')
+    const [appName, setAppName] = useState('');
 
     const getAppMetaInfoRes = () => {
         setIsLoading(true);
         const res = getAppMetaInfo(appId).then((_result) => {
-          setAppName(_result?.result?.appName);
+            setAppName(_result?.result?.appName);
             let labelOptionRes = _result?.result?.labels?.map((_label) => {
                 return {
                     label: `${_label.key?.toString()}:${_label.value?.toString()}`,
@@ -67,13 +67,7 @@ function AppHeaderComponent() {
         {
             alias: {
                 ':appId(\\d+)': {
-                    component: (
-                        <AppSelector
-                            onChange={handleAppChange}
-                            appId={appId}
-                            appName={appName}
-                        />
-                    ),
+                    component: <AppSelector onChange={handleAppChange} appId={appId} appName={appName} />,
                     linked: false,
                 },
                 app: {

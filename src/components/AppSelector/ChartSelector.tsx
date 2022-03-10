@@ -49,9 +49,7 @@ export default function ChartSelector({
             }))}
             value={{
                 value: _primaryKey,
-                label: listMap.has(_primaryKey)
-                    ? (listMap.get(_primaryKey)[primaryValue] as string)
-                    : '',
+                label: listMap.has(_primaryKey) ? (listMap.get(_primaryKey)[primaryValue] as string) : '',
             }}
             {...(formatOptionLabel ? { formatOptionLabel } : {})}
             {...(filterOption ? { filterOption } : {})}

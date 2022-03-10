@@ -245,8 +245,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     _multiSelectStyles = {
         ...multiSelectStyles,
         control: (base, state) => ({
-          ...base,
-          cursor: 'pointer',
+            ...base,
+            cursor: 'pointer',
         }),
         menu: (base, state) => ({
             ...base,

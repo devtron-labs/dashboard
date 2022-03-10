@@ -64,26 +64,28 @@ export default function ChartGroupDetails() {
         [state.name],
     );
     const [showDeployModal, toggleDeployModal] = useState(false);
-    const [chartGroupDetailsLoading, chartGroupInstalled, chartGroupDetailsError, reloadChartGroupDetails] = useAsync(
-        () => getChartGroupInstallationDetails(groupId),
-        [groupId],
-    );
+    const [
+        chartGroupDetailsLoading,
+        chartGroupInstalled,
+        chartGroupDetailsError,
+        reloadChartGroupDetails,
+    ] = useAsync(() => getChartGroupInstallationDetails(groupId), [groupId]);
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
 
     const getGitopsConfiguration = () => {
         isGitopsConfigured()
-        .then((response) => {
-            let isGitOpsConfigAvailable = response.result && response.result.exists;
-            setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
-        })
-        .catch((error) => {
-            showError(error);
-        });
-    }
+            .then((response) => {
+                let isGitOpsConfigAvailable = response.result && response.result.exists;
+                setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
+            })
+            .catch((error) => {
+                showError(error);
+            });
+    };
 
     useEffect(() => {
-        getGitopsConfiguration()
+        getGitopsConfiguration();
     }, []);
 
     function handleOnDeployTo() {
@@ -141,29 +143,28 @@ export default function ChartGroupDetails() {
         }
     }
 
-     function getDeleteComponent(){
+    function getDeleteComponent() {
         let payload = {
             name: state.name,
             description: state.description,
             id: parseInt(groupId),
             chartGroupEntries: state.charts,
-            installedChartData:chartGroupInstalled?.result?.installedChartData
+            installedChartData: chartGroupInstalled?.result?.installedChartData,
         };
 
-            return (
-                <DeleteComponent
-                    setDeleting={setDeleting}
-                    deleteComponent={deleteChartGroup}
-                    payload={payload}
-                    title={state.name}
-                    toggleConfirmation={toggleConfirmation}
-                    component={DeleteComponentsName.ChartGroup}
-                    redirectTo={true}
-                    url={`${URLS.CHARTS}/discover`}
-                    reload={getGitopsConfiguration}
-                />
-            );
-
+        return (
+            <DeleteComponent
+                setDeleting={setDeleting}
+                deleteComponent={deleteChartGroup}
+                payload={payload}
+                title={state.name}
+                toggleConfirmation={toggleConfirmation}
+                component={DeleteComponentsName.ChartGroup}
+                redirectTo={true}
+                url={`${URLS.CHARTS}/discover`}
+                reload={getGitopsConfiguration}
+            />
+        );
     }
 
     return (
