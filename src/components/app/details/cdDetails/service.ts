@@ -62,4 +62,10 @@ export function getCDBuildReport(appId, envId, pipelineId, workflowId) {
     return get(`app/cd-pipeline/workflow/download/${appId}/${envId}/${pipelineId}/${workflowId}`)
 }
 
+export function getDeploymentTemplateDiff(appId,  pipelineId) {
+    return get(`app/history/template/${appId}/${pipelineId}`)
+}
 
+export function getDeploymentTemplate(appId, envId, chartId){
+    return get(`app/env/${appId}/${envId}/${chartId}`)
+}

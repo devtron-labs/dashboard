@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useReducer, useState } from 'react';
 import { useRouteMatch } from 'react-router';
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom';
 import CodeEditor from '../../../CodeEditor/CodeEditor';
@@ -8,13 +8,13 @@ import './cdDetail.scss';
 import CompareWithBaseConfig from './CompareWithBaseConfig';
 import DeploymentConfiguration from './DeploymentConfiguration';
 import DeploymentTemplateHistory from './DeploymentTemplateHistory';
-import { getCDBuildReport } from './service';
+import { getDeploymentTemplateDiff } from './service';
 
 function HistoryDiff() {
     const [tempValue, setTempValue] = useState('');
     const [loading, setLoading] = useState(false)
     let { path } = useRouteMatch();
-
+    
    const renderLeftHistoryConfiguration = () => {
        return<><div>
             <NavLink replace className="tab-list__tab-link" activeClassName="active" to={`deployment-template`}>
