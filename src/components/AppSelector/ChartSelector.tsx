@@ -29,6 +29,7 @@ export default function ChartSelector({
     const { path } = useRouteMatch();
     const params = useParams();
     const { push } = useHistory();
+    const _primaryKey = Number(params[primaryKey]);
     function selectApp(selected) {
         if (onChange) {
             onChange(selected);
@@ -47,9 +48,9 @@ export default function ChartSelector({
                 ...res,
             }))}
             value={{
-                value: Number(params[primaryKey]),
-                label: listMap.has(Number(params[primaryKey]))
-                    ? (listMap.get(Number(params[primaryKey]))[primaryValue] as string)
+                value: _primaryKey,
+                label: listMap.has(_primaryKey)
+                    ? (listMap.get(_primaryKey)[primaryValue] as string)
                     : '',
             }}
             {...(formatOptionLabel ? { formatOptionLabel } : {})}

@@ -1,6 +1,11 @@
 import React from 'react';
 import { components } from 'react-select';
 import { ReactComponent as DropDownIcon } from '../../assets/icons/ic-chevron-down.svg';
+import { ServerErrors } from '../../modals/commonTypes';
+import { getAppList } from '../app/service';
+import { showError } from '../common';
+
+let timeoutId;
 
 export const appSelectorStyle = {
     control: (base, state) => ({
@@ -11,6 +16,7 @@ export const appSelectorStyle = {
         minHeight: '32px',
         minWidth: state.menuIsOpen ? '300px' : 'unset',
         justifyContent: state.menuIsOpen ? 'space-between' : 'flex-start',
+        cursor: 'pointer',
     }),
     valueContainer: (base, state) => ({
         ...base,
@@ -69,3 +75,46 @@ export const DropdownIndicator = (props) => {
         </components.DropdownIndicator>
     );
 };
+
+export const noOptionsMessage = (inputObj: { inputValue: string }): string => {
+    if (inputObj && (inputObj.inputValue === '' || inputObj.inputValue.length < 3)) {
+        return 'Type 3 chars to see matching results';
+    }
+    return 'No matching results';
+};
+
+export const appListOptions = (inputValue: string): Promise<[]> =>
+    new Promise((resolve) => {
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+        timeoutId = setTimeout(() => {
+            if (inputValue.length < 3) {
+                resolve([]);
+                return;
+            }
+            getAppList({
+                appNameSearch: inputValue,
+                sortBy: 'appNameSort',
+                sortOrder: 'ASC',
+                size: 50,
+            })
+                .then((response) => {
+                    let appList = [];
+                    if (response.result && response.result.appContainers) {
+                        appList = response.result.appContainers.map((res) => ({
+                            value: res['appId'],
+                            label: res['appName'],
+                            ...res,
+                        }));
+                    }
+                    resolve(appList as []);
+                })
+                .catch((errors: ServerErrors) => {
+                    resolve([]);
+                    if (errors.code) {
+                        showError(errors);
+                    }
+                });
+        }, 300);
+    });

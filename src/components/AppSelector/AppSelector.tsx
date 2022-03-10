@@ -1,9 +1,6 @@
 import React from 'react';
-import { showError } from '../common';
 import AsyncSelect from 'react-select/async';
-import { ServerErrors } from '../../modals/commonTypes';
-import { getAppList } from '../app/service';
-import { appSelectorStyle, DropdownIndicator } from './AppSelectorUtil';
+import { appListOptions, appSelectorStyle, DropdownIndicator, noOptionsMessage } from './AppSelectorUtil';
 
 interface AppSelectorType {
     onChange: ({ label, value }) => void;
@@ -13,49 +10,6 @@ interface AppSelectorType {
 export default function AppSelector({ onChange, appId, appName }: AppSelectorType) {
     const defaultOption = [{ value: appId, label: appName }];
     let selectedValue = defaultOption[0];
-    let timeoutId;
-    function noOptionsMessage(inputObj: { inputValue: string }): string {
-        if (inputObj && (inputObj.inputValue === '' || inputObj.inputValue.length < 3)) {
-            return 'Type 3 chars to see matching results';
-        }
-        return 'No matching results';
-    }
-
-    const appListOptions = (inputValue: string): Promise<[]> =>
-        new Promise((resolve) => {
-            if (timeoutId) {
-                clearTimeout(timeoutId);
-            }
-            timeoutId = setTimeout(() => {
-                if (inputValue.length < 3) {
-                    resolve([]);
-                    return;
-                }
-                getAppList({
-                    appNameSearch: inputValue,
-                    sortBy: 'appNameSort',
-                    sortOrder: 'ASC',
-                    size: 50,
-                })
-                    .then((response) => {
-                        let appList = [];
-                        if (response.result && !!response.result.appContainers) {
-                            appList = response.result.appContainers.map((res) => ({
-                                value: res['appId'],
-                                label: res['appName'],
-                                ...res,
-                            }));
-                        }
-                        resolve(appList as []);
-                    })
-                    .catch((errors: ServerErrors) => {
-                        resolve([]);
-                        if (errors.code) {
-                            showError(errors);
-                        }
-                    });
-            }, 300);
-        });
     return (
         <AsyncSelect
             defaultOption

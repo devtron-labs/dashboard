@@ -38,15 +38,19 @@ export interface RadioGroupProps {
 export class RadioGroup extends Component<RadioGroupProps> {
 
     render() {
-        return <div className={`form__radio-group ${this.props.className}`}>
-            <RadioGroupContext.Provider value={{
-                name: this.props.name,
-                value: this.props.value,
-                disabled: this.props.disabled,
-                onChange: this.props.onChange
-            }}>
-                {this.props.children}
-            </RadioGroupContext.Provider>
-        </div>
+        return (
+            <div className={`form__radio-group ${this.props.className ? this.props.className : ''}`}>
+                <RadioGroupContext.Provider
+                    value={{
+                        name: this.props.name,
+                        value: this.props.value,
+                        disabled: this.props.disabled,
+                        onChange: this.props.onChange,
+                    }}
+                >
+                    {this.props.children}
+                </RadioGroupContext.Provider>
+            </div>
+        );
     }
 }

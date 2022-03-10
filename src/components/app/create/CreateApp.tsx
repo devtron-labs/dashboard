@@ -22,8 +22,8 @@ import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg';
 import ReactSelect from 'react-select';
 import AsyncSelect from 'react-select/async';
-import { getAppList } from '../service';
 import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup';
+import { appListOptions, noOptionsMessage } from '../../AppSelector/AppSelectorUtil';
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules();
@@ -228,49 +228,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         });
     };
 
-    noOptionsMessage(inputObj: { inputValue: string }): string {
-        if (inputObj && (inputObj.inputValue === '' || inputObj.inputValue.length < 3)) {
-            return 'Type 3 chars to see matching results';
-        }
-        return 'No matching results';
-    }
-
-    appListOptions = (inputValue: string): Promise<[]> =>
-        new Promise((resolve) => {
-            if (this.timeoutId) {
-                clearTimeout(this.timeoutId);
-            }
-            this.timeoutId = setTimeout(() => {
-                if (inputValue.length < 3) {
-                    resolve([]);
-                    return;
-                }
-                getAppList({
-                    appNameSearch: inputValue,
-                    sortBy: 'appNameSort',
-                    sortOrder: 'ASC',
-                    size: 50,
-                })
-                    .then((response) => {
-                        let appList = [];
-                        if (response.result && !!response.result.appContainers) {
-                            appList = response.result.appContainers.map((res) => ({
-                                value: res['appId'],
-                                label: res['appName'],
-                                ...res,
-                            }));
-                        }
-                        resolve(appList as []);
-                    })
-                    .catch((errors: ServerErrors) => {
-                        resolve([]);
-                        if (errors.code) {
-                            showError(errors);
-                        }
-                    });
-            }, 300);
-        });
-
     changeTemplate = (appCreationType: string): void => {
         let { form, isValid } = { ...this.state };
         form.appCreationType = appCreationType;
@@ -287,6 +244,10 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
 
     _multiSelectStyles = {
         ...multiSelectStyles,
+        control: (base, state) => ({
+          ...base,
+          cursor: 'pointer',
+        }),
         menu: (base, state) => ({
             ...base,
             marginTop: 'auto',
@@ -432,8 +393,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                 <span className="form__label">Template*</span>
                                 <AsyncSelect
                                     defaultOption
-                                    loadOptions={this.appListOptions}
-                                    noOptionsMessage={this.noOptionsMessage}
+                                    loadOptions={appListOptions}
+                                    noOptionsMessage={noOptionsMessage}
                                     onChange={this.handleCloneAppChange}
                                     styles={this._multiSelectStyles}
                                     components={{
