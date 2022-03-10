@@ -55,8 +55,10 @@ export interface InstalledAppInfo {
     installedAppId: number,
     installedAppVersionId: number,
     environmentName: string,
-    appOfferingMode: string
-    appStoreChartId: number
+    appOfferingMode: string,
+    appStoreChartId: number,
+    clusterId: number,
+    environmentId: number
 }
 
 export interface HelmAppDeploymentHistory {
