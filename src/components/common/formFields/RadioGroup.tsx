@@ -39,7 +39,7 @@ export class RadioGroup extends Component<RadioGroupProps> {
 
     render() {
         return (
-            <div className={`form__radio-group ${this.props.className ? this.props.className : ''}`}>
+            <div className={`form__radio-group ${this.props.className || ''}`}>
                 <RadioGroupContext.Provider
                     value={{
                         name: this.props.name,

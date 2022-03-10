@@ -22,6 +22,6 @@ export class ValidationRules {
     cloneApp = (cloneAppId: number): { isValid: boolean, message: string } => {
         let found = !!cloneAppId;
         if (found) return { isValid: true, message: '' };
-        else return { isValid: false, message: 'This is a required field' };
+        else return { isValid: false, message: 'Please select an application to clone' };
     }
 }

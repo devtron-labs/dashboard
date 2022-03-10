@@ -44,7 +44,7 @@ export class DialogForm extends Component<DialogFormProps> {
             onSave: this.props.onSave,
         }}>
             <VisibleModal className="">
-                <div className={`modal__body ${this.props.className ? this.props.className : ''}`}>
+                <div className={`modal__body ${this.props.className || ''}`}>
                     <div className={`modal__header ${this.props.headerClassName}`}>
                         <h1 className="modal__title">{this.props.title}</h1>
                         <button type="button" className="transparent" onClick={this.props.close}> <img src={close} alt="close" /></button>

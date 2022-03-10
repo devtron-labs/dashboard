@@ -365,6 +365,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                 onChange={(selected) => {
                                     this.handleProject(selected.id);
                                 }}
+                                placeholder="Select project"
                             />
                             <span className="form__error">
                                 {showError && !this.state.isValid.projectId ? (
@@ -390,7 +391,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         </div>
                         {this.state.form.appCreationType === AppCreationType.Existing && (
                             <div className="form__row clone-apps inline-block">
-                                <span className="form__label">Template*</span>
+                                <span className="form__label">Select an app to clone*</span>
                                 <AsyncSelect
                                     defaultOption
                                     loadOptions={appListOptions}
@@ -401,6 +402,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                         IndicatorSeparator: null,
                                         LoadingIndicator: null,
                                     }}
+                                    placeholder="Select app"
                                 />
 
                                 <span className="form__error">
@@ -439,7 +441,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     <hr className="separator m-0" />
                     <div className="footer">
                         <DialogFormSubmit tabIndex={3}>
-                            {this.state.form.cloneId > 0 ? 'Clone App' : 'Create App'}
+                            {this.state.form.appCreationType === AppCreationType.Existing ? 'Clone App' : 'Create App'}
                         </DialogFormSubmit>
                     </div>
                 </DialogForm>
