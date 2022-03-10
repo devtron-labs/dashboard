@@ -51,7 +51,7 @@ export class DialogForm extends Component<DialogFormProps> {
                     </div>
                     <DialogFormContext.Consumer>
                         {(context) => {
-                            return <form onSubmit={(e) => {
+                            return <form noValidate onSubmit={(e) => {
                                 e.preventDefault();
                                 if (!context.isLoading) {
                                     context.onSave(e);
