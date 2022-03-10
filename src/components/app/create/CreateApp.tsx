@@ -414,7 +414,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             </div>
                         )}
                         {this.state.form.appCreationType === AppCreationType.Existing && (
-                            <div className="info__container info__container--create-app en-2 mb-16">
+                            <div className="info__container info__container--create-app eb-2 mb-16">
                                 <Info />
                                 <div className="flex column left">
                                     <div>
