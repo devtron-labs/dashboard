@@ -16,13 +16,13 @@ import {
 import { toast } from 'react-toastify';
 import ChartGroupBasicDeploy from './modal/ChartGroupBasicDeploy';
 import Tippy from '@tippyjs/react';
-import AppSelector from '../AppSelector/AppSelector';
 import { isGitopsConfigured } from '../../services/service';
 import { ConfirmationDialog } from '../common';
 import warn from '../../assets/icons/ic-warning.svg';
 import { NavLink } from 'react-router-dom';
 import DeleteComponent from '../../util/DeleteComponent';
 import { DeleteComponentsName } from '../../config/constantMessaging';
+import { ChartSelector } from '../AppSelector';
 
 export default function ChartGroupDetails() {
     const { groupId } = useParams<{ groupId }>();
@@ -49,7 +49,7 @@ export default function ChartGroupDetails() {
                 group: 'Chart groups',
                 ':groupId': {
                     component: (
-                        <AppSelector
+                        <ChartSelector
                             api={() => getChartGroups().then((res) => ({ result: res.result.groups }))}
                             primaryKey="groupId"
                             primaryValue="name"
@@ -64,26 +64,28 @@ export default function ChartGroupDetails() {
         [state.name],
     );
     const [showDeployModal, toggleDeployModal] = useState(false);
-    const [chartGroupDetailsLoading, chartGroupInstalled, chartGroupDetailsError, reloadChartGroupDetails] = useAsync(
-        () => getChartGroupInstallationDetails(groupId),
-        [groupId],
-    );
+    const [
+        chartGroupDetailsLoading,
+        chartGroupInstalled,
+        chartGroupDetailsError,
+        reloadChartGroupDetails,
+    ] = useAsync(() => getChartGroupInstallationDetails(groupId), [groupId]);
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
 
     const getGitopsConfiguration = () => {
         isGitopsConfigured()
-        .then((response) => {
-            let isGitOpsConfigAvailable = response.result && response.result.exists;
-            setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
-        })
-        .catch((error) => {
-            showError(error);
-        });
-    }
+            .then((response) => {
+                let isGitOpsConfigAvailable = response.result && response.result.exists;
+                setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
+            })
+            .catch((error) => {
+                showError(error);
+            });
+    };
 
     useEffect(() => {
-        getGitopsConfiguration()
+        getGitopsConfiguration();
     }, []);
 
     function handleOnDeployTo() {
@@ -141,31 +143,30 @@ export default function ChartGroupDetails() {
         }
     }
 
-     function getDeleteComponent(){
+    function getDeleteComponent() {
         let payload = {
             name: state.name,
             description: state.description,
             id: parseInt(groupId),
             chartGroupEntries: state.charts,
-            installedChartData:chartGroupInstalled?.result?.installedChartData 
+            installedChartData: chartGroupInstalled?.result?.installedChartData,
         };
 
-            return (
-                <DeleteComponent
-                    setDeleting={setDeleting}
-                    deleteComponent={deleteChartGroup}
-                    payload={payload}
-                    title={state.name}
-                    toggleConfirmation={toggleConfirmation}
-                    component={DeleteComponentsName.ChartGroup}
-                    redirectTo={true}
-                    url={`${URLS.CHARTS}/discover`}
-                    reload={getGitopsConfiguration}
-                />
-            );
-    
+        return (
+            <DeleteComponent
+                setDeleting={setDeleting}
+                deleteComponent={deleteChartGroup}
+                payload={payload}
+                title={state.name}
+                toggleConfirmation={toggleConfirmation}
+                component={DeleteComponentsName.ChartGroup}
+                redirectTo={true}
+                url={`${URLS.CHARTS}/discover`}
+                reload={getGitopsConfiguration}
+            />
+        );
     }
-    
+
     return (
         <div className="chart-group-details-page">
             <div className="page-header">

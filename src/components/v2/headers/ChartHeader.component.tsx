@@ -3,7 +3,7 @@ import { NavLink, Link } from 'react-router-dom';
 import { URLS, Routes, AppListConstants } from '../../../config';
 import { BreadCrumb, useBreadcrumb } from '../../common';
 import ReactGA from 'react-ga';
-import AppSelector from '../../AppSelector';
+import { ChartSelector } from '../../AppSelector';
 import { useParams, useRouteMatch, useHistory, generatePath } from 'react-router';
 import { get } from '../../../services/api';
 import { handleUTCTime } from '../../common';
@@ -47,7 +47,7 @@ function ChartHeaderComponent() {
             alias: {
                 ':appId(\\d+)': {
                     component: (
-                        <AppSelector
+                        <ChartSelector
                             //@ts-ignore
                             api={getInstalledCharts}
                             primaryKey="appId"
@@ -69,7 +69,10 @@ function ChartHeaderComponent() {
     return (
         <div className="app-page-header" style={{ gridTemplateColumns: 'unset' }}>
             <div className="m-0 flex left ">
-                <Link to={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`} className="devtron-breadcrumb__item">
+                <Link
+                    to={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
+                    className="devtron-breadcrumb__item"
+                >
                     <span className="cb-5 fs-16">Helm Apps </span>
                 </Link>
                 <span className="fs-16 cn-9 ml-4 mr-4"> / </span>

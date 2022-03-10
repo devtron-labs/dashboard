@@ -1,111 +1,136 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useHistory, useLocation, useRouteMatch } from 'react-router';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import MultiChartSummary from './MultiChartSummary';
 import useChartGroup from './useChartGroup';
-import { Select, mapByKey, Progressing, showError, BreadCrumb, useBreadcrumb, useEffectAfterMount, ConditionalWrap } from '../common';
-import AdvancedConfig from './AdvancedConfig'
-import { getDeployableChartsFromConfiguredCharts } from './list/DiscoverCharts'
-import { deployChartGroup, getChartGroups } from './charts.service'
-import { toast } from 'react-toastify'
+import {
+    Select,
+    mapByKey,
+    Progressing,
+    showError,
+    BreadCrumb,
+    useBreadcrumb,
+    useEffectAfterMount,
+    ConditionalWrap,
+} from '../common';
+import AdvancedConfig from './AdvancedConfig';
+import { getDeployableChartsFromConfiguredCharts } from './list/DiscoverCharts';
+import { deployChartGroup, getChartGroups } from './charts.service';
+import { toast } from 'react-toastify';
 import { Prompt } from 'react-router';
 import { ReactComponent as LeftArrow } from '../../assets/icons/ic-arrow-left.svg';
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg';
 import Tippy from '@tippyjs/react';
-import AppSelector from '../AppSelector'
+import { ChartSelector } from '../AppSelector';
 
 export default function ChartGroupAdvanceDeploy() {
     const { groupId } = useParams();
     const { push } = useHistory();
-    const location = useLocation()
-    const [project, setProject] = useState({id: null, error: ""})
-    const [installing, setInstalling] = useState(false)
-    const { state, validateData, handleValuesYaml, handleNameChange, handleEnvironmentChange, configureChart, toggleChart, fetchChartValues, getChartVersionsAndValues, handleChartVersionChange, handleChartValueChange, discardValuesYamlChanges, setCharts } = useChartGroup(groupId);
+    const location = useLocation();
+    const [project, setProject] = useState({ id: null, error: '' });
+    const [installing, setInstalling] = useState(false);
+    const {
+        state,
+        validateData,
+        handleValuesYaml,
+        handleNameChange,
+        handleEnvironmentChange,
+        configureChart,
+        toggleChart,
+        fetchChartValues,
+        getChartVersionsAndValues,
+        handleChartVersionChange,
+        handleChartValueChange,
+        discardValuesYamlChanges,
+        setCharts,
+    } = useChartGroup(groupId);
     const projectsMap = mapByKey(state.projects, 'id');
-    const {breadcrumbs} = useBreadcrumb(
+    const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
                 'chart-store': 'Chart store',
                 group: 'Chart groups',
                 ':groupId': {
-                    component: <AppSelector
-                        api={()=>getChartGroups().then(res=>({result: res.result.groups}))}
-                        primaryKey="groupId"
-                        primaryValue='name'
-                        matchedKeys={[]}
-                        apiPrimaryKey="id"
-                    />,
+                    component: (
+                        <ChartSelector
+                            api={() => getChartGroups().then((res) => ({ result: res.result.groups }))}
+                            primaryKey="groupId"
+                            primaryValue="name"
+                            matchedKeys={[]}
+                            apiPrimaryKey="id"
+                        />
+                    ),
                     linked: false,
                 },
-                'deploy': null
+                deploy: null,
             },
         },
         [state.name],
     );
-    const isLeavingPageAllowed = state.charts.every(chart => chart.valuesYaml === chart.originalValuesYaml)
+    const isLeavingPageAllowed = state.charts.every((chart) => chart.valuesYaml === chart.originalValuesYaml);
 
-    const {url, path} = useRouteMatch();
-    const [deployed, setDeployed] = useState(false)
-    
-    useEffectAfterMount(()=>{
-        if(state.loading) return
+    const { url, path } = useRouteMatch();
+    const [deployed, setDeployed] = useState(false);
+
+    useEffectAfterMount(() => {
+        if (state.loading) return;
         if (state.charts.length === 0) {
-            push(url.replace("/deploy", ""))
+            push(url.replace('/deploy', ''));
         }
         configureChart((location?.state as any)?.configureChartIndex || 0);
-    },[state.loading])
+    }, [state.loading]);
 
-    useEffectAfterMount(()=>{
-        if(state.chartGroupDetailsLoading) return
-        setCharts((location?.state as any)?.charts || [])
-        if ((location?.state as any)?.projectId){
-            setProject({ id: (location?.state as any).projectId, error: "" })
+    useEffectAfterMount(() => {
+        if (state.chartGroupDetailsLoading) return;
+        setCharts((location?.state as any)?.charts || []);
+        if ((location?.state as any)?.projectId) {
+            setProject({ id: (location?.state as any).projectId, error: '' });
         }
-    },[state.chartGroupDetailsLoading])
-    
-    const reloadCallback = useCallback((event) => {
-        event.preventDefault();
-        if (!isLeavingPageAllowed) {
-            event.returnValue = "Your changes will be lost. Do you want to leave without deploying?"
-        }
-    }, [isLeavingPageAllowed])
+    }, [state.chartGroupDetailsLoading]);
+
+    const reloadCallback = useCallback(
+        (event) => {
+            event.preventDefault();
+            if (!isLeavingPageAllowed) {
+                event.returnValue = 'Your changes will be lost. Do you want to leave without deploying?';
+            }
+        },
+        [isLeavingPageAllowed],
+    );
 
     useEffect(() => {
         window.addEventListener('beforeunload', reloadCallback);
         return () => {
             window.removeEventListener('beforeunload', reloadCallback);
-        }
+        };
     }, [reloadCallback]);
 
-    useEffectAfterMount(()=>{
+    useEffectAfterMount(() => {
         // whenver deployment succeeds, go to deployments list
-        if(!deployed) return
-        push(url.replace("/deploy", ""))
-    },[deployed])
+        if (!deployed) return;
+        push(url.replace('/deploy', ''));
+    }, [deployed]);
 
     async function handleInstall() {
         try {
-            if(!project.id){
-                setProject(project=>({...project, error: "Project is mandatory for deployment."}))
-                return
+            if (!project.id) {
+                setProject((project) => ({ ...project, error: 'Project is mandatory for deployment.' }));
+                return;
             }
-            setInstalling(true)
-            const validated = await validateData()
+            setInstalling(true);
+            const validated = await validateData();
             if (!validated) {
-                toast.warn('Click on highlighted charts and resolve errors.', {autoClose: 5000})
-                return
+                toast.warn('Click on highlighted charts and resolve errors.', { autoClose: 5000 });
+                return;
             }
-            const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts)
+            const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts);
             await deployChartGroup(project.id, deployableCharts, Number(groupId));
-            setDeployed(true)
-            toast.success('Deployment initiated')
-            
-        }
-        catch (err) {
-            showError(err)
-        }
-        finally {
-            setInstalling(false)
+            setDeployed(true);
+            toast.success('Deployment initiated');
+        } catch (err) {
+            showError(err);
+        } finally {
+            setInstalling(false);
         }
     }
 
@@ -123,7 +148,7 @@ export default function ChartGroupAdvanceDeploy() {
                         Advanced options
                     </div>
                 </div>
-                <span className="page-header__cta-container"/>
+                <span className="page-header__cta-container" />
             </div>
             <div className="chart-group-advance-deploy__body">
                 {!deployed && (
@@ -179,7 +204,7 @@ export default function ChartGroupAdvanceDeploy() {
                                         ))}
                                     </Select>
                                     {project.error && (
-                                        <span className="form__error flex left " style={{display:"flex"}}>
+                                        <span className="form__error flex left " style={{ display: 'flex' }}>
                                             <WarningIcon className="mr-5 icon-dim-16" />
                                             {project.error}
                                         </span>
