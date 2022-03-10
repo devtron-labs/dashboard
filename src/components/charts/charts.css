@@ -344,6 +344,6 @@
     stroke: var(--R500);
 }
 
-.flex {
-    display: flex !important; 
+.form__error.flex {
+    display: flex;
 }
