@@ -69,12 +69,12 @@ const AppDetailsComponent = () => {
 
     const clearLogSearchTerm = (tabIdentifier: string): void => {
         if (logSearchTerms) {
-            const podIdentifier =
-                tabIdentifier.toLowerCase().startsWith(NodeType.Pod.toLowerCase()) && tabIdentifier.toLowerCase();
-            if (podIdentifier && logSearchTerms[podIdentifier]) {
+            const identifier = tabIdentifier.toLowerCase();
+
+            if (identifier.startsWith(NodeType.Pod.toLowerCase()) && logSearchTerms[identifier]) {
                 setLogSearchTerms({
                     ...logSearchTerms,
-                    [podIdentifier]: '',
+                    [identifier]: '',
                 });
             }
         }
