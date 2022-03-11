@@ -66,6 +66,10 @@ export function getDeploymentTemplateDiff(appId,  pipelineId) {
     return get(`app/history/template/${appId}/${pipelineId}`)
 }
 
+export function getDeploymentTemplateDiffId(appId,  pipelineId, id) {
+    return get(`app/history/template/${appId}/${pipelineId}/${id}`)
+}
+
 export function getDeploymentTemplate(appId, envId, chartId){
     return get(`app/env/${appId}/${envId}/${chartId}`)
 }

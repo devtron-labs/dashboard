@@ -1,20 +1,23 @@
-import React, { useReducer, useState } from 'react';
+import React, { useCallback, useReducer, useState } from 'react';
 import { useRouteMatch } from 'react-router';
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom';
 import CodeEditor from '../../../CodeEditor/CodeEditor';
-import { Progressing } from '../../../common';
+import { mapByKey, Progressing } from '../../../common';
 import { GitChanges, Artifacts } from '../cIDetails/CIDetails';
 import './cdDetail.scss';
 import CompareWithBaseConfig from './CompareWithBaseConfig';
 import DeploymentConfiguration from './DeploymentConfiguration';
 import DeploymentTemplateHistory from './DeploymentTemplateHistory';
 import { getDeploymentTemplateDiff } from './service';
+import { useParams } from 'react-router'
 
 function HistoryDiff() {
     const [tempValue, setTempValue] = useState('');
     const [loading, setLoading] = useState(false)
     let { path } = useRouteMatch();
+    const { appId, envId, pipelineId } = useParams<{ appId, envId, pipelineId}>() 
     
+
    const renderLeftHistoryConfiguration = () => {
        return<><div>
             <NavLink replace className="tab-list__tab-link" activeClassName="active" to={`deployment-template`}>
@@ -56,3 +59,4 @@ function HistoryDiff() {
 }
 
 export default HistoryDiff;
+

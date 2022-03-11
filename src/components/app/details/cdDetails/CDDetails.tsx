@@ -13,7 +13,7 @@ import Reload from '../../../Reload/Reload'
 import {
     default as AnsiUp
 } from 'ansi_up';
-import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './service'
+import { getTriggerHistory, getTriggerDetails, getCDBuildReport, getDeploymentTemplateDiff } from './service'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { cancelPrePostCdTrigger } from '../../service';
 import {Scroller} from '../cIDetails/CIDetails';
@@ -51,6 +51,27 @@ export default function CDDetails(){
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
     const keys = useKeyDown()
     const [showTemplate, setShowTemplate] = useState(false)
+    const [deploymentTemplateDiff, setDeploymentTemplateDiff] = useState([]);
+    const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState({value: '', label: ''})
+    const [currentTemplateId, setCurrentTemplateId] = useState(0)
+
+    const initialiseDeploymentTemplate = () => {
+        try {
+            getDeploymentTemplateDiff(appId, pipelineId).then((response) => {
+                setDeploymentTemplateDiff(response.result);
+                let currentId = response.result.map((res)=> res.id)
+                setCurrentTemplateId(currentId)
+            });
+        } catch (err) {
+            showError(err);
+        }
+    };
+
+    useEffect(() => {
+        initialiseDeploymentTemplate();
+    },[]);
+
+   
 
     useEffect(()=>{
         if(!pathname.includes('/logs')) return
@@ -155,7 +176,7 @@ export default function CDDetails(){
             <div className={`${ !showTemplate ? 'ci-details' : ''} ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
                 {showTemplate ? (
                     <div className='historical-diff'>
-                    <CompareWithBaseConfig />
+                    <CompareWithBaseConfig deploymentTemplateDiffRes={deploymentTemplateDiff} selectedDeploymentTemplate={selectedDeploymentTemplate} setSeletedDeploymentTemplate={setSeletedDeploymentTemplate}/>
                     <HistoryDiff />
                     </div >
                 ) : (
