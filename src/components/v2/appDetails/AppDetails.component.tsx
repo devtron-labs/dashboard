@@ -57,16 +57,7 @@ const AppDetailsComponent = () => {
         e.stopPropagation();
 
         // Clear pod related log search term on close tab action
-        if (logSearchTerms) {
-            const name =
-                tabIdentifier.toLowerCase().startsWith(NodeType.Pod.toLowerCase()) && tabIdentifier.split('/')[1];
-            if (name && logSearchTerms[name]) {
-                setLogSearchTerms({
-                    ...logSearchTerms,
-                    [name]: '',
-                });
-            }
-        }
+        clearLogSearchTerm(tabIdentifier);
 
         const pushURL = AppDetailsStore.removeAppDetailsTabByIdentifier(tabIdentifier);
         setTimeout(() => {
@@ -74,6 +65,19 @@ const AppDetailsComponent = () => {
                 history.push(pushURL);
             }
         }, 1);
+    };
+
+    const clearLogSearchTerm = (tabIdentifier: string): void => {
+        if (logSearchTerms) {
+            const podIdentifier =
+                tabIdentifier.toLowerCase().startsWith(NodeType.Pod.toLowerCase()) && tabIdentifier.toLowerCase();
+            if (podIdentifier && logSearchTerms[podIdentifier]) {
+                setLogSearchTerms({
+                    ...logSearchTerms,
+                    [podIdentifier]: '',
+                });
+            }
+        }
     };
 
     const handleFocusTabs = () => {

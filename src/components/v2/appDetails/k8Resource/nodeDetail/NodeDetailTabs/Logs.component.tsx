@@ -198,13 +198,11 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
         });
     };
 
-    const handleCurrentSearchTerms = (searchTerm: string) => {
-        if (typeof setLogSearchTerms === 'function') {
-            setLogSearchTerms({
-                ...logSearchTerms,
-                [isLogAnalyzer ? AppDetailsTabs.log_analyzer : params.podName]: searchTerm,
-            });
-        }
+    const handleCurrentSearchTerm = (searchTerm: string): void => {
+        setLogSearchTerms({
+            ...logSearchTerms,
+            [isLogAnalyzer ? AppDetailsTabs.log_analyzer : `${params.nodeType}/${params.podName}`]: searchTerm,
+        });
     };
 
     const handleLogsSearch = (e) => {
@@ -213,7 +211,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
             handleSearchTextChange(e.target.value as string);
             const { length, [length - 1]: highlightString } = e.target.value.split(' ');
             setHighlightString(highlightString);
-            handleCurrentSearchTerms(e.target.value as string);
+            handleCurrentSearchTerm(e.target.value as string);
         }
     };
 
@@ -239,7 +237,8 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
         setLogState(getInitialPodContainerSelection(isLogAnalyzer, params, location));
 
         if (logSearchTerms) {
-            const currentSearchTerm = logSearchTerms[isLogAnalyzer ? AppDetailsTabs.log_analyzer : params.podName];
+            const currentSearchTerm =
+                logSearchTerms[isLogAnalyzer ? AppDetailsTabs.log_analyzer : `${params.nodeType}/${params.podName}`];
 
             if (currentSearchTerm) {
                 setTempSearch(currentSearchTerm);
@@ -446,7 +445,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                     handleSearchTextChange('');
                                     setHighlightString('');
                                     setTempSearch('');
-                                    handleCurrentSearchTerms('');
+                                    handleCurrentSearchTerm('');
                                 }}
                             />
                         )}
