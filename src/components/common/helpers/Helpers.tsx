@@ -281,7 +281,7 @@ export function useAsync<T>(func: (...rest) => Promise<T>, dependencyArray: any[
                     loading: false
                 }))
             }
-            catch (error) {
+            catch (error: any) {
                 if (mounted.current) setState(state => ({
                     ...state,
                     error,

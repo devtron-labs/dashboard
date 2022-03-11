@@ -208,7 +208,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
 	}
 	useEffect(() => {
 		// scroll to the editor view with animation for only update-chart
-		// subtracting - 100 from offset top because of floating header's tab 
+		// subtracting - 100 from offset top because of floating header's tab
 		if (envId) {
 			setTimeout(() => {
 				deployChartForm.current?.scrollTo({
@@ -306,7 +306,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
 			let url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`;
 			push(url);
 		}
-		catch (err) {
+		catch (err: any) {
 			if (!force && err.code != 403) {
 			    setForceDeleteDialog(true)
 			    setForceDeleteDialogData(err)
@@ -414,7 +414,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
               {
 			  !isUpdate ? <>
 			  <div className="title">{chartName}/ {name}</div>
-                <div className="border" /> 
+                <div className="border" />
 				</> : ''
 				}
             </div>

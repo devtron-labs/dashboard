@@ -311,7 +311,7 @@ export default function UserGroupRoute() {
 
 const UserGroupList: React.FC<{ type: 'user' | 'group'; reloadLists: () => void }> = ({ type, reloadLists }) => {
     const [loading, data, error, reload, setState] = useAsync(type === 'user' ? getUserList : getGroupList, [type]);
-    const result = data?.result || [];
+    const result = (data && data['result']) || [];
     const [searchString, setSearchString] = useState('');
     const searchRef = useRef(null);
     const keys = useKeyDown();

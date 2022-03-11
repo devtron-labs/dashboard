@@ -22,7 +22,7 @@
     "jsx": "react-jsx",
     "noImplicitAny": false,
     "strictNullChecks": false,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
   },
   "exclude": [
     "node_modules",

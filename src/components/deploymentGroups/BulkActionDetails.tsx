@@ -18,7 +18,7 @@ import Tippy from '@tippyjs/react';
 import {ReactComponent as DropDown} from '../../assets/icons/appstatus/ic-chevron-down.svg';
 
 export default function BulkActionDetails() {
-    const { id: deploymentGroupId } = useParams()
+    const { id: deploymentGroupId } = useParams<{id: string}>()
     const [deleteConfirmation, setDeleteConfirmation] = useState('')
     const [showCDModal, toggleShowCDModal] = useState(false);
     const { push } = useHistory()
@@ -131,7 +131,7 @@ export default function BulkActionDetails() {
                 return warningIcon
             case 'resume':
                 return restoreIcon
-        }   
+        }
     }
 
     function getConfirmationDialogTitles(){

@@ -24,7 +24,7 @@ import Tippy from '@tippyjs/react';
 import { ChartSelector } from '../AppSelector';
 
 export default function ChartGroupAdvanceDeploy() {
-    const { groupId } = useParams();
+    const { groupId } = useParams<{groupId: string}>();
     const { push } = useHistory();
     const location = useLocation();
     const [project, setProject] = useState({ id: null, error: '' });

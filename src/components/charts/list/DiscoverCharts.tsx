@@ -240,7 +240,7 @@ function DiscoverChartList() {
                         handleEnvironmentChange={handleEnvironmentChange}
                         handleNameChange={handleNameChange}
                         discardValuesYamlChanges={discardValuesYamlChanges}
-                    /> : 
+                    /> :
                      <ChartEmptyState
                             title={'No charts available right now'}
                             subTitle={'The connected chart repositories are syncing or no charts are available.'}
