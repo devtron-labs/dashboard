@@ -140,7 +140,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                         <input type="text" autoComplete="off" className={`form__input ${appName?.error ? 'form__input--error' : ''}`} value={appName.value} onChange={e => handleNameChange(index, e.target.value)} />
                         {appName?.error &&
                             <span className="form__error flex left">
-                                <WarningIcon className="mr-5" />{appName?.error || ""}
+                                <WarningIcon className="mr-5 icon-dim-16" />{appName?.error || ""}
                                 {appName.suggestedName && <span>. Suggested name: <span className="anchor pointer" onClick={e => handleNameChange(index, appName.suggestedName)}>{appName.suggestedName}</span></span>}
                             </span>}
                     </div>}
@@ -151,7 +151,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                                 <Select.Button rootClassName="select-button--default">{environments.has(environment?.id) ? environments.get(environment.id).environment_name : 'Select Environment'}</Select.Button>
                                 {Array.from(environments.values()).map(env => <Select.Option value={env.id} key={env.id}>{env.environment_name}</Select.Option>)}
                             </Select>
-                            {environment?.error && <span className="form__error flex left "><WarningIcon className="mr-5" />{environment?.error || ""}</span>}
+                            {environment?.error && <span className="form__error flex left"><WarningIcon className="mr-5 icon-dim-16" />{environment?.error || ""}</span>}
                         </div>
                         <div className="flex column half left top">
                             <label htmlFor="" className="form__label">Namespace*</label>

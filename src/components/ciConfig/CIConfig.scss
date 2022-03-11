@@ -32,6 +32,20 @@
         }
         .form__field {
             margin-bottom: 16px;
+            .bottom-0 {
+                bottom: 0;
+            }
+            .docker-flie-container {
+                display: flex;
+                .checkout-path-container {
+                    padding: 10px;
+                    background: #d0d4d9;
+                    border-radius: 4px 0 0 4px;
+                }
+                .file-name {
+                    border-radius: 0 4px 4px 0;
+                }
+            }
         }
         .form__error {
             position: unset;
@@ -59,7 +73,7 @@
         }
     }
 }
-.docker__dropdown{
+.docker__dropdown {
     margin: auto;
     margin-right: 0;
     margin-top: 0;

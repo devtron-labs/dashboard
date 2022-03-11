@@ -1,2 +1,2 @@
-import AppSelector from './AppSelector'
-export default AppSelector
+export { default as AppSelector } from './AppSelector';
+export { default as ChartSelector } from './ChartSelector';
