@@ -12,8 +12,33 @@
         height: 100%;
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: 40px 40px 40px 40px 40px 40px 1fr auto;
+        grid-template-rows: 110px 40px 40px 40px 40px 40px 40px 1fr auto;
         overflow: hidden;
+        &.hide-app-config-help {
+            grid-template-rows: 40px 40px 40px 40px 40px 40px 1fr auto;
+        }
+        .help-container {
+            background-color: #f3f0ff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            height: 100px;
+            .progress-container {
+                background-color: #ffffff;
+                margin: 5px 0 10px 0;
+                font-size: 12px;
+                .progress-tracker {
+                    background-color: #1dad70;
+                    height: 4px;
+                    width: 1%;
+                }
+            }
+            .font-weight-600 {
+                font-weight: 600;
+            }
+            .need-help {
+                color: var(--B500);
+            }
+        }
     }
 
     .app-compose__main {
@@ -106,7 +131,7 @@
         height: 100%;
         overflow: hidden;
 
-        &>.app-compose__nav-item {
+        & > .app-compose__nav-item {
             height: 40px;
             line-height: 40px;
             width: 100%;

@@ -468,7 +468,9 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             else {
                 return <button type="button"
                     className={`cta cta--workflow cancel mr-16`}
-                    onClick={this.props.close}>Cancel
+                    onClick={() => {
+                      this.props.close();
+                  }}>Cancel
                 </button>
             }
         }
@@ -556,7 +558,9 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
             <div className="modal__body modal__body--ci br-0 modal__body--p-0">
                 <div className="p-20 flex flex-align-center flex-justify bcn-0 ">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0">{title}</h2>
-                    <button type="button" className="transparent flex icon-dim-24" onClick={this.props.close}>
+                    <button type="button" className="transparent flex icon-dim-24" onClick={() => {
+                            this.props.close();
+                        }}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>

@@ -94,11 +94,11 @@ export const Routes = {
     PIPELINE_CONFIG_MAP_UPDATE: 'configmap/update/pipelinelevel',
     CHART_INSTALLED: 'app-store/installed-app',
     CHART_AVAILABLE: 'app-store',
-    CHART_STORE : 'app-store',
+    CHART_STORE: 'app-store',
     CHART_REPO: 'chart-repo',
     CHART_RESYNC: 'sync-charts',
-    CHART_STORE_VALUES : 'values',
-    CHART_STORE_DEPLOYMENT : 'deployment',
+    CHART_STORE_VALUES: 'values',
+    CHART_STORE_DEPLOYMENT: 'deployment',
     CHART_VALUES: 'template/values',
     CHART_VALUES_LIST_CATEGORIZED: 'application/values/list',
     CHART_VALUES_LIST_TEMPLATE: 'template/values/list',
@@ -126,7 +126,7 @@ export const Routes = {
     CREATE_RESOURCE: 'k8s/resource/create',
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
     HELM_RELEASE_APP_UPDATE_API: 'application/update',
-    NAMESPACE: 'env/namespace'
+    NAMESPACE: 'env/namespace',
 };
 
 export const ViewType = {
@@ -160,7 +160,7 @@ export const PATTERNS = {
     CONFIG_MAP_AND_SECRET_KEY: /^[-._a-zA-Z0-9]+$/,
     CONFIGMAP_AND_SECRET_NAME: /^[a-z0-9][a-z0-9-.]*[a-z0-9]$/,
     ALL_DIGITS_BETWEEN_0_AND_7: /^[0-7]*$/,
-    APP_LABEL_CHIP: /^.+:.+$/
+    APP_LABEL_CHIP: /^.+:.+$/,
 };
 
 export const TriggerType = {
@@ -178,18 +178,19 @@ export const SourceTypeMap = {
     WEBHOOK: 'WEBHOOK',
 };
 
-export const Moment12HourFormat = "ddd, DD MMM YYYY, hh:mm A";
+export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A';
 
 export const DOCUMENTATION = {
     HOME_PAGE: 'https://docs.devtron.ai',
     APP_CREATE: 'https://docs.devtron.ai/user-guide/creating-application',
     APP_CREATE_ENV: 'https://docs.devtron.ai/user-guide/creating-application/environment-overrides',
-    APP_CREATE_CI_CONFIG: 'https://docs.devtron.ai/user-guide/creating-application/docker-build-configuration',
+    APP_CREATE_MATERIAL: 'https://docs.devtron.ai/devtron/user-guide/creating-application/git-material',
+    APP_CREATE_CI_CONFIG: 'https://docs.devtron.ai/devtron/user-guide/creating-application/docker-build-configuration',
     APP_CREATE_DEPLOYMENT_TEMPLATE: 'https://docs.devtron.ai/user-guide/creating-application/deployment-template',
     APP_CREATE_CONFIG_MAP: 'https://docs.devtron.ai/user-guide/creating-application/config-maps',
     APP_CREATE_SECRET: 'https://docs.devtron.ai/user-guide/creating-application/secrets',
-    APP_CREATE_WORKFLOW: 'https://docs.devtron.ai/creating-application/workflow',
-    APP_CREATE_ENVIRONMENT_OVERRIDE: "https://docs.devtron.ai/user-guide/creating-application/environment-overrides",
+    APP_CREATE_WORKFLOW: 'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow',
+    APP_CREATE_ENVIRONMENT_OVERRIDE: 'https://docs.devtron.ai/user-guide/creating-application/environment-overrides',
     BULK_UPDATE: 'https://docs.devtron.ai/user-guide/bulk-update',
     CHART_DEPLOY: 'https://docs.devtron.ai/user-guide/deploy-chart',
     CHART_LIST: 'https://docs.devtron.ai/user-guide/deploy-chart/overview-of-charts',
@@ -199,32 +200,33 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_DOCKER: 'https://docs.devtron.ai/user-guide/global-configurations/docker-registries',
     GLOBAL_CONFIG_CLUSTER: 'https://docs.devtron.ai/user-guide/global-configurations/cluster-and-environments',
     GLOBAL_CONFIG_CHART: 'https://docs.devtron.ai/user-guide/global-configurations/chart-repo',
-    GLOBAL_CONFIG_NOTIFICATION: 'https://docs.devtron.ai/global-configurations/manage-notification',
-    GLOBAL_CONFIG_PROJECT: 'https://docs.devtron.ai/global-configurations/projects',
-    GLOBAL_CONFIG_SSO: 'https://docs.devtron.ai/user-guide/global-configurations/sso-login',
-    GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/user-guide/global-configurations/user-access',
+    GLOBAL_CONFIG_NOTIFICATION: 'https://docs.devtron.ai/devtron/setup/global-configurations/manage-notification',
+    GLOBAL_CONFIG_PROJECT: 'https://docs.devtron.ai/devtron/setup/global-configurations/projects',
+    GLOBAL_CONFIG_SSO: 'https://docs.devtron.ai/devtron/setup/global-configurations/sso-login',
+    GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/devtron/setup/global-configurations/user-access',
     HYPERION_TO_FULL_MODE: 'https://docs.devtron.ai/hyperion/upgrade-to-devtron',
-    HYPERION: 'https://docs.devtron.ai/#hyperion'
-}
+    HYPERION: 'https://docs.devtron.ai/#hyperion',
+};
 
 // APP LIST STARTS
 export const AppListConstants = {
+    SAMPLE_NODE_REPO_URL: 'https://github.com/devtron-labs/getting-started-nodejs',
     CREATE_DEVTRON_APP_URL: 'create-d-app',
-    AppTabs : {
+    AppTabs: {
         DEVTRON_APPS: 'Devtron Apps',
-        HELM_APPS: 'Helm Apps'
+        HELM_APPS: 'Helm Apps',
     },
-    AppType : {
+    AppType: {
         DEVTRON_APPS: 'd',
-        HELM_APPS: 'h'
+        HELM_APPS: 'h',
     },
-    FilterType : {
+    FilterType: {
         PROJECT: 'team',
         CLUTSER: 'cluster',
         NAMESPACE: 'namespace',
-        ENVIRONMENT: 'environment'
-    }
-}
+        ENVIRONMENT: 'environment',
+    },
+};
 // APP LIST ENDS
 
 export enum SERVER_MODE {
@@ -235,14 +237,200 @@ export enum SERVER_MODE {
 export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE;
 
 export enum ACCESS_TYPE_MAP {
-  DEVTRON_APPS = '', // devtron app work flow
-  HELM_APPS = 'helm-app', //helm app work flow
+    DEVTRON_APPS = '', // devtron app work flow
+    HELM_APPS = 'helm-app', //helm app work flow
 }
 
 export enum MODES {
-    YAML = "yaml",
-    JSON = "json",
-    SHELL = "shell",
+    YAML = 'yaml',
+    JSON = 'json',
+    SHELL = 'shell',
 }
 
 export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned';
+export interface InputDetailType {
+    label: string;
+    defaultValue: string;
+    placeholder: string;
+}
+export interface RegistryTypeDetailType {
+    value: string;
+    label: string;
+    desiredFormat: string;
+    placeholderText: string;
+    gettingStartedLink: string;
+    defaultRegistryURL: string;
+    registryURL: InputDetailType;
+    id: InputDetailType;
+    password: InputDetailType;
+}
+
+export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
+    ecr: {
+        value: 'ecr',
+        label: 'ECR',
+        desiredFormat: '(desired format: repo-name)',
+        placeholderText: 'Eg. repo_name',
+        gettingStartedLink: 'https://docs.aws.amazon.com/AmazonECR/latest/userguide/get-set-up-for-amazon-ecr.html',
+        defaultRegistryURL: '',
+        registryURL: {
+            label: 'Registry URL*',
+            defaultValue: '',
+            placeholder: 'Eg. xxxxxxxxxxxx.dkr.ecr.region.amazonaws.com',
+        },
+        id: {
+            label: 'Access key ID*',
+            defaultValue: '',
+            placeholder: '',
+        },
+        password: {
+            label: 'Secret access key*',
+            defaultValue: '',
+            placeholder: '',
+        },
+    },
+    'docker-hub': {
+        value: 'docker-hub',
+        label: 'Docker',
+        desiredFormat: '(desired format: username/repo-name)',
+        placeholderText: 'Eg. username/repo_name',
+        gettingStartedLink: 'https://docs.docker.com/docker-hub/',
+        defaultRegistryURL: 'docker.io',
+        registryURL: {
+            label: 'Registry URL*',
+            defaultValue: 'docker.io',
+            placeholder: '',
+        },
+        id: {
+            label: 'Username*',
+            defaultValue: '',
+            placeholder: '',
+        },
+        password: {
+            label: 'Password/Token (recommended)*',
+            defaultValue: '',
+            placeholder: '',
+        },
+    },
+    acr: {
+        value: 'acr',
+        label: 'Azure',
+        desiredFormat: '(desired format: repo-name)',
+        placeholderText: 'Eg. repo_name',
+        gettingStartedLink:
+            'https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal',
+        defaultRegistryURL: '',
+        registryURL: {
+            label: 'Registry url/Login server*',
+            defaultValue: '',
+            placeholder: 'Eg. xxx.azurecr.io',
+        },
+        id: {
+            label: 'Username/Registry name*',
+            defaultValue: '',
+            placeholder: '',
+        },
+        password: {
+            label: 'Password*',
+            defaultValue: '',
+            placeholder: '',
+        },
+    },
+    'artifact-registry': {
+        value: 'artifact-registry',
+        label: 'Artifact Registry (GCP)',
+        desiredFormat: '(desired format: project-id/artifacts-repo/repo-name)',
+        placeholderText: 'Eg. project-id/artifacts-repo/repo-name',
+        gettingStartedLink: 'https://cloud.google.com/artifact-registry/docs/manage-repos?hl=en_US',
+        defaultRegistryURL: '',
+        registryURL: {
+            label: 'Registry URL*',
+            defaultValue: '',
+            placeholder: 'Eg. region-docker.pkg.dev',
+        },
+        id: {
+            label: 'Username*',
+            defaultValue: '_json_key',
+            placeholder: '',
+        },
+        password: {
+            label: 'Service account JSON file*',
+            defaultValue: '',
+            placeholder: 'Paste json file content here',
+        },
+    },
+    gcr: {
+        value: 'gcr',
+        label: 'GCR',
+        desiredFormat: '(desired format: project-id/repo-name)',
+        placeholderText: 'Eg. project-id/repo_name',
+        gettingStartedLink: 'https://cloud.google.com/container-registry/docs/quickstart',
+        defaultRegistryURL: 'gcr.io',
+        registryURL: {
+            label: 'Registry URL*',
+            defaultValue: 'gcr.io',
+            placeholder: '',
+        },
+        id: {
+            label: 'Username*',
+            defaultValue: '_json_key',
+            placeholder: '',
+        },
+        password: {
+            label: 'Service account JSON file*',
+            defaultValue: '',
+            placeholder: 'Paste json file content here',
+        },
+    },
+    quay: {
+        value: 'quay',
+        label: 'Quay',
+        desiredFormat: '(desired format: username/repo-name)',
+        placeholderText: 'Eg. username/repo_name',
+        gettingStartedLink: '',
+        defaultRegistryURL: 'quay.io',
+        registryURL: {
+            label: 'Registry URL*',
+            defaultValue: 'quay.io',
+            placeholder: '',
+        },
+        id: {
+            label: 'Username*',
+            defaultValue: '',
+            placeholder: '',
+        },
+        password: {
+            label: 'Token*',
+            defaultValue: '',
+            placeholder: '',
+        },
+    },
+    other: {
+        value: 'other',
+        label: 'Other',
+        desiredFormat: '',
+        placeholderText: '',
+        gettingStartedLink: '',
+        defaultRegistryURL: '',
+        registryURL: {
+            label: 'Registry URL*',
+            defaultValue: '',
+            placeholder: '',
+        },
+        id: {
+            label: 'Username*',
+            defaultValue: '',
+            placeholder: '',
+        },
+        password: {
+            label: 'Password/Token*',
+            defaultValue: '',
+            placeholder: '',
+        },
+    },
+};
+
+export const AppCreationType = {
+    Blank: 'BLANK',
+    Existing: 'EXISTING',
+};
