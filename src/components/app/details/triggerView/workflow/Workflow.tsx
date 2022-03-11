@@ -142,6 +142,9 @@ export class Workflow extends Component<WorkflowProps> {
             history={this.props.history}
             location={this.props.location}
             match={this.props.match}
+            parentPipelineId={node.parentPipelineId}
+            parentPipelineType={node.parentPipelineType}
+            parentEnvironmentName={node.parentEnvironmentName}
         />
     }
 
