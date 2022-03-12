@@ -13,7 +13,7 @@ import Reload from '../../../Reload/Reload'
 import {
     default as AnsiUp
 } from 'ansi_up';
-import { getTriggerHistory, getTriggerDetails, getCDBuildReport, getDeploymentTemplateDiff } from './service'
+import { getTriggerHistory, getTriggerDetails, getCDBuildReport, getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from './service'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { cancelPrePostCdTrigger } from '../../service';
 import {Scroller} from '../cIDetails/CIDetails';
@@ -28,14 +28,15 @@ import {History} from '../cIDetails/types'
 import {Moment12HourFormat} from '../../../../config';
 import DeploymentConfiguration from './DeploymentConfiguration';
 import HistoryDiff from './HistoryDiff';
-import CompareWithBaseConfig from './CompareWithBaseConfig';
 import './cdDetail.scss'
+import YAML from 'yaml'
+import CompareViewDeployment from './CompareViewDeployment';
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(["starting", "running", "pending"]);
 
 export default function CDDetails(){
-    const {appId, envId, triggerId, pipelineId} = useParams()
+    const {appId, envId, triggerId, pipelineId} = useParams<{appId, envId, triggerId, pipelineId}>()
     const [pagination, setPagination] = useState<{offset: number, size: number}>({offset: 0, size : 20})
     const [hasMore, setHasMore] = useState<boolean>(false);
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map());
@@ -51,28 +52,7 @@ export default function CDDetails(){
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
     const keys = useKeyDown()
     const [showTemplate, setShowTemplate] = useState(false)
-    const [deploymentTemplateDiff, setDeploymentTemplateDiff] = useState([]);
-    const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState({value: '', label: ''})
-    const [currentTemplateId, setCurrentTemplateId] = useState(0)
-
-    const initialiseDeploymentTemplate = () => {
-        try {
-            getDeploymentTemplateDiff(appId, pipelineId).then((response) => {
-                setDeploymentTemplateDiff(response.result);
-                let currentId = response.result.map((res)=> res.id)
-                setCurrentTemplateId(currentId)
-            });
-        } catch (err) {
-            showError(err);
-        }
-    };
-
-    useEffect(() => {
-        initialiseDeploymentTemplate();
-    },[]);
-
    
-
     useEffect(()=>{
         if(!pathname.includes('/logs')) return
         switch(keys.join("")){
@@ -167,6 +147,7 @@ export default function CDDetails(){
             return new Map(triggerHistory)
         })
     }
+
     if(loading || (loadingDeploymentHistory && triggerHistory.size === 0)) return <Progressing pageLoader/>
     if (result && !(Array.isArray(result[0].result))) return <AppNotConfigured text="App is not deployed on any environment." />
     if (result && !(Array.isArray(result[1]?.pipelines))) return <AppNotConfigured text="No CD pipelines found." />
@@ -174,11 +155,8 @@ export default function CDDetails(){
     return (
         <>
             <div className={`${ !showTemplate ? 'ci-details' : ''} ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
-                {showTemplate ? (
-                    <div className='historical-diff'>
-                    <CompareWithBaseConfig deploymentTemplateDiffRes={deploymentTemplateDiff} selectedDeploymentTemplate={selectedDeploymentTemplate} setSeletedDeploymentTemplate={setSeletedDeploymentTemplate}/>
-                    <HistoryDiff />
-                    </div >
+            {showTemplate ? (
+                    <CompareViewDeployment />
                 ) : (
                     <>
                         <div className="ci-details__history">
@@ -317,7 +295,7 @@ function Logs({ triggerDetails }) {
     const eventSrcRef = useRef(null);
     const [logs, setLogs] = useState([]);
     const counter = useRef(0)
-    const { pipelineId, envId, appId } = useParams()
+    const { pipelineId, envId, appId } = useParams<{pipelineId, envId, appId }>()
 
     function createMarkup(log) {
         try {
@@ -379,9 +357,9 @@ const TriggerOutput: React.FC<{
     fullScreenView: boolean;
     syncState: (triggerId: number, triggerDetails: History) => void;
     triggerHistory: Map<number, History>;
-    setShowTemplate
+    setShowTemplate;
 }> = ({ fullScreenView, syncState, triggerHistory, setShowTemplate }) => {
-    const { appId, triggerId, envId, pipelineId } = useParams();
+    const { appId, triggerId, envId, pipelineId } = useParams<{appId, triggerId, envId, pipelineId}>();
     const triggerDetails = triggerHistory.get(+triggerId);
     const [
         triggerDetailsLoading,
@@ -491,9 +469,9 @@ const TriggerOutput: React.FC<{
     );
 };
 
-const HistoryLogs: React.FC<{triggerDetails: History, loading: boolean, setShowTemplate}> = ({ triggerDetails, loading, setShowTemplate }) => {
+const HistoryLogs: React.FC<{triggerDetails: History, loading: boolean, setShowTemplate;}> = ({ triggerDetails, loading, setShowTemplate }) => {
     let { path } = useRouteMatch();
-    const {appId, pipelineId, triggerId, envId} = useParams()
+    const {appId, pipelineId, triggerId, envId} = useParams<{appId, pipelineId, triggerId, envId}>()
     const [autoBottomScroll, setAutoBottomScroll] = useState<boolean>(triggerDetails.status.toLowerCase() !== 'succeeded')
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll })
 
@@ -507,7 +485,9 @@ const HistoryLogs: React.FC<{triggerDetails: History, loading: boolean, setShowT
                     </div>
                 </Route>}
                 <Route path={`${path}/source-code`} render={props => <GitChanges triggerDetails={triggerDetails} />} />
+                <Route path={`${path}/configuration/deployment-template`} render={props => <CompareViewDeployment />} />
                 <Route path={`${path}/configuration`} render={props => <DeploymentConfiguration setShowTemplate={setShowTemplate}/>} />
+
                 {triggerDetails.stage !== 'DEPLOY' && <Route path={`${path}/artifacts`} render={props => <Artifacts getArtifactPromise={()=>getCDBuildReport(appId, envId, pipelineId, triggerId)} triggerDetails={triggerDetails} />} />}
                 <Redirect to={triggerDetails.status.toLowerCase() === 'succeeded' ? `${path}/artifacts` : triggerDetails.stage === 'DEPLOY' ? `${path}/source-code` : `${path}/logs`} />
             </Switch>}

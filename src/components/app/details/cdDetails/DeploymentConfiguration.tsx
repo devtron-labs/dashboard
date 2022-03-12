@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ReactComponent as RightArrow } from '../../../../assets/icons/ic-arrow-left.svg';
 import { NavLink, Route, Switch } from 'react-router-dom';
 import { useRouteMatch } from 'react-router';
@@ -7,6 +7,7 @@ import DeploymentTemplateHistory from './DeploymentTemplateHistory';
 interface TemplateConfiguration {
     setShowTemplate: (boolean) => void;
 }
+
 
 function DeploymentConfiguration({ setShowTemplate }: TemplateConfiguration) {
     const match = useRouteMatch();
@@ -19,8 +20,8 @@ function DeploymentConfiguration({ setShowTemplate }: TemplateConfiguration) {
                 <RightArrow className="rotate icon-dim-20" style={{ ['--rotateBy' as any]: '180deg' }} />
             </div> */}
 
-            <div
-                // to={`${match.url}/deployment-template`}
+            <NavLink
+                 to={`${match.url}/deployment-template`}
                 onClick={() => setShowTemplate(true)}
                 className="bcb-1 no-decor bcn-0 cn-9 pl-16 pr-16 pt-12 pb-12 br-4 en-2 bw-1 mb-20 flex content-space cursor"
             >
@@ -31,7 +32,7 @@ function DeploymentConfiguration({ setShowTemplate }: TemplateConfiguration) {
                     {' '}
                     <RightArrow className="rotate icon-dim-20" style={{ ['--rotateBy' as any]: '180deg' }} />
                 </span>
-            </div>
+            </NavLink>
             {/* <Switch>
                 <Route path={`${url}/deployment-template`} render={(props) => <HistoryDiff />} />
             </Switch> */}

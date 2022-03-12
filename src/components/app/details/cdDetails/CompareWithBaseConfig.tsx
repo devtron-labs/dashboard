@@ -21,7 +21,7 @@ interface DeploymentTemplateDiffRes {
 interface CompareWithBaseConfig {
     deploymentTemplateDiffRes: DeploymentTemplateDiffRes[];
     selectedDeploymentTemplate: {label: string, value: string};
-    setSeletedDeploymentTemplate: (selectedVal) => void
+    setSeletedDeploymentTemplate: (selected) => void
 }
 
 function CompareWithBaseConfig({ deploymentTemplateDiffRes, selectedDeploymentTemplate, setSeletedDeploymentTemplate } : CompareWithBaseConfig) {
@@ -31,18 +31,20 @@ function CompareWithBaseConfig({ deploymentTemplateDiffRes, selectedDeploymentTe
     let deploymentTemplateOption: { label: string, value: string }[] = deploymentTemplateDiffRes.map(p => { return { value: String(p.id), label: p.deployedOn } });
 
     const onClickTimeStampSelector = (selected : {label: string, value: string}) => {
-
         handleSelector(selected.value)
-        setSeletedDeploymentTemplate(selected.label)
-        getDeploymentTemplateDiffId(appId , pipelineId, selected.value).then((res) => {
-           console.log(res.result)
-        })
+        setSeletedDeploymentTemplate(selected)
     }
 
    const handleSelector = (deploymentId) => {
     let deploymentTemp = deploymentTemplateDiffRes.find(e => e.id.toString()  === deploymentId.toString() );
         setSeletedDeploymentTemplate(deploymentTemp);
    }
+
+   useEffect (()=>{
+    if(deploymentTemplateOption &&  deploymentTemplateOption.length > 0){
+        setSeletedDeploymentTemplate(deploymentTemplateOption[0])
+    }
+   },[])
 
     return (
         <div className="border-bottom pl-20 pr-20 pt-12 pb-12 flex left">
@@ -57,7 +59,6 @@ function CompareWithBaseConfig({ deploymentTemplateDiffRes, selectedDeploymentTe
                     <div style={{ minWidth: '200px' }}>
                         <ReactSelect
                             placeholder="Select Timestamp"
-                            defaultValue={deploymentTemplateOption[0]}
                             styles={{
                                 ...multiSelectStyles,
                                 menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', width: '150%' }),
@@ -94,7 +95,7 @@ function CompareWithBaseConfig({ deploymentTemplateDiffRes, selectedDeploymentTe
                             components={{
                                 IndicatorSeparator: null,
                             }}
-                            value={selectedDeploymentTemplate}
+                            value={selectedDeploymentTemplate || deploymentTemplateOption[0]}
                         />
                     </div>
                 </div>

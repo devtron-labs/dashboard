@@ -237,6 +237,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                     </div>}
                 </div>
                 <div className="code-editor-container">
+                    
                     <CodeEditor
                         value={state ? state.duplicate ? YAML.stringify(state.duplicate, { indent: 2 }) : YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
                         onChange={res => setTempValue(res)}

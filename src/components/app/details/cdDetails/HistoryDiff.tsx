@@ -1,59 +1,52 @@
 import React, { useCallback, useReducer, useState } from 'react';
 import { useRouteMatch } from 'react-router';
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom';
-import CodeEditor from '../../../CodeEditor/CodeEditor';
 import { mapByKey, Progressing } from '../../../common';
-import { GitChanges, Artifacts } from '../cIDetails/CIDetails';
 import './cdDetail.scss';
-import CompareWithBaseConfig from './CompareWithBaseConfig';
-import DeploymentConfiguration from './DeploymentConfiguration';
-import DeploymentTemplateHistory from './DeploymentTemplateHistory';
-import { getDeploymentTemplateDiff } from './service';
 import { useParams } from 'react-router'
+import DeploymentTemplateHistory from './DeploymentTemplateHistory';
 
-function HistoryDiff() {
+function HistoryDiff({currentTemplate}) {
     const [tempValue, setTempValue] = useState('');
     const [loading, setLoading] = useState(false)
-    let { path } = useRouteMatch();
+    let { path, url} = useRouteMatch();
     const { appId, envId, pipelineId } = useParams<{ appId, envId, pipelineId}>() 
     
 
    const renderLeftHistoryConfiguration = () => {
-       return<><div>
-            <NavLink replace className="tab-list__tab-link" activeClassName="active" to={`deployment-template`}>
+       return<div className='bcn-0'>
+             <NavLink replace className="tab-list__tab-link" activeClassName="active" to={`${url}/configuration/deployment-template`}>
                 <div className="historical-diff__left">
                     Deployment template
                     <div className="cg-5">2 changes</div>
                 </div>
             </NavLink>
        </div>
-       </>
 
     }
 
     const renderRightHistoryConfiguration = () => {
-          
-            return <>
-                <div className="historical-diff__right ci-details__body bcn-1">
-                    {loading ? <Progressing pageLoader/>
-                    :<Switch>
-                        <Route path={`${path}/deployment-configuration`} render={props => <DeploymentTemplateHistory setTempValue={setTempValue}/>} />
-                    </Switch>}
+            return  <div className="historical-diff__right ci-details__body bcn-1">
+                    <Switch>
+                        <Route path={`${path}/configuration/deployment-template`} 
+                        render={props => <DeploymentTemplateHistory setTempValue={setTempValue} currentTemplate={currentTemplate}/>}
+                          />
+                    </Switch>
                 </div>
-            </>
     }
 
     return (
         <div className="historical-diff__container">
-           {renderLeftHistoryConfiguration}
-            {renderRightHistoryConfiguration}
-            <NavLink replace className="tab-list__tab-link border-right" activeClassName="active" to={`deployment-template`}>
+           {renderLeftHistoryConfiguration()}
+          
+        {renderRightHistoryConfiguration()} 
+            {/* <NavLink replace className="tab-list__tab-link border-right" activeClassName="active" to={`deployment-template`}>
                 <div className="historical-diff__left">
                     Deployment template
                     <div className="cg-5">2 changes</div>
                 </div>
-            </NavLink>
-            <DeploymentTemplateHistory setTempValue={setTempValue}/>
+            </NavLink> */}
+            {/* <DeploymentTemplateHistory setTempValue={setTempValue} currentTemplate={currentTemplate}/> */}
         </div>
     );
 }
