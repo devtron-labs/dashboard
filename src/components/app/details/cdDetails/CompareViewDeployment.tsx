@@ -6,35 +6,33 @@ import { getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from './servic
 import { useParams } from 'react-router';
 
 function CompareViewDeployment() {
-
     const [deploymentTemplateDiff, setDeploymentTemplateDiff] = useState([]);
-    const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState<{value: string, label: string}>()
-    const [currentTemplate, setCurrentTemplate] = useState<any>()
-    const {appId, envId, pipelineId} = useParams<{appId, envId, pipelineId}>()
-
+    const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState<{ value: string; label: string }>();
+    const [currentTemplate, setCurrentTemplate] = useState<any>();
+    const { appId, envId, pipelineId } = useParams<{ appId; envId; pipelineId }>();
 
     useEffect(() => {
-        if(selectedDeploymentTemplate){
+        if (selectedDeploymentTemplate) {
             try {
                 getDeploymentTemplateDiffId(appId, pipelineId, selectedDeploymentTemplate.value).then((response) => {
-                    setCurrentTemplate( response.result)
+                    setCurrentTemplate(response.result);
                 });
             } catch (err) {
                 showError(err);
             }
         }
-    },[selectedDeploymentTemplate]);
-    
+    }, [selectedDeploymentTemplate]);
+
     useEffect(() => {
         try {
             getDeploymentTemplateDiff(appId, pipelineId).then((response) => {
                 setDeploymentTemplateDiff(response.result);
-                let currentId = response.result.map((res)=> res.id)
+                let currentId = response.result.map((res) => res.id);
             });
         } catch (err) {
             showError(err);
         }
-    },[]);
+    }, []);
 
     return (
         <div>

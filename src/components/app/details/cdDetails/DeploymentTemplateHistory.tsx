@@ -4,7 +4,7 @@ import { mapByKey, showError, useEffectAfterMount } from '../../../common';
 import { useParams } from 'react-router';
 import YAML from 'yaml';
 import { toast } from 'react-toastify';
-import { getDeploymentTemplate, getDeploymentTemplateDiff } from './service';
+import { getDeploymentTemplate } from './service';
 import { chartRefAutocomplete } from '../../../EnvironmentOverride/service';
 
 function DeploymentTemplateHistory({ setTempValue, currentTemplate }) {
