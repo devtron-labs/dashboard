@@ -4,9 +4,8 @@ import { NavLink, Redirect, Route, Switch } from 'react-router-dom';
 import './cdDetail.scss';
 import DeploymentTemplateHistory from './DeploymentTemplateHistory';
 
-function HistoryDiff({ currentTemplate }) {
+function HistoryDiff({ currentConfiguration }) {
     const [tempValue, setTempValue] = useState('');
-    const [loading, setLoading] = useState(false);
     const { path, url } = useRouteMatch();
     const { appId, envId, pipelineId, triggerId } = useParams<{ appId; envId; pipelineId; triggerId }>();
 
@@ -35,7 +34,7 @@ function HistoryDiff({ currentTemplate }) {
                     <Route
                         path={path}
                         render={(props) => (
-                            <DeploymentTemplateHistory setTempValue={setTempValue} currentTemplate={currentTemplate} />
+                            <DeploymentTemplateHistory setTempValue={setTempValue} currentConfiguration={currentConfiguration} />
                         )}
                     />
                 </Switch>

@@ -14,14 +14,14 @@ function CompareViewDeployment({
 }) {
     const [deploymentTemplateDiff, setDeploymentTemplateDiff] = useState([]);
     const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState<{ value: string; label: string }>();
-    const [currentTemplate, setCurrentTemplate] = useState<any>();
+    const [currentConfiguration, setCurrentConfiguration] = useState<any>();
     const { appId, pipelineId } = useParams<{ appId; pipelineId }>();
 
     useEffect(() => {
         if (selectedDeploymentTemplate) {
             try {
                 getDeploymentTemplateDiffId(appId, pipelineId, selectedDeploymentTemplate.value).then((response) => {
-                    setCurrentTemplate(response.result);
+                    setCurrentConfiguration(response.result);
                 });
             } catch (err) {
                 showError(err);
@@ -57,7 +57,7 @@ function CompareViewDeployment({
                 setSeletedDeploymentTemplate={setSeletedDeploymentTemplate}
                 setShowTemplate={setShowTemplate}
             />
-            <HistoryDiff currentTemplate={currentTemplate} />
+            <HistoryDiff currentConfiguration={currentConfiguration} />
         </div>
     );
 }

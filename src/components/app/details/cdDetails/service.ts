@@ -70,6 +70,12 @@ export function getDeploymentTemplateDiffId(appId,  pipelineId, id) {
     return get(`app/history/template/${appId}/${pipelineId}/${id}`)
 }
 
-export function getDeploymentTemplate(appId, envId, chartId){
+export function getPreviousDeploymentTemplate(appId, envId, chartId){
     return get(`app/env/${appId}/${envId}/${chartId}`)
 }
+
+export function getDeploymentTemplateVersion(id: number, chartRefId: number) {
+    const URL = `${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`;
+    return get(URL)
+}
+
