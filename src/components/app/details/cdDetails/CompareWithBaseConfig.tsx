@@ -4,6 +4,8 @@ import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-fo
 import { multiSelectStyles, Select } from '../../../common';
 import { useHistory, useRouteMatch } from 'react-router';
 import { NavLink } from 'react-router-dom';
+import moment from 'moment';
+import { Moment12HourFormat } from '../../../../config';
 
 interface DeploymentTemplateDiffRes {
     appId: number;
@@ -30,9 +32,8 @@ function CompareWithBaseConfig({
     const { url } = useRouteMatch()
     const history = useHistory()
     const deploymentTemplateOption: { label: string; value: string }[] = deploymentTemplateDiffRes.map((p) => {
-        return { value: String(p.id), label: p.deployedOn };
+        return { value: String(p.id), label: moment(p.deployedOn).format(Moment12HourFormat) };
     });
-
     const onClickTimeStampSelector = (selected: { label: string; value: string }) => {
         handleSelector(selected.value);
         setSeletedDeploymentTemplate(selected);
