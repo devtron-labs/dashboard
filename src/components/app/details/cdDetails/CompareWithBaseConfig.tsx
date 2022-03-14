@@ -3,6 +3,7 @@ import ReactSelect from 'react-select';
 import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-forward.svg';
 import { multiSelectStyles, Select } from '../../../common';
 import { useHistory, useRouteMatch } from 'react-router';
+import { NavLink } from 'react-router-dom';
 
 interface DeploymentTemplateDiffRes {
     appId: number;
@@ -17,18 +18,18 @@ interface CompareWithBaseConfig {
     deploymentTemplateDiffRes: DeploymentTemplateDiffRes[];
     selectedDeploymentTemplate: { label: string; value: string };
     setSeletedDeploymentTemplate: (selected) => void;
+    setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function CompareWithBaseConfig({
     deploymentTemplateDiffRes,
     selectedDeploymentTemplate,
     setSeletedDeploymentTemplate,
+    setShowTemplate,
 }: CompareWithBaseConfig) {
-
-    const {url} = useRouteMatch()
+    const { url } = useRouteMatch()
     const history = useHistory()
-
-    let deploymentTemplateOption: { label: string; value: string }[] = deploymentTemplateDiffRes.map((p) => {
+    const deploymentTemplateOption: { label: string; value: string }[] = deploymentTemplateDiffRes.map((p) => {
         return { value: String(p.id), label: p.deployedOn };
     });
 
@@ -43,21 +44,25 @@ function CompareWithBaseConfig({
     };
 
     useEffect(() => {
-        if (deploymentTemplateOption && deploymentTemplateOption.length > 0) {
+        if (!selectedDeploymentTemplate && deploymentTemplateOption && deploymentTemplateOption.length > 0) {
             setSeletedDeploymentTemplate(deploymentTemplateOption[0]);
         }
-    }, []);
-
-    const handleBackArrow = () => {
-        history.replace(`${url}/configuration`)
-    }
+    }, [deploymentTemplateOption]);
 
     return (
         <div className="border-bottom pl-20 pr-20 pt-12 pb-12 flex left">
             <div className="border-right flex">
-                <div onClick={handleBackArrow}>
+                {/* TODO: use To instead of history.goBack(); */}
+                <NavLink
+                    to=""
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setShowTemplate(false);
+                        history.goBack();
+                    }}
+                >
                     <LeftIcon className="rotate icon-dim-20 mr-16" style={{ ['--rotateBy' as any]: '180deg' }} />
-                </div>
+                </NavLink>
                 <div>
                     <div className="cn-6">Compare with</div>
                     <div style={{ minWidth: '200px' }}>

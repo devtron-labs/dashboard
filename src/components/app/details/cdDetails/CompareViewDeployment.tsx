@@ -5,7 +5,13 @@ import HistoryDiff from './HistoryDiff';
 import { getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from './service';
 import { useParams } from 'react-router';
 
-function CompareViewDeployment() {
+function CompareViewDeployment({
+    showTemplate,
+    setShowTemplate,
+}: {
+    showTemplate: boolean;
+    setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
     const [deploymentTemplateDiff, setDeploymentTemplateDiff] = useState([]);
     const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState<{ value: string; label: string }>();
     const [currentTemplate, setCurrentTemplate] = useState<any>();
@@ -28,9 +34,19 @@ function CompareViewDeployment() {
             getDeploymentTemplateDiff(appId, pipelineId).then((response) => {
                 setDeploymentTemplateDiff(response.result);
             });
+
+            if (!showTemplate) {
+                setShowTemplate(true);
+            }
         } catch (err) {
             showError(err);
         }
+
+        return (): void => {
+            if (showTemplate) {
+                setShowTemplate(false);
+            }
+        };
     }, []);
 
     return (
@@ -39,6 +55,7 @@ function CompareViewDeployment() {
                 deploymentTemplateDiffRes={deploymentTemplateDiff}
                 selectedDeploymentTemplate={selectedDeploymentTemplate}
                 setSeletedDeploymentTemplate={setSeletedDeploymentTemplate}
+                setShowTemplate={setShowTemplate}
             />
             <HistoryDiff currentTemplate={currentTemplate} />
         </div>

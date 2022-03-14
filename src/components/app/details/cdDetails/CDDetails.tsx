@@ -154,10 +154,8 @@ export default function CDDetails(){
     if(!result || dependencyState[2] !== envId) return null
     return (
         <>
-            <div className={`${ !showTemplate ? 'ci-details' : ''} ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
-            {showTemplate ? (
-                    <CompareViewDeployment />
-                ) : (
+            <div className={`${!showTemplate ? 'ci-details' : ''} ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
+            {!showTemplate && (
                     <>
                         <div className="ci-details__history">
                             {!fullScreenView && (
@@ -222,6 +220,14 @@ export default function CDDetails(){
                         </div>
                     </>
                 )}
+                <Switch>
+                    <Route
+                        path={`${path}/configuration/deployment-template`}
+                        render={(props) => (
+                            <CompareViewDeployment showTemplate={showTemplate} setShowTemplate={setShowTemplate} />
+                        )}
+                    />
+                </Switch>
             </div>
             {(scrollToTop || scrollToBottom) && (
                 <Scroller
@@ -357,7 +363,7 @@ const TriggerOutput: React.FC<{
     fullScreenView: boolean;
     syncState: (triggerId: number, triggerDetails: History) => void;
     triggerHistory: Map<number, History>;
-    setShowTemplate;
+    setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ fullScreenView, syncState, triggerHistory, setShowTemplate }) => {
     const { appId, triggerId, envId, pipelineId } = useParams<{appId, triggerId, envId, pipelineId}>();
     const triggerDetails = triggerHistory.get(+triggerId);
@@ -464,12 +470,21 @@ const TriggerOutput: React.FC<{
                     </>
                 )}
             </div>
-            <HistoryLogs key={triggerDetails.id} triggerDetails={triggerDetails} loading={triggerDetailsLoading && !triggerDetailsResult} setShowTemplate={setShowTemplate}/>
+            <HistoryLogs
+                key={triggerDetails.id}
+                triggerDetails={triggerDetails}
+                loading={triggerDetailsLoading && !triggerDetailsResult}
+                setShowTemplate={setShowTemplate}
+            />
         </>
     );
 };
 
-const HistoryLogs: React.FC<{triggerDetails: History, loading: boolean, setShowTemplate;}> = ({ triggerDetails, loading, setShowTemplate }) => {
+const HistoryLogs: React.FC<{
+    triggerDetails: History;
+    loading: boolean;
+    setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ triggerDetails, loading, setShowTemplate }) => {
     let { path } = useRouteMatch();
     const {appId, pipelineId, triggerId, envId} = useParams<{appId, pipelineId, triggerId, envId}>()
     const [autoBottomScroll, setAutoBottomScroll] = useState<boolean>(triggerDetails.status.toLowerCase() !== 'succeeded')
@@ -485,9 +500,7 @@ const HistoryLogs: React.FC<{triggerDetails: History, loading: boolean, setShowT
                     </div>
                 </Route>}
                 <Route path={`${path}/source-code`} render={props => <GitChanges triggerDetails={triggerDetails} />} />
-                <Route path={`${path}/configuration/deployment-template`} render={props => <CompareViewDeployment />} />
                 <Route path={`${path}/configuration`} render={props => <DeploymentConfiguration setShowTemplate={setShowTemplate}/>} />
-
                 {triggerDetails.stage !== 'DEPLOY' && <Route path={`${path}/artifacts`} render={props => <Artifacts getArtifactPromise={()=>getCDBuildReport(appId, envId, pipelineId, triggerId)} triggerDetails={triggerDetails} />} />}
                 <Redirect to={triggerDetails.status.toLowerCase() === 'succeeded' ? `${path}/artifacts` : triggerDetails.stage === 'DEPLOY' ? `${path}/source-code` : `${path}/logs`} />
             </Switch>}
