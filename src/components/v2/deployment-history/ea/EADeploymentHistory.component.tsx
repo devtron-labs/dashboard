@@ -39,7 +39,7 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
         getDeploymentHistory(appId)
             .then((deploymentHistoryResponse: HelmAppDeploymentHistoryResponse) => {
                 let _deploymentHistoryArr =
-                    deploymentHistoryResponse.result?.deploymentHistory?.sort(
+                    deploymentHistoryResponse.result?.deploymentHistory?.deploymentHistory?.sort(
                         (a, b) => b.deployedAt.seconds - a.deployedAt.seconds,
                     ) || [];
                 setDeploymentHistoryArr(_deploymentHistoryArr);
