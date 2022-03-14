@@ -51,7 +51,7 @@ export interface ReleaseInfo {
 }
 
 export interface DeploymentHistoryAndInstalledAppInfo {
-    deploymentHistory : HelmAppDeploymentHistory,
+    deploymentHistory : HelmAppDeploymentDetail[],
     installedAppInfo : InstalledAppInfo,
 }
 
@@ -61,10 +61,6 @@ export interface InstalledAppInfo {
     environmentName: string,
     appOfferingMode: string
     appStoreChartId: number
-}
-
-export interface HelmAppDeploymentHistory {
-    deploymentHistory: HelmAppDeploymentDetail[]
 }
 
 export interface HelmAppDeploymentDetail {
