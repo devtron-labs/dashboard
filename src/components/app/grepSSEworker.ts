@@ -87,7 +87,6 @@ export default () => {
                 // console.log(urls)
                 for (let index = 0; index < urls.length; index++) {
                     const element = urls[index];
-                    console.log(element)
                     wrappers[index] = Object.assign({}, bp)
                     wrappers[index].prefix = `${typeof pods[index] === 'object' ? pods[index].name : pods[index]}: `;
                     wrappers[index].eventSrc = new EventSource(element, { withCredentials: true })
