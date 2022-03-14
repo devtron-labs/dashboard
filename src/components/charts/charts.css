@@ -343,3 +343,7 @@
 .chart-group-deployment__delete-app:hover .stroke-color {
     stroke: var(--R500);
 }
+
+.form__error.flex {
+    display: flex;
+}
