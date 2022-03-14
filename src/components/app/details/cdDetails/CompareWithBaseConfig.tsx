@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import ReactSelect from 'react-select';
 import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-forward.svg';
 import { multiSelectStyles, Select } from '../../../common';
-import { useParams } from 'react-router';
+import { useHistory, useRouteMatch } from 'react-router';
 
 interface DeploymentTemplateDiffRes {
     appId: number;
@@ -24,7 +24,9 @@ function CompareWithBaseConfig({
     selectedDeploymentTemplate,
     setSeletedDeploymentTemplate,
 }: CompareWithBaseConfig) {
-    const { appId, pipelineId } = useParams<{ appId; pipelineId }>();
+
+    const {url} = useRouteMatch()
+    const history = useHistory()
 
     let deploymentTemplateOption: { label: string; value: string }[] = deploymentTemplateDiffRes.map((p) => {
         return { value: String(p.id), label: p.deployedOn };
@@ -46,12 +48,16 @@ function CompareWithBaseConfig({
         }
     }, []);
 
+    const handleBackArrow = () => {
+        history.replace(`${url}/configuration`)
+    }
+
     return (
         <div className="border-bottom pl-20 pr-20 pt-12 pb-12 flex left">
             <div className="border-right flex">
-                <a href="">
+                <div onClick={handleBackArrow}>
                     <LeftIcon className="rotate icon-dim-20 mr-16" style={{ ['--rotateBy' as any]: '180deg' }} />
-                </a>
+                </div>
                 <div>
                     <div className="cn-6">Compare with</div>
                     <div style={{ minWidth: '200px' }}>

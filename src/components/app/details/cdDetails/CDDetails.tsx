@@ -235,7 +235,7 @@ export default function CDDetails(){
 
 const DeploymentCard:React.FC<{triggerDetails: History}> = ({triggerDetails})=>{
     const { url, path } = useRouteMatch()
-    const {triggerId, ...rest} = useParams()
+    const {triggerId, ...rest} = useParams<{triggerId}>()
     return (
         <ConditionalWrap
             condition={Array.isArray(triggerDetails?.ciMaterials)}

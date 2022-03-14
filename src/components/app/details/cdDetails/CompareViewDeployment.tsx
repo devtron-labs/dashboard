@@ -9,7 +9,7 @@ function CompareViewDeployment() {
     const [deploymentTemplateDiff, setDeploymentTemplateDiff] = useState([]);
     const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState<{ value: string; label: string }>();
     const [currentTemplate, setCurrentTemplate] = useState<any>();
-    const { appId, envId, pipelineId } = useParams<{ appId; envId; pipelineId }>();
+    const { appId, pipelineId } = useParams<{ appId; pipelineId }>();
 
     useEffect(() => {
         if (selectedDeploymentTemplate) {
@@ -27,7 +27,6 @@ function CompareViewDeployment() {
         try {
             getDeploymentTemplateDiff(appId, pipelineId).then((response) => {
                 setDeploymentTemplateDiff(response.result);
-                let currentId = response.result.map((res) => res.id);
             });
         } catch (err) {
             showError(err);

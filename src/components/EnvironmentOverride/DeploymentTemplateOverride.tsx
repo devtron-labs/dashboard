@@ -237,7 +237,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                     </div>}
                 </div>
                 <div className="code-editor-container">
-                    
+
                     <CodeEditor
                         value={state ? state.duplicate ? YAML.stringify(state.duplicate, { indent: 2 }) : YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
                         onChange={res => setTempValue(res)}
@@ -279,7 +279,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
 
 function NameSpace({ originalNamespace = "", chartRefId, id }) {
     const [loading, setLoading] = useState(false)
-    const { appId, envId } = useParams()
+    const { appId, envId } = useParams<{appId, envId}>()
     const [namespace, setNamespace] = useState(originalNamespace)
     useEffect(() => {
         setNamespace(originalNamespace)
