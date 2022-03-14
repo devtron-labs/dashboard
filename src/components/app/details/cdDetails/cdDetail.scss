@@ -11,7 +11,7 @@
     flex-basis: 280px;
     transition: flex-basis 0.3s;
     grid-template-columns: 280px auto;
-    grid-template-rows: auto;
+    height: calc(100vh - 160px);
 }
 
 .deployment-diff__upper{
@@ -33,4 +33,13 @@
 
 .border-bottom{
     border-bottom: 1px solid var(--N200);
+}
+
+.history_diff__wrapper{
+    .tab-list__tab-link.active{
+        color: var(--N900);
+        background: #E5F2FF;
+        font-weight: 600;
+        border-bottom: 0px
+     }
 }

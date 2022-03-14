@@ -12,18 +12,17 @@ function HistoryDiff({ currentTemplate }) {
 
     const renderLeftHistoryConfiguration = () => {
         return (
-            <div className="bcn-0">
+            <div className="history_diff__wrapper bcn-0 border-right">
                 {/* TODO: Use url match or similar to generate these URLs instead of manual creation */}
+
                 <NavLink
+                    style={{ maxHeight: '60px' }}
                     replace
-                    className="tab-list__tab-link"
+                    className={`bcb-1 cursor tab-list__tab-link historical-diff__left`}
                     activeClassName="active"
                     to={`/app/${appId}/cd-details/${envId}/${pipelineId}/${triggerId}/configuration/deployment-template`}
                 >
-                    <div className="historical-diff__left">
-                        Deployment template
-                        <div className="cg-5">2 changes</div>
-                    </div>
+                    Deployment template
                 </NavLink>
             </div>
         );
