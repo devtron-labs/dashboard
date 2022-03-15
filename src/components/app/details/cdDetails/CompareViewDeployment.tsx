@@ -8,9 +8,12 @@ import { useParams } from 'react-router';
 function CompareViewDeployment({
     showTemplate,
     setShowTemplate,
+    baseTimeStamp
+    
 }: {
     showTemplate: boolean;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
+    baseTimeStamp: string
 }) {
     const [deploymentTemplateDiff, setDeploymentTemplateDiff] = useState([]);
     const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState<{ value: string; label: string }>();
@@ -56,6 +59,7 @@ function CompareViewDeployment({
                 selectedDeploymentTemplate={selectedDeploymentTemplate}
                 setSeletedDeploymentTemplate={setSeletedDeploymentTemplate}
                 setShowTemplate={setShowTemplate}
+                baseTimeStamp={baseTimeStamp}
             />
             <HistoryDiff currentConfiguration={currentConfiguration} />
         </div>

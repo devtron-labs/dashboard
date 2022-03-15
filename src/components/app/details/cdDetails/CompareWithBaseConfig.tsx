@@ -21,6 +21,7 @@ interface CompareWithBaseConfig {
     selectedDeploymentTemplate: { label: string; value: string };
     setSeletedDeploymentTemplate: (selected) => void;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
+    baseTimeStamp: string
 }
 
 function CompareWithBaseConfig({
@@ -28,6 +29,7 @@ function CompareWithBaseConfig({
     selectedDeploymentTemplate,
     setSeletedDeploymentTemplate,
     setShowTemplate,
+    baseTimeStamp
 }: CompareWithBaseConfig) {
     const { url } = useRouteMatch()
     const history = useHistory()
@@ -113,7 +115,7 @@ function CompareWithBaseConfig({
             </div>
             <div className="pt-12 pb-12 pl-16 pr-16">
                 <span className="cn-6">Base configuration</span>
-                <div>Mon, 17 Jun 2019, 11:32 AM</div>
+                <div className='cn-9'>{baseTimeStamp}</div>
             </div>
         </div>
     );

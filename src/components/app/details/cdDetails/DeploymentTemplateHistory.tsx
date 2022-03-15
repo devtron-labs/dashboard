@@ -75,7 +75,6 @@ function DeploymentTemplateHistory({ setTempValue, currentConfiguration }) {
     return (
         
         <div>
-            {console.log(isTemplateDiff)}
             <div className="en-2 bw-1 br-4 deployment-diff__upper bcn-0 mt-20 mb-16 mr-20 ml-20">
                 <div className="">
                     <div className={`${isTemplateDiff ? 'bcr-1' : ''} pl-16 pr-16 pt-16 pb-16`}>

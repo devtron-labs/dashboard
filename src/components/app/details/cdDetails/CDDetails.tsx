@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, { useRef, useState, useEffect, useMemo, SetStateAction } from 'react';
 import { getAppOtherEnvironment, getCDConfig as getCDPipelines } from '../../../../services/service'
 import {AppEnvironment} from '../../../../services/service.types';
 import { Progressing, Select, showError, useAsync, useInterval, useScrollable, useKeyDown, not, mapByKey, asyncWrap, ConditionalWrap, useAppContext } from '../../../common';
@@ -52,7 +52,8 @@ export default function CDDetails(){
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
     const keys = useKeyDown()
     const [showTemplate, setShowTemplate] = useState(false)
-   
+   const [baseTimeStamp, setBaseTimeStamp] = useState('')
+
     useEffect(()=>{
         if(!pathname.includes('/logs')) return
         switch(keys.join("")){
@@ -165,7 +166,7 @@ export default function CDDetails(){
                                         {Array.from(triggerHistory)
                                             ?.sort(([a], [b]) => b - a)
                                             ?.map(([triggerId, trigger], idx) => (
-                                                <DeploymentCard key={idx} triggerDetails={trigger} />
+                                                <DeploymentCard key={idx} triggerDetails={trigger} setBaseTimeStamp={setBaseTimeStamp}/>
                                             ))}
                                         {hasMore && <DetectBottom callback={reloadNextAfterBottom} />}
                                     </div>
@@ -220,15 +221,18 @@ export default function CDDetails(){
                         </div>
                     </>
                 )}
-                <Switch>
+
+              <Switch>
                     <Route
                         path={`${path}/configuration/deployment-template`}
                         render={(props) => (
-                            <CompareViewDeployment showTemplate={showTemplate} setShowTemplate={setShowTemplate} />
+                            <CompareViewDeployment showTemplate={showTemplate} setShowTemplate={setShowTemplate} baseTimeStamp={baseTimeStamp}/>
                         )}
                     />
                 </Switch>
+              
             </div>
+
             {(scrollToTop || scrollToBottom) && (
                 <Scroller
                     style={{ position: 'fixed', bottom: '25px', right: '32px' }}
@@ -239,9 +243,14 @@ export default function CDDetails(){
     );
 }
 
-const DeploymentCard:React.FC<{triggerDetails: History}> = ({triggerDetails})=>{
-    const { url, path } = useRouteMatch()
+const DeploymentCard:React.FC<{triggerDetails: History, setBaseTimeStamp: React.Dispatch<SetStateAction<string>> }> = ({triggerDetails, setBaseTimeStamp})=>{
+    const { path } = useRouteMatch()
     const {triggerId, ...rest} = useParams<{triggerId}>()
+
+    useEffect(()=>{
+        setBaseTimeStamp(moment(triggerDetails.startedOn).format(Moment12HourFormat))
+    },[triggerDetails])
+
     return (
         <ConditionalWrap
             condition={Array.isArray(triggerDetails?.ciMaterials)}
