@@ -51,10 +51,11 @@ function CompareWithBaseConfig({
     }, [deploymentTemplateOption]);
 
     return (
-        <div className="border-bottom pl-20 pr-20 pt-12 pb-12 flex left">
+        <div className="border-bottom pl-20 pr-20 flex left bcn-0">
             <div className="border-right flex">
                 {/* TODO: use To instead of history.goBack(); */}
                 <NavLink
+                  className=''
                     to=""
                     onClick={(e) => {
                         e.preventDefault();
@@ -62,10 +63,10 @@ function CompareWithBaseConfig({
                         history.goBack();
                     }}
                 >
-                    <LeftIcon className="rotate icon-dim-20 mr-16" style={{ ['--rotateBy' as any]: '180deg' }} />
+                    <LeftIcon className="rotate icon-dim-24 mr-16" style={{ ['--rotateBy' as any]: '180deg' }} />
                 </NavLink>
-                <div>
-                    <div className="cn-6">Compare with</div>
+                <div className='pt-12 pb-12 pl-4 border-left pr-12'>
+                    <div className="cn-6 pl-12">Compare with</div>
                     <div style={{ minWidth: '200px' }}>
                         <ReactSelect
                             placeholder="Select Timestamp"
@@ -110,7 +111,7 @@ function CompareWithBaseConfig({
                     </div>
                 </div>
             </div>
-            <div className="ml-16">
+            <div className="pt-12 pb-12 pl-16 pr-16">
                 <span className="cn-6">Base configuration</span>
                 <div>Mon, 17 Jun 2019, 11:32 AM</div>
             </div>
