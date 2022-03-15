@@ -837,12 +837,15 @@ export function asyncWrap(promise): any[] {
 }
 
 export function Td({ children, to = null, ...props }) {
-    const ContentTag = to ? Link : 'div';
     return (
         <td>
-            <ContentTag to={to} {...props}>
-                {children}
-            </ContentTag>
+            {to ? (
+                <Link to={to} {...props}>
+                    {children}
+                </Link>
+            ) : (
+                <div {...props}>{children}</div>
+            )}
         </td>
     );
 }
