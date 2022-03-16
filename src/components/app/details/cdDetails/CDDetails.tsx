@@ -52,7 +52,9 @@ export default function CDDetails(){
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
     const keys = useKeyDown()
     const [showTemplate, setShowTemplate] = useState(false)
-   const [baseTimeStamp, setBaseTimeStamp] = useState('')
+   const [baseTimeStamp, setBaseTimeStamp] = useState<string>('')
+   const [baseTimeStampId, setBaseTimeStampId] = useState<number>()
+
 
     useEffect(()=>{
         if(!pathname.includes('/logs')) return
@@ -149,10 +151,19 @@ export default function CDDetails(){
         })
     }
 
+    useEffect(()=>{
+        Array.from(triggerHistory)
+            ?.sort(([a], [b]) => b - a)
+            ?.map(([triggerId, trigger], idx) => console.log('trigger', trigger))
+    },[])
+ 
+
     if(loading || (loadingDeploymentHistory && triggerHistory.size === 0)) return <Progressing pageLoader/>
     if (result && !(Array.isArray(result[0].result))) return <AppNotConfigured text="App is not deployed on any environment." />
     if (result && !(Array.isArray(result[1]?.pipelines))) return <AppNotConfigured text="No CD pipelines found." />
     if(!result || dependencyState[2] !== envId) return null
+
+  
     return (
         <>
             <div className={`${!showTemplate ? 'ci-details' : ''} ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
@@ -166,7 +177,7 @@ export default function CDDetails(){
                                         {Array.from(triggerHistory)
                                             ?.sort(([a], [b]) => b - a)
                                             ?.map(([triggerId, trigger], idx) => (
-                                                <DeploymentCard key={idx} triggerDetails={trigger} setBaseTimeStamp={setBaseTimeStamp}/>
+                                                <DeploymentCard key={idx} triggerDetails={trigger}/>
                                             ))}
                                         {hasMore && <DetectBottom callback={reloadNextAfterBottom} />}
                                     </div>
@@ -222,6 +233,8 @@ export default function CDDetails(){
                     </>
                 )}
 
+                
+
               <Switch>
                     <Route
                         path={`${path}/configuration/deployment-template`}
@@ -243,13 +256,9 @@ export default function CDDetails(){
     );
 }
 
-const DeploymentCard:React.FC<{triggerDetails: History, setBaseTimeStamp: React.Dispatch<SetStateAction<string>> }> = ({triggerDetails, setBaseTimeStamp})=>{
+const DeploymentCard:React.FC<{triggerDetails: History }> = ({triggerDetails})=>{
     const { path } = useRouteMatch()
     const {triggerId, ...rest} = useParams<{triggerId}>()
-
-    useEffect(()=>{
-        setBaseTimeStamp(moment(triggerDetails.startedOn).format(Moment12HourFormat))
-    },[triggerDetails])
 
     return (
         <ConditionalWrap

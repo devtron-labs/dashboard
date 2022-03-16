@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactSelect, { components } from 'react-select';
 import { multiSelectStyles, Select } from '../../../common';
 import { useHistory, useRouteMatch } from 'react-router';
@@ -24,6 +24,8 @@ interface CompareWithBaseConfig {
     baseTimeStamp: string;
 }
 
+
+
 function CompareWithBaseConfig({
     deploymentTemplateDiffRes,
     selectedDeploymentTemplate,
@@ -31,8 +33,9 @@ function CompareWithBaseConfig({
     setShowTemplate,
     baseTimeStamp,
 }: CompareWithBaseConfig) {
-    const { url } = useRouteMatch();
+    const { url, path } = useRouteMatch();
     const history = useHistory();
+    const [redirectToConfiguration, setRedirectToConfiguration] = useState<string>()
     const deploymentTemplateOption: { label: string; value: string; author: string }[] = deploymentTemplateDiffRes.map(
         (p) => {
             return { value: String(p.id), label: moment(p.deployedOn).format(Moment12HourFormat), author: p.emailId };
@@ -57,14 +60,12 @@ function CompareWithBaseConfig({
     return (
         <div className="border-bottom pl-20 pr-20 flex left bcn-0">
             <div className="border-right flex">
-                {/* TODO: use To instead of history.goBack(); */}
                 <NavLink
-                    className=""
-                    to=""
+                    to={`${url.split('/configuration')[0]}/configuration`}
                     onClick={(e) => {
                         e.preventDefault();
                         setShowTemplate(false);
-                        history.goBack();
+                        history.push(`${url.split('/configuration')[0]}/configuration`);
                     }}
                 >
                     <LeftIcon className="rotate icon-dim-24 mr-16" style={{ ['--rotateBy' as any]: '180deg' }} />
@@ -80,10 +81,10 @@ function CompareWithBaseConfig({
                                 control: (base, state) => ({
                                     ...base,
                                     backgroundColor: 'transparent',
-                                    minHeight: '24px !important',
+                                    maxHeight: '12px !important',
                                     cursor: 'pointer',
-                                    border: 0,
-                                    padding: 0
+                                    border: 0
+
                                 }),
                                 singleValue: (base, state) => ({
                                     ...base,
@@ -91,9 +92,6 @@ function CompareWithBaseConfig({
                                     color: '#06c',
                                     direction: 'rtl',
                                     marginLeft: '2px',
-                                }),
-                                indicatorsContainer: (provided, state) => ({
-                                    ...provided,
                                 }),
                                 option: (base, state) => ({
                                     ...base,
@@ -105,6 +103,17 @@ function CompareWithBaseConfig({
                                     cursor: 'pointer',
                                    
                                 }),
+                                valueContainer: (base,state) => ({
+                                    ...base,
+                                    padding: 0,
+                                    border: 'none',
+                                    // height: '12px'
+                                }),
+                                indicatorsContainer: () => ({
+                                    // height: '40px',
+                                    // padding: '0px'
+                                }),
+
                             }}
                             onChange={onClickTimeStampSelector}
                             options={deploymentTemplateOption}

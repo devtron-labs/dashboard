@@ -63,7 +63,7 @@ export function getCDBuildReport(appId, envId, pipelineId, workflowId) {
 }
 
 export function getDeploymentTemplateDiff(appId,  pipelineId) {
-    return get(`app/history/template/${appId}/${pipelineId}`)
+    return get(`app/history/template/${appId}/${pipelineId}?offset=0&size=20`)
 }
 
 export function getDeploymentTemplateDiffId(appId,  pipelineId, id) {
