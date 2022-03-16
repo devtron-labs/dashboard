@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { showError } from '../../../common';
+import { showError, sortCallback } from '../../../common';
 import CompareWithBaseConfig from './CompareWithBaseConfig';
 import HistoryDiff from './HistoryDiff';
 import { getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from './service';
@@ -40,7 +40,7 @@ function CompareViewDeployment({
         try {
 
             getDeploymentTemplateDiff(appId, pipelineId).then((response) => {
-                setDeploymentTemplateDiff(response.result);
+                setDeploymentTemplateDiff(response.result.sort((a, b) => sortCallback('id', b, a)))
                 setLoader(false)
             });
 
@@ -61,6 +61,7 @@ function CompareViewDeployment({
 
     return (
         <div>
+
             <CompareWithBaseConfig
                 deploymentTemplateDiffRes={deploymentTemplateDiff}
                 selectedDeploymentTemplate={selectedDeploymentTemplate}
