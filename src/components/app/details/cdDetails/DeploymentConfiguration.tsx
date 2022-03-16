@@ -18,7 +18,8 @@ function DeploymentConfiguration({ setShowTemplate }: TemplateConfiguration) {
                 className="bcb-1 no-decor bcn-0 cn-9 pl-16 pr-16 pt-12 pb-12 br-4 en-2 bw-1 mb-20 flex content-space cursor"
             >
                 <div>
-                    Deployment template <span className="cn-6 ml-4">2 changes from previous deployment</span>
+                    Deployment template
+                     {/* <span className="cn-6 ml-4">2 changes from previous deployment</span> */}
                 </div>
                 <span>
                     {' '}
