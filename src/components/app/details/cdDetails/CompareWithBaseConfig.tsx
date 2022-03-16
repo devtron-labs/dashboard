@@ -15,10 +15,11 @@ interface DeploymentTemplateDiffRes {
     emailId: string;
     id: string;
     pipelineId: number;
+    deploymentStatus: string
 }
 interface CompareWithBaseConfig {
     deploymentTemplateDiffRes: DeploymentTemplateDiffRes[];
-    selectedDeploymentTemplate: { label: string; value: string; author: string };
+    selectedDeploymentTemplate: { label: string; value: string; author: string; status: string };
     setSeletedDeploymentTemplate: (selected) => void;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
     baseTimeStamp: string;
@@ -33,12 +34,11 @@ function CompareWithBaseConfig({
     setShowTemplate,
     baseTimeStamp,
 }: CompareWithBaseConfig) {
-    const { url, path } = useRouteMatch();
+    const { url } = useRouteMatch();
     const history = useHistory();
-    const [redirectToConfiguration, setRedirectToConfiguration] = useState<string>()
-    const deploymentTemplateOption: { label: string; value: string; author: string }[] = deploymentTemplateDiffRes.map(
+    const deploymentTemplateOption: { label: string; value: string; author: string; status: string }[] = deploymentTemplateDiffRes.map(
         (p) => {
-            return { value: String(p.id), label: moment(p.deployedOn).format(Moment12HourFormat), author: p.emailId };
+            return { value: String(p.id), label: moment(p.deployedOn).format(Moment12HourFormat), author: p.emailId, status: p.deploymentStatus };
         },
     );
     const onClickTimeStampSelector = (selected: { label: string; value: string }) => {
@@ -107,7 +107,6 @@ function CompareWithBaseConfig({
                                     ...base,
                                     padding: 0,
                                     border: 'none',
-                                    // height: '12px'
                                 }),
                                 indicatorsContainer: () => ({
                                     // height: '40px',
@@ -123,6 +122,7 @@ function CompareWithBaseConfig({
                                     return (
                                         <components.Option {...props}>
                                             <div className="flex left">
+                                                
                                                 {props.isSelected ? (
                                                     <div>
                                                         <Check className="icon-dim-16 scb-5 mr-8" />
@@ -130,7 +130,7 @@ function CompareWithBaseConfig({
                                                 ) : (
                                                     <div className="inline-block icon-dim-16 mr-8"></div>
                                                 )}
-
+                                                    <div className={`app-summary__icon icon-dim-22 ${props.data.status.toLocaleLowerCase().replace(/\s+/g, '')} mr-8`}></div>
                                                 <div>
                                                     <div> {props.label}</div>
                                                     <div>{props.data.author}</div>

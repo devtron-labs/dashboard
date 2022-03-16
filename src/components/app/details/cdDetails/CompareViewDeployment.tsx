@@ -16,7 +16,7 @@ function CompareViewDeployment({
     baseTimeStamp: string;
 }) {
     const [deploymentTemplateDiff, setDeploymentTemplateDiff] = useState([]);
-    const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState<{ value: string; label: string, author: string }>();
+    const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState<{ value: string; label: string; author: string; status: string }>();
     const [currentConfiguration, setCurrentConfiguration] = useState<any>();
     const { appId, pipelineId } = useParams<{ appId; pipelineId }>();
     const [loader, setLoader] = useState(false)
