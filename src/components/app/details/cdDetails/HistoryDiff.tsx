@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useParams, useRouteMatch } from 'react-router';
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom';
+import { Progressing } from '../../../common';
 import './cdDetail.scss';
 import DeploymentTemplateHistory from './DeploymentTemplateHistory';
 
-function HistoryDiff({ currentConfiguration }) {
+function HistoryDiff({ currentConfiguration, loader }) {
     const [tempValue, setTempValue] = useState('');
     const { path, url } = useRouteMatch();
     const { appId, envId, pipelineId, triggerId } = useParams<{ appId; envId; pipelineId; triggerId }>();
@@ -44,8 +45,12 @@ function HistoryDiff({ currentConfiguration }) {
 
     return (
         <div className="historical-diff__container">
-            {renderLeftHistoryConfiguration()}
-            {renderRightHistoryConfiguration()}
+           { renderLeftHistoryConfiguration()}
+            {loader ?  <Progressing pageLoader /> : 
+            <>
+           { renderRightHistoryConfiguration()}
+            </>
+}
         </div>
     );
 }

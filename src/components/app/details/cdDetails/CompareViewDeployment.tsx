@@ -19,12 +19,15 @@ function CompareViewDeployment({
     const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState<{ value: string; label: string }>();
     const [currentConfiguration, setCurrentConfiguration] = useState<any>();
     const { appId, pipelineId } = useParams<{ appId; pipelineId }>();
+    const [loader, setLoader] = useState(false)
 
     useEffect(() => {
+        setLoader(true)
         if (selectedDeploymentTemplate) {
             try {
                 getDeploymentTemplateDiffId(appId, pipelineId, selectedDeploymentTemplate.value).then((response) => {
                     setCurrentConfiguration(response.result);
+                        setLoader(false)
                 });
             } catch (err) {
                 showError(err);
@@ -33,9 +36,12 @@ function CompareViewDeployment({
     }, [selectedDeploymentTemplate]);
 
     useEffect(() => {
+        setLoader(true)
         try {
+
             getDeploymentTemplateDiff(appId, pipelineId).then((response) => {
                 setDeploymentTemplateDiff(response.result);
+                setLoader(false)
             });
 
             if (!showTemplate) {
@@ -43,6 +49,7 @@ function CompareViewDeployment({
             }
         } catch (err) {
             showError(err);
+            setLoader(false)
         }
 
         return (): void => {
@@ -61,7 +68,7 @@ function CompareViewDeployment({
                 setShowTemplate={setShowTemplate}
                 baseTimeStamp={baseTimeStamp}
             />
-            <HistoryDiff currentConfiguration={currentConfiguration} />
+            <HistoryDiff currentConfiguration={currentConfiguration} loader={loader} />
         </div>
     );
 }
