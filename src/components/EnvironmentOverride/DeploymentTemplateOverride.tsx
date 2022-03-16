@@ -181,6 +181,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
         }
         const api = state.data.environmentConfig && state.data.environmentConfig.id > 0 ? updateDeploymentTemplate : createDeploymentTemplate
         const payload = {
+            envId: +envId,
             envOverrideValues: obj,
             chartRefId: state.selectedChartRefId,
             IsOverride: true,

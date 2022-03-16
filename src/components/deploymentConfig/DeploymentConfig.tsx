@@ -213,7 +213,6 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                 valuesOverride: obj,
                 defaultAppOverride: template,
                 isAppMetricsEnabled,
-                envId: +envId
             };
             const api = chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate;
             const { result } = await api(requestBody);
