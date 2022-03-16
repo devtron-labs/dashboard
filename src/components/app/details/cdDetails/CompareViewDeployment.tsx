@@ -13,7 +13,7 @@ function CompareViewDeployment({
 }: {
     showTemplate: boolean;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
-    baseTimeStamp: string
+    baseTimeStamp: string;
 }) {
     const [deploymentTemplateDiff, setDeploymentTemplateDiff] = useState([]);
     const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState<{ value: string; label: string, author: string }>();
