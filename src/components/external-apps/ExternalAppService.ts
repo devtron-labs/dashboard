@@ -5,7 +5,7 @@ import {HelmApp, AppEnvironmentDetail} from '../app/list-new/AppListService';
 import {ResourceTree} from '../v2/appDetails/appDetails.type';
 
 export interface ReleaseInfoResponse extends ResponseType {
-    result?: ReleaseInfo
+    result?: ReleaseAndInstalledAppInfo
 }
 
 export interface HelmAppDeploymentHistoryResponse extends ResponseType {
@@ -21,7 +21,7 @@ export interface HelmAppDeploymentManifestDetailResponse extends ResponseType {
 }
 
 export interface HelmAppDetailResponse extends ResponseType {
-    result?: HelmAppDetail
+    result?: HelmAppDetailAndInstalledAppInfo
 }
 
 export interface UninstallReleaseResponse extends ResponseType {
@@ -32,12 +32,33 @@ export interface UpdateReleaseResponse extends ResponseType {
     result?: ActionResponse
 }
 
+export interface HelmAppDetailAndInstalledAppInfo {
+    appDetail : HelmAppDetail,
+    installedAppInfo : InstalledAppInfo,
+}
+
+export interface ReleaseAndInstalledAppInfo {
+    releaseInfo : ReleaseInfo,
+    installedAppInfo : InstalledAppInfo,
+}
+
 export interface ReleaseInfo {
     deployedAppDetail: HelmApp
     defaultValues: string,
     overrideValues: string,
     mergedValues: string,
     readme: string,
+}
+
+export interface InstalledAppInfo {
+    appId: number,
+    installedAppId: number,
+    installedAppVersionId: number,
+    environmentName: string,
+    appOfferingMode: string,
+    appStoreChartId: number,
+    clusterId: number,
+    environmentId: number
 }
 
 export interface HelmAppDeploymentHistory {

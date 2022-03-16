@@ -62,6 +62,7 @@ const AppDetailsStore = {
             tab.isSelected = false;
             if (tab.title.toLowerCase() === title.toLowerCase()) {
                 tab.isSelected = true;
+                tab.url = tabURL;
                 alreadyAdded = true;
             }
         }
@@ -101,12 +102,12 @@ const AppDetailsStore = {
         applicationObjectTabsSubject.next([...remainingTabs]);
         return pushURL;
     },
-    markAppDetailsTabActiveByIdentifier: (objectName: string, objectKind?: string) => {
+    markAppDetailsTabActiveByIdentifier: (objectName: string, objectKind?: string, tabUrl?: string) => {
         if (!objectName) return;
-        let isTabFound = false
+        let isTabFound = false;
 
         let applicationObjectTabs = applicationObjectTabsSubject.getValue();
-        let title = objectName
+        let title = objectName;
         if (objectKind) {
             title = objectKind + '/' + objectName;
         }
@@ -116,7 +117,8 @@ const AppDetailsStore = {
             tab.isSelected = false;
             if (tab.title.toLowerCase() === title.toLowerCase()) {
                 tab.isSelected = true;
-                isTabFound = true
+                tab.url = tabUrl || tab.url;
+                isTabFound = true;
             }
         }
 

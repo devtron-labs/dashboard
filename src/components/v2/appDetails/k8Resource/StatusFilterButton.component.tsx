@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react';
 import IndexStore from '../index.store';
-import { useParams } from 'react-router';
 import { useState } from 'react';
-import { useSharedState } from '../../utils/useSharedState';
 import { Node } from '../appDetails.type';
 
 interface TabState {

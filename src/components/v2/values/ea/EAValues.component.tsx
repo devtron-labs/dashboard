@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useHistory, useRouteMatch } from 'react-router'
 import { toast } from 'react-toastify';
 import { showError, Progressing, ErrorScreenManager, DeleteDialog } from '../../../common';
-import { getReleaseInfo, ReleaseInfoResponse, ReleaseInfo, deleteApplicationRelease, updateApplicationRelease, UpdateApplicationRequest } from '../../../external-apps/ExternalAppService';
+import { getReleaseInfo, ReleaseInfoResponse, ReleaseInfo, InstalledAppInfo, deleteApplicationRelease, updateApplicationRelease, UpdateApplicationRequest } from '../../../external-apps/ExternalAppService';
+import { deleteInstalledChart } from '../../../charts/charts.service';
 import { ServerErrors } from '../../../../modals/commonTypes';
 import ReadmeColumn  from '../common/ReadmeColumn.component';
 import CodeEditor from '../../../CodeEditor/CodeEditor'
@@ -22,13 +23,15 @@ function ExternalAppValues({appId}) {
     const [releaseInfo, setReleaseInfo] = useState<ReleaseInfo>(undefined);
     const [showDeleteAppConfirmationDialog, setShowDeleteAppConfirmationDialog] = useState(false);
     const [modifiedValuesYaml, setModifiedValuesYaml] = useState("");
+    const [installedAppInfo, setInstalledAppInfo] = useState<InstalledAppInfo>(undefined);
 
     // component load
     useEffect(() => {
         getReleaseInfo(appId)
             .then((releaseInfoResponse: ReleaseInfoResponse) => {
-                let _releaseInfo = releaseInfoResponse.result;
+                let _releaseInfo = releaseInfoResponse.result.releaseInfo;
                 setReleaseInfo(_releaseInfo);
+                setInstalledAppInfo(releaseInfoResponse.result.installedAppInfo);
                 setModifiedValuesYaml(YAML.stringify(JSON.parse(_releaseInfo.mergedValues)));
                 setIsLoading(false);
             })
@@ -46,7 +49,7 @@ function ExternalAppValues({appId}) {
         }
         setDeleteInProgress(true);
         setShowDeleteAppConfirmationDialog(false);
-        deleteApplicationRelease(appId)
+        getDeleteApplicationApi()
             .then(() => {
                 setDeleteInProgress(false);
                 toast.success('Successfully deleted.');
@@ -57,6 +60,14 @@ function ExternalAppValues({appId}) {
                 showError(errors);
                 setDeleteInProgress(false);
             });
+    }
+
+    const getDeleteApplicationApi = () : Promise<any> => {
+        if(installedAppInfo && installedAppInfo.installedAppId){
+            return deleteInstalledChart(installedAppInfo.installedAppId);
+        }else{
+            return deleteApplicationRelease(appId);
+        }
     }
 
     const updateApplication = () =>  {
@@ -107,7 +118,7 @@ function ExternalAppValues({appId}) {
                         </label>
                         <label className="form__row form__row--w-100">
                             <span className="form__label">Environment</span>
-                            <input className="form__input" value={`${releaseInfo.deployedAppDetail.environmentDetail.clusterName}/${releaseInfo.deployedAppDetail.environmentDetail.namespace}`} autoFocus disabled={true} />
+                            <input className="form__input" value={`${installedAppInfo ? installedAppInfo.environmentName : releaseInfo.deployedAppDetail.environmentDetail.clusterName + "__" + releaseInfo.deployedAppDetail.environmentDetail.namespace}`} autoFocus disabled={true} />
                         </label>
                         <label className="form__row form__row--w-100">
                             <span className="form__label">Chart</span>

@@ -4,8 +4,8 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@sentry/browser": "^5.29.0",
-        "@sentry/integrations": "^5.29.0",
+        "@sentry/browser": "^6.17.9",
+        "@sentry/integrations": "^6.17.9",
         "@tippyjs/react": "^4.2.0",
         "@types/react-select": "^3.0.11",
         "@uiw/react-monacoeditor": "^2.0.2",
@@ -66,7 +66,7 @@
         "not op_mini all"
     ],
     "devDependencies": {
-        "@sentry/cli": "^1.47.2",
+        "@sentry/cli": "^1.72.2",
         "@testing-library/jest-dom": "^5.10.1",
         "@testing-library/react": "^10.2.1",
         "@types/chai": "^4.2.5",
@@ -98,7 +98,8 @@
         "react-test-render": "^1.1.2",
         "ts-jest": "^24.1.0",
         "ts-node": "^8.5.2",
-        "typescript": "^3.8.2"
+        "typescript": "^3.8.2",
+        "worker-loader": "3.0.8"
     },
     "jest": {
         "collectCoverageFrom": [

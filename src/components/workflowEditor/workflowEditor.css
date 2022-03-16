@@ -93,3 +93,15 @@
 .pipeline-webhook__item:hover {
     background-color: var(--N100);
 }
+
+.icon-container {
+    height: 60px;
+}
+
+.close-button-container {
+    text-align: right;
+}
+
+.action-card:hover {
+    background: var(--N50);
+}

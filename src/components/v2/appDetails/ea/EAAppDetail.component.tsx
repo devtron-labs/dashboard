@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {useLocation, useHistory} from 'react-router';
 import { showError, Progressing, ErrorScreenManager,  } from '../../../common';
-import { getAppDetail, HelmAppDetailResponse, HelmAppDetail } from '../../../external-apps/ExternalAppService';
+import { getAppDetail, HelmAppDetailResponse, HelmAppDetail, HelmAppDetailAndInstalledAppInfo } from '../../../external-apps/ExternalAppService';
 import { ServerErrors } from '../../../../modals/commonTypes';
 import IndexStore from '../index.store';
 import { AppDetails, AppType } from "../appDetails.type";
@@ -29,7 +29,6 @@ function ExternalAppDetail({appId, appName}) {
             }
         };
     }, []);
-    
 
     useEffect(() => {
         if(checkIfToRefetchData(location)){
@@ -49,12 +48,14 @@ function ExternalAppDetail({appId, appName}) {
         }, 30000);
     }
 
-    const _convertToGenericAppDetailModel = (helmAppDetail : HelmAppDetail) : AppDetails =>  {
+    const _convertToGenericAppDetailModel = (helmAppDetailAndInstalledAppInfo : HelmAppDetailAndInstalledAppInfo) : AppDetails =>  {
+        let helmAppDetail = helmAppDetailAndInstalledAppInfo.appDetail;
+        let installedAppInfo = helmAppDetailAndInstalledAppInfo.installedAppInfo;
         let genericAppDetail : AppDetails = {
             appType : AppType.EXTERNAL_HELM_CHART,
             appId : appId,
             appName : appName,
-            environmentName: helmAppDetail.environmentDetails.clusterName + "/" + helmAppDetail.environmentDetails.namespace,
+            environmentName: helmAppDetail.environmentDetails.clusterName + "__" + helmAppDetail.environmentDetails.namespace,
             namespace: helmAppDetail.environmentDetails.namespace,
             lastDeployedTime : moment(new Date(helmAppDetail.lastDeployed.seconds * 1000), 'YYYY-MM-DDTHH:mm:ssZ').format('YYYY-MM-DDTHH:mm:ssZ'),
             resourceTree :  {
@@ -66,6 +67,12 @@ function ExternalAppDetail({appId, appName}) {
             additionalData : helmAppDetail.releaseStatus,
             clusterId: helmAppDetail.environmentDetails.clusterId,
         }
+
+        if(installedAppInfo){
+            genericAppDetail.appStoreChartId = installedAppInfo.appStoreChartId;
+            genericAppDetail.environmentName = installedAppInfo.environmentName;
+        }
+
         return genericAppDetail
     }
 

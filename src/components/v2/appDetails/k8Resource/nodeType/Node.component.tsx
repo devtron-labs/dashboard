@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouteMatch, useParams, useHistory } from 'react-router';
-import IndexStore, { getiNodesByKind } from '../../index.store';
+import IndexStore from '../../index.store';
 import Tippy from '@tippyjs/react';
 import { copyToClipboard } from '../../../../common';
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
@@ -15,7 +15,7 @@ import { toast } from 'react-toastify';
 import { getNodeStatus } from './nodeType.util';
 import { useSharedState } from '../../../utils/useSharedState';
 
-function NodeComponent({ handleFocusTabs }) {
+function NodeComponent({handleFocusTabs}: {handleFocusTabs: () => void}) {
     const { path, url } = useRouteMatch();
     const history = useHistory();
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
@@ -26,12 +26,12 @@ function NodeComponent({ handleFocusTabs }) {
     const [podType, setPodType] = useState(false);
     const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
     const appDetails = IndexStore.getAppDetails();
-    const params = useParams<{ nodeType: NodeType }>();
+    const params = useParams<{ nodeType: NodeType, resourceName: string }>();
     const [filteredNodes] = useSharedState(
         IndexStore.getAppDetailsFilteredNodes(),
         IndexStore.getAppDetailsNodesFilteredObservable(),
     );
-    
+
 
     useEffect(() => {
         if (!copied) return;
@@ -64,35 +64,27 @@ function NodeComponent({ handleFocusTabs }) {
             setTableHeader(tableHeader);
             setFirstColWidth(_fcw);
 
-           
-                let _selectedNodes; //.filter((pn) => pn.kind.toLowerCase() === params.nodeType.toLowerCase())
+            let [_ignore, _selectedResource] = url.split("group/")
+            let _selectedNodes: Array<iNode>
+            if (_selectedResource) {
+                _selectedResource = _selectedResource.replace(/\/$/, '')
+                _selectedNodes =IndexStore.getPodsForRootNode(_selectedResource).sort((a,b) => a.name > b.name? 1: -1)
+            } else {
+                _selectedNodes = IndexStore.getiNodesByKind(params.nodeType).sort((a,b) => a.name > b.name? 1: -1)
+            }
+            let _healthyNodeCount = 0;
 
-                if (filteredNodes && !filteredNodes.every((_node) => _node.health?.status.toLowerCase() === 'all')) {
-                    _selectedNodes = getiNodesByKind(filteredNodes, params.nodeType);
-                } else {
-                    _selectedNodes = IndexStore.getiNodesByKind(params.nodeType);
+            _selectedNodes.forEach((node: Node) => {
+                if (node.health?.status.toLowerCase() === 'healthy') {
+                    _healthyNodeCount++;
                 }
+            });
 
-                // if (params.nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
-                //     _selectedNodes = _selectedNodes.filter((node) => {
-                //         const _podMetaData = IndexStore.getMetaDataForPod(node.name);
+            setSelectedNodes([..._selectedNodes]);
 
-                //         return _podMetaData.isNew === podType;
-                //     });
-                // }
-                let _healthyNodeCount = 0;
-
-                _selectedNodes.forEach((node: Node) => {
-                    if (node.health?.status.toLowerCase() === 'healthy') {
-                        _healthyNodeCount++;
-                    }
-                });
-
-                setSelectedNodes([..._selectedNodes]);
-
-                setSelectedHealthyNodeCount(_healthyNodeCount);
+            setSelectedHealthyNodeCount(_healthyNodeCount);
         }
-    }, [params.nodeType, podType, filteredNodes]);
+    }, [params.nodeType, podType, url, filteredNodes]);
 
     const markNodeSelected = (nodes: Array<iNode>, nodeName: string) => {
         const updatedNodes = nodes.map((node) => {
@@ -113,7 +105,8 @@ function NodeComponent({ handleFocusTabs }) {
     };
 
     const handleActionTabClick = (node: iNode, _tabName: string, containerName?: string) => {
-        let _url = `${url.split('/').slice(0, -1).join('/')}/${node.kind.toLowerCase()}/${
+        let [_url, _ignore] = url.split("/group/")
+        _url = `${_url.split('/').slice(0, -1).join('/')}/${node.kind.toLowerCase()}/${
             node.name
         }/${_tabName.toLowerCase()}`;
 
@@ -204,6 +197,7 @@ function NodeComponent({ handleFocusTabs }) {
                                                 handleFocusTabs();
                                             }}
                                             className="fw-6 cb-5 ml-6 cursor resource-action-tabs__active"
+
                                         >
                                             {kind}
                                         </a>
