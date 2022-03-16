@@ -42,7 +42,6 @@ export default function DeployedChartFilters({ handleFilterQueryChanges, appStor
                             name="environment"
                             value={selectedEnvironment}
                             options={environment}
-                            closeOnSelect={false}
                             onChange={(e) => handleSelectedFilters(e, "environment")}
                             isClearable={false}
                             isMulti={true}
@@ -63,7 +62,6 @@ export default function DeployedChartFilters({ handleFilterQueryChanges, appStor
                             name="repository"
                             value={selectedChartRepo}
                             options={chartRepos}
-                            closeOnSelect={false}
                             onChange={(e) => handleSelectedFilters(e, "repository")}
                             isClearable={false}
                             isMulti={true}
@@ -82,8 +80,8 @@ export default function DeployedChartFilters({ handleFilterQueryChanges, appStor
                         <Checkbox rootClassName="ml-16 mb-0 fs-13 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
                             isChecked={onlyDeprecated == true}
                             value={"CHECKED"}
-                            onChange={(e) => { 
-                                let value =  !onlyDeprecated; 
+                            onChange={(e) => {
+                                let value =  !onlyDeprecated;
                                 handleFilterQueryChanges(value, "deprecated") }} >
                             <div className="ml-5"> Show only deprecated</div>
                         </Checkbox>

@@ -22,13 +22,13 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
 
     constructor(props) {
       super(props)
-    
+
       this.state = {
          deleting: false,
          confirmation: false,
       }
     }
-    
+
     toggleConfirmation = () => {
         this.setState((prevState)=>{
            return{ confirmation: !prevState.confirmation}
@@ -97,7 +97,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                 <div className="">
                     <label className="form__label">Git Account*</label>
                     <ReactSelect className="m-0"
-                        tabIndex='1'
+                        tabIndex={1}
                         isMulti={false}
                         isClearable={false}
                         options={sortedProviders}

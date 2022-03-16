@@ -192,7 +192,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
             state.form.isError = false;
             this.setState(state);
         }
-     
+
         let promise = this.props.sesConfigId ? updateSESConfiguration(this.getPayload()) : saveSESConfiguration(this.getPayload());
         promise.then((response) => {
             let state = { ...this.state };
@@ -280,7 +280,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                             components={{
                                 DropdownIndicator
                             }}
-                            tabIndex="4"
+                            tabIndex={4}
                             placeholder="Select AWS Region"
                             styles={{
                                 ...multiSelectStyles,

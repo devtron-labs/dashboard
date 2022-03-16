@@ -8,11 +8,11 @@ interface AppSelectorType {
     appName: string;
 }
 export default function AppSelector({ onChange, appId, appName }: AppSelectorType) {
-    const defaultOption = [{ value: appId, label: appName }];
-    let selectedValue = defaultOption[0];
+    const defaultOptions = [{ value: appId, label: appName }];
+    let selectedValue = defaultOptions[0];
     return (
         <AsyncSelect
-            defaultOption
+            defaultOptions
             loadOptions={appListOptions}
             noOptionsMessage={noOptionsMessage}
             onChange={onChange}

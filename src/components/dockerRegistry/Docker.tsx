@@ -455,7 +455,7 @@ function DockerForm({
                     </label>
                     <ReactSelect
                         className="m-0 w100"
-                        tabIndex="1"
+                        tabIndex={1}
                         isMulti={false}
                         isClearable={false}
                         options={Object.values(REGISTRY_TYPE_MAP)}

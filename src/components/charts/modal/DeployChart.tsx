@@ -557,6 +557,24 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 isUpdate === null ?
                                     <div className="w-50">
                                         <span className="form__label">Chart Version</span>
+                                        <ReactSelect
+                                         tabIndex={4}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        DropdownIndicator
+                                    }}
+                                    isDisabled={!!isUpdate}
+                                    getOptionLabel={(option) => `${option.id}`}
+                                    getOptionValue={(option) => `${option.version}`}
+                                    placeholder="Select Version"
+                                    value={versions.get(selectedVersion)}
+                                    styles={{
+                                        ...styles,
+                                        ...menuList,
+                                    }}
+                                    onChange={selected => setSelectedVersionUpdatePage(selected)}
+                                    options={chartVersionsData}
+                                />
                                         <Select tabIndex={4} rootClassName="select-button--default" value={selectedVersion} onChange={event => selectVersion(event.target.value)}>
                                             <Select.Button>{chartVersionObj ? chartVersionObj.version : 'Select Version'}</Select.Button>
                                             {Array.from(versions).map(([versionId, versionData], idx) => <Select.Option key={versionId} value={versionId}>{versionData.version}</Select.Option>)}

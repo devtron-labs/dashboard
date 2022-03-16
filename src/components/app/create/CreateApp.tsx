@@ -352,7 +352,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             <span className="form__label">Project*</span>
                             <ReactSelect
                                 className="m-0"
-                                tabIndex="2"
+                                tabIndex={2}
                                 isMulti={false}
                                 isClearable={false}
                                 options={this.state.projects}
@@ -393,7 +393,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             <div className="form__row clone-apps inline-block">
                                 <span className="form__label">Select an app to clone*</span>
                                 <AsyncSelect
-                                    defaultOption
                                     loadOptions={appListOptions}
                                     noOptionsMessage={noOptionsMessage}
                                     onChange={this.handleCloneAppChange}

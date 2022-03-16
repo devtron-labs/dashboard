@@ -658,6 +658,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         selectOption,
         selectProps,
         setValue,
+        isDisabled,
+        isRtl,
+        theme,
         ...props
     }) => {
         const [{ value }] = getValue();
@@ -674,6 +677,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     selectOption,
                     selectProps,
                     setValue,
+                    isDisabled,
+                    isRtl,
+                    theme,
                     ...props,
                 }}
             >
@@ -682,7 +688,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     : permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                     ? possibleRolesMetaHelmApps[value].value
                     : possibleRolesMeta[value].value}
-                {React.cloneElement(children[1])}
             </components.ValueContainer>
         );
     };
@@ -1023,7 +1028,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 options={(permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                     ? possibleRolesHelmApps
                     : possibleRoles
-                ).map((role) => ({ label: role as string, value: role as string }))}
+                ).map((role) => ({ label: role as string, value: role as ActionTypes.MANAGER| ActionTypes.VIEW| ActionTypes.TRIGGER| ActionTypes.ADMIN }))}
                 className="basic-multi-select"
                 classNamePrefix="select"
                 menuPortalTarget={document.body}
@@ -1261,7 +1266,6 @@ export const projectValueContainer = (props) => {
             {value[0] ? (
                 <>
                     {value[0].value}
-                    {React.cloneElement(props.children[1])}
                 </>
             ) : (
                 <>{props.children}</>
