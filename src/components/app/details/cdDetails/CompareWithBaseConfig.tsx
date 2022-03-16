@@ -79,10 +79,11 @@ function CompareWithBaseConfig({
                                 menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', width: '150%' }),
                                 control: (base, state) => ({
                                     ...base,
-                                    borderColor: 'transparent',
                                     backgroundColor: 'transparent',
                                     minHeight: '24px !important',
                                     cursor: 'pointer',
+                                    border: 0,
+                                    padding: 0
                                 }),
                                 singleValue: (base, state) => ({
                                     ...base,
@@ -102,6 +103,7 @@ function CompareWithBaseConfig({
                                     overflow: 'hidden',
                                     whiteSpace: 'nowrap',
                                     cursor: 'pointer',
+                                   
                                 }),
                             }}
                             onChange={onClickTimeStampSelector}
