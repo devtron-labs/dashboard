@@ -37,7 +37,8 @@ function CompareWithBaseConfig({
     const history = useHistory();
     const { triggerId } = useParams<{ triggerId: string }>();
     const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState(baseTimeStamp);
-    const [baseTemplateId, setBaseTemplateId]= useState<number | string>()
+    const [baseTemplateId, setBaseTemplateId] = useState<number | string>();
+    const [comaparedTemplateId, setComparedTemplateId] = useState<number>()
 
     const deploymentTemplateOption: { label: string; value: string; author: string; status: string }[] =
         deploymentTemplateDiffRes.map((p) => {
@@ -62,16 +63,27 @@ function CompareWithBaseConfig({
         if (deploymentTemplateDiffRes.length > 0 && !baseTimeStamp) {
             const baseTemplate = deploymentTemplateDiffRes.find((e) => e.wfrId.toString() === triggerId);
             setBaseTemplateTimeStamp(baseTemplate?.deployedOn);
-            setBaseTemplateId(baseTemplate?.id)
+            setBaseTemplateId(baseTemplate?.id);
         }
     }, [deploymentTemplateDiffRes, baseTemplateTimeStamp]);
 
     useEffect(() => {
-        if (!selectedDeploymentTemplate && deploymentTemplateOption && deploymentTemplateOption.length > 0) {
-            
-           let comparedOption =  deploymentTemplateOption.find(dt=> dt.value == baseTemplateId)
-        //    console.log(baseTemplateId, comparedOption)
-            setSeletedDeploymentTemplate(deploymentTemplateOption[0]);
+        if (
+            !selectedDeploymentTemplate &&
+            deploymentTemplateOption &&
+            deploymentTemplateOption.length > 0 &&
+            baseTemplateId
+        ) {
+            let comparedOption = deploymentTemplateOption.map((dt, key) => {
+                if (dt.value == baseTemplateId) {
+                    setComparedTemplateId(key)
+                }
+                setSeletedDeploymentTemplate(deploymentTemplateOption[comaparedTemplateId+1]);
+                console.log(comaparedTemplateId)
+
+            });
+            console.log(baseTemplateId, comparedOption);
+            console.log(deploymentTemplateOption);
         }
     }, [deploymentTemplateOption]);
 
