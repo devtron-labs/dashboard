@@ -125,7 +125,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
         // initialise()
     }, [selectedChart]);
 
-    const { appId } = useParams<{ appId }>();
+    const { appId, envId } = useParams<{ appId, envId }>();
 
     async function saveAppMetrics(appMetricsEnabled) {
         try {
@@ -213,6 +213,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                 valuesOverride: obj,
                 defaultAppOverride: template,
                 isAppMetricsEnabled,
+                envId: +envId
             };
             const api = chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate;
             const { result } = await api(requestBody);
