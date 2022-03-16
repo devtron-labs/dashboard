@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactSelect, { components } from 'react-select';
 import { multiSelectStyles, Select } from '../../../common';
-import { useHistory, useRouteMatch } from 'react-router';
+import { useHistory, useRouteMatch, useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import moment from 'moment';
 import { Moment12HourFormat } from '../../../../config';
@@ -15,7 +15,8 @@ interface DeploymentTemplateDiffRes {
     emailId: string;
     id: string;
     pipelineId: number;
-    deploymentStatus: string
+    deploymentStatus: string;
+    wfrId: number
 }
 interface CompareWithBaseConfig {
     deploymentTemplateDiffRes: DeploymentTemplateDiffRes[];
@@ -36,6 +37,9 @@ function CompareWithBaseConfig({
 }: CompareWithBaseConfig) {
     const { url } = useRouteMatch();
     const history = useHistory();
+const {triggerId} = useParams<{triggerId: string}>()
+const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState(baseTimeStamp)
+
     const deploymentTemplateOption: { label: string; value: string; author: string; status: string }[] = deploymentTemplateDiffRes.map(
         (p) => {
             return { value: String(p.id), label: moment(p.deployedOn).format(Moment12HourFormat), author: p.emailId, status: p.deploymentStatus };
@@ -57,6 +61,15 @@ function CompareWithBaseConfig({
         }
     }, [deploymentTemplateOption]);
 
+    useEffect(()=>{
+        if( deploymentTemplateDiffRes.length > 0 && !baseTimeStamp){
+           const baseTemplate =   deploymentTemplateDiffRes.find((e) => e.wfrId.toString() === triggerId);
+           setBaseTemplateTimeStamp(baseTemplate?.deployedOn)
+        }
+
+    },[deploymentTemplateDiffRes, baseTemplateTimeStamp])
+    
+
     return (
         <div className="border-bottom pl-20 pr-20 flex left bcn-0">
             <div className="border-right flex">
@@ -75,15 +88,18 @@ function CompareWithBaseConfig({
                     <div style={{ minWidth: '200px' }}>
                         <ReactSelect
                             placeholder="Select Timestamp"
+                            isSearchable= {false}
                             styles={{
                                 ...multiSelectStyles,
                                 menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', width: '150%' }),
                                 control: (base, state) => ({
                                     ...base,
                                     backgroundColor: 'transparent',
-                                    maxHeight: '12px !important',
+                                    minHeight: '12px',
                                     cursor: 'pointer',
-                                    border: 0
+                                    border: 0,
+                                    outline: 'none',
+                                    boxShadow: 'none'
 
                                 }),
                                 singleValue: (base, state) => ({
@@ -105,12 +121,11 @@ function CompareWithBaseConfig({
                                 }),
                                 valueContainer: (base,state) => ({
                                     ...base,
-                                    padding: 0,
-                                    border: 'none',
                                 }),
-                                indicatorsContainer: () => ({
+                                indicatorsContainer: (base) => ({
+                                    ...base,
                                     // height: '40px',
-                                    // padding: '0px'
+                                    padding: 0
                                 }),
 
                             }}
@@ -147,7 +162,7 @@ function CompareWithBaseConfig({
             </div>
             <div className="pt-12 pb-12 pl-16 pr-16">
                 <span className="cn-6">Base configuration</span>
-                <div className="cn-9">{baseTimeStamp}</div>
+                <div className="cn-9">{baseTemplateTimeStamp}</div>
             </div>
         </div>
     );
