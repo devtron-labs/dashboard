@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import ReactSelect from 'react-select';
-import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-forward.svg';
+import ReactSelect, { components } from 'react-select';
 import { multiSelectStyles, Select } from '../../../common';
 import { useHistory, useRouteMatch } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import moment from 'moment';
 import { Moment12HourFormat } from '../../../../config';
-
+import { ReactComponent as Check } from '../../../../assets/icons/ic-check.svg';
+import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-forward.svg';
 interface DeploymentTemplateDiffRes {
     appId: number;
     deployed: boolean;
@@ -18,10 +18,10 @@ interface DeploymentTemplateDiffRes {
 }
 interface CompareWithBaseConfig {
     deploymentTemplateDiffRes: DeploymentTemplateDiffRes[];
-    selectedDeploymentTemplate: { label: string; value: string };
+    selectedDeploymentTemplate: { label: string; value: string; author: string };
     setSeletedDeploymentTemplate: (selected) => void;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
-    baseTimeStamp: string
+    baseTimeStamp: string;
 }
 
 function CompareWithBaseConfig({
@@ -29,13 +29,15 @@ function CompareWithBaseConfig({
     selectedDeploymentTemplate,
     setSeletedDeploymentTemplate,
     setShowTemplate,
-    baseTimeStamp
+    baseTimeStamp,
 }: CompareWithBaseConfig) {
-    const { url } = useRouteMatch()
-    const history = useHistory()
-    const deploymentTemplateOption: { label: string; value: string }[] = deploymentTemplateDiffRes.map((p) => {
-        return { value: String(p.id), label: moment(p.deployedOn).format(Moment12HourFormat) };
-    });
+    const { url } = useRouteMatch();
+    const history = useHistory();
+    const deploymentTemplateOption: { label: string; value: string; author: string }[] = deploymentTemplateDiffRes.map(
+        (p) => {
+            return { value: String(p.id), label: moment(p.deployedOn).format(Moment12HourFormat), author: p.emailId };
+        },
+    );
     const onClickTimeStampSelector = (selected: { label: string; value: string }) => {
         handleSelector(selected.value);
         setSeletedDeploymentTemplate(selected);
@@ -57,7 +59,7 @@ function CompareWithBaseConfig({
             <div className="border-right flex">
                 {/* TODO: use To instead of history.goBack(); */}
                 <NavLink
-                  className=''
+                    className=""
                     to=""
                     onClick={(e) => {
                         e.preventDefault();
@@ -67,7 +69,7 @@ function CompareWithBaseConfig({
                 >
                     <LeftIcon className="rotate icon-dim-24 mr-16" style={{ ['--rotateBy' as any]: '180deg' }} />
                 </NavLink>
-                <div className='pt-12 pb-12 pl-4 border-left pr-12'>
+                <div className="pt-12 pb-12 pl-4 border-left pr-12">
                     <div className="cn-6 pl-12">Compare with</div>
                     <div style={{ minWidth: '200px' }}>
                         <ReactSelect
@@ -99,7 +101,6 @@ function CompareWithBaseConfig({
                                     textOverflow: 'ellipsis',
                                     overflow: 'hidden',
                                     whiteSpace: 'nowrap',
-                                    direction: 'rtl',
                                     cursor: 'pointer',
                                 }),
                             }}
@@ -107,6 +108,26 @@ function CompareWithBaseConfig({
                             options={deploymentTemplateOption}
                             components={{
                                 IndicatorSeparator: null,
+                                Option: (props) => {
+                                    return (
+                                        <components.Option {...props}>
+                                            <div className="flex left">
+                                                {props.isSelected ? (
+                                                    <div>
+                                                        <Check className="icon-dim-16 scb-5 mr-8" />
+                                                    </div>
+                                                ) : (
+                                                    <div className="inline-block icon-dim-16 mr-8"></div>
+                                                )}
+
+                                                <div>
+                                                    <div> {props.label}</div>
+                                                    <div>{props.data.author}</div>
+                                                </div>
+                                            </div>
+                                        </components.Option>
+                                    );
+                                },
                             }}
                             value={selectedDeploymentTemplate || deploymentTemplateOption[0]}
                         />
@@ -115,7 +136,7 @@ function CompareWithBaseConfig({
             </div>
             <div className="pt-12 pb-12 pl-16 pr-16">
                 <span className="cn-6">Base configuration</span>
-                <div className='cn-9'>{baseTimeStamp}</div>
+                <div className="cn-9">{baseTimeStamp}</div>
             </div>
         </div>
     );
