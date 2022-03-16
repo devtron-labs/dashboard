@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import {
-    Select,
     DialogForm,
     DialogFormSubmit,
     Progressing,
     showError,
     ErrorScreenManager,
     sortObjectArrayAlphabetically,
+    multiSelectStyles,
 } from '../../common';
 import { AddNewAppProps, AddNewAppState } from '../types';
-import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE } from '../../../config';
+import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config';
 import { ValidationRules } from './validationRules';
-import { getTeamListMin, getAppListMin } from '../../../services/service';
+import { getTeamListMin } from '../../../services/service';
 import { createApp } from './service';
 import { toast } from 'react-toastify';
 import { ServerErrors } from '../../../modals/commonTypes';
@@ -20,17 +20,21 @@ import { TAG_VALIDATION_MESSAGE, validateTags, createOption, handleKeyDown } fro
 import TagLabelSelect from '../details/TagLabelSelect';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg';
+import ReactSelect from 'react-select';
+import AsyncSelect from 'react-select/async';
+import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup';
+import { appListOptions, noOptionsMessage } from '../../AppSelector/AppSelectorUtil';
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules();
     _inputAppName: HTMLInputElement;
+    timeoutId;
     constructor(props) {
         super(props);
         this.state = {
             view: ViewType.FORM,
             code: 0,
             projects: [],
-            apps: [],
             disableForm: false,
             showErrors: false,
             form: {
@@ -38,6 +42,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 projectId: 0,
                 appName: '',
                 cloneId: 0,
+                appCreationType: AppCreationType.Blank,
             },
             labels: {
                 tags: [],
@@ -47,6 +52,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             isValid: {
                 projectId: false,
                 appName: false,
+                cloneAppId: true,
             },
         };
         this.createApp = this.createApp.bind(this);
@@ -56,9 +62,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
 
     async componentDidMount() {
         try {
-            const [{ result: projects }, { result: apps }] = await Promise.all([getTeamListMin(), getAppListMin()]);
-            sortObjectArrayAlphabetically(projects, 'name');
-            this.setState({ view: ViewType.FORM, projects, apps: [{ id: 0, name: 'Blank App' }, ...apps] });
+            const { result } = await getTeamListMin();
+            sortObjectArrayAlphabetically(result, 'name');
+            this.setState({ view: ViewType.FORM, projects: result });
         } catch (err) {
             this.setState({ view: ViewType.ERROR });
             showError(err);
@@ -109,7 +115,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.setState({ form, isValid });
     }
 
-    handleProject(item: number, appId): void {
+    handleProject(item: number): void {
         let { form, isValid } = { ...this.state };
         form.projectId = item;
         isValid.projectId = !!item;
@@ -202,10 +208,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             });
     }
 
-    handleClone(cloneId, appId) {
-        this.setState((state) => ({ ...state, form: { ...state.form, cloneId } }));
-    }
-
     redirectToArtifacts(appId): void {
         let url = getAppComposeURL(appId, APP_COMPOSE_STAGE.SOURCE_CONFIG);
         this.props.history.push(url);
@@ -226,17 +228,53 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         });
     };
 
+    changeTemplate = (appCreationType: string): void => {
+        let { form, isValid } = { ...this.state };
+        form.appCreationType = appCreationType;
+        isValid.cloneAppId = appCreationType === AppCreationType.Blank;
+        this.setState({ form, isValid });
+    };
+
+    handleCloneAppChange = ({ value }): void => {
+        let { form, isValid } = { ...this.state };
+        form.cloneId = value;
+        isValid.cloneAppId = !!value;
+        this.setState({ form, isValid });
+    };
+
+    _multiSelectStyles = {
+        ...multiSelectStyles,
+        control: (base, state) => ({
+            ...base,
+            cursor: 'pointer',
+        }),
+        menu: (base, state) => ({
+            ...base,
+            marginTop: 'auto',
+        }),
+        menuList: (base) => {
+            return {
+                ...base,
+                position: 'relative',
+                paddingBottom: '0px',
+                maxHeight: '180px',
+            };
+        },
+    };
+
     render() {
-        let errorObject = [this.rules.appName(this.state.form.appName), this.rules.team(this.state.form.projectId)];
+        let errorObject = [
+            this.rules.appName(this.state.form.appName),
+            this.rules.team(this.state.form.projectId),
+            this.rules.cloneApp(this.state.form.cloneId),
+        ];
         let showError = this.state.showErrors;
-        let provider = this.state.projects.find((project) => this.state.form.projectId === project.id);
-        let clone = this.state.apps.find((app) => this.state.form.cloneId === app.id);
         if (this.state.view === ViewType.LOADING) {
             return (
                 <DialogForm
-                    title="Add New App"
+                    title="Create application"
                     isLoading={this.state.disableForm}
-                    className=""
+                    className="create-app-modal"
                     close={this.props.close}
                     onSave={(e) => {
                         e.preventDefault();
@@ -253,9 +291,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         if (this.state.view === ViewType.ERROR) {
             return (
                 <DialogForm
-                    title="Add New App"
+                    title="Create application"
                     isLoading={this.state.disableForm}
-                    className=""
+                    className="create-app-modal"
                     close={this.props.close}
                     onSave={(e) => {
                         e.preventDefault();
@@ -269,9 +307,10 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         } else {
             return (
                 <DialogForm
-                    title="Add New App"
+                    title="Create application"
                     isLoading={this.state.disableForm}
-                    className=""
+                    className="create-app-modal p-0"
+                    headerClassName={'m-20'}
                     close={this.props.close}
                     onSave={(e) => {
                         e.preventDefault();
@@ -279,104 +318,130 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     }}
                     closeOnESC={true}
                 >
-                    <label className="form__row">
-                        <span className="form__label">App Name*</span>
-                        <input
-                            ref={(node) => (this._inputAppName = node)}
-                            className="form__input"
-                            type="text"
-                            name="app-name"
-                            value={this.state.form.appName}
-                            placeholder="e.g. my-first-app"
-                            autoComplete="off"
-                            autoFocus={true}
-                            tabIndex={1}
-                            onChange={this.handleAppname}
-                            required
-                        />
-                        <span className="form__error">
-                            {showError && !this.state.isValid.appName ? (
-                                <>
-                                    <Error className="form__icon form__icon--error" />
-                                    {errorObject[0].message} <br />
-                                </>
-                            ) : null}
-                        </span>
-                        <span className="form__text-field-info form__text-field-info--create-app">
-                            <Info className="form__icon form__icon--info form__icon--create-app" />
-                            Apps are NOT env specific and can be used to deploy to multiple environments.
-                        </span>
-                    </label>
-                    <div className="form__row">
-                        <span className="form__label">Project*</span>
-                        <Select
-                            value={this.state.form.projectId}
-                            onChange={(e) => this.handleProject(e.target.value, this.state.form.appId)}
-                        >
-                            <Select.Button rootClassName="select-button--default">
-                                {provider ? provider.name : 'Select Project'}
-                            </Select.Button>
-                            {this.state.projects.map((team) => {
-                                return (
-                                    <Select.Option value={team.id} key={team.id}>
-                                        {team.name}
-                                    </Select.Option>
-                                );
-                            })}
-                        </Select>
-                        <span className="form__error">
-                            {showError && !this.state.isValid.projectId ? (
-                                <>
-                                    <Error className="form__icon form__icon--error" />
-                                    {errorObject[1].message}
-                                </>
-                            ) : null}
-                        </span>
-                    </div>
-                    <div className="form__row clone-apps inline-block">
-                        <span className="form__label">Template</span>
-                        <Select
-                            value={clone ? clone.id : null}
-                            onChange={(e) => this.handleClone(e.target.value, this.state.form.appId)}
-                        >
-                            <Select.Button rootClassName="select-button--default">
-                                {clone ? clone.name : 'Select Clone'}
-                            </Select.Button>
-                            <Select.Search />
-                            {this.state.apps.map((app) => {
-                                return (
-                                    <Select.Option value={app.id} key={app.id} name={app.name}>
-                                        {app.name}
-                                    </Select.Option>
-                                );
-                            })}
-                        </Select>
-                    </div>
-                    <TagLabelSelect
-                        validateTags={validateTags}
-                        labelTags={this.state.labels}
-                        onInputChange={this.handleInputChange}
-                        onTagsChange={this.handleTagsChange}
-                        onKeyDown={(event) => handleKeyDown(this.state.labels, this.setAppTagLabel, event)}
-                        onCreatableBlur={this.handleCreatableBlur}
-                    />
+                    <hr className="separator m-0" />
+                    <div className="scrollable-content p-20">
+                        <label className="form__row">
+                            <span className="form__label">App Name*</span>
+                            <input
+                                ref={(node) => (this._inputAppName = node)}
+                                className="form__input"
+                                type="text"
+                                name="app-name"
+                                value={this.state.form.appName}
+                                placeholder="e.g. my-first-app"
+                                autoComplete="off"
+                                autoFocus={true}
+                                tabIndex={1}
+                                onChange={this.handleAppname}
+                                required
+                            />
+                            <span className="form__error">
+                                {showError && !this.state.isValid.appName ? (
+                                    <>
+                                        <Error className="form__icon form__icon--error" />
+                                        {errorObject[0].message} <br />
+                                    </>
+                                ) : null}
+                            </span>
+                            <span className="form__text-field-info form__text-field-info--create-app">
+                                <Info className="form__icon form__icon--info form__icon--create-app" />
+                                Apps are NOT env specific and can be used to deploy to multiple environments.
+                            </span>
+                        </label>
+                        <div className="form__row">
+                            <span className="form__label">Project*</span>
+                            <ReactSelect
+                                className="m-0"
+                                tabIndex="2"
+                                isMulti={false}
+                                isClearable={false}
+                                options={this.state.projects}
+                                getOptionLabel={(option) => `${option.name}`}
+                                getOptionValue={(option) => `${option.id}`}
+                                styles={this._multiSelectStyles}
+                                components={{
+                                    IndicatorSeparator: null,
+                                }}
+                                onChange={(selected) => {
+                                    this.handleProject(selected.id);
+                                }}
+                                placeholder="Select project"
+                            />
+                            <span className="form__error">
+                                {showError && !this.state.isValid.projectId ? (
+                                    <>
+                                        <Error className="form__icon form__icon--error" />
+                                        {errorObject[1].message}
+                                    </>
+                                ) : null}
+                            </span>
+                        </div>
+                        <div className="form__row clone-apps inline-block">
+                            <RadioGroup
+                                className="no-border"
+                                value={this.state.form.appCreationType}
+                                name="trigger-type"
+                                onChange={(event) => {
+                                    this.changeTemplate(event.target.value);
+                                }}
+                            >
+                                <RadioGroupItem value={AppCreationType.Blank}>Blank app</RadioGroupItem>
+                                <RadioGroupItem value={AppCreationType.Existing}>Clone an existing app</RadioGroupItem>
+                            </RadioGroup>
+                        </div>
+                        {this.state.form.appCreationType === AppCreationType.Existing && (
+                            <div className="form__row clone-apps inline-block">
+                                <span className="form__label">Select an app to clone*</span>
+                                <AsyncSelect
+                                    defaultOption
+                                    loadOptions={appListOptions}
+                                    noOptionsMessage={noOptionsMessage}
+                                    onChange={this.handleCloneAppChange}
+                                    styles={this._multiSelectStyles}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        LoadingIndicator: null,
+                                    }}
+                                    placeholder="Select app"
+                                />
 
-                    <div className="cr-5 fs-11">{this.state.labels.tagError}</div>
-                    {this.state.form.cloneId > 0 && (
-                        <div className="mt-20 info__container info__container--create-app">
-                            <Info />
-                            <div className="flex column left">
-                                <div className="info__title">Important</div>
-                                <div className="info__subtitle">
-                                    Do not forget to modify git repositories, corresponding branches and container
-                                    registries to be used for each CI Pipeline if required.
+                                <span className="form__error">
+                                    {showError && !this.state.isValid.cloneAppId ? (
+                                        <>
+                                            <Error className="form__icon form__icon--error" />
+                                            {errorObject[2].message}
+                                        </>
+                                    ) : null}
+                                </span>
+                            </div>
+                        )}
+                        {this.state.form.appCreationType === AppCreationType.Existing && (
+                            <div className="info__container info__container--create-app eb-2 mb-16">
+                                <Info />
+                                <div className="flex column left">
+                                    <div>
+                                        <div className="info__title">Important: </div>Do not forget to modify git
+                                        repositories, corresponding branches and container registries to be used for
+                                        each CI Pipeline if required.
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
-                    <div className=" mt-40">
+                        )}
+                        <TagLabelSelect
+                            validateTags={validateTags}
+                            labelTags={this.state.labels}
+                            onInputChange={this.handleInputChange}
+                            onTagsChange={this.handleTagsChange}
+                            onKeyDown={(event) => handleKeyDown(this.state.labels, this.setAppTagLabel, event)}
+                            onCreatableBlur={this.handleCreatableBlur}
+                        />
+
+                        <div className="cr-5 fs-11">{this.state.labels.tagError}</div>
+                    </div>
+                    <hr className="separator m-0" />
+                    <div className="footer">
                         <DialogFormSubmit tabIndex={3}>
-                            {this.state.form.cloneId > 0 ? 'Duplicate App' : 'Create App'}
+                            {this.state.form.appCreationType === AppCreationType.Existing ? 'Clone App' : 'Create App'}
                         </DialogFormSubmit>
                     </div>
                 </DialogForm>

@@ -1,6 +1,5 @@
 import { RouteComponentProps } from 'react-router';
 
-
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: () => void;
 }
@@ -21,18 +20,19 @@ export interface AddNewAppState {
     code: number;
     disableForm: boolean;
     projects: { id: number; name: string }[];
-    apps: any[];
     showErrors: boolean;
     form: {
         appName: string;
         appId: number;
         projectId: number;
         cloneId: number;
+        appCreationType: string;
     };
     labels: LabelTags;
     isValid: {
         projectId: boolean;
         appName: boolean;
+        cloneAppId: boolean;
     };
 }
 
@@ -54,7 +54,7 @@ export interface AppDetails {
     projectName?: string;
 }
 
-export interface LabelTag{
+export interface LabelTag {
     key: string;
     value: string;
 }
@@ -154,7 +154,7 @@ interface MaterialInfo {
     modifiedTime: string;
     revision: string;
     url: string;
-    webhookData: string
+    webhookData: string;
 }
 
 interface Source {
@@ -183,7 +183,7 @@ interface Resource {
     message: string;
     hookPhase: string;
     syncPhase: string;
-    health?: Health
+    health?: Health;
 }
 
 interface Destination {
@@ -265,15 +265,14 @@ export interface AppStreamData {
     result: {
         type: string;
         application: Application;
-    }
+    };
 }
-
 
 export interface GenericNode<T> {
     group?: string;
     version: string;
     kind: T;
-    name: string
+    name: string;
     appName?: string;
     namespace?: string;
 }
@@ -308,8 +307,8 @@ export enum Nodes {
     Rollout = 'Rollout',
     PersistentVolumeClaim = 'PersistentVolumeClaim',
     PersistentVolume = 'PersistentVolume',
-    Containers = 'Containers',// containers are being trated same way as nodes for nsted table generation
-    InitContainers = 'InitContainers'
+    Containers = 'Containers', // containers are being trated same way as nodes for nsted table generation
+    InitContainers = 'InitContainers',
 }
 export type NodeType = keyof typeof Nodes;
 
@@ -320,43 +319,41 @@ export enum AggregationKeys {
     RBAC = 'RBAC',
     Administration = 'Administration',
     'Custom Resource' = 'Custom Resource',
-    Other = 'Other'
+    Other = 'Other',
 }
 export type AggregationKeysType = keyof typeof AggregationKeys;
 
 type Aggregation = {
-    [key in AggregationKeys]: NodesMap
-}
+    [key in AggregationKeys]: NodesMap;
+};
 
 type NodesMap = {
     [key in NodeType]?: Map<string, any>;
-}
+};
 
 export interface AggregatedNodes {
     nodes: NodesMap;
     aggregation: Aggregation;
     statusCount: {
-        [status: string]: number
+        [status: string]: number;
     };
     nodeStatusCount: {
         [node in NodeType]?: {
-            [status: string]: number
-        }
+            [status: string]: number;
+        };
     };
     aggregatorStatusCount: {
         [aggregator in AggregationKeys]?: {
-            [status: string]: number
-        }
-    }
+            [status: string]: number;
+        };
+    };
 }
-
 
 export enum NodeDetailTabs {
     EVENTS = 'EVENTS',
     LOGS = 'LOGS',
     MANIFEST = 'MANIFEST',
     DESCRIBE = 'DESCRIBE',
-    TERMINAL = "TERMINAL",
-};
+    TERMINAL = 'TERMINAL',
+}
 export type NodeDetailTabsType = keyof typeof NodeDetailTabs;
-
