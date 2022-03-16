@@ -99,9 +99,9 @@ function DeploymentTemplateHistory({ setTempValue, currentConfiguration }) {
                 </div>
             </div>
 
-            <div className="form__row form__row--code-editor-container en-2 bw-1 br-4 mr-20 ml-20">
-                <div className="border-bottom br-4 pl-16 pr-16 pt-12 pb-12 fs-13 fw-6 cn-9 bcn-0">values.yaml</div>
-                <div className="code-editor-container">
+            <div className=" form__row form__row--code-editor-container en-2 bw-1 br-4 mr-20 ml-20">
+                <div className="code-editor-header-value pl-16 pr-16 pt-12 pb-12 fs-13 fw-6 cn-9 bcn-0">values.yaml</div>
+                <div>
                     {baseDeploymentTemplate &&
                         baseDeploymentTemplate.globalConfig &&
                         currentConfiguration &&
