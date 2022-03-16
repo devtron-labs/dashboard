@@ -45,7 +45,9 @@ function HistoryDiff({ currentConfiguration, loader }) {
 
     return (
         <div className="historical-diff__container">
-           { renderLeftHistoryConfiguration()}
+           {/* NOTE: removing for the time being, will add when working on other keys as well */}
+
+           {/* { renderLeftHistoryConfiguration()} */}
             {loader ?  <Progressing pageLoader /> : 
             <>
            { renderRightHistoryConfiguration()}

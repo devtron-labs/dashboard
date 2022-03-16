@@ -6,11 +6,13 @@
 }
 
 .historical-diff__container{
-    display: grid;
+    // display: grid;
     overflow: hidden;
     flex-basis: 280px;
-    transition: flex-basis 0.3s;
-    grid-template-columns: 280px auto;
+    //NOTE: removing for the time being, will add when working on other keys as well
+
+    // transition: flex-basis 0.3s;
+    // grid-template-columns: 280px auto;
     height: calc(100vh - 160px);
 }
 
