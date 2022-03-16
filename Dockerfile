@@ -2,8 +2,8 @@ FROM node:14 AS builder
 
 WORKDIR /app
 COPY package.json .
-COPY yarn.lock .
-RUN yarn install
+COPY package-lock.json .
+RUN npm run install
 
 COPY src/ src
 COPY types/ types
