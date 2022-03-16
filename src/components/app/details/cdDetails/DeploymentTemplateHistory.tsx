@@ -63,7 +63,7 @@ function DeploymentTemplateHistory({ setTempValue, currentConfiguration }) {
     }
 
 
-    let isTemplateDiff = isDeploymentConfigDiff()
+    let isTemplateVersionDiff = isDeploymentConfigDiff()
     
     function isDeploymentConfigDiff () : boolean {
         if (currentConfiguration && currentConfiguration.templateVersion !== previousChartVersion) {
@@ -77,23 +77,23 @@ function DeploymentTemplateHistory({ setTempValue, currentConfiguration }) {
         <div>
             <div className="en-2 bw-1 br-4 deployment-diff__upper bcn-0 mt-20 mb-16 mr-20 ml-20">
                 <div className="">
-                    <div className={`${isTemplateDiff ? 'bcr-1' : ''} pl-16 pr-16 pt-16 pb-16`}>
+                    <div className={`${isTemplateVersionDiff ? 'bcr-1' : ''} pl-16 pr-16 pt-16 pb-16`}>
                         <div className="cn-6">Chart version</div>
                         <div className="cn-9">{currentConfiguration?.templateVersion}</div>
                     </div>
-                    <div className={`${isTemplateDiff ? 'bcr-1' : ''} pl-16 pr-16 pt-16 pb-16`}>
+                    <div className={`pl-16 pr-16 pt-16 pb-16`}>
                         <div className="cn-6">Application metrics</div>
                         <div className="cn-9">Disabled</div>
                     </div>
                 </div>
                 <div className="">
-                    <div className={`${isTemplateDiff ? 'bcg-1' : ''} pl-16 pr-16 pt-16 pb-16`}>
+                    <div className={`${isTemplateVersionDiff ? 'bcg-1' : ''} pl-16 pr-16 pt-16 pb-16`}>
                         <div className={`cn-6`}>Chart version</div>
                         <div className="cn-9">{previousChartVersion}</div>
                     </div>
-                    <div className={`${isTemplateDiff ? 'bcg-1' : ''} pl-16 pr-16 pt-16 pb-16`}>
+                    <div className={`pl-16 pr-16 pt-16 pb-16`}>
                         <div className="cn-6">Application metrics</div>
-                        <div className="cn-9">Enabled</div>
+                        <div className="cn-9">Disable</div>
                     </div>
                 </div>
             </div>
