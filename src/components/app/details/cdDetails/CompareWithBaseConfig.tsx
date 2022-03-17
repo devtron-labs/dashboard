@@ -22,13 +22,14 @@ function CompareWithBaseConfig({
     const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>('');
     const [comaparedTemplateId, setComparedTemplateId] = useState<number>();
 
-    const deploymentTemplateOption: { label: string; value: string; author: string; status: string }[] =
+    const deploymentTemplateOption: { label: string; value: string; author: string; status: string; workflowType: string }[] =
         deploymentTemplatesConfiguration.map((p) => {
             return {
                 value: String(p.id),
                 label: moment(p.deployedOn).format(Moment12HourFormat),
                 author: p.emailId,
                 status: p.deploymentStatus,
+                workflowType: p.workflowType
             };
         });
 
@@ -79,17 +80,20 @@ function CompareWithBaseConfig({
     //    }
     // },[compareId])
 
-    const renderArrowofCompareDeployment = () => {
-        <NavLink
-            to={`${url.split('/configuration')[0]}/configuration`}
-            onClick={(e) => {
-                e.preventDefault();
-                setShowTemplate(false);
-                history.push(`${url.split('/configuration')[0]}/configuration`);
-            }}
-        >
-            <LeftIcon className="rotate icon-dim-24 mr-16" style={{ ['--rotateBy' as any]: '180deg' }} />
-        </NavLink>;
+    const renderArrowOfCompareDeployment = () => {
+        return (
+            <NavLink
+                to={`${url.split('/configuration')[0]}/configuration`}
+                className='flex'
+                onClick={(e) => {
+                    e.preventDefault();
+                    setShowTemplate(false);
+                    history.push(`${url.split('/configuration')[0]}/configuration`);
+                }}
+            >
+                <LeftIcon className="rotate icon-dim-24 mr-16" style={{ ['--rotateBy' as any]: '180deg' }} />
+            </NavLink>
+        );
     };
 
     const renderCompareDeploymentConfig = () => {
@@ -115,19 +119,22 @@ function CompareWithBaseConfig({
     };
 
     const renderBaseDeploymentConfig = () => {
-        <div className="pt-12 pb-12 pl-16 pr-16">
-            <span className="cn-6">Base configuration</span>
-            <div className="cn-9">
-                {baseTemplateTimeStamp && moment(baseTemplateTimeStamp).format(Moment12HourFormat)}
+        return (
+            <div className="compare-history__border-left pt-12 pb-12 pl-16 pr-16">
+                <span className="cn-6">Base configuration</span>
+                <div className="cn-9 fs-13">
+                    {baseTemplateTimeStamp && moment(baseTemplateTimeStamp).format(Moment12HourFormat)}
+                </div>
             </div>
-        </div>;
+        );
     };
     return (
         <div className="border-bottom pl-20 pr-20 flex left bcn-0">
-            <div className="compare-history__border-right flex">
-                {renderArrowofCompareDeployment()}
-                {renderCompareDeploymentConfig()}
-            </div>
+            {/* <div className="compare-history__border-right flex">
+              
+            </div> */}
+            {renderArrowOfCompareDeployment()}
+            {renderCompareDeploymentConfig()}
             {renderBaseDeploymentConfig()}
         </div>
     );

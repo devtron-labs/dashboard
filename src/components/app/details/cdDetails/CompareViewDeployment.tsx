@@ -18,7 +18,7 @@ function CompareViewDeployment({
     const { appId, pipelineId, compareId } = useParams<{ appId; pipelineId, compareId }>();
     const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState([]);
     const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] =
-        useState<{ value: string; label: string; author: string; status: string }>();
+        useState<{ value: string; label: string; author: string; status: string; workflowType: string; }>();
     const [currentConfiguration, setCurrentConfiguration] = useState<DeploymentTemplateConfiguration>();
     const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentTemplateConfiguration>();
 

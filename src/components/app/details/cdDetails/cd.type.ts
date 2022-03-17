@@ -27,11 +27,12 @@ export interface DeploymentTemplateDiffRes {
     pipelineId: number;
     deploymentStatus: string;
     wfrId: number;
+    workflowType: string
 }
 
 export interface CompareWithBaseConfiguration {
     deploymentTemplatesConfiguration: DeploymentTemplateDiffRes[];
-    selectedDeploymentTemplate: { label: string; value: string; author: string; status: string };
+    selectedDeploymentTemplate: { label: string; value: string; author: string; status: string ; workflowType: string};
     setSeletedDeploymentTemplate: (selected) => void;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
     baseTemplateId: number | string
