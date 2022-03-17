@@ -62,20 +62,22 @@
 }
 
 .advanced-config-readme{
-    height: 650px;
+    height: calc(100vh - 100px);
     width: calc(100vw - 100px);
     background: var(--N000);
-   
+    margin: 50px 50px;
     display: grid;
     grid-row-gap: 12px;
-    transform: translate(-50%, -50%);
-    top: 50%;
-    left: 50%;
-    position: relative;
+    // transform: translate(-50%, -50%);
+    // top: 50%;
+    // left: 50%;
+    // position: relative;
     
     .config-editor{
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 50% 50%;
+        min-height: 0;
+        height: 100%;
     }
 
     .infobar{
@@ -89,13 +91,20 @@
     }
 
     .readme{
-        height: 500px;
+        height: calc(100% - 40px);
         overflow-y: scroll;
+        min-height: 0;
     }
 
     .readmeEditor{
         background: var(--N000);
         border-right: 1px solid #D0D4D9;
-        height: 550px;
+        height:100%;
+        min-height: 0;
+    }
+
+    .codeEditor{
+        min-height: 0;
+        height: calc(100% - 42px);
     }
 }
