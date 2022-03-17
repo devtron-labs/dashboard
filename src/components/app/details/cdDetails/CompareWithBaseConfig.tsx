@@ -21,7 +21,7 @@ function CompareWithBaseConfig({
     const history = useHistory();
     const { triggerId } = useParams<{ triggerId: string }>();
     const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>(baseTimeStamp);
-    const [comaparedTemplateId, setComparedTemplateId] = useState<number>();
+    const [comaparedTemplateId, setComparedTemplateId] = useState<string>();
 
     const deploymentTemplateOption: DeploymentTemplateOptions[] = deploymentTemplatesConfiguration.map((p) => {
         return {
@@ -47,7 +47,7 @@ function CompareWithBaseConfig({
         if (deploymentTemplatesConfiguration.length > 0) {
             const baseTemplate = deploymentTemplatesConfiguration.find((e) => e.wfrId.toString() === triggerId);
             setBaseTemplateTimeStamp(baseTemplate?.deployedOn);
-            setBaseTemplateId(+baseTemplate?.id);
+            setBaseTemplateId(baseTemplate?.id.toString());
         }
     }, [deploymentTemplatesConfiguration, baseTemplateTimeStamp]);
 
@@ -59,8 +59,8 @@ function CompareWithBaseConfig({
             baseTemplateId
         ) {
             deploymentTemplateOption.map((dt, key) => {
-                if (+dt.value === baseTemplateId) {
-                    setComparedTemplateId(key);
+                if (dt.value === baseTemplateId) {
+                    setComparedTemplateId(key.toString());
                 }
                 setSeletedDeploymentTemplate(deploymentTemplateOption[comaparedTemplateId + 1]);
             });

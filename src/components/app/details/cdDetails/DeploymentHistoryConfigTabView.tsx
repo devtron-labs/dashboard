@@ -34,7 +34,7 @@ function CompareViewDeployment({
         setLoader(true);
         if (selectedDeploymentTemplate) {
             try {
-                getDeploymentTemplateDiffId(appId, pipelineId, +selectedDeploymentTemplate.value).then((response) => {
+                getDeploymentTemplateDiffId(appId, pipelineId, selectedDeploymentTemplate.value).then((response) => {
                     setCurrentConfiguration(response.result);
                     setLoader(false);
                 });

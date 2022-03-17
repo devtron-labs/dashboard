@@ -73,6 +73,6 @@ export function getDeploymentTemplateDiff(appId: string, pipelineId: string) {
     return get(`app/history/template/${appId}/${pipelineId}?offset=0&size=20`);
 }
 
-export function getDeploymentTemplateDiffId(appId: string, pipelineId: string, id: number) {
+export function getDeploymentTemplateDiffId(appId: string, pipelineId: string, id: string) {
     return get(`app/history/template/${appId}/${pipelineId}/${id}`);
 }

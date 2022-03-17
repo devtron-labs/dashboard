@@ -52,7 +52,7 @@ export default function CDDetails(){
     const keys = useKeyDown()
     const [showTemplate, setShowTemplate] = useState(false)
    const [baseTimeStamp, setBaseTimeStamp] = useState<string>('')
-     const [baseTemplateId, setBaseTemplateId] = useState< number>();
+     const [baseTemplateId, setBaseTemplateId] = useState< string>();
     const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState<DeploymentTemplateConfiguration[]>([]);
    
     useEffect(()=>{
@@ -407,11 +407,11 @@ const TriggerOutput: React.FC<{
     triggerHistory: Map<number, History>;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
     baseTimeStamp: string;
-    setBaseTemplateId: React.Dispatch<React.SetStateAction<number>>;
-    baseTemplateId: number;
+    setBaseTemplateId: React.Dispatch<React.SetStateAction<string>>;
+    baseTemplateId: string;
     deploymentTemplatesConfiguration
     showTemplate: boolean
-}> = ({ fullScreenView, syncState, triggerHistory, setShowTemplate, baseTimeStamp, baseTemplateId, setBaseTemplateId, deploymentTemplatesConfiguration , showTemplate}) => {
+}> = ({ fullScreenView, syncState, triggerHistory, setShowTemplate, setBaseTemplateId, deploymentTemplatesConfiguration , showTemplate}) => {
     const { appId, triggerId, envId, pipelineId } = useParams<{appId: string, triggerId: string, envId: string, pipelineId: string}>();
     const triggerDetails = triggerHistory.get(+triggerId);
     const [
@@ -537,9 +537,9 @@ const HistoryLogs: React.FC<{
     triggerDetails: History;
     loading: boolean;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
-    setBaseTemplateId: React.Dispatch<React.SetStateAction<number>>;
+    setBaseTemplateId: React.Dispatch<React.SetStateAction<string>>;
     deploymentTemplatesConfiguration
-}> = ({ triggerDetails, loading, setShowTemplate, deploymentTemplatesConfiguration, setBaseTemplateId }) => {
+}> = ({ triggerDetails, loading, setShowTemplate, deploymentTemplatesConfiguration }) => {
     let { path } = useRouteMatch();
     const {appId, pipelineId, triggerId, envId} = useParams<{appId: string, pipelineId: string, triggerId: string, envId: string}>()
     const [autoBottomScroll, setAutoBottomScroll] = useState<boolean>(triggerDetails.status.toLowerCase() !== 'succeeded')

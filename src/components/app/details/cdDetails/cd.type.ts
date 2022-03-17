@@ -41,14 +41,14 @@ export interface CompareWithBaseConfiguration {
     setSeletedDeploymentTemplate: (selected) => void;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
     baseTimeStamp: string;
-    baseTemplateId: number;
-    setBaseTemplateId: React.Dispatch<React.SetStateAction<number>>;
+    baseTemplateId: string;
+    setBaseTemplateId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export interface CompareViewDeploymentType {
     showTemplate: boolean;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
     baseTimeStamp: string;
-    baseTemplateId: number;
-    setBaseTemplateId: React.Dispatch<React.SetStateAction<number>>;
+    baseTemplateId: string;
+    setBaseTemplateId: React.Dispatch<React.SetStateAction<string>>;
 }
