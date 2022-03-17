@@ -11,48 +11,42 @@ function DeploymentTemplateHistory({
     let isTemplateVersionDiff = isDeploymentConfigDiff();
 
     function isDeploymentConfigDiff(): boolean {
-        if (
-            currentConfiguration &&
-            baseTemplateConfiguration &&
-            currentConfiguration?.templateVersion !== baseTemplateConfiguration?.templateVersion
-        ) {
-            return true;
-        }
-        return;
+        return currentConfiguration?.templateVersion !== baseTemplateConfiguration?.templateVersion;
     }
 
     function isApplicationMetricesDiff(): boolean {
-        if (
-            currentConfiguration &&
-            baseTemplateConfiguration &&
-            currentConfiguration?.isAppMetricsEnabled !== baseTemplateConfiguration?.isAppMetricsEnabled
-        ) {
-            return true;
-        }
-        return;
+        return (
+            (currentConfiguration?.isAppMetricsEnabled && !baseTemplateConfiguration?.isAppMetricsEnabled) ||
+            (!currentConfiguration?.isAppMetricsEnabled && baseTemplateConfiguration?.isAppMetricsEnabled)
+        );
     }
 
-    const renderHistoryUpperDiff = (configuration) => {
-       return <div className="">
-            <div className={`${isTemplateVersionDiff ? 'bcr-1' : ''} pl-16 pr-16 pt-8 pb-8`}>
-                <div className="cn-6">Chart version</div>
-                {configuration?.templateVersion ? (
-                    <div className="cn-9 ">{configuration.templateVersion}</div>
-                ) : (
-                    <div className=" inline-block"></div>
-                )}
+    const renderHistoryUpperDiff = (configuration, isBaseTemplate) => {
+        const bgColorDeploymentDiff = isDeploymentConfigDiff() ? (isBaseTemplate ? 'bcg-1' : 'bcr-1') : '';
+        const bgColorForAppMetricesDiff = isApplicationMetricesDiff() ? (isBaseTemplate ? 'bcg-1' : 'bcr-1') : '';
+
+        return (
+            <div className="">
+                <div className={`${bgColorDeploymentDiff} pl-16 pr-16 pt-8 pb-8`}>
+                    <div className="cn-6">Chart version</div>
+                    {configuration?.templateVersion ? (
+                        <div className="cn-9 ">{configuration.templateVersion}</div>
+                    ) : (
+                        <div className=" inline-block"></div>
+                    )}
+                </div>
+                <div className={`${bgColorForAppMetricesDiff} pl-16 pr-16 pt-8 pb-8`}>
+                    <div className="cn-6">Application metrics</div>
+                    <div className="cn-9 fs-13">{configuration?.isAppMetricsEnabled ? 'Enabled' : 'Disabled'}</div>
+                </div>
             </div>
-            <div className={`${isApplicationMetricesDiff ? '' : ''} pl-16 pr-16 pt-8 pb-8`}>
-                <div className="cn-6">Application metrics</div>
-                <div className="cn-9 fs-13">{configuration?.isAppMetricsEnabled && configuration.isAppMetricsEnabled ? 'Enabled' : 'Disabled'}</div>
-            </div>
-        </div>;
+        );
     };
     return (
         <div>
             <div className="en-2 bw-1 br-4 deployment-diff__upper bcn-0 mt-20 mb-16 mr-20 ml-20 pt-8 pb-8">
-                {renderHistoryUpperDiff(currentConfiguration)}
-                {renderHistoryUpperDiff(baseTemplateConfiguration)}
+                {renderHistoryUpperDiff(currentConfiguration, false)}
+                {renderHistoryUpperDiff(baseTemplateConfiguration, true)}
             </div>
 
             <div className=" form__row form__row--code-editor-container en-2 bw-1 br-4 mr-20 ml-20">

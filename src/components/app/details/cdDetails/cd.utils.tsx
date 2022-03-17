@@ -31,6 +31,7 @@ export const styles = {
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         cursor: 'pointer',
+        padding: 0
     }),
     valueContainer: (base, state) => ({
         ...base,
