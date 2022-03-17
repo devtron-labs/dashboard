@@ -53,7 +53,7 @@ function ReadmeConfig({ readme, value, handleClose, loading, onChange, schema, r
                         <MarkDown markdown={readme} />
                     </div>
                 </div>
-                <div className="bw-1 br-4 bcn-0 codeEditor">
+                <div className="bw-1 br-4 bcn-0 code-editor">
                     <CodeEditor
                         value={value}
                         defaultValue={defaultValue}
