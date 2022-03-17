@@ -32,6 +32,7 @@ function CompareWithBaseConfig({
                 status: p.deploymentStatus,
             };
         });
+
     const onClickTimeStampSelector = (selected: { label: string; value: string }) => {
         handleSelector(selected.value);
         setSeletedDeploymentTemplate(selected);
@@ -40,6 +41,8 @@ function CompareWithBaseConfig({
     const handleSelector = (selectedTemplateId) => {
         let deploymentTemp = deploymentTemplatesConfiguration.find((e) => e.id.toString() === selectedTemplateId.toString());
         setSeletedDeploymentTemplate(deploymentTemp);
+        history.push(`${url}/${selectedTemplateId}`)
+
     };
 
     useEffect(() => {

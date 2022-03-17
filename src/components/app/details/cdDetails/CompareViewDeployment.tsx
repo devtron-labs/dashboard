@@ -5,6 +5,8 @@ import HistoryDiff from './HistoryDiff';
 import { getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from './service';
 import { useParams } from 'react-router';
 import { DeploymentTemplateConfiguration } from './cd.type';
+import EmptyState from '../../../EmptyState/EmptyState';
+import AppNotDeployed from '../../../../assets/img/app-not-deployed.png';
 
 function CompareViewDeployment({
     showTemplate,
@@ -76,7 +78,23 @@ function CompareViewDeployment({
         };
     }, []);
 
-    return (
+    const NoCDHistortData = () => {
+     return   <EmptyState>
+            <EmptyState.Image>
+                <img src={AppNotDeployed} alt="" />
+            </EmptyState.Image>
+            <EmptyState.Title>
+                <h4 className='fw-6 fs-16'>Data not available</h4>
+            </EmptyState.Title>
+            <EmptyState.Subtitle>
+                Deployed configurations is not available for older deployments
+            </EmptyState.Subtitle>
+        </EmptyState>
+    };
+
+    return (!deploymentTemplatesConfiguration && deploymentTemplatesConfiguration.length < 1 && !loader )? (
+        <>{NoCDHistortData()}</>
+    ) : (
         <div>
             <CompareWithBaseConfig
                 deploymentTemplatesConfiguration={deploymentTemplatesConfiguration}
