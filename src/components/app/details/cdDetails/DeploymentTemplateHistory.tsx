@@ -1,7 +1,8 @@
 import React from 'react';
 import CodeEditor from '../../../CodeEditor/CodeEditor';
+import {DeploymentTemplateHistoryType} from './cd.type'
 
-function DeploymentTemplateHistory({ currentConfiguration, baseTemplateConfiguration, codeEditorLoading }) {
+function DeploymentTemplateHistory({ currentConfiguration, baseTemplateConfiguration, codeEditorLoading }: DeploymentTemplateHistoryType) {
     let isTemplateVersionDiff = isDeploymentConfigDiff();
 
     function isDeploymentConfigDiff(): boolean {

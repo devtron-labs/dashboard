@@ -1,41 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import ReactSelect, { components } from 'react-select';
-import { multiSelectStyles, Select, sortCallback } from '../../../common';
 import { useHistory, useRouteMatch, useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import moment from 'moment';
 import { Moment12HourFormat } from '../../../../config';
-import { ReactComponent as Check } from '../../../../assets/icons/ic-check.svg';
 import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-forward.svg';
-interface DeploymentTemplateDiffRes {
-    appId: number;
-    deployed: boolean;
-    deployedBy: number;
-    deployedOn: string;
-    emailId: string;
-    id: string;
-    pipelineId: number;
-    deploymentStatus: string;
-    wfrId: number;
-}
-interface CompareWithBaseConfig {
-    deploymentTemplateDiffRes: DeploymentTemplateDiffRes[];
-    selectedDeploymentTemplate: { label: string; value: string; author: string; status: string };
-    setSeletedDeploymentTemplate: (selected) => void;
-    setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
-    baseTemplateId: number | string
-    setBaseTemplateId: React.Dispatch<React.SetStateAction<string | number>>;
-
-}
+import {CompareWithBaseConfiguration} from './cd.type'
+import {Option, styles} from './cd.utils';
 
 function CompareWithBaseConfig({
-    deploymentTemplateDiffRes,
+    deploymentTemplatesConfiguration,
     selectedDeploymentTemplate,
     setSeletedDeploymentTemplate,
     setShowTemplate,
     baseTemplateId,
     setBaseTemplateId
-}: CompareWithBaseConfig) {
+}: CompareWithBaseConfiguration) {
+
     const { url } = useRouteMatch();
     const history = useHistory();
     const { triggerId } = useParams<{ triggerId: string }>();
@@ -43,7 +24,7 @@ function CompareWithBaseConfig({
     const [comaparedTemplateId, setComparedTemplateId] = useState<number>();
 
     const deploymentTemplateOption: { label: string; value: string; author: string; status: string }[] =
-        deploymentTemplateDiffRes.map((p) => {
+        deploymentTemplatesConfiguration.map((p) => {
             return {
                 value: String(p.id),
                 label: moment(p.deployedOn).format(Moment12HourFormat),
@@ -57,17 +38,17 @@ function CompareWithBaseConfig({
     };
 
     const handleSelector = (selectedTemplateId) => {
-        let deploymentTemp = deploymentTemplateDiffRes.find((e) => e.id.toString() === selectedTemplateId.toString());
+        let deploymentTemp = deploymentTemplatesConfiguration.find((e) => e.id.toString() === selectedTemplateId.toString());
         setSeletedDeploymentTemplate(deploymentTemp);
     };
 
     useEffect(() => {
-        if (deploymentTemplateDiffRes.length > 0) {
-            const baseTemplate = deploymentTemplateDiffRes.find((e) => e.wfrId.toString() === triggerId);
+        if (deploymentTemplatesConfiguration.length > 0) {
+            const baseTemplate = deploymentTemplatesConfiguration.find((e) => e.wfrId.toString() === triggerId);
             setBaseTemplateTimeStamp(baseTemplate?.deployedOn);
             setBaseTemplateId(baseTemplate?.id);
         }
-    }, [deploymentTemplateDiffRes, baseTemplateTimeStamp]);
+    }, [deploymentTemplatesConfiguration, baseTemplateTimeStamp]);
 
     useEffect(() => {
         if (
@@ -104,74 +85,12 @@ function CompareWithBaseConfig({
                         <ReactSelect
                             placeholder="Select Timestamp"
                             isSearchable={false}
-                            styles={{
-                                ...multiSelectStyles,
-                                menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', width: '150%' }),
-                                control: (base, state) => ({
-                                    ...base,
-                                    backgroundColor: 'transparent',
-                                    minHeight: '12px',
-                                    cursor: 'pointer',
-                                    border: 0,
-                                    outline: 'none',
-                                    boxShadow: 'none',
-                                }),
-                                singleValue: (base, state) => ({
-                                    ...base,
-                                    fontWeight: 600,
-                                    color: '#06c',
-                                    direction: 'rtl',
-                                    marginLeft: '2px',
-                                }),
-                                option: (base, state) => ({
-                                    ...base,
-                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                    color: 'var(--N900)',
-                                    textOverflow: 'ellipsis',
-                                    overflow: 'hidden',
-                                    whiteSpace: 'nowrap',
-                                    cursor: 'pointer',
-                                }),
-                                valueContainer: (base, state) => ({
-                                    ...base,
-                                    height: '20px',
-                                    padding: 0,
-                                }),
-                                indicatorsContainer: (base) => ({
-                                    ...base,
-                                    // height: '40px',
-                                    padding: 0,
-                                }),
-                                dropdownIndicator: (styles) => ({ ...styles, padding: 0 }),
-                            }}
+                            styles={styles}
                             onChange={onClickTimeStampSelector}
                             options={deploymentTemplateOption}
                             components={{
                                 IndicatorSeparator: null,
-                                Option: (props) => {
-                                    return (
-                                        <components.Option {...props}>
-                                            <div className="flex left">
-                                                {props.isSelected ? (
-                                                    <div>
-                                                        <Check className="icon-dim-16 scb-5 mr-8" />
-                                                    </div>
-                                                ) : (
-                                                    <div className="inline-block icon-dim-16 mr-8"></div>
-                                                )}
-                                                <div
-                                                    className={`app-summary__icon icon-dim-22 ${props.data.status
-                                                        .toLocaleLowerCase()
-                                                        .replace(/\s+/g, '')} mr-8`}
-                                                ></div>
-                                                <div>
-                                                    <div> {props.label}</div>
-                                                    <div>{props.data.author}</div>
-                                                </div>
-                                            </div>
-                                        </components.Option>
-                                    );
-                                },
+                                Option: Option
                             }}
                             value={selectedDeploymentTemplate || deploymentTemplateOption[0]}
                         />

@@ -4,6 +4,7 @@ import CompareWithBaseConfig from './CompareWithBaseConfig';
 import HistoryDiff from './HistoryDiff';
 import { getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from './service';
 import { useParams } from 'react-router';
+import { DeploymentTemplateConfiguration } from './cd.type';
 
 function CompareViewDeployment({
     showTemplate,
@@ -12,14 +13,15 @@ function CompareViewDeployment({
     showTemplate: boolean;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-    const [deploymentTemplateDiff, setDeploymentTemplateDiff] = useState([]);
+    const { appId, pipelineId } = useParams<{ appId; pipelineId }>();
+    const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState([]);
     const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] =
         useState<{ value: string; label: string; author: string; status: string }>();
-    const [currentConfiguration, setCurrentConfiguration] = useState<any>();
-    const { appId, pipelineId } = useParams<{ appId; pipelineId }>();
-    const [loader, setLoader] = useState(false);
+    const [currentConfiguration, setCurrentConfiguration] = useState<DeploymentTemplateConfiguration>();
+    const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentTemplateConfiguration>();
+
+    const [loader, setLoader] = useState<boolean>(false);
     const [baseTemplateId, setBaseTemplateId] = useState<number | string>();
-    const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<any>();
     const [codeEditorLoading, setCodeEditorLoading] = useState<boolean>(false);
 
     useEffect(() => {
@@ -55,7 +57,7 @@ function CompareViewDeployment({
         setLoader(true);
         try {
             getDeploymentTemplateDiff(appId, pipelineId).then((response) => {
-                setDeploymentTemplateDiff(response.result.sort((a, b) => sortCallback('id', b, a)));
+                setDeploymentTemplatesConfiguration(response.result.sort((a, b) => sortCallback('id', b, a)));
                 setLoader(false);
             });
 
@@ -77,7 +79,7 @@ function CompareViewDeployment({
     return (
         <div>
             <CompareWithBaseConfig
-                deploymentTemplateDiffRes={deploymentTemplateDiff}
+                deploymentTemplatesConfiguration={deploymentTemplatesConfiguration}
                 selectedDeploymentTemplate={selectedDeploymentTemplate}
                 setSeletedDeploymentTemplate={setSeletedDeploymentTemplate}
                 setShowTemplate={setShowTemplate}
