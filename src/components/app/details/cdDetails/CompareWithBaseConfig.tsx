@@ -57,11 +57,11 @@ function CompareWithBaseConfig({
         if (
             !selectedDeploymentTemplate &&
             deploymentTemplateOption &&
-            deploymentTemplateOption.length > 0 &&
+            deploymentTemplateOption?.length > 0 &&
             baseTemplateId
         ) {
             deploymentTemplateOption.map((dt, key) => {
-                if (+dt.value == +baseTemplateId) {
+                if (+dt.value === baseTemplateId) {
                     setComparedTemplateId(key);
                 }
                 setSeletedDeploymentTemplate(deploymentTemplateOption[comaparedTemplateId + 1]);

@@ -60,6 +60,7 @@ function DeploymentTemplateHistory({
                             <CodeEditor
                                 value={YAML.stringify(JSON.parse(baseTemplateConfiguration.template))}
                                 defaultValue={currentConfiguration.template}
+                                height={700}
                                 mode="yaml"
                                 diffView={true}
                                 readOnly={true}

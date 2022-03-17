@@ -14,18 +14,11 @@ function HistoryDiff({ currentConfiguration, loader, codeEditorLoading, baseTemp
                 <Progressing pageLoader />
             ) : (
                 <div className="historical-diff__right ci-details__body bcn-1">
-                    <Switch>
-                        <Route
-                            path={path}
-                            render={(props) => (
-                                <DeploymentTemplateHistory
-                                    currentConfiguration={currentConfiguration}
-                                    baseTemplateConfiguration={baseTemplateConfiguration}
-                                    codeEditorLoading={codeEditorLoading}
-                                />
-                            )}
-                        />
-                    </Switch>
+                    <DeploymentTemplateHistory
+                        currentConfiguration={currentConfiguration}
+                        baseTemplateConfiguration={baseTemplateConfiguration}
+                        codeEditorLoading={codeEditorLoading}
+                    />
                 </div>
             )}
         </div>

@@ -1,15 +1,21 @@
 import React from 'react';
 import { ReactComponent as RightArrow } from '../../../../assets/icons/ic-arrow-left.svg';
 import { NavLink } from 'react-router-dom';
-import { useRouteMatch } from 'react-router';
+import { useRouteMatch, useParams } from 'react-router';
+import { DeploymentTemplateDiffRes } from './cd.type';
+import CDEmptyState from './CDEmptyState';
 interface TemplateConfiguration {
     setShowTemplate: (boolean) => void;
+    deploymentTemplatesConfiguration: DeploymentTemplateDiffRes[]
 }
 
-function DeploymentConfigurationNav({ setShowTemplate }: TemplateConfiguration) {
+function DeploymentConfigurationNav({ setShowTemplate, deploymentTemplatesConfiguration }: TemplateConfiguration) {
     const match = useRouteMatch();
+    const {triggerId} = useParams<{triggerId: string}>()
 
-    return (
+    const deploymentTemplateFilteredTrigger = deploymentTemplatesConfiguration.find((dt)=> dt.wfrId.toString() === triggerId )
+        
+        return deploymentTemplateFilteredTrigger ? (
         <div className="m-20 fs-13 cn-9">
             <NavLink
                 to={`${match.url}/deployment-template`}
@@ -22,7 +28,7 @@ function DeploymentConfigurationNav({ setShowTemplate }: TemplateConfiguration) 
                 </span>
             </NavLink>
         </div>
-    );
+    ) : <CDEmptyState />
 }
 
 export default DeploymentConfigurationNav;
