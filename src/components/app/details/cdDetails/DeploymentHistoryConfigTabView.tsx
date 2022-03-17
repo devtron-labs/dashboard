@@ -4,19 +4,16 @@ import CompareWithBaseConfig from './CompareWithBaseConfig';
 import HistoryDiff from './HistoryDiff';
 import { getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from './service';
 import { useParams } from 'react-router';
-import { DeploymentTemplateConfiguration, DeploymentTemplateOptions } from './cd.type';
-import EmptyState from '../../../EmptyState/EmptyState';
-import AppNotDeployed from '../../../../assets/img/app-not-deployed.png';
+import { DeploymentTemplateConfiguration, DeploymentTemplateOptions, CompareViewDeploymentType } from './cd.type';
+import CDEmptyState from './CDEmptyState'
 
 function CompareViewDeployment({
     showTemplate,
     setShowTemplate,
     baseTimeStamp,
-}: {
-    showTemplate: boolean;
-    setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
-    baseTimeStamp: string;
-}) {
+    baseTemplateId,
+    setBaseTemplateId
+}: CompareViewDeploymentType) {
     const { appId, pipelineId } = useParams<{ appId: string; pipelineId: string }>();
     const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState([]);
     const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState<DeploymentTemplateOptions>();
@@ -24,14 +21,13 @@ function CompareViewDeployment({
     const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentTemplateConfiguration>();
 
     const [loader, setLoader] = useState<boolean>(false);
-    const [baseTemplateId, setBaseTemplateId] = useState<number | string>();
     const [codeEditorLoading, setCodeEditorLoading] = useState<boolean>(false);
 
     useEffect(() => {
         setLoader(true);
         if (selectedDeploymentTemplate) {
             try {
-                getDeploymentTemplateDiffId(appId, pipelineId, selectedDeploymentTemplate.value).then((response) => {
+                getDeploymentTemplateDiffId(appId, pipelineId, +selectedDeploymentTemplate.value).then((response) => {
                     setCurrentConfiguration(response.result);
                     setLoader(false);
                 });
@@ -79,24 +75,9 @@ function CompareViewDeployment({
         };
     }, []);
 
-    const NoCDHistortData = () => {
-        return (
-            <EmptyState>
-                <EmptyState.Image>
-                    <img src={AppNotDeployed} alt="" />
-                </EmptyState.Image>
-                <EmptyState.Title>
-                    <h4 className="fw-6 fs-16">Data not available</h4>
-                </EmptyState.Title>
-                <EmptyState.Subtitle>
-                    Deployed configurations is not available for older deployments
-                </EmptyState.Subtitle>
-            </EmptyState>
-        );
-    };
 
     return !deploymentTemplatesConfiguration && deploymentTemplatesConfiguration.length < 1 && !loader ? (
-        <>{NoCDHistortData()}</>
+        <CDEmptyState/>
     ) : (
         <div>
             <CompareWithBaseConfig

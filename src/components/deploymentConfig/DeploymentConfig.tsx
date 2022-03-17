@@ -114,18 +114,11 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
         initialise();
     }, []);
 
-    // useEffectAfterMount(() => {
-    //     if (typeof chartConfigLoading === 'boolean' && !chartConfigLoading) {
-    //         fetchDeploymentTemplate()
-    //     }
-    // }, [chartConfigLoading])
-
     useEffectAfterMount(() => {
         fetchDeploymentTemplate();
-        // initialise()
     }, [selectedChart]);
 
-    const { appId, envId } = useParams<{ appId, envId }>();
+    const { appId, envId } = useParams<{ appId: string, envId: string }>();
 
     async function saveAppMetrics(appMetricsEnabled) {
         try {

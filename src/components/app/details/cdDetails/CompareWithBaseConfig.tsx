@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ReactSelect, { components } from 'react-select';
+import ReactSelect from 'react-select';
 import { useHistory, useRouteMatch, useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import moment from 'moment';
@@ -20,7 +20,7 @@ function CompareWithBaseConfig({
     const { url } = useRouteMatch();
     const history = useHistory();
     const { triggerId } = useParams<{ triggerId: string }>();
-    const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>(baseTimeStamp);
+    const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>(baseTimeStamp)
     const [comaparedTemplateId, setComparedTemplateId] = useState<number>();
 
     const deploymentTemplateOption: DeploymentTemplateOptions[] = deploymentTemplatesConfiguration.map((p) => {
@@ -38,7 +38,7 @@ function CompareWithBaseConfig({
         setSeletedDeploymentTemplate(selected);
     };
 
-    const handleSelector = (selectedTemplateId) => {
+    const handleSelector = (selectedTemplateId: string) => {
         let deploymentTemp = deploymentTemplatesConfiguration.find(
             (e) => e.id.toString() === selectedTemplateId.toString(),
         );
@@ -49,7 +49,7 @@ function CompareWithBaseConfig({
         if (deploymentTemplatesConfiguration.length > 0) {
             const baseTemplate = deploymentTemplatesConfiguration.find((e) => e.wfrId.toString() === triggerId);
             setBaseTemplateTimeStamp(baseTemplate?.deployedOn);
-            setBaseTemplateId(baseTemplate?.id);
+            setBaseTemplateId(+baseTemplate?.id);
         }
     }, [deploymentTemplatesConfiguration, baseTemplateTimeStamp]);
 
@@ -61,7 +61,7 @@ function CompareWithBaseConfig({
             baseTemplateId
         ) {
             deploymentTemplateOption.map((dt, key) => {
-                if (dt.value == baseTemplateId) {
+                if (+dt.value == +baseTemplateId) {
                     setComparedTemplateId(key);
                 }
                 setSeletedDeploymentTemplate(deploymentTemplateOption[comaparedTemplateId + 1]);
@@ -69,7 +69,7 @@ function CompareWithBaseConfig({
         }
     }, [deploymentTemplateOption]);
 
-    const renderArrowOfCompareDeployment = () => {
+    const renderGoBacktoConfiguration = () => {
         return (
             <NavLink
                 to={`${url.split('/configuration')[0]}/configuration`}
@@ -119,7 +119,7 @@ function CompareWithBaseConfig({
     };
     return (
         <div className="border-bottom pl-20 pr-20 flex left bcn-0">
-            {renderArrowOfCompareDeployment()}
+            {renderGoBacktoConfiguration()}
             {renderCompareDeploymentConfig()}
             {renderBaseDeploymentConfig()}
         </div>

@@ -62,20 +62,10 @@ export function getCDBuildReport(appId, envId, pipelineId, workflowId) {
     return get(`app/cd-pipeline/workflow/download/${appId}/${envId}/${pipelineId}/${workflowId}`)
 }
 
-export function getDeploymentTemplateDiff(appId,  pipelineId) {
-    return get(`app/history/template/${appId}/${pipelineId}?offset=0&size=20`)
+export function getDeploymentTemplateDiff(appId: string,  pipelineId: string) {
+    return get(`app/history/template/${+appId}/${+pipelineId}?offset=0&size=20`)
 }
 
-export function getDeploymentTemplateDiffId(appId,  pipelineId, id) {
-    return get(`app/history/template/${appId}/${pipelineId}/${id}`)
+export function getDeploymentTemplateDiffId(appId: string,  pipelineId: string, id: number) {
+    return get(`app/history/template/${+appId}/${+pipelineId}/${id}`)
 }
-
-export function getPreviousDeploymentTemplate(appId, envId, chartId){
-    return get(`app/env/${appId}/${envId}/${chartId}`)
-}
-
-export function getDeploymentTemplateVersion(id: number, chartRefId: number) {
-    const URL = `${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`;
-    return get(URL)
-}
-

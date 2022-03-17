@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useMemo, SetStateAction } from 'react';
 import { getAppOtherEnvironment, getCDConfig as getCDPipelines } from '../../../../services/service'
 import {AppEnvironment} from '../../../../services/service.types';
-import { Progressing, Select, showError, useAsync, useInterval, useScrollable, useKeyDown, not, mapByKey, asyncWrap, ConditionalWrap, useAppContext } from '../../../common';
+import { Progressing, Select, showError, useAsync, useInterval, useScrollable, useKeyDown, not, mapByKey, asyncWrap, ConditionalWrap, useAppContext, sortCallback } from '../../../common';
 import { Host } from '../../../../config';
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useLocation, useRouteMatch, useParams, generatePath } from 'react-router';
@@ -13,7 +13,7 @@ import Reload from '../../../Reload/Reload'
 import {
     default as AnsiUp
 } from 'ansi_up';
-import { getTriggerHistory, getTriggerDetails, getCDBuildReport} from './service'
+import { getTriggerHistory, getTriggerDetails, getCDBuildReport, getDeploymentTemplateDiff} from './service'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { cancelPrePostCdTrigger } from '../../service';
 import {Scroller} from '../cIDetails/CIDetails';
@@ -29,6 +29,8 @@ import {Moment12HourFormat} from '../../../../config';
 import DeploymentConfigurationNav from './DeploymentConfigurationNav';
 import './cdDetail.scss'
 import CompareViewDeployment from './DeploymentHistoryConfigTabView';
+import CDEmptyState from './CDEmptyState';
+import { DeploymentTemplateConfiguration } from './cd.type';
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(["starting", "running", "pending"]);
@@ -51,6 +53,45 @@ export default function CDDetails(){
     const keys = useKeyDown()
     const [showTemplate, setShowTemplate] = useState(false)
    const [baseTimeStamp, setBaseTimeStamp] = useState<string>('')
+     const [baseTemplateId, setBaseTemplateId] = useState< number>();
+     const [loader, setLoader] = useState<boolean>(false);
+    const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState([]);
+    const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>(baseTimeStamp);
+     
+    //  useEffect(() => {
+    //     setLoader(true);
+    //     try {
+    //         if(baseTemplateId){
+    //             getDeploymentTemplateDiff(appId, pipelineId).then((response) => {
+    //                 setDeploymentTemplatesConfiguration(response.result.sort((a, b) => sortCallback('id', b, a)));
+    //                 setLoader(false);
+    //             });
+    //         }
+
+    //         if (!showTemplate) {
+    //             setShowTemplate(true);
+    //         }
+    //     } catch (err) {
+    //         showError(err);
+    //         setLoader(false);
+    //     }
+
+    //     return (): void => {
+    //         if (showTemplate) {
+    //             setShowTemplate(false);
+    //         }
+    //     };
+    // }, []);
+
+    //  useEffect(() => {
+    //     if (deploymentTemplatesConfiguration.length > 0) {
+    //         const baseTemplate = deploymentTemplatesConfiguration.find((e) => e.wfrId.toString() === triggerId);
+    //         setBaseTemplateTimeStamp(baseTemplate?.deployedOn);
+    //         setBaseTemplateId(+baseTemplate?.id);
+    //     }
+    // }, [deploymentTemplatesConfiguration, baseTemplateTimeStamp]);
+
+    
 
     useEffect(()=>{
         if(!pathname.includes('/logs')) return
@@ -170,6 +211,9 @@ export default function CDDetails(){
                                                     key={idx}
                                                     triggerDetails={trigger}
                                                     setBaseTimeStamp={setBaseTimeStamp}
+                                                    baseTimeStamp={baseTimeStamp}
+                                                    baseTemplateId={baseTemplateId}
+                                                    setBaseTemplateId={setBaseTemplateId}
                                                 />
                                             ))}
                                         {hasMore && <DetectBottom callback={reloadNextAfterBottom} />}
@@ -195,6 +239,9 @@ export default function CDDetails(){
                                         syncState={syncState}
                                         triggerHistory={triggerHistory}
                                         setShowTemplate={setShowTemplate}
+                                        baseTimeStamp={baseTimeStamp}
+                                        baseTemplateId={baseTemplateId}
+                                        setBaseTemplateId={setBaseTemplateId}
                                     />
                                 </Route>
                             )}
@@ -233,7 +280,9 @@ export default function CDDetails(){
                             <CompareViewDeployment
                                 showTemplate={showTemplate}
                                 setShowTemplate={setShowTemplate}
+                                baseTemplateId={baseTemplateId}
                                 baseTimeStamp={baseTimeStamp}
+                                setBaseTemplateId= {setBaseTemplateId}
                             />
                         )}
                     />
@@ -250,9 +299,10 @@ export default function CDDetails(){
     );
 }
 
-const DeploymentCard:React.FC<{triggerDetails: History; setBaseTimeStamp}> = ({triggerDetails, setBaseTimeStamp})=>{
+const DeploymentCard:React.FC<{triggerDetails: History; setBaseTimeStamp; baseTimeStamp: string; setBaseTemplateId; baseTemplateId}> = ({triggerDetails, setBaseTimeStamp, baseTimeStamp})=>{
     const { path } = useRouteMatch()
     const {triggerId, ...rest} = useParams<{triggerId: string}>()
+
 
     useEffect(()=>{
         setBaseTimeStamp(triggerDetails.startedOn)
@@ -380,7 +430,10 @@ const TriggerOutput: React.FC<{
     syncState: (triggerId: number, triggerDetails: History) => void;
     triggerHistory: Map<number, History>;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ fullScreenView, syncState, triggerHistory, setShowTemplate }) => {
+    baseTimeStamp: string;
+    setBaseTemplateId: React.Dispatch<React.SetStateAction<number>>;
+    baseTemplateId: number
+}> = ({ fullScreenView, syncState, triggerHistory, setShowTemplate, baseTimeStamp, baseTemplateId, setBaseTemplateId }) => {
     const { appId, triggerId, envId, pipelineId } = useParams<{appId: string, triggerId: string, envId: string, pipelineId: string}>();
     const triggerDetails = triggerHistory.get(+triggerId);
     const [
@@ -491,6 +544,9 @@ const TriggerOutput: React.FC<{
                 triggerDetails={triggerDetails}
                 loading={triggerDetailsLoading && !triggerDetailsResult}
                 setShowTemplate={setShowTemplate}
+                baseTimeStamp={baseTimeStamp}
+                baseTemplateId={baseTemplateId}
+                setBaseTemplateId={setBaseTemplateId}
             />
         </>
     );
@@ -500,7 +556,10 @@ const HistoryLogs: React.FC<{
     triggerDetails: History;
     loading: boolean;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ triggerDetails, loading, setShowTemplate }) => {
+    baseTimeStamp: string
+    baseTemplateId: number;
+    setBaseTemplateId: React.Dispatch<React.SetStateAction<number>>;
+}> = ({ triggerDetails, loading, setShowTemplate, baseTimeStamp, baseTemplateId }) => {
     let { path } = useRouteMatch();
     const {appId, pipelineId, triggerId, envId} = useParams<{appId: string, pipelineId: string, triggerId: string, envId: string}>()
     const [autoBottomScroll, setAutoBottomScroll] = useState<boolean>(triggerDetails.status.toLowerCase() !== 'succeeded')

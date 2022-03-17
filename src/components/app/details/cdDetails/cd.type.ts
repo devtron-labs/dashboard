@@ -30,20 +30,28 @@ export interface DeploymentTemplateDiffRes {
     workflowType: string;
 }
 
-export interface CompareWithBaseConfiguration {
-    deploymentTemplatesConfiguration: DeploymentTemplateDiffRes[];
-    selectedDeploymentTemplate: { label: string; value: string; author: string; status: string; workflowType: string };
-    setSeletedDeploymentTemplate: (selected) => void;
-    setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
-    baseTemplateId: number | string;
-    setBaseTemplateId: React.Dispatch<React.SetStateAction<string | number>>;
-    baseTimeStamp: string;
-}
-
 export interface DeploymentTemplateOptions {
     label: string;
     value: string;
     author: string;
     status: string;
     workflowType: string;
+}
+export interface CompareWithBaseConfiguration {
+    deploymentTemplatesConfiguration: DeploymentTemplateDiffRes[];
+    selectedDeploymentTemplate: DeploymentTemplateOptions;
+    setSeletedDeploymentTemplate: (selected) => void;
+    setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
+    baseTimeStamp: string;
+    baseTemplateId: number ;
+    setBaseTemplateId: React.Dispatch<React.SetStateAction<number>>;
+   
+}
+
+export interface CompareViewDeploymentType {
+    showTemplate: boolean;
+    setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
+    baseTimeStamp: string;
+    baseTemplateId: number
+    setBaseTemplateId: React.Dispatch<React.SetStateAction<number>>;
 }
