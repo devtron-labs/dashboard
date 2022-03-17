@@ -26,7 +26,7 @@ import Tippy from '@tippyjs/react'
 import {DetectBottom, TriggerDetails, GitChanges, Artifacts, BuildCardPopup} from '../cIDetails/CIDetails'
 import {History} from '../cIDetails/types'
 import {Moment12HourFormat} from '../../../../config';
-import DeploymentConfiguration from './DeploymentConfiguration';
+import DeploymentConfigurationNav from './DeploymentConfigurationNav';
 import './cdDetail.scss'
 import CompareViewDeployment from './CompareViewDeployment';
 
@@ -232,7 +232,7 @@ export default function CDDetails(){
                             <CompareViewDeployment showTemplate={showTemplate} setShowTemplate={setShowTemplate}/>
                         )}
                     />*/}
-                    
+
                     <Route 
                         path={`${path}/configuration/deployment-template`}
                         render={(props) => (
@@ -515,7 +515,7 @@ const HistoryLogs: React.FC<{
                     </div>
                 </Route>}
                 <Route path={`${path}/source-code`} render={props => <GitChanges triggerDetails={triggerDetails} />} />
-                <Route path={`${path}/configuration`} render={props => <DeploymentConfiguration setShowTemplate={setShowTemplate}/>} />
+                <Route path={`${path}/configuration`} render={props => <DeploymentConfigurationNav setShowTemplate={setShowTemplate}/>} />
                 {triggerDetails.stage !== 'DEPLOY' && <Route path={`${path}/artifacts`} render={props => <Artifacts getArtifactPromise={()=>getCDBuildReport(appId, envId, pipelineId, triggerId)} triggerDetails={triggerDetails} />} />}
                 <Redirect to={triggerDetails.status.toLowerCase() === 'succeeded' ? `${path}/artifacts` : triggerDetails.stage === 'DEPLOY' ? `${path}/source-code` : `${path}/logs`} />
             </Switch>}
