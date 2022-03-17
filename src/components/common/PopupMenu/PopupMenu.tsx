@@ -36,7 +36,7 @@ function PopupMenu({ children = null, onToggleCallback = null, autoClose = false
             }
         }
     }, [popupPosition])
-    
+
     let options = {
         root: null,
         rootMargin: '0px',
@@ -68,6 +68,7 @@ function PopupMenu({ children = null, onToggleCallback = null, autoClose = false
     }
 
     const handleOpen = (e)=>{
+        e.stopPropagation();
         setOpacity(0)
         const { bottom,height,left,right,top,width,x,y } = e.currentTarget.getBoundingClientRect()
         setPopupPosition({left: x, top: y + height})
@@ -98,7 +99,7 @@ function PopupMenu({ children = null, onToggleCallback = null, autoClose = false
         const { bottom, height, left, right, top, width, x, y } = buttonEl.getBoundingClientRect()
         buttonWidth.current=width;
     }
-    
+
     return <PopupContext.Provider value={{handleOpen, popupPosition, handleClose, opacity, setPopupPosition, callbackRef, buttonRef, initialiseButtonWidth, buttonWidth}}>
         {children}
     </PopupContext.Provider>
