@@ -649,6 +649,10 @@ button.anchor {
             flex: 0 0 213px;
             word-wrap: anywhere;
             white-space: pre-line;
+            padding: 0;
+            .Toastify__toast-icon{
+              display: none;
+            }
         }
 
         .Toastify__close-button {
