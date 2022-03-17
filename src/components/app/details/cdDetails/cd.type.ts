@@ -1,9 +1,12 @@
-export interface DeploymentTemplateConfiguration {
+interface DeploymentTemplateCommon {
     appId: number;
     deployed: boolean;
     deployedOn: string;
     emailId: string;
     id: number;
+}
+
+export interface DeploymentTemplateConfiguration extends DeploymentTemplateCommon {
     isAppMetricsEnabled: boolean;
     template: string;
     templateName: string;
@@ -17,19 +20,13 @@ export interface DeploymentTemplateHistoryType {
     codeEditorLoading: boolean;
 }
 
-export interface DeploymentTemplateDiffRes {
-    appId: number;
-    deployed: boolean;
+export interface DeploymentTemplateDiffRes extends DeploymentTemplateCommon {
     deployedBy: number;
-    deployedOn: string;
-    emailId: string;
-    id: string;
     pipelineId: number;
     deploymentStatus: string;
     wfrId: number;
     workflowType: string;
 }
-
 export interface DeploymentTemplateOptions {
     label: string;
     value: string;
@@ -43,15 +40,14 @@ export interface CompareWithBaseConfiguration {
     setSeletedDeploymentTemplate: (selected) => void;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
     baseTimeStamp: string;
-    baseTemplateId: number ;
+    baseTemplateId: number;
     setBaseTemplateId: React.Dispatch<React.SetStateAction<number>>;
-   
 }
 
 export interface CompareViewDeploymentType {
     showTemplate: boolean;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
     baseTimeStamp: string;
-    baseTemplateId: number
+    baseTemplateId: number;
     setBaseTemplateId: React.Dispatch<React.SetStateAction<number>>;
 }
