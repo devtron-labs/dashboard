@@ -33,6 +33,7 @@ function CompareViewDeployment({
                 });
             } catch (err) {
                 showError(err);
+                setLoader(false);
             }
         }
     }, [selectedDeploymentTemplate]);
