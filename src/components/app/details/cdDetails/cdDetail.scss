@@ -6,7 +6,7 @@
 }
 
 .historical-diff__container {
-    flex-basis: 280px;
+    width: 280px;
     height: calc(100vh - 160px);
 }
 
@@ -19,8 +19,7 @@
 .historical-diff__left {
     padding: 16px 12px;
     overflow: hidden;
-    flex-basis: 280px;
-    transition: flex-basis 0.3s;
+    width: 280px;
 }
 
 .ml-20 {
