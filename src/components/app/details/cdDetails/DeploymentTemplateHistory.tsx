@@ -15,6 +15,16 @@ function DeploymentTemplateHistory({ currentConfiguration, baseTemplateConfigura
         return;
     }
 
+    function isApplicationMetricesDiff(): boolean {
+        if (
+            currentConfiguration &&
+            currentConfiguration?.isAppMetricsEnabled !== baseTemplateConfiguration?.isAppMetricsEnabled
+        ) {
+            return true;
+        }
+        return;
+    }
+
     return (
         <div>
             <div className="en-2 bw-1 br-4 deployment-diff__upper bcn-0 mt-20 mb-16 mr-20 ml-20 pt-8 pb-8">
@@ -27,7 +37,7 @@ function DeploymentTemplateHistory({ currentConfiguration, baseTemplateConfigura
                             <div className=" inline-block"></div>
                         )}
                     </div>
-                    <div className={`pl-16 pr-16 pt-8 pb-8`}>
+                    <div className={`${isApplicationMetricesDiff ? 'bcr-1' : ''} pl-16 pr-16 pt-8 pb-8`}>
                         <div className="cn-6">Application metrics</div>
                         <div className="cn-9">{currentConfiguration?.isAppMetricsEnabled ? 'Enable' : 'Disable'}</div>
                     </div>
@@ -41,9 +51,9 @@ function DeploymentTemplateHistory({ currentConfiguration, baseTemplateConfigura
                             <div className=" inline-block"></div>
                         )}
                     </div>
-                    <div className={`pl-16 pr-16 pt-8 pb-8`}>
+                    <div className={`${isTemplateVersionDiff ? 'bcg-1' : ''} pl-16 pr-16 pt-8 pb-8`}>
                         <div className="cn-6">Application metrics</div>
-                        <div className="cn-9">Disable</div>
+                        <div className="cn-9">{baseTemplateConfiguration?.isAppMetricsEnabled}</div>
                     </div>
                 </div>
             </div>

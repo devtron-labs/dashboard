@@ -62,7 +62,7 @@ export function Option(props) {
                 ></div>
                 <div>
                     <div> {props.label}</div>
-                    <div>{props.data.author}</div>
+                    <div>Deploy {props.data.author}</div>
                 </div>
             </div>
         </components.Option>
