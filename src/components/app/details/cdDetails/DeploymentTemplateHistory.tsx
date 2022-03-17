@@ -49,7 +49,7 @@ function DeploymentTemplateHistory({
                 <Progressing pageLoader />
             </div>
         ) : (
-            <div>
+            <>
                 {baseTemplateConfiguration?.template && currentConfiguration?.template && (
                     <CodeEditor
                         value={YAML.stringify(JSON.parse(baseTemplateConfiguration.template))}
@@ -61,7 +61,7 @@ function DeploymentTemplateHistory({
                         loading={codeEditorLoading}
                     ></CodeEditor>
                 )}
-            </div>
+            </>
         );
     };
     return (

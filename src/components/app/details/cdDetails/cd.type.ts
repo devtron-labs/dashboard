@@ -12,6 +12,7 @@ export interface DeploymentTemplateConfiguration extends DeploymentTemplateCommo
     templateName: string;
     templateVersion: string;
     imageDescriptorTemplate: string;
+    targetEnvironment: string
 }
 
 export interface DeploymentTemplateHistoryType {
@@ -20,7 +21,7 @@ export interface DeploymentTemplateHistoryType {
     codeEditorLoading: boolean;
 }
 
-export interface DeploymentTemplateDiffRes extends DeploymentTemplateCommon {
+export interface DeploymentTemplateViaTargetResponse extends DeploymentTemplateCommon {
     deployedBy: number;
     pipelineId: number;
     deploymentStatus: string;
@@ -35,7 +36,7 @@ export interface DeploymentTemplateOptions {
     workflowType: string;
 }
 export interface CompareWithBaseConfiguration {
-    deploymentTemplatesConfiguration: DeploymentTemplateDiffRes[];
+    deploymentTemplatesConfiguration: DeploymentTemplateViaTargetResponse[];
     selectedDeploymentTemplate: DeploymentTemplateOptions;
     setSeletedDeploymentTemplate: (selected) => void;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;

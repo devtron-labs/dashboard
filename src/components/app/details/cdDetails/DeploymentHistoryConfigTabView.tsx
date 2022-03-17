@@ -4,7 +4,12 @@ import CompareWithBaseConfig from './CompareWithBaseConfig';
 import HistoryDiff from './HistoryDiff';
 import { getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from './service';
 import { useParams } from 'react-router';
-import { DeploymentTemplateConfiguration, DeploymentTemplateOptions, CompareViewDeploymentType } from './cd.type';
+import {
+    DeploymentTemplateConfiguration,
+    DeploymentTemplateOptions,
+    CompareViewDeploymentType,
+    DeploymentTemplateViaTargetResponse,
+} from './cd.type';
 import CDEmptyState from './CDEmptyState';
 
 function CompareViewDeployment({
@@ -15,7 +20,9 @@ function CompareViewDeployment({
     setBaseTemplateId,
 }: CompareViewDeploymentType) {
     const { appId, pipelineId } = useParams<{ appId: string; pipelineId: string }>();
-    const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState([]);
+    const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState<
+        DeploymentTemplateViaTargetResponse[]
+    >([]);
     const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState<DeploymentTemplateOptions>();
     const [currentConfiguration, setCurrentConfiguration] = useState<DeploymentTemplateConfiguration>();
     const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentTemplateConfiguration>();
@@ -79,7 +86,7 @@ function CompareViewDeployment({
     return !deploymentTemplatesConfiguration && deploymentTemplatesConfiguration.length < 1 && !loader ? (
         <CDEmptyState />
     ) : (
-        <div>
+        <>
             <CompareWithBaseConfig
                 deploymentTemplatesConfiguration={deploymentTemplatesConfiguration}
                 selectedDeploymentTemplate={selectedDeploymentTemplate}
@@ -95,7 +102,7 @@ function CompareViewDeployment({
                 codeEditorLoading={codeEditorLoading}
                 baseTemplateConfiguration={baseTemplateConfiguration}
             />
-        </div>
+        </>
     );
 }
 

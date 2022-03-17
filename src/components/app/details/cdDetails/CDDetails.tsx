@@ -29,6 +29,7 @@ import {Moment12HourFormat} from '../../../../config';
 import DeploymentConfigurationNav from './DeploymentConfigurationNav';
 import './cdDetail.scss'
 import CompareViewDeployment from './DeploymentHistoryConfigTabView';
+import { DeploymentTemplateConfiguration } from './cd.type';
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(["starting", "running", "pending"]);
@@ -52,7 +53,7 @@ export default function CDDetails(){
     const [showTemplate, setShowTemplate] = useState(false)
    const [baseTimeStamp, setBaseTimeStamp] = useState<string>('')
      const [baseTemplateId, setBaseTemplateId] = useState< number>();
-    const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState([]);
+    const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState<DeploymentTemplateConfiguration[]>([]);
    
     useEffect(()=>{
         if(!pathname.includes('/logs')) return
