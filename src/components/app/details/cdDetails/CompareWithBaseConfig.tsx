@@ -19,7 +19,7 @@ function CompareWithBaseConfig({
 
     const { url } = useRouteMatch();
     const history = useHistory();
-    const { triggerId } = useParams<{ triggerId: string }>();
+    const { triggerId, compareId } = useParams<{ triggerId: string; compareId: string }>();
     const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>('');
     const [comaparedTemplateId, setComparedTemplateId] = useState<number>();
 
@@ -41,8 +41,9 @@ function CompareWithBaseConfig({
     const handleSelector = (selectedTemplateId) => {
         let deploymentTemp = deploymentTemplatesConfiguration.find((e) => e.id.toString() === selectedTemplateId.toString());
         setSeletedDeploymentTemplate(deploymentTemp);
-        history.push(`${url}/${selectedTemplateId}`)
-
+        // if(compareId){
+        //     history.push(`${url}/${selectedTemplateId}`)
+        // }
     };
 
     useEffect(() => {
@@ -68,6 +69,14 @@ function CompareWithBaseConfig({
             });
         }
     }, [deploymentTemplateOption]);
+
+    // Note: Will be picking later on
+
+    // useEffect(()=>{
+    //    if(compareId){
+    //     setComparedTemplateId(+compareId)
+    //    }
+    // },[compareId])
 
     return (
         <div className="border-bottom pl-20 pr-20 flex left bcn-0">

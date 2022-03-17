@@ -15,7 +15,7 @@ function CompareViewDeployment({
     showTemplate: boolean;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-    const { appId, pipelineId } = useParams<{ appId; pipelineId }>();
+    const { appId, pipelineId, compareId } = useParams<{ appId; pipelineId, compareId }>();
     const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState([]);
     const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] =
         useState<{ value: string; label: string; author: string; status: string }>();
@@ -39,6 +39,22 @@ function CompareViewDeployment({
             }
         }
     }, [selectedDeploymentTemplate]);
+
+    // Will be picking later on
+
+    // useEffect(()=>{
+    //     setLoader(true);
+    //     if (compareId) {
+    //         try {
+    //             getDeploymentTemplateDiffId(appId, pipelineId, compareId).then((response) => {
+    //                 setCurrentConfiguration(response.result);
+    //                 setLoader(false);
+    //             });
+    //         } catch (err) {
+    //             showError(err);
+    //         }
+    //     }
+    // },[compareId])
 
     useEffect(() => {
         try {

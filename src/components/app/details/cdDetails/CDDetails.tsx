@@ -225,7 +225,15 @@ export default function CDDetails(){
                 
 
               <Switch>
-                    <Route
+                  {/* //Note: will be picking this later on */}
+                    {/* <Route
+                        path={`${path}/configuration/deployment-template/:compareId`}
+                        render={(props) => (
+                            <CompareViewDeployment showTemplate={showTemplate} setShowTemplate={setShowTemplate}/>
+                        )}
+                    />*/}
+                    
+                    <Route 
                         path={`${path}/configuration/deployment-template`}
                         render={(props) => (
                             <CompareViewDeployment showTemplate={showTemplate} setShowTemplate={setShowTemplate}/>

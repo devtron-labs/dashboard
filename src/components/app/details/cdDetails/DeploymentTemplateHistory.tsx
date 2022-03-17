@@ -1,6 +1,7 @@
 import React from 'react';
 import CodeEditor from '../../../CodeEditor/CodeEditor';
 import {DeploymentTemplateHistoryType} from './cd.type'
+import YAML from 'yaml'
 
 function DeploymentTemplateHistory({ currentConfiguration, baseTemplateConfiguration, codeEditorLoading }: DeploymentTemplateHistoryType) {
     let isTemplateVersionDiff = isDeploymentConfigDiff();
@@ -51,10 +52,10 @@ function DeploymentTemplateHistory({ currentConfiguration, baseTemplateConfigura
                             <div className=" inline-block"></div>
                         )}
                     </div>
-                    <div className={`${isTemplateVersionDiff ? 'bcg-1' : ''} pl-16 pr-16 pt-8 pb-8`}>
+                    <div className={`${isApplicationMetricesDiff ? 'bcg-1' : ''} pl-16 pr-16 pt-8 pb-8`}>
                         <div className="cn-6">Application metrics</div>
-                        <div className="cn-9">{baseTemplateConfiguration?.isAppMetricsEnabled}</div>
-                    </div>
+                            <div className="cn-9">{baseTemplateConfiguration?.isAppMetricsEnabled ? 'Enable' : 'Disable'}</div>
+                     </div>
                 </div>
             </div>
 
@@ -68,7 +69,7 @@ function DeploymentTemplateHistory({ currentConfiguration, baseTemplateConfigura
                         currentConfiguration &&
                         currentConfiguration.template && (
                             <CodeEditor
-                                value={baseTemplateConfiguration.template}
+                                value={YAML.stringify(JSON.parse(baseTemplateConfiguration.template))}
                                 defaultValue={currentConfiguration.template}
                                 mode="yaml"
                                 diffView={true}
