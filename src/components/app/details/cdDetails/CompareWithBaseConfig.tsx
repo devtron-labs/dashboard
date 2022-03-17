@@ -23,7 +23,9 @@ interface CompareWithBaseConfig {
     selectedDeploymentTemplate: { label: string; value: string; author: string; status: string };
     setSeletedDeploymentTemplate: (selected) => void;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
-    baseTimeStamp: string;
+    baseTemplateId: number | string
+    setBaseTemplateId: React.Dispatch<React.SetStateAction<string | number>>;
+
 }
 
 function CompareWithBaseConfig({
@@ -31,14 +33,14 @@ function CompareWithBaseConfig({
     selectedDeploymentTemplate,
     setSeletedDeploymentTemplate,
     setShowTemplate,
-    baseTimeStamp,
+    baseTemplateId,
+    setBaseTemplateId
 }: CompareWithBaseConfig) {
     const { url } = useRouteMatch();
     const history = useHistory();
     const { triggerId } = useParams<{ triggerId: string }>();
-    const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState(baseTimeStamp);
-    const [baseTemplateId, setBaseTemplateId] = useState<number | string>();
-    const [comaparedTemplateId, setComparedTemplateId] = useState<number>()
+    const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>('');
+    const [comaparedTemplateId, setComparedTemplateId] = useState<number>();
 
     const deploymentTemplateOption: { label: string; value: string; author: string; status: string }[] =
         deploymentTemplateDiffRes.map((p) => {
@@ -60,7 +62,7 @@ function CompareWithBaseConfig({
     };
 
     useEffect(() => {
-        if (deploymentTemplateDiffRes.length > 0 && !baseTimeStamp) {
+        if (deploymentTemplateDiffRes.length > 0) {
             const baseTemplate = deploymentTemplateDiffRes.find((e) => e.wfrId.toString() === triggerId);
             setBaseTemplateTimeStamp(baseTemplate?.deployedOn);
             setBaseTemplateId(baseTemplate?.id);
@@ -74,16 +76,12 @@ function CompareWithBaseConfig({
             deploymentTemplateOption.length > 0 &&
             baseTemplateId
         ) {
-            let comparedOption = deploymentTemplateOption.map((dt, key) => {
+            deploymentTemplateOption.map((dt, key) => {
                 if (dt.value == baseTemplateId) {
-                    setComparedTemplateId(key)
+                    setComparedTemplateId(key);
                 }
-                setSeletedDeploymentTemplate(deploymentTemplateOption[comaparedTemplateId+1]);
-                console.log(comaparedTemplateId)
-
+                setSeletedDeploymentTemplate(deploymentTemplateOption[comaparedTemplateId + 1]);
             });
-            console.log(baseTemplateId, comparedOption);
-            console.log(deploymentTemplateOption);
         }
     }, [deploymentTemplateOption]);
 
@@ -182,7 +180,7 @@ function CompareWithBaseConfig({
             </div>
             <div className="pt-12 pb-12 pl-16 pr-16">
                 <span className="cn-6">Base configuration</span>
-                <div className="cn-9">{moment(baseTemplateTimeStamp).format(Moment12HourFormat)}</div>
+                <div className="cn-9">{baseTemplateTimeStamp && moment(baseTemplateTimeStamp).format(Moment12HourFormat)}</div>
             </div>
         </div>
     );

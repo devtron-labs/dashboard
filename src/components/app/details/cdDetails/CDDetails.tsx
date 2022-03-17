@@ -27,9 +27,7 @@ import {DetectBottom, TriggerDetails, GitChanges, Artifacts, BuildCardPopup} fro
 import {History} from '../cIDetails/types'
 import {Moment12HourFormat} from '../../../../config';
 import DeploymentConfiguration from './DeploymentConfiguration';
-import HistoryDiff from './HistoryDiff';
 import './cdDetail.scss'
-import YAML from 'yaml'
 import CompareViewDeployment from './CompareViewDeployment';
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
@@ -53,8 +51,6 @@ export default function CDDetails(){
     const keys = useKeyDown()
     const [showTemplate, setShowTemplate] = useState(false)
    const [baseTimeStamp, setBaseTimeStamp] = useState<string>('')
-   const [baseTimeStampId, setBaseTimeStampId] = useState<number>()
-
 
     useEffect(()=>{
         if(!pathname.includes('/logs')) return
@@ -151,13 +147,6 @@ export default function CDDetails(){
         })
     }
 
-    useEffect(()=>{
-        Array.from(triggerHistory)
-            ?.sort(([a], [b]) => b - a)
-            ?.map(([triggerId, trigger], idx) => console.log('trigger', trigger))
-    },[])
- 
-
     if(loading || (loadingDeploymentHistory && triggerHistory.size === 0)) return <Progressing pageLoader/>
     if (result && !(Array.isArray(result[0].result))) return <AppNotConfigured text="App is not deployed on any environment." />
     if (result && !(Array.isArray(result[1]?.pipelines))) return <AppNotConfigured text="No CD pipelines found." />
@@ -177,7 +166,7 @@ export default function CDDetails(){
                                         {Array.from(triggerHistory)
                                             ?.sort(([a], [b]) => b - a)
                                             ?.map(([triggerId, trigger], idx) => (
-                                                <DeploymentCard key={idx} triggerDetails={trigger}/>
+                                                <DeploymentCard key={idx} triggerDetails={trigger} />
                                             ))}
                                         {hasMore && <DetectBottom callback={reloadNextAfterBottom} />}
                                     </div>
@@ -239,7 +228,7 @@ export default function CDDetails(){
                     <Route
                         path={`${path}/configuration/deployment-template`}
                         render={(props) => (
-                            <CompareViewDeployment showTemplate={showTemplate} setShowTemplate={setShowTemplate} baseTimeStamp={baseTimeStamp}/>
+                            <CompareViewDeployment showTemplate={showTemplate} setShowTemplate={setShowTemplate}/>
                         )}
                     />
                 </Switch>
@@ -256,7 +245,7 @@ export default function CDDetails(){
     );
 }
 
-const DeploymentCard:React.FC<{triggerDetails: History }> = ({triggerDetails})=>{
+const DeploymentCard:React.FC<{triggerDetails: History}> = ({triggerDetails})=>{
     const { path } = useRouteMatch()
     const {triggerId, ...rest} = useParams<{triggerId}>()
 
