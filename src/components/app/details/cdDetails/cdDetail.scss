@@ -6,7 +6,7 @@
 }
 
 .historical-diff__container {
-    width: 280px;
+    min-width: 280px;
     height: calc(100vh - 160px);
 }
 
@@ -19,7 +19,7 @@
 .historical-diff__left {
     padding: 16px 12px;
     overflow: hidden;
-    width: 280px;
+    min-width: 280px;
 }
 
 .ml-20 {
