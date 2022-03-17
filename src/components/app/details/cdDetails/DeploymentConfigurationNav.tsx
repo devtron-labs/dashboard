@@ -6,16 +6,18 @@ import { DeploymentTemplateDiffRes } from './cd.type';
 import CDEmptyState from './CDEmptyState';
 interface TemplateConfiguration {
     setShowTemplate: (boolean) => void;
-    deploymentTemplatesConfiguration: DeploymentTemplateDiffRes[]
+    deploymentTemplatesConfiguration: DeploymentTemplateDiffRes[];
 }
 
 function DeploymentConfigurationNav({ setShowTemplate, deploymentTemplatesConfiguration }: TemplateConfiguration) {
     const match = useRouteMatch();
-    const {triggerId} = useParams<{triggerId: string}>()
+    const { triggerId } = useParams<{ triggerId: string }>();
 
-    const deploymentTemplateFilteredTrigger = deploymentTemplatesConfiguration.find((dt)=> dt.wfrId.toString() === triggerId )
-        
-        return deploymentTemplateFilteredTrigger ? (
+    const deploymentTemplateFilteredTrigger = deploymentTemplatesConfiguration.find(
+        (dt) => dt.wfrId.toString() === triggerId,
+    );
+
+    return deploymentTemplateFilteredTrigger ? (
         <div className="m-20 fs-13 cn-9">
             <NavLink
                 to={`${match.url}/deployment-template`}
@@ -28,7 +30,9 @@ function DeploymentConfigurationNav({ setShowTemplate, deploymentTemplatesConfig
                 </span>
             </NavLink>
         </div>
-    ) : <CDEmptyState />
+    ) : (
+        <CDEmptyState />
+    );
 }
 
 export default DeploymentConfigurationNav;

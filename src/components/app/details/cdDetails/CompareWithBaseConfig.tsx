@@ -20,7 +20,7 @@ function CompareWithBaseConfig({
     const { url } = useRouteMatch();
     const history = useHistory();
     const { triggerId } = useParams<{ triggerId: string }>();
-    const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>(baseTimeStamp)
+    const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>(baseTimeStamp);
     const [comaparedTemplateId, setComparedTemplateId] = useState<number>();
 
     const deploymentTemplateOption: DeploymentTemplateOptions[] = deploymentTemplatesConfiguration.map((p) => {
@@ -39,9 +39,7 @@ function CompareWithBaseConfig({
     };
 
     const handleSelector = (selectedTemplateId: string) => {
-        let deploymentTemp = deploymentTemplatesConfiguration.find(
-            (e) => e.id.toString() === selectedTemplateId.toString(),
-        );
+        let deploymentTemp = deploymentTemplatesConfiguration.find((e) => e.id.toString() === selectedTemplateId);
         setSeletedDeploymentTemplate(deploymentTemp);
     };
 

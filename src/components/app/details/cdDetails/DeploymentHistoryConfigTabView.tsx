@@ -5,14 +5,14 @@ import HistoryDiff from './HistoryDiff';
 import { getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from './service';
 import { useParams } from 'react-router';
 import { DeploymentTemplateConfiguration, DeploymentTemplateOptions, CompareViewDeploymentType } from './cd.type';
-import CDEmptyState from './CDEmptyState'
+import CDEmptyState from './CDEmptyState';
 
 function CompareViewDeployment({
     showTemplate,
     setShowTemplate,
     baseTimeStamp,
     baseTemplateId,
-    setBaseTemplateId
+    setBaseTemplateId,
 }: CompareViewDeploymentType) {
     const { appId, pipelineId } = useParams<{ appId: string; pipelineId: string }>();
     const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState([]);
@@ -76,9 +76,8 @@ function CompareViewDeployment({
         };
     }, []);
 
-
     return !deploymentTemplatesConfiguration && deploymentTemplatesConfiguration.length < 1 && !loader ? (
-        <CDEmptyState/>
+        <CDEmptyState />
     ) : (
         <div>
             <CompareWithBaseConfig
