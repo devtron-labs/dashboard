@@ -52,7 +52,6 @@ export default function CDDetails(){
     const [showTemplate, setShowTemplate] = useState(false)
    const [baseTimeStamp, setBaseTimeStamp] = useState<string>('')
      const [baseTemplateId, setBaseTemplateId] = useState< number>();
-     const [loader, setLoader] = useState<boolean>(false);
     const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState([]);
    
     useEffect(()=>{
@@ -146,15 +145,12 @@ export default function CDDetails(){
       
     useEffect(() => {
         if(pipelineId){
-        setLoader(true);
         try {
                 getDeploymentTemplateDiff(appId, pipelineId).then((response) => {
                     setDeploymentTemplatesConfiguration(response.result.sort((a, b) => sortCallback('id', b, a)));
-                    setLoader(false);
                 });
         } catch (err) {
             showError(err);
-            setLoader(false);
         }
     }
     }, [pipelineId]);

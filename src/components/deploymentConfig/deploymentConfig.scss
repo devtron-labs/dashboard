@@ -35,6 +35,7 @@
 }
 
 .form__row--code-editor-container{
+    height: 500px;
     border: 1px solid var(--N200);
     display: grid;
     grid-template-rows: 40px 1fr;

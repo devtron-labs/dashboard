@@ -74,7 +74,7 @@ function CompareViewDeployment({
                 setShowTemplate(false);
             }
         };
-    }, []);
+    }, [pipelineId]);
 
     return !deploymentTemplatesConfiguration && deploymentTemplatesConfiguration.length < 1 && !loader ? (
         <CDEmptyState />
