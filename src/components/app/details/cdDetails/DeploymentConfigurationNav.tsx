@@ -8,7 +8,6 @@ interface TemplateConfiguration {
 
 function DeploymentConfigurationNav({ setShowTemplate }: TemplateConfiguration) {
     const match = useRouteMatch();
-    const { path, url } = useRouteMatch();
 
     return (
         <div className="m-20 fs-13 cn-9">
@@ -17,7 +16,7 @@ function DeploymentConfigurationNav({ setShowTemplate }: TemplateConfiguration) 
                 onClick={() => setShowTemplate(true)}
                 className="bcb-1 no-decor bcn-0 cn-9 pl-16 pr-16 pt-12 pb-12 br-4 en-2 bw-1 mb-20 flex content-space cursor"
             >
-                    Deployment template
+                Deployment template
                 <span>
                     <RightArrow className="rotate icon-dim-20" style={{ ['--rotateBy' as any]: '180deg' }} />
                 </span>

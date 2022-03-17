@@ -8,7 +8,6 @@ function DeploymentTemplateHistory({
     baseTemplateConfiguration,
     codeEditorLoading,
 }: DeploymentTemplateHistoryType) {
-    let isTemplateVersionDiff = isDeploymentConfigDiff();
 
     function isDeploymentConfigDiff(): boolean {
         return currentConfiguration?.templateVersion !== baseTemplateConfiguration?.templateVersion;
@@ -21,7 +20,7 @@ function DeploymentTemplateHistory({
         );
     }
 
-    const renderHistoryUpperDiff = (configuration, isBaseTemplate) => {
+    const renderHistoryFieldDiff = (configuration, isBaseTemplate) => {
         const bgColorDeploymentDiff = isDeploymentConfigDiff() ? (isBaseTemplate ? 'bcg-1' : 'bcr-1') : '';
         const bgColorForAppMetricesDiff = isApplicationMetricesDiff() ? (isBaseTemplate ? 'bcg-1' : 'bcr-1') : '';
 
@@ -45,8 +44,8 @@ function DeploymentTemplateHistory({
     return (
         <div>
             <div className="en-2 bw-1 br-4 deployment-diff__upper bcn-0 mt-20 mb-16 mr-20 ml-20 pt-8 pb-8">
-                {renderHistoryUpperDiff(currentConfiguration, false)}
-                {renderHistoryUpperDiff(baseTemplateConfiguration, true)}
+                {renderHistoryFieldDiff(currentConfiguration, false)}
+                {renderHistoryFieldDiff(baseTemplateConfiguration, true)}
             </div>
 
             <div className=" form__row form__row--code-editor-container en-2 bw-1 br-4 mr-20 ml-20">

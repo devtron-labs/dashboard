@@ -13,7 +13,7 @@ import Reload from '../../../Reload/Reload'
 import {
     default as AnsiUp
 } from 'ansi_up';
-import { getTriggerHistory, getTriggerDetails, getCDBuildReport, getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from './service'
+import { getTriggerHistory, getTriggerDetails, getCDBuildReport} from './service'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { cancelPrePostCdTrigger } from '../../service';
 import {Scroller} from '../cIDetails/CIDetails';
@@ -28,13 +28,13 @@ import {History} from '../cIDetails/types'
 import {Moment12HourFormat} from '../../../../config';
 import DeploymentConfigurationNav from './DeploymentConfigurationNav';
 import './cdDetail.scss'
-import CompareViewDeployment from './CompareViewDeployment';
+import CompareViewDeployment from './DeploymentHistoryConfigTabView';
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(["starting", "running", "pending"]);
 
 export default function CDDetails(){
-    const {appId, envId, triggerId, pipelineId} = useParams<{appId, envId, triggerId, pipelineId}>()
+    const {appId, envId, triggerId, pipelineId} = useParams<{appId:string, envId:string, triggerId:string, pipelineId:string}>()
     const [pagination, setPagination] = useState<{offset: number, size: number}>({offset: 0, size : 20})
     const [hasMore, setHasMore] = useState<boolean>(false);
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map());
@@ -156,7 +156,7 @@ export default function CDDetails(){
     return (
         <>
             <div className={`${!showTemplate ? 'ci-details' : ''} ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
-            {!showTemplate && (
+                {!showTemplate && (
                     <>
                         <div className="ci-details__history">
                             {!fullScreenView && (
@@ -166,7 +166,11 @@ export default function CDDetails(){
                                         {Array.from(triggerHistory)
                                             ?.sort(([a], [b]) => b - a)
                                             ?.map(([triggerId, trigger], idx) => (
-                                                <DeploymentCard key={idx} triggerDetails={trigger} />
+                                                <DeploymentCard
+                                                    key={idx}
+                                                    triggerDetails={trigger}
+                                                    setBaseTimeStamp={setBaseTimeStamp}
+                                                />
                                             ))}
                                         {hasMore && <DetectBottom callback={reloadNextAfterBottom} />}
                                     </div>
@@ -222,25 +226,18 @@ export default function CDDetails(){
                     </>
                 )}
 
-                
-
-              <Switch>
-                  {/* //Note: will be picking this later on */}
-                    {/* <Route
-                        path={`${path}/configuration/deployment-template/:compareId`}
-                        render={(props) => (
-                            <CompareViewDeployment showTemplate={showTemplate} setShowTemplate={setShowTemplate}/>
-                        )}
-                    />*/}
-
-                    <Route 
+                <Switch>
+                    <Route
                         path={`${path}/configuration/deployment-template`}
                         render={(props) => (
-                            <CompareViewDeployment showTemplate={showTemplate} setShowTemplate={setShowTemplate}/>
+                            <CompareViewDeployment
+                                showTemplate={showTemplate}
+                                setShowTemplate={setShowTemplate}
+                                baseTimeStamp={baseTimeStamp}
+                            />
                         )}
                     />
                 </Switch>
-              
             </div>
 
             {(scrollToTop || scrollToBottom) && (
@@ -253,9 +250,13 @@ export default function CDDetails(){
     );
 }
 
-const DeploymentCard:React.FC<{triggerDetails: History}> = ({triggerDetails})=>{
+const DeploymentCard:React.FC<{triggerDetails: History; setBaseTimeStamp}> = ({triggerDetails, setBaseTimeStamp})=>{
     const { path } = useRouteMatch()
-    const {triggerId, ...rest} = useParams<{triggerId}>()
+    const {triggerId, ...rest} = useParams<{triggerId: string}>()
+
+    useEffect(()=>{
+        setBaseTimeStamp(triggerDetails.startedOn)
+    })
 
     return (
         <ConditionalWrap
@@ -316,7 +317,7 @@ function Logs({ triggerDetails }) {
     const eventSrcRef = useRef(null);
     const [logs, setLogs] = useState([]);
     const counter = useRef(0)
-    const { pipelineId, envId, appId } = useParams<{pipelineId, envId, appId }>()
+    const { pipelineId, envId, appId } = useParams<{pipelineId: string, envId: string, appId: string }>()
 
     function createMarkup(log) {
         try {
@@ -380,7 +381,7 @@ const TriggerOutput: React.FC<{
     triggerHistory: Map<number, History>;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ fullScreenView, syncState, triggerHistory, setShowTemplate }) => {
-    const { appId, triggerId, envId, pipelineId } = useParams<{appId, triggerId, envId, pipelineId}>();
+    const { appId, triggerId, envId, pipelineId } = useParams<{appId: string, triggerId: string, envId: string, pipelineId: string}>();
     const triggerDetails = triggerHistory.get(+triggerId);
     const [
         triggerDetailsLoading,
@@ -501,7 +502,7 @@ const HistoryLogs: React.FC<{
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ triggerDetails, loading, setShowTemplate }) => {
     let { path } = useRouteMatch();
-    const {appId, pipelineId, triggerId, envId} = useParams<{appId, pipelineId, triggerId, envId}>()
+    const {appId, pipelineId, triggerId, envId} = useParams<{appId: string, pipelineId: string, triggerId: string, envId: string}>()
     const [autoBottomScroll, setAutoBottomScroll] = useState<boolean>(triggerDetails.status.toLowerCase() !== 'succeeded')
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll })
 

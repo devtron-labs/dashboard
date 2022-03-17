@@ -13,8 +13,8 @@ export interface DeploymentTemplateConfiguration {
 
 export interface DeploymentTemplateHistoryType {
     currentConfiguration: DeploymentTemplateConfiguration;
-     baseTemplateConfiguration: DeploymentTemplateConfiguration;
-     codeEditorLoading: boolean;
+    baseTemplateConfiguration: DeploymentTemplateConfiguration;
+    codeEditorLoading: boolean;
 }
 
 export interface DeploymentTemplateDiffRes {
@@ -27,15 +27,23 @@ export interface DeploymentTemplateDiffRes {
     pipelineId: number;
     deploymentStatus: string;
     wfrId: number;
-    workflowType: string
+    workflowType: string;
 }
 
 export interface CompareWithBaseConfiguration {
     deploymentTemplatesConfiguration: DeploymentTemplateDiffRes[];
-    selectedDeploymentTemplate: { label: string; value: string; author: string; status: string ; workflowType: string};
+    selectedDeploymentTemplate: { label: string; value: string; author: string; status: string; workflowType: string };
     setSeletedDeploymentTemplate: (selected) => void;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
-    baseTemplateId: number | string
+    baseTemplateId: number | string;
     setBaseTemplateId: React.Dispatch<React.SetStateAction<string | number>>;
+    baseTimeStamp: string;
+}
 
+export interface DeploymentTemplateOptions {
+    label: string;
+    value: string;
+    author: string;
+    status: string;
+    workflowType: string;
 }

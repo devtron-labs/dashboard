@@ -31,7 +31,7 @@ export const styles = {
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         cursor: 'pointer',
-        padding: 0
+        padding: '0 4px'
     }),
     valueContainer: (base, state) => ({
         ...base,
@@ -40,7 +40,6 @@ export const styles = {
     }),
     indicatorsContainer: (base) => ({
         ...base,
-        // height: '40px',
         padding: 0,
     }),
     dropdownIndicator: (styles) => ({ ...styles, padding: 0 }),

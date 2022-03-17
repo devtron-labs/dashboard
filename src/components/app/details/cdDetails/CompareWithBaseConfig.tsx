@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 import moment from 'moment';
 import { Moment12HourFormat } from '../../../../config';
 import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-forward.svg';
-import { CompareWithBaseConfiguration } from './cd.type';
+import { CompareWithBaseConfiguration, DeploymentTemplateOptions } from './cd.type';
 import { Option, styles } from './cd.utils';
 
 function CompareWithBaseConfig({
@@ -15,23 +15,23 @@ function CompareWithBaseConfig({
     setShowTemplate,
     baseTemplateId,
     setBaseTemplateId,
+    baseTimeStamp,
 }: CompareWithBaseConfiguration) {
     const { url } = useRouteMatch();
     const history = useHistory();
-    const { triggerId, compareId } = useParams<{ triggerId: string; compareId: string }>();
-    const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>('');
+    const { triggerId } = useParams<{ triggerId: string }>();
+    const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>(baseTimeStamp);
     const [comaparedTemplateId, setComparedTemplateId] = useState<number>();
 
-    const deploymentTemplateOption: { label: string; value: string; author: string; status: string; workflowType: string }[] =
-        deploymentTemplatesConfiguration.map((p) => {
-            return {
-                value: String(p.id),
-                label: moment(p.deployedOn).format(Moment12HourFormat),
-                author: p.emailId,
-                status: p.deploymentStatus,
-                workflowType: p.workflowType
-            };
-        });
+    const deploymentTemplateOption: DeploymentTemplateOptions[] = deploymentTemplatesConfiguration.map((p) => {
+        return {
+            value: String(p.id),
+            label: moment(p.deployedOn).format(Moment12HourFormat),
+            author: p.emailId,
+            status: p.deploymentStatus,
+            workflowType: p.workflowType,
+        };
+    });
 
     const onClickTimeStampSelector = (selected: { label: string; value: string }) => {
         handleSelector(selected.value);
@@ -43,9 +43,6 @@ function CompareWithBaseConfig({
             (e) => e.id.toString() === selectedTemplateId.toString(),
         );
         setSeletedDeploymentTemplate(deploymentTemp);
-        // if(compareId){
-        //     history.push(`${url}/${selectedTemplateId}`)
-        // }
     };
 
     useEffect(() => {
@@ -72,19 +69,11 @@ function CompareWithBaseConfig({
         }
     }, [deploymentTemplateOption]);
 
-    // Note: Will be picking later on
-
-    // useEffect(()=>{
-    //    if(compareId){
-    //     setComparedTemplateId(+compareId)
-    //    }
-    // },[compareId])
-
     const renderArrowOfCompareDeployment = () => {
         return (
             <NavLink
                 to={`${url.split('/configuration')[0]}/configuration`}
-                className='flex'
+                className="flex"
                 onClick={(e) => {
                     e.preventDefault();
                     setShowTemplate(false);
@@ -130,9 +119,6 @@ function CompareWithBaseConfig({
     };
     return (
         <div className="border-bottom pl-20 pr-20 flex left bcn-0">
-            {/* <div className="compare-history__border-right flex">
-              
-            </div> */}
             {renderArrowOfCompareDeployment()}
             {renderCompareDeploymentConfig()}
             {renderBaseDeploymentConfig()}
