@@ -54,7 +54,6 @@ export default function CDDetails(){
      const [baseTemplateId, setBaseTemplateId] = useState< number>();
      const [loader, setLoader] = useState<boolean>(false);
     const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState([]);
-    const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>(baseTimeStamp);
    
     useEffect(()=>{
         if(!pathname.includes('/logs')) return
@@ -158,7 +157,7 @@ export default function CDDetails(){
             setLoader(false);
         }
     }
-    }, []);
+    }, [pipelineId]);
 
     function syncState(triggerId: number, triggerDetail: History){
         setTriggerHistory(triggerHistory=>{
@@ -495,7 +494,8 @@ const TriggerOutput: React.FC<{
                                     Source code
                                 </NavLink>
                             </li>
-                            <li className="tab-list__tab">
+                          {triggerDetails.stage == 'DEPLOY' &&   
+                          <li className="tab-list__tab">
                                 <NavLink
                                     replace
                                     className="tab-list__tab-link"
@@ -504,7 +504,7 @@ const TriggerOutput: React.FC<{
                                 >
                                     Configuration
                                 </NavLink>
-                            </li>
+                            </li>}
                             {triggerDetails.stage !== 'DEPLOY' && (
                                 <li className="tab-list__tab">
                                     <NavLink
