@@ -28,22 +28,19 @@ function DeploymentTemplateHistory({ currentConfiguration, baseTemplateConfigura
 
     return (
         <div>
-            {/* {console.log(currentConfiguration?.isAppMetricsEnabled)}
-            {console.log(baseTemplateConfiguration?.isAppMetricsEnabled)} */}
-
             <div className="en-2 bw-1 br-4 deployment-diff__upper bcn-0 mt-20 mb-16 mr-20 ml-20 pt-8 pb-8">
                 <div className="">
                     <div className={`${isTemplateVersionDiff ? 'bcr-1' : ''} pl-16 pr-16 pt-8 pb-8`}>
                         <div className="cn-6">Chart version</div>
                         {currentConfiguration?.templateVersion ? (
-                            <div className="cn-9">{currentConfiguration?.templateVersion}</div>
+                            <div className="cn-9 fs-13">{currentConfiguration?.templateVersion}</div>
                         ) : (
                             <div className=" inline-block"></div>
                         )}
                     </div>
                     <div className={`${isApplicationMetricesDiff ? 'bcr-1' : ''} pl-16 pr-16 pt-8 pb-8`}>
                         <div className="cn-6">Application metrics</div>
-                        <div className="cn-9">{currentConfiguration?.isAppMetricsEnabled ? 'Enabled' : 'Disabled'}</div>
+                        <div className="cn-9 fs-13">{currentConfiguration?.isAppMetricsEnabled ? 'Enabled' : 'Disabled'}</div>
                     </div>
                 </div>
                 <div className="">

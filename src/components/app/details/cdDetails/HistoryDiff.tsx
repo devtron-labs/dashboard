@@ -29,8 +29,12 @@ function HistoryDiff({ currentConfiguration, loader, codeEditorLoading, baseTemp
     //     );
     // };
 
-    const renderRightHistoryConfiguration = () => {
-        return (
+    return (
+        <div className="historical-diff__container">
+            {/* NOTE: removing for the time being, will add when working on other keys as well */}
+
+            {/* { renderLeftHistoryConfiguration()} */}
+            {loader ? <Progressing pageLoader /> : <> 
             <div className="historical-diff__right ci-details__body bcn-1">
                 <Switch>
                     <Route
@@ -45,15 +49,7 @@ function HistoryDiff({ currentConfiguration, loader, codeEditorLoading, baseTemp
                     />
                 </Switch>
             </div>
-        );
-    };
-
-    return (
-        <div className="historical-diff__container">
-            {/* NOTE: removing for the time being, will add when working on other keys as well */}
-
-            {/* { renderLeftHistoryConfiguration()} */}
-            {loader ? <Progressing pageLoader /> : <>{renderRightHistoryConfiguration()}</>}
+        );</>}
         </div>
     );
 }

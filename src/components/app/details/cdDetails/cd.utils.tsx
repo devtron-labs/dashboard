@@ -48,13 +48,6 @@ export function Option(props) {
     return (
         <components.Option {...props}>
             <div className={`flex left pt-8 pb-8 pl-8 pr-8 ${props.isSelected ? 'bcb-1' : ''}`}>
-                {/* {props.isSelected ? (
-                            <div>
-                                <Check className="icon-dim-16 scb-5 mr-8" />
-                            </div>
-                        ) : (
-                            <div className="inline-block icon-dim-16 mr-8"></div>
-                        )} */}
                 <div
                     className={`app-summary__icon icon-dim-22 ${props.data.status
                         .toLocaleLowerCase()

@@ -5,8 +5,8 @@ import { NavLink } from 'react-router-dom';
 import moment from 'moment';
 import { Moment12HourFormat } from '../../../../config';
 import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-forward.svg';
-import {CompareWithBaseConfiguration} from './cd.type'
-import {Option, styles} from './cd.utils';
+import { CompareWithBaseConfiguration } from './cd.type';
+import { Option, styles } from './cd.utils';
 
 function CompareWithBaseConfig({
     deploymentTemplatesConfiguration,
@@ -14,9 +14,8 @@ function CompareWithBaseConfig({
     setSeletedDeploymentTemplate,
     setShowTemplate,
     baseTemplateId,
-    setBaseTemplateId
+    setBaseTemplateId,
 }: CompareWithBaseConfiguration) {
-
     const { url } = useRouteMatch();
     const history = useHistory();
     const { triggerId, compareId } = useParams<{ triggerId: string; compareId: string }>();
@@ -39,7 +38,9 @@ function CompareWithBaseConfig({
     };
 
     const handleSelector = (selectedTemplateId) => {
-        let deploymentTemp = deploymentTemplatesConfiguration.find((e) => e.id.toString() === selectedTemplateId.toString());
+        let deploymentTemp = deploymentTemplatesConfiguration.find(
+            (e) => e.id.toString() === selectedTemplateId.toString(),
+        );
         setSeletedDeploymentTemplate(deploymentTemp);
         // if(compareId){
         //     history.push(`${url}/${selectedTemplateId}`)
@@ -78,41 +79,56 @@ function CompareWithBaseConfig({
     //    }
     // },[compareId])
 
-    return (
-        <div className="border-bottom pl-20 pr-20 flex left bcn-0">
-            <div className="border-right flex">
-                <NavLink
-                    to={`${url.split('/configuration')[0]}/configuration`}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        setShowTemplate(false);
-                        history.push(`${url.split('/configuration')[0]}/configuration`);
-                    }}
-                >
-                    <LeftIcon className="rotate icon-dim-24 mr-16" style={{ ['--rotateBy' as any]: '180deg' }} />
-                </NavLink>
-                <div className="pt-12 pb-12 pl-16 border-left pr-16">
-                    <div className="cn-6 lh-1-43 ">Compare with</div>
-                    <div style={{ minWidth: '200px' }}>
-                        <ReactSelect
-                            placeholder="Select Timestamp"
-                            isSearchable={false}
-                            styles={styles}
-                            onChange={onClickTimeStampSelector}
-                            options={deploymentTemplateOption}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option: Option
-                            }}
-                            value={selectedDeploymentTemplate || deploymentTemplateOption[0]}
-                        />
-                    </div>
+    const renderArrowofCompareDeployment = () => {
+        <NavLink
+            to={`${url.split('/configuration')[0]}/configuration`}
+            onClick={(e) => {
+                e.preventDefault();
+                setShowTemplate(false);
+                history.push(`${url.split('/configuration')[0]}/configuration`);
+            }}
+        >
+            <LeftIcon className="rotate icon-dim-24 mr-16" style={{ ['--rotateBy' as any]: '180deg' }} />
+        </NavLink>;
+    };
+
+    const renderCompareDeploymentConfig = () => {
+        return (
+            <div className="pt-12 pb-12 pl-16 compare-history__border-left pr-16">
+                <div className="cn-6 lh-1-43 ">Compare with</div>
+                <div style={{ minWidth: '200px' }}>
+                    <ReactSelect
+                        placeholder="Select Timestamp"
+                        isSearchable={false}
+                        styles={styles}
+                        onChange={onClickTimeStampSelector}
+                        options={deploymentTemplateOption}
+                        components={{
+                            IndicatorSeparator: null,
+                            Option: Option,
+                        }}
+                        value={selectedDeploymentTemplate || deploymentTemplateOption[0]}
+                    />
                 </div>
             </div>
-            <div className="pt-12 pb-12 pl-16 pr-16">
-                <span className="cn-6">Base configuration</span>
-                <div className="cn-9">{baseTemplateTimeStamp && moment(baseTemplateTimeStamp).format(Moment12HourFormat)}</div>
+        );
+    };
+
+    const renderBaseDeploymentConfig = () => {
+        <div className="pt-12 pb-12 pl-16 pr-16">
+            <span className="cn-6">Base configuration</span>
+            <div className="cn-9">
+                {baseTemplateTimeStamp && moment(baseTemplateTimeStamp).format(Moment12HourFormat)}
             </div>
+        </div>;
+    };
+    return (
+        <div className="border-bottom pl-20 pr-20 flex left bcn-0">
+            <div className="compare-history__border-right flex">
+                {renderArrowofCompareDeployment()}
+                {renderCompareDeploymentConfig()}
+            </div>
+            {renderBaseDeploymentConfig()}
         </div>
     );
 }

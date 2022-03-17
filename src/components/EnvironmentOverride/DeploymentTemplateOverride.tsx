@@ -301,7 +301,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
 
 function NameSpace({ originalNamespace = "", chartRefId, id }) {
     const [loading, setLoading] = useState(false)
-    const { appId, envId } = useParams<{appId, envId}>()
+    const { appId, envId } = useParams<{appId: string, envId: string}>()
     const [namespace, setNamespace] = useState(originalNamespace)
     useEffect(() => {
         setNamespace(originalNamespace)
