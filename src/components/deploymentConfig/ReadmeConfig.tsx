@@ -57,8 +57,7 @@ function ReadmeConfig({ readme, value, handleClose, loading, onChange, schema, r
                     <CodeEditor
                         value={value}
                         defaultValue={defaultValue}
-                        height={100}
-                        heightUnit="%"
+                        height={"calc(100% - 42px)"}
                         readOnly={readOnly}
                         validatorSchema={schema}
                         onChange={setTempForm}
