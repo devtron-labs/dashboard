@@ -21,7 +21,7 @@ export async function fetchChartVersionsData(
         if (isExternal) {
             const specificVersion = result.find((e) => e.version === currentChartVersion);
             if (specificVersion) {
-                selectVersion(specificVersion.id);
+                selectVersion && selectVersion(specificVersion.id);
                 setSelectedVersionUpdatePage(specificVersion);
             } else {
                 setSelectedVersionUpdatePage(result[0]);
@@ -55,6 +55,7 @@ export async function getChartValuesList(
             });
         }
     } catch (err) {
+        showError(err);
     } finally {
         setLoading && setLoading(false);
     }
@@ -71,6 +72,8 @@ export async function getChartRelatedReadMe(
         setActiveReadMe(result.readme);
         setFetchingReadMe(false);
     } catch (err) {
+        showError(err);
+    } finally {
         setFetchingReadMe(false);
     }
 }

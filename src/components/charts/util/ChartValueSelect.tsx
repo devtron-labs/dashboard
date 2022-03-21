@@ -37,16 +37,22 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
         </div>
     }
 
+    getChartValueLabel(selectedChartValue: ChartValuesType): string {
+        return selectedChartValue
+            ? `${selectedChartValue.name}${
+                  this.props.hideVersionFromLabel || !selectedChartValue.chartVersion
+                      ? ''
+                      : ` (${selectedChartValue.chartVersion})`
+              }`
+            : 'Select Chart Value';
+    }
+
     render() {
         let chartValuesList = this.props.chartValuesList;
         let chartValues = getChartValuesFiltered(this.props.chartValuesList);
         let selectedChartValue = chartValuesList.find(chartValue => this.props.chartValues.id === chartValue.id && chartValue.kind === this.props.chartValues.kind);
-        let label = "Select Chart Value";
-        if (selectedChartValue) {
-            label = `${selectedChartValue.name}${
-                this.props.hideVersionFromLabel ? '' : ` (${selectedChartValue.chartVersion})`
-            }`;
-        }
+        const label = this.getChartValueLabel(selectedChartValue);
+
         return <>
             <Select tabIndex={this.props.tabIndex || 0}
                 rootClassName="select-button--default"
@@ -77,7 +83,9 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                     {chartValues.existingChartValues.length ? chartValues.existingChartValues.map((chartValue) => {
                         return <Select.Option key={chartValue.id} value={chartValue}>
                                           {`${chartValue.name}${
-                                              this.props.hideVersionFromLabel ? '' : ` (${chartValue.chartVersion})`
+                                              this.props.hideVersionFromLabel || !chartValue.chartVersion
+                                                  ? ''
+                                                  : ` (${chartValue.chartVersion})`
                                           }`}
                     </Select.Option>
                     }) : this.renderNoResultsOption()}

@@ -68,5 +68,6 @@ export interface ChartValuesEditorType {
     onChange: (value: string) => void;
     repoChartValue: ChartRepoOtions;
     hasChartChanged: boolean;
-    editorRef?: React.MutableRefObject<any>;
+    parentRef: React.MutableRefObject<any>;
+    autoFocus: boolean;
 }

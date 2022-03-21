@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useHistory, useRouteMatch } from 'react-router';
 import { toast } from 'react-toastify';
 import { showError, Progressing, ErrorScreenManager } from '../../../common';
@@ -51,6 +51,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
     const [selectedVersion, selectVersion] = useState<any>();
     const [selectedVersionUpdatePage, setSelectedVersionUpdatePage] = useState<ChartVersionType>();
     const [chartValues, setChartValues] = useState<any>({});
+    const deployChartRef = useRef<HTMLDivElement>(null);
 
     // component load
     useEffect(() => {
@@ -58,31 +59,34 @@ function ExternalAppValues({ appId }: { appId: string }) {
             .then((releaseInfoResponse: ReleaseInfoResponse) => {
                 let _releaseInfo = releaseInfoResponse.result.releaseInfo;
                 setReleaseInfo(_releaseInfo);
-                setRepoChartValue({
-                    appStoreApplicationVersionId: 0,
-                    chartRepoName: '',
-                    chartId: 0,
-                    chartName: _releaseInfo.deployedAppDetail.chartName,
-                    version: _releaseInfo.deployedAppDetail.chartVersion,
-                    deprecated: false,
-                });
 
-                const _chartVersionData = {
-                    id: 0,
-                    version: _releaseInfo.deployedAppDetail.chartVersion,
-                };
+                if (!releaseInfoResponse.result.installedAppInfo) {
+                    setRepoChartValue({
+                        appStoreApplicationVersionId: 0,
+                        chartRepoName: '',
+                        chartId: 0,
+                        chartName: _releaseInfo.deployedAppDetail.chartName,
+                        version: _releaseInfo.deployedAppDetail.chartVersion,
+                        deprecated: false,
+                    });
 
-                setSelectedVersionUpdatePage(_chartVersionData);
-                setChartVersionsData([_chartVersionData]);
+                    const _chartVersionData = {
+                        id: 0,
+                        version: _releaseInfo.deployedAppDetail.chartVersion,
+                    };
 
-                const _chartValues = {
-                    id: 0,
-                    kind: 'EXISTING',
-                    name: _releaseInfo.deployedAppDetail.chartName,
-                };
+                    setSelectedVersionUpdatePage(_chartVersionData);
+                    setChartVersionsData([_chartVersionData]);
 
-                setChartValues(_chartValues);
-                setChartValuesList([_chartValues]);
+                    const _chartValues = {
+                        id: 0,
+                        kind: 'EXISTING',
+                        name: _releaseInfo.deployedAppDetail.chartName,
+                    };
+
+                    setChartValues(_chartValues);
+                    setChartValuesList([_chartValues]);
+                }
                 setInstalledAppInfo(releaseInfoResponse.result.installedAppInfo);
                 setModifiedValuesYaml(YAML.stringify(JSON.parse(_releaseInfo.mergedValues)));
                 setIsLoading(false);
@@ -108,16 +112,16 @@ function ExternalAppValues({ appId }: { appId: string }) {
         );
         getChartValuesList(
             event.chartId,
-            (_chartVluesList) => {
+            (_chartValuesList) => {
                 if (!installedAppInfo) {
-                    _chartVluesList?.push({
+                    _chartValuesList?.push({
                         id: 0,
                         kind: 'EXISTING',
                         name: releaseInfo.deployedAppDetail.chartName,
                     });
                 }
 
-                setChartValuesList(_chartVluesList);
+                setChartValuesList(_chartValuesList);
             },
             setChartValues,
         );
@@ -216,7 +220,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
                     selectedVersionUpdatePage={selectedVersionUpdatePage}
                 />
                 <div className="deploy-chart-body">
-                    <div className="overflown">
+                    <div className="overflown" ref={deployChartRef}>
                         <div className="hide-scroll">
                             <label className="form__row form__row--w-100">
                                 <span className="form__label">Release Name</span>
@@ -258,7 +262,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
                                     chartValuesList={chartValuesList}
                                     chartValues={chartValues}
                                     setChartValues={setChartValues}
-                                    hideVersionFromLabel={!installedAppInfo}
+                                    hideVersionFromLabel={!installedAppInfo && chartValues.kind === 'EXISTING'}
                                 />
                             )}
                             <ChartValuesEditor
@@ -266,6 +270,8 @@ function ExternalAppValues({ appId }: { appId: string }) {
                                 onChange={OnEditorValueChange}
                                 repoChartValue={repoChartValue}
                                 hasChartChanged={!!repoChartValue?.chartRepoName}
+                                parentRef={deployChartRef}
+                                autoFocus={!!installedAppInfo}
                             />
                         </div>
                     </div>

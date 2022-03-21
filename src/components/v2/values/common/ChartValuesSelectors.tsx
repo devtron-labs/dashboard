@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ReactSelect, { components } from 'react-select';
 import AsyncSelect from 'react-select/async';
 import { menuList } from '../../../charts/charts.util';
@@ -52,7 +52,6 @@ export const ChartEnvironmentSelector = ({
                           '__' +
                           releaseInfo.deployedAppDetail.environmentDetail.namespace
                 }`}
-                autoFocus
                 disabled={true}
             />
         </label>
@@ -95,10 +94,15 @@ export const ChartRepoSelector = ({
 
     async function handleRepoChartFocus(refetch: boolean) {
         if (!repoChartAPIMade || refetch) {
-            const matchedCharts = (await getChartsByKeyword(chartDetails.chartName)).result;
-            filterMatchedCharts(matchedCharts);
-            setRepoChartAPIMade(true);
-            setRefetchingCharts(false);
+            try {
+                const { result } = await getChartsByKeyword(chartDetails.chartName);
+                filterMatchedCharts(result);
+            } catch (e) {
+                filterMatchedCharts([]);
+            } finally {
+                setRepoChartAPIMade(true);
+                setRefetchingCharts(false);
+            }
         }
     }
 
@@ -125,8 +129,12 @@ export const ChartRepoSelector = ({
     }
 
     async function repoChartLoadOptions(inputValue: string, callback) {
-        const matchedCharts = (await getChartsByKeyword(inputValue)).result;
-        callback(filterMatchedCharts(matchedCharts));
+        try {
+            const { result } = await getChartsByKeyword(inputValue);
+            callback(filterMatchedCharts(result));
+        } catch (err) {
+            callback(filterMatchedCharts([]));
+        }
     }
 
     function repoChartSelectOptionLabel({ chartRepoName, chartName, version }: ChartRepoDetailsType) {
@@ -159,26 +167,10 @@ export const ChartRepoSelector = ({
                         bottom: '-4px',
                     }}
                 >
-                    <div
-                        className="flex"
-                        style={{
-                            backgroundColor: '#F3F0FF',
-                            justifyContent: 'flex-start',
-                            padding: '10px 12px',
-                            margin: '8px 8px',
-                            borderRadius: '4px',
-                        }}
-                    >
+                    <div className="flex sticky-information__bottom">
                         <Info className="code-editor__information-info-icon" />
                         Unable to find the desired chart? To connect a chart repo or Re-sync connected repos.&nbsp;
-                        <NavLink
-                            to={URLS.GLOBAL_CONFIG_CHART}
-                            style={{
-                                color: 'var(--B500)',
-                            }}
-                        >
-                            Go to chart repository
-                        </NavLink>
+                        <NavLink to={URLS.GLOBAL_CONFIG_CHART}>Go to chart repository</NavLink>
                     </div>
                 </div>
             </components.MenuList>
@@ -369,9 +361,7 @@ const ChartValuesSelector = ({
                 chartValuesList={chartValuesList}
                 chartValues={chartValues}
                 redirectToChartValues={redirectToChartValues}
-                onChange={(event) => {
-                    setChartValues(event);
-                }}
+                onChange={setChartValues}
                 hideVersionFromLabel={hideVersionFromLabel}
             />
         </div>
@@ -452,10 +442,26 @@ export const ChartValuesEditor = ({
     onChange,
     repoChartValue,
     hasChartChanged,
-    editorRef,
+    parentRef,
+    autoFocus,
 }: ChartValuesEditorType) => {
+    const editorRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        // scroll to the editor view with animation for only update-chart
+        // subtracting - 100 from offset top because of floating header's tab
+        if (autoFocus && parentRef?.current && editorRef?.current) {
+            setTimeout(() => {
+                parentRef.current.scrollTo({
+                    top: editorRef.current.offsetTop - 100,
+                    behavior: 'smooth',
+                });
+            }, 1000);
+        }
+    }, []);
+
     return (
-        <div className="code-editor-container" {...(editorRef && { ref: editorRef })}>
+        <div className="code-editor-container" ref={editorRef}>
             <CodeEditor value={valuesText} noParsing mode="yaml" onChange={onChange}>
                 <CodeEditor.Header>
                     <span className="bold">values.yaml</span>

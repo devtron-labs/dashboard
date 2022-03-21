@@ -99,7 +99,6 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const { chartId, envId } = useParams<{ chartId; envId }>();
     const [showCodeEditorError, setCodeEditorError] = useState(false);
     const deployChartForm = useRef(null);
-    const deployChartEditor = useRef(null);
     const history = useHistory();
     const { url } = useRouteMatch();
 
@@ -189,18 +188,6 @@ const DeployChart: React.FC<DeployChartProps> = ({
             setLoading(false);
         }
     };
-    useEffect(() => {
-        // scroll to the editor view with animation for only update-chart
-        // subtracting - 100 from offset top because of floating header's tab
-        if (envId) {
-            setTimeout(() => {
-                deployChartForm.current?.scrollTo({
-                    top: deployChartEditor.current.offsetTop - 100,
-                    behavior: 'smooth',
-                });
-            }, 1000);
-        }
-    }, []);
 
     useEffect(() => {
         if (chartId) {
@@ -449,7 +436,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 onChange={setTextRef}
                                 repoChartValue={repoChartValue}
                                 hasChartChanged={hasChartChanged()}
-                                editorRef={deployChartEditor}
+                                parentRef={deployChartForm}
+                                autoFocus={!!envId}
                             />
                         </div>
                     </div>
