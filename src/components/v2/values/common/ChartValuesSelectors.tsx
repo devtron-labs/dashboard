@@ -17,6 +17,8 @@ import {
     ChartVersionSelectorType,
     ChartValuesSelectorType,
     ChartVersionValuesSelectorType,
+    ChartValuesEditorType,
+    ChartRepoDetailsType,
 } from './chartValuesSelectors.type';
 import { getChartsByKeyword } from '../../../charts/charts.service';
 import { ChartRepoOtions } from '../DeployChart';
@@ -125,11 +127,11 @@ export const ChartRepoSelector = ({
         callback(filterMatchedCharts(matchedCharts));
     }
 
-    function repoChartSelectOptionLabel({ chartRepoName, chartName, version }) {
+    function repoChartSelectOptionLabel({ chartRepoName, chartName, version }: ChartRepoDetailsType) {
         return <div>{!chartRepoName ? `${chartName} (${version})` : `${chartRepoName}/${chartName}`}</div>;
     }
 
-    function repoChartOptionLabel(props) {
+    function repoChartOptionLabel(props: any) {
         const { innerProps, innerRef } = props;
         const isCurrentlySelected = props.data.chartId === repoChartValue.chartId;
         return (
@@ -145,7 +147,7 @@ export const ChartRepoSelector = ({
         );
     }
 
-    function customMenuListItem(props): JSX.Element {
+    function customMenuListItem(props: any): JSX.Element {
         return (
             <components.MenuList {...props}>
                 {props.children}
@@ -472,13 +474,7 @@ export const ChartValuesEditor = ({
     repoChartValue,
     hasChartChanged,
     editorRef,
-}: {
-    valuesText: string;
-    onChange: (value: string) => void;
-    repoChartValue: ChartRepoOtions;
-    hasChartChanged: boolean;
-    editorRef?: React.MutableRefObject<any>;
-}) => {
+}: ChartValuesEditorType) => {
     return (
         <div className="code-editor-container" {...(editorRef && { ref: editorRef })}>
             <CodeEditor value={valuesText} noParsing mode="yaml" onChange={onChange}>

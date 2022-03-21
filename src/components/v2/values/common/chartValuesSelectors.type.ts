@@ -16,9 +16,15 @@ export interface ChartEnvironmentSelectorType extends ChartSelectorType {
     environments?: any[];
 }
 
+export interface ChartRepoDetailsType {
+    chartRepoName: string;
+    chartName: string;
+    version: string;
+}
+
 export interface ChartRepoSelectorType extends ChartSelectorType {
     repoChartValue?: ChartRepoOtions;
-    repoChartSelectOptionLabel?: ({ chartRepoName, chartName }) => JSX.Element;
+    repoChartSelectOptionLabel?: (chartRepoDetails: ChartRepoDetailsType) => JSX.Element;
     handleRepoChartValueChange?: (event: any) => void;
     repoChartOptionLabel?: (props: any) => JSX.Element;
     chartDetails?: ChartRepoOtions;
@@ -42,13 +48,13 @@ export interface ChartVersionSelectorType {
     selectVersion: React.Dispatch<React.SetStateAction<number>>;
     chartVersionObj?: any;
     versions?: Map<number, VersionType>;
-    selectedVersionUpdatePage: any;
+    selectedVersionUpdatePage: VersionType;
     setSelectedVersionUpdatePage: React.Dispatch<React.SetStateAction<VersionType>>;
     chartVersionsData: VersionType[];
 }
 
 export interface ChartValuesSelectorType {
-    chartValuesList: any[];
+    chartValuesList: ChartValuesType[];
     chartValues: ChartValuesType;
     setChartValues: React.Dispatch<React.SetStateAction<ChartValuesType>>;
     redirectToChartValues?: () => Promise<void>;
@@ -56,3 +62,11 @@ export interface ChartValuesSelectorType {
 }
 
 export interface ChartVersionValuesSelectorType extends ChartVersionSelectorType, ChartValuesSelectorType {}
+
+export interface ChartValuesEditorType {
+    valuesText: string;
+    onChange: (value: string) => void;
+    repoChartValue: ChartRepoOtions;
+    hasChartChanged: boolean;
+    editorRef?: React.MutableRefObject<any>;
+}
