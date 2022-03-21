@@ -298,7 +298,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                 defaultValue={activeTab === 'Compare' && desiredManifest}
                                 diffView={activeTab === 'Compare'}
                                 theme="vs-dark--dt"
-                                height={700}
+                                height={"100vh"}
                                 value={activeManifestEditorData}
                                 mode="yaml"
                                 readOnly={activeTab !== 'Live manifest' || !isEditmode}

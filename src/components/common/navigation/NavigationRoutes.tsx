@@ -31,38 +31,40 @@ export default function NavigationRoutes() {
     const [pageOverflowEnabled, setPageOverflowEnabled] = useState<boolean>(true);
 
     useEffect(() => {
-        const loginInfo = getLoginInfo()
-        if (!loginInfo) return
-        if (process.env.NODE_ENV !== 'production' || !window._env_ || (window._env_ && !window._env_.SENTRY_ENABLED)) return
-        Sentry.configureScope(function (scope) {
-            scope.setUser({ email: loginInfo['email'] || loginInfo['sub'] });
-        });
-
-        if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.GA_ENABLED) {
-            let email = loginInfo ? loginInfo['email'] || loginInfo['sub'] : "";
-            let path = location.pathname;
-            ReactGA.initialize(window._env_.GA_TRACKING_ID, {
-                debug: false,
-                titleCase: false,
-                gaOptions: {
-                    userId: `${email}`
-                }
-            });
-            ReactGA.pageview(`${path}`);
-            ReactGA.event({
-                category: `Page ${path}`,
-                action: 'First Land'
-            });
-            history.listen((location) => {
+        const loginInfo = getLoginInfo();
+        if (!loginInfo) return;
+        if (process.env.NODE_ENV === 'production' && window._env_) {
+            if (window._env_.SENTRY_ENABLED) {
+                Sentry.configureScope(function (scope) {
+                    scope.setUser({ email: loginInfo['email'] || loginInfo['sub'] });
+                });
+            }
+            if (window._env_.GA_ENABLED) {
+                let email = loginInfo ? loginInfo['email'] || loginInfo['sub'] : '';
                 let path = location.pathname;
-                path = path.replace(new RegExp("[0-9]", "g"), "");
-                path = path.replace(new RegExp("//", "g"), "/");
+                ReactGA.initialize(window._env_.GA_TRACKING_ID, {
+                    debug: false,
+                    titleCase: false,
+                    gaOptions: {
+                        userId: `${email}`,
+                    },
+                });
                 ReactGA.pageview(`${path}`);
                 ReactGA.event({
                     category: `Page ${path}`,
-                    action: 'First Land'
+                    action: 'First Land',
                 });
-            })
+                history.listen((location) => {
+                    let path = location.pathname;
+                    path = path.replace(new RegExp('[0-9]', 'g'), '');
+                    path = path.replace(new RegExp('//', 'g'), '/');
+                    ReactGA.pageview(`${path}`);
+                    ReactGA.event({
+                        category: `Page ${path}`,
+                        action: 'First Land',
+                    });
+                });
+            }
         }
     }, [])
 
