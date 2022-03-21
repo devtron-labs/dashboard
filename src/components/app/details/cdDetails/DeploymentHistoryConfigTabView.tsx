@@ -12,7 +12,7 @@ import {
 } from './cd.type';
 import CDEmptyState from './CDEmptyState';
 
-function CompareViewDeployment({
+function DeploymentHistoryConfigTabView({
     showTemplate,
     setShowTemplate,
     baseTimeStamp,
@@ -106,4 +106,4 @@ function CompareViewDeployment({
     );
 }
 
-export default CompareViewDeployment;
+export default DeploymentHistoryConfigTabView;
