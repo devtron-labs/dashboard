@@ -282,7 +282,6 @@ const DeploymentCard:React.FC<{triggerDetails: History; setBaseTimeStamp; baseTi
 
     useEffect(()=>{
         setBaseTimeStamp(triggerDetails.startedOn)
-        console.log(baseTimeStamp)
     },[triggerId])
 
     return (

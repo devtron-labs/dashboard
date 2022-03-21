@@ -4,11 +4,7 @@ import CompareWithBaseConfig from './CompareWithBaseConfig';
 import HistoryDiff from './HistoryDiff';
 import { getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from './service';
 import { useParams } from 'react-router';
-import {
-    DeploymentTemplateConfiguration,
-    DeploymentTemplateOptions,
-    CompareViewDeploymentType,
-} from './cd.type';
+import { DeploymentTemplateConfiguration, DeploymentTemplateOptions, CompareViewDeploymentType } from './cd.type';
 import CDEmptyState from './CDEmptyState';
 
 function DeploymentHistoryConfigTabView({
@@ -29,11 +25,6 @@ function DeploymentHistoryConfigTabView({
     const [loader, setLoader] = useState<boolean>(false);
     const [codeEditorLoading, setCodeEditorLoading] = useState<boolean>(false);
 
-
-    useEffect(()=>{
-        console.log('dhc', baseTimeStamp)
-    },[baseTimeStamp])
-    
     useEffect(() => {
         setLoader(true);
         if (selectedDeploymentTemplate) {
