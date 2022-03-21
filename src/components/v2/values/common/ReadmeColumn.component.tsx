@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactGA from 'react-ga';
-import { DropdownIcon, Page } from '../../../common';
+import { DropdownIcon, Page, Progressing } from '../../../common';
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails';
 import '../../../charts/modal/DeployChart.scss';
 
-function ReadmeColumn({ readmeCollapsed, toggleReadmeCollapsed, readme, ...props }) {
+function ReadmeColumn({ readmeCollapsed, toggleReadmeCollapsed, readme, loading = false, ...props }) {
 
     return (
         <div className="deploy-chart__readme-column">
-            <MarkDown markdown={readme} className="deploy-chart__readme-markdown" />
+            {loading && !readmeCollapsed ? (
+                <Progressing pageLoader />
+            ) : (
+                <MarkDown markdown={readme} className="deploy-chart__readme-markdown" />
+            )}
             <aside className="flex column" onClick={readme ? (e) => {
                 if (readmeCollapsed) {
                     ReactGA.event({

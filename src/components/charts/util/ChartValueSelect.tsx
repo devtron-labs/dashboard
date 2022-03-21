@@ -10,6 +10,7 @@ export interface ChartValuesSelectProps {
     tabIndex?: number;
     chartValues: ChartValuesType;
     chartValuesList: ChartValuesType[];
+    hideVersionFromLabel?: boolean;
 }
 
 export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
@@ -42,7 +43,9 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
         let selectedChartValue = chartValuesList.find(chartValue => this.props.chartValues.id === chartValue.id && chartValue.kind === this.props.chartValues.kind);
         let label = "Select Chart Value";
         if (selectedChartValue) {
-            label = `${selectedChartValue.name} (${selectedChartValue.chartVersion})`
+            label = `${selectedChartValue.name}${
+                this.props.hideVersionFromLabel ? '' : ` (${selectedChartValue.chartVersion})`
+            }`;
         }
         return <>
             <Select tabIndex={this.props.tabIndex || 0}
@@ -73,7 +76,9 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                 <Select.OptGroup label="EXISTING" key={"EXISTING"}>
                     {chartValues.existingChartValues.length ? chartValues.existingChartValues.map((chartValue) => {
                         return <Select.Option key={chartValue.id} value={chartValue}>
-                            {chartValue.name} ({chartValue.chartVersion})
+                                          {`${chartValue.name}${
+                                              this.props.hideVersionFromLabel ? '' : ` (${chartValue.chartVersion})`
+                                          }`}
                     </Select.Option>
                     }) : this.renderNoResultsOption()}
                 </Select.OptGroup>
