@@ -64,6 +64,7 @@ export interface ChartValuesSelectorType {
 export interface ChartVersionValuesSelectorType extends ChartVersionSelectorType, ChartValuesSelectorType {}
 
 export interface ChartValuesEditorType {
+    loading: boolean;
     valuesText: string;
     onChange: (value: string) => void;
     repoChartValue: ChartRepoOtions;

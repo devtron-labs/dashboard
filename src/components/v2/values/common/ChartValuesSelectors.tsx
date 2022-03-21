@@ -437,6 +437,7 @@ export const ActiveReadmeColumn = ({
 };
 
 export const ChartValuesEditor = ({
+    loading,
     valuesText,
     onChange,
     repoChartValue,
@@ -461,7 +462,7 @@ export const ChartValuesEditor = ({
 
     return (
         <div className="code-editor-container" ref={editorRef}>
-            <CodeEditor value={valuesText} noParsing mode="yaml" onChange={onChange}>
+            <CodeEditor value={valuesText} noParsing mode="yaml" onChange={onChange} loading={loading}>
                 <CodeEditor.Header>
                     <span className="bold">values.yaml</span>
                 </CodeEditor.Header>

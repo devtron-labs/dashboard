@@ -83,6 +83,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const [forceDeleteDialogMessage, setForceDeleteErrorMessage] = useState('');
     const [forceDeleteDialogTitle, setForceDeleteErroTitle] = useState('');
     const [textRef, setTextRef] = useState(rawValues);
+    const [fetchingValuesYaml, setFetchingValuesYaml] = useState(false);
     const [repoChartValue, setRepoChartValue] = useState<ChartRepoOtions>({
         appStoreApplicationVersionId: appStoreVersion,
         chartRepoName: chartName,
@@ -239,6 +240,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
 
     useEffect(() => {
         if (chartValues.id && chartValues.chartVersion) {
+            setFetchingValuesYaml(true);
             getChartValues(chartValues.id, chartValues.kind)
                 .then((response) => {
                     let values = response.result.values || '';
@@ -247,9 +249,12 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     if (chartValues && cv && cv.version !== chartValues.chartVersion) {
                         setCodeEditorError(true);
                     } else setCodeEditorError(false);
+
+                    setFetchingValuesYaml(false);
                 })
                 .catch((error) => {
                     showError(error);
+                    setFetchingValuesYaml(false);
                 });
         }
     }, [chartValues]);
@@ -432,6 +437,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 setChartValues={setChartValues}
                             />
                             <ChartValuesEditor
+                                loading={fetchingValuesYaml}
                                 valuesText={textRef}
                                 onChange={setTextRef}
                                 repoChartValue={repoChartValue}

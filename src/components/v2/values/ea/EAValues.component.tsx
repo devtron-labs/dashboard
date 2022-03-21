@@ -37,6 +37,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
     const { url } = useRouteMatch();
 
     const [isLoading, setIsLoading] = useState(true);
+    const [fetchingValuesYaml, setFetchingValuesYaml] = useState(false);
     const [isUpdateInProgress, setUpdateInProgress] = useState(false);
     const [isDeleteInProgress, setDeleteInProgress] = useState(false);
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
@@ -101,6 +102,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
 
     useEffect(() => {
         if (releaseInfo && chartValues) {
+            setFetchingValuesYaml(true);
             if (
                 chartValues.id &&
                 chartValues.chartVersion &&
@@ -109,12 +111,15 @@ function ExternalAppValues({ appId }: { appId: string }) {
                 getChartValues(chartValues.id, chartValues.kind)
                     .then((response) => {
                         setModifiedValuesYaml(response.result.values || '');
+                        setFetchingValuesYaml(false);
                     })
                     .catch((error) => {
                         showError(error);
+                        setFetchingValuesYaml(false);
                     });
             } else if (releaseInfo.mergedValues && releaseInfo.deployedAppDetail.appName === chartValues.name) {
                 setModifiedValuesYaml(YAML.stringify(JSON.parse(releaseInfo?.mergedValues)));
+                setFetchingValuesYaml(false);
             }
         }
     }, [chartValues]);
@@ -294,6 +299,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
                                 />
                             )}
                             <ChartValuesEditor
+                                loading={fetchingValuesYaml}
                                 valuesText={modifiedValuesYaml}
                                 onChange={OnEditorValueChange}
                                 repoChartValue={repoChartValue}
