@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Select, showError, mapByKey, Progressing, VisibleModal, useAsync, useKeyDown, Info, Pencil, useSize } from '../common'
+import { Select, showError, mapByKey, Progressing, VisibleModal, useAsync, useKeyDown, Info, Pencil } from '../common'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { getEnvironmentListMin } from '../../services/service'
 import { ChartGroupEntry, AdvancedConfigHelpers, ChartValuesNativeType, ChartVersionType } from './charts.types'
@@ -274,7 +274,6 @@ export default AdvancedConfig
 
 function ReadmeCharts({ readme, valuesYaml, onChange, handleClose, chart }) {
     const key = useKeyDown()
-    const { target, height, width } = useSize()
     useEffect(() => {
         if (key.join().includes('Escape')) {
             handleClose()
@@ -283,7 +282,7 @@ function ReadmeCharts({ readme, valuesYaml, onChange, handleClose, chart }) {
     return (
         <div className="advanced-config__readme">
             <h3>{chart.chartMetaData.chartName}</h3>
-            <div ref={target} className="readme-config-container">
+            <div className="readme-config-container">
                 <div className="readme-config--header">
                     <h5 className="flex left">Readme.md</h5>
                     <h5 className="flex left">
@@ -301,7 +300,7 @@ function ReadmeCharts({ readme, valuesYaml, onChange, handleClose, chart }) {
                             mode="yaml"
                             noParsing
                             readOnly={!onChange}
-                            height={height}
+                            height={"100%"}
                             onChange={onChange ? valuesYaml => onChange(valuesYaml) : () => { }}
                         />
                     </div>
@@ -318,7 +317,6 @@ function ValuesDiffViewer({ chartName, appName, valuesYaml, selectedChartValue, 
     const [versionId, setVersionId] = useState(selectedChartValue.id);
     const [kind, setKind] = useState(originalKind);
     const [originalValuesYaml, setOriginalValuesYaml] = useState("");
-    const { target, height, width } = useSize();
 
     const { DEFAULT, TEMPLATE, DEPLOYED } = availableChartValues.reduce((agg, { kind, values }) => {
         agg[kind] = values
@@ -388,7 +386,7 @@ function ValuesDiffViewer({ chartName, appName, valuesYaml, selectedChartValue, 
                         <Pencil style={{ marginLeft: 'auto' }} />
                     </h5>
                 </div>
-                <div ref={target} className="readme-config--body" style={{ gridTemplateColumns: '1fr' }}>
+                <div className="readme-config--body" style={{ gridTemplateColumns: '1fr' }}>
                     <CodeEditor
                         defaultValue={originalValuesYaml}
                         value={valuesYaml}
@@ -396,7 +394,7 @@ function ValuesDiffViewer({ chartName, appName, valuesYaml, selectedChartValue, 
                         noParsing
                         loading={loading && !originalValuesYaml}
                         readOnly={!onChange}
-                        height={height}
+                        height={"100%"}
                         diffView
                         onChange={onChange ? valuesYaml => onChange(valuesYaml) : () => { }}
                     >
