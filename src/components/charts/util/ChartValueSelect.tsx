@@ -37,21 +37,17 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
         </div>
     }
 
-    getChartValueLabel(selectedChartValue: ChartValuesType): string {
-        return selectedChartValue
-            ? `${selectedChartValue.name}${
-                  this.props.hideVersionFromLabel || !selectedChartValue.chartVersion
-                      ? ''
-                      : ` (${selectedChartValue.chartVersion})`
-              }`
-            : 'Select Chart Value';
+    getChartValueLabel(chartName: string, version: string): string {
+        return `${chartName}${this.props.hideVersionFromLabel || !version ? '' : ` (${version})`}`;
     }
 
     render() {
         let chartValuesList = this.props.chartValuesList;
         let chartValues = getChartValuesFiltered(this.props.chartValuesList);
         let selectedChartValue = chartValuesList.find(chartValue => this.props.chartValues.id === chartValue.id && chartValue.kind === this.props.chartValues.kind);
-        const label = this.getChartValueLabel(selectedChartValue);
+        const label = selectedChartValue
+            ? this.getChartValueLabel(selectedChartValue.name, selectedChartValue.chartVersion)
+            : 'Select Chart Value';
 
         return <>
             <Select tabIndex={this.props.tabIndex || 0}
@@ -82,11 +78,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                 <Select.OptGroup label="EXISTING" key={"EXISTING"}>
                     {chartValues.existingChartValues.length ? chartValues.existingChartValues.map((chartValue) => {
                         return <Select.Option key={chartValue.id} value={chartValue}>
-                                          {`${chartValue.name}${
-                                              this.props.hideVersionFromLabel || !chartValue.chartVersion
-                                                  ? ''
-                                                  : ` (${chartValue.chartVersion})`
-                                          }`}
+                                          {this.getChartValueLabel(chartValue.name, chartValue.chartVersion)}
                     </Select.Option>
                     }) : this.renderNoResultsOption()}
                 </Select.OptGroup>

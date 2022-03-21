@@ -183,7 +183,6 @@ export const ChartRepoSelector = ({
             <input
                 className="form__input"
                 value={`${releaseInfo.deployedAppDetail.chartName} (${releaseInfo.deployedAppDetail.chartVersion})`}
-                autoFocus
                 disabled={true}
             />
         </label>
