@@ -86,7 +86,6 @@ const LogViewer: React.FunctionComponent<logViewerInterface> = ({ subject, rootC
         webFontAddon.current = new XtermWebfont()
 
         terminal.current.loadAddon(fitAddon.current);
-        fitAddon.current.fit();
         terminal.current.loadAddon(webFontAddon.current);
         searchAddon.current = new SearchAddon();
         terminal.current.loadAddon(searchAddon.current);
