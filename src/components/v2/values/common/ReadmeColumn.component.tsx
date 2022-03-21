@@ -9,7 +9,7 @@ function ReadmeColumn({ readmeCollapsed, toggleReadmeCollapsed, readme, loading 
     return (
         <div className="deploy-chart__readme-column">
             {loading && !readmeCollapsed && <Progressing pageLoader />}
-            {!loading && readme && (
+            {!loading && !readme && (
                 <MessageUI
                     icon={MsgUIType.ERROR}
                     msg="Readme is not available for the selected chart version"
@@ -20,7 +20,7 @@ function ReadmeColumn({ readmeCollapsed, toggleReadmeCollapsed, readme, loading 
                     {...(readmeCollapsed && { bodyStyle: { width: '0' } })}
                 />
             )}
-            {!loading && !readme && <MarkDown markdown={readme} className="deploy-chart__readme-markdown" />}
+            {!loading && readme && <MarkDown markdown={readme} className="deploy-chart__readme-markdown" />}
             <aside className="flex column" onClick={readme ? (e) => {
                 if (readmeCollapsed) {
                     ReactGA.event({
