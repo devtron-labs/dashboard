@@ -25,6 +25,7 @@ import {
     ActiveReadmeColumn,
     DeleteChartDialog,
     ChartValuesEditor,
+    AppNotLinkedDialog,
 } from '../common/ChartValuesSelectors';
 import { ChartRepoOtions } from '../DeployChart';
 import { ChartVersionType } from '../../../charts/charts.types';
@@ -41,6 +42,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
     const [readmeCollapsed, toggleReadmeCollapsed] = useState(true);
     const [releaseInfo, setReleaseInfo] = useState<ReleaseInfo>(undefined);
     const [showDeleteAppConfirmationDialog, setShowDeleteAppConfirmationDialog] = useState(false);
+    const [showAppNotLinkedDialog, setShowAppNotLinkedDialog] = useState(false);
     const [modifiedValuesYaml, setModifiedValuesYaml] = useState('');
     const [installedAppInfo, setInstalledAppInfo] = useState<InstalledAppInfo>(undefined);
     const [repoChartValue, setRepoChartValue] = useState<ChartRepoOtions>();
@@ -148,8 +150,13 @@ function ExternalAppValues({ appId }: { appId: string }) {
         }
     };
 
-    const updateApplication = () => {
+    const updateApplication = (forceUpdate?: boolean) => {
         if (isUpdateInProgress) {
+            return;
+        }
+
+        if (!forceUpdate && !repoChartValue?.chartRepoName) {
+            setShowAppNotLinkedDialog(true);
             return;
         }
 
@@ -287,7 +294,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
                         className={`cta flex-1 ml-16 mr-16 ${
                             isUpdateInProgress || isDeleteInProgress ? 'disabled' : ''
                         }`}
-                        onClick={updateApplication}
+                        onClick={() => updateApplication(false)}
                     >
                         {isUpdateInProgress ? (
                             <div className="flex">
@@ -307,6 +314,9 @@ function ExternalAppValues({ appId }: { appId: string }) {
                         handleDelete={deleteApplication}
                         toggleConfirmation={setShowDeleteAppConfirmationDialog}
                     />
+                )}
+                {showAppNotLinkedDialog && (
+                    <AppNotLinkedDialog close={() => setShowAppNotLinkedDialog(false)} update={updateApplication} />
                 )}
             </div>
         );

@@ -8,8 +8,9 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg
 import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg';
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.svg';
 import checkIcon from '../../../../assets/icons/appstatus/ic-check.svg';
+import warn from '../../../../assets/icons/ic-warning.svg';
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect';
-import { DeleteDialog, Select } from '../../../common';
+import { ConfirmationDialog, DeleteDialog, Select } from '../../../common';
 import {
     ChartEnvironmentSelectorType,
     ChartRepoSelectorType,
@@ -446,6 +447,29 @@ export const ActiveReadmeColumn = ({
     );
 };
 
+export const ChartValuesEditor = ({
+    valuesText,
+    onChange,
+    repoChartValue,
+    hasChartChanged,
+    editorRef,
+}: ChartValuesEditorType) => {
+    return (
+        <div className="code-editor-container" {...(editorRef && { ref: editorRef })}>
+            <CodeEditor value={valuesText} noParsing mode="yaml" onChange={onChange}>
+                <CodeEditor.Header>
+                    <span className="bold">values.yaml</span>
+                </CodeEditor.Header>
+                {hasChartChanged && (
+                    <CodeEditor.Information
+                        text={`Please ensure that the values are compatible with "${repoChartValue.chartRepoName}/${repoChartValue.chartName}"`}
+                    />
+                )}
+            </CodeEditor>
+        </div>
+    );
+};
+
 export const DeleteChartDialog = ({
     appName,
     handleDelete,
@@ -469,25 +493,38 @@ export const DeleteChartDialog = ({
     );
 };
 
-export const ChartValuesEditor = ({
-    valuesText,
-    onChange,
-    repoChartValue,
-    hasChartChanged,
-    editorRef,
-}: ChartValuesEditorType) => {
+export const AppNotLinkedDialog = ({
+    close,
+    update,
+}: {
+    close: () => void;
+    update: (forceUpdate: boolean) => void;
+}) => {
     return (
-        <div className="code-editor-container" {...(editorRef && { ref: editorRef })}>
-            <CodeEditor value={valuesText} noParsing mode="yaml" onChange={onChange}>
-                <CodeEditor.Header>
-                    <span className="bold">values.yaml</span>
-                </CodeEditor.Header>
-                {hasChartChanged && (
-                    <CodeEditor.Information
-                        text={`Please ensure that the values are compatible with "${repoChartValue.chartRepoName}/${repoChartValue.chartName}"`}
-                    />
-                )}
-            </CodeEditor>
-        </div>
+        <ConfirmationDialog>
+            <ConfirmationDialog.Icon src={warn} />
+            <ConfirmationDialog.Body title="This app is not linked to a helm chart">
+                <p className="fs-13 cn-7 lh-1-54">
+                    We strongly recommend linking the app to a helm chart for better application management.
+                </p>
+            </ConfirmationDialog.Body>
+            <ConfirmationDialog.ButtonGroup>
+                <div className="flex right">
+                    <button type="button" className="cta cancel" onClick={close}>
+                        Go back
+                    </button>
+                    <button
+                        type="button"
+                        className="cta ml-12 no-decor"
+                        onClick={() => {
+                            close();
+                            update(true);
+                        }}
+                    >
+                        Deploy without linking helm chart
+                    </button>
+                </div>
+            </ConfirmationDialog.ButtonGroup>
+        </ConfirmationDialog>
     );
 };
