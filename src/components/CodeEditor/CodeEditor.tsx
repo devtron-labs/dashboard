@@ -277,7 +277,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                             options={options}
                             theme={state.theme.toLowerCase().split(" ").join("-")}
                             editorDidMount={editorDidMount}
-                            height={height || "100%"}
+                            height={height}
                             width="100%"
                         />
                         :
@@ -288,7 +288,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                             options={options}
                             onChange={handleOnChange}
                             editorDidMount={editorDidMount}
-                            height={ height || "100%"}
+                            height={height}
                             width="100%"
                             
                         />
