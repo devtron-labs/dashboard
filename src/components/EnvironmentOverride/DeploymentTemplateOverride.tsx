@@ -181,6 +181,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
         }
         const api = state.data.environmentConfig && state.data.environmentConfig.id > 0 ? updateDeploymentTemplate : createDeploymentTemplate
         const payload = {
+            environmentId: +envId,
             envOverrideValues: obj,
             chartRefId: state.selectedChartRefId,
             IsOverride: true,
@@ -299,7 +300,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
 
 function NameSpace({ originalNamespace = "", chartRefId, id }) {
     const [loading, setLoading] = useState(false)
-    const { appId, envId } = useParams<{ appId: string, envId: string }>()
+    const { appId, envId } = useParams<{appId: string, envId: string}>()
     const [namespace, setNamespace] = useState(originalNamespace)
     useEffect(() => {
         setNamespace(originalNamespace)

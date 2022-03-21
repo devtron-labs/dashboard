@@ -1,7 +1,7 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, { useRef, useState, useEffect, useMemo, SetStateAction } from 'react';
 import { getAppOtherEnvironment, getCDConfig as getCDPipelines } from '../../../../services/service'
 import {AppEnvironment} from '../../../../services/service.types';
-import { Progressing, Select, showError, useAsync, useInterval, useScrollable, useKeyDown, not, mapByKey, asyncWrap, ConditionalWrap, useAppContext } from '../../../common';
+import { Progressing, Select, showError, useAsync, useInterval, useScrollable, useKeyDown, not, mapByKey, asyncWrap, ConditionalWrap, useAppContext, sortCallback } from '../../../common';
 import { Host } from '../../../../config';
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useLocation, useRouteMatch, useParams, generatePath } from 'react-router';
@@ -13,7 +13,7 @@ import Reload from '../../../Reload/Reload'
 import {
     default as AnsiUp
 } from 'ansi_up';
-import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './service'
+import { getTriggerHistory, getTriggerDetails, getCDBuildReport, getDeploymentTemplateDiff} from './service'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { cancelPrePostCdTrigger } from '../../service';
 import {Scroller} from '../cIDetails/CIDetails';
@@ -26,11 +26,16 @@ import Tippy from '@tippyjs/react'
 import {DetectBottom, TriggerDetails, GitChanges, Artifacts, BuildCardPopup} from '../cIDetails/CIDetails'
 import {History} from '../cIDetails/types'
 import {Moment12HourFormat} from '../../../../config';
+import DeploymentTemplateWrapper from './DeploymentTemplateWrapper';
+import './cdDetail.scss'
+import DeploymentHistoryConfigTabView from './DeploymentHistoryConfigTabView';
+import { DeploymentTemplateConfiguration } from './cd.type';
+
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(["starting", "running", "pending"]);
 
 export default function CDDetails(){
-    const {appId, envId, triggerId, pipelineId} = useParams<{appId: string, envId:string, triggerId: string, pipelineId: string}>()
+    const {appId, envId, triggerId, pipelineId} = useParams<{appId: string, envId: string, triggerId: string, pipelineId: string}>()
     const [pagination, setPagination] = useState<{offset: number, size: number}>({offset: 0, size : 20})
     const [hasMore, setHasMore] = useState<boolean>(false);
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map());
@@ -45,6 +50,10 @@ export default function CDDetails(){
     useInterval(pollHistory, 30000)
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
     const keys = useKeyDown()
+    const [showTemplate, setShowTemplate] = useState(false)
+   const [baseTimeStamp, setBaseTimeStamp] = useState<string>()
+     const [baseTemplateId, setBaseTemplateId] = useState< string>();
+    const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState<DeploymentTemplateConfiguration[]>([]);
 
     useEffect(()=>{
         if(!pathname.includes('/logs')) return
@@ -134,53 +143,144 @@ export default function CDDetails(){
         }
     },[deploymentHistoryResult, loadingDeploymentHistory, deploymentHistoryError])
 
+
+    useEffect(() => {
+        if(pipelineId){
+        try {
+                getDeploymentTemplateDiff(appId, pipelineId).then((response) => {
+                    setDeploymentTemplatesConfiguration(response.result.sort((a, b) => sortCallback('id', b, a)));
+                });
+        } catch (err) {
+            showError(err);
+        }
+    }
+    }, [pipelineId]);
+
     function syncState(triggerId: number, triggerDetail: History){
         setTriggerHistory(triggerHistory=>{
             triggerHistory.set(triggerId, triggerDetail)
             return new Map(triggerHistory)
         })
     }
+
     if(loading || (loadingDeploymentHistory && triggerHistory.size === 0)) return <Progressing pageLoader/>
     if (result && !(Array.isArray(result[0].result))) return <AppNotConfigured text="App is not deployed on any environment." />
     if (result && !(Array.isArray(result[1]?.pipelines))) return <AppNotConfigured text="No CD pipelines found." />
     if(!result || dependencyState[2] !== envId) return null
+
+
     return (
-    <>
-    <div className={`ci-details ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
-        <div className="ci-details__history">
-            {!fullScreenView && <>
-                <SelectEnvironment environments={result[0].result}/>
-                <div className="flex column top left" style={{overflowY:'auto'}}>
-                    {Array.from(triggerHistory)?.sort(([a,], [b,])=>(b-a))?.map(([triggerId, trigger], idx)=><DeploymentCard key={idx} triggerDetails={trigger}/>)}
-                    {hasMore && <DetectBottom callback={reloadNextAfterBottom}/>}
-                </div>
-            </>}
-        </div>
-        <div ref={ref} className="ci-details__body">
-            {!envId && <><div/><SelectEnvironmentView/></>}
-            {!!envId && triggerHistory?.size > 0 &&
-                <Route path={`${path.replace(":pipelineId(\\d+)?", ":pipelineId(\\d+)").replace(":envId(\\d+)?" , ":envId(\\d+)")}`}>
-                    <TriggerOutput fullScreenView={fullScreenView} syncState={syncState} triggerHistory={triggerHistory}/>
-                </Route>
-            }
+        <>
+            <div className={`${!showTemplate ? 'ci-details' : ''} ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
+                {!showTemplate && (
+                    <>
+                        <div className="ci-details__history">
+                            {!fullScreenView && (
+                                <>
+                                    <SelectEnvironment environments={result[0].result} />
+                                    <div className="flex column top left" style={{ overflowY: 'auto' }}>
+                                        {Array.from(triggerHistory)
+                                            ?.sort(([a], [b]) => b - a)
+                                            ?.map(([triggerId, trigger], idx) => (
+                                                <DeploymentCard
+                                                    key={idx}
+                                                    triggerDetails={trigger}
+                                                    setBaseTimeStamp={setBaseTimeStamp}
+                                                />
+                                            ))}
+                                        {hasMore && <DetectBottom callback={reloadNextAfterBottom} />}
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                        <div ref={ref} className="ci-details__body">
+                            {!envId && (
+                                <>
+                                    <div />
+                                    <SelectEnvironmentView />
+                                </>
+                            )}
+                            {!!envId && triggerHistory?.size > 0 && (
+                                <Route
+                                    path={`${path
+                                        .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
+                                        .replace(':envId(\\d+)?', ':envId(\\d+)')}`}
+                                >
+                                    <TriggerOutput
+                                        fullScreenView={fullScreenView}
+                                        syncState={syncState}
+                                        triggerHistory={triggerHistory}
+                                        setShowTemplate={setShowTemplate}
+                                        baseTemplateId={baseTemplateId}
+                                        setBaseTemplateId={setBaseTemplateId}
+                                        deploymentTemplatesConfiguration={deploymentTemplatesConfiguration}
+                                        showTemplate={showTemplate}
+                                        setBaseTimeStamp={setBaseTimeStamp}
+                                        baseTimeStamp={baseTimeStamp}
+                                    />
+                                </Route>
+                            )}
 
-            {!!envId && triggerHistory?.size === 0 &&
-                <NoCDTriggersView environmentName={environment?.environmentName}/>
-            }
-            {pathname.includes('/logs') && <Tippy placement="top" arrow={false} className="default-tt" content={fullScreenView ? 'Exit fullscreen (f)' : 'Enter fullscreen (f)'}>
-                {fullScreenView ? <ZoomOut className="zoom zoom--out pointer" onClick={e => setFullScreenView(false)}/> : <ZoomIn className="zoom zoom--in pointer" onClick={e=>setFullScreenView(true)}/>}
-            </Tippy>}
+                            {!!envId && triggerHistory?.size === 0 && (
+                                <NoCDTriggersView environmentName={environment?.environmentName} />
+                            )}
+                            {pathname.includes('/logs') && (
+                                <Tippy
+                                    placement="top"
+                                    arrow={false}
+                                    className="default-tt"
+                                    content={fullScreenView ? 'Exit fullscreen (f)' : 'Enter fullscreen (f)'}
+                                >
+                                    {fullScreenView ? (
+                                        <ZoomOut
+                                            className="zoom zoom--out pointer"
+                                            onClick={(e) => setFullScreenView(false)}
+                                        />
+                                    ) : (
+                                        <ZoomIn
+                                            className="zoom zoom--in pointer"
+                                            onClick={(e) => setFullScreenView(true)}
+                                        />
+                                    )}
+                                </Tippy>
+                            )}
+                        </div>
+                    </>
+                )}
+                 <Switch>
+                    <Route
+                        path={`${path}/configuration/deployment-template`}
+                        render={(props) => (
+                            <DeploymentHistoryConfigTabView
+                                showTemplate={showTemplate}
+                                setShowTemplate={setShowTemplate}
+                                baseTemplateId={baseTemplateId}
+                                baseTimeStamp={baseTimeStamp}
+                                setBaseTemplateId= {setBaseTemplateId}
+                            />
+                        )}
+                    />
+                </Switch>
+            </div>
 
-        </div>
-    </div>
-    {(scrollToTop || scrollToBottom) && <Scroller style={{ position: 'fixed', bottom: '25px', right: '32px' }} {...{ scrollToTop, scrollToBottom }} />}
-    </>
-    )
+            {(scrollToTop || scrollToBottom) && (
+                <Scroller
+                    style={{ position: 'fixed', bottom: '25px', right: '32px' }}
+                    {...{ scrollToTop, scrollToBottom }}
+                />
+            )}
+        </>
+    );
 }
 
-const DeploymentCard:React.FC<{triggerDetails: History}> = ({triggerDetails})=>{
-    const { url, path } = useRouteMatch()
-    const {triggerId, ...rest} = useParams<{appId: string, envId:string, triggerId: string, pipelineId: string}>()
+const DeploymentCard:React.FC<{triggerDetails: History; setBaseTimeStamp: React.Dispatch<React.SetStateAction<string>>}> = ({triggerDetails, setBaseTimeStamp})=>{
+    const { path } = useRouteMatch()
+    const {triggerId, ...rest} = useParams<{triggerId: string}>()
+
+    useEffect(()=>{
+        setBaseTimeStamp(triggerDetails.startedOn)
+    },[triggerId])
+
     return (
         <ConditionalWrap
             condition={Array.isArray(triggerDetails?.ciMaterials)}
@@ -240,7 +340,7 @@ function Logs({ triggerDetails }) {
     const eventSrcRef = useRef(null);
     const [logs, setLogs] = useState([]);
     const counter = useRef(0)
-    const { pipelineId, envId, appId } = useParams<{appId: string, envId:string, pipelineId: string}>()
+    const { pipelineId, envId, appId } = useParams<{pipelineId: string, envId: string, appId: string }>()
 
     function createMarkup(log) {
         try {
@@ -302,20 +402,28 @@ const TriggerOutput: React.FC<{
     fullScreenView: boolean;
     syncState: (triggerId: number, triggerDetails: History) => void;
     triggerHistory: Map<number, History>;
-}> = ({ fullScreenView, syncState, triggerHistory }) => {
-    const { appId, triggerId, envId, pipelineId } = useParams<{appId: string, envId:string, triggerId: string, pipelineId: string}>();
+    setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
+    baseTemplateId: string;
+    setBaseTemplateId: React.Dispatch<React.SetStateAction<string>>;
+    deploymentTemplatesConfiguration: DeploymentTemplateConfiguration[];
+    showTemplate: boolean
+    baseTimeStamp: string;
+    setBaseTimeStamp: React.Dispatch<React.SetStateAction<string>>;
+}> = ({ fullScreenView, syncState, triggerHistory, setShowTemplate, setBaseTemplateId, deploymentTemplatesConfiguration , showTemplate, baseTimeStamp, setBaseTimeStamp}) => {
+    const { appId, triggerId, envId, pipelineId } = useParams<{appId: string, triggerId: string, envId: string, pipelineId: string}>();
     const triggerDetails = triggerHistory.get(+triggerId);
     const [
         triggerDetailsLoading,
         triggerDetailsResult,
         triggerDetailsError,
         reloadTriggerDetails,
-        setTriggerDetails,
     ] = useAsync(
         () => getTriggerDetails({ appId, envId, pipelineId, triggerId }),
         [triggerId, appId, envId],
         !!triggerId && !!pipelineId,
     );
+
+
     useEffect(()=>{
         if(triggerDetailsLoading || triggerDetailsError) return
 
@@ -382,6 +490,17 @@ const TriggerOutput: React.FC<{
                                     Source code
                                 </NavLink>
                             </li>
+                          {triggerDetails.stage == 'DEPLOY' &&
+                          <li className="tab-list__tab">
+                                <NavLink
+                                    replace
+                                    className="tab-list__tab-link"
+                                    activeClassName="active"
+                                    to={`configuration`}
+                                >
+                                    Configuration
+                                </NavLink>
+                            </li>}
                             {triggerDetails.stage !== 'DEPLOY' && (
                                 <li className="tab-list__tab">
                                     <NavLink
@@ -398,14 +517,33 @@ const TriggerOutput: React.FC<{
                     </>
                 )}
             </div>
-            <HistoryLogs key={triggerDetails.id} triggerDetails={triggerDetails} loading={triggerDetailsLoading && !triggerDetailsResult}/>
+            <HistoryLogs
+                key={triggerDetails.id}
+                triggerDetails={triggerDetails}
+                loading={triggerDetailsLoading && !triggerDetailsResult}
+                setShowTemplate={setShowTemplate}
+                deploymentTemplatesConfiguration={deploymentTemplatesConfiguration}
+                showTemplate={showTemplate}
+                baseTimeStamp={baseTimeStamp}
+                setBaseTimeStamp={setBaseTimeStamp}
+                setBaseTemplateId={setBaseTemplateId}
+            />
         </>
     );
 };
 
-const HistoryLogs: React.FC<{triggerDetails: History, loading: boolean}> = ({ triggerDetails, loading }) => {
+const HistoryLogs: React.FC<{
+    showTemplate:boolean
+    triggerDetails: History;
+    loading: boolean;
+    setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
+    setBaseTemplateId: React.Dispatch<React.SetStateAction<string>>;
+    deploymentTemplatesConfiguration: DeploymentTemplateConfiguration[];
+    baseTimeStamp: string;
+    setBaseTimeStamp: React.Dispatch<React.SetStateAction<string>>;
+}> = ({ triggerDetails, loading, setShowTemplate, deploymentTemplatesConfiguration, setBaseTimeStamp, baseTimeStamp }) => {
     let { path } = useRouteMatch();
-    const {appId, pipelineId, triggerId, envId} = useParams<{appId: string, envId:string, triggerId: string, pipelineId: string}>()
+    const {appId, pipelineId, triggerId, envId} = useParams<{appId: string, pipelineId: string, triggerId: string, envId: string}>()
     const [autoBottomScroll, setAutoBottomScroll] = useState<boolean>(triggerDetails.status.toLowerCase() !== 'succeeded')
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll })
 
@@ -419,6 +557,7 @@ const HistoryLogs: React.FC<{triggerDetails: History, loading: boolean}> = ({ tr
                     </div>
                 </Route>}
                 <Route path={`${path}/source-code`} render={props => <GitChanges triggerDetails={triggerDetails} />} />
+                <Route path={`${path}/configuration`} render={props => <DeploymentTemplateWrapper setShowTemplate={setShowTemplate} deploymentTemplatesConfiguration={deploymentTemplatesConfiguration} setBaseTimeStamp={setBaseTimeStamp} baseTimeStamp={baseTimeStamp}/>} />
                 {triggerDetails.stage !== 'DEPLOY' && <Route path={`${path}/artifacts`} render={props => <Artifacts getArtifactPromise={()=>getCDBuildReport(appId, envId, pipelineId, triggerId)} triggerDetails={triggerDetails} />} />}
                 <Redirect to={triggerDetails.status.toLowerCase() === 'succeeded' ? `${path}/artifacts` : triggerDetails.stage === 'DEPLOY' ? `${path}/source-code` : `${path}/logs`} />
             </Switch>}
