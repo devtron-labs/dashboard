@@ -1,32 +1,28 @@
 interface DeploymentTemplateCommon {
+    id: number;
     appId: number;
+    isAppMetricsEnabled: boolean;
     deployed: boolean;
     deployedOn: string;
+    deployedBy: number;
     emailId: string;
-    id: number;
 }
 
 export interface DeploymentTemplateConfiguration extends DeploymentTemplateCommon {
-    isAppMetricsEnabled: boolean;
-    template: string;
-    templateName: string;
-    templateVersion: string;
-    imageDescriptorTemplate: string;
-    targetEnvironment: string
-}
-
-export interface DeploymentTemplateHistoryType {
-    currentConfiguration: DeploymentTemplateConfiguration;
-    baseTemplateConfiguration: DeploymentTemplateConfiguration;
-    codeEditorLoading: boolean;
-}
-
-export interface DeploymentTemplateViaTargetResponse extends DeploymentTemplateCommon {
-    deployedBy: number;
-    pipelineId: number;
     deploymentStatus: string;
     wfrId: number;
     workflowType: string;
+}
+export interface DeploymentTemplateViaTargetId extends DeploymentTemplateCommon {
+    imageDescriptorTemplate: string;
+    template: string;
+    templateName: string;
+    templateVersion: string;
+}
+export interface DeploymentTemplateHistoryType {
+    currentConfiguration: DeploymentTemplateViaTargetId;
+    baseTemplateConfiguration: DeploymentTemplateViaTargetId;
+    codeEditorLoading: boolean;
 }
 export interface DeploymentTemplateOptions {
     label: string;
@@ -36,7 +32,7 @@ export interface DeploymentTemplateOptions {
     workflowType: string;
 }
 export interface CompareWithBaseConfiguration {
-    deploymentTemplatesConfiguration: DeploymentTemplateViaTargetResponse[];
+    deploymentTemplatesConfiguration: DeploymentTemplateConfiguration[];
     selectedDeploymentTemplate: DeploymentTemplateOptions;
     setSeletedDeploymentTemplate: (selected) => void;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;

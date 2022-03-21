@@ -8,7 +8,7 @@ import {
     DeploymentTemplateConfiguration,
     DeploymentTemplateOptions,
     CompareViewDeploymentType,
-    DeploymentTemplateViaTargetResponse,
+    DeploymentTemplateViaTargetId,
 } from './cd.type';
 import CDEmptyState from './CDEmptyState';
 
@@ -21,10 +21,10 @@ function CompareViewDeployment({
 }: CompareViewDeploymentType) {
     const { appId, pipelineId } = useParams<{ appId: string; pipelineId: string }>();
     const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState<
-        DeploymentTemplateViaTargetResponse[]
+        DeploymentTemplateConfiguration[]
     >([]);
     const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState<DeploymentTemplateOptions>();
-    const [currentConfiguration, setCurrentConfiguration] = useState<DeploymentTemplateConfiguration>();
+    const [currentConfiguration, setCurrentConfiguration] = useState<DeploymentTemplateConfiguration[]>();
     const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentTemplateConfiguration>();
 
     const [loader, setLoader] = useState<boolean>(false);

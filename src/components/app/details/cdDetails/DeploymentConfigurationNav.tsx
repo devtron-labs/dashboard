@@ -2,11 +2,11 @@ import React from 'react';
 import { ReactComponent as RightArrow } from '../../../../assets/icons/ic-arrow-left.svg';
 import { NavLink } from 'react-router-dom';
 import { useRouteMatch, useParams } from 'react-router';
-import { DeploymentTemplateViaTargetResponse } from './cd.type';
+import { DeploymentTemplateConfiguration } from './cd.type';
 import CDEmptyState from './CDEmptyState';
 interface TemplateConfiguration {
     setShowTemplate: (boolean) => void;
-    deploymentTemplatesConfiguration: DeploymentTemplateViaTargetResponse[];
+    deploymentTemplatesConfiguration: DeploymentTemplateConfiguration[];
 }
 
 function DeploymentConfigurationNav({ setShowTemplate, deploymentTemplatesConfiguration }: TemplateConfiguration) {

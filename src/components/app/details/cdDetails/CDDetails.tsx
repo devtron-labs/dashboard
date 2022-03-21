@@ -29,7 +29,7 @@ import {Moment12HourFormat} from '../../../../config';
 import DeploymentConfigurationNav from './DeploymentConfigurationNav';
 import './cdDetail.scss'
 import CompareViewDeployment from './DeploymentHistoryConfigTabView';
-import { DeploymentTemplateConfiguration } from './cd.type';
+import { DeploymentTemplateConfiguration, DeploymentTemplateViaTargetId } from './cd.type';
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(["starting", "running", "pending"]);
@@ -275,14 +275,13 @@ export default function CDDetails(){
     );
 }
 
-const DeploymentCard:React.FC<{triggerDetails: History; setBaseTimeStamp; baseTimeStamp: string; setBaseTemplateId; baseTemplateId}> = ({triggerDetails, setBaseTimeStamp, baseTimeStamp})=>{
+const DeploymentCard:React.FC<{triggerDetails: History; setBaseTimeStamp; baseTimeStamp: string; setBaseTemplateId; baseTemplateId}> = ({triggerDetails, setBaseTimeStamp})=>{
     const { path } = useRouteMatch()
     const {triggerId, ...rest} = useParams<{triggerId: string}>()
 
-
     useEffect(()=>{
         setBaseTimeStamp(triggerDetails.startedOn)
-    })
+    },[triggerId])
 
     return (
         <ConditionalWrap
@@ -409,7 +408,7 @@ const TriggerOutput: React.FC<{
     baseTimeStamp: string;
     setBaseTemplateId: React.Dispatch<React.SetStateAction<string>>;
     baseTemplateId: string;
-    deploymentTemplatesConfiguration
+    deploymentTemplatesConfiguration: DeploymentTemplateConfiguration[];
     showTemplate: boolean
 }> = ({ fullScreenView, syncState, triggerHistory, setShowTemplate, setBaseTemplateId, deploymentTemplatesConfiguration , showTemplate}) => {
     const { appId, triggerId, envId, pipelineId } = useParams<{appId: string, triggerId: string, envId: string, pipelineId: string}>();
@@ -538,7 +537,7 @@ const HistoryLogs: React.FC<{
     loading: boolean;
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>;
     setBaseTemplateId: React.Dispatch<React.SetStateAction<string>>;
-    deploymentTemplatesConfiguration
+    deploymentTemplatesConfiguration: DeploymentTemplateConfiguration[];
 }> = ({ triggerDetails, loading, setShowTemplate, deploymentTemplatesConfiguration }) => {
     let { path } = useRouteMatch();
     const {appId, pipelineId, triggerId, envId} = useParams<{appId: string, pipelineId: string, triggerId: string, envId: string}>()

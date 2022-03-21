@@ -26,7 +26,7 @@ function DeploymentTemplateHistory({
         const bgColorForAppMetricesDiff = isApplicationMetricesDiff() ? (isBaseTemplate ? 'bcg-1' : 'bcr-1') : '';
 
         return (
-            <div className="">
+            <div>
                 <div className={`${bgColorDeploymentDiff} ${commonStyle}`}>
                     <div className="cn-6">Chart version</div>
                     {configuration?.templateVersion ? (
@@ -65,7 +65,7 @@ function DeploymentTemplateHistory({
         );
     };
     return (
-        <div>
+        <>
             <div className="en-2 bw-1 br-4 deployment-diff__upper bcn-0 mt-20 mb-16 mr-20 ml-20 pt-8 pb-8">
                 {renderHistoryFieldDiff(currentConfiguration, false)}
                 {renderHistoryFieldDiff(baseTemplateConfiguration, true)}
@@ -77,7 +77,7 @@ function DeploymentTemplateHistory({
                 </div>
                 {renderDeploymentDiffViaCodeEditor()}
             </div>
-        </div>
+        </>
     );
 }
 
