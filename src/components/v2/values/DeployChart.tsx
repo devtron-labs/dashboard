@@ -99,7 +99,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const { push } = useHistory();
     const { chartId, envId } = useParams<{ chartId; envId }>();
     const [showCodeEditorError, setCodeEditorError] = useState(false);
-    const deployChartForm = useRef(null);
+    const deployChartForm = useRef<HTMLDivElement>(null);
     const history = useHistory();
     const { url } = useRouteMatch();
 

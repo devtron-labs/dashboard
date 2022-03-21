@@ -1,5 +1,4 @@
-import { OptionsType } from 'react-select';
-import { ChartValuesType } from '../../../charts/charts.types';
+import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types';
 import { InstalledAppInfo, ReleaseInfo } from '../../../external-apps/ExternalAppService';
 import { ChartRepoOtions } from '../DeployChart';
 
@@ -37,20 +36,15 @@ export interface ChartDeprecatedType {
     name: string;
 }
 
-export interface VersionType {
-    id: number;
-    version: any;
-}
-
 export interface ChartVersionSelectorType {
     isUpdate?: boolean;
     selectedVersion: number;
     selectVersion: React.Dispatch<React.SetStateAction<number>>;
-    chartVersionObj?: any;
-    versions?: Map<number, VersionType>;
-    selectedVersionUpdatePage: VersionType;
-    setSelectedVersionUpdatePage: React.Dispatch<React.SetStateAction<VersionType>>;
-    chartVersionsData: VersionType[];
+    chartVersionObj?: ChartVersionType;
+    versions?: Map<number, ChartVersionType>;
+    selectedVersionUpdatePage: ChartVersionType;
+    setSelectedVersionUpdatePage: React.Dispatch<React.SetStateAction<ChartVersionType>>;
+    chartVersionsData: ChartVersionType[];
 }
 
 export interface ChartValuesSelectorType {
@@ -69,6 +63,6 @@ export interface ChartValuesEditorType {
     onChange: (value: string) => void;
     repoChartValue: ChartRepoOtions;
     hasChartChanged: boolean;
-    parentRef: React.MutableRefObject<any>;
+    parentRef: React.MutableRefObject<HTMLDivElement>;
     autoFocus: boolean;
 }

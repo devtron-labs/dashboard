@@ -26,9 +26,10 @@ import {
     DeleteChartDialog,
     ChartValuesEditor,
     AppNotLinkedDialog,
+    StaticChartRepoInput,
 } from '../common/ChartValuesSelectors';
 import { ChartRepoOtions } from '../DeployChart';
-import { ChartVersionType } from '../../../charts/charts.types';
+import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types';
 import { fetchChartVersionsData, getChartValuesList } from '../common/chartValues.api';
 import { getChartValuesURL } from '../../../charts/charts.helper';
 
@@ -49,10 +50,10 @@ function ExternalAppValues({ appId }: { appId: string }) {
     const [installedAppInfo, setInstalledAppInfo] = useState<InstalledAppInfo>(undefined);
     const [repoChartValue, setRepoChartValue] = useState<ChartRepoOtions>();
     const [chartVersionsData, setChartVersionsData] = useState<ChartVersionType[]>([]);
-    const [chartValuesList, setChartValuesList] = useState([]);
+    const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>([]);
     const [selectedVersion, selectVersion] = useState<any>();
     const [selectedVersionUpdatePage, setSelectedVersionUpdatePage] = useState<ChartVersionType>();
-    const [chartValues, setChartValues] = useState<any>({});
+    const [chartValues, setChartValues] = useState<ChartValuesType>();
     const deployChartRef = useRef<HTMLDivElement>(null);
 
     // component load
@@ -72,7 +73,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
                         deprecated: false,
                     });
 
-                    const _chartVersionData = {
+                    const _chartVersionData: ChartVersionType = {
                         id: 0,
                         version: _releaseInfo.deployedAppDetail.chartVersion,
                     };
@@ -80,7 +81,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
                     setSelectedVersionUpdatePage(_chartVersionData);
                     setChartVersionsData([_chartVersionData]);
 
-                    const _chartValues = {
+                    const _chartValues: ChartValuesType = {
                         id: 0,
                         kind: 'EXISTING',
                         name: _releaseInfo.deployedAppDetail.appName,
@@ -138,13 +139,16 @@ function ExternalAppValues({ appId }: { appId: string }) {
         );
         getChartValuesList(
             event.chartId,
-            (_chartValuesList) => {
+            (_chartValuesList: ChartValuesType[]) => {
                 if (!installedAppInfo) {
-                    _chartValuesList?.push({
+                    const _defaultChartValues: ChartValuesType = {
                         id: 0,
                         kind: 'EXISTING',
                         name: releaseInfo.deployedAppDetail.appName,
-                    });
+                    };
+
+                    _chartValuesList?.push(_defaultChartValues);
+                    setChartValues(_defaultChartValues);
                 }
 
                 setChartValuesList(_chartValuesList);
@@ -268,21 +272,23 @@ function ExternalAppValues({ appId }: { appId: string }) {
                                 installedAppInfo={installedAppInfo}
                                 releaseInfo={releaseInfo}
                             />
-                            <ChartRepoSelector
-                                isExternal={true}
-                                installedAppInfo={installedAppInfo}
-                                releaseInfo={releaseInfo}
-                                handleRepoChartValueChange={handleRepoChartValueChange}
-                                repoChartValue={repoChartValue}
-                                chartDetails={{
-                                    appStoreApplicationVersionId: 0,
-                                    chartRepoName: releaseInfo.deployedAppDetail.chartName,
-                                    chartId: 0,
-                                    chartName: releaseInfo.deployedAppDetail.chartName,
-                                    version: releaseInfo.deployedAppDetail.chartVersion,
-                                    deprecated: false,
-                                }}
-                            />
+                            {installedAppInfo && releaseInfo && <StaticChartRepoInput releaseInfo={releaseInfo} />}
+                            {!installedAppInfo && (
+                                <ChartRepoSelector
+                                    isExternal={true}
+                                    installedAppInfo={installedAppInfo}
+                                    handleRepoChartValueChange={handleRepoChartValueChange}
+                                    repoChartValue={repoChartValue}
+                                    chartDetails={{
+                                        appStoreApplicationVersionId: 0,
+                                        chartRepoName: releaseInfo.deployedAppDetail.chartName,
+                                        chartId: 0,
+                                        chartName: releaseInfo.deployedAppDetail.chartName,
+                                        version: releaseInfo.deployedAppDetail.chartVersion,
+                                        deprecated: false,
+                                    }}
+                                />
+                            )}
                             {!installedAppInfo && repoChartValue?.chartRepoName && (
                                 <ChartVersionValuesSelector
                                     isUpdate={true}

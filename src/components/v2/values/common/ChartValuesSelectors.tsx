@@ -20,6 +20,7 @@ import {
     ChartVersionValuesSelectorType,
     ChartValuesEditorType,
     ChartRepoDetailsType,
+    ChartSelectorType,
 } from './chartValuesSelectors.type';
 import { getChartsByKeyword } from '../../../charts/charts.service';
 import { ChartRepoOtions } from '../DeployChart';
@@ -77,10 +78,22 @@ export const ChartEnvironmentSelector = ({
     );
 };
 
+export const StaticChartRepoInput = ({ releaseInfo }: ChartSelectorType) => {
+    return (
+        <label className="form__row form__row--w-100">
+            <span className="form__label">Chart</span>
+            <input
+                className="form__input"
+                value={`${releaseInfo.deployedAppDetail.chartName} (${releaseInfo.deployedAppDetail.chartVersion})`}
+                disabled={true}
+            />
+        </label>
+    );
+};
+
 export const ChartRepoSelector = ({
     isExternal,
     installedAppInfo,
-    releaseInfo,
     isUpdate,
     repoChartValue,
     handleRepoChartValueChange,
@@ -177,16 +190,7 @@ export const ChartRepoSelector = ({
         );
     }
 
-    return isExternal && installedAppInfo ? (
-        <label className="form__row form__row--w-100">
-            <span className="form__label">Chart</span>
-            <input
-                className="form__input"
-                value={`${releaseInfo.deployedAppDetail.chartName} (${releaseInfo.deployedAppDetail.chartVersion})`}
-                disabled={true}
-            />
-        </label>
-    ) : (
+    return (
         (isExternal || isUpdate) && (
             <div className="form__row form__row--w-100">
                 <span className="form__label">{isExternal ? 'Chart' : 'Repo/Chart'}</span>
