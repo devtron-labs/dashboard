@@ -8,7 +8,11 @@ import MessageUI, { MsgUIType } from '../../common/message.ui';
 function ReadmeColumn({ readmeCollapsed, toggleReadmeCollapsed, readme, loading = false, ...props }) {
     return (
         <div className="deploy-chart__readme-column">
-            {loading && !readmeCollapsed && <Progressing pageLoader />}
+            {loading && (
+                <div {...(readmeCollapsed && { style: { width: '0' } })}>
+                    <Progressing pageLoader />
+                </div>
+            )}
             {!loading && !readme && (
                 <MessageUI
                     icon={MsgUIType.ERROR}
