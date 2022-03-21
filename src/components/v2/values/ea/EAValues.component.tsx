@@ -13,7 +13,7 @@ import {
     linkToChartStore,
     LinkToChartStoreRequest,
 } from '../../../external-apps/ExternalAppService';
-import { deleteInstalledChart } from '../../../charts/charts.service';
+import { deleteInstalledChart, getChartValues } from '../../../charts/charts.service';
 import { ServerErrors } from '../../../../modals/commonTypes';
 import { URLS } from '../../../../config';
 import YAML from 'yaml';
@@ -30,6 +30,7 @@ import {
 import { ChartRepoOtions } from '../DeployChart';
 import { ChartVersionType } from '../../../charts/charts.types';
 import { fetchChartVersionsData, getChartValuesList } from '../common/chartValues.api';
+import { getChartValuesURL } from '../../../charts/charts.helper';
 
 function ExternalAppValues({ appId }: { appId: string }) {
     const history = useHistory();
@@ -81,7 +82,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
                     const _chartValues = {
                         id: 0,
                         kind: 'EXISTING',
-                        name: _releaseInfo.deployedAppDetail.chartName,
+                        name: _releaseInfo.deployedAppDetail.appName,
                     };
 
                     setChartValues(_chartValues);
@@ -97,6 +98,24 @@ function ExternalAppValues({ appId }: { appId: string }) {
                 setIsLoading(false);
             });
     }, []);
+
+    useEffect(() => {
+        if (
+            chartValues?.id &&
+            chartValues?.chartVersion &&
+            chartValues?.name !== releaseInfo?.deployedAppDetail.appName
+        ) {
+            getChartValues(chartValues.id, chartValues.kind)
+                .then((response) => {
+                    setModifiedValuesYaml(response.result.values || '');
+                })
+                .catch((error) => {
+                    showError(error);
+                });
+        } else if (chartValues?.name === releaseInfo?.deployedAppDetail.appName && releaseInfo?.mergedValues) {
+            setModifiedValuesYaml(YAML.stringify(JSON.parse(releaseInfo?.mergedValues)));
+        }
+    }, [chartValues]);
 
     const handleRepoChartValueChange = (event) => {
         setRepoChartValue(event);
@@ -117,7 +136,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
                     _chartValuesList?.push({
                         id: 0,
                         kind: 'EXISTING',
-                        name: releaseInfo.deployedAppDetail.chartName,
+                        name: releaseInfo.deployedAppDetail.appName,
                     });
                 }
 
@@ -206,6 +225,12 @@ function ExternalAppValues({ appId }: { appId: string }) {
         setModifiedValuesYaml(codeEditorData);
     };
 
+    const redirectToChartValues = async () => {
+        if (repoChartValue?.chartId) {
+            history.push(getChartValuesURL(repoChartValue.chartId));
+        }
+    };
+
     function renderData() {
         return (
             <div
@@ -263,10 +288,11 @@ function ExternalAppValues({ appId }: { appId: string }) {
                                     chartValues={chartValues}
                                     setChartValues={setChartValues}
                                     hideVersionFromLabel={!installedAppInfo && chartValues.kind === 'EXISTING'}
+                                    redirectToChartValues={redirectToChartValues}
                                 />
                             )}
                             <ChartValuesEditor
-                                valuesText={YAML.stringify(JSON.parse(releaseInfo.mergedValues))}
+                                valuesText={modifiedValuesYaml}
                                 onChange={OnEditorValueChange}
                                 repoChartValue={repoChartValue}
                                 hasChartChanged={!!repoChartValue?.chartRepoName}
