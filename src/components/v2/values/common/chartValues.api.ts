@@ -68,11 +68,7 @@ export async function getChartRelatedReadMe(
     try {
         setFetchingReadMe(true);
         const { result } = await getReadme(id);
-
-        // If ReadMe for specific version/id is available then only update the active ReadMe.
-        if (result.readme) {
-            setActiveReadMe(result.readme);
-        }
+        setActiveReadMe(result.readme);
         setFetchingReadMe(false);
     } catch (err) {
         setFetchingReadMe(false);

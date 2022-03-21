@@ -165,7 +165,7 @@
         fill: var(--V500);
     }
 
-    .refresh-charts {
+    .refetch-charts {
         background-color: var(--N100);
         border: solid 1px var(--N200);
         border-radius: 4px;
@@ -175,17 +175,17 @@
             fill: var(--N600);
         }
 
-        &.refreshing {
+        &.refetching {
             cursor: not-allowed;
 
             svg {
-                animation-name: refresh;
+                animation-name: refetch;
                 animation-duration: 1s;
                 animation-iteration-count: infinite;
                 animation-timing-function: linear;
             }
 
-            @keyframes refresh {
+            @keyframes refetch {
                 0% {
                     transform: rotate(360deg);
                 }

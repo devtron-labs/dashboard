@@ -5,7 +5,7 @@ import { menuList } from '../../../charts/charts.util';
 import { DropdownIndicator, styles } from '../../common/ReactSelect.utils';
 import { ReactComponent as AlertTriangle } from '../../../../assets/icons/ic-alert-triangle.svg';
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg';
-import { ReactComponent as Refresh } from '../../../../assets/icons/ic-restore.svg';
+import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg';
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.svg';
 import checkIcon from '../../../../assets/icons/appstatus/ic-check.svg';
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect';
@@ -28,6 +28,7 @@ import { NavLink } from 'react-router-dom';
 import { URLS } from '../../../../config';
 import { getChartRelatedReadMe } from './chartValues.api';
 import { ChartVersionType } from '../../../charts/charts.types';
+import Tippy from '@tippyjs/react';
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -89,19 +90,19 @@ export const ChartRepoSelector = ({
     const [repoChartOptions, setRepoChartOptions] = useState<ChartRepoOtions[] | null>(
         isExternal && !installedAppInfo ? [] : [chartDetails],
     );
-    const [refreshingCharts, setRefreshingCharts] = useState(false);
+    const [refetchingCharts, setRefetchingCharts] = useState(false);
 
-    async function handleRepoChartFocus(forceRefresh?: boolean) {
-        if (!repoChartAPIMade || forceRefresh) {
+    async function handleRepoChartFocus(refetch: boolean) {
+        if (!repoChartAPIMade || refetch) {
             const matchedCharts = (await getChartsByKeyword(chartDetails.chartName)).result;
             filterMatchedCharts(matchedCharts);
             setRepoChartAPIMade(true);
-            setRefreshingCharts(false);
+            setRefetchingCharts(false);
         }
     }
 
-    function refreshCharts() {
-        setRefreshingCharts(true);
+    function refetchCharts() {
+        setRefetchingCharts(true);
         handleRepoChartFocus(true);
     }
 
@@ -207,7 +208,7 @@ export const ChartRepoSelector = ({
                         onFocus={() => handleRepoChartFocus(false)}
                         onChange={handleRepoChartValueChange}
                         noOptionsMessage={() => 'No matching results'}
-                        isLoading={!repoChartAPIMade || refreshingCharts}
+                        isLoading={!repoChartAPIMade || refetchingCharts}
                         components={{
                             IndicatorSeparator: () => null,
                             LoadingIndicator: () => null,
@@ -251,15 +252,15 @@ export const ChartRepoSelector = ({
                             },
                         }}
                     />
-                    {isExternal && (
+                    <Tippy className="default-tt " arrow={false} content={'Refetch Charts'}>
                         <button
-                            className={`refresh-charts${refreshingCharts ? ' refreshing' : ''} flex p-10 ml-8`}
-                            onClick={refreshCharts}
-                            disabled={refreshingCharts}
+                            className={`refetch-charts${refetchingCharts ? ' refetching' : ''} flex p-10 ml-8`}
+                            onClick={refetchCharts}
+                            disabled={refetchingCharts}
                         >
-                            <Refresh className="icon-dim-16" />
+                            <Refetch className="icon-dim-16" />
                         </button>
-                    )}
+                    </Tippy>
                 </div>
                 {repoChartValue.deprecated && (
                     <div className="deprecated-text-image flex left">
