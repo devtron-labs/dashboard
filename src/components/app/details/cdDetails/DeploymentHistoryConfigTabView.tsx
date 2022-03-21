@@ -8,11 +8,10 @@ import {
     DeploymentTemplateConfiguration,
     DeploymentTemplateOptions,
     CompareViewDeploymentType,
-    DeploymentTemplateViaTargetId,
 } from './cd.type';
 import CDEmptyState from './CDEmptyState';
 
-function CompareViewDeployment({
+function DeploymentHistoryConfigTabView({
     showTemplate,
     setShowTemplate,
     baseTimeStamp,
@@ -30,6 +29,11 @@ function CompareViewDeployment({
     const [loader, setLoader] = useState<boolean>(false);
     const [codeEditorLoading, setCodeEditorLoading] = useState<boolean>(false);
 
+
+    useEffect(()=>{
+        console.log('dhc', baseTimeStamp)
+    },[baseTimeStamp])
+    
     useEffect(() => {
         setLoader(true);
         if (selectedDeploymentTemplate) {
@@ -106,4 +110,4 @@ function CompareViewDeployment({
     );
 }
 
-export default CompareViewDeployment;
+export default DeploymentHistoryConfigTabView;

@@ -21,7 +21,7 @@ function CompareWithBaseConfig({
     const history = useHistory();
     const { triggerId } = useParams<{ triggerId: string }>();
     const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>(baseTimeStamp);
-    const [comaparedTemplateId, setComparedTemplateId] = useState<string>();
+    const [comparedTemplateId, setComparedTemplateId] = useState<string>();
 
     const deploymentTemplateOption: DeploymentTemplateOptions[] = deploymentTemplatesConfiguration.map((p) => {
         return {
@@ -33,14 +33,14 @@ function CompareWithBaseConfig({
         };
     });
 
-    const onClickTimeStampSelector = (selected: { label: string; value: string }) => {
-        handleSelector(selected.value);
-        setSeletedDeploymentTemplate(selected);
-    };
-
     const handleSelector = (selectedTemplateId: string) => {
         let deploymentTemp = deploymentTemplatesConfiguration.find((e) => e.id.toString() === selectedTemplateId);
         setSeletedDeploymentTemplate(deploymentTemp);
+    };
+
+    const onClickTimeStampSelector = (selected: { label: string; value: string }) => {
+        handleSelector(selected.value);
+        setSeletedDeploymentTemplate(selected);
     };
 
     useEffect(() => {
@@ -48,34 +48,31 @@ function CompareWithBaseConfig({
             const baseTemplate = deploymentTemplatesConfiguration.find((e) => e.wfrId.toString() === triggerId);
             setBaseTemplateTimeStamp(baseTemplate?.deployedOn);
             setBaseTemplateId(baseTemplate?.id.toString());
+            if (
+              !selectedDeploymentTemplate &&
+              deploymentTemplateOption?.length > 0 &&
+              baseTemplateId
+          ) {
+              deploymentTemplateOption.map((dt, key) => {
+                  if (dt.value === baseTemplate?.id.toString()) {
+                      setComparedTemplateId(key.toString());
+                      setSeletedDeploymentTemplate(deploymentTemplateOption[key + 1]);
+                  }
+              });
+          }
         }
     }, [deploymentTemplatesConfiguration, baseTemplateTimeStamp]);
-
-    useEffect(() => {
-        if (
-            !selectedDeploymentTemplate &&
-            deploymentTemplateOption &&
-            deploymentTemplateOption?.length > 0 &&
-            baseTemplateId
-        ) {
-            deploymentTemplateOption.map((dt, key) => {
-                if (dt.value === baseTemplateId) {
-                    setComparedTemplateId(key.toString());
-                }
-                setSeletedDeploymentTemplate(deploymentTemplateOption[comaparedTemplateId + 1]);
-            });
-        }
-    }, [deploymentTemplateOption]);
 
     const renderGoBacktoConfiguration = () => {
         return (
             <NavLink
-                to={`${url.split('/configuration')[0]}/configuration`}
+                to={``}
                 className="flex"
                 onClick={(e) => {
                     e.preventDefault();
                     setShowTemplate(false);
                     history.push(`${url.split('/configuration')[0]}/configuration`);
+                    setSeletedDeploymentTemplate(deploymentTemplateOption[comparedTemplateId]);
                 }}
             >
                 <LeftIcon className="rotate icon-dim-24 mr-16" style={{ ['--rotateBy' as any]: '180deg' }} />
