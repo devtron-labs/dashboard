@@ -49,11 +49,10 @@ interface CodeEditorInterface {
     tabSize?: number;
     readOnly?: boolean;
     noParsing?: boolean;
-    autoResize?: boolean;
     minHeight?: number;
     maxHeight?: number;
     inline?: boolean;
-    height?: number;
+    height?: number | string;
     shebang?: string | JSX.Element;
     diffView?: boolean;
     loading?: boolean;
@@ -109,14 +108,12 @@ interface CodeEditorState {
     diffMode: boolean;
     theme: 'vs' | 'vs-dark';
     code: string;
-    height: string;
     noParsing: boolean;
 }
 const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema ,isKubernetes = true}) {
     const editorRef = useRef(null)
     const monacoRef = useRef(null)
     const { width, height: windowHeight } = useWindowSize()
-    const prevHeight = useRef<number>(0)
     const memoisedReducer = useCallback((state: CodeEditorState, action: Action) => {
         switch (action.type) {
             case 'changeLanguage':
@@ -137,7 +134,6 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         mode,
         theme: theme || 'vs',
         code: value,
-        height: height.toString(),
         diffMode: diffView,
         noParsing: ['json', 'yaml'].includes(mode) ? noParsing : true
     }
@@ -168,40 +164,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         
         editorRef.current = editor
         monacoRef.current = monaco
-        if (inline) {
-            updateEditorHeight();
-            editor.onDidChangeModelDecorations(() => {
-                updateEditorHeight(); // typing
-                requestAnimationFrame(updateEditorHeight); // folding
-            });
-        }
     }
-
-    const updateEditorHeight = () => {
-        const editorElement = editorRef.current.getDomNode();
-        if (!editorElement) {
-            return;
-        }
-
-        const lineHeight: number = editorRef.current.getOption(monacoRef.current.editor.EditorOption.lineHeight);
-        const lineCount: number = editorRef.current.getModel()?.getLineCount() || 1;
-        const height: number = editorRef.current.getTopForLineNumber(lineCount + 1) + lineHeight;
-
-        if (prevHeight.current !== height) {
-            if (minHeight > height) {
-                prevHeight.current = minHeight
-                dispatch({ type: 'setHeight', value: minHeight });
-            }
-            else if (maxHeight < height) {
-                prevHeight.current = maxHeight
-                dispatch({ type: 'setHeight', value: maxHeight })
-            }
-            else {
-                prevHeight.current = height;
-                dispatch({ type: 'setHeight', value: height })
-            }
-        }
-    };
 
     useEffect(() => {
         if (!validatorSchema) return;
@@ -263,14 +226,6 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         dispatch({ type: 'setCode', value: final })
     }, [value, noParsing])
 
-
-    useEffect(() => {
-        if (prevHeight.current !== height) {
-            prevHeight.current = height;
-            dispatch({ type: 'setHeight', value: height })
-        }
-    }, [height])
-
     useEffect(() => {
       dispatch({ type: 'setDiff', value: diffView })
     }, [diffView])
@@ -322,7 +277,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                             options={options}
                             theme={state.theme.toLowerCase().split(" ").join("-")}
                             editorDidMount={editorDidMount}
-                            height={state.height || "100%"}
+                            height={height}
                             width="100%"
                         />
                         :
@@ -333,8 +288,9 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                             options={options}
                             onChange={handleOnChange}
                             editorDidMount={editorDidMount}
-                            height={state.height || "100%"}
+                            height={height}
                             width="100%"
+                            
                         />
                     }
                 </>
