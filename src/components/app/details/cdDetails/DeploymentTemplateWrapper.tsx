@@ -20,12 +20,8 @@ function DeploymentTemplateWrapper({ setShowTemplate, deploymentTemplatesConfigu
         (dt) => dt.wfrId.toString() === triggerId,
     );
 
-    
-
- 
-    return deploymentTemplateFilteredTrigger ? (
+    return deploymentTemplateFilteredTrigger && deploymentTemplatesConfiguration[deploymentTemplatesConfiguration.length - 1].wfrId.toString() !== triggerId ? (
         <div className="m-20 fs-13 cn-9">
-            {console.log('dtw', baseTimeStamp)}
             <NavLink
                 to={`${match.url}/deployment-template`}
                 onClick={() => {setShowTemplate(true); setBaseTimeStamp(baseTimeStamp)}}
@@ -37,9 +33,7 @@ function DeploymentTemplateWrapper({ setShowTemplate, deploymentTemplatesConfigu
                 </span>
             </NavLink>
         </div>
-    ) : (
-        <CDEmptyState />
-    );
+    ) : <CDEmptyState />
 }
 
 export default DeploymentTemplateWrapper;
