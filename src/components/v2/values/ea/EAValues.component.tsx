@@ -101,9 +101,10 @@ function ExternalAppValues({ appId }: { appId: string }) {
 
     useEffect(() => {
         if (
-            chartValues?.id &&
-            chartValues?.chartVersion &&
-            chartValues?.name !== releaseInfo?.deployedAppDetail.appName
+            chartValues &&
+            chartValues.id &&
+            chartValues.chartVersion &&
+            chartValues.name !== releaseInfo?.deployedAppDetail.appName
         ) {
             getChartValues(chartValues.id, chartValues.kind)
                 .then((response) => {
@@ -112,7 +113,11 @@ function ExternalAppValues({ appId }: { appId: string }) {
                 .catch((error) => {
                     showError(error);
                 });
-        } else if (chartValues?.name === releaseInfo?.deployedAppDetail.appName && releaseInfo?.mergedValues) {
+        } else if (
+            releaseInfo &&
+            releaseInfo.mergedValues &&
+            releaseInfo.deployedAppDetail.appName === chartValues?.name
+        ) {
             setModifiedValuesYaml(YAML.stringify(JSON.parse(releaseInfo?.mergedValues)));
         }
     }, [chartValues]);
