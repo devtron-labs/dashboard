@@ -186,9 +186,6 @@ export default function CDDetails(){
                                                     key={idx}
                                                     triggerDetails={trigger}
                                                     setBaseTimeStamp={setBaseTimeStamp}
-                                                    baseTimeStamp={baseTimeStamp}
-                                                    baseTemplateId={baseTemplateId}
-                                                    setBaseTemplateId={setBaseTemplateId}
                                                 />
                                             ))}
                                         {hasMore && <DetectBottom callback={reloadNextAfterBottom} />}
@@ -276,7 +273,7 @@ export default function CDDetails(){
     );
 }
 
-const DeploymentCard:React.FC<{triggerDetails: History; setBaseTimeStamp; baseTimeStamp: string; setBaseTemplateId; baseTemplateId}> = ({triggerDetails, setBaseTimeStamp, baseTimeStamp})=>{
+const DeploymentCard:React.FC<{triggerDetails: History; setBaseTimeStamp: React.Dispatch<React.SetStateAction<string>>}> = ({triggerDetails, setBaseTimeStamp})=>{
     const { path } = useRouteMatch()
     const {triggerId, ...rest} = useParams<{triggerId: string}>()
 

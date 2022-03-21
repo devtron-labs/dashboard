@@ -4,10 +4,15 @@ import CompareWithBaseConfig from './CompareWithBaseConfig';
 import HistoryDiff from './HistoryDiff';
 import { getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from './service';
 import { useParams } from 'react-router';
-import { DeploymentTemplateConfiguration, DeploymentTemplateOptions, CompareViewDeploymentType } from './cd.type';
+import {
+    DeploymentTemplateOptions,
+    CompareViewDeploymentType,
+    DeploymentTemplateConfiguration,
+    DeploymentTemplateViaTargetId,
+} from './cd.type';
 import CDEmptyState from './CDEmptyState';
 
-function DeploymentHistoryConfigTabView({
+function CompareViewDeployment({
     showTemplate,
     setShowTemplate,
     baseTimeStamp,
@@ -19,8 +24,8 @@ function DeploymentHistoryConfigTabView({
         DeploymentTemplateConfiguration[]
     >([]);
     const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState<DeploymentTemplateOptions>();
-    const [currentConfiguration, setCurrentConfiguration] = useState<DeploymentTemplateConfiguration[]>();
-    const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentTemplateConfiguration>();
+    const [currentConfiguration, setCurrentConfiguration] = useState<DeploymentTemplateViaTargetId>();
+    const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentTemplateViaTargetId>();
 
     const [loader, setLoader] = useState<boolean>(false);
     const [codeEditorLoading, setCodeEditorLoading] = useState<boolean>(false);
@@ -101,4 +106,4 @@ function DeploymentHistoryConfigTabView({
     );
 }
 
-export default DeploymentHistoryConfigTabView;
+export default CompareViewDeployment;

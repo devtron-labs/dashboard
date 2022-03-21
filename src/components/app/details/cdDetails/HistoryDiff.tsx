@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
-import { useRouteMatch } from 'react-router';
-import { Route, Switch } from 'react-router-dom';
+import React from 'react';
 import { Progressing } from '../../../common';
+import { DeploymentTemplateHistoryType } from './cd.type';
 import './cdDetail.scss';
 import DeploymentTemplateHistory from './DeploymentTemplateHistory';
 
-function HistoryDiff({ currentConfiguration, loader, codeEditorLoading, baseTemplateConfiguration }) {
-    const { path } = useRouteMatch();
+function HistoryDiff({ currentConfiguration, loader, codeEditorLoading, baseTemplateConfiguration }: DeploymentTemplateHistoryType) {
 
     return (
         <div className="historical-diff__container">

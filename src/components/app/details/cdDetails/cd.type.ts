@@ -23,6 +23,7 @@ export interface DeploymentTemplateHistoryType {
     currentConfiguration: DeploymentTemplateViaTargetId;
     baseTemplateConfiguration: DeploymentTemplateViaTargetId;
     codeEditorLoading: boolean;
+    loader?: boolean
 }
 export interface DeploymentTemplateOptions {
     label: string;
