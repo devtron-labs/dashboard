@@ -89,6 +89,7 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
         terminal.current.attachCustomKeyEventHandler(handleKeyPress);
         handleSelectionChange(terminal.current,setPopupText);
         fitAddon.current = new FitAddon();
+        fitAddon.current.fit()
         webFontAddon.current = new XtermWebfont();
 
         terminal.current.loadAddon(fitAddon.current);
