@@ -273,7 +273,6 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                     handleClose={e => setReadme(false)}
                     schema={state.data.schema}
                     defaultValue={state && state.data && state.duplicate ? YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
-                    height={500}
                     readOnly={!state.duplicate}
                     readme={state.data.readme}
                 />

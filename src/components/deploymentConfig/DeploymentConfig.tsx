@@ -384,7 +384,6 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                 <VisibleModal className="">
                     <ReadmeConfig
                         value={tempFormData}
-                        height={500}
                         schema={schemas}
                         onChange={(resp) => {
                             setTempFormData(resp);
