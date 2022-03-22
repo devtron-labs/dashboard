@@ -183,7 +183,9 @@ export const ChartRepoSelector = ({
                     <div className="flex sticky-information__bottom">
                         <Info className="code-editor__information-info-icon" />
                         Unable to find the desired chart? To connect a chart repo or Re-sync connected repos.&nbsp;
-                        <NavLink to={URLS.GLOBAL_CONFIG_CHART}>Go to chart repository</NavLink>
+                        <NavLink to={URLS.GLOBAL_CONFIG_CHART} target="_blank">
+                            Go to chart repository
+                        </NavLink>
                     </div>
                 </div>
             </components.MenuList>
