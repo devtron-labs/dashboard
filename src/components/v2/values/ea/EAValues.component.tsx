@@ -188,7 +188,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
             return
         }
 
-        if (!forceUpdate && !installedAppInfo) {
+        if (!forceUpdate && !installedAppInfo && !repoChartValue?.chartRepoName) {
             setShowAppNotLinkedDialog(true)
             return
         }
@@ -204,7 +204,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
         setUpdateInProgress(true)
 
         try {
-            if (!installedAppInfo && !forceUpdate) {
+            if (!forceUpdate && !installedAppInfo) {
                 const payload: LinkToChartStoreRequest = {
                     appId: appId,
                     valuesYaml: modifiedValuesYaml,
