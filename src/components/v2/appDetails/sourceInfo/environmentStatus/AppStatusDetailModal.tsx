@@ -1,19 +1,10 @@
-import React, { useEffect, useMemo, useRef } from 'react'
-import { Drawer, VisibleModal } from '../../../../common'
-import TableUtil from '../../../utils/tableUtils/Table.util'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { Drawer } from '../../../../common'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import IndexStore from '../../index.store';
-import { AggregatedNodes } from '../../../../app/types';
+import { AggregatedNodes, AppStreamData } from '../../../../app/types';
 import { aggregateNodes } from '../../../../app/details/appDetails/utils';
 import './environmentStatus.scss'
-
-// function getNodeMessage(kind, name) {
-//     if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
-//         const { status, message } = nodeStatusMap.get(`${kind}/${name}`);
-//         if (status === 'SyncFailed') return 'Unable to apply changes: ' + message;
-//     }
-//     return '';
-// }
 
 function AppStatusDetailModal({ close }) {
     const _appDetails = IndexStore.getAppDetails();
@@ -21,7 +12,28 @@ function AppStatusDetailModal({ close }) {
         return aggregateNodes(_appDetails?.resourceTree?.nodes || [], _appDetails?.resourceTree?.podMetadata || []);
     }, [_appDetails]);
     const appStatusDetailRef = useRef<HTMLDivElement>(null);
+    const [streamData, setStreamData] = useState<AppStreamData>(null);
 
+    const [nodeStatusMap, setNodeStatusMap] = useState(new Map());
+    useEffect(() => {
+        const stats = streamData?.result?.application?.status?.operationState?.syncResult?.resources?.reduce(
+            (agg, curr) => {
+                agg.set(`${curr.kind}/${curr.name}`, curr);
+                return agg;
+            },
+            new Map(),
+        );
+        setNodeStatusMap(stats);
+    }, [streamData]);
+
+    function getNodeMessage(kind, name) {
+        if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
+            const { status, message } = nodeStatusMap.get(`${kind}/${name}`);
+            if (status === 'SyncFailed') return 'Unable to apply changes: ' + message;
+            console.log('SyncFailed')
+        }
+        return '';
+    }
     const escKeyPressHandler = (evt): void => {
         if (evt && evt.key === 'Escape' && typeof close === 'function') {
             evt.preventDefault();
@@ -111,12 +123,13 @@ function AppStatusDetailModal({ close }) {
                                                                 gridRowGap: '8px',
                                                             }}
                                                         >
-                                                            {/* {getNodeMessage(kind, nodeDetails.name) && (
+                                                           {getNodeMessage(kind, nodeDetails.name) && (
                                                                 <div>{getNodeMessage(kind, nodeDetails.name)}</div>
-                                                            )} */}
+                                                            )} 
                                                             {nodeDetails.health && nodeDetails.health.message && (
-                                                                <div>{nodeDetails.health.message}</div>
+                                                                <div>{nodeDetails.health.message} </div>
                                                             )}
+                                                            {console.log(getNodeMessage(kind, nodeDetails.name))}
                                                         </div>
                                                     </td>
                                                 </tr>
