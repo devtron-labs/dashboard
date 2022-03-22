@@ -218,8 +218,8 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                 setValidationStatus(VALIDATION_STATUS.SUCCESS)
                 toast.success(
                     <ToastBody
-                        title="Chart repo added."
-                        subtitle="It may take upto 5 mins for the charts to be available in the chart store."
+                        title="Chart repo saved"
+                        subtitle="It may take upto 5 mins for the charts to be listed in the chart store."
                     />,
                 );
                 await reload();
