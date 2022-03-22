@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { showError, useForm, useEffectAfterMount, useAsync, Progressing } from '../common'
+import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ToastBody } from '../common'
 import { toast } from 'react-toastify'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react';
@@ -216,10 +216,14 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
 
             if (result && !result?.actualErrMsg) {
                 setValidationStatus(VALIDATION_STATUS.SUCCESS)
-                toast.success('Successfully saved.')
+                toast.success(
+                    <ToastBody
+                        title="Chart repo saved"
+                        subtitle="It may take upto 5 mins for the charts to be listed in the chart store."
+                    />,
+                );
                 await reload();
-            }
-            else {
+            } else {
                 setValidationStatus(VALIDATION_STATUS.FAILURE)
                 setLoading(false);
                 setValidationError({ errtitle: result?.customErrMsg, errMessage: result.actualErrMsg })

@@ -10,6 +10,7 @@ export interface ChartValuesSelectProps {
     tabIndex?: number;
     chartValues: ChartValuesType;
     chartValuesList: ChartValuesType[];
+    hideVersionFromLabel?: boolean;
 }
 
 export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
@@ -36,14 +37,18 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
         </div>
     }
 
+    getChartValueLabel(chartName: string, version: string): string {
+        return `${chartName}${this.props.hideVersionFromLabel || !version ? '' : ` (${version})`}`;
+    }
+
     render() {
         let chartValuesList = this.props.chartValuesList;
         let chartValues = getChartValuesFiltered(this.props.chartValuesList);
         let selectedChartValue = chartValuesList.find(chartValue => this.props.chartValues.id === chartValue.id && chartValue.kind === this.props.chartValues.kind);
-        let label = "Select Chart Value";
-        if (selectedChartValue) {
-            label = `${selectedChartValue.name} (${selectedChartValue.chartVersion})`
-        }
+        const label = selectedChartValue
+            ? this.getChartValueLabel(selectedChartValue.name, selectedChartValue.chartVersion)
+            : 'Select Chart Value';
+
         return <>
             <Select tabIndex={this.props.tabIndex || 0}
                 rootClassName="select-button--default"
@@ -73,7 +78,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                 <Select.OptGroup label="EXISTING" key={"EXISTING"}>
                     {chartValues.existingChartValues.length ? chartValues.existingChartValues.map((chartValue) => {
                         return <Select.Option key={chartValue.id} value={chartValue}>
-                            {chartValue.name} ({chartValue.chartVersion})
+                                          {this.getChartValueLabel(chartValue.name, chartValue.chartVersion)}
                     </Select.Option>
                     }) : this.renderNoResultsOption()}
                 </Select.OptGroup>
