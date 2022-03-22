@@ -181,6 +181,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
         }
         const api = state.data.environmentConfig && state.data.environmentConfig.id > 0 ? updateDeploymentTemplate : createDeploymentTemplate
         const payload = {
+            environmentId: +envId,
             envOverrideValues: obj,
             chartRefId: state.selectedChartRefId,
             IsOverride: true,
@@ -272,7 +273,6 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                     handleClose={e => setReadme(false)}
                     schema={state.data.schema}
                     defaultValue={state && state.data && state.duplicate ? YAML.stringify(state.data.globalConfig, { indent: 2 }) : ""}
-                    height={500}
                     readOnly={!state.duplicate}
                     readme={state.data.readme}
                 />
@@ -300,7 +300,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
 
 function NameSpace({ originalNamespace = "", chartRefId, id }) {
     const [loading, setLoading] = useState(false)
-    const { appId, envId } = useParams()
+    const { appId, envId } = useParams<{appId: string, envId: string}>()
     const [namespace, setNamespace] = useState(originalNamespace)
     useEffect(() => {
         setNamespace(originalNamespace)

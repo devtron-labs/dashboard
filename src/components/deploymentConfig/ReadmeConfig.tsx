@@ -12,14 +12,13 @@ interface Readme {
     value: string;
     handleClose: any;
     loading: boolean;
-    height?: number;
     onChange: any;
     schema?: any;
     readOnly?: boolean;
     defaultValue?: string;
 }
 
-function ReadmeConfig({ readme, value, handleClose, loading, height, onChange, schema, readOnly, defaultValue }:Readme) {
+function ReadmeConfig({ readme, value, handleClose, loading, onChange, schema, readOnly, defaultValue }:Readme) {
     const key = useKeyDown();
     const [tempForm, setTempForm] = useState();
     useEffect(() => {
@@ -54,11 +53,11 @@ function ReadmeConfig({ readme, value, handleClose, loading, height, onChange, s
                         <MarkDown markdown={readme} />
                     </div>
                 </div>
-                <div className="bw-1 br-4 bcn-0">
+                <div className="bw-1 br-4 bcn-0 code-editor">
                     <CodeEditor
                         value={value}
                         defaultValue={defaultValue}
-                        height={height}
+                        height={"calc(100% - 42px)"}
                         readOnly={readOnly}
                         validatorSchema={schema}
                         onChange={setTempForm}

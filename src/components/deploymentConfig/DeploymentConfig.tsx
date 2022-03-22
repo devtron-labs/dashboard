@@ -114,18 +114,11 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
         initialise();
     }, []);
 
-    // useEffectAfterMount(() => {
-    //     if (typeof chartConfigLoading === 'boolean' && !chartConfigLoading) {
-    //         fetchDeploymentTemplate()
-    //     }
-    // }, [chartConfigLoading])
-
     useEffectAfterMount(() => {
         fetchDeploymentTemplate();
-        // initialise()
     }, [selectedChart]);
 
-    const { appId } = useParams<{ appId }>();
+    const { appId, envId } = useParams<{ appId: string, envId: string }>();
 
     async function saveAppMetrics(appMetricsEnabled) {
         try {
@@ -391,7 +384,6 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                 <VisibleModal className="">
                     <ReadmeConfig
                         value={tempFormData}
-                        height={500}
                         schema={schemas}
                         onChange={(resp) => {
                             setTempFormData(resp);
