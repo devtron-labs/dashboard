@@ -189,7 +189,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
             return;
         }
 
-        if (!forceUpdate && !repoChartValue?.chartRepoName) {
+        if (!forceUpdate && !installedAppInfo) {
             setShowAppNotLinkedDialog(true);
             return;
         }
@@ -203,7 +203,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
         }
 
         setUpdateInProgress(true);
-        const payload = repoChartValue.chartRepoName
+        const payload = !installedAppInfo
             ? {
                   appId: appId,
                   valuesYaml: modifiedValuesYaml,
@@ -216,7 +216,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
                   valuesYaml: modifiedValuesYaml,
               };
 
-        (repoChartValue.chartRepoName
+        (!installedAppInfo
             ? linkToChartStore(payload as LinkToChartStoreRequest)
             : updateApplicationRelease(payload as UpdateApplicationRequest)
         )
