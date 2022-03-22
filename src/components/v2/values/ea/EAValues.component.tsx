@@ -272,7 +272,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
                                 installedAppInfo={installedAppInfo}
                                 releaseInfo={releaseInfo}
                             />
-                            {installedAppInfo && releaseInfo && <StaticChartRepoInput releaseInfo={releaseInfo} />}
+                            {installedAppInfo && <StaticChartRepoInput releaseInfo={releaseInfo} />}
                             {!installedAppInfo && (
                                 <ChartRepoSelector
                                     isExternal={true}
