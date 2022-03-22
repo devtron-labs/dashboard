@@ -1,14 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactGA from 'react-ga';
-import { DropdownIcon, Page } from '../../../common';
+import { DropdownIcon, Page, Progressing } from '../../../common';
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails';
 import '../../../charts/modal/DeployChart.scss';
+import MessageUI, { MsgUIType } from '../../common/message.ui';
 
-function ReadmeColumn({ readmeCollapsed, toggleReadmeCollapsed, readme, ...props }) {
-
+function ReadmeColumn({ readmeCollapsed, toggleReadmeCollapsed, readme, loading = false, ...props }) {
     return (
         <div className="deploy-chart__readme-column">
-            <MarkDown markdown={readme} className="deploy-chart__readme-markdown" />
+            {loading && (
+                <div {...(readmeCollapsed && { style: { width: '0' } })}>
+                    <Progressing pageLoader />
+                </div>
+            )}
+            {!loading && !readme && (
+                <MessageUI
+                    icon={MsgUIType.ERROR}
+                    msg="Readme is not available for the selected chart version"
+                    size={16}
+                    theme="light-gray"
+                    iconClassName="no-readme-icon"
+                    msgStyle={{ color: 'var(--N700)', marginTop: '0' }}
+                    {...(readmeCollapsed && { bodyStyle: { width: '0' } })}
+                />
+            )}
+            {!loading && readme && <MarkDown markdown={readme} className="deploy-chart__readme-markdown" />}
             <aside className="flex column" onClick={readme ? (e) => {
                 if (readmeCollapsed) {
                     ReactGA.event({
@@ -24,7 +40,7 @@ function ReadmeColumn({ readmeCollapsed, toggleReadmeCollapsed, readme, ...props
                 {readmeCollapsed && <Page className="rotate" style={{ ['--rotateBy' as any]: `0deg` }} />}
             </aside>
         </div>
-    )
+    );
 }
 
-export default ReadmeColumn
+export default ReadmeColumn;
