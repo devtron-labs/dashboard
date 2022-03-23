@@ -459,8 +459,8 @@ export const ChartValuesEditor = ({
         let timer;
         if (autoFocus && parentRef && editorRef) {
             timer = setTimeout(() => {
-                parentRef.current?.scrollTo({
-                    top: editorRef.current?.offsetTop - 100,
+                parentRef?.current?.scrollTo({
+                    top: editorRef?.current?.offsetTop - 100,
                     behavior: 'smooth',
                 });
             }, 1000);
