@@ -1,0 +1,54 @@
+.historical-diff {
+    display: grid;
+    grid-template-rows: 60px auto;
+    height: 100%;
+    background-color: var(--white);
+}
+
+.historical-diff__container {
+    min-width: 280px;
+    height: calc(100vh - 160px);
+}
+
+.deployment-diff__upper {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: auto;
+}
+
+.historical-diff__left {
+    padding: 16px 12px;
+    overflow: hidden;
+    min-width: 280px;
+}
+
+.ml-20 {
+    margin-left: 20px !important;
+}
+
+.border-bottom {
+    border-bottom: 1px solid var(--N200);
+}
+
+.history_diff__wrapper {
+    .tab-list__tab-link.active {
+        color: var(--N900);
+        background: #e5f2ff;
+        font-weight: 600;
+        border-bottom: 0px;
+    }
+}
+
+.code-editor-header-value {
+    border-bottom: 1px solid var(--N200);
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+}
+
+.compare-history__border-right {
+    border-right: 1px solid var(--N100);
+}
+
+.compare-history__border-left {
+    border-left: 1px solid var(--N100);
+}

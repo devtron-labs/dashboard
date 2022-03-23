@@ -1,18 +1,20 @@
 import React from 'react';
 import { ReactComponent as InfoIcon } from '../assets/icons/ic-info-outline-gray.svg';
 import { ReactComponent as MultipleContainer } from '../assets/icons/ic-select-container.svg';
+import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg';
 import { Pod as PodIcon, Progressing } from '../../common';
 
 export enum MsgUIType {
     LOADING = 'loading',
     POD = 'pod',
     MULTI_CONTAINER = 'multi_container',
+    ERROR = 'error',
 }
 
 export interface MsgUIProps {
     msg: string;
     icon?: MsgUIType;
-    theme?: 'white' | 'dark';
+    theme?: 'white' | 'dark' | 'light-gray';
     iconClassName?: string;
     bodyStyle?: any;
     msgStyle?: any;
@@ -59,6 +61,8 @@ const MessageUI: React.FC<MsgUIProps> = ({
                             );
                         case MsgUIType.MULTI_CONTAINER:
                             return <MultipleContainer className={iconClassName || ''} />;
+                        case MsgUIType.ERROR:
+                            return <ErrorIcon className={iconClassName || ''} width={size} height={size} />;
                         default:
                             return <InfoIcon className={`fcn-0 ${iconClassName || ''}`} width={size} height={size} />;
                     }
