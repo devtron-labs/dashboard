@@ -148,7 +148,7 @@ export default function CDDetails(){
         if(pipelineId){
         try {
                 getDeploymentTemplateDiff(appId, pipelineId).then((response) => {
-                    setDeploymentTemplatesConfiguration(response.result.sort((a, b) => sortCallback('id', b, a)));
+                    setDeploymentTemplatesConfiguration(response.result?.sort((a, b) => sortCallback('id', b, a)));
                 });
         } catch (err) {
             showError(err);
