@@ -15,12 +15,12 @@ interface TemplateConfiguration {
 function DeploymentTemplateWrapper({ setShowTemplate, deploymentTemplatesConfiguration, setBaseTimeStamp, baseTimeStamp }: TemplateConfiguration) {
     const match = useRouteMatch();
     const { triggerId } = useParams<{ triggerId: string }>();
-    const deploymentTemplateFilteredTrigger = deploymentTemplatesConfiguration.find(
+    const deploymentTemplateFilteredTrigger =  deploymentTemplatesConfiguration?.find(
         (dt) => dt.wfrId.toString() === triggerId,
     );
-    const isLastDeploymentTemplatesConfiguration =  deploymentTemplatesConfiguration[deploymentTemplatesConfiguration.length - 1].wfrId.toString() === triggerId
+    const isLastDeploymentTemplatesConfiguration =  deploymentTemplatesConfiguration && deploymentTemplatesConfiguration.length > 0 && deploymentTemplatesConfiguration[deploymentTemplatesConfiguration.length - 1]?.wfrId.toString() === triggerId
     
-    return deploymentTemplateFilteredTrigger && !isLastDeploymentTemplatesConfiguration ? (
+    return deploymentTemplateFilteredTrigger && !isLastDeploymentTemplatesConfiguration  ? (
         <div className="m-20 fs-13 cn-9">
             <NavLink
                 to={`${match.url}/deployment-template`}

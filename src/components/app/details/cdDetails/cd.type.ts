@@ -48,4 +48,7 @@ export interface CompareViewDeploymentType {
     baseTimeStamp: string;
     baseTemplateId: string;
     setBaseTemplateId: React.Dispatch<React.SetStateAction<string>>;
+    deploymentTemplatesConfiguration: DeploymentTemplateConfiguration[]
+    loader: boolean;
+    setLoader: React.Dispatch<React.SetStateAction<boolean>>;
 }
