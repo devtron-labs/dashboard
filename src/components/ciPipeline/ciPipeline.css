@@ -1,6 +1,6 @@
 .modal__body--ci {
     width: 800px;
-    margin-top: 0;
+    margin-top: 24px;
 }
 
 .ci-button-container {
@@ -203,6 +203,11 @@
 .ci-error {
     text-align: center;
     margin-left: 19%;
+}
+
+.modal__body__ci_new_ui {
+  width: 800px;
+  margin-top: 0;
 }
 
 .advanced-option-container{

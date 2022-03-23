@@ -247,7 +247,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         <VisibleModal className="">
             {' '}
             <div
-                className={`modal__body modal__body--ci br-0 modal__body--p-0 ${
+                className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
                 }`}
             >
