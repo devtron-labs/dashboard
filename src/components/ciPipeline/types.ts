@@ -36,39 +36,42 @@ export interface ExternalCIPipelineState {
     hostURLConfig: HostURLConfig;
 }
 
+export interface FormType {
+  name: string,
+  args: { key: string, value: string }[],
+  materials: MaterialType[],
+  gitHost: Githost,
+  webhookEvents: WebhookEvent[],
+  ciPipelineSourceTypeOptions: CiPipelineSourceTypeOption[],
+  webhookConditionList: { selectorId: number; value: string }[],
+  triggerType: string,
+  scanEnabled?: boolean,
+  beforeDockerBuildScripts: { id: number; name: string, outputLocation: string; script: string, isCollapsed: boolean, index: number }[],
+  afterDockerBuildScripts: { id: number; name: string, outputLocation: string; script: string, isCollapsed: boolean, index: number }[],
+  ciPipelineEditable : true
+}
+
+export interface CIPipelineDataType {
+  id: number,
+  ciMaterial: any[],
+  dockerArgs: any,
+  parentCiPipeline?: number; //required in case of linked CI
+  parentAppId?: number//required in case of linked CI
+  active: true,
+  externalCiConfig: any,
+  isExternal: boolean,
+  isManual: boolean,
+  name: string,
+  linkedCount: number;
+  scanEnabled?: boolean;
+}
 export interface CIPipelineState {
     code: number;
     view: string;
     showError: boolean;
     loadingData: boolean;
-    form: {
-        name: string,
-        args: { key: string, value: string }[],
-        materials: MaterialType[],
-        gitHost: Githost,
-        webhookEvents: WebhookEvent[],
-        ciPipelineSourceTypeOptions: CiPipelineSourceTypeOption[],
-        webhookConditionList: { selectorId: number; value: string }[],
-        triggerType: string,
-        scanEnabled?: boolean,
-        beforeDockerBuildScripts: { id: number; name: string, outputLocation: string; script: string, isCollapsed: boolean, index: number }[],
-        afterDockerBuildScripts: { id: number; name: string, outputLocation: string; script: string, isCollapsed: boolean, index: number }[],
-        ciPipelineEditable : true
-    },
-    ciPipeline: {
-        id: number,
-        ciMaterial: any[],
-        dockerArgs: any,
-        parentCiPipeline?: number; //required in case of linked CI
-        parentAppId?: number//required in case of linked CI
-        active: true,
-        externalCiConfig: any,
-        isExternal: boolean,
-        isManual: boolean,
-        name: string,
-        linkedCount: number;
-        scanEnabled?: boolean;
-    },
+    form: FormType,
+    ciPipeline: CIPipelineDataType,
     sourcePipelineURL?: string; //required Linked CI
     showDeleteModal: boolean;
     showDockerArgs: boolean;

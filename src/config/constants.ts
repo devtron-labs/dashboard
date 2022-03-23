@@ -206,6 +206,7 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/devtron/setup/global-configurations/user-access',
     HYPERION_TO_FULL_MODE: 'https://docs.devtron.ai/hyperion/upgrade-to-devtron',
     HYPERION: 'https://docs.devtron.ai/#hyperion',
+    PRE_BUILD_TASK: 'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/cd-pipeline'
 };
 
 // APP LIST STARTS

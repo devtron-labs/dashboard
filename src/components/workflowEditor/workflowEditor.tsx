@@ -9,7 +9,7 @@ import { getCreateWorkflows } from '../app/details/triggerView/workflow.service'
 import { deleteWorkflow } from './service';
 import AddWorkflow from './CreateWorkflow';
 import add from '../../assets/icons/misc/addWhite.svg';
-import CIPipeline from '../ciPipeline/CIPipeline';
+import CIPipeline from '../CIPipelineN/CIPipeline';
 import CDPipeline from '../cdPipeline/CDPipeline';
 import emptyWorkflow from '../../assets/img/ic-empty-workflow@3x.png';
 import ExternalCIPipeline from '../ciPipeline/ExternalCIPipeline';
@@ -208,6 +208,11 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.setState({ showSuccessScreen: false });
     };
 
+    getLen = (): number=>{
+      let ciNode = this.state.allCINodeMap.get(this.props.match.params.ciPipelineId);
+      return ciNode && ciNode.downstreams ? ciNode.downstreams.length : 0;
+    }
+
     //TODO: dynamic routes for ci-pipeline
     renderRouter() {
         return (
@@ -248,8 +253,15 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     }}
                 />
                 <Route
-                    path={`${this.props.match.path}/ci-pipeline/:ciPipelineId?`}
-                    render={(props) => {
+                    path={`${this.props.match.path}/ci-pipeline/:ciPipelineId?`}>
+                      <CIPipeline
+                                appName={this.state.appName}
+                                connectCDPipelines={this.getLen()}
+                                close={this.closePipeline}
+                                getWorkflows={this.getWorkflows}
+                            />
+                    </Route>
+                    {/* render={(props) => {
                         let ciNode = this.state.allCINodeMap.get(props.match.params.ciPipelineId);
                         let len = ciNode && ciNode.downstreams ? ciNode && ciNode.downstreams.length : 0;
                         return (
@@ -264,19 +276,17 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             />
                         );
                     }}
-                />
+                /> */}
                 <Route
                     path={`${this.props.match.path}/external-ci/:ciPipelineId?`}
                     render={(props) => {
-                        let ciNode = this.state.allCINodeMap.get(props.match.params.ciPipelineId);
-                        let len = ciNode && ciNode.downstreams ? ciNode && ciNode.downstreams.length : 0;
                         return (
                             <ExternalCIPipeline
                                 match={props.match}
                                 history={props.history}
                                 location={props.location}
                                 appName={this.state.appName}
-                                connectCDPipelines={len}
+                                connectCDPipelines={this.getLen()}
                                 close={this.closePipeline}
                                 getWorkflows={this.getWorkflows}
                             />
@@ -286,15 +296,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 <Route
                     path={`${this.props.match.path}/linked-ci/:ciPipelineId`}
                     render={(props) => {
-                        let ciNode = this.state.allCINodeMap.get(props.match.params.ciPipelineId);
-                        let len = ciNode && ciNode.downstreams ? ciNode && ciNode.downstreams.length : 0;
                         return (
                             <LinkedCIPipelineView
                                 match={props.match}
                                 history={props.history}
                                 location={props.location}
                                 appName={this.state.appName}
-                                connectCDPipelines={len}
+                                connectCDPipelines={this.getLen()}
                                 close={this.closePipeline}
                                 getWorkflows={this.getWorkflows}
                             />
