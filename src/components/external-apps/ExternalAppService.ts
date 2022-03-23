@@ -9,7 +9,7 @@ export interface ReleaseInfoResponse extends ResponseType {
 }
 
 export interface HelmAppDeploymentHistoryResponse extends ResponseType {
-    result?: HelmAppDeploymentHistory
+    result?: DeploymentHistoryAndInstalledAppInfo
 }
 
 export interface HelmAppDeploymentManifestDetail {
@@ -50,6 +50,11 @@ export interface ReleaseInfo {
     readme: string,
 }
 
+export interface DeploymentHistoryAndInstalledAppInfo {
+    deploymentHistory : HelmAppDeploymentDetail[],
+    installedAppInfo : InstalledAppInfo,
+}
+
 export interface InstalledAppInfo {
     appId: number,
     installedAppId: number,
@@ -59,10 +64,6 @@ export interface InstalledAppInfo {
     appStoreChartId: number,
     clusterId: number,
     environmentId: number
-}
-
-export interface HelmAppDeploymentHistory {
-    deploymentHistory: HelmAppDeploymentDetail[]
 }
 
 export interface HelmAppDeploymentDetail {
