@@ -157,11 +157,6 @@ export default function CDDetails(){
             showError(err);
             setLoader(false);
         }
-
-        return (): void => {
-            if (showTemplate) {
-                setShowTemplate(false);
-    }}
     }}, [pipelineId]);
 
     function syncState(triggerId: number, triggerDetail: History){

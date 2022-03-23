@@ -18,7 +18,7 @@ function DeploymentTemplateWrapper({ setShowTemplate, deploymentTemplatesConfigu
     const deploymentTemplateFilteredTrigger =  deploymentTemplatesConfiguration?.find(
         (dt) => dt.wfrId.toString() === triggerId,
     );
-    const isLastDeploymentTemplatesConfiguration =  deploymentTemplatesConfiguration && deploymentTemplatesConfiguration[deploymentTemplatesConfiguration.length - 1]?.wfrId.toString() === triggerId
+    const isLastDeploymentTemplatesConfiguration =  deploymentTemplatesConfiguration.length > 0 && deploymentTemplatesConfiguration[deploymentTemplatesConfiguration.length - 1]?.wfrId.toString() === triggerId
     
     return deploymentTemplateFilteredTrigger && !isLastDeploymentTemplatesConfiguration  ? (
         <div className="m-20 fs-13 cn-9">
