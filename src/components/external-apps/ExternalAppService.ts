@@ -118,6 +118,17 @@ export interface LinkToChartStoreRequest {
     referenceValueKind: string;
 }
 
+export interface RollbackReleaseRequest {
+    hAppId: string
+    version: number
+    installedAppId?: number
+    installedAppVersionId?: number
+}
+
+interface RollbackReleaseResponse extends ResponseType {
+    result?: ActionResponse
+}
+
 export const getReleaseInfo = (appId: string): Promise<ReleaseInfoResponse> => {
     let url = `${Routes.HELM_RELEASE_INFO_API}?appId=${appId}`
     return get(url);
@@ -152,3 +163,11 @@ export const updateApplicationRelease = (requestPayload: UpdateApplicationReques
 export const linkToChartStore = (request: LinkToChartStoreRequest): Promise<UpdateReleaseResponse> => {
     return put(Routes.HELM_LINK_TO_CHART_STORE_API, request);
 };
+
+export const rollbackApplicationDeployment = (
+    request: RollbackReleaseRequest,
+    isExternal: boolean,
+): Promise<RollbackReleaseResponse> => {
+    const url = isExternal ? Routes.HELM_EA_DEPLOYMENT_ROLLBACK_API : Routes.HELM_DEPLOYMENT_ROLLBACK_API
+    return put(url, request)
+}

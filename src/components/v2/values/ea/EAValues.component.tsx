@@ -204,6 +204,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
         setUpdateInProgress(true)
 
         try {
+            let result, errors;
             if (!forceUpdate && !installedAppInfo) {
                 const payload: LinkToChartStoreRequest = {
                     appId: appId,
@@ -212,18 +213,29 @@ function ExternalAppValues({ appId }: { appId: string }) {
                     referenceValueId: selectedVersionUpdatePage.id,
                     referenceValueKind: chartValues.kind,
                 }
-                await linkToChartStore(payload)
+                const res = await linkToChartStore(payload)
+                result = res.result
+                errors = res.errors
             } else {
                 const payload: UpdateApplicationRequest = {
                     appId: appId,
                     valuesYaml: modifiedValuesYaml,
                 }
-                await updateApplicationRelease(payload)
+                const res = await updateApplicationRelease(payload)
+                result = res.result
+                errors = res.errors
             }
 
             setUpdateInProgress(false)
-            toast.success('Update and deployment initiated.')
-            history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
+
+            if (result?.success) {
+                toast.success('Update and deployment initiated.')
+                history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
+            } else if (errors) {
+                showError(errors)
+            } else {
+                toast.error('Some error occurred')
+            }
         } catch (err) {
             showError(err)
             setUpdateInProgress(false)
