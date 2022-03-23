@@ -366,10 +366,12 @@ function ExternalAppDeploymentHistory({ appId, appName }: { appId: string; appNa
                 requestPayload.installedAppVersionId = installedAppInfo.installedAppVersionId
             }
 
-            await rollbackApplicationDeployment(requestPayload, !installedAppInfo)
+
             setShowRollbackConfirmation(false)
-            toast.success('Deployment initiated')
             history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
+
+            await rollbackApplicationDeployment(requestPayload, !installedAppInfo)
+            toast.success('Deployment initiated')
         } catch (err) {
             setShowRollbackConfirmation(false)
             showError(err)
