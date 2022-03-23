@@ -54,7 +54,8 @@ export default function CDDetails(){
    const [baseTimeStamp, setBaseTimeStamp] = useState<string>()
      const [baseTemplateId, setBaseTemplateId] = useState< string>();
     const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState<DeploymentTemplateConfiguration[]>([]);
-   
+    const [loader, setLoader] = useState<boolean>(false);
+
     useEffect(()=>{
         if(!pathname.includes('/logs')) return
         switch(keys.join("")){
@@ -143,18 +144,25 @@ export default function CDDetails(){
         }
     },[deploymentHistoryResult, loadingDeploymentHistory, deploymentHistoryError])
 
-      
     useEffect(() => {
+        setLoader(true);
         if(pipelineId){
         try {
-                getDeploymentTemplateDiff(appId, pipelineId).then((response) => {
-                    setDeploymentTemplatesConfiguration(response.result?.sort((a, b) => sortCallback('id', b, a)));
-                });
+            getDeploymentTemplateDiff(appId, pipelineId).then((response) => {
+                setDeploymentTemplatesConfiguration(response.result.sort((a, b) => sortCallback('id', b, a)));
+                setLoader(false);
+            });
+
         } catch (err) {
             showError(err);
+            setLoader(false);
         }
-    }
-    }, [pipelineId]);
+
+        return (): void => {
+            if (showTemplate) {
+                setShowTemplate(false);
+    }}
+    }}, [pipelineId]);
 
     function syncState(triggerId: number, triggerDetail: History){
         setTriggerHistory(triggerHistory=>{
@@ -257,6 +265,9 @@ export default function CDDetails(){
                                 baseTemplateId={baseTemplateId}
                                 baseTimeStamp={baseTimeStamp}
                                 setBaseTemplateId= {setBaseTemplateId}
+                                deploymentTemplatesConfiguration={deploymentTemplatesConfiguration}
+                                loader={loader}
+                                setLoader={setLoader}
                             />
                         )}
                     />
