@@ -227,10 +227,6 @@
     padding: 0px;
 }
 
-.modal__body--mt-0 {
-    margin-top: 0px;
-}
-
 .modal__close-icon .stroke-color {
     stroke: var(--N600);
     stroke-width: 2;
