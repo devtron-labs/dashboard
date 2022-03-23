@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 import { useRouteMatch, useHistory } from 'react-router';
 import Tippy from '@tippyjs/react';
 
-function EnvironmentStatusComponent() {
+function EnvironmentStatusComponent({appStreamData}) {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable());
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false);
     const [showConfigStatusModal, setShowConfigStatusModal] = useState(false);
@@ -142,6 +142,7 @@ function EnvironmentStatusComponent() {
                     close={() => {
                         setShowAppStatusDetail(false);
                     }}
+                    appStreamData={appStreamData}
                 />
             )}
         </div>

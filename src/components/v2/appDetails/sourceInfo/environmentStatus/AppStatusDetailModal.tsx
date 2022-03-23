@@ -5,18 +5,18 @@ import IndexStore from '../../index.store';
 import { AggregatedNodes, AppStreamData } from '../../../../app/types';
 import { aggregateNodes } from '../../../../app/details/appDetails/utils';
 import './environmentStatus.scss'
+import { CaptureConsole } from '@sentry/integrations';
 
-function AppStatusDetailModal({ close }) {
+function AppStatusDetailModal({ close, appStreamData }) {
     const _appDetails = IndexStore.getAppDetails();
     const nodes: AggregatedNodes = useMemo(() => {
         return aggregateNodes(_appDetails?.resourceTree?.nodes || [], _appDetails?.resourceTree?.podMetadata || []);
     }, [_appDetails]);
     const appStatusDetailRef = useRef<HTMLDivElement>(null);
-    const [streamData, setStreamData] = useState<AppStreamData>(null);
-
     const [nodeStatusMap, setNodeStatusMap] = useState(new Map());
+
     useEffect(() => {
-        const stats = streamData?.result?.application?.status?.operationState?.syncResult?.resources?.reduce(
+        const stats = appStreamData?.result?.application?.status?.operationState?.syncResult?.resources?.reduce(
             (agg, curr) => {
                 agg.set(`${curr.kind}/${curr.name}`, curr);
                 return agg;
@@ -24,7 +24,7 @@ function AppStatusDetailModal({ close }) {
             new Map(),
         );
         setNodeStatusMap(stats);
-    }, [streamData]);
+    }, [appStreamData]);
 
     function getNodeMessage(kind, name) {
         if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
@@ -125,7 +125,7 @@ function AppStatusDetailModal({ close }) {
                                                         >
                                                            {getNodeMessage(kind, nodeDetails.name) && (
                                                                 <div>{getNodeMessage(kind, nodeDetails.name)}</div>
-                                                            )} 
+                                                            )}
                                                             {nodeDetails.health && nodeDetails.health.message && (
                                                                 <div>{nodeDetails.health.message} </div>
                                                             )}
