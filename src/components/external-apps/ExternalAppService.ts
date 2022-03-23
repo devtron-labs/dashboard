@@ -9,7 +9,7 @@ export interface ReleaseInfoResponse extends ResponseType {
 }
 
 export interface HelmAppDeploymentHistoryResponse extends ResponseType {
-    result?: HelmAppDeploymentHistory
+    result?: DeploymentHistoryAndInstalledAppInfo
 }
 
 export interface HelmAppDeploymentManifestDetail {
@@ -50,6 +50,11 @@ export interface ReleaseInfo {
     readme: string,
 }
 
+export interface DeploymentHistoryAndInstalledAppInfo {
+    deploymentHistory : HelmAppDeploymentDetail[],
+    installedAppInfo : InstalledAppInfo,
+}
+
 export interface InstalledAppInfo {
     appId: number,
     installedAppId: number,
@@ -59,10 +64,6 @@ export interface InstalledAppInfo {
     appStoreChartId: number,
     clusterId: number,
     environmentId: number
-}
-
-export interface HelmAppDeploymentHistory {
-    deploymentHistory: HelmAppDeploymentDetail[]
 }
 
 export interface HelmAppDeploymentDetail {
@@ -109,6 +110,25 @@ export interface UpdateApplicationRequest {
     valuesYaml: string
 }
 
+export interface LinkToChartStoreRequest {
+    appId: string;
+    valuesYaml: string;
+    appStoreApplicationVersionId: number;
+    referenceValueId: number;
+    referenceValueKind: string;
+}
+
+export interface RollbackReleaseRequest {
+    hAppId: string
+    version: number
+    installedAppId?: number
+    installedAppVersionId?: number
+}
+
+interface RollbackReleaseResponse extends ResponseType {
+    result?: ActionResponse
+}
+
 export const getReleaseInfo = (appId: string): Promise<ReleaseInfoResponse> => {
     let url = `${Routes.HELM_RELEASE_INFO_API}?appId=${appId}`
     return get(url);
@@ -137,6 +157,17 @@ export const deleteApplicationRelease = (appId: string): Promise<UninstallReleas
 }
 
 export const updateApplicationRelease = (requestPayload: UpdateApplicationRequest): Promise<UpdateReleaseResponse> => {
-    let url = `${Routes.HELM_RELEASE_APP_UPDATE_API}`
-    return put(url, requestPayload);
+    return put(Routes.HELM_RELEASE_APP_UPDATE_API, requestPayload);
+};
+
+export const linkToChartStore = (request: LinkToChartStoreRequest): Promise<UpdateReleaseResponse> => {
+    return put(Routes.HELM_LINK_TO_CHART_STORE_API, request);
+};
+
+export const rollbackApplicationDeployment = (
+    request: RollbackReleaseRequest,
+    isExternal: boolean,
+): Promise<RollbackReleaseResponse> => {
+    const url = isExternal ? Routes.HELM_EA_DEPLOYMENT_ROLLBACK_API : Routes.HELM_DEPLOYMENT_ROLLBACK_API
+    return put(url, request)
 }

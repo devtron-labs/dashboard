@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { showError, sortCallback } from '../../../common';
-import CompareWithBaseConfig from './CompareWithBaseConfig';
-import HistoryDiff from './HistoryDiff';
-import { getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from './service';
-import { useParams } from 'react-router';
+import React, { useEffect, useState } from 'react'
+import { showError, sortCallback } from '../../../common'
+import CompareWithBaseConfig from './CompareWithBaseConfig'
+import HistoryDiff from './HistoryDiff'
+import { getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from './service'
+import { useParams } from 'react-router'
 import {
     DeploymentTemplateOptions,
     CompareViewDeploymentType,
     DeploymentTemplateConfiguration,
     DeploymentTemplateViaTargetId,
-} from './cd.type';
-import CDEmptyState from './CDEmptyState';
+} from './cd.type'
+import CDEmptyState from './CDEmptyState'
 
 function DeploymentHistoryConfigTabView({
     showTemplate,
@@ -18,70 +18,59 @@ function DeploymentHistoryConfigTabView({
     baseTimeStamp,
     baseTemplateId,
     setBaseTemplateId,
+    deploymentTemplatesConfiguration,
+    loader,
+    setLoader,
 }: CompareViewDeploymentType) {
-    const { appId, pipelineId } = useParams<{ appId: string; pipelineId: string }>();
-    const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState<
-        DeploymentTemplateConfiguration[]
-    >([]);
-    const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState<DeploymentTemplateOptions>();
-    const [currentConfiguration, setCurrentConfiguration] = useState<DeploymentTemplateViaTargetId>();
-    const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentTemplateViaTargetId>();
+    const { appId, pipelineId } = useParams<{ appId: string; pipelineId: string }>()
+    const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState<DeploymentTemplateOptions>()
+    const [currentConfiguration, setCurrentConfiguration] = useState<DeploymentTemplateViaTargetId>()
+    const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentTemplateViaTargetId>()
 
-    const [loader, setLoader] = useState<boolean>(false);
-    const [codeEditorLoading, setCodeEditorLoading] = useState<boolean>(false);
+    const [codeEditorLoading, setCodeEditorLoading] = useState<boolean>(false)
 
     useEffect(() => {
-        setLoader(true);
-        if (selectedDeploymentTemplate) {
+        setLoader(true)
+
+        if (deploymentTemplatesConfiguration && selectedDeploymentTemplate) {
             try {
                 getDeploymentTemplateDiffId(appId, pipelineId, selectedDeploymentTemplate.value).then((response) => {
-                    setCurrentConfiguration(response.result);
-                    setLoader(false);
-                });
+                    setCurrentConfiguration(response?.result)
+                    setLoader(false)
+                })
             } catch (err) {
-                showError(err);
-                setLoader(false);
+                showError(err)
+                setLoader(false)
             }
         }
-    }, [selectedDeploymentTemplate]);
+    }, [selectedDeploymentTemplate])
 
     useEffect(() => {
         try {
-            setCodeEditorLoading(true);
-            if (baseTemplateId) {
+            setCodeEditorLoading(true)
+            if (deploymentTemplatesConfiguration && baseTemplateId) {
                 getDeploymentTemplateDiffId(appId, pipelineId, baseTemplateId).then((response) => {
-                    setBaseTemplateConfiguration(response.result);
-                    setCodeEditorLoading(false);
-                });
+                    setBaseTemplateConfiguration(response.result)
+                    setCodeEditorLoading(false)
+                })
             }
         } catch (err) {
-            showError(err);
-            setCodeEditorLoading(false);
+            showError(err)
+            setCodeEditorLoading(false)
         }
-    }, [baseTemplateId]);
+    }, [baseTemplateId])
 
     useEffect(() => {
-        setLoader(true);
-        try {
-            getDeploymentTemplateDiff(appId, pipelineId).then((response) => {
-                setDeploymentTemplatesConfiguration(response.result.sort((a, b) => sortCallback('id', b, a)));
-                setLoader(false);
-            });
-
-            if (!showTemplate) {
-                setShowTemplate(true);
-            }
-        } catch (err) {
-            showError(err);
-            setLoader(false);
+        if (!showTemplate) {
+            setShowTemplate(true)
         }
 
         return (): void => {
             if (showTemplate) {
-                setShowTemplate(false);
+              setShowTemplate(false);
             }
-        };
-    }, [pipelineId]);
+        }
+    },[showTemplate])
 
     return !deploymentTemplatesConfiguration && deploymentTemplatesConfiguration.length < 1 && !loader ? (
         <CDEmptyState />
@@ -103,7 +92,7 @@ function DeploymentHistoryConfigTabView({
                 baseTemplateConfiguration={baseTemplateConfiguration}
             />
         </>
-    );
+    )
 }
 
-export default DeploymentHistoryConfigTabView;
+export default DeploymentHistoryConfigTabView
