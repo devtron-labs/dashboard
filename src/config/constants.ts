@@ -126,6 +126,7 @@ export const Routes = {
     CREATE_RESOURCE: 'k8s/resource/create',
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
     HELM_RELEASE_APP_UPDATE_API: 'application/update',
+    HELM_LINK_TO_CHART_STORE_API: 'app-store/deployment/application/helm/link-to-chart-store',
     NAMESPACE: 'env/namespace',
 };
 
