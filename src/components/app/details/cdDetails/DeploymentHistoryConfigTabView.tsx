@@ -64,6 +64,12 @@ function DeploymentHistoryConfigTabView({
         if (!showTemplate) {
             setShowTemplate(true)
         }
+
+        return (): void => {
+            if (showTemplate) {
+              setShowTemplate(false);
+            }
+        }
     },[showTemplate])
 
     return !deploymentTemplatesConfiguration && deploymentTemplatesConfiguration.length < 1 && !loader ? (
