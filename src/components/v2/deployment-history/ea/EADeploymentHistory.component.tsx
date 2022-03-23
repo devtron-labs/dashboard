@@ -39,6 +39,7 @@ function ExternalAppDeploymentHistory({ appId, appName }: { appId: string; appNa
     const [selectedDeploymentTabIndex, setSelectedDeploymentTabIndex] = useState<number>(0);
     const [deploymentManifestDetails, setDeploymentManifestDetails] = useState<Map<number, DeploymentManifestDetail>>();
     const [showRollbackConfirmation, setShowRollbackConfirmation] = useState(false);
+    const [deploying, setDeploying] = useState(false);
     const history = useHistory()
     const { url } = useRouteMatch()
 
@@ -355,6 +356,7 @@ function ExternalAppDeploymentHistory({ appId, appName }: { appId: string; appNa
 
     async function handleDeployClick() {
         try {
+            setDeploying(true)
             const selectedDeploymentHistory = deploymentHistoryArr[selectedDeploymentHistoryIndex]
             const requestPayload: RollbackReleaseRequest = {
                 hAppId: appId,
@@ -366,15 +368,22 @@ function ExternalAppDeploymentHistory({ appId, appName }: { appId: string; appNa
                 requestPayload.installedAppVersionId = installedAppInfo.installedAppVersionId
             }
 
-
+            const { result, errors } = await rollbackApplicationDeployment(requestPayload, !installedAppInfo)
+            setDeploying(false)
             setShowRollbackConfirmation(false)
-            history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
 
-            await rollbackApplicationDeployment(requestPayload, !installedAppInfo)
-            toast.success('Deployment initiated')
+            if (result?.success) {
+                toast.success('Deployment initiated')
+                history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
+            } else if (errors) {
+                showError(errors)
+            } else {
+                toast.error('Some error occurred')
+            }
         } catch (err) {
-            setShowRollbackConfirmation(false)
             showError(err)
+            setDeploying(false)
+            setShowRollbackConfirmation(false)
         }
     }
 
@@ -390,12 +399,19 @@ function ExternalAppDeploymentHistory({ appId, appName }: { appId: string; appNa
                             type="button"
                             className="flex cta cancel"
                             onClick={() => setShowRollbackConfirmation(false)}
+                            disabled={deploying}
                         >
                             Cancel
                         </button>
-                        <button className="flex cta deploy-button" onClick={handleDeployClick}>
-                            <DeployButton className="deploy-button-icon" />
-                            <span className="ml-8">Deploy</span>
+                        <button className="flex cta deploy-button" onClick={handleDeployClick} disabled={deploying}>
+                            {deploying ? (
+                                <Progressing />
+                            ) : (
+                                <>
+                                    <DeployButton className="deploy-button-icon" />
+                                    <span className="ml-8">Deploy</span>
+                                </>
+                            )}
                         </button>
                     </div>
                 </ConfirmationDialog.ButtonGroup>
