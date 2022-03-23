@@ -456,13 +456,20 @@ export const ChartValuesEditor = ({
     useEffect(() => {
         // scroll to the editor view with animation for only update-chart
         // subtracting - 100 from offset top because of floating header's tab
-        if (autoFocus && parentRef?.current && editorRef?.current) {
-            setTimeout(() => {
-                parentRef.current.scrollTo({
-                    top: editorRef.current.offsetTop - 100,
+        let timer;
+        if (autoFocus && parentRef && editorRef) {
+            timer = setTimeout(() => {
+                parentRef.current?.scrollTo({
+                    top: editorRef.current?.offsetTop - 100,
                     behavior: 'smooth',
                 });
             }, 1000);
+        }
+
+        return (): void => {
+            if (timer) {
+                clearTimeout(timer);
+            }
         }
     }, []);
 
