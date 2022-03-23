@@ -293,6 +293,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
     checkUniqueness(): boolean {
         let list = this.state.form.beforeDockerBuildScripts.concat(this.state.form.afterDockerBuildScripts);
         let stageNameList = list.map((l) => {
+            l.script = l.script.replace(/\r\n/g, '\n');
             return l.name;
         })
         let set = new Set();
