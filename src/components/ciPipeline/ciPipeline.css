@@ -243,7 +243,12 @@
 
 .scrollable-content{
   overflow: auto;
-  min-height: 350px;
+  max-height: calc(100vh - 125px);
+}
+
+.task-container{
+  max-height: 235px;
+  overflow: auto;
 }
 
 .task-item{
@@ -257,9 +262,10 @@
 .add-task-container{
   border: 1px dashed var(--N300);
   cursor: pointer;
+  margin-bottom: 0;
 }
 .add-icon{
-  height: 20px;
+  height: 20px !important;
 }
 .add-icon path{
   fill: var(--B500);
@@ -280,7 +286,7 @@
 .no-border {
   border: none;
   display: inline-block;
-  padding: 12px 0;
+  padding: 12px 0 0;
 }
 
 .no-border .form__radio-item {
@@ -296,5 +302,32 @@
   text-transform: none;
 }
 .no-border .form__radio-item input:checked ~ .form__radio-item-content .radio__title{
+  color: var(--N900);
+}
+
+.configuration-container{
+  margin-bottom: 12px;
+}
+
+.configuration-container input + .radio__item-label{
+  text-align: center;
+  display: table;
+  padding: 3px;
+  background: var(--N0);
+  border: 1px solid var(--N200);
+  width: 120px;
+  color: var(--N400);
+}
+
+.configuration-container .left-radius input + .radio__item-label{
+  border-radius: 4px 0 0 4px !important;
+}
+
+.configuration-container .right-radius input + .radio__item-label{
+  border-radius: 0 4px 4px 0 !important;
+}
+
+.radio-group input[type=checkbox]:checked + .radio__item-label {
+  background: var(--N100);
   color: var(--N900);
 }

@@ -438,3 +438,8 @@ export const AppCreationType = {
     Blank: 'BLANK',
     Existing: 'EXISTING',
 };
+
+export const ConfigurationType = {
+  GUI: 'GUI',
+  YAML: 'YAML',
+};

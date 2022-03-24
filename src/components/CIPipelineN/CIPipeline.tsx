@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ButtonWithLoader, ConditionalWrap, DeleteDialog, showError, VisibleModal } from '../common'
-import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
 import { TriggerType, ViewType } from '../../config'
 import {
     deleteCIPipeline,
@@ -29,17 +29,20 @@ interface CIPipelineType {
 
 export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, close }: CIPipelineType) {
     let { appId, workflowId, ciPipelineId } = useParams<{ appId: string; workflowId: string; ciPipelineId: string }>()
-    if (ciPipelineId && ciPipelineId.indexOf('build') >= 0) {
-        ciPipelineId = undefined
+    if (ciPipelineId === '0') {
+        ciPipelineId = null
     }
+    const location = useLocation()
+    const isBuildPage = location.pathname.indexOf('/build') >= 0
     const { path } = useRouteMatch()
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const text = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
     const title = ciPipelineId ? 'Edit build pipeline' : 'Create build pipeline'
-    const [isAdvanced, setIsAdvanced] = useState<boolean>(false)
+    const [isAdvanced, setIsAdvanced] = useState<boolean>(!isBuildPage && !!ciPipelineId)
     const [showFormError, setShowFormError] = useState<boolean>(false)
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
+    const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [formData, setFormData] = useState<FormType>({
         name: '',
         args: [{ key: '', value: '' }],
@@ -243,6 +246,23 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                 setLoadingData(false)
             })
     }
+
+    const addNewTask = () => {
+        let _formData = { ...formData }
+        const { length, [length - 1]: last } = _formData.beforeDockerBuildScripts
+        const index = last ? last.index + 1 : 1
+        const stage = {
+            index: index,
+            name: `Task ` + index,
+            outputLocation: '',
+            script: '',
+            isCollapsed: false,
+            id: 0,
+        }
+        _formData.beforeDockerBuildScripts.push(stage)
+        setFormData(_formData)
+    }
+
     return (
         <VisibleModal className="">
             {' '}
@@ -252,8 +272,8 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                 }`}
             >
                 <div className="flex flex-align-center flex-justify bcn-0 pr-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">{title}</h2>
-                <button
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">{title}</h2>
+                    <button
                         type="button"
                         className="transparent flex icon-dim-24"
                         onClick={() => {
@@ -263,8 +283,9 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
-                {isAdvanced &&
-                        <ul className="ml-20 tab-list w-90">
+                {isAdvanced && (
+                    <ul className="ml-20 tab-list w-90">
+                        {isAdvanced && (
                             <li className="tab-list__tab">
                                 <NavLink
                                     replace
@@ -275,11 +296,18 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                     Pre-build stage
                                 </NavLink>
                             </li>
-                            <li className="tab-list__tab">
-                                <NavLink replace className="tab-list__tab-link fs-13 pt-5 pb-5" activeClassName="active" to={`build`}>
-                                    Build stage
-                                </NavLink>
-                            </li>
+                        )}
+                        <li className="tab-list__tab">
+                            <NavLink
+                                replace
+                                className="tab-list__tab-link fs-13 pt-5 pb-5"
+                                activeClassName="active"
+                                to={`build`}
+                            >
+                                Build stage
+                            </NavLink>
+                        </li>
+                        {isAdvanced && (
                             <li className="tab-list__tab">
                                 <NavLink
                                     replace
@@ -290,8 +318,9 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                     Post-build stage
                                 </NavLink>
                             </li>
-                        </ul>
-                   }
+                        )}
+                    </ul>
+                )}
                 <hr className="divider m-0" />
 
                 <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''}`}>
@@ -299,13 +328,24 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         <div className="sidebar-container">
                             <Sidebar
                                 formData={formData}
-                                setFormData={setFormData} />
+                                setFormData={setFormData}
+                                addNewTask={addNewTask}
+                                configurationType={configurationType}
+                                setConfigurationType={setConfigurationType}
+                            />
                         </div>
                     )}
                     <Switch>
-                        <Route path={`${path}/pre-build`}>
-                            <PreBuild />
-                        </Route>
+                        {isAdvanced && (
+                            <Route path={`${path}/pre-build`}>
+                                <PreBuild formData={formData} setFormData={setFormData} addNewTask={addNewTask} />
+                            </Route>
+                        )}
+                        {isAdvanced && (
+                            <Route path={`${path}/post-build`}>
+                                <PostBuild formData={formData} setFormData={setFormData} addNewTask={addNewTask} />
+                            </Route>
+                        )}
                         <Route path={`${path}/build`}>
                             <Build
                                 formData={formData}
@@ -316,9 +356,11 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                 ciPipelineId={ciPipeline.id}
                             />
                         </Route>
-                        <Route path={`${path}/post-build`}>
-                            <PostBuild />
-                        </Route>
+                        {isAdvanced && (
+                            <Route path={`${path}/post-build`}>
+                                <PostBuild formData={formData} setFormData={setFormData} addNewTask={addNewTask} />
+                            </Route>
+                        )}
                         <Redirect to={`${path}/build`} />
                     </Switch>
                 </div>

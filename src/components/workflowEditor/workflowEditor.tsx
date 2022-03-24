@@ -127,7 +127,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         let link = `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId}`;
         switch (type) {
             case 'CI':
-                link = `${link}/ci-pipeline`;
+                link = `${link}/ci-pipeline/0`;
                 break;
             case 'EXTERNAL-CI':
                 link = `${link}/external-ci`;
@@ -253,7 +253,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     }}
                 />
                 <Route
-                    path={`${this.props.match.path}/ci-pipeline/:ciPipelineId?`}>
+                    path={`${this.props.match.path}/ci-pipeline/:ciPipelineId`}>
                       <CIPipeline
                                 appName={this.state.appName}
                                 connectCDPipelines={this.getLen()}

@@ -128,7 +128,12 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                     ClearIndicator: null,
                                     MenuList,
                                 }}
-                                styles={{ ...reactSelectStyles }} />
+                                menuPortalTarget={document.getElementById('visible-modal')}
+                                styles={{ ...reactSelectStyles,
+                                  menu: (base, state) => ({
+                                      ...base,
+                                      top: 'auto',
+                                  }) }} />
                         </div>
                         {mat.type !== SourceTypeMap.WEBHOOK ? <div className="w-50 ml-8">
                             <label className="form__label mb-6">
