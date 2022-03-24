@@ -54,6 +54,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
         try {
             const appChartRefRes = await getAppChartRef(appId);
             const { result } = await getSecretList(appId);
+        console.log(result)
             if (Array.isArray(result.configData)) {
                 result.configData = result.configData.map(config => {
                     if (config.data) {
@@ -408,7 +409,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
 
             if (selectedTab === 'Data Volume') {
                 payload['mountPath'] = volumeMountPath.value;
-                if (isExternalValues && !isChartVersion309OrBelow) {
+                if (!isChartVersion309OrBelow) {
                     payload['subPath'] = isSubPathChecked;
                 }
                 if (isFilePermissionChecked && !isChartVersion309OrBelow) {
@@ -563,7 +564,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 error={volumeMountPath.error}
                 onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
         </div> : null}
-        {isExternalValues && selectedTab === 'Data Volume' ?
+        {selectedTab === 'Data Volume' ?
             <div className="mb-16">
                 <Checkbox isChecked={isSubPathChecked}
                     onClick={(e) => { e.stopPropagation() }}
