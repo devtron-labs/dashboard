@@ -54,7 +54,6 @@ const Secret = ({ respondOnSuccess, ...props }) => {
         try {
             const appChartRefRes = await getAppChartRef(appId);
             const { result } = await getSecretList(appId);
-        console.log(result)
             if (Array.isArray(result.configData)) {
                 result.configData = result.configData.map(config => {
                     if (config.data) {
