@@ -187,12 +187,18 @@ function getNavItems(isUnlocked: AppStageUnlockedType, appId: number): { navItem
             href: `/app/${appId}/edit/configmap`,
             stage: 'CONFIGMAP',
             isLocked: !isUnlocked.configmap,
+            supportDocumentURL: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
+            flowCompletionPercent: completedPercent,
+            currentStep: completedSteps,
         },
         {
             title: 'Secrets',
             href: `/app/${appId}/edit/secrets`,
             stage: 'SECRETS',
             isLocked: !isUnlocked.secret,
+            supportDocumentURL: DOCUMENTATION.APP_CREATE_SECRET,
+            flowCompletionPercent: completedPercent,
+            currentStep: completedSteps,
         },
         {
             title: 'Environment Override',
