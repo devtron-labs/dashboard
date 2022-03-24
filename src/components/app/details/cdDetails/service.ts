@@ -32,9 +32,10 @@ export async function getTriggerHistory(
 ): Promise<DeploymentHistoryResult> {
     return get(
         `app/cd-pipeline/workflow/history/${appId}/${envId}/${pipelineId}?offset=${pagination.offset}&size=${pagination.size}`,
-    ).then(({ result, code, status }) => {
+    ).then((response) => {
+        const { result, code, status } = response || { result: [], code: 0, status: "" };
         return {
-            result: (result || []).map((deploymentHistory: DeploymentHistory) => ({
+            result: (result).map((deploymentHistory: DeploymentHistory) => ({
                 ...deploymentHistory,
                 triggerId: deploymentHistory?.cd_workflow_id,
                 podStatus: deploymentHistory?.pod_status,

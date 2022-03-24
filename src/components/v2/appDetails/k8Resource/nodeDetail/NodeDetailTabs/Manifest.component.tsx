@@ -46,7 +46,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
             (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
         )[0];
         setShowInfoText(
-            !selectedResource.group &&
+            !selectedResource?.group &&
                 selectedResource.kind === NodeType.Secret &&
                 appDetails.appType === AppType.EXTERNAL_HELM_CHART,
         );

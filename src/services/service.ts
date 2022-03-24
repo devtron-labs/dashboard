@@ -54,7 +54,7 @@ export const getTeamListMin = (): Promise<TeamList> => {
             return sortCallback('name', a, b);
         });
         return {
-            code: response.code,
+            code: response?.code,
             result: list,
         };
     });
