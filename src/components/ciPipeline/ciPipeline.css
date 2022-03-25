@@ -251,12 +251,19 @@
   overflow: auto;
 }
 
-.task-item{
+.task-item {
   height: 34px;
   background: var(--window-bg);
   border-radius: 4px;
   margin: 12px 0;
   padding: 6px 10px;
+  display: flex;
+}
+
+.drag-icon {
+  cursor: move;
+  height: 20px;
+  width: 20px;
 }
 
 .add-task-container{
@@ -330,4 +337,8 @@
 .radio-group input[type=checkbox]:checked + .radio__item-label {
   background: var(--N100);
   color: var(--N900);
+}
+
+.plugin-card{
+  padding: 20px 0;
 }

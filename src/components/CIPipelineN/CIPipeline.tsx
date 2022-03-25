@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ButtonWithLoader, ConditionalWrap, DeleteDialog, showError, VisibleModal } from '../common'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
-import { TriggerType, ViewType } from '../../config'
+import { BuildStageType, TriggerType, ViewType } from '../../config'
 import {
     deleteCIPipeline,
     getInitData,
@@ -33,12 +33,17 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         ciPipelineId = null
     }
     const location = useLocation()
-    const isBuildPage = location.pathname.indexOf('/build') >= 0
+    let activeStageName = BuildStageType.Build
+    if (location.pathname.indexOf('/pre-build') >= 0) {
+        activeStageName = BuildStageType.PreBuild
+    } else if (location.pathname.indexOf('/post-build') >= 0) {
+        activeStageName = BuildStageType.PostBuild
+    }
     const { path } = useRouteMatch()
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const text = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
     const title = ciPipelineId ? 'Edit build pipeline' : 'Create build pipeline'
-    const [isAdvanced, setIsAdvanced] = useState<boolean>(!isBuildPage && !!ciPipelineId)
+    const [isAdvanced, setIsAdvanced] = useState<boolean>(activeStageName !== BuildStageType.PreBuild && !!ciPipelineId)
     const [showFormError, setShowFormError] = useState<boolean>(false)
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
@@ -249,8 +254,15 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
 
     const addNewTask = () => {
         let _formData = { ...formData }
-        const { length, [length - 1]: last } = _formData.beforeDockerBuildScripts
-        const index = last ? last.index + 1 : 1
+        let addTaskTo = 'beforeDockerBuildScripts'
+        if (activeStageName === BuildStageType.PostBuild) {
+            addTaskTo = 'afterDockerBuildScripts'
+        }
+        const index =
+            _formData[addTaskTo].reduce(
+                (prev, current) => (prev.index > current.index ? prev : current),
+                {'index': 0},
+            ).index + 1
         const stage = {
             index: index,
             name: `Task ` + index,
@@ -259,7 +271,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             isCollapsed: false,
             id: 0,
         }
-        _formData.beforeDockerBuildScripts.push(stage)
+        _formData[addTaskTo].push(stage)
         setFormData(_formData)
     }
 
@@ -293,7 +305,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                     activeClassName="active"
                                     to={`pre-build`}
                                 >
-                                    Pre-build stage
+                                    {BuildStageType.PreBuild}
                                 </NavLink>
                             </li>
                         )}
@@ -304,7 +316,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                 activeClassName="active"
                                 to={`build`}
                             >
-                                Build stage
+                                {BuildStageType.Build}
                             </NavLink>
                         </li>
                         {isAdvanced && (
@@ -315,7 +327,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                     activeClassName="active"
                                     to={`post-build`}
                                 >
-                                    Post-build stage
+                                    {BuildStageType.PostBuild}
                                 </NavLink>
                             </li>
                         )}
@@ -332,6 +344,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                 addNewTask={addNewTask}
                                 configurationType={configurationType}
                                 setConfigurationType={setConfigurationType}
+                                activeStageName={activeStageName}
                             />
                         </div>
                     )}

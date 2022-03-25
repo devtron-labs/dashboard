@@ -443,3 +443,9 @@ export const ConfigurationType = {
   GUI: 'GUI',
   YAML: 'YAML',
 };
+
+export const BuildStageType = {
+  PreBuild: 'Pre-build stage',
+  Build: 'Build stage',
+  PostBuild: 'Post-build stage'
+}

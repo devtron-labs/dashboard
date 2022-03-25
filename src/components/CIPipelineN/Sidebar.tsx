@@ -1,5 +1,5 @@
 import React from 'react'
-import { ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
+import { BuildStageType, ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { RadioGroup as RadioLabel } from '../common'
 import { FormType } from '../ciPipeline/types'
@@ -12,12 +12,14 @@ export function Sidebar({
     addNewTask,
     configurationType,
     setConfigurationType,
+    activeStageName
 }: {
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
     addNewTask: ()=> void
     configurationType: string
     setConfigurationType: React.Dispatch<React.SetStateAction<string>>
+    activeStageName: string
 }) {
     const location = useLocation();
     const isBuildPage = location.pathname.indexOf('/build') >= 0;
@@ -29,7 +31,7 @@ export function Sidebar({
 
     return (
         <div className="">
-            {!isBuildPage && <div className="sidebar-action-container sidebar-action-container-border">
+            {activeStageName !== BuildStageType.Build && <div className="sidebar-action-container sidebar-action-container-border">
                 <div className="action-title fw-6 fs-12 cn-6">CONFIGURE STAGE USING</div>
                 <RadioLabel className="configuration-container"
                 disabled={false}
@@ -43,7 +45,7 @@ export function Sidebar({
                     <RadioLabel.Radio className="right-radius" value={ConfigurationType.YAML}>{ConfigurationType.YAML}</RadioLabel.Radio>
                 </RadioLabel>
                 {configurationType === ConfigurationType.GUI && <><div className="action-title fw-6 fs-12 cn-6">Tasks (IN ORDER OF EXECUTION)</div>
-                <TaskList formData={formData} setFormData={setFormData} addNewTask={addNewTask}/></>}
+                <TaskList formData={formData} setFormData={setFormData} addNewTask={addNewTask} activeStageName={activeStageName}/></>}
             </div>}
             <div className="sidebar-action-container sidebar-action-container-border">
                 <div className="action-title fw-6 fs-12 cn-6">Trigger BUILD PIPELINE</div>
