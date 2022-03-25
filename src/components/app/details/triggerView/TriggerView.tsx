@@ -156,8 +156,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             let cdMap = {};
             let preCDMap = {};
             let postCDMap = {};
-            let allCIs = response?.result.ciWorkflowStatus || [];
-            let allCDs = response?.result.cdWorkflowStatus || [];
+            let allCIs = response?.result?.ciWorkflowStatus || [];
+            let allCDs = response?.result?.cdWorkflowStatus || [];
             //Create maps from Array
             if (allCIs.length) {
                 allCIs.forEach((pipeline) => {
