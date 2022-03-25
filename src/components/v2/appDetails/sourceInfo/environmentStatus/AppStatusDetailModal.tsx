@@ -8,8 +8,6 @@ import './environmentStatus.scss'
 import { CaptureConsole } from '@sentry/integrations'
 
 function AppStatusDetailModal({ close, appStreamData }) {
-
-  
     const _appDetails = IndexStore.getAppDetails()
     const nodes: AggregatedNodes = useMemo(() => {
         return aggregateNodes(_appDetails?.resourceTree?.nodes || [], _appDetails?.resourceTree?.podMetadata || [])
@@ -21,9 +19,29 @@ function AppStatusDetailModal({ close, appStreamData }) {
             close()
         }
     }
+    const [nodeStatusMap, setNodeStatusMap] = useState(new Map())
 
-    let message = null;
-    const conditions = _appDetails?.resourceTree?.conditions;
+    useEffect(() => {
+        const stats = appStreamData?.result?.application?.status?.operationState?.syncResult?.resources?.reduce(
+            (agg, curr) => {
+                agg.set(`${curr.kind}/${curr.name}`, curr)
+                return agg
+            },
+            new Map(),
+        )
+        setNodeStatusMap(stats)
+    }, [appStreamData])
+
+    function getNodeMessage(kind, name) {
+        if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
+            const { status, message } = nodeStatusMap.get(`${kind}/${name}`)
+            if (status === 'SyncFailed') return 'Unable to apply changes: ' + message
+        }
+        return ''
+    }
+
+    let message = null
+    const conditions = _appDetails?.resourceTree?.conditions
     const Rollout = nodes?.nodes?.Rollout
     if (
         ['progressing', 'degraded'].includes(_appDetails?.resourceTree?.status.toLowerCase()) &&
@@ -31,9 +49,9 @@ function AppStatusDetailModal({ close, appStreamData }) {
         conditions?.length > 0 &&
         conditions[0].message
     ) {
-        message = conditions[0].message;
+        message = conditions[0].message
     } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
-        message = Rollout[0]?.health?.message;
+        message = Rollout[0]?.health?.message
     }
 
     const outsideClickHandler = (evt): void => {
@@ -61,10 +79,8 @@ function AppStatusDetailModal({ close, appStreamData }) {
     }, [outsideClickHandler])
 
     return (
-
         <Drawer position="right" width="50%">
             <div className="app-status-detail-modal bcn-0" ref={appStatusDetailRef}>
-       
                 <div className="app-status-detail__header box-shadow pb-12 pt-12 mb-20 bcn-0">
                     <div className="title flex content-space cn-9 fs-16 fw-6 pl-20 pr-20 ">
                         App status detail
@@ -82,9 +98,11 @@ function AppStatusDetailModal({ close, appStreamData }) {
                 </div>
 
                 <div className="app-status-detail__body">
-                {message && <div className='bcr-1 cn-9 pt-10 pb-10 pl-20 pr-20'>
-                         <span className='fw-6 '>Message: </span> {message}
-                           </div>} 
+                    {message && (
+                        <div className="bcr-1 cn-9 pt-10 pb-10 pl-20 pr-20">
+                            <span className="fw-6 ">Message: </span> {message}
+                        </div>
+                    )}
                     <table>
                         <thead>
                             <tr className="border-bottom cn-7">
@@ -131,16 +149,13 @@ function AppStatusDetailModal({ close, appStreamData }) {
                                                                 gridRowGap: '8px',
                                                             }}
                                                         >
-                                                           {appStreamData?.result?.application?.status?.conditions.map(
-                                                                (condition) => (
-                                                                        <div className="pl-24 pb-8">
-                                                                            {condition.message}
-                                                                        </div>
-                                                                ),
-                                                            )} 
-                                                            {nodeDetails.health && nodeDetails.health.message && (
-                                                                <div>{nodeDetails.health.message} </div>
+                                                            {getNodeMessage(kind, nodeDetails.name) && (
+                                                                <div>{getNodeMessage(kind, nodeDetails.name)}</div>
                                                             )}
+
+                                                            {/* {nodeDetails.health && nodeDetails.health.message && (
+                                                                <div>{nodeDetails.health.message} </div>
+                                                            )} */}
                                                         </div>
                                                     </td>
                                                 </tr>
