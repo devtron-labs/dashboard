@@ -3,25 +3,25 @@
     flex-basis: 305px;
 }
 
-.ci-details__build-card{
-    cursor : pointer;
+.ci-details__build-card {
+    cursor: pointer;
 }
 
 .border-btm {
     border-bottom: 1px solid var(--N100);
 }
 
-.trigger-outputs-container .source-detail{
-    display : grid;
+.trigger-outputs-container .source-detail {
+    display: grid;
     grid-template-columns: 30% 70%;
 }
 
 .deployment-tab-list {
-    padding-left : 20px !important;
+    padding-left: 20px !important;
 }
 
 .error-exclamation-icon path {
-    fill: #767D84;
+    fill: #767d84;
 }
 
 .ci-details {

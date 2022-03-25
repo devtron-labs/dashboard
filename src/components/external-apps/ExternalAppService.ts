@@ -8,18 +8,6 @@ export interface ReleaseInfoResponse extends ResponseType {
     result?: ReleaseAndInstalledAppInfo
 }
 
-export interface HelmAppDeploymentHistoryResponse extends ResponseType {
-    result?: DeploymentHistoryAndInstalledAppInfo
-}
-
-export interface HelmAppDeploymentManifestDetail {
-    manifest?: string;
-    valuesYaml?: string;
-}
-export interface HelmAppDeploymentManifestDetailResponse extends ResponseType {
-    result?: HelmAppDeploymentManifestDetail;
-}
-
 export interface HelmAppDetailResponse extends ResponseType {
     result?: HelmAppDetailAndInstalledAppInfo
 }
@@ -50,11 +38,6 @@ export interface ReleaseInfo {
     readme: string,
 }
 
-export interface DeploymentHistoryAndInstalledAppInfo {
-    deploymentHistory : HelmAppDeploymentDetail[],
-    installedAppInfo : InstalledAppInfo,
-}
-
 export interface InstalledAppInfo {
     appId: number,
     installedAppId: number,
@@ -64,13 +47,6 @@ export interface InstalledAppInfo {
     appStoreChartId: number,
     clusterId: number,
     environmentId: number
-}
-
-export interface HelmAppDeploymentDetail {
-    chartMetadata: ChartMetadata;
-    dockerImages: string[];
-    version: number;
-    deployedAt: DeployedAt;
 }
 
 export interface HelmAppDetail {
@@ -86,16 +62,16 @@ export interface ActionResponse {
     success: boolean
 }
 
-interface DeployedAt {
-    seconds : number,
+export interface DeployedAt {
+    seconds: number
     nanos: number
 }
 
-interface ChartMetadata {
-    chartName: string,
-    chartVersion: string,
-    home: string,
-    sources: string[],
+export interface ChartMetadata {
+    chartName: string
+    chartVersion: string
+    home: string
+    sources: string[]
     description: string
 }
 
@@ -118,33 +94,10 @@ export interface LinkToChartStoreRequest {
     referenceValueKind: string;
 }
 
-export interface RollbackReleaseRequest {
-    hAppId: string
-    version: number
-    installedAppId?: number
-    installedAppVersionId?: number
-}
-
-interface RollbackReleaseResponse extends ResponseType {
-    result?: ActionResponse
-}
-
 export const getReleaseInfo = (appId: string): Promise<ReleaseInfoResponse> => {
     let url = `${Routes.HELM_RELEASE_INFO_API}?appId=${appId}`
     return get(url);
 }
-
-export const getDeploymentHistory = (appId: string): Promise<HelmAppDeploymentHistoryResponse> => {
-    let url = `${Routes.HELM_RELEASE_DEPLOYMENT_HISTORY_API}?appId=${appId}`
-    return get(url);
-}
-
-export const getDeploymentManifestDetails = (
-    appId: string,
-    version: number,
-): Promise<HelmAppDeploymentManifestDetailResponse> => {
-    return get(`${Routes.HELM_RELEASE_DEPLOYMENT_DETAIL_API}?appId=${appId}&version=${version}`);
-};
 
 export const getAppDetail = (appId: string): Promise<HelmAppDetailResponse> => {
     let url = `${Routes.HELM_RELEASE_APP_DETAIL_API}?appId=${appId}`
@@ -163,11 +116,3 @@ export const updateApplicationRelease = (requestPayload: UpdateApplicationReques
 export const linkToChartStore = (request: LinkToChartStoreRequest): Promise<UpdateReleaseResponse> => {
     return put(Routes.HELM_LINK_TO_CHART_STORE_API, request);
 };
-
-export const rollbackApplicationDeployment = (
-    request: RollbackReleaseRequest,
-    isExternal: boolean,
-): Promise<RollbackReleaseResponse> => {
-    const url = isExternal ? Routes.HELM_EA_DEPLOYMENT_ROLLBACK_API : Routes.HELM_DEPLOYMENT_ROLLBACK_API
-    return put(url, request)
-}

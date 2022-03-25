@@ -13,6 +13,7 @@ import { EnvType } from './appDetails/appDetails.type';
 import IndexStore from './appDetails/index.store';
 import ErrorImage from './assets/icons/ic-404-error.png';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil';
+import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHistory.component';
 
 let initTimer = null;
 
@@ -102,32 +103,32 @@ function RouterComponent({ envType }) {
 
     return (
         <React.Fragment>
+            {isLoading && <DetailsProgressing loadingText="Please wait…" size={24} fullHeight />}
 
-            { isLoading &&
-                <DetailsProgressing loadingText="Please wait…" size={24} fullHeight />
-            }
-
-            { !isLoading && errorResponseCode &&
+            {!isLoading && errorResponseCode && (
                 <div className="loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
-            }
+            )}
 
-            { !isLoading && !errorResponseCode &&
+            {!isLoading && !errorResponseCode && (
                 <>
                     {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
                     <Suspense fallback={<DetailsProgressing loadingText="Please wait…" size={24} />}>
                         <Switch>
                             <Route path={`${path}/${URLS.APP_DETAILS}`} component={AppDetailsComponent} />
                             <Route path={`${path}/${URLS.APP_VALUES}`} component={ValuesComponent} />
+                            <Route
+                                path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}
+                                render={() => <ChartDeploymentHistory appId={params.appId} isExternal={false} />}
+                            />
                             <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
                         </Switch>
                     </Suspense>
                 </>
-            }
-
+            )}
         </React.Fragment>
-    );
+    )
 }
 
 export default RouterComponent;
