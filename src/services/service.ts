@@ -47,7 +47,6 @@ export const getTeamListMin = (): Promise<TeamList> => {
     const URL = `${Routes.PROJECT_LIST_MIN}`;
     return get(URL).then(response => {
         let list = [];
-        response=undefined
         if (response && response.result && Array.isArray(response.result)) {
             list = response.result;
         }
