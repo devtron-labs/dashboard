@@ -43,7 +43,7 @@ function ChartDeploymentHistory({
     isExternal: boolean
 }) {
     const [isLoading, setIsLoading] = useState(true)
-    const [errorResponseCode, setErrorResponseCode] = useState(undefined)
+    const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [deploymentHistoryArr, setDeploymentHistoryArr] = useState<ChartDeploymentDetail[]>([])
     const [installedAppInfo, setInstalledAppInfo] = useState<InstalledAppInfo>()
     const [selectedDeploymentHistoryIndex, setSelectedDeploymentHistoryIndex] = useState<number>(0)
@@ -61,7 +61,6 @@ function ChartDeploymentHistory({
 
     // component load
     useEffect(() => {
-        console.log(IndexStore.getAppDetails())
         getDeploymentHistory(appId, isExternal)
             .then((deploymentHistoryResponse: ChartDeploymentHistoryResponse) => {
                 const _deploymentHistoryArr =
@@ -481,7 +480,7 @@ function ChartDeploymentHistory({
 
             const { result, errors } = await rollbackApplicationDeployment(
                 requestPayload,
-                !isExternal || (isExternal && !installedAppInfo),
+                isExternal && !installedAppInfo,
             )
             setDeploying(false)
             setShowRollbackConfirmation(false)
