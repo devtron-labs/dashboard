@@ -89,7 +89,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
 
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
-            repository: { value: _selectedMaterial?.name, error: '' },
+            repository: { value: _selectedMaterial.name, error: '' },
             dockerfile: {
                 value: ciConfig ? ciConfig.dockerBuildConfig.dockerfileRelativePath : 'Dockerfile',
                 error: '',
