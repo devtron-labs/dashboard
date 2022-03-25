@@ -47,6 +47,7 @@ export const getTeamListMin = (): Promise<TeamList> => {
     const URL = `${Routes.PROJECT_LIST_MIN}`;
     return get(URL).then(response => {
         let list = [];
+        response=undefined
         if (response && response.result && Array.isArray(response.result)) {
             list = response.result;
         }
@@ -54,7 +55,7 @@ export const getTeamListMin = (): Promise<TeamList> => {
             return sortCallback('name', a, b);
         });
         return {
-            code: response?.code,
+            code: response.code,
             result: list,
         };
     });
