@@ -70,7 +70,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
 
     const handlePodSelection = (selectedOption: string) => {
         let pods = getSelectedPodList(selectedOption);
-        let containers = new Set(pods[0]?.containers ?? []);
+        let containers = new Set(pods[0].containers ?? []);
         let selectedContainer = containers.has(logState.selectedContainerOption)
             ? logState.selectedContainerOption
             : '';
@@ -645,7 +645,7 @@ function getPodContainerOptions(
 
         //build container Options
         let _allSelectedPods = getSelectedPodList(logState.selectedPodOption);
-        const containers = (_allSelectedPods[0]?.containers ?? []).sort();
+        const containers = (_allSelectedPods[0].containers ?? []).sort();
         const containerOptions = containers.map((_container, index) => {
             return { name: _container, selected: index == 0 };
         });
