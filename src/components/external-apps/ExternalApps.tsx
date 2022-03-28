@@ -17,20 +17,15 @@ export default function ExternalApps() {
             <EAHeaderComponent />
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>
-                    <Route
-                        path={`${path}/${URLS.APP_DETAILS}`}
-                        render={() => <ExternalAppDetail appId={params.appId} appName={params.appName} />}
-                    />
-                    <Route
-                        path={`${path}/${URLS.APP_VALUES}`}
-                        render={() => <ExternalAppValues appId={params.appId} />}
-                    />
-                    <Route
-                        path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}
-                        render={() => (
-                            <ChartDeploymentHistory appId={params.appId} appName={params.appName} isExternal={true} />
-                        )}
-                    />
+                    <Route path={`${path}/${URLS.APP_DETAILS}`}>
+                        <ExternalAppDetail appId={params.appId} appName={params.appName} />
+                    </Route>
+                    <Route path={`${path}/${URLS.APP_VALUES}`}>
+                        <ExternalAppValues appId={params.appId} />
+                    </Route>
+                    <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}>
+                        <ChartDeploymentHistory appId={params.appId} appName={params.appName} isExternal={true} />
+                    </Route>
                     <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
                 </Switch>
             </Suspense>

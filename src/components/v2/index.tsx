@@ -118,10 +118,9 @@ function RouterComponent({ envType }) {
                         <Switch>
                             <Route path={`${path}/${URLS.APP_DETAILS}`} component={AppDetailsComponent} />
                             <Route path={`${path}/${URLS.APP_VALUES}`} component={ValuesComponent} />
-                            <Route
-                                path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}
-                                render={() => <ChartDeploymentHistory appId={params.appId} isExternal={false} />}
-                            />
+                            <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}>
+                                <ChartDeploymentHistory appId={params.appId} isExternal={false} />
+                            </Route>
                             <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
                         </Switch>
                     </Suspense>

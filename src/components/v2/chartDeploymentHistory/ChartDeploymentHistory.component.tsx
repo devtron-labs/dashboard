@@ -549,26 +549,26 @@ function ChartDeploymentHistory({
 
     return (
         <>
-            {isLoading && (
+            {isLoading ? (
                 <div className="loading-wrapper">
                     <Progressing pageLoader />
                 </div>
-            )}
+            ) : (
+                <>
+                    {errorResponseCode && errorResponseCode !== 404 && (
+                        <div className="loading-wrapper">
+                            <ErrorScreenManager code={errorResponseCode} />
+                        </div>
+                    )}
 
-            {!isLoading && errorResponseCode && (
-                <div className="loading-wrapper">
-                    <ErrorScreenManager code={errorResponseCode} />
-                </div>
-            )}
+                    {(!errorResponseCode || errorResponseCode === 404) &&
+                        (!deploymentHistoryArr || deploymentHistoryArr.length <= 0) && (
+                            <CDEmptyState subtitle="Data for previous deployments is not available. History for any new deployment will be available here." />
+                        )}
 
-            {!isLoading && !errorResponseCode && (!deploymentHistoryArr || deploymentHistoryArr.length <= 0) && (
-                <CDEmptyState subtitle="Data for previous deployments is not available. History for any new deployment will be available here." />
+                    {!errorResponseCode && deploymentHistoryArr && deploymentHistoryArr.length > 0 && renderData()}
+                </>
             )}
-            {!isLoading &&
-                !errorResponseCode &&
-                deploymentHistoryArr &&
-                deploymentHistoryArr.length > 0 &&
-                renderData()}
         </>
     )
 }
