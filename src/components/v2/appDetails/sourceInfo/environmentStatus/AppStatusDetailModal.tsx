@@ -41,7 +41,7 @@ function AppStatusDetailModal({ close, appStreamData }: { close: () => void; app
         return ''
     }
 
-    let message = null
+    let message = ''
     const conditions = _appDetails.resourceTree.conditions
     const Rollout = nodes?.nodes?.Rollout
     if (
