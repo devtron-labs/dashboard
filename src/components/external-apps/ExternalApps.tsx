@@ -19,7 +19,7 @@ export default function ExternalApps() {
                 <Switch>
                     <Route path={`${path}/${URLS.APP_DETAILS}`} render={() => <ExternalAppDetail appId={params.appId} appName={params.appName} />} />
                     <Route path={`${path}/${URLS.APP_VALUES}`} render={() => <ExternalAppValues appId={params.appId} />} />
-                    <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`} render={() => <ExternalAppDeploymentHistory appId={params.appId} />} />
+                    <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`} render={() => <ExternalAppDeploymentHistory appId={params.appId} appName={params.appName} />} />
                     <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
                 </Switch>
             </Suspense>

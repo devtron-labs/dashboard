@@ -126,6 +126,9 @@ export const Routes = {
     CREATE_RESOURCE: 'k8s/resource/create',
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
     HELM_RELEASE_APP_UPDATE_API: 'application/update',
+    HELM_LINK_TO_CHART_STORE_API: 'app-store/deployment/application/helm/link-to-chart-store',
+    HELM_DEPLOYMENT_ROLLBACK_API: 'app-store/deployment/application/rollback',
+    HELM_EA_DEPLOYMENT_ROLLBACK_API: 'application/rollback',
     NAMESPACE: 'env/namespace',
 };
 
@@ -187,8 +190,8 @@ export const DOCUMENTATION = {
     APP_CREATE_MATERIAL: 'https://docs.devtron.ai/devtron/user-guide/creating-application/git-material',
     APP_CREATE_CI_CONFIG: 'https://docs.devtron.ai/devtron/user-guide/creating-application/docker-build-configuration',
     APP_CREATE_DEPLOYMENT_TEMPLATE: 'https://docs.devtron.ai/user-guide/creating-application/deployment-template',
-    APP_CREATE_CONFIG_MAP: 'https://docs.devtron.ai/user-guide/creating-application/config-maps',
-    APP_CREATE_SECRET: 'https://docs.devtron.ai/user-guide/creating-application/secrets',
+    APP_CREATE_CONFIG_MAP: 'https://docs.devtron.ai/devtron/user-guide/creating-application/config-maps',
+    APP_CREATE_SECRET: 'https://docs.devtron.ai/devtron/user-guide/creating-application/secrets',
     APP_CREATE_WORKFLOW: 'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow',
     APP_CREATE_ENVIRONMENT_OVERRIDE: 'https://docs.devtron.ai/user-guide/creating-application/environment-overrides',
     BULK_UPDATE: 'https://docs.devtron.ai/user-guide/bulk-update',

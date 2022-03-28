@@ -23,3 +23,47 @@
 .error-exclamation-icon path {
     fill: #767D84;
 }
+
+.ci-details {
+    .deploy-button {
+        width: 85px;
+        height: 32px;
+        border-radius: 4px;
+        padding: 0;
+
+        .deploy-button-icon {
+            width: 16px;
+            height: 16px;
+        }
+    }
+}
+
+.confirmation-dialog__body.rollback-confirmation-dialog {
+    width: 360px;
+    height: 210px;
+
+    .confirmation-dialog__title {
+        color: var(--N900);
+    }
+
+    .confirmation-dialog__title + p {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .cta.cancel {
+        height: 36px;
+    }
+
+    .cta.deploy-button {
+        width: 96px;
+        height: 36px;
+        border-radius: 4px;
+        padding: 0;
+
+        .deploy-button-icon {
+            width: 20px;
+            height: 20px;
+        }
+    }
+}

@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { showError, Progressing, ErrorScreenManager } from '../../../common';
+import { showError, Progressing, ErrorScreenManager, ConfirmationDialog } from '../../../common';
 import docker from '../../../../assets/icons/misc/docker.svg';
+import { ReactComponent as DeployButton } from '../../../../assets/icons/ic-deploy.svg';
 import {
     getDeploymentHistory,
     HelmAppDeploymentHistoryResponse,
     HelmAppDeploymentDetail,
     getDeploymentManifestDetails,
     HelmAppDeploymentManifestDetail,
+    rollbackApplicationDeployment,
+    RollbackReleaseRequest,
+    InstalledAppInfo,
 } from '../../../external-apps/ExternalAppService';
 import { ServerErrors } from '../../../../modals/commonTypes';
-import { Moment12HourFormat } from '../../../../config';
+import { Moment12HourFormat, URLS } from '../../../../config';
 import CodeEditor from '../../../CodeEditor/CodeEditor';
 import moment from 'moment';
 import Tippy from '@tippyjs/react';
@@ -17,6 +21,8 @@ import '../../../app/details/cIDetails/ciDetails.scss';
 import YAML from 'yaml';
 import './ea-deployment-history.scss';
 import MessageUI from '../../common/message.ui';
+import { toast } from 'react-toastify';
+import { useHistory, useRouteMatch } from 'react-router';
 
 interface DeploymentManifestDetail extends HelmAppDeploymentManifestDetail {
     loading?: boolean;
@@ -24,13 +30,18 @@ interface DeploymentManifestDetail extends HelmAppDeploymentManifestDetail {
     isApiCallInProgress?: boolean;
 }
 
-function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
+function ExternalAppDeploymentHistory({ appId, appName }: { appId: string; appName: string }) {
     const [isLoading, setIsLoading] = useState(true);
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
     const [deploymentHistoryArr, setDeploymentHistoryArr] = useState<HelmAppDeploymentDetail[]>([]);
+    const [installedAppInfo, setInstalledAppInfo] = useState<InstalledAppInfo>();
     const [selectedDeploymentHistoryIndex, setSelectedDeploymentHistoryIndex] = useState<number>(0);
     const [selectedDeploymentTabIndex, setSelectedDeploymentTabIndex] = useState<number>(0);
     const [deploymentManifestDetails, setDeploymentManifestDetails] = useState<Map<number, DeploymentManifestDetail>>();
+    const [showRollbackConfirmation, setShowRollbackConfirmation] = useState(false);
+    const [deploying, setDeploying] = useState(false);
+    const history = useHistory()
+    const { url } = useRouteMatch()
 
     const deploymentTabs: string[] = ['Source', 'values.yaml', 'Helm generated manifest'];
 
@@ -43,6 +54,7 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
                         (a, b) => b.deployedAt.seconds - a.deployedAt.seconds,
                     ) || [];
                 setDeploymentHistoryArr(_deploymentHistoryArr);
+                setInstalledAppInfo(deploymentHistoryResponse.result?.installedAppInfo);
 
                 // init deployment manifest details map
                 let _deploymentManifestDetails = new Map<number, DeploymentManifestDetail>();
@@ -298,18 +310,21 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
         );
     }
 
-    function renderSelectedDeploymentDetailHeader(){
-        let deployment = deploymentHistoryArr[selectedDeploymentHistoryIndex];
-        return <div className="trigger-details ml-20 pb-20">
-            <div className="trigger-details__summary">
-                <div className="flex column left pt-10">
-                    <div className="cn-9 fs-14 fw-6">Deployed at</div>
-                    <div className="flex left">
-                        <time className="cn-7 fs-12">
-                            {moment(new Date(deployment.deployedAt.seconds * 1000), 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
-                        </time>
-                        {
-                            deployment.dockerImages.map((dockerImage, index) => {
+    function renderSelectedDeploymentDetailHeader() {
+        const deployment = deploymentHistoryArr[selectedDeploymentHistoryIndex]
+
+        return (
+            <div className="trigger-details ml-20 mr-20 pb-20">
+                <div className="flex content-space trigger-details__summary">
+                    <div className="flex column left pt-10">
+                        <div className="cn-9 fs-14 fw-6">Deployed at</div>
+                        <div className="flex left">
+                            <time className="cn-7 fs-12">
+                                {moment(new Date(deployment.deployedAt.seconds * 1000), 'YYYY-MM-DDTHH:mm:ssZ').format(
+                                    Moment12HourFormat,
+                                )}
+                            </time>
+                            {deployment.dockerImages.map((dockerImage, index) => {
                                 return (
                                     <div key={index} className="app-commit__hash ml-10">
                                         <Tippy arrow={true} className="default-tt" content={dockerImage}>
@@ -320,27 +335,101 @@ function ExternalAppDeploymentHistory({ appId }: { appId: string }) {
                                         </Tippy>
                                     </div>
                                 )
-                            })
-                        }
+                            })}
+                        </div>
                     </div>
+                    {selectedDeploymentHistoryIndex !== 0 && (
+                        <Tippy className="default-tt" arrow={false} content={'Re-deploy this version'}>
+                            <button
+                                className="flex cta deploy-button"
+                                onClick={() => setShowRollbackConfirmation(true)}
+                            >
+                                <DeployButton className="deploy-button-icon" />
+                                <span className="ml-4">Deploy</span>
+                            </button>
+                        </Tippy>
+                    )}
                 </div>
             </div>
-        </div>
+        )
     }
 
+    async function handleDeployClick() {
+        try {
+            setDeploying(true)
+            const selectedDeploymentHistory = deploymentHistoryArr[selectedDeploymentHistoryIndex]
+            const requestPayload: RollbackReleaseRequest = {
+                hAppId: appId,
+                version: selectedDeploymentHistory.version,
+            }
+
+            if (installedAppInfo) {
+                requestPayload.installedAppId = installedAppInfo.installedAppId
+                requestPayload.installedAppVersionId = installedAppInfo.installedAppVersionId
+            }
+
+            const { result, errors } = await rollbackApplicationDeployment(requestPayload, !installedAppInfo)
+            setDeploying(false)
+            setShowRollbackConfirmation(false)
+
+            if (result?.success) {
+                toast.success('Deployment initiated')
+                history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
+            } else if (errors) {
+                showError(errors)
+            } else {
+                toast.error('Some error occurred')
+            }
+        } catch (err) {
+            showError(err)
+            setDeploying(false)
+            setShowRollbackConfirmation(false)
+        }
+    }
+
+    function RollbackConfirmationDialog() {
+        return (
+            <ConfirmationDialog className="rollback-confirmation-dialog">
+                <ConfirmationDialog.Body title={`Rollback "${appName}"`}>
+                    <p className="fs-13 cn-7 lh-1-54">Are you sure you want to deploy a previous version?</p>
+                </ConfirmationDialog.Body>
+                <ConfirmationDialog.ButtonGroup>
+                    <div className="flex right">
+                        <button
+                            type="button"
+                            className="flex cta cancel"
+                            onClick={() => setShowRollbackConfirmation(false)}
+                            disabled={deploying}
+                        >
+                            Cancel
+                        </button>
+                        <button className="flex cta deploy-button" onClick={handleDeployClick} disabled={deploying}>
+                            {deploying ? (
+                                <Progressing />
+                            ) : (
+                                <>
+                                    <DeployButton className="deploy-button-icon" />
+                                    <span className="ml-8">Deploy</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </ConfirmationDialog.ButtonGroup>
+            </ConfirmationDialog>
+        )
+    }
 
     function renderData() {
         return (
             <div className="ci-details">
                 <div className="ci-details__history deployment-cards">
                     <span className="pl-16 pr-16 text-uppercase">Deployments</span>
-                    <div className="flex column top left" style={{overflowY:'auto'}}>
+                    <div className="flex column top left" style={{ overflowY: 'auto' }}>
                         {renderDeploymentCards()}
                     </div>
                 </div>
-                <div className="ci-details__body">
-                    {renderSelectedDeploymentDetail()}
-                </div>
+                <div className="ci-details__body">{renderSelectedDeploymentDetail()}</div>
+                {showRollbackConfirmation && <RollbackConfirmationDialog />}
             </div>
         )
     }
