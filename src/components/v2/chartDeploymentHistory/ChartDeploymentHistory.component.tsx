@@ -344,7 +344,7 @@ function ChartDeploymentHistory({
                     }
                     noParsing
                     mode="yaml"
-                    height={700}
+                    height="100vh"
                     readOnly={true}
                 ></CodeEditor>
             </div>
