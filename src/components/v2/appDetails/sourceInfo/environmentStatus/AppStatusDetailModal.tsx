@@ -36,23 +36,23 @@ function AppStatusDetailModal({ close, appStreamData }: { close: () => void; app
     function getNodeMessage(kind: string, name: string) {
         if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
             const { status, message } = nodeStatusMap.get(`${kind}/${name}`)
-            if (status === 'SyncFailed') return 'Unable to apply changes: ' + message
+            if (status === 'SyncFailed') return `Unable to apply changes: ${message}`
         }
         return ''
     }
 
     let message = ''
-    const conditions = _appDetails.resourceTree.conditions
+    const conditions = _appDetails.resourceTree?.conditions
     const Rollout = nodes?.nodes?.Rollout
     if (
         ['progressing', 'degraded'].includes(_appDetails.resourceTree.status.toLowerCase()) &&
         Array.isArray(conditions) &&
-        conditions?.length > 0 &&
+        conditions.length > 0 &&
         conditions[0].message
     ) {
         message = conditions[0].message
     } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
-        message = Rollout[0]?.health?.message
+        message = Rollout[0].health.message
     }
 
     function handleShowMoreButton() {
