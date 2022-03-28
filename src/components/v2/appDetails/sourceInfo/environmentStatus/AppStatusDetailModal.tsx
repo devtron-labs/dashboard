@@ -6,9 +6,10 @@ import { AggregatedNodes } from '../../../../app/types'
 import { aggregateNodes } from '../../../../app/details/appDetails/utils'
 import './environmentStatus.scss'
 
-function AppStatusDetailModal({ close, appStreamData }:{close: () => void; appStreamData: any}) {
+function AppStatusDetailModal({ close, appStreamData }: { close: () => void; appStreamData: any }) {
     const _appDetails = IndexStore.getAppDetails()
-    const resourceTree = _appDetails?.resourceTree
+    const resourceTree = _appDetails.resourceTree
+
     const nodes: AggregatedNodes = useMemo(() => {
         return aggregateNodes(resourceTree?.nodes || [], resourceTree?.podMetadata || [])
     }, [_appDetails])
@@ -21,7 +22,7 @@ function AppStatusDetailModal({ close, appStreamData }:{close: () => void; appSt
     }
     const [nodeStatusMap, setNodeStatusMap] = useState(new Map())
     const [showSeeMore, setShowSeeMore] = useState(true)
- 
+
     useEffect(() => {
         const stats = appStreamData?.result?.application?.status.operationState.syncResult.resources.reduce(
             (agg, curr) => {
@@ -113,9 +114,12 @@ function AppStatusDetailModal({ close, appStreamData }:{close: () => void; appSt
                 </div>
 
                 <div className="app-status-detail__body">
-
                     {message && (
-                        <div className={` ${showSeeMore ? 'app-status__message-wrapper' : ''} bcr-1 cn-9 pt-10 pb-10 pl-20 pr-20`}>
+                        <div
+                            className={` ${
+                                showSeeMore ? 'app-status__message-wrapper' : ''
+                            } bcr-1 cn-9 pt-10 pb-10 pl-20 pr-20`}
+                        >
                             <span className="fw-6 ">Message: </span> {message}
                             {_hasMoreData && renderShowMoreButton()}
                         </div>
@@ -163,7 +167,6 @@ function AppStatusDetailModal({ close, appStreamData }:{close: () => void; appSt
                                                             {getNodeMessage(kind, nodeDetails.name) && (
                                                                 <div>{getNodeMessage(kind, nodeDetails.name)}</div>
                                                             )}
-
                                                         </div>
                                                     </td>
                                                 </tr>
