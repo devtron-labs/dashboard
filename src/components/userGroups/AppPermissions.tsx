@@ -248,10 +248,10 @@ export default function AppPermissions({
             })),
         ];
     }
-
+    
     function setEnvValues(index, selectedValue, actionMeta, tempPermissions) {
         const { action, option, name } = actionMeta;
-        const { value, clusterName } = option;
+        const { value, clusterName } = option || {value:'',clusterName:''};
         const startsWithHash = value && value.startsWith('#');
         if ((value && value.startsWith('*')) || startsWithHash) {
             if (tempPermissions[index].accessType === ACCESS_TYPE_MAP.HELM_APPS) {

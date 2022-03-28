@@ -456,7 +456,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                                         {!arg.data?.isEOC ? <span key={`${index}-/`} className="m-4">/</span> : null}
                                     </>
                                 })}
-                                {!this.state.arguments[this.state.arguments.length - 1]?.data.isEOC && <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
+                                {!this.state.arguments[this.state.arguments.length - 1]?.data?.isEOC && <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
                                     <input ref={this._inputPlaceholder} type="text" placeholder={PlaceholderText} className="w-100 command__input" />
                                     <input ref={this._inputText} type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="w-100 command__input"
                                         placeholder="" onKeyDown={this.noopOnArgumentInput} onChange={this.handleArgumentInputChange} />
