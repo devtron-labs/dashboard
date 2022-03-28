@@ -8,10 +8,9 @@ import './environmentStatus.scss'
 
 function AppStatusDetailModal({ close, appStreamData }: { close: () => void; appStreamData: any }) {
     const _appDetails = IndexStore.getAppDetails()
-    const resourceTree = _appDetails.resourceTree
 
     const nodes: AggregatedNodes = useMemo(() => {
-        return aggregateNodes(resourceTree?.nodes || [], resourceTree?.podMetadata || [])
+        return aggregateNodes(_appDetails.resourceTree.nodes || [], _appDetails.resourceTree.podMetadata || [])
     }, [_appDetails])
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
     const escKeyPressHandler = (evt): void => {
@@ -43,10 +42,10 @@ function AppStatusDetailModal({ close, appStreamData }: { close: () => void; app
     }
 
     let message = null
-    const conditions = resourceTree?.conditions
+    const conditions = _appDetails.resourceTree.conditions
     const Rollout = nodes?.nodes?.Rollout
     if (
-        ['progressing', 'degraded'].includes(resourceTree?.status.toLowerCase()) &&
+        ['progressing', 'degraded'].includes(_appDetails.resourceTree.status.toLowerCase()) &&
         Array.isArray(conditions) &&
         conditions?.length > 0 &&
         conditions[0].message
@@ -106,9 +105,9 @@ function AppStatusDetailModal({ close, appStreamData }: { close: () => void; app
                     </div>
                     <div>
                         <div
-                            className={`subtitle app-summary__status-name fw-6 pl-20 f-${resourceTree?.status.toLowerCase()} mr-16`}
+                            className={`subtitle app-summary__status-name fw-6 pl-20 f-${_appDetails.resourceTree.status.toLowerCase()} mr-16`}
                         >
-                            {resourceTree?.status.toUpperCase()}
+                            {_appDetails.resourceTree.status.toUpperCase()}
                         </div>
                     </div>
                 </div>
