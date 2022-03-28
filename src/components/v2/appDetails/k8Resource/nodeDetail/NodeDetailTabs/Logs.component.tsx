@@ -567,7 +567,7 @@ export function getSelectedPodList(selectedOption: string): PodMetaData[] {
         default:
             if (selectedOption.startsWith('All new ')) {
                 handleDefaultForSelectedOption(selectedOption.replace('All new ', ''));
-            } else if (selectedOption.startsWith('All old')) {
+            } else if (selectedOption.startsWith('All old ')) {
                 handleDefaultForSelectedOption(selectedOption.replace('All old ', ''));
             } else if (selectedOption.startsWith('All')) {
                 handleDefaultForSelectedOption(selectedOption.replace('All ', ''));
