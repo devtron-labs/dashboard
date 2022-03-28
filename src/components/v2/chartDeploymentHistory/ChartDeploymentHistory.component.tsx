@@ -533,6 +533,18 @@ function ChartDeploymentHistory({
     }
 
     function renderData() {
+        if (errorResponseCode && errorResponseCode !== 404) {
+            return (
+                <div className="loading-wrapper">
+                    <ErrorScreenManager code={errorResponseCode} />
+                </div>
+            )
+        } else if (!deploymentHistoryArr || deploymentHistoryArr.length <= 0) {
+            return (
+                <CDEmptyState subtitle="Data for previous deployments is not available. History for any new deployment will be available here." />
+            )
+        }
+
         return (
             <div className="ci-details">
                 <div className="ci-details__history deployment-cards">
@@ -554,20 +566,7 @@ function ChartDeploymentHistory({
                     <Progressing pageLoader />
                 </div>
             ) : (
-                <>
-                    {errorResponseCode && errorResponseCode !== 404 && (
-                        <div className="loading-wrapper">
-                            <ErrorScreenManager code={errorResponseCode} />
-                        </div>
-                    )}
-
-                    {(!errorResponseCode || errorResponseCode === 404) &&
-                        (!deploymentHistoryArr || deploymentHistoryArr.length <= 0) && (
-                            <CDEmptyState subtitle="Data for previous deployments is not available. History for any new deployment will be available here." />
-                        )}
-
-                    {!errorResponseCode && deploymentHistoryArr && deploymentHistoryArr.length > 0 && renderData()}
-                </>
+                renderData()
             )}
         </>
     )
