@@ -6,6 +6,7 @@ import { FormType } from '../ciPipeline/types'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { Progressing } from '../common'
 import error from '../../assets/icons/misc/errorInfo.svg'
+import { CustomScriptComponent } from './CustomScriptComponent'
 
 export function Build({
     formData,
@@ -13,7 +14,7 @@ export function Build({
     setFormData,
     showFormError,
     isAdvanced,
-    ciPipelineId
+    ciPipelineId,
 }: {
     formData: FormType
     pageState: string
@@ -25,14 +26,16 @@ export function Build({
     const validationRules = new ValidationRules()
 
     const handleSourceChange = (event, gitMaterialId: number): void => {
-        let _formData = { ...formData }
-        let allMaterials = _formData.materials.map((mat) => {
+        const _formData = { ...formData }
+        const allMaterials = _formData.materials.map((mat) => {
             if (mat.gitMaterialId == gitMaterialId) {
                 return {
                     ...mat,
                     value: event.target.value,
                 }
-            } else return mat
+            } else {
+                return mat
+            }
         })
         _formData.materials = allMaterials
         setFormData(_formData)
@@ -40,8 +43,8 @@ export function Build({
 
     const selectSourceType = (selectedSource, gitMaterialId: number): void => {
         // update source type in material
-        let _formData = { ...formData }
-        let allMaterials = _formData.materials.map((mat) => {
+        const _formData = { ...formData }
+        const allMaterials = _formData.materials.map((mat) => {
             return {
                 ...mat,
                 type: gitMaterialId === mat.gitMaterialId ? selectedSource.value : mat.type,
@@ -50,7 +53,7 @@ export function Build({
         })
         _formData.materials = allMaterials
         // update source type selected option in dropdown
-        let _ciPipelineSourceTypeOptions = _formData.ciPipelineSourceTypeOptions.map((sourceTypeOption) => {
+        const _ciPipelineSourceTypeOptions = _formData.ciPipelineSourceTypeOptions.map((sourceTypeOption) => {
             return {
                 ...sourceTypeOption,
                 isSelected: sourceTypeOption.label === selectedSource.label,
@@ -60,9 +63,9 @@ export function Build({
 
         // if selected source is of type webhook, then set eventId in value, assume single git material, set condition list
         if (selectedSource.isWebhook) {
-            let _material = _formData.materials[0]
-            let _selectedWebhookEvent = _formData.webhookEvents.find((we) => we.name === selectedSource.label)
-            let _condition = {}
+            const _material = _formData.materials[0]
+            const _selectedWebhookEvent = _formData.webhookEvents.find((we) => we.name === selectedSource.label)
+            const _condition = {}
 
             // create initial data with fix values
             if (_selectedWebhookEvent && _selectedWebhookEvent.selectors) {
@@ -81,34 +84,34 @@ export function Build({
         setFormData(_formData)
     }
     const getSelectedWebhookEvent = (material) => {
-        let _materialValue = JSON.parse(material.value)
-        let _selectedEventId = _materialValue.eventId
+        const _materialValue = JSON.parse(material.value)
+        const _selectedEventId = _materialValue.eventId
         return formData.webhookEvents.find((we) => we.id === _selectedEventId)
     }
 
     const addWebhookCondition = (): void => {
-        let _form = { ...formData }
+        const _form = { ...formData }
         _form.webhookConditionList.push({ selectorId: 0, value: '' })
         setFormData(_form)
     }
 
     const deleteWebhookCondition = (index: number): void => {
-        let _form = { ...formData }
+        const _form = { ...formData }
         _form.webhookConditionList.splice(index, 1)
         setFormData(_form)
     }
 
     const onWebhookConditionSelectorChange = (index: number, selectorId: number): void => {
-        let _form = { ...formData }
-        let _condition = _form.webhookConditionList[index]
+        const _form = { ...formData }
+        const _condition = _form.webhookConditionList[index]
         _condition.selectorId = selectorId
         _condition.value = ''
         setFormData(_form)
     }
 
     const onWebhookConditionSelectorValueChange = (index: number, value: string): void => {
-        let _form = { ...formData }
-        let _condition = _form.webhookConditionList[index]
+        const _form = { ...formData }
+        const _condition = _form.webhookConditionList[index]
         _condition.value = value
         setFormData(_form)
     }
@@ -116,8 +119,8 @@ export function Build({
     const noop = () => {}
 
     const copyToClipboard = (text: string, callback = noop): void => {
-        let textarea = document.createElement('textarea')
-        let main = document.getElementsByClassName('main')[0]
+        const textarea = document.createElement('textarea')
+        const main = document.getElementsByClassName('main')[0]
         main.appendChild(textarea)
         textarea.value = text
         textarea.select()
@@ -127,7 +130,7 @@ export function Build({
     }
 
     const renderBasicCI = () => {
-        let _webhookData: WebhookCIProps = {
+        const _webhookData: WebhookCIProps = {
             webhookConditionList: formData.webhookConditionList,
             gitHost: formData.gitHost,
             getSelectedWebhookEvent: getSelectedWebhookEvent,
@@ -140,6 +143,7 @@ export function Build({
 
         return (
             <div className="pl-20 pr-20 pt-20 pb-20 scrollable-content">
+                <CustomScriptComponent />
                 {isAdvanced && renderPipelineName()}
                 <SourceMaterials
                     showError={showFormError}
@@ -156,9 +160,9 @@ export function Build({
         )
     }
 
-    const handlePipelineName=(event): void =>{
-      let _form = { ...formData }
-        _form.name = event.target.value;
+    const handlePipelineName = (event): void => {
+        const _form = { ...formData }
+        _form.name = event.target.value
         setFormData(_form)
     }
 
