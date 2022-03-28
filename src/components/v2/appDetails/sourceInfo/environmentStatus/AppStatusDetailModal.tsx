@@ -2,14 +2,15 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Drawer } from '../../../../common'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import IndexStore from '../../index.store'
-import { AggregatedNodes, AppStreamData } from '../../../../app/types'
+import { AggregatedNodes } from '../../../../app/types'
 import { aggregateNodes } from '../../../../app/details/appDetails/utils'
 import './environmentStatus.scss'
 
-function AppStatusDetailModal({ close, appStreamData }) {
+function AppStatusDetailModal({ close, appStreamData }:{close: () => void; appStreamData: any}) {
     const _appDetails = IndexStore.getAppDetails()
+    const resourceTree = _appDetails?.resourceTree
     const nodes: AggregatedNodes = useMemo(() => {
-        return aggregateNodes(_appDetails?.resourceTree?.nodes || [], _appDetails?.resourceTree?.podMetadata || [])
+        return aggregateNodes(resourceTree?.nodes || [], resourceTree?.podMetadata || [])
     }, [_appDetails])
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
     const escKeyPressHandler = (evt): void => {
@@ -20,9 +21,9 @@ function AppStatusDetailModal({ close, appStreamData }) {
     }
     const [nodeStatusMap, setNodeStatusMap] = useState(new Map())
     const [showSeeMore, setShowSeeMore] = useState(true)
-
+ 
     useEffect(() => {
-        const stats = appStreamData?.result?.application?.status?.operationState?.syncResult?.resources?.reduce(
+        const stats = appStreamData?.result?.application?.status.operationState.syncResult.resources.reduce(
             (agg, curr) => {
                 agg.set(`${curr.kind}/${curr.name}`, curr)
                 return agg
@@ -32,7 +33,7 @@ function AppStatusDetailModal({ close, appStreamData }) {
         setNodeStatusMap(stats)
     }, [appStreamData])
 
-    function getNodeMessage(kind, name) {
+    function getNodeMessage(kind: string, name: string) {
         if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
             const { status, message } = nodeStatusMap.get(`${kind}/${name}`)
             if (status === 'SyncFailed') return 'Unable to apply changes: ' + message
@@ -41,10 +42,10 @@ function AppStatusDetailModal({ close, appStreamData }) {
     }
 
     let message = null
-    const conditions = _appDetails?.resourceTree?.conditions
+    const conditions = resourceTree?.conditions
     const Rollout = nodes?.nodes?.Rollout
     if (
-        ['progressing', 'degraded'].includes(_appDetails?.resourceTree?.status.toLowerCase()) &&
+        ['progressing', 'degraded'].includes(resourceTree?.status.toLowerCase()) &&
         Array.isArray(conditions) &&
         conditions?.length > 0 &&
         conditions[0].message
@@ -104,9 +105,9 @@ function AppStatusDetailModal({ close, appStreamData }) {
                     </div>
                     <div>
                         <div
-                            className={`subtitle app-summary__status-name fw-6 pl-20 f-${_appDetails?.resourceTree?.status.toLowerCase()} mr-16`}
+                            className={`subtitle app-summary__status-name fw-6 pl-20 f-${resourceTree?.status.toLowerCase()} mr-16`}
                         >
-                            {_appDetails?.resourceTree?.status.toUpperCase()}
+                            {resourceTree?.status.toUpperCase()}
                         </div>
                     </div>
                 </div>

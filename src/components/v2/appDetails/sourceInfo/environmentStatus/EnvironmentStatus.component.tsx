@@ -3,7 +3,6 @@ import AppStatusDetailModal from './AppStatusDetailModal';
 import './environmentStatus.scss';
 import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg';
 import { ReactComponent as Alert } from '../../../assets/icons/ic-alert-triangle.svg';
-import ConfigStatusModalComponent from './ConfigStatusModal.component';
 import IndexStore from '../../index.store';
 import moment from 'moment';
 import { URLS } from '../../../../../config';
@@ -13,10 +12,9 @@ import { Link } from 'react-router-dom';
 import { useRouteMatch, useHistory } from 'react-router';
 import Tippy from '@tippyjs/react';
 
-function EnvironmentStatusComponent({appStreamData}) {
+function EnvironmentStatusComponent({appStreamData}:{appStreamData: any}) {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable());
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false);
-    const [showConfigStatusModal, setShowConfigStatusModal] = useState(false);
     const status = appDetails.resourceTree?.status || '';
     const { path, url } = useRouteMatch();
     const history = useHistory();
