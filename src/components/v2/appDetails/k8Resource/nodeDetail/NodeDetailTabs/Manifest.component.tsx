@@ -46,16 +46,16 @@ function ManifestComponent({ selectedTab, isDeleted }) {
             (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
         )[0];
         setShowInfoText(
-            !selectedResource?.group &&
+            selectedResource && !selectedResource.group &&
                 selectedResource.kind === NodeType.Secret &&
                 appDetails.appType === AppType.EXTERNAL_HELM_CHART,
         );
 
         let _isResourceMissing =
-            appDetails.appType === AppType.EXTERNAL_HELM_CHART && selectedResource.health?.status === 'Missing';
+            appDetails.appType === AppType.EXTERNAL_HELM_CHART && selectedResource?.health?.status === 'Missing';
         setIsResourceMissing(_isResourceMissing);
         let _showDesiredAndCompareManifest =
-            appDetails.appType === AppType.EXTERNAL_HELM_CHART && !selectedResource.parentRefs?.length;
+            appDetails.appType === AppType.EXTERNAL_HELM_CHART && !selectedResource?.parentRefs?.length;
         setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest);
 
         setLoading(true);
