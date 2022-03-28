@@ -76,11 +76,19 @@
     }
 }
 
-.app-status-detail__header{
+.app-status-detail__header {
     position: absolute;
     width: 100%;
 }
 
-.app-status-detail__body{
+.app-status-detail__body {
     padding-top: 76px;
+}
+
+.app-status__message-wrapper {
+    max-height: 80px;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

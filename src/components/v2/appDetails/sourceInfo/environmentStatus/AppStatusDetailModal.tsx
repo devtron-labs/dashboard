@@ -5,7 +5,6 @@ import IndexStore from '../../index.store'
 import { AggregatedNodes, AppStreamData } from '../../../../app/types'
 import { aggregateNodes } from '../../../../app/details/appDetails/utils'
 import './environmentStatus.scss'
-import { CaptureConsole } from '@sentry/integrations'
 
 function AppStatusDetailModal({ close, appStreamData }) {
     const _appDetails = IndexStore.getAppDetails()
@@ -20,6 +19,7 @@ function AppStatusDetailModal({ close, appStreamData }) {
         }
     }
     const [nodeStatusMap, setNodeStatusMap] = useState(new Map())
+    const [showSeeMore, setShowSeeMore] = useState(true)
 
     useEffect(() => {
         const stats = appStreamData?.result?.application?.status?.operationState?.syncResult?.resources?.reduce(
@@ -52,6 +52,20 @@ function AppStatusDetailModal({ close, appStreamData }) {
         message = conditions[0].message
     } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
         message = Rollout[0]?.health?.message
+    }
+
+    function handleShowMoreButton() {
+        setShowSeeMore(!showSeeMore)
+    }
+
+    const _hasMoreData = message.length >= 126
+
+    function renderShowMoreButton() {
+        return (
+            <div onClick={handleShowMoreButton} className="cb-5 fw-6 cursor">
+                {showSeeMore ? 'Show More' : 'Show Less'}
+            </div>
+        )
     }
 
     const outsideClickHandler = (evt): void => {
@@ -98,9 +112,11 @@ function AppStatusDetailModal({ close, appStreamData }) {
                 </div>
 
                 <div className="app-status-detail__body">
+
                     {message && (
-                        <div className="bcr-1 cn-9 pt-10 pb-10 pl-20 pr-20">
+                        <div className={` ${showSeeMore ? 'app-status__message-wrapper' : ''} bcr-1 cn-9 pt-10 pb-10 pl-20 pr-20`}>
                             <span className="fw-6 ">Message: </span> {message}
+                            {_hasMoreData && renderShowMoreButton()}
                         </div>
                     )}
                     <table>
@@ -117,7 +133,7 @@ function AppStatusDetailModal({ close, appStreamData }) {
                             {nodes &&
                                 Object.keys(nodes.nodes)
                                     .filter((kind) => kind.toLowerCase() !== 'rollout')
-                                    .map((kind) =>
+                                    .map((kind, index) =>
                                         Array.from(nodes.nodes[kind] as Map<string, any>).map(
                                             ([nodeName, nodeDetails]) => (
                                                 <tr key={`${nodeDetails.kind}/${nodeDetails.name}`}>
@@ -142,20 +158,11 @@ function AppStatusDetailModal({ close, appStreamData }) {
                                                             : ''}
                                                     </td>
                                                     <td valign="top" className="pl-20 pt-12 pb-12">
-                                                        <div
-                                                            style={{
-                                                                display: 'grid',
-                                                                gridAutoColumns: '1fr',
-                                                                gridRowGap: '8px',
-                                                            }}
-                                                        >
+                                                        <div>
                                                             {getNodeMessage(kind, nodeDetails.name) && (
                                                                 <div>{getNodeMessage(kind, nodeDetails.name)}</div>
                                                             )}
 
-                                                            {/* {nodeDetails.health && nodeDetails.health.message && (
-                                                                <div>{nodeDetails.health.message} </div>
-                                                            )} */}
                                                         </div>
                                                     </td>
                                                 </tr>
