@@ -6,6 +6,17 @@ import { AggregatedNodes } from '../../../../app/types'
 import { aggregateNodes } from '../../../../app/details/appDetails/utils'
 import './environmentStatus.scss'
 
+interface NodeStreamMap {
+    group: string
+    kind: string
+    message: string
+    name: string
+    namespace: string
+    status: string
+    syncPhase: string
+    version: string
+}
+
 function AppStatusDetailModal({ close, appStreamData }: { close: () => void; appStreamData: any }) {
     const _appDetails = IndexStore.getAppDetails()
 
@@ -19,7 +30,7 @@ function AppStatusDetailModal({ close, appStreamData }: { close: () => void; app
             close()
         }
     }
-    const [nodeStatusMap, setNodeStatusMap] = useState(new Map())
+    const [nodeStatusMap, setNodeStatusMap] = useState<Map<string, NodeStreamMap>>()
     const [showSeeMore, setShowSeeMore] = useState(true)
 
     useEffect(() => {
@@ -35,8 +46,6 @@ function AppStatusDetailModal({ close, appStreamData }: { close: () => void; app
 
     function getNodeMessage(kind: string, name: string) {
         if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
-            console.log(typeof(nodeStatusMap))
-            console.log(nodeStatusMap)
             const { status, message } = nodeStatusMap.get(`${kind}/${name}`)
             if (status === 'SyncFailed') return `Unable to apply changes: ${message}`
         }
