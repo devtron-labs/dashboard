@@ -35,6 +35,8 @@ function AppStatusDetailModal({ close, appStreamData }: { close: () => void; app
 
     function getNodeMessage(kind: string, name: string) {
         if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
+            console.log(typeof(nodeStatusMap))
+            console.log(nodeStatusMap)
             const { status, message } = nodeStatusMap.get(`${kind}/${name}`)
             if (status === 'SyncFailed') return `Unable to apply changes: ${message}`
         }
