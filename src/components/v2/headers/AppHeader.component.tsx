@@ -133,7 +133,7 @@ function AppHeaderComponent() {
                         onClick={(event) => {
                             ReactGA.event({
                                 category: 'App',
-                                action: 'Trigger Clicked',
+                                action: 'Values Clicked',
                             });
                         }}
                     >
