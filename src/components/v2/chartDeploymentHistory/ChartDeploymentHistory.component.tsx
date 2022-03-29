@@ -335,7 +335,7 @@ function ChartDeploymentHistory({
             )
         }
         return (
-            <div className="bcn-0 border-btm pt-6">
+            <div className="bcn-0 border-btm">
                 <CodeEditor
                     value={
                         selectedDeploymentTabIndex === 1
