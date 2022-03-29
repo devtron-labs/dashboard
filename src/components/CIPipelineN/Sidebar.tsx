@@ -4,7 +4,6 @@ import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { RadioGroup as RadioLabel } from '../common'
 import { FormType } from '../ciPipeline/types'
 import { TaskList } from './TaskList'
-import { useLocation } from 'react-router'
 
 export function Sidebar({
     formData,
@@ -12,57 +11,76 @@ export function Sidebar({
     addNewTask,
     configurationType,
     setConfigurationType,
-    activeStageName
+    activeStageName,
+    selectedTaskIndex,
 }: {
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
-    addNewTask: ()=> void
+    addNewTask: () => void
     configurationType: string
     setConfigurationType: React.Dispatch<React.SetStateAction<string>>
     activeStageName: string
+    selectedTaskIndex: number
 }) {
-    const location = useLocation();
-    const isBuildPage = location.pathname.indexOf('/build') >= 0;
     const changeTriggerType = (appCreationType: string): void => {
-        let _formData = { ...formData }
+        const _formData = { ...formData }
         _formData.triggerType = appCreationType
         setFormData(_formData)
     }
 
     return (
         <div className="">
-            {activeStageName !== BuildStageType.Build && <div className="sidebar-action-container sidebar-action-container-border">
-                <div className="action-title fw-6 fs-12 cn-6">CONFIGURE STAGE USING</div>
-                <RadioLabel className="configuration-container"
-                disabled={false}
-                 initialTab={configurationType}
-                    name="configuration-type"
-                    onChange={(event) => {
-                        setConfigurationType(event.target.value)
-                    }}
-                >
-                    <RadioLabel.Radio className="left-radius" value={ConfigurationType.GUI}>{ConfigurationType.GUI}</RadioLabel.Radio>
-                    <RadioLabel.Radio className="right-radius" value={ConfigurationType.YAML}>{ConfigurationType.YAML}</RadioLabel.Radio>
-                </RadioLabel>
-                {configurationType === ConfigurationType.GUI && <><div className="action-title fw-6 fs-12 cn-6">Tasks (IN ORDER OF EXECUTION)</div>
-                <TaskList formData={formData} setFormData={setFormData} addNewTask={addNewTask} activeStageName={activeStageName}/></>}
-            </div>}
-            <div className="sidebar-action-container sidebar-action-container-border">
-                <div className="action-title fw-6 fs-12 cn-6">Trigger BUILD PIPELINE</div>
-                <div>
-                    <RadioGroup
-                        className="no-border"
-                        value={formData.triggerType}
-                        name="trigger-type"
+            {activeStageName !== BuildStageType.Build && (
+                <div className="sidebar-action-container sidebar-action-container-border">
+                    <div className="action-title fw-6 fs-12 cn-6">CONFIGURE STAGE USING</div>
+                    <RadioLabel
+                        className="configuration-container"
+                        disabled={false}
+                        initialTab={configurationType}
+                        name="configuration-type"
                         onChange={(event) => {
-                            changeTriggerType(event.target.value)
+                            setConfigurationType(event.target.value)
                         }}
                     >
-                        <RadioGroupItem value={TriggerType.Auto}>Automatically</RadioGroupItem>
-                        <RadioGroupItem value={TriggerType.Manual}>Manually</RadioGroupItem>
-                    </RadioGroup>
+                        <RadioLabel.Radio className="left-radius" value={ConfigurationType.GUI}>
+                            {ConfigurationType.GUI}
+                        </RadioLabel.Radio>
+                        <RadioLabel.Radio className="right-radius" value={ConfigurationType.YAML}>
+                            {ConfigurationType.YAML}
+                        </RadioLabel.Radio>
+                    </RadioLabel>
+                    {configurationType === ConfigurationType.GUI && (
+                        <>
+                            <div className="action-title fw-6 fs-12 cn-6">Tasks (IN ORDER OF EXECUTION)</div>
+                            <TaskList
+                                formData={formData}
+                                setFormData={setFormData}
+                                addNewTask={addNewTask}
+                                activeStageName={activeStageName}
+                                selectedTaskIndex={selectedTaskIndex}
+                            />
+                        </>
+                    )}
                 </div>
-            </div>
+            )}
+            {activeStageName === BuildStageType.Build && (
+                <div className="sidebar-action-container sidebar-action-container-border">
+                    <div className="action-title fw-6 fs-12 cn-6">Trigger BUILD PIPELINE</div>
+                    <div>
+                        <RadioGroup
+                            className="no-border"
+                            value={formData.triggerType}
+                            name="trigger-type"
+                            onChange={(event) => {
+                                changeTriggerType(event.target.value)
+                            }}
+                        >
+                            <RadioGroupItem value={TriggerType.Auto}>Automatically</RadioGroupItem>
+                            <RadioGroupItem value={TriggerType.Manual}>Manually</RadioGroupItem>
+                        </RadioGroup>
+                    </div>
+                </div>
+            )}
             <div className="sidebar-action-container ">
                 <div className="action-title fw-6 fs-13 cn-9">📙 Need help?</div>
                 <div>

@@ -35,7 +35,66 @@ export interface ExternalCIPipelineState {
     showDockerArgs: boolean
     hostURLConfig: HostURLConfig
 }
+interface VariableType {
+    id: number
+    name: string
+    value: number
+    format: string
+    description: string
+    defaultValue: string
+    RefVariableUsed: true
+    RefVariableType: ['GLOBAL', 'FROM_PREVIOUS_STEP']
+    RefVariableStepIndex: 0
+    RefVariableName: string
+}
 
+interface ConditionDetails {
+    id: number
+    ConditionOnVariable: string
+    ConditionOperator: string
+    ConditionType: ['SKIP', 'TRIGGER', 'SUCCESS', 'FAIL']
+    ConditionalValue: string
+}
+
+interface InlineStepDetailType {
+    scriptType: ['SHELL', 'DOCKERFILE']
+    script: string
+    dockerFileExists: true
+    mountPath: string
+    mountCodeToContainer: true
+    configureMountPath: true
+    mountPathMap: {
+        filePathOnDisk: string
+        filePathOnContainer: string
+    }
+    inputVariables: VariableType[]
+    outputVariables: VariableType[]
+    conditionDetails: ConditionDetails[]
+}
+
+interface PluginRefStepDetailType {
+    id: number
+    pluginId: number
+    inputVariables: VariableType[]
+    outputVariables: VariableType[]
+    conditionDetails: ConditionDetails[]
+}
+
+interface BuildStageType {
+    id: number
+    steps: [
+        {
+            id: number
+            index: number
+            name: string
+            description: string
+            stepType: ['INLINE', 'PLUGIN REF']
+            directoryPath: string
+            inlineStepDetail: InlineStepDetailType
+            pluginRefStepDetail: PluginRefStepDetailType
+        },
+    ]
+}
 export interface FormType {
     name: string
     args: { key: string; value: string }[]
@@ -63,6 +122,8 @@ export interface FormType {
         index: number
     }[]
     ciPipelineEditable: true
+    preBuildStage?: BuildStageType
+    postBuildStage?: BuildStageType
 }
 
 export interface CIPipelineDataType {
@@ -179,4 +240,13 @@ export interface CiPipelineSourceTypeOption {
     isDisabled: boolean
     isSelected: boolean
     isWebhook: boolean
+}
+
+export interface PluginType {
+    id: number
+    name: string
+    type: string
+    description: string
+    icon: string
+    tags: string[]
 }

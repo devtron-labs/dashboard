@@ -1,7 +1,7 @@
-export const RequestTimeout = 60000;
-export const DEFAULT_STATUS = 'Checking Status...';
-export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
-export const DEFAULTK8SVERSION = 'v1.16.0';
+export const RequestTimeout = 60000
+export const DEFAULT_STATUS = 'Checking Status...'
+export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
+export const DEFAULTK8SVERSION = 'v1.16.0'
 
 export const Routes = {
     LOGIN: 'api/v1/session',
@@ -130,14 +130,15 @@ export const Routes = {
     HELM_DEPLOYMENT_ROLLBACK_API: 'app-store/deployment/application/rollback',
     HELM_EA_DEPLOYMENT_ROLLBACK_API: 'application/rollback',
     NAMESPACE: 'env/namespace',
-};
+    PLUGIN_LIST: 'plugin/global/list',
+}
 
 export const ViewType = {
     EMPTY: 'EMPTY',
     LOADING: 'LOADING',
     FORM: 'FORM',
     ERROR: 'ERROR',
-};
+}
 
 export const AppConfigStatus = {
     LOADING: -1,
@@ -150,11 +151,11 @@ export const AppConfigStatus = {
     SECRETS: 6,
     ENV_OVERRIDE: 7,
     END: 10,
-};
+}
 
 export const FullRoutes = {
     LOGIN: `${Routes.LOGIN}`,
-};
+}
 
 export const PATTERNS = {
     STRING: /[A-Za-z0-9]+$/,
@@ -164,24 +165,24 @@ export const PATTERNS = {
     CONFIGMAP_AND_SECRET_NAME: /^[a-z0-9][a-z0-9-.]*[a-z0-9]$/,
     ALL_DIGITS_BETWEEN_0_AND_7: /^[0-7]*$/,
     APP_LABEL_CHIP: /^.+:.+$/,
-};
+}
 
 export const TriggerType = {
     Auto: 'AUTOMATIC',
     Manual: 'MANUAL',
-};
+}
 
 export const TriggerTypeMap = {
     automatic: 'Auto',
     manual: 'Manual',
-};
+}
 
 export const SourceTypeMap = {
     BranchFixed: 'SOURCE_TYPE_BRANCH_FIXED',
     WEBHOOK: 'WEBHOOK',
-};
+}
 
-export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A';
+export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A'
 
 export const DOCUMENTATION = {
     HOME_PAGE: 'https://docs.devtron.ai',
@@ -209,8 +210,8 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/devtron/setup/global-configurations/user-access',
     HYPERION_TO_FULL_MODE: 'https://docs.devtron.ai/hyperion/upgrade-to-devtron',
     HYPERION: 'https://docs.devtron.ai/#hyperion',
-    PRE_BUILD_TASK: 'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/cd-pipeline'
-};
+    PRE_BUILD_TASK: 'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/cd-pipeline',
+}
 
 // APP LIST STARTS
 export const AppListConstants = {
@@ -230,7 +231,7 @@ export const AppListConstants = {
         NAMESPACE: 'namespace',
         ENVIRONMENT: 'environment',
     },
-};
+}
 // APP LIST ENDS
 
 export enum SERVER_MODE {
@@ -238,7 +239,7 @@ export enum SERVER_MODE {
     FULL = 'FULL',
 }
 
-export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE;
+export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE
 
 export enum ACCESS_TYPE_MAP {
     DEVTRON_APPS = '', // devtron app work flow
@@ -251,22 +252,22 @@ export enum MODES {
     SHELL = 'shell',
 }
 
-export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned';
+export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned'
 export interface InputDetailType {
-    label: string;
-    defaultValue: string;
-    placeholder: string;
+    label: string
+    defaultValue: string
+    placeholder: string
 }
 export interface RegistryTypeDetailType {
-    value: string;
-    label: string;
-    desiredFormat: string;
-    placeholderText: string;
-    gettingStartedLink: string;
-    defaultRegistryURL: string;
-    registryURL: InputDetailType;
-    id: InputDetailType;
-    password: InputDetailType;
+    value: string
+    label: string
+    desiredFormat: string
+    placeholderText: string
+    gettingStartedLink: string
+    defaultRegistryURL: string
+    registryURL: InputDetailType
+    id: InputDetailType
+    password: InputDetailType
 }
 
 export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
@@ -432,20 +433,20 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
             placeholder: '',
         },
     },
-};
+}
 
 export const AppCreationType = {
     Blank: 'BLANK',
     Existing: 'EXISTING',
-};
+}
 
 export const ConfigurationType = {
-  GUI: 'GUI',
-  YAML: 'YAML',
-};
+    GUI: 'GUI',
+    YAML: 'YAML',
+}
 
 export const BuildStageType = {
-  PreBuild: 'Pre-build stage',
-  Build: 'Build stage',
-  PostBuild: 'Post-build stage'
+    PreBuild: 'Pre-build stage',
+    Build: 'Build stage',
+    PostBuild: 'Post-build stage',
 }

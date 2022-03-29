@@ -1,29 +1,31 @@
-import { Routes, SourceTypeMap } from '../../config';
-import { get, post } from '../../services/api';
-import { TriggerType, ViewType } from '../../config';
-import { PatchAction } from './types';
-import { CiPipelineSourceTypeBaseOptions } from './ciPipeline.util';
-import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service';
-import { MaterialType, Githost } from './types';
+import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { get, post } from '../../services/api'
+import { CiPipelineSourceTypeBaseOptions } from './ciPipeline.util'
+import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
+import { MaterialType, Githost, PatchAction } from './types'
 
 export function savePipeline(request): Promise<any> {
-    const URL = `${Routes.CI_PIPELINE}`;
-    return post(URL, request);
+    const URL = `${Routes.CI_PIPELINE}`
+    return post(URL, request)
 }
 
 export function getCIPipelineNameSuggestion(appId: string | number): Promise<any> {
-    const URL = `app/pipeline/suggest/ci/${appId}`;
-    return get(URL);
+    const URL = `app/pipeline/suggest/ci/${appId}`
+    return get(URL)
 }
 
 export function getInitData(appId: string | number, includeWebhookData: boolean = false): Promise<any> {
-    return Promise.all([getCIPipelineNameSuggestion(appId), getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true)]).then(([pipelineNameRes, pipelineMetaConfig]) => {
-        let scanEnabled = (window._env_ && (window._env_.RECOMMEND_SECURITY_SCANNING || window._env_.FORCE_SECURITY_SCANNING))
+    return Promise.all([
+        getCIPipelineNameSuggestion(appId),
+        getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true),
+    ]).then(([pipelineNameRes, pipelineMetaConfig]) => {
+        const scanEnabled =
+            window._env_ && (window._env_.RECOMMEND_SECURITY_SCANNING || window._env_.FORCE_SECURITY_SCANNING)
         return {
             result: {
                 form: {
                     name: pipelineNameRes.result,
-                    args: [{ key: "", value: "" }],
+                    args: [{ key: '', value: '' }],
                     materials: pipelineMetaConfig.result.materials,
                     gitHost: pipelineMetaConfig.result.gitHost,
                     webhookEvents: pipelineMetaConfig.result.webhookEvents,
@@ -33,37 +35,36 @@ export function getInitData(appId: string | number, includeWebhookData: boolean 
                     beforeDockerBuildScripts: [],
                     afterDockerBuildScripts: [],
                     scanEnabled: scanEnabled,
-                    ciPipelineEditable: true
+                    ciPipelineEditable: true,
                 },
                 loadingData: false,
                 isAdvanced: false,
-            }
+            },
         }
     })
 }
 
 function getCIPipeline(appId: string, ciPipelineId: string): Promise<any> {
-    const URL = `${Routes.CI_CONFIG_GET}/${appId}/${ciPipelineId}`;
+    const URL = `${Routes.CI_CONFIG_GET}/${appId}/${ciPipelineId}`
     return get(URL)
 }
 
-
 function getPipelineBaseMetaConfiguration(appId: string): Promise<any> {
     return getSourceConfig(appId).then((response) => {
-        let materials = response?.result?.material?.map((mat) => {
+        const materials = response?.result?.material?.map((mat) => {
             return {
                 id: 0,
                 gitMaterialId: mat.id,
                 name: mat.name,
                 type: CiPipelineSourceTypeBaseOptions[0].value,
-                value: "",
+                value: '',
                 isSelected: true,
                 gitMaterialName: mat.name,
                 gitProviderId: mat.gitProviderId,
-                gitHostId: 0
+                gitHostId: 0,
             }
-        });
-        let _baseCiPipelineSourceTypeOptions = CiPipelineSourceTypeBaseOptions.map(obj => ({ ...obj }));;
+        })
+        const _baseCiPipelineSourceTypeOptions = CiPipelineSourceTypeBaseOptions.map((obj) => ({ ...obj }))
         return {
             code: response.code,
             result: {
@@ -71,62 +72,80 @@ function getPipelineBaseMetaConfiguration(appId: string): Promise<any> {
                 gitHost: undefined,
                 webhookEvents: undefined,
                 webhookConditionList: undefined,
-                ciPipelineSourceTypeOptions: _baseCiPipelineSourceTypeOptions
-            }
+                ciPipelineSourceTypeOptions: _baseCiPipelineSourceTypeOptions,
+            },
         }
     })
 }
 
-
-export function getPipelineMetaConfiguration(appId: string, includeWebhookData: boolean = false, isNewPipeline: boolean = true ): Promise<any> {
+export function getPipelineMetaConfiguration(
+    appId: string,
+    includeWebhookData: boolean = false,
+    isNewPipeline: boolean = true,
+): Promise<any> {
     return getPipelineBaseMetaConfiguration(appId).then((baseResponse) => {
         // if webhook data is not to be included, or materials not found, or multigit new pipeline, then return
-        let _materials = baseResponse.result.materials
+        const _materials = baseResponse.result.materials
         if (!includeWebhookData || _materials.length == 0 || (isNewPipeline && _materials.length > 1)) {
-            return baseResponse;
+            return baseResponse
         }
 
         // if webhook data to include// assume first git material
-        let _material = _materials[0];
+        const _material = _materials[0]
         return getWebhookDataMetaConfig(_material.gitProviderId).then((_webhookDataMetaConfig) => {
-            let _result = _webhookDataMetaConfig.result;
-            let _gitHostId = _result.gitHostId;
-            _material.gitHostId = _gitHostId;
+            const _result = _webhookDataMetaConfig.result
+            const _gitHostId = _result.gitHostId
+            _material.gitHostId = _gitHostId
 
             // if git host Id is not set, then return
             if (!_gitHostId || _gitHostId == 0) {
-                return baseResponse;
+                return baseResponse
             }
 
-            baseResponse.result.gitHost = _result.gitHost;
-            baseResponse.result.webhookEvents = _result.webhookEvents || [];
+            baseResponse.result.gitHost = _result.gitHost
+            baseResponse.result.webhookEvents = _result.webhookEvents || []
 
             baseResponse.result.webhookEvents.forEach((_webhookEvent) => {
-                baseResponse.result.ciPipelineSourceTypeOptions.push({ label: _webhookEvent.name, value: 'WEBHOOK', isDisabled: false, isSelected: false, isWebhook: true });
-            });
+                baseResponse.result.ciPipelineSourceTypeOptions.push({
+                    label: _webhookEvent.name,
+                    value: 'WEBHOOK',
+                    isDisabled: false,
+                    isSelected: false,
+                    isWebhook: true,
+                })
+            })
 
-            return baseResponse;
-
+            return baseResponse
         })
     })
-
 }
 
-
-export function getInitDataWithCIPipeline(appId: string, ciPipelineId: string, includeWebhookData: boolean = false): Promise<any> {
-    return Promise.all([getCIPipeline(appId, ciPipelineId), getPipelineMetaConfiguration(appId, includeWebhookData, false)]).then(([ciPipelineRes, pipelineMetaConfig]) => {
-        let ciPipeline = ciPipelineRes?.result;
-        let pipelineMetaConfigResult = pipelineMetaConfig?.result;
-        return parseCIResponse(pipelineMetaConfig.code, ciPipeline, pipelineMetaConfigResult.materials,
-            pipelineMetaConfigResult.gitHost, pipelineMetaConfigResult.webhookEvents, pipelineMetaConfigResult.ciPipelineSourceTypeOptions);
+export function getInitDataWithCIPipeline(
+    appId: string,
+    ciPipelineId: string,
+    includeWebhookData: boolean = false,
+): Promise<any> {
+    return Promise.all([
+        getCIPipeline(appId, ciPipelineId),
+        getPipelineMetaConfiguration(appId, includeWebhookData, false),
+    ]).then(([ciPipelineRes, pipelineMetaConfig]) => {
+        const ciPipeline = ciPipelineRes?.result
+        const pipelineMetaConfigResult = pipelineMetaConfig?.result
+        return parseCIResponse(
+            pipelineMetaConfig.code,
+            ciPipeline,
+            pipelineMetaConfigResult.materials,
+            pipelineMetaConfigResult.gitHost,
+            pipelineMetaConfigResult.webhookEvents,
+            pipelineMetaConfigResult.ciPipelineSourceTypeOptions,
+        )
     })
 }
 
-
-export function saveLinkedCIPipeline(parentCIPipeline, params: { name: string, appId: number, workflowId: number }) {
-    delete parentCIPipeline['beforeDockerBuildScripts'];
-    delete parentCIPipeline['afterDockerBuildScripts'];
-    let request = {
+export function saveLinkedCIPipeline(parentCIPipeline, params: { name: string; appId: number; workflowId: number }) {
+    delete parentCIPipeline['beforeDockerBuildScripts']
+    delete parentCIPipeline['afterDockerBuildScripts']
+    const request = {
         appId: params.appId,
         appWorkflowId: params.workflowId,
         action: PatchAction.CREATE,
@@ -137,11 +156,11 @@ export function saveLinkedCIPipeline(parentCIPipeline, params: { name: string, a
             ciPipelineName: parentCIPipeline.name,
             parentCiPipeline: parentCIPipeline.id,
             id: null,
-        }
+        },
     }
 
     return savePipeline(request).then((response) => {
-        let ciPipelineFromRes = response?.result?.ciPipelines[0];
+        const ciPipelineFromRes = response?.result?.ciPipelines[0]
         return {
             code: response.code,
             form: {
@@ -153,50 +172,82 @@ export function saveLinkedCIPipeline(parentCIPipeline, params: { name: string, a
     })
 }
 
-export function saveCIPipeline(formData, ciPipeline, gitMaterials: MaterialType[], appId: number, workflowId: number, isExternalCI, webhookConditionList, ciPipelineSourceTypeOptions) {
-    let ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList);
-    let request = {
+export function saveCIPipeline(
+    formData,
+    ciPipeline,
+    gitMaterials: MaterialType[],
+    appId: number,
+    workflowId: number,
+    isExternalCI,
+    webhookConditionList,
+    ciPipelineSourceTypeOptions,
+) {
+    const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
+    const request = {
         appId: appId,
         appWorkflowId: workflowId,
-        action: (ciPipeline.id) ? PatchAction.UPDATE_SOURCE : PatchAction.CREATE,
+        action: ciPipeline.id ? PatchAction.UPDATE_SOURCE : PatchAction.CREATE,
         ciPipeline: ci,
     }
     return savePipeline(request).then((response) => {
-        let ciPipelineFromRes = response.result.ciPipelines[0];
-        return parseCIResponse(response.code, ciPipelineFromRes, gitMaterials, undefined, undefined, ciPipelineSourceTypeOptions);
+        const ciPipelineFromRes = response.result.ciPipelines[0]
+        return parseCIResponse(
+            response.code,
+            ciPipelineFromRes,
+            gitMaterials,
+            undefined,
+            undefined,
+            ciPipelineSourceTypeOptions,
+        )
     })
 }
 
-export function deleteCIPipeline(formData, ciPipeline, gitMaterials, appId: number, workflowId: number, isExternalCI: boolean, webhookConditionList) {
-    let ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
-    let request = {
+export function deleteCIPipeline(
+    formData,
+    ciPipeline,
+    gitMaterials,
+    appId: number,
+    workflowId: number,
+    isExternalCI: boolean,
+    webhookConditionList,
+) {
+    const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
+    const request = {
         appId: appId,
         appWorkflowId: workflowId,
         action: PatchAction.DELETE,
         ciPipeline: ci,
     }
     return savePipeline(request).then((response) => {
-        return parseCIResponse(response.code, response?.result?.ciPipelines[0], gitMaterials, undefined, undefined, undefined)
+        return parseCIResponse(
+            response.code,
+            response?.result?.ciPipelines[0],
+            gitMaterials,
+            undefined,
+            undefined,
+            undefined,
+        )
     })
 }
 
-
 function formatStages(allStages): any[] {
-    allStages = allStages.filter(stage => stage.name && stage.script);
+    allStages = allStages.filter((stage) => stage.name && stage.script)
     for (let i = 0; i < allStages.length; i++) {
-        allStages[i].index = i + 1;
-        if (!allStages[i].id) delete allStages[i].id;
-        delete allStages[i].isCollapsed;
+        allStages[i].index = i + 1
+        if (!allStages[i].id) {
+            delete allStages[i].id
+        }
+        delete allStages[i].isCollapsed
     }
-    return allStages;
+    return allStages
 }
 
 function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webhookConditionList) {
     formData = JSON.parse(JSON.stringify(formData))
     ciPipeline = JSON.parse(JSON.stringify(ciPipeline))
-    let beforeDockerBuildScripts = formatStages(formData.beforeDockerBuildScripts || []);
-    let afterDockerBuildScripts = formatStages(formData.afterDockerBuildScripts || []);
-    let ci = {
+    const beforeDockerBuildScripts = formatStages(formData.beforeDockerBuildScripts || [])
+    const afterDockerBuildScripts = formatStages(formData.afterDockerBuildScripts || [])
+    const ci = {
         ...ciPipeline,
         id: ciPipeline.id,
         active: ciPipeline.active,
@@ -204,16 +255,17 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
         linkedCount: ciPipeline.linkedCount,
         isExternal: isExternalCI,
         isManual: formData.triggerType == TriggerType.Manual ? true : false,
-        ciMaterial: formData.materials.filter(mat => mat.isSelected)
-            .map(mat => {
-                let _value = mat.value;
+        ciMaterial: formData.materials
+            .filter((mat) => mat.isSelected)
+            .map((mat) => {
+                let _value = mat.value
                 if (mat.type === SourceTypeMap.WEBHOOK) {
-                    let _condition = {};
+                    const _condition = {}
                     webhookConditionList.forEach((webhookCondition) => {
-                        _condition[webhookCondition.selectorId] = webhookCondition.value;
+                        _condition[webhookCondition.selectorId] = webhookCondition.value
                     })
-                    let _eventId = getEventIdFromMaterialValue(_value);
-                    _value = JSON.stringify({ eventId: _eventId, condition: _condition });
+                    const _eventId = getEventIdFromMaterialValue(_value)
+                    _value = JSON.stringify({ eventId: _eventId, condition: _condition })
                 }
                 return {
                     gitMaterialId: mat.gitMaterialId,
@@ -221,93 +273,108 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
                     source: {
                         type: mat.type,
                         value: _value,
-                    }
+                    },
                 }
             }),
         name: formData.name,
         beforeDockerBuildScripts: beforeDockerBuildScripts,
         afterDockerBuildScripts: afterDockerBuildScripts,
         scanEnabled: formData.scanEnabled,
-        dockerArgs: formData.args.filter(arg => arg.key && arg.key.length && arg.value && arg.value.length)
+        dockerArgs: formData.args
+            .filter((arg) => arg.key && arg.key.length && arg.value && arg.value.length)
             .reduce((agg, curr) => {
                 agg[curr.key] = curr.value
                 return agg
             }, {}),
     }
-    return ci;
+    return ci
 }
 
 function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: Githost): MaterialType[] {
-    let materials: MaterialType[] = [];
-    let ciMaterialSet = new Set();
-    if (ciPipeline) materials = ciPipeline.ciMaterial.map((mat) => {
-        ciMaterialSet.add(mat.gitMaterialId);
-        return {
-            id: mat.id,
-            gitMaterialId: mat.gitMaterialId,
-            name: mat.gitMaterialName,
-            type: mat.source.type,
-            value: mat.source.value,
-            isSelected: true,
-            gitHostId: gitHost ? gitHost.id : 0,
-        }
-    })
+    let materials: MaterialType[] = []
+    const ciMaterialSet = new Set()
+    if (ciPipeline) {
+        materials = ciPipeline.ciMaterial.map((mat) => {
+            ciMaterialSet.add(mat.gitMaterialId)
+            return {
+                id: mat.id,
+                gitMaterialId: mat.gitMaterialId,
+                name: mat.gitMaterialName,
+                type: mat.source.type,
+                value: mat.source.value,
+                isSelected: true,
+                gitHostId: gitHost ? gitHost.id : 0,
+            }
+        })
+    }
 
-    if (!!ciPipeline.parentCiPipeline) return materials;
+    if (ciPipeline.parentCiPipeline) {
+        return materials
+    }
 
     for (let i = 0; i < gitMaterials.length; i++) {
-        let mat = gitMaterials[i];
+        const mat = gitMaterials[i]
         if (!ciMaterialSet.has(mat.gitMaterialId)) {
             materials.push({
                 id: 0,
                 gitMaterialId: mat.gitMaterialId,
                 name: mat.name,
                 type: CiPipelineSourceTypeBaseOptions[0].value,
-                value: "",
+                value: '',
                 isSelected: true,
                 gitHostId: mat.gitHostId,
-                gitProviderId: mat.gitProviderId
+                gitProviderId: mat.gitProviderId,
             })
         }
     }
-    return materials;
+    return materials
 }
 
-function parseCIResponse(responseCode: number, ciPipeline, gitMaterials, gitHost, webhookEvents, ciPipelineSourceTypeOptions) {
-
+function parseCIResponse(
+    responseCode: number,
+    ciPipeline,
+    gitMaterials,
+    gitHost,
+    webhookEvents,
+    ciPipelineSourceTypeOptions,
+) {
     if (ciPipeline) {
-        if (!ciPipeline.beforeDockerBuildScripts) ciPipeline.beforeDockerBuildScripts = [];
-        if (!ciPipeline.afterDockerBuildScripts) ciPipeline.afterDockerBuildScripts = [];
-        let materials = createMaterialList(ciPipeline, gitMaterials, gitHost);
+        if (!ciPipeline.beforeDockerBuildScripts) {
+            ciPipeline.beforeDockerBuildScripts = []
+        }
+        if (!ciPipeline.afterDockerBuildScripts) {
+            ciPipeline.afterDockerBuildScripts = []
+        }
+        const materials = createMaterialList(ciPipeline, gitMaterials, gitHost)
 
-        let _isCiPipelineEditable = true;
-        if(materials.length > 1 && materials.some(_material => _material.type == SourceTypeMap.WEBHOOK)){
-            _isCiPipelineEditable = false;
+        let _isCiPipelineEditable = true
+        if (materials.length > 1 && materials.some((_material) => _material.type == SourceTypeMap.WEBHOOK)) {
+            _isCiPipelineEditable = false
         }
 
         // do webhook event specific
-        let _webhookConditionList = [];
+        let _webhookConditionList = []
         if (webhookEvents && webhookEvents.length > 0) {
             // assume single git material
-            let _material = materials[0];
-            let _materialValue = _material.value;
+            const _material = materials[0]
+            const _materialValue = _material.value
 
             if (_material.type == SourceTypeMap.WEBHOOK) {
-                _webhookConditionList = createWebhookConditionList(_materialValue);
+                _webhookConditionList = createWebhookConditionList(_materialValue)
 
-                let _eventId = getEventIdFromMaterialValue(_materialValue);
-                let _webhookEvent = webhookEvents.find(i => i.id === _eventId);
+                const _eventId = getEventIdFromMaterialValue(_materialValue)
+                const _webhookEvent = webhookEvents.find((i) => i.id === _eventId)
                 ciPipelineSourceTypeOptions.forEach((_ciPipelineSourceTypeOption) => {
-                    _ciPipelineSourceTypeOption.isSelected = (_ciPipelineSourceTypeOption.label === _webhookEvent.name);
+                    _ciPipelineSourceTypeOption.isSelected = _ciPipelineSourceTypeOption.label === _webhookEvent.name
                 })
             }
         }
 
-        let keys = Object.keys(ciPipeline.dockerArgs);
-        let args = keys.map((arg) => {
+        const keys = Object.keys(ciPipeline.dockerArgs)
+        const args = keys.map((arg) => {
             return {
                 key: arg,
-                value: ciPipeline.dockerArgs[arg]
+                value: ciPipeline.dockerArgs[arg],
             }
         })
         return {
@@ -319,64 +386,74 @@ function parseCIResponse(responseCode: number, ciPipeline, gitMaterials, gitHost
                 name: ciPipeline.name,
                 triggerType: ciPipeline.isManual ? TriggerType.Manual : TriggerType.Auto,
                 materials: materials,
-                args: args.length ? args : ciPipeline.parentCiPipeline ? [] : [{ key: "", value: "" }],
-                beforeDockerBuildScripts: Array.isArray(ciPipeline.beforeDockerBuildScripts) ? ciPipeline.beforeDockerBuildScripts.map(d => ({ ...d, isCollapsed: true })) : [],
-                afterDockerBuildScripts: Array.isArray(ciPipeline.afterDockerBuildScripts) ? ciPipeline.afterDockerBuildScripts.map(d => ({ ...d, isCollapsed: true })) : [],
+                args: args.length ? args : ciPipeline.parentCiPipeline ? [] : [{ key: '', value: '' }],
+                beforeDockerBuildScripts: Array.isArray(ciPipeline.beforeDockerBuildScripts)
+                    ? ciPipeline.beforeDockerBuildScripts.map((d) => ({ ...d, isCollapsed: true }))
+                    : [],
+                afterDockerBuildScripts: Array.isArray(ciPipeline.afterDockerBuildScripts)
+                    ? ciPipeline.afterDockerBuildScripts.map((d) => ({ ...d, isCollapsed: true }))
+                    : [],
                 externalCiConfig: createCurlRequest(ciPipeline.externalCiConfig),
                 scanEnabled: ciPipeline.scanEnabled,
                 gitHost: gitHost,
                 webhookEvents: webhookEvents,
                 ciPipelineSourceTypeOptions: ciPipelineSourceTypeOptions,
                 webhookConditionList: _webhookConditionList,
-                ciPipelineEditable : _isCiPipelineEditable
+                ciPipelineEditable: _isCiPipelineEditable,
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,
             showPostBuild: ciPipeline.afterDockerBuildScripts?.length > 0,
-        };
+        }
     }
 }
 
 export function createWebhookConditionList(materialJsonValue: string) {
-    let conditions = [];
+    let conditions = []
     if (!materialJsonValue) {
-        conditions = [];
-        conditions.push({ "selectorId": 0, "value": "" })
-        return conditions;
+        conditions = []
+        conditions.push({ selectorId: 0, value: '' })
+        return conditions
     }
 
-    let _materialValue = JSON.parse(materialJsonValue);
-    let _selectedEventId = _materialValue.eventId;
-    let _selectedEventCondition = _materialValue.condition;
+    const _materialValue = JSON.parse(materialJsonValue)
+    const _selectedEventId = _materialValue.eventId
+    const _selectedEventCondition = _materialValue.condition
 
     if (!_selectedEventCondition || Object.keys(_selectedEventCondition).length == 0) {
-        conditions = [];
-        conditions.push({ "selectorId": 0, "value": "" })
-        return conditions;
+        conditions = []
+        conditions.push({ selectorId: 0, value: '' })
+        return conditions
     }
 
     // iterate in map
     Object.keys(_selectedEventCondition).forEach((_selectorId) => {
-        conditions.push({ "selectorId": _selectorId, "value": _selectedEventCondition[_selectorId] });
+        conditions.push({ selectorId: _selectorId, value: _selectedEventCondition[_selectorId] })
     })
 
-    return conditions;
+    return conditions
 }
 
 function getEventIdFromMaterialValue(materialJsonValue: string) {
     if (!materialJsonValue) {
-        return 0;
+        return 0
     }
 
-    let _materialValue = JSON.parse(materialJsonValue);
-    return _materialValue.eventId;
+    const _materialValue = JSON.parse(materialJsonValue)
+    return _materialValue.eventId
 }
 
 function createCurlRequest(externalCiConfig): string {
-    if (!externalCiConfig.webhookUrl || !externalCiConfig.payload || !externalCiConfig.accessKey) return "";
+    if (!externalCiConfig.webhookUrl || !externalCiConfig.payload || !externalCiConfig.accessKey) {
+        return ''
+    }
 
-    let url = externalCiConfig.webhookUrl;
-    let json = externalCiConfig.payload;
-    let curl = `curl -X POST -H 'Content-type: application/json' --data '${json}' ${url}/${externalCiConfig.accessKey}`;
-    return curl;
+    const url = externalCiConfig.webhookUrl
+    const json = externalCiConfig.payload
+    const curl = `curl -X POST -H 'Content-type: application/json' --data '${json}' ${url}/${externalCiConfig.accessKey}`
+    return curl
+}
+
+export function getPluginsData(): Promise<any> {
+    return get(Routes.PLUGIN_LIST)
 }

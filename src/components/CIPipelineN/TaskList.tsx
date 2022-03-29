@@ -12,11 +12,13 @@ export function TaskList({
     setFormData,
     addNewTask,
     activeStageName,
+    selectedTaskIndex,
 }: {
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
     addNewTask: () => void
     activeStageName: string
+    selectedTaskIndex: number
 }) {
     const [dragItem, setDragItem] = useState(0)
     const [dragAllowed, setDragAllowed] = useState(false)
@@ -25,8 +27,7 @@ export function TaskList({
     }
 
     const handleDragEnter = (e, index) => {
-        if (e.target.id !== 'dragHandle') e.preventDefault()
-        let _formData = { ...formData }
+        const _formData = { ...formData }
         let addTaskTo = 'beforeDockerBuildScripts'
         if (activeStageName === BuildStageType.PostBuild) {
             addTaskTo = 'afterDockerBuildScripts'
@@ -55,7 +56,7 @@ export function TaskList({
                     activeStageName === BuildStageType.PreBuild ? 'beforeDockerBuildScripts' : 'afterDockerBuildScripts'
                 ].map((taskDetail, index) => (
                     <div
-                        className="task-item fw-4 fs-13"
+                        className={`task-item fw-4 fs-13 ${selectedTaskIndex === index ? ' bcb-1 eb-5' : ''}`}
                         draggable={dragAllowed}
                         onDragStart={() => handleDragStart(index)}
                         onDragEnter={(e) => handleDragEnter(e, index)}

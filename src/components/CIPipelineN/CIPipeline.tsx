@@ -147,8 +147,8 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
 
     const renderSecondaryButtton = () => {
         if (ciPipelineId) {
-            let canDeletePipeline = connectCDPipelines === 0 && ciPipeline.linkedCount === 0
-            let message =
+            const canDeletePipeline = connectCDPipelines === 0 && ciPipeline.linkedCount === 0
+            const message =
                 connectCDPipelines > 0
                     ? 'This Pipeline cannot be deleted as it has connected CD pipeline'
                     : 'This pipeline has linked CI pipelines'
@@ -189,33 +189,36 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
     }
 
     const checkUniqueness = (): boolean => {
-        let list = formData.beforeDockerBuildScripts.concat(formData.afterDockerBuildScripts)
-        let stageNameList = list.map((l) => {
+        const list = formData.beforeDockerBuildScripts.concat(formData.afterDockerBuildScripts)
+        const stageNameList = list.map((l) => {
             return l.name
         })
-        let set = new Set()
+        const set = new Set()
         for (let i = 0; i < stageNameList.length; i++) {
-            if (set.has(stageNameList[i])) return false
-            else set.add(stageNameList[i])
+            if (set.has(stageNameList[i])) {
+                return false
+            } else {
+                set.add(stageNameList[i])
+            }
         }
         return true
     }
 
     const savePipeline = () => {
-        let isUnique = checkUniqueness()
+        const isUnique = checkUniqueness()
         if (!isUnique) {
             toast.error('All Stage names must be unique')
             return
         }
         setLoadingData(true)
         setShowFormError(true)
-        let errObj = validationRules.name(formData.name)
+        const errObj = validationRules.name(formData.name)
         let valid = formData.materials.reduce((isValid, mat) => {
             isValid = isValid && validationRules.sourceValue(mat.value).isValid
             return isValid
         }, true)
         valid = valid && errObj.isValid
-        let scanValidation = formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
+        const scanValidation = formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
         if (!scanValidation) {
             setLoadingData(false)
             toast.error('Scanning is mandotory, please enable scanning')
@@ -226,7 +229,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             toast.error('Some Required Fields are missing')
             return
         }
-        let msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
+        const msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
         saveCIPipeline(
             formData,
             ciPipeline,
@@ -253,16 +256,14 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
     }
 
     const addNewTask = () => {
-        let _formData = { ...formData }
+        const _formData = { ...formData }
         let addTaskTo = 'beforeDockerBuildScripts'
         if (activeStageName === BuildStageType.PostBuild) {
             addTaskTo = 'afterDockerBuildScripts'
         }
         const index =
-            _formData[addTaskTo].reduce(
-                (prev, current) => (prev.index > current.index ? prev : current),
-                {'index': 0},
-            ).index + 1
+            _formData[addTaskTo].reduce((prev, current) => (prev.index > current.index ? prev : current), { index: 0 })
+                .index + 1
         const stage = {
             index: index,
             name: `Task ` + index,
@@ -345,13 +346,20 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                 configurationType={configurationType}
                                 setConfigurationType={setConfigurationType}
                                 activeStageName={activeStageName}
+                                selectedTaskIndex={0}
                             />
                         </div>
                     )}
                     <Switch>
                         {isAdvanced && (
                             <Route path={`${path}/pre-build`}>
-                                <PreBuild formData={formData} setFormData={setFormData} addNewTask={addNewTask} />
+                                <PreBuild
+                                    formData={formData}
+                                    setFormData={setFormData}
+                                    addNewTask={addNewTask}
+                                    pageState={pageState}
+                                    setPageState={setPageState}
+                                />
                             </Route>
                         )}
                         {isAdvanced && (

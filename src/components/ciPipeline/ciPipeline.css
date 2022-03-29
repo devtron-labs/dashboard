@@ -340,5 +340,21 @@
 }
 
 .plugin-card{
-  padding: 20px 0;
+  padding: 10px 0;
 }
+
+.tag-container{
+    padding: 0px 4px;
+    text-transform: capitalize;
+}
+
+.lh-16 {
+    line-height: 16px;
+ }
+
+ .pc-icon-container{
+   width: 40px;
+   height: 40px;
+   justify-content: center;
+    align-items: center;
+ }
