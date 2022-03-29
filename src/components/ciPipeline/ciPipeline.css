@@ -241,7 +241,7 @@
   justify-content: right;
 }
 
-.scrollable-content{
+.ci-scrollable-content{
   overflow: auto;
   max-height: calc(100vh - 125px);
 }
@@ -339,8 +339,9 @@
   color: var(--N900);
 }
 
-.plugin-card{
-  padding: 10px 0;
+.plugin-card:hover{
+  box-shadow: 1px 1px 1px 1px var(--N200);
+  border-radius: 4px;
 }
 
 .tag-container{

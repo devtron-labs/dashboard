@@ -142,7 +142,7 @@ export function Build({
         }
 
         return (
-            <div className="pl-20 pr-20 pt-20 pb-20 scrollable-content">
+            <div className="pl-20 pr-20 pt-20 pb-20 ci-scrollable-content">
                 <CustomScriptComponent />
                 {isAdvanced && renderPipelineName()}
                 <SourceMaterials

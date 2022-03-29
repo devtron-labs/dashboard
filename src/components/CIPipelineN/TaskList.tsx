@@ -12,13 +12,15 @@ export function TaskList({
     setFormData,
     addNewTask,
     activeStageName,
-    selectedTaskIndex,
+    selectedTaskIndex: selectedTaskIndex,
+    setSelectedTaskIndex: setSelectedTaskIndex,
 }: {
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
     addNewTask: () => void
     activeStageName: string
     selectedTaskIndex: number
+    setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
 }) {
     const [dragItem, setDragItem] = useState(0)
     const [dragAllowed, setDragAllowed] = useState(false)
@@ -28,16 +30,17 @@ export function TaskList({
 
     const handleDragEnter = (e, index) => {
         const _formData = { ...formData }
-        let addTaskTo = 'beforeDockerBuildScripts'
+        let addTaskTo = 'preBuildStage'
         if (activeStageName === BuildStageType.PostBuild) {
-            addTaskTo = 'afterDockerBuildScripts'
+            addTaskTo = 'postBuildStage'
         }
-        const newList = [..._formData[addTaskTo]]
+        const newList = [..._formData[addTaskTo].steps]
         const item = newList[dragItem]
         newList.splice(dragItem, 1)
         newList.splice(index, 0, item)
         setDragItem(index)
-        _formData[addTaskTo] = newList
+        setSelectedTaskIndex(index)
+        _formData[addTaskTo].steps = newList
         setFormData(_formData)
     }
 
@@ -52,33 +55,34 @@ export function TaskList({
     return (
         <>
             <div className="task-container">
-                {formData[
-                    activeStageName === BuildStageType.PreBuild ? 'beforeDockerBuildScripts' : 'afterDockerBuildScripts'
-                ].map((taskDetail, index) => (
-                    <div
-                        className={`task-item fw-4 fs-13 ${selectedTaskIndex === index ? ' bcb-1 eb-5' : ''}`}
-                        draggable={dragAllowed}
-                        onDragStart={() => handleDragStart(index)}
-                        onDragEnter={(e) => handleDragEnter(e, index)}
-                        onDrop={(e) => handleDrop(e)}
-                        onDragOver={(e) => e.preventDefault()}
-                        key={index}
-                    >
-                        <Drag className="drag-icon" onMouseDown={() => setDragAllowed(true)} />
-                        <span className="w-80 pl-5">{taskDetail.name}</span>
-                        <PopupMenu autoClose>
-                            <PopupMenu.Button isKebab>
-                                <Dots className="rotate" style={{ ['--rotateBy' as any]: '90deg' }} />
-                            </PopupMenu.Button>
-                            <PopupMenu.Body rootClassName="deployment-table-row__delete">
-                                <div className="flex left" onClick={(e) => deleteTask(index)}>
-                                    <Trash />
-                                    Delete
-                                </div>
-                            </PopupMenu.Body>
-                        </PopupMenu>
-                    </div>
-                ))}
+                {formData[activeStageName === BuildStageType.PreBuild ? 'preBuildStage' : 'postBuildStage'].steps.map(
+                    (taskDetail, index) => (
+                        <div
+                            className={`task-item fw-4 fs-13 ${selectedTaskIndex === index ? ' bcb-1 eb-5' : ''}`}
+                            draggable={dragAllowed}
+                            onDragStart={() => handleDragStart(index)}
+                            onDragEnter={(e) => handleDragEnter(e, index)}
+                            onDrop={(e) => handleDrop(e)}
+                            onDragOver={(e) => e.preventDefault()}
+                            key={index}
+                            onClick={() => setSelectedTaskIndex(index)}
+                        >
+                            <Drag className="drag-icon" onMouseDown={() => setDragAllowed(true)} />
+                            <span className="w-80 pl-5">{taskDetail.name}</span>
+                            <PopupMenu autoClose>
+                                <PopupMenu.Button isKebab>
+                                    <Dots className="rotate" style={{ ['--rotateBy' as any]: '90deg' }} />
+                                </PopupMenu.Button>
+                                <PopupMenu.Body rootClassName="deployment-table-row__delete">
+                                    <div className="flex left" onClick={(e) => deleteTask(index)}>
+                                        <Trash />
+                                        Delete
+                                    </div>
+                                </PopupMenu.Body>
+                            </PopupMenu>
+                        </div>
+                    ),
+                )}
             </div>
             <div className="task-item add-task-container cb-5 fw-6 fs-13 flexbox" onClick={addNewTask}>
                 <Add className="add-icon" /> Add task

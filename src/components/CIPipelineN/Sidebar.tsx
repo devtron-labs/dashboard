@@ -12,7 +12,8 @@ export function Sidebar({
     configurationType,
     setConfigurationType,
     activeStageName,
-    selectedTaskIndex,
+    selectedTaskIndex: selectedTaskIndex,
+    setSelectedTaskIndex: setSelectedTaskIndex,
 }: {
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -21,6 +22,7 @@ export function Sidebar({
     setConfigurationType: React.Dispatch<React.SetStateAction<string>>
     activeStageName: string
     selectedTaskIndex: number
+    setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
 }) {
     const changeTriggerType = (appCreationType: string): void => {
         const _formData = { ...formData }
@@ -58,6 +60,7 @@ export function Sidebar({
                                 addNewTask={addNewTask}
                                 activeStageName={activeStageName}
                                 selectedTaskIndex={selectedTaskIndex}
+                                setSelectedTaskIndex={setSelectedTaskIndex}
                             />
                         </>
                     )}

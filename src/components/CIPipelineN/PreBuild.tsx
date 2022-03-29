@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { FormType, PluginType } from '../ciPipeline/types'
-import { EmptyTaskState } from './EmptyTaskState'
+import { FormType, PluginDetailType, PluginType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
 import PreBuildIcon from '../../assets/icons/ic-cd-stage.svg'
 import { PluginCard } from './PluginCard'
@@ -9,6 +8,10 @@ import { ViewType } from '../../config'
 import { getPluginsData } from '../ciPipeline/ciPipeline.service'
 import { ServerErrors } from '../../modals/commonTypes'
 import { showError } from '../common'
+import CDEmptyState from '../app/details/cdDetails/CDEmptyState'
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { CustomScriptComponent } from './CustomScriptComponent'
+import { PluginDetailComponent } from './PluginDetailComponent'
 
 export function PreBuild({
     formData,
@@ -16,15 +19,17 @@ export function PreBuild({
     pageState,
     setPageState,
     addNewTask,
+    selectedTaskIndex,
 }: {
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
     pageState: string
     setPageState: React.Dispatch<React.SetStateAction<string>>
     addNewTask: () => void
+    selectedTaskIndex: number
 }) {
-    const [presetPlugins, setPresetPlugins] = useState<PluginType[]>([])
-    const [sharedPlugins, setSharedPlugins] = useState<PluginType[]>([])
+    const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
+    const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
 
     useEffect(() => {
         const pluginList = [
@@ -34,7 +39,7 @@ export function PreBuild({
                 type: 'PRESET',
                 description:
                     'Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla.',
-                icon: 'string',
+                icon: 'https://bitnami.com/assets/stacks/airflow/img/airflow-stack-220x234.png',
                 tags: ['GIT', 'Build'],
             },
             {
@@ -43,7 +48,7 @@ export function PreBuild({
                 type: 'PRESET',
                 description:
                     'Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla.',
-                icon: 'string',
+                icon: 'https://s3-ap-southeast-1.amazonaws.com/devtron.ai/images/devtron-sqr-logo.png',
                 tags: ['GIT', 'Build'],
             },
             {
@@ -52,7 +57,7 @@ export function PreBuild({
                 type: 'PRESET',
                 description:
                     'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla dapibus dolor vel.',
-                icon: 'string',
+                icon: 'https://raw.githubusercontent.com/prometheus/prometheus.github.io/master/assets/prometheus_logo-cb55bb5c346.png',
                 tags: ['Request'],
             },
             {
@@ -60,7 +65,7 @@ export function PreBuild({
                 name: 'Google Cloud Storage',
                 type: 'PRESET',
                 description: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
-                icon: 'string',
+                icon: 'https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.svg',
                 tags: ['Database', 'Storage'],
             },
             {
@@ -69,7 +74,7 @@ export function PreBuild({
                 type: 'SHARED',
                 description:
                     'Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla.',
-                icon: 'string',
+                icon: 'https://helm.elastic.co/icons/eck.png',
                 tags: ['GIT', 'Build'],
             },
             {
@@ -78,7 +83,7 @@ export function PreBuild({
                 type: 'SHARED',
                 description:
                     'Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla.',
-                icon: 'string',
+                icon: 'https://bitnami.com/assets/stacks/fluentd/img/fluentd-stack-220x234.png',
                 tags: ['PROTECT', 'SECURITY'],
             },
         ]
@@ -94,7 +99,7 @@ export function PreBuild({
         //         showError(error)
         //     })
     }, [])
-    function processPluginList(pluginList: PluginType[]): void {
+    function processPluginList(pluginList: PluginDetailType[]): void {
         const _presetPlugin = []
         const _sharedPlugin = []
         const pluginListLength = pluginList.length
@@ -109,23 +114,49 @@ export function PreBuild({
         setSharedPlugins(_sharedPlugin)
     }
 
-    return formData.beforeDockerBuildScripts.length === 0 ? (
-        <EmptyTaskState
+    function setPluginType(pluginType: PluginType): void {
+        const _form = { ...formData }
+        _form.preBuildStage.steps[selectedTaskIndex].stepType = pluginType
+        setFormData(_form)
+    }
+
+    return formData.preBuildStage.steps.length === 0 ? (
+        <CDEmptyState
             imgSource={EmptyPreBuild}
             title="No pre-build tasks configured"
-            subTitle="Here, you can configure tasks to be executed before the container image is built."
-            addNewTask={addNewTask}
+            subtitle="Here, you can configure tasks to be executed before the container image is built."
+            actionHandler={addNewTask}
+            actionButtonText="Add task"
+            ActionButtonIcon={Add}
         />
     ) : (
-        <div className="p-20 scrollable-content">
-            <div className="cn-9 fw-6 fs-14">What do you want this task to do?</div>
-            <PluginCard
-                imgSource={PreBuildIcon}
-                title="Execute custom script"
-                subTitle="Write a script to perform custom tasks."
-            />
-            <PluginCardListContainer pluginListTitle="PRESET PLUGINS" pluginList={presetPlugins} />
-            <PluginCardListContainer pluginListTitle="SHARED PLUGINS" pluginList={sharedPlugins} />
+        <div className="p-20 ci-scrollable-content">
+            {!formData.preBuildStage.steps[selectedTaskIndex]?.stepType ? (
+                <>
+                    <div className="cn-9 fw-6 fs-14">What do you want this task to do?</div>
+                    <div onClick={() => setPluginType(PluginType.INLINE)}>
+                        <PluginCard
+                            imgSource={PreBuildIcon}
+                            title="Execute custom script"
+                            subTitle="Write a script to perform custom tasks."
+                        />
+                    </div>
+                    <PluginCardListContainer
+                        setPluginType={setPluginType}
+                        pluginListTitle="PRESET PLUGINS"
+                        pluginList={presetPlugins}
+                    />
+                    <PluginCardListContainer
+                        setPluginType={setPluginType}
+                        pluginListTitle="SHARED PLUGINS"
+                        pluginList={sharedPlugins}
+                    />
+                </>
+            ) : formData.preBuildStage.steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
+                <CustomScriptComponent />
+            ) : (
+                <PluginDetailComponent />
+            )}
         </div>
     )
 }

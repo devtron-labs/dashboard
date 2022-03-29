@@ -35,6 +35,29 @@ export interface ExternalCIPipelineState {
     showDockerArgs: boolean
     hostURLConfig: HostURLConfig
 }
+
+export enum PluginType {
+    INLINE = 'INLINE',
+    PLUGIN_REF = 'PLUGIN REF',
+}
+
+export enum RefVariableType {
+    GLOBAL = 'GLOBAL',
+    FROM_PREVIOUS_STEP = 'FROM_PREVIOUS_STEP',
+}
+
+export enum scriptType {
+    SHELL = 'SHELL',
+    DOCKERFILE = 'DOCKERFILE',
+}
+
+export enum ConditionType {
+    SKIP = 'SKIP',
+    TRIGGER = 'TRIGGER',
+    SUCCESS = 'SUCCESS',
+    FAIL = 'FAIL',
+}
+
 interface VariableType {
     id: number
     name: string
@@ -43,7 +66,7 @@ interface VariableType {
     description: string
     defaultValue: string
     RefVariableUsed: true
-    RefVariableType: ['GLOBAL', 'FROM_PREVIOUS_STEP']
+    RefVariableType: RefVariableType
     RefVariableStepIndex: 0
     RefVariableName: string
 }
@@ -52,12 +75,12 @@ interface ConditionDetails {
     id: number
     ConditionOnVariable: string
     ConditionOperator: string
-    ConditionType: ['SKIP', 'TRIGGER', 'SUCCESS', 'FAIL']
+    ConditionType: ConditionType
     ConditionalValue: string
 }
 
 interface InlineStepDetailType {
-    scriptType: ['SHELL', 'DOCKERFILE']
+    scriptType: scriptType
     script: string
     dockerFileExists: true
     mountPath: string
@@ -82,18 +105,16 @@ interface PluginRefStepDetailType {
 
 interface BuildStageType {
     id: number
-    steps: [
-        {
-            id: number
-            index: number
-            name: string
-            description: string
-            stepType: ['INLINE', 'PLUGIN REF']
-            directoryPath: string
-            inlineStepDetail: InlineStepDetailType
-            pluginRefStepDetail: PluginRefStepDetailType
-        },
-    ]
+    steps: {
+        id: number
+        index: number
+        name: string
+        description: string
+        stepType: PluginType
+        directoryPath: string
+        inlineStepDetail?: InlineStepDetailType
+        pluginRefStepDetail?: PluginRefStepDetailType
+    }[]
 }
 export interface FormType {
     name: string
@@ -242,7 +263,7 @@ export interface CiPipelineSourceTypeOption {
     isWebhook: boolean
 }
 
-export interface PluginType {
+export interface PluginDetailType {
     id: number
     name: string
     type: string

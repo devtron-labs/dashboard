@@ -48,6 +48,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
     const [configurationType, setConfigurationType] = useState<string>('GUI')
+    const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0)
     const [formData, setFormData] = useState<FormType>({
         name: '',
         args: [{ key: '', value: '' }],
@@ -61,6 +62,14 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         ciPipelineSourceTypeOptions: [],
         webhookConditionList: [],
         ciPipelineEditable: true,
+        preBuildStage: {
+            id: 0,
+            steps: [],
+        },
+        postBuildStage: {
+            id: 0,
+            steps: [],
+        },
     })
     const [ciPipeline, setCIPipeline] = useState<CIPipelineDataType>({
         active: true,
@@ -81,6 +90,14 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         if (ciPipelineId) {
             getInitDataWithCIPipeline(appId, ciPipelineId, true)
                 .then((response) => {
+                    response.form.preBuildStage = {
+                        id: 0,
+                        steps: [],
+                    }
+                    response.form.postBuildStage = {
+                        id: 0,
+                        steps: [],
+                    }
                     setFormData(response.form)
                     setCIPipeline(response.ciPipeline)
                     setIsAdvanced(true)
@@ -93,6 +110,14 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         } else {
             getInitData(appId, true)
                 .then((response) => {
+                    response.result.form.preBuildStage = {
+                        id: 0,
+                        steps: [],
+                    }
+                    response.result.form.postBuildStage = {
+                        id: 0,
+                        steps: [],
+                    }
                     setFormData(response.result.form)
                     setPageState(ViewType.FORM)
                 })
@@ -257,23 +282,25 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
 
     const addNewTask = () => {
         const _formData = { ...formData }
-        let addTaskTo = 'beforeDockerBuildScripts'
+        let addTaskTo = 'preBuildStage'
         if (activeStageName === BuildStageType.PostBuild) {
-            addTaskTo = 'afterDockerBuildScripts'
+            addTaskTo = 'postBuildStage'
         }
         const index =
-            _formData[addTaskTo].reduce((prev, current) => (prev.index > current.index ? prev : current), { index: 0 })
-                .index + 1
+            _formData[addTaskTo].steps.reduce((prev, current) => (prev.index > current.index ? prev : current), {
+                index: 0,
+            }).index + 1
         const stage = {
+            id: index,
             index: index,
-            name: `Task ` + index,
-            outputLocation: '',
-            script: '',
-            isCollapsed: false,
-            id: 0,
+            name: `Task ${index}`,
+            description: '',
+            stepType: '',
+            directoryPath: '',
         }
-        _formData[addTaskTo].push(stage)
+        _formData[addTaskTo].steps.push(stage)
         setFormData(_formData)
+        setSelectedTaskIndex(_formData[addTaskTo].steps.length - 1)
     }
 
     return (
@@ -346,7 +373,8 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                 configurationType={configurationType}
                                 setConfigurationType={setConfigurationType}
                                 activeStageName={activeStageName}
-                                selectedTaskIndex={0}
+                                selectedTaskIndex={selectedTaskIndex}
+                                setSelectedTaskIndex={setSelectedTaskIndex}
                             />
                         </div>
                     )}
@@ -359,6 +387,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                     addNewTask={addNewTask}
                                     pageState={pageState}
                                     setPageState={setPageState}
+                                    selectedTaskIndex={selectedTaskIndex}
                                 />
                             </Route>
                         )}
