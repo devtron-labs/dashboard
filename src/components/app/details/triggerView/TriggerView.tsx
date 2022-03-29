@@ -150,15 +150,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             document.documentElement.style.overflow = null;
         }
     }
-
     getWorkflowStatus() {
         getWorkflowStatus(this.props.match.params.appId).then((response) => {
             let ciMap = {};
             let cdMap = {};
             let preCDMap = {};
             let postCDMap = {};
-            let allCIs = response.result.ciWorkflowStatus || [];
-            let allCDs = response.result.cdWorkflowStatus || [];
+            let allCIs = response?.result?.ciWorkflowStatus || [];
+            let allCDs = response?.result?.cdWorkflowStatus || [];
             //Create maps from Array
             if (allCIs.length) {
                 allCIs.forEach((pipeline) => {
