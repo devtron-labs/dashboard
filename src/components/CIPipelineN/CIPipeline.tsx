@@ -90,14 +90,6 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         if (ciPipelineId) {
             getInitDataWithCIPipeline(appId, ciPipelineId, true)
                 .then((response) => {
-                    response.form.preBuildStage = {
-                        id: 0,
-                        steps: [],
-                    }
-                    response.form.postBuildStage = {
-                        id: 0,
-                        steps: [],
-                    }
                     setFormData(response.form)
                     setCIPipeline(response.ciPipeline)
                     setIsAdvanced(true)
@@ -110,14 +102,6 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         } else {
             getInitData(appId, true)
                 .then((response) => {
-                    response.result.form.preBuildStage = {
-                        id: 0,
-                        steps: [],
-                    }
-                    response.result.form.postBuildStage = {
-                        id: 0,
-                        steps: [],
-                    }
                     setFormData(response.result.form)
                     setPageState(ViewType.FORM)
                 })

@@ -4,6 +4,10 @@ import { CiPipelineSourceTypeBaseOptions } from './ciPipeline.util'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { MaterialType, Githost, PatchAction } from './types'
 
+const emptyStepsData = () => {
+    return { id: 0, steps: [] }
+}
+
 export function savePipeline(request): Promise<any> {
     const URL = `${Routes.CI_PIPELINE}`
     return post(URL, request)
@@ -34,6 +38,8 @@ export function getInitData(appId: string | number, includeWebhookData: boolean 
                     triggerType: TriggerType.Auto,
                     beforeDockerBuildScripts: [],
                     afterDockerBuildScripts: [],
+                    preBuildStage: emptyStepsData(),
+                    postBuildStage: emptyStepsData(),
                     scanEnabled: scanEnabled,
                     ciPipelineEditable: true,
                 },
@@ -247,6 +253,10 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
     ciPipeline = JSON.parse(JSON.stringify(ciPipeline))
     const beforeDockerBuildScripts = formatStages(formData.beforeDockerBuildScripts || [])
     const afterDockerBuildScripts = formatStages(formData.afterDockerBuildScripts || [])
+    formData.preBuildStage.steps = formatStages(formData.preBuildStage.steps)
+    formData.postBuildStage.steps = formatStages(formData.postBuildStage.steps)
+    const preBuildStage = formData.preBuildStage.steps.length > 0 ? formData.preBuildStage : {}
+    const postBuildStage = formData.postBuildStage.steps.length > 0 ? formData.postBuildStage : {}
     const ci = {
         ...ciPipeline,
         id: ciPipeline.id,
@@ -279,6 +289,8 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
         name: formData.name,
         beforeDockerBuildScripts: beforeDockerBuildScripts,
         afterDockerBuildScripts: afterDockerBuildScripts,
+        preBuildStage: preBuildStage,
+        postBuildStage: postBuildStage,
         scanEnabled: formData.scanEnabled,
         dockerArgs: formData.args
             .filter((arg) => arg.key && arg.key.length && arg.value && arg.value.length)
@@ -400,6 +412,8 @@ function parseCIResponse(
                 ciPipelineSourceTypeOptions: ciPipelineSourceTypeOptions,
                 webhookConditionList: _webhookConditionList,
                 ciPipelineEditable: _isCiPipelineEditable,
+                preBuildStage: ciPipeline.preBuildStage || emptyStepsData(),
+                postBuildStage: ciPipeline.postBuildStage || emptyStepsData(),
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,
