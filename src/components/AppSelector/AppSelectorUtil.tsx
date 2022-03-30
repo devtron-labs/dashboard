@@ -28,6 +28,10 @@ export const appSelectorStyle = {
         color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
         height: '30px',
     }),
+    singleValue: (base, state) => ({
+        ...state,
+        color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
+    }),
     menu: (base, state) => ({
         ...base,
         minWidth: '300px',
