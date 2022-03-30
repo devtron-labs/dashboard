@@ -172,7 +172,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
     const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
     const [loading, setLoading] = useState(false)
     const { appId, envId } = useParams<{ appId, envId }>()
-    
+
     async function handleSubmit(e) {
         e.preventDefault();
         if (!obj) {
@@ -251,7 +251,7 @@ function DeploymentTemplateOverrideForm({ state, handleOverride, dispatch, initi
                         mode={MODES.YAML}
                         validatorSchema={state.data.schema}
                         readOnly={!state.duplicate}
-                        loading={chartRefLoading}>    
+                        loading={chartRefLoading}>
                         <div className='readme-container ' >
                             <CodeEditor.Header>
                                 <h5>{MODES.YAML.toUpperCase()}</h5>

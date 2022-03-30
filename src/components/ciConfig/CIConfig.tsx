@@ -343,7 +343,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         </label>
                         <ReactSelect
                             className="m-0"
-                            tabIndex="1"
+                            tabIndex={1}
                             isMulti={false}
                             isClearable={false}
                             options={dockerRegistries}
@@ -395,7 +395,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         <label className="form__label">Select repository containing docker file</label>
                         <ReactSelect
                             className="m-0"
-                            tabIndex="3"
+                            tabIndex={3}
                             isMulti={false}
                             isClearable={false}
                             options={sourceConfig.material}

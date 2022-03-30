@@ -11,7 +11,6 @@ import { CIPipelineAdvanced } from './CIPipelineAdvanced';
 import { SourceMaterials, WebhookCIProps } from './SourceMaterials';
 import Tippy from '@tippyjs/react';
 import './ciPipeline.css';
-import { classNames } from 'react-select/src/utils';
 
 export default class CIPipeline extends Component<CIPipelineProps, CIPipelineState> {
     validationRules;

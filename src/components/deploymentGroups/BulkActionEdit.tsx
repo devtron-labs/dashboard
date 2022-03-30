@@ -15,7 +15,7 @@ import {getCiPipelineApps, getLinkedCiPipelines, createUpdateDeploymentGroup, ge
 import { useMemo } from 'react';
 
 export function BulkActionEdit() {
-    const { id } = useParams();
+    const { id } = useParams<{id: string}>();
     const location = useLocation()
     const [loading, result, error, reload] = useAsync(()=>getLinkedCiPipelines(id),[id])
     const { push } = useHistory()
@@ -153,7 +153,7 @@ export function BulkActionEdit() {
                     envName: item.envName
                 });
             }
-            
+
         }
     }
     function handleSelectApp(id, name) {
@@ -247,10 +247,10 @@ export function BulkActionEdit() {
                         onClick={e => dispatch({ type: 'changeStep', value: 1 })}
                     >
                         {state.activeStep === 1 && <div className="ci-pipelines">
-                            {Array.isArray(state.pipelines) && 
+                            {Array.isArray(state.pipelines) &&
                             <>
                                 {state.pipelines.map(p => <PipelineSelect key={p.ciPipelineId} {...p} isActive={p.ciPipelineId === state.ciPipelineId} select={Number(id) === 0 ? e => dispatch({ type: 'selectPipeline', value: p.ciPipelineId }) : () => { }} />)}
-                                {state.pipelines.length === 0 && 
+                                {state.pipelines.length === 0 &&
                                 <EmptyState>
                                     <div style={{height:'400px'}} className="flex column empty-pipelines">
                                         <EmptyState.Image><Error style={{width:'32px', height:'32px'}}/></EmptyState.Image>
@@ -303,7 +303,7 @@ export function BulkActionEdit() {
                 </div>
             </section>
             <section className="cta-section flex">
-                <button className="cta" onClick={createDeploymentGroup} type="button">{state.loading ? 
+                <button className="cta" onClick={createDeploymentGroup} type="button">{state.loading ?
                     <Progressing /> : 'Save Changes'
                 }
                 </button>
@@ -325,7 +325,7 @@ export function BulkActionEdit() {
 }
 
 function EnvSelect({ envName = "", appCount, active = false, select }) {
-    const { id: deploymentGroupId } = useParams()
+    const { id: deploymentGroupId } = useParams<{id: string}>()
     if(Number(deploymentGroupId) > 0 && !active) return null
     return (
         <div className={`env-select-card flex left pointer ${active ? 'active' : ''}`} onClick={select}>
@@ -361,7 +361,7 @@ function SelectedApp({ id, name, select, selected, selectedEnvId, envId }) {
 }
 
 function PipelineSelect({id, name, connections, isActive, select, repositories }) {
-    const {id: deploymentGroupId} = useParams()
+    const {id: deploymentGroupId} = useParams<{id: string}>()
     if(Number(deploymentGroupId) > 0 && !isActive){
         return null
     }

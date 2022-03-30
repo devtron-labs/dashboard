@@ -50,7 +50,7 @@ interface AddNotificationState {
     sesConfigOptions: { id: number; configName: string; dest: "slack" | "ses" | ""; recipient: string }[];
     isLoading: boolean;
     appliedFilters: Array<{ type: string, value: number | string | undefined, label: string | undefined }>;
-    selectedChannels: { __isNew__: boolean; label: string; value; data: { dest: "slack" | "ses" | "", configId: number; recipient: string; } }[];
+    selectedChannels: { __isNew__?: boolean; label: string; value; data: { dest: "slack" | "ses" | "", configId: number; recipient: string; } }[];
     openSelectPipeline: boolean;
     pipelineList: PipelineType[];
     filterInput: string;
@@ -93,7 +93,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
 
     componentDidMount() {
         this.getInitialData();
-       
+
     }
 
     getInitialData() {
@@ -539,7 +539,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
 
     render() {
         return <ErrorBoundary>
-           
+
             <div className="add-notification-page">
                 <div className="form__title mb-16">Add Notifications</div>
                 {this.renderAddCard()}

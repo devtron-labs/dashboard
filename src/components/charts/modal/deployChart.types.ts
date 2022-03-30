@@ -1,13 +1,13 @@
 import { ChartValuesType } from '../charts.types';
 
 export interface DeployChartProps
-//  extends RouteComponentProps<{ chartId: string }> 
+//  extends RouteComponentProps<{ chartId: string }>
  {
     appStoreVersion: number;
     chartValuesFromParent: ChartValuesType;
     installedAppVersion?: number;
     chartIdFromDeploymentDetail?: number;
-    versions?: Map<number, { id: number, version }>;
+    versions?: Map<number, { id: number, version: string }>;
     valuesYaml?: string;
     rawValues?:string;
     environmentId?: number;

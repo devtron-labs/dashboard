@@ -117,7 +117,9 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     renderHeader() {
         return <div className="p-20 flex flex-align-center flex-justify">
             <h2 className="fs-16 fw-6 lh-1-43 m-0">Create linked build pipeline</h2>
-            <button type="button" className="transparent flex icon-dim-24" onClick={this.props.close}>
+            <button type="button" className="transparent flex icon-dim-24" onClick={() => {
+                            this.props.close();
+                        }}>
                 <Close className="icon-dim-24" />
             </button>
         </div>
@@ -201,7 +203,9 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                 {this.state.view !== ViewType.LOADING &&
                     <div className="ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex flex-justify">
                         <button type="button" className="cta cta--workflow cancel mr-16"
-                            onClick={this.props.close}>Cancel
+                            onClick={() => {
+                              this.props.close();
+                          }}>Cancel
                         </button>
                         <ButtonWithLoader rootClassName="cta cta--workflow flex-1" loaderColor="white"
                             onClick={this.savePipeline}

@@ -1,3 +1,5 @@
+/* eslint-disable no-fallthrough */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /**
  * JS Implementation of MurmurHash3 (r136) (as of May 20, 2011)
  *
@@ -42,7 +44,9 @@ export function murmurhash3_32_gc(key, seed) {
 	k1 = 0;
 
 	switch (remainder) {
+    // @ts-expect-error
 		case 3: k1 ^= (key.charCodeAt(i + 2) & 0xff) << 16;
+    // @ts-expect-error
 		case 2: k1 ^= (key.charCodeAt(i + 1) & 0xff) << 8;
 		case 1: k1 ^= (key.charCodeAt(i) & 0xff);
 

@@ -74,7 +74,7 @@ const LogViewer: React.FunctionComponent<logViewerInterface> = ({ subject, rootC
             fontFamily: 'Inconsolata',
             // disableStdin: true,
             cursorStyle: 'bar',
-            cursorWidth: 0,
+            cursorWidth: 1,
             theme: {
                 background: '#0b0f22',
                 foreground: '#FFFFFF'
@@ -114,9 +114,9 @@ const LogViewer: React.FunctionComponent<logViewerInterface> = ({ subject, rootC
 
     return (
         <>
-        
+
         <CopyToast showCopyToast={popupText} />
-        
+
         <Scroller
             scrollToBottom={scrollToBottom}
             scrollToTop={scrollToTop}

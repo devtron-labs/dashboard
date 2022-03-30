@@ -8,7 +8,7 @@ import { DropdownIndicator, styles, ValueContainer, Option } from './security.ut
 import { ScanDetailsModal, Pagination, Progressing, showError, ErrorScreenManager as ErrorScreen } from '../common'
 import { ViewType } from '../../config';
 import { ReactSelectOptionType, SecurityScansTabState } from './security.types';
-import ReactSelect, { OptionsType } from 'react-select';
+import ReactSelect from 'react-select';
 import EmptyState from '../EmptyState/EmptyState';
 import AppNotDeployed from '../../assets/img/app-not-deployed.png';
 import NoResults from '../../assets/img/empty-noresult@2x.png';
@@ -284,7 +284,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
             return <ReactSelect key={filter}
               className={`security-scan__filter security-scan__filter--${filter}`}
               name={filter}
-              tabIndex={`${index + 2}`}
+              tabIndex={index + 2}
               isMulti={true}
               isClearable={false}
               value={this.state.filtersApplied[filter]}

@@ -214,12 +214,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             <Switch>
                 <Route
                     path={`${this.props.match.path}/edit`}
-                    render={(props) => {
+                    render={({location, history, match}: {location: any, history: any, match: any}) => {
                         return (
                             <AddWorkflow
-                                match={props.match}
-                                history={props.history}
-                                location={props.location}
+                                match={match}
+                                history={history}
+                                location={location}
                                 name={this.state.appName}
                                 onClose={this.closeAddWorkflow}
                                 getWorkflows={this.getWorkflows}
@@ -231,14 +231,14 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     path={[URLS.APP_EXTERNAL_CI_CONFIG, URLS.APP_LINKED_CI_CONFIG, URLS.APP_CI_CONFIG].map(
                         (pipeline) => `${this.props.match.path}/${pipeline}/:ciPipelineId/cd-pipeline/:cdPipelineId?`,
                     )}
-                    render={(props) => {
-                        let cdNode = this.state.allDeploymentNodeMap.get(props.match.params.cdPipelineId);
+                    render={({location, history, match}: {location: any, history: any, match: any}) => {
+                        let cdNode = this.state.allDeploymentNodeMap.get(match.params.cdPipelineId);
                         let downstreamNodeSize = cdNode?.downstreams?.length ?? 0;
                         return (
                             <CDPipeline
-                                match={props.match}
-                                history={props.history}
-                                location={props.location}
+                                match={match}
+                                history={history}
+                                location={location}
                                 appName={this.state.appName}
                                 close={this.closePipeline}
                                 downstreamNodeSize={downstreamNodeSize}
@@ -249,14 +249,14 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 />
                 <Route
                     path={`${this.props.match.path}/ci-pipeline/:ciPipelineId?`}
-                    render={(props) => {
-                        let ciNode = this.state.allCINodeMap.get(props.match.params.ciPipelineId);
+                    render={({location, history, match}: {location: any, history: any, match: any}) => {
+                        let ciNode = this.state.allCINodeMap.get(match.params.ciPipelineId);
                         let len = ciNode && ciNode.downstreams ? ciNode && ciNode.downstreams.length : 0;
                         return (
                             <CIPipeline
-                                match={props.match}
-                                history={props.history}
-                                location={props.location}
+                                match={match}
+                                history={history}
+                                location={location}
                                 appName={this.state.appName}
                                 connectCDPipelines={len}
                                 close={this.closePipeline}
@@ -267,14 +267,14 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 />
                 <Route
                     path={`${this.props.match.path}/external-ci/:ciPipelineId?`}
-                    render={(props) => {
-                        let ciNode = this.state.allCINodeMap.get(props.match.params.ciPipelineId);
+                    render={({location, history, match}: {location: any, history: any, match: any}) => {
+                        let ciNode = this.state.allCINodeMap.get(match.params.ciPipelineId);
                         let len = ciNode && ciNode.downstreams ? ciNode && ciNode.downstreams.length : 0;
                         return (
                             <ExternalCIPipeline
-                                match={props.match}
-                                history={props.history}
-                                location={props.location}
+                                match={match}
+                                history={history}
+                                location={location}
                                 appName={this.state.appName}
                                 connectCDPipelines={len}
                                 close={this.closePipeline}
@@ -285,14 +285,14 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 />
                 <Route
                     path={`${this.props.match.path}/linked-ci/:ciPipelineId`}
-                    render={(props) => {
-                        let ciNode = this.state.allCINodeMap.get(props.match.params.ciPipelineId);
+                    render={({location, history, match}: {location: any, history: any, match: any}) => {
+                        let ciNode = this.state.allCINodeMap.get(match.params.ciPipelineId);
                         let len = ciNode && ciNode.downstreams ? ciNode && ciNode.downstreams.length : 0;
                         return (
                             <LinkedCIPipelineView
-                                match={props.match}
-                                history={props.history}
-                                location={props.location}
+                                match={match}
+                                history={history}
+                                location={location}
                                 appName={this.state.appName}
                                 connectCDPipelines={len}
                                 close={this.closePipeline}
@@ -303,12 +303,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 />
                 <Route
                     path={`${this.props.match.path}/linked-ci`}
-                    render={(props) => {
+                    render={({location, history, match}: {location: any, history: any, match: any}) => {
                         return (
                             <LinkedCIPipeline
-                                match={props.match}
-                                history={props.history}
-                                location={props.location}
+                                match={match}
+                                history={history}
+                                location={location}
                                 appName={this.state.appName}
                                 connectCDPipelines={0}
                                 close={this.closePipeline}
