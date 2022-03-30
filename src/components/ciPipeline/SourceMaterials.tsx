@@ -116,7 +116,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                 isSearchable={false}
                                 options={props.ciPipelineSourceTypeOptions}
                                 value={selectedMaterial}
-                                closeOnSelect={false}
+                                closeMenuOnSelect={false}
                                 onChange={(selected) => props?.selectSourceType(selected, mat.gitMaterialId)}
                                 isClearable={false}
                                 isDisabled={!!mat.id}

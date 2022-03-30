@@ -106,7 +106,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                         components={{
                             DropdownIndicator
                         }}
-                        tabIndex="1"
+                        tabIndex={1}
                         placeholder="Select Project"
                         styles={{
                             ...styles,
@@ -127,7 +127,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                         components={{
                             DropdownIndicator
                         }}
-                        tabIndex="2"
+                        tabIndex={2}
                         placeholder="Select Environment"
                         styles={{
                             ...smallMenuList,

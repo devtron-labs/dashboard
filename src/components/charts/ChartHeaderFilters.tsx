@@ -81,7 +81,6 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
                 name="repository"
                 value={selectedChartRepo}
                 options={chartRepoList}
-                closeOnSelect={false}
                 onChange={setSelectedChartRepo}
                 isClearable={false}
                 isMulti={true}

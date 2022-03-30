@@ -144,7 +144,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                         options={this.props.channelList}
                         value={this.state.selectedRecipient}
                         onChange={(selected) => this.addRecipient(selected)}
-                        tabIndex="2"
+                        tabIndex={2}
                         className="basic-multi-select"
                         classNamePrefix="select"
                         components={{

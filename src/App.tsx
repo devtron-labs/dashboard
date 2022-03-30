@@ -81,7 +81,7 @@ export default function App() {
 					push(newLocation);
 				}
 			}
-			catch (err) {
+			catch (err: any) {
 				// push to login without breaking search
 				if (err?.code === 401) {
 					const loginPath = URLS.LOGIN_SSO;

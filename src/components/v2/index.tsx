@@ -75,7 +75,7 @@ function RouterComponent({ envType }) {
             IndexStore.publishAppDetails(response.result);
             setIsLoading(false);
             setErrorResponseCode(undefined);
-        } catch (e) {
+        } catch (e: any) {
             showError(e);
             if(e?.code){
                 setErrorResponseCode(e.code);

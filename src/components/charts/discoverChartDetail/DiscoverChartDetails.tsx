@@ -17,7 +17,7 @@ import { getAvailableCharts } from '../../../services/service';
 import { DiscoverChartDetailsProps, DeploymentProps } from './types';
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg';
 import fileIcon from '../../../assets/icons/ic-file.svg';
-import marked from 'marked';
+import { marked } from 'marked';
 import DeployChart from '../modal/DeployChart';
 import ManageValues from '../modal/ManageValues';
 import { About } from './About';

@@ -21,7 +21,7 @@ export class UpdateSeverityModal extends Component<UpdateSeverityModalProps, Upd
     constructor(props) {
         super(props);
         this.state = {
-            policy: { label: "allow", value: "allow" }
+            policy: { label: "ALLOW", value: "allow" }
         }
         this.handleChangeSeverity = this.handleChangeSeverity.bind(this);
     }
@@ -61,7 +61,7 @@ export class UpdateSeverityModal extends Component<UpdateSeverityModalProps, Upd
                             ...styles
                         }}
                         onChange={this.handleChangeSeverity}
-                        options={[{ label: "BLOCK", value: "BLOCK" }, { label: "ALLOW", value: "ALLOW" }, { label: "INHERIT", value: "INHERIT" }]} />
+                        options={[{ label: "BLOCK", value: "block" }, { label: "ALLOW", value: "allow" }, { label: "INHERIT", value: "inherit" }]} />
                     <div className="flex right form-row mt-24">
                         <button type="button" tabIndex={1} className="cta cancel mb-16 mr-16" onClick={this.props.close}>Cancel</button>
                         <button type="submit" tabIndex={2} className="cta mb-16" onClick={(event) => { this.props.saveSeverity(this.props.severity, this.state.policy.value); }}>Save</button>

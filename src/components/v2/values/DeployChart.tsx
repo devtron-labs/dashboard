@@ -285,7 +285,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
             toast.success('Successfully deleted.');
             let url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`;
             push(url);
-        } catch (err) {
+        } catch (err: any) {
             if (!force && err.code != 403) {
                 setForceDeleteDialog(true);
                 setForceDeleteDialogData(err);

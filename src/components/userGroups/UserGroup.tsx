@@ -311,7 +311,7 @@ export default function UserGroupRoute() {
 
 const UserGroupList: React.FC<{ type: 'user' | 'group'; reloadLists: () => void }> = ({ type, reloadLists }) => {
     const [loading, data, error, reload, setState] = useAsync(type === 'user' ? getUserList : getGroupList, [type]);
-    const result = data?.result || [];
+    const result = (data && data['result']) || [];
     const [searchString, setSearchString] = useState('');
     const searchRef = useRef(null);
     const keys = useKeyDown();
@@ -658,6 +658,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         selectOption,
         selectProps,
         setValue,
+        isDisabled,
+        isRtl,
+        theme,
         ...props
     }) => {
         const [{ value }] = getValue();
@@ -674,6 +677,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     selectOption,
                     selectProps,
                     setValue,
+                    isDisabled,
+                    isRtl,
+                    theme,
                     ...props,
                 }}
             >
@@ -682,7 +688,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     : permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                     ? possibleRolesMetaHelmApps[value].value
                     : possibleRolesMeta[value].value}
-                {React.cloneElement(children[1])}
+                    {React.cloneElement(children[1])}
             </components.ValueContainer>
         );
     };
@@ -860,6 +866,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             <Select
                 value={permission.team}
                 name="team"
+                isMulti={false}
                 placeholder="Select project"
                 options={(serverMode === SERVER_MODE.EA_ONLY
                     ? [{ name: HELM_APP_UNASSIGNED_PROJECT }]
@@ -883,6 +890,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         ...base,
                         border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
                         boxShadow: 'none',
+                    }),
+                    valueContainer: (base, state) => ({
+                        ...base,
+                        display: 'flex',
                     }),
                 }}
                 formatOptionLabel={formatOptionLabelProject}
@@ -1023,7 +1034,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 options={(permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                     ? possibleRolesHelmApps
                     : possibleRoles
-                ).map((role) => ({ label: role as string, value: role as string }))}
+                ).map((role) => ({ label: role as string, value: role as ActionTypes.MANAGER| ActionTypes.VIEW| ActionTypes.TRIGGER| ActionTypes.ADMIN }))}
                 className="basic-multi-select"
                 classNamePrefix="select"
                 menuPortalTarget={document.body}
@@ -1039,6 +1050,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         backgroundColor: state.isSelected ? 'var(--B100)' : state.isFocused ? 'var(--N100)' : 'white',
                         fontWeight: state.isSelected ? 600 : 'normal',
                         marginRight: '8px',
+                    }),
+                    valueContainer: (base, state) => ({
+                        ...base,
+                        display: 'flex',
                     }),
                 }}
                 components={{
@@ -1260,7 +1275,7 @@ export const projectValueContainer = (props) => {
         <components.ValueContainer {...props}>
             {value[0] ? (
                 <>
-                    {value[0].value}
+                    {!props.selectProps.menuIsOpen && value[0].value}
                     {React.cloneElement(props.children[1])}
                 </>
             ) : (
