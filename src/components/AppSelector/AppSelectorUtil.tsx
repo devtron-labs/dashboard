@@ -1,11 +1,11 @@
-import React from 'react';
-import { components } from 'react-select';
-import { ReactComponent as DropDownIcon } from '../../assets/icons/ic-chevron-down.svg';
-import { ServerErrors } from '../../modals/commonTypes';
-import { getAppList } from '../app/service';
-import { showError } from '../common';
+import React from 'react'
+import { components } from 'react-select'
+import { ReactComponent as DropDownIcon } from '../../assets/icons/ic-chevron-down.svg'
+import { ServerErrors } from '../../modals/commonTypes'
+import { getAppList } from '../app/service'
+import { showError } from '../common'
 
-let timeoutId;
+let timeoutId
 
 export const appSelectorStyle = {
     control: (base, state) => ({
@@ -30,8 +30,7 @@ export const appSelectorStyle = {
     }),
     singleValue: (base, state) => ({
         ...state,
-        flexBasis: 0,
-        height: '32px',
+        color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
     }),
     menu: (base, state) => ({
         ...base,
@@ -54,12 +53,13 @@ export const appSelectorStyle = {
     input: (base, state) => ({
         ...base,
         margin: '0',
+        flex: 'unset',
     }),
     dropdownIndicator: (base, state) => ({
         ...base,
         padding: '0 4px 0 4px',
     }),
-};
+}
 
 export const DropdownIndicator = (props) => {
     return (
@@ -73,25 +73,25 @@ export const DropdownIndicator = (props) => {
                 }}
             />
         </components.DropdownIndicator>
-    );
-};
+    )
+}
 
 export const noOptionsMessage = (inputObj: { inputValue: string }): string => {
     if (inputObj && (inputObj.inputValue === '' || inputObj.inputValue.length < 3)) {
-        return 'Type 3 chars to see matching results';
+        return 'Type 3 chars to see matching results'
     }
-    return 'No matching results';
-};
+    return 'No matching results'
+}
 
 export const appListOptions = (inputValue: string): Promise<[]> =>
     new Promise((resolve) => {
         if (timeoutId) {
-            clearTimeout(timeoutId);
+            clearTimeout(timeoutId)
         }
         timeoutId = setTimeout(() => {
             if (inputValue.length < 3) {
-                resolve([]);
-                return;
+                resolve([])
+                return
             }
             getAppList({
                 appNameSearch: inputValue,
@@ -100,21 +100,21 @@ export const appListOptions = (inputValue: string): Promise<[]> =>
                 size: 50,
             })
                 .then((response) => {
-                    let appList = [];
+                    let appList = []
                     if (response.result && response.result.appContainers) {
                         appList = response.result.appContainers.map((res) => ({
                             value: res['appId'],
                             label: res['appName'],
                             ...res,
-                        }));
+                        }))
                     }
-                    resolve(appList as []);
+                    resolve(appList as [])
                 })
                 .catch((errors: ServerErrors) => {
-                    resolve([]);
+                    resolve([])
                     if (errors.code) {
-                        showError(errors);
+                        showError(errors)
                     }
-                });
-        }, 300);
-    });
+                })
+        }, 300)
+    })
