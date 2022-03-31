@@ -33,12 +33,12 @@ html {
 
 .info__container {
     display: grid;
-    grid-template-columns: 26px 1fr auto;
-    padding: 16px 24px;
+    grid-template-columns: 20px 1fr auto;
+    padding: 10px 16px;
     grid-column-gap: 16px;
     align-items: center;
-    background: linear-gradient(to bottom, #f0f7ff, #f0f7ff);
-    border: solid 1px var(--B500);
+    background: var(--B100);
+    border: solid 1px var(--B200);
     border-radius: 4px;
 }
 
@@ -50,14 +50,14 @@ html {
 }
 
 .info__title {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--N900);
     font-weight: 600;
 }
 
 .info__subtitle {
-    color: var(--N600);
-    font-size: 12px;
+    color: var(--N900);
+    font-size: 13px;
 }
 
 .chart-grid-item__icon-wrapper {
