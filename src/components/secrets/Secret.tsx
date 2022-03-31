@@ -595,7 +595,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                             subPath
                         </a>
                         for volume mount)<br></br>
-                        {isSubPathChecked ? <span className="mb-0 cn-5 fs-11">Keys will be used as filename for subpath</span> : null}
+                        {isSubPathChecked && <span className="mb-0 cn-5 fs-11">{ externalType === "KubernetesSecret" ? 'Please provide keys of secret to be mounted' : 'Keys will be used as filename for subpath'}</span>}
                         {isChartVersion309OrBelow ? <span className="fs-12 fw-5">
                             <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                             <span className="cn-7 ml-5">Learn more about </span>
