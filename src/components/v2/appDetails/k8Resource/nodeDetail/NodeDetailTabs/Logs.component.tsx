@@ -262,6 +262,31 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
 
     let podContainerOptions = getPodContainerOptions(isLogAnalyzer, params, location, logState);
 
+    const getPodGroups = () => {
+        let allGroupPods = [], individualPods = []
+
+        const podCreate = (podGroupName, _pod) => {
+            podGroupName.push({
+                label: _pod.name,
+                value: _pod.name,
+            })
+        }
+
+        podContainerOptions.podOptions.map((pod) => {
+            pod.name.startsWith('All ') ? podCreate(allGroupPods, pod) : podCreate(individualPods, pod)
+        })
+        return [
+            {
+                label: 'ALL PODS FOR',
+                options: allGroupPods,
+            },
+            {
+                label: 'INDIVIDUAL PODS',
+                options: individualPods,
+            },
+        ]
+    }
+ 
     return isDeleted ? (
         <div>
             <MessageUI msg="This resource no longer exists" size={32} />
@@ -305,14 +330,11 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                         {isLogAnalyzer && podContainerOptions.podOptions.length > 0 && (
                             <React.Fragment>
                                 <div className="cn-6 ml-8 mr-10 ">Pods</div>
-                                <div className="cn-6 flex left">
+                                <div className="cn-6 flex left"> 
                                     <div style={{ minWidth: '200px' }}>
                                         <Select
                                             placeholder="Select Pod"
-                                            options={podContainerOptions.podOptions.map((_pod) => ({
-                                                label: _pod.name,
-                                                value: _pod.name,
-                                            }))}
+                                            options={getPodGroups()}
                                             defaultValue={getFirstOrNull(
                                                 podContainerOptions.podOptions
                                                     .filter((_pod) => _pod.selected)
@@ -329,12 +351,20 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                                     minHeight: '24px !important',
                                                     cursor: 'pointer',
                                                 }),
+                                                groupHeading: (base) => ({
+                                                    ...base,
+                                                    fontWeight: 600,
+                                                    fontSize: '10px',
+                                                    color: 'var(--n-700)',
+                                                    direction: 'rtl',
+                                                    marginLeft: 0,
+                                                }),
                                                 singleValue: (base, state) => ({
                                                     ...base,
                                                     fontWeight: 600,
                                                     color: '#06c',
                                                     direction: 'rtl',
-                                                    marginLeft: 0,
+                                                    marginLeft: "2px",
                                                 }),
                                                 indicatorsContainer: (provided, state) => ({
                                                     ...provided,
@@ -352,7 +382,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                             }}
                                             components={{
                                                 IndicatorSeparator: null,
-                                                Option,
+                                                Option: (props)=> <Option {...props} showTippy={true} />,
                                             }}
                                         />
                                     </div>
@@ -397,7 +427,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                                 fontWeight: 600,
                                                 color: '#06c',
                                                 direction: 'rtl',
-                                                marginLeft: 0,
+                                                marginLeft: "2px",
                                             }),
                                             indicatorsContainer: (provided, state) => ({
                                                 ...provided,
@@ -415,7 +445,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                         }}
                                         components={{
                                             IndicatorSeparator: null,
-                                            Option,
+                                            Option: (props)=> <Option {...props} showTippy={true} />,
                                         }}
                                     />
                                 </div>
