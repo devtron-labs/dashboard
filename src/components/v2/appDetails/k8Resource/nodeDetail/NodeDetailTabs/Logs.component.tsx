@@ -119,7 +119,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
 
     const getGrepTokens = (expression) => {
         const options = commandLineParser({
-            args: expression.replace(/[\s]+/, ' ').replace('"', '').split(' '),
+            args: expression.replace(/[\s]+/, ' ').replace(/"/g, '').split(' '),
             booleanKeys: ['v'],
             allowEmbeddedValues: true,
         });
