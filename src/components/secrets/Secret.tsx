@@ -61,7 +61,9 @@ const Secret = ({ respondOnSuccess, ...props }) => {
                     }
                     return config
                 })
+            
             }
+            console.log(result)
             setAppChartRef(appChartRefRes.result);
             setList(result);
         }
@@ -209,7 +211,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!props.filePermission)
     const [filePermissionValue, setFilePermissionValue] = useState({ value: props.filePermission, error: "" })
     const isChartVersion309OrBelow = props.appChartRef && isVersionLessThanOrEqualToTarget(props.appChartRef.version, [3, 9]) && isChartRef3090OrBelow(props.appChartRef.id);
-
+    
     let tempSecretData: any[] = props?.secretData || [];
     tempSecretData = tempSecretData.map((s) => {
         return {
@@ -586,6 +588,16 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     </span>
                 </Checkbox>
             </div> : ""}
+            {selectedTab === 'Data Volume' && !isExternalValues && isSubPathChecked ? <div className="mb-16">
+            <CustomInput value={filePermissionValue.value}
+                autoComplete="off"
+                tabIndex={5}
+                label={""}
+                placeholder={"Enter keys (Eg. key1, key2, key3)"}
+                error={filePermissionValue.error}
+                onChange={(e) => setFilePermissionValue({ value: e.target.value, error: "" })}
+            />
+        </div> : ""}
         {selectedTab === 'Data Volume' ? <div className="mb-16">
             <Checkbox isChecked={isFilePermissionChecked}
                 onClick={(e) => { e.stopPropagation() }}
