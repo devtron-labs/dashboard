@@ -351,14 +351,18 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 setFilePermissionValue({ value: filePermissionValue.value, error: 'Atleast 3 character are required' });
                 return;
             }
-            if(selectedTab === 'Data Volume' && isSubPathChecked ){
-                if (!externalSubpathValues.value) {
-                    setExternalSubpathValues({ value: externalSubpathValues.value, error: 'This is a required field' });
-                    return;
-                }
+        }
+        if (!new RegExp(PATTERNS.ALL_DIGITS_BETWEEN_0_AND_7).test(filePermissionValue.value)) {
+            setFilePermissionValue({ value: filePermissionValue.value, error: 'This is octal number, use numbers between 0 to 7' });
+            return;
+        }
+        if(selectedTab === 'Data Volume' && isSubPathChecked ){
+            if (!externalSubpathValues.value) {
+                setExternalSubpathValues({ value: externalSubpathValues.value, error: 'This is a required field' });
+                return;
             }
-            if (!new RegExp(PATTERNS.ALL_DIGITS_BETWEEN_0_AND_7).test(filePermissionValue.value)) {
-                setFilePermissionValue({ value: filePermissionValue.value, error: 'This is octal number, use numbers between 0 to 7' });
+            if (!new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_MULTPLS_KEYS).test(externalSubpathValues.value)) {
+                setExternalSubpathValues({ value: externalSubpathValues.value, error: 'There should be no space between keys' });
                 return;
             }
         }
