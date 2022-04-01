@@ -265,7 +265,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
     const getPodGroups = () => {
         let allGroupPods = [], individualPods = []
 
-        const podCreate = (podGroupName, _pod) => {
+        const podCreate = (podGroupName, _pod: Options) => {
             podGroupName.push({
                 label: _pod.name,
                 value: _pod.name,
@@ -331,7 +331,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                             <React.Fragment>
                                 <div className="cn-6 ml-8 mr-10 ">Pods</div>
                                 <div className="cn-6 flex left"> 
-                                    <div style={{ minWidth: '200px' }}>
+                                    <div style={{ width: '200px' }}>
                                         <Select
                                             placeholder="Select Pod"
                                             options={getPodGroups()}
@@ -364,7 +364,8 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                                     fontWeight: 600,
                                                     color: '#06c',
                                                     direction: 'rtl',
-                                                    marginLeft: "2px",
+                                                    textAlign: 'left',
+                                                    marginLeft: '2px',
                                                 }),
                                                 indicatorsContainer: (provided, state) => ({
                                                     ...provided,
@@ -394,7 +395,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                             <React.Fragment>
                                 <div className="cn-6 ml-8 mr-10">Container </div>
 
-                                <div style={{ minWidth: '150px' }}>
+                                <div style={{ width: '150px' }}>
                                     <Select
                                         placeholder="Select Containers"
                                         options={podContainerOptions.containerOptions.map((_container) => ({
@@ -427,7 +428,8 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                                 fontWeight: 600,
                                                 color: '#06c',
                                                 direction: 'rtl',
-                                                marginLeft: "2px",
+                                                textAlign: 'left',
+                                                marginLeft: '2px',
                                             }),
                                             indicatorsContainer: (provided, state) => ({
                                                 ...provided,
