@@ -96,13 +96,23 @@ export function PluginDetailComponent({
             pluginData.inputVariables
         setFormData(_form)
     }
+    const handleNameChange = (e: any): void => {
+        const _formData = { ...formData }
+        _formData.preBuildStage.steps[selectedTaskIndex].name = e.target.value
+        setFormData(_formData)
+    }
 
     return (
         <div className="p-20 ci-scrollable-content">
             <div>
                 <div className="row-container mb-10">
                     <label className="fw-6 fs-13 cn-7 label-width">Task name*</label>{' '}
-                    <input className="w-100" type="text" />
+                    <input
+                        className="w-100"
+                        type="text"
+                        onChange={(e) => handleNameChange(e)}
+                        value={formData.preBuildStage.steps[selectedTaskIndex].name}
+                    />
                 </div>
                 <div className="row-container mb-10">
                     <label className="fw-6 fs-13 cn-7 label-width">Configure task using</label>

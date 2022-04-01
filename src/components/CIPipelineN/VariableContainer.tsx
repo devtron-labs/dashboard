@@ -64,26 +64,6 @@ export function VariableContainer({
                             )}
                         </>
                     ))}
-                    {/* <label className="p-4 fs-13 fw-4">date*</label>
-                    <label className="p-4 fs-13 fw-4">number</label>
-                    <div className="p-4 fs-14">
-                        <input className="w-100" type="text" />
-                    </div>
-                    <label className="p-4 fs-13 fw-4">Time*</label>
-                    <label className="p-4 fs-13 fw-4">number</label>
-                    {type === PluginVariableType.INPUT ? (
-                        <div className="p-4 fs-14">
-                            <input className="w-100" type="text" />
-                        </div>
-                    ) : (
-                        <label className="p-4 fs-13 fw-4">Date at which the person was greeted.</label>
-                    )}
-
-                    <label className="p-4 fs-13 fw-4">who_to_greet</label>
-                    <label className="p-4 fs-13 fw-4">string</label>
-                    <div className="p-4 fs-14">
-                        <input className="w-100" type="text" />
-                    </div> */}
                 </div>
             )}
         </div>
