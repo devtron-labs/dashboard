@@ -24,6 +24,9 @@ export default () => {
                 log = ev.data;
             }
             let bufferedLogs: Array<string> = []
+
+            // Regex to match ANSI color code/escape sequence
+            const ANSI_COLOR_ESCAPE_SEQUENCE_REGEX = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
             if (!log || log.length == 0) {
                 console.log("no log lines")
             } else {
@@ -32,7 +35,8 @@ export default () => {
                     bufferedLogs = [log]
                 } else {
                     const { _args, a = 0, b = 0 } = this.grepTokens[0]
-                    if (new RegExp(_args, 'gi').test(log)) {
+
+                    if (new RegExp(_args, 'gi').test(log.replace(ANSI_COLOR_ESCAPE_SEQUENCE_REGEX, ''))) {
                         if (this.indexFromLastMatch <= 1 * (a+b)) {
                             let size = Math.min(1*(this.indexFromLastMatch - b), this.trailingLines.length)
                             bufferedLogs = bufferedLogs.concat(this.trailingLines.slice(0, size))
@@ -56,15 +60,23 @@ export default () => {
                     }
                     for (let i = 1; i < this.grepTokens.length; i++) {
                         const { v, _args } = this.grepTokens[i]
-                        bufferedLogs = bufferedLogs.filter(l => (new RegExp(_args, 'gi').test(l)))
+                        bufferedLogs = bufferedLogs.filter((l) =>
+                            new RegExp(_args, 'gi').test(l.replace(ANSI_COLOR_ESCAPE_SEQUENCE_REGEX, '')),
+                        )
                     }
                 }
             }
             let matches = bufferedLogs
-            // console.log("matching "+matches)
             this.filteredArray = this.filteredArray.concat(matches)
             if (this.grepTokens && this.grepTokens.length > 0) {
-                this.filteredArray = this.filteredArray.map(log => log.replace(new RegExp(this.grepTokens[this.grepTokens.length - 1]._args, 'gi'), m => `\x1B[1;31m${m}\x1B[0m`))
+                this.filteredArray = this.filteredArray.map((log) =>
+                    log
+                        .replace(ANSI_COLOR_ESCAPE_SEQUENCE_REGEX, '')
+                        .replace(
+                            new RegExp(this.grepTokens[this.grepTokens.length - 1]._args, 'gi'),
+                            (m) => `\x1B[1;31m${m}\x1B[0m`,
+                        ),
+                )
             }
         }
     }
