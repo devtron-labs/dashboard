@@ -52,9 +52,7 @@ export function Option(props) {
         <Tippy className="default-white ml-10" arrow={false} placement="right" content={data.label}>
             {getOption()}
         </Tippy>
-    ) : (
-        <>{getOption()}</>
-    )
+    ) : getOption()
 };
 
 export function DropdownIndicator(props) {

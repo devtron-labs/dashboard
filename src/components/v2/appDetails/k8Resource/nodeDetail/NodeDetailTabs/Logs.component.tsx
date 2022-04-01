@@ -263,7 +263,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
     let podContainerOptions = getPodContainerOptions(isLogAnalyzer, params, location, logState);
 
     const getPodGroups = () => {
-        let allGroupPods = [], individualPods = []
+        const allGroupPods = [], individualPods = []
 
         const podCreate = (podGroupName, _pod: Options) => {
             podGroupName.push({
@@ -356,7 +356,6 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                                     fontWeight: 600,
                                                     fontSize: '10px',
                                                     color: 'var(--n-700)',
-                                                    direction: 'rtl',
                                                     marginLeft: 0,
                                                 }),
                                                 singleValue: (base, state) => ({
@@ -601,7 +600,7 @@ export function getSelectedPodList(selectedOption: string): PodMetaData[] {
                 handleDefaultForSelectedOption(selectedOption.replace('All new ', ''));
             } else if (selectedOption.startsWith('All old ')) {
                 handleDefaultForSelectedOption(selectedOption.replace('All old ', ''));
-            } else if (selectedOption.startsWith('All')) {
+            } else if (selectedOption.startsWith('All ')) {
                 handleDefaultForSelectedOption(selectedOption.replace('All ', ''));
             } else {
                 pods = IndexStore.getAllPods().filter((_pod) => _pod.name == selectedOption);
