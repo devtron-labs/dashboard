@@ -471,3 +471,7 @@ function createCurlRequest(externalCiConfig): string {
 export function getPluginsData(): Promise<any> {
     return get(Routes.PLUGIN_LIST)
 }
+
+export function getPluginDetail(pluginID: number): Promise<any> {
+    return get(`${Routes.PLUGIN_DETAIL}/${pluginID}`)
+}
