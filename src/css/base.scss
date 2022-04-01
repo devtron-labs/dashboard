@@ -1148,6 +1148,14 @@ button.anchor {
     background-color: var(--N900);
 }
 
+.tippy-box.default-white {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--N900);
+    border: 1px solid var(--N100);
+    background-color: var(--N000);
+}
+
 .devtron-breadcrumb {
     font-size: 12px;
     line-height: 1.34;
