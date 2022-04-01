@@ -339,7 +339,7 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                     return;
                 }
                 if (!new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_MULTPLS_KEYS).test(externalSubpathValues.value)) {
-                    setExternalSubpathValues({ value: externalSubpathValues.value, error: 'There should be no space between keys' });
+                    setExternalSubpathValues({ value: externalSubpathValues.value, error: `Use (a-z), (0-9), (-), (_); Do not use 'spaces'. Use (,) to separate multiple keys `});
                     return;
                 }
             }

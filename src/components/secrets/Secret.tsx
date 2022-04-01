@@ -210,7 +210,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!props.filePermission)
     const [filePermissionValue, setFilePermissionValue] = useState({ value: props.filePermission, error: "" })
     const isChartVersion309OrBelow = props.appChartRef && isVersionLessThanOrEqualToTarget(props.appChartRef.version, [3, 9]) && isChartRef3090OrBelow(props.appChartRef.id);
-    const [externalSubpathValues, setExternalSubpathValues] = useState({value: props.data ? Object.keys(props.data).join(',') : '' , error: "" })
+    const [externalSubpathValues, setExternalSubpathValues] = useState<{value: string; error: string}>({value: props.data ? Object.keys(props.data).join(',') : '' , error: "" })
 
     let tempSecretData: any[] = props?.secretData || [];
     tempSecretData = tempSecretData.map((s) => {
@@ -362,7 +362,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 return;
             }
             if (!new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_MULTPLS_KEYS).test(externalSubpathValues.value)) {
-                setExternalSubpathValues({ value: externalSubpathValues.value, error: 'There should be no space between keys' });
+                setExternalSubpathValues({ value: externalSubpathValues.value, error: `Use (a-z), (0-9), (-), (_); Do not use 'spaces'. Use (,) to separate multiple keys` });
                 return;
             }
         }
