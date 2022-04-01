@@ -33,7 +33,7 @@ export const styles = {
 }
 
 export function Option(props) {
-    const { selectOption, data, showTippy } = props
+    const { selectOption, data, showTippy, isScrollable } = props
     const style = { height: '16px', width: '16px', flex: '0 0 16px' }
     const onClick = (e) => selectOption(data)
     
@@ -49,7 +49,7 @@ export function Option(props) {
     }
 
     return showTippy ? (
-        <Tippy className="default-white ml-10" arrow={false} placement="right" content={data.label}>
+        <Tippy className={`default-white ${isScrollable ? 'ml-12' : ''}`} arrow={false} placement="right" content={data.label}>
             {getOption()}
         </Tippy>
     ) : getOption()

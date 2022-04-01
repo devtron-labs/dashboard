@@ -382,7 +382,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                             }}
                                             components={{
                                                 IndicatorSeparator: null,
-                                                Option: (props)=> <Option {...props} showTippy={true} />,
+                                                Option: (props)=> <Option {...props} showTippy={true} isScrollable={podContainerOptions.podOptions.length > 6} />,
                                             }}
                                         />
                                     </div>
