@@ -8,7 +8,6 @@ import { toast } from 'react-toastify';
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { DOCUMENTATION, PATTERNS } from '../../config';
-import Reload from '../Reload/Reload';
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as File } from '../../assets/icons/ic-file.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
@@ -248,7 +247,7 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
     const [filePermissionValue, setFilePermissionValue] = useState({ value: filePermission, error: "" });
     const isChartVersion309OrBelow = appChartRef && isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]) && isChartRef3090OrBelow(appChartRef.id);
-
+    const [externalSubpathValues, setExternalSubpathValues] = useState({value: data ? Object.keys(data).join(',') : '' , error: "" })
     function setKeyValueArray(arr) {
         tempArray.current = arr
     }
@@ -334,6 +333,16 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                 setFilePermissionValue({ value: filePermissionValue.value, error: 'This is octal number, use numbers between 0 to 7' });
                 return;
             }
+         if(selectedTab === 'Data Volume' && isSubPathChecked && isExternalValues ){
+                if (!externalSubpathValues.value) {
+                    setExternalSubpathValues({ value: externalSubpathValues.value, error: 'This is a required field' });
+                    return;
+                }
+                if (!new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_MULTPLS_KEYS).test(externalSubpathValues.value)) {
+                    setExternalSubpathValues({ value: externalSubpathValues.value, error: 'There should be no space between keys' });
+                    return;
+                }
+            }
         }
 
         let dataArray = yamlMode ? tempArray.current : externalValues
@@ -361,11 +370,17 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
             }
             if (selectedTab === 'Data Volume') {
                 payload['mountPath'] = volumeMountPath.value;
-                if (!isExternalValues && !isChartVersion309OrBelow) {
+                if (!isChartVersion309OrBelow) {
                     payload['subPath'] = isSubPathChecked;
                 }
                 if (isFilePermissionChecked && !isChartVersion309OrBelow) {
                     payload['filePermission'] = filePermissionValue.value.length === 3 ? `0${filePermissionValue.value}` : `${filePermissionValue.value}`;
+                }
+                if (isSubPathChecked && isExternalValues){
+                    const externalSubpathKey = externalSubpathValues.value.split(',')
+                    const secretKeys = {}
+                    externalSubpathKey.forEach((key)=> secretKeys[key] = '')
+                    payload['data'] = secretKeys
                 }
             }
             if (!envId) {
@@ -452,6 +467,7 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
             <div className={`form__row form-row__tab`}>
                 {tabs.map((data, idx) => <Tab {...data} key={idx} onClick={title => selectTab(title)} />)}
             </div>
+
             {selectedTab === 'Data Volume' ? <div className="form__row">
                 <CustomInput value={volumeMountPath.value}
                     autoComplete="off"
@@ -462,7 +478,7 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                     error={volumeMountPath.error}
                     onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
             </div> : null}
-            {!isExternalValues && selectedTab === 'Data Volume' ?
+            {selectedTab === 'Data Volume' ?
                 <div className="mb-16">
                     <Checkbox isChecked={isSubPathChecked}
                         onClick={(e) => { e.stopPropagation(); }}
@@ -475,7 +491,8 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                                 subPath
                             </a>
                             for volume mount)<br></br>
-                            {isSubPathChecked ? <span className="mb-0 cn-5 fs-11">Keys will be used as filename for subpath</span> : null}
+                            {isSubPathChecked ? <span className="mb-0 cn-5 fs-11">{ isExternalValues ? 'Please provide keys of secret to be mounted' : 'Keys will be used as filename for subpath'}</span> : null}
+                           
                             {isChartVersion309OrBelow ? <span className="fs-12 fw-5">
                                 <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                                 <span className="cn-7 ml-5">Learn more about </span>
@@ -483,7 +500,18 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                             </span> : null}
                         </span>
                     </Checkbox>
+                    { isExternalValues  && isSubPathChecked? <div className="mb-16">
+                        <CustomInput value={externalSubpathValues.value}
+                            autoComplete="off"
+                            tabIndex={5}
+                            label={""}
+                            placeholder={"Enter keys (Eg. username, configs.json)"}
+                            error={externalSubpathValues.error}
+                            onChange={(e) => setExternalSubpathValues({ value: e.target.value, error: "" })}
+            />
+        </div> : ""}
                 </div> : ""}
+           
             {selectedTab === 'Data Volume' ? <div className="mb-16">
                 <Checkbox isChecked={isFilePermissionChecked}
                     onClick={(e) => { e.stopPropagation() }}
@@ -552,7 +580,7 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                         </div>
                         : <>
                             {externalValues.map((data, idx) => <KeyValueInput keyLabel={selectedTab == "Data Volume" ? "File Name" : "Key"} valueLabel={selectedTab == "Data Volume" ? "File Content" : "Value"} {...data} key={idx} index={idx} onChange={handleChange} onDelete={handleDeleteParam} />)}
-                            <div className="add-parameter bold pointer" onClick={e => setExternalValues(externalValues => [...externalValues, { k: "", v: "", keyError: "", valueError: "" }])}>
+                            <div className="add-parameter bold pointer flex left" onClick={e => setExternalValues(externalValues => [...externalValues, { k: "", v: "", keyError: "", valueError: "" }])}>
                                 <Add />Add parameter
                             </div>
                         </>
