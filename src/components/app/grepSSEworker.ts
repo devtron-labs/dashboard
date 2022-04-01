@@ -26,7 +26,7 @@ export default () => {
             let bufferedLogs: Array<string> = []
 
             // Regex to match ANSI color code/escape sequence
-            const ANSI_COLOR_ESCAPE_SEQUENCE_REGEX = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
+            const ANSI_COLOR_ESCAPE_SEQUENCE_REGEX = /\u001b\[.*?m/g
             if (!log || log.length == 0) {
                 console.log("no log lines")
             } else {
