@@ -581,7 +581,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 error={volumeMountPath.error}
                 onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
         </div> : null}
-        {selectedTab === 'Data Volume' ?
+        {selectedTab === 'Data Volume' &&
             <div className="mb-16">
                 <Checkbox isChecked={isSubPathChecked}
                     onClick={(e) => { e.stopPropagation() }}
@@ -603,7 +603,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         </span> : null}
                     </span>
                 </Checkbox>
-            </div> : ""}
+            </div>}
             {selectedTab === 'Data Volume' && !isExternalValues && isSubPathChecked && <div className="mb-16">
             <CustomInput value={externalSubpathValues.value}
                 autoComplete="off"
@@ -614,7 +614,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 onChange={(e) => setExternalSubpathValues({ value: e.target.value, error: "" })}
             />
         </div>}
-        {selectedTab === 'Data Volume' ? <div className="mb-16">
+        {selectedTab === 'Data Volume' && <div className="mb-16">
             <Checkbox isChecked={isFilePermissionChecked}
                 onClick={(e) => { e.stopPropagation() }}
                 rootClassName=""
@@ -633,8 +633,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     </span> : null}
                 </span>
             </Checkbox>
-        </div> : ""}
-        {selectedTab === 'Data Volume' && isFilePermissionChecked ? <div className="mb-16">
+        </div>}
+        {selectedTab === 'Data Volume' && isFilePermissionChecked && <div className="mb-16">
             <CustomInput value={filePermissionValue.value}
                 autoComplete="off"
                 tabIndex={5}
@@ -644,7 +644,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 error={filePermissionValue.error}
                 onChange={(e) => setFilePermissionValue({ value: e.target.value, error: "" })}
             />
-        </div> : ""}
+        </div>}
         {isHashiOrAWS ? <div className="form__row">
             <CustomInput value={roleARN.value}
                 autoComplete="off"

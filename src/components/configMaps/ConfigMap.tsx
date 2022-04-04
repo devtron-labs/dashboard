@@ -502,7 +502,7 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                 ))}
             </div>
 
-            {selectedTab === 'Data Volume' ? (
+            {selectedTab === 'Data Volume' && (
                 <div className="form__row">
                     <CustomInput
                         value={volumeMountPath.value}
@@ -515,8 +515,8 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                         onChange={(e) => setVolumeMountPath({ value: e.target.value, error: '' })}
                     />
                 </div>
-            ) : null}
-            {selectedTab === 'Data Volume' ? (
+            )}
+            {selectedTab === 'Data Volume' && (
                 <div className="mb-16">
                     <Checkbox
                         isChecked={isSubPathChecked}
@@ -575,11 +575,9 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                         </div>
                     )}
                 </div>
-            ) : (
-                ''
             )}
 
-            {selectedTab === 'Data Volume' ? (
+            {selectedTab === 'Data Volume' && (
                 <div className="mb-16">
                     <Checkbox
                         isChecked={isFilePermissionChecked}
@@ -619,8 +617,6 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                         </span>
                     </Checkbox>
                 </div>
-            ) : (
-                ''
             )}
             {selectedTab === 'Data Volume' && isFilePermissionChecked ? (
                 <div className="mb-16">
