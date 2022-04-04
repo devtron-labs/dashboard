@@ -54,30 +54,28 @@ export function CustomScriptComponent() {
                     <Add className="icon-dim-20 fcb-5 vertical-align-middle mr-16" />
                     <span className="artifact__add">Add Variable</span>
                 </div>
-                <input
-                        className="form__input"
-                        autoComplete="off"
-                        placeholder="Variable name"
-                        type="text"
-                    />
+                <input className="form__input w-100" autoComplete="off" placeholder="Variable name" type="text" />
+                <input className="form__input w-100" autoComplete="off" placeholder="Description" type="text" />
+
             </div>
         )
     }
 
     return (
-        <>
-            <div className="flexbox">
-                Task name*
+        <div className="fs-13 fw-6">
+            <div className="flexbox pt-6 pb-6">
+                <span className="w-200">Task name*</span>
                 <input
-                    className="form__input bcn-1"
+                    style={{ width: '80% !important' }}
+                    className="form__input bcn-1 w-80"
                     autoComplete="off"
                     placeholder="Task 1"
                     type="text"
                     value={'name'}
                 />
             </div>
-            <div className="flexbox">
-                Configure task using
+            <div className="flexbox pt-6 pb-6">
+                <span className="w-200">Configure task using</span>
                 <RadioGroup
                     className="gui-yaml-switch"
                     name="yaml-mode"
@@ -89,8 +87,8 @@ export function CustomScriptComponent() {
                     <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
                 </RadioGroup>
             </div>
-            <div className="flexbox">
-                Task type
+            <div className="flexbox pt-6 pb-6">
+                <span className="w-200">Task type</span>
                 <RadioGroup
                     className="gui-yaml-switch"
                     name="yaml-mode"
@@ -103,22 +101,24 @@ export function CustomScriptComponent() {
                     <RadioGroup.Radio value=">Docker file">Docker file</RadioGroup.Radio>
                 </RadioGroup>
             </div>
-            <div className="flexbox">Input variables {renderAddStage('beforeDockerBuildScripts')}</div>
-            <div>
-                <span className="form__label">Script to execute*</span>
-                <div className="script-container">
-                    <CodeEditor
-                        // value={stage.script}
-                        mode="shell"
-                        // onChange={(value) => this.props.handleChange({ target: { value } }, stage.id, key, index, 'script')}
-                        shebang="#!/bin/sh"
-                        inline
-                        height={300}
-                    ></CodeEditor>
-                </div>
-                <div className="flexbox">Output variables {renderAddStage('beforeDockerBuildScripts')}</div>
+            <div className="flexbox pt-6 pb-6 ">
+                <span className="w-200">Input variables</span> 
+                {renderAddStage('beforeDockerBuildScripts')}
             </div>
-        </>
+            <span className="form__label w-200">Script to execute*</span>
+            <div className="script-container">
+                <CodeEditor
+                    // value={stage.script}
+                    mode="shell"
+                    // onChange={(value) => this.props.handleChange({ target: { value } }, stage.id, key, index, 'script')}
+                    shebang="#!/bin/sh"
+                    inline
+                    height={300}
+                ></CodeEditor>
+            </div>
+            <div className="flexbox pt-6 pb-6">
+                <span className='w-200'>Output variables </span>
+                {renderAddStage('beforeDockerBuildScripts')}</div>
+        </div>
     )
 }
-
