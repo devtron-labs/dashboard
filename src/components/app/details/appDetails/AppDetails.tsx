@@ -65,9 +65,7 @@ import {
 } from '../../types';
 import { aggregateNodes, SecurityVulnerabilitites, getSelectedNodeItems, getPodNameSuffix } from './utils';
 import { AppMetrics } from './AppMetrics';
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { TriggerInfoModal } from '../../list/TriggerInfo';
-import { Interface } from 'readline';
 import { sortObjectArrayAlphabetically } from '../../../common/helpers/Helpers';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
@@ -163,11 +161,11 @@ export const Details: React.FC<{
     const [appDetailsError, setAppDetailsError] = useState(undefined);
     const [appDetailsResult, setAppDetailsResult] = useState(undefined);
     const [pollingIntervalID, setPollingIntervalID] = useState(null);
-    let prefix = '';
-    if (process.env.NODE_ENV === 'production') {
+    //let prefix = '';
+    //if (process.env.NODE_ENV === 'production') {
         //     //@ts-ignore
-        //     prefix = `${location.protocol}//${location.host}`; 
-    }
+        //     prefix = `${location.protocol}//${location.host}`;
+    //}
 
     const interval = 30000;
     const appDetails = appDetailsResult?.result;
@@ -898,7 +896,8 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                     options={params.tab?.toLowerCase() == 'logs' ? options : Array.from(nodesMap).map(([name, data]) => ({
                         label: name + getPodNameSuffix(selectedNodes, isAppDeployment, nodesMap, kind),
                         value: name,
-                    }))} closeOnSelect={false}
+                    }))}
+                    closeMenuOnSelect={false}
                     onChange={(selected) => {
                         params.tab?.toLowerCase() == 'logs' ?
                             selectPod(selected) : selectNode((selected as any).value);

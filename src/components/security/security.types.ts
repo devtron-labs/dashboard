@@ -173,7 +173,7 @@ export type Severity = "critical" | "moderate" | "low";
 /**
  * actions which can be taken on vulnerabilities
  */
-export type VulnerabilityAction = "block" | "allow";
+export type VulnerabilityAction = "block" | "allow" | "inherit";
 
 /**
  * Whether vulnerability is allowed or blocked and is it inherited or is it overriden

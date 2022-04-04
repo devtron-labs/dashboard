@@ -649,6 +649,10 @@ button.anchor {
             flex: 0 0 213px;
             word-wrap: anywhere;
             white-space: pre-line;
+            padding: 0;
+            .Toastify__toast-icon{
+              display: none;
+            }
         }
 
         .Toastify__close-button {
@@ -1142,6 +1146,14 @@ button.anchor {
     line-height: 1.6;
     border: 1px solid rgba(255, 255, 255, 0.4);
     background-color: var(--N900);
+}
+
+.tippy-box.default-white {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--N900);
+    border: 1px solid var(--N100);
+    background-color: var(--N000);
 }
 
 .devtron-breadcrumb {
@@ -1750,4 +1762,8 @@ button.anchor {
     &.other {
         background-image: url('../assets/icons/container.svg');
     }
+}
+
+.xterm .xterm-viewport {
+  width: initial !important;
 }

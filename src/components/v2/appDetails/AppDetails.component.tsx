@@ -90,7 +90,7 @@ const AppDetailsComponent = () => {
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             <div>
                 <EnvironmentSelectorComponent />
-                <EnvironmentStatusComponent />
+                <EnvironmentStatusComponent appStreamData={streamData}/>
             </div>
 
             <SyncErrorComponent appStreamData={streamData} />

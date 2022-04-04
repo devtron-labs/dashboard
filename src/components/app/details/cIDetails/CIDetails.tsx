@@ -90,7 +90,7 @@ interface TriggerDetails {
 }
 
 export default function CIDetails() {
-    const { appId, pipelineId } = useParams()
+    const { appId, pipelineId } = useParams<{appId: string, pipelineId: string}>()
     const [pagination, setPagination] = useState<{ offset: number, size: number }>({ offset: 0, size: 20 })
     const [hasMore, setHasMore] = useState<boolean>(false)
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
@@ -295,7 +295,7 @@ interface BuildDetails {
     synchroniseState: (triggerId: number, triggerDetails: History) => void;
 }
 const BuildDetails: React.FC<BuildDetails> = ({ triggerHistory, pipeline, fullScreenView, setFullScreenView, synchroniseState }) => {
-    const { buildId, appId, pipelineId, envId } = useParams()
+    const { buildId, appId, pipelineId, envId } = useParams<{appId: string, envId:string, buildId: string, pipelineId: string}>()
 
     const history = useHistory()
     const { url, path } = useRouteMatch()
@@ -310,7 +310,7 @@ const BuildDetails: React.FC<BuildDetails> = ({ triggerHistory, pipeline, fullSc
 }
 
 const Details: React.FC<BuildDetails> = ({ pipeline, fullScreenView, setFullScreenView, synchroniseState, triggerHistory }) => {
-    const { pipelineId, appId, buildId } = useParams()
+    const { pipelineId, appId, buildId } = useParams<{appId: string, buildId:string, pipelineId: string}>()
     const triggerDetails = triggerHistory.get(+buildId);
     const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails, setTriggerDetails, dependency] = useAsync(() => getCIHistoricalStatus({ appId, pipelineId, buildId }), [pipelineId, buildId, appId], !pipeline.parentCiPipeline && !terminalStatus.has(triggerDetails?.status?.toLowerCase()))
 
@@ -544,7 +544,7 @@ const Generic: React.FC<{ triggerDetails: History, type: 'CI' | 'CD' }> = ({ tri
 
 const HistoryLogs: React.FC<{ pipeline: CIPipeline, triggerDetails: History, setFullScreenView: (...args) => void }> = ({ pipeline, triggerDetails, setFullScreenView }) => {
     let { path } = useRouteMatch();
-    const { pipelineId, buildId } = useParams()
+    const { pipelineId, buildId } = useParams<{buildId: string, pipelineId: string}>()
     const [autoBottomScroll, setAutoBottomScroll] = useState<boolean>(
         triggerDetails.status.toLowerCase() !== 'succeeded',
     );
@@ -570,7 +570,7 @@ const HistoryLogs: React.FC<{ pipeline: CIPipeline, triggerDetails: History, set
 }
 
 const SelectPipeline: React.FC<Pipelines> = ({ pipelines }) => {
-    const { pipelineId, appId, envId } = useParams()
+    const { pipelineId, appId, envId } = useParams<{appId: string, envId:string, pipelineId: string}>()
     const { push } = useHistory()
     const { url, path } = useRouteMatch()
     function handlePipelineChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -614,7 +614,7 @@ export const GitChanges: React.FC<{ triggerDetails: History }> = ({ triggerDetai
 }
 
 const LinkedCIPipelineView: React.FC<{ pipeline: CIPipeline }> = ({ pipeline }) => {
-    const { pipelineId } = useParams()
+    const { pipelineId } = useParams<{pipelineId: string}>()
     let link = `${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`;
     return (
         <EmptyState >
@@ -632,7 +632,7 @@ const LinkedCIPipelineView: React.FC<{ pipeline: CIPipeline }> = ({ pipeline }) 
 }
 
 function SelectPipelineView() {
-    const { pipelineId } = useParams()
+    const { pipelineId } = useParams<{pipelineId: string}>()
     return (
         <EmptyState >
             <EmptyState.Image><img src={AppNotDeployed} alt="" /></EmptyState.Image>
@@ -687,7 +687,7 @@ export const LogsRenderer: React.FC<{ triggerDetails: History, setFullScreenView
                 break
         }
     }, [keys])
-    const { pipelineId } = useParams()
+    const { pipelineId } = useParams<{pipelineId: string}>()
     const [logs, eventSource] = useCIEventSource(`${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`)
     function createMarkup(log) {
         try {
@@ -726,7 +726,7 @@ export function Scroller({ scrollToTop, scrollToBottom, style }) {
 }
 
 export const Artifacts: React.FC<{ triggerDetails: History, getArtifactPromise?: () => Promise<any> }> = ({ triggerDetails, getArtifactPromise }) => {
-    const { buildId, triggerId } = useParams()
+    const { buildId, triggerId } = useParams<{buildId: string, triggerId: string}>()
     const [downloading, setDownloading] = useState(false)
     async function handleArtifact(e) {
         try {
@@ -806,7 +806,7 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
         isLoading: !!props.triggerHistory.artifactId,
         isError: false,
     })
-    const { appId } = useParams();
+    const { appId } = useParams<{appId: string}>();
     async function callGetSecurityIssues() {
         try {
             const { result } = await getLastExecutionByArtifactId(appId, props.triggerHistory.artifactId);

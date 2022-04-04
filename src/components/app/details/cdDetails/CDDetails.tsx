@@ -35,7 +35,7 @@ const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'f
 let statusSet = new Set(["starting", "running", "pending"]);
 
 export default function CDDetails(){
-    const {appId, envId, triggerId, pipelineId} = useParams<{appId:string, envId:string, triggerId:string, pipelineId:string}>()
+    const {appId, envId, triggerId, pipelineId} = useParams<{appId: string, envId: string, triggerId: string, pipelineId: string}>()
     const [pagination, setPagination] = useState<{offset: number, size: number}>({offset: 0, size : 20})
     const [hasMore, setHasMore] = useState<boolean>(false);
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map());
@@ -51,8 +51,8 @@ export default function CDDetails(){
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
     const keys = useKeyDown()
     const [showTemplate, setShowTemplate] = useState(false)
-   const [baseTimeStamp, setBaseTimeStamp] = useState<string>()
-     const [baseTemplateId, setBaseTemplateId] = useState< string>();
+    const [baseTimeStamp, setBaseTimeStamp] = useState<string>()
+    const [baseTemplateId, setBaseTemplateId] = useState< string>();
     const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState<DeploymentTemplateConfiguration[]>([]);
     const [loader, setLoader] = useState<boolean>(false);
 
@@ -67,7 +67,7 @@ export default function CDDetails(){
                 break
         }
     }, [keys])
-    
+
     useEffect(()=>{
         // check for more
         if(loading || !deploymentHistoryResult) return
@@ -129,7 +129,7 @@ export default function CDDetails(){
     },[pipelineId, envId, pipelines])
 
     useEffect(()=>{
-        if(triggerId) return // no need to manually redirect 
+        if(triggerId) return // no need to manually redirect
         if(!envId) return
         if(!pipelineId) return
 
@@ -171,7 +171,7 @@ export default function CDDetails(){
     if (result && !(Array.isArray(result[1]?.pipelines))) return <AppNotConfigured text="No CD pipelines found." />
     if(!result || dependencyState[2] !== envId) return null
 
-  
+
     return (
         <>
             <div className={`${!showTemplate ? 'ci-details' : ''} ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
@@ -249,7 +249,7 @@ export default function CDDetails(){
                             )}
                         </div>
                     </>
-                )} 
+                )}
                  <Switch>
                     <Route
                         path={`${path}/configuration/deployment-template`}
@@ -318,7 +318,7 @@ const DeploymentCard:React.FC<{triggerDetails: History; setBaseTimeStamp: React.
         </ConditionalWrap>
     )
 
-    
+
 }
 
 function SelectEnvironmentView(){
@@ -429,7 +429,7 @@ const TriggerOutput: React.FC<{
         !!triggerId && !!pipelineId,
     );
 
-    
+
     useEffect(()=>{
         if(triggerDetailsLoading || triggerDetailsError) return
 
@@ -496,7 +496,7 @@ const TriggerOutput: React.FC<{
                                     Source code
                                 </NavLink>
                             </li>
-                          {triggerDetails.stage == 'DEPLOY' &&   
+                          {triggerDetails.stage == 'DEPLOY' &&
                           <li className="tab-list__tab">
                                 <NavLink
                                     replace
@@ -555,7 +555,6 @@ const HistoryLogs: React.FC<{
 
     return <>
         <div className="trigger-outputs-container">
-             
             {loading ? <Progressing pageLoader/>
             :<Switch>
                 {triggerDetails.stage !== 'DEPLOY' && <Route path={`${path}/logs`}>
@@ -579,7 +578,7 @@ const SelectEnvironment:React.FC<{environments: AppEnvironment[] }> = ({environm
     const { push } = useHistory()
     const { path } = useRouteMatch()
     const environmentsMap = mapByKey(environments, 'environmentId')
-    
+
     function handleEnvironmentChange(envId: number){
         if (envId && envId > 0) {
             const newUrl = generatePath(path, {  envId, appId: params.appId});
@@ -612,9 +611,9 @@ const SelectEnvironment:React.FC<{environments: AppEnvironment[] }> = ({environm
                     {environment ? environment.environmentName : 'Select environment'}
                 </div>
             </Select.Button>
-            {Array.isArray(environments) && 
+            {Array.isArray(environments) &&
             environments.sort((a, b) => a.environmentName.localeCompare(b.environmentName))
-            .map(p => 
+            .map(p =>
                 <Select.Option key={p.environmentId} value={p.environmentId}>
                     <span className="ellipsis-left">{p.environmentName}</span>
                 </Select.Option>)

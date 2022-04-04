@@ -106,7 +106,7 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
         // set filter clusters ends
 
         // set filter namespace starts
-        let _namespaces = _buildNamespaces(namespaceListRes, filterApplied.clusterVsNamespaceMap);
+        let _namespaces = _buildNamespaces(namespaceListRes as EnvironmentListHelmResponse, filterApplied.clusterVsNamespaceMap);
         filters.namespaces = _namespaces.sort((a, b) => { return sortByLabel(a, b) });
         //set filter namespace ends
 

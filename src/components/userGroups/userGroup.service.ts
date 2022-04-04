@@ -119,7 +119,7 @@ export async function getGroupList(): Promise<GroupList> {
         const response = await get('user/role/group');
         const { result } = response;
         return { ...response, result: result.sort((a, b) => a.name.localeCompare(b.name)) };
-    } catch (err) {
+    } catch (err: any) {
         return err;
     }
 }

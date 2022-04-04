@@ -15,7 +15,7 @@ export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, s
                     // Option,
                 }}
                 isSearchable={true}
-                tabIndex="1"
+                tabIndex={1}
                 placeholder="Select Key"
                 styles={{
                     ...multiSelectStyles,

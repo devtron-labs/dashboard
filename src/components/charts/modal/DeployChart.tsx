@@ -218,7 +218,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 push(_buildAppDetailUrl(newInstalledAppId, newEnvironmentId))
             }
         }
-        catch (err) {
+        catch (err: any) {
             if (Array.isArray(err.errors)) {
                 err.errors.map(({ userMessage }, idx) => toast.error(userMessage, { autoClose: false }))
             }
@@ -331,7 +331,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
             toast.success('Successfully deleted.')
             push(URLS.CHARTS)
         }
-        catch (err) {
+        catch (err: any) {
             if (!force && err.code != 403) {
                 setForceDeleteDialog(true)
                 setForceDeleteDialogData(err)

@@ -119,7 +119,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
 
     const getGrepTokens = (expression) => {
         const options = commandLineParser({
-            args: expression.replace(/[\s]+/, ' ').replace('"', '').split(' '),
+            args: expression.replace(/"/g, '').split(' '),
             booleanKeys: ['v'],
             allowEmbeddedValues: true,
         });
@@ -129,7 +129,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
             B = C || c;
         }
 
-        return _args ? { _args: _args[0], a: Number(A || a), b: Number(B || b), v } : null;
+        return _args ? { _args: _args.join(' '), a: Number(A || a), b: Number(B || b), v } : null;
     };
 
     const handleMessage = (event: any) => {
@@ -262,6 +262,31 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
 
     let podContainerOptions = getPodContainerOptions(isLogAnalyzer, params, location, logState);
 
+    const getPodGroups = () => {
+        const allGroupPods = [], individualPods = []
+
+        const podCreate = (podGroupName, _pod: Options) => {
+            podGroupName.push({
+                label: _pod.name,
+                value: _pod.name,
+            })
+        }
+
+        podContainerOptions.podOptions.map((pod) => {
+            pod.name.startsWith('All ') ? podCreate(allGroupPods, pod) : podCreate(individualPods, pod)
+        })
+        return [
+            {
+                label: 'ALL PODS FOR',
+                options: allGroupPods,
+            },
+            {
+                label: 'INDIVIDUAL PODS',
+                options: individualPods,
+            },
+        ]
+    }
+ 
     return isDeleted ? (
         <div>
             <MessageUI msg="This resource no longer exists" size={32} />
@@ -305,14 +330,11 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                         {isLogAnalyzer && podContainerOptions.podOptions.length > 0 && (
                             <React.Fragment>
                                 <div className="cn-6 ml-8 mr-10 ">Pods</div>
-                                <div className="cn-6 flex left">
-                                    <div style={{ minWidth: '200px' }}>
+                                <div className="cn-6 flex left"> 
+                                    <div style={{ width: '200px' }}>
                                         <Select
                                             placeholder="Select Pod"
-                                            options={podContainerOptions.podOptions.map((_pod) => ({
-                                                label: _pod.name,
-                                                value: _pod.name,
-                                            }))}
+                                            options={getPodGroups()}
                                             defaultValue={getFirstOrNull(
                                                 podContainerOptions.podOptions
                                                     .filter((_pod) => _pod.selected)
@@ -329,12 +351,20 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                                     minHeight: '24px !important',
                                                     cursor: 'pointer',
                                                 }),
+                                                groupHeading: (base) => ({
+                                                    ...base,
+                                                    fontWeight: 600,
+                                                    fontSize: '10px',
+                                                    color: 'var(--n-700)',
+                                                    marginLeft: 0,
+                                                }),
                                                 singleValue: (base, state) => ({
                                                     ...base,
                                                     fontWeight: 600,
                                                     color: '#06c',
                                                     direction: 'rtl',
-                                                    marginLeft: 0,
+                                                    textAlign: 'left',
+                                                    marginLeft: '2px',
                                                 }),
                                                 indicatorsContainer: (provided, state) => ({
                                                     ...provided,
@@ -352,7 +382,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                             }}
                                             components={{
                                                 IndicatorSeparator: null,
-                                                Option,
+                                                Option: (props)=> <Option {...props} showTippy={true} />,
                                             }}
                                         />
                                     </div>
@@ -364,7 +394,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                             <React.Fragment>
                                 <div className="cn-6 ml-8 mr-10">Container </div>
 
-                                <div style={{ minWidth: '150px' }}>
+                                <div style={{ width: '150px' }}>
                                     <Select
                                         placeholder="Select Containers"
                                         options={podContainerOptions.containerOptions.map((_container) => ({
@@ -397,7 +427,8 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                                 fontWeight: 600,
                                                 color: '#06c',
                                                 direction: 'rtl',
-                                                marginLeft: 0,
+                                                textAlign: 'left',
+                                                marginLeft: '2px',
                                             }),
                                             indicatorsContainer: (provided, state) => ({
                                                 ...provided,
@@ -415,7 +446,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                         }}
                                         components={{
                                             IndicatorSeparator: null,
-                                            Option,
+                                            Option: (props)=> <Option {...props} showTippy={true} />,
                                         }}
                                     />
                                 </div>
@@ -565,11 +596,11 @@ export function getSelectedPodList(selectedOption: string): PodMetaData[] {
             pods = IndexStore.getAllNewPods();
             break;
         default:
-            if (selectedOption.startsWith('All new')) {
+            if (selectedOption.startsWith('All new ')) {
                 handleDefaultForSelectedOption(selectedOption.replace('All new ', ''));
-            } else if (selectedOption.startsWith('All old')) {
+            } else if (selectedOption.startsWith('All old ')) {
                 handleDefaultForSelectedOption(selectedOption.replace('All old ', ''));
-            } else if (selectedOption.startsWith('All')) {
+            } else if (selectedOption.startsWith('All ')) {
                 handleDefaultForSelectedOption(selectedOption.replace('All ', ''));
             } else {
                 pods = IndexStore.getAllPods().filter((_pod) => _pod.name == selectedOption);

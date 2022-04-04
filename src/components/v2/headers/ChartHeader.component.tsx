@@ -103,11 +103,26 @@ function ChartHeaderComponent() {
                         onClick={(event) => {
                             ReactGA.event({
                                 category: 'App',
-                                action: 'Trigger Clicked',
+                                action: 'Values Clicked',
                             });
                         }}
                     >
                         Values
+                    </NavLink>
+                </li>
+                <li className="tab-list__tab">
+                    <NavLink
+                        activeClassName="active"
+                        to={`${match.url}/${URLS.APP_DEPLOYMNENT_HISTORY}`}
+                        className="tab-list__tab-link"
+                        onClick={(event) => {
+                            ReactGA.event({
+                                category: 'App',
+                                action: 'Deployment history Clicked',
+                            })
+                        }}
+                    >
+                        Deployment history
                     </NavLink>
                 </li>
             </ul>
