@@ -563,7 +563,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 error={volumeMountPath.error}
                 onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
         </div> : null}
-        {isExternalValues && selectedTab === 'Data Volume' ?
+        {isExternalValues && selectedTab === 'Data Volume' &&
             <div className="mb-16">
                 <Checkbox isChecked={isSubPathChecked}
                     onClick={(e) => { e.stopPropagation() }}
@@ -577,15 +577,15 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                             subPath
                         </a>
                         for volume mount)<br></br>
-                        {isSubPathChecked ? <span className="mb-0 cn-5 fs-11">Keys will be used as filename for subpath</span> : null}
-                        {isChartVersion309OrBelow ? <span className="fs-12 fw-5">
+                        {isSubPathChecked && <span className="mb-0 cn-5 fs-11">Keys will be used as filename for subpath</span>}
+                        {isChartVersion309OrBelow && <span className="fs-12 fw-5">
                             <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                             <span className="cn-7 ml-5">Learn more about </span>
                             <a href="https://docs.devtron.ai/user-guide/creating-application/deployment-template" rel="noreferrer noopener" target="_blank">Deployment Template &gt; Chart Version</a>
-                        </span> : null}
+                        </span>}
                     </span>
                 </Checkbox>
-            </div> : ""}
+            </div>}
         {selectedTab === 'Data Volume' ? <div className="mb-16">
             <Checkbox isChecked={isFilePermissionChecked}
                 onClick={(e) => { e.stopPropagation() }}

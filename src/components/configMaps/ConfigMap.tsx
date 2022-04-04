@@ -436,13 +436,13 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                     </Select>
                 </div>
             </div>
-            {isExternalValues ? <div className="info__container mb-24">
+            {isExternalValues && <div className="info__container mb-24">
                 <Info />
                 <div className="flex column left">
                     <div className="info__title">Using External Configmaps</div>
                     <div className="info__subtitle">Configmap will not be created by system. However, they will be used inside the pod. Please make sure that configmap with the same name is present in the environment.</div>
                 </div>
-            </div> : null}
+            </div>}
             <div className="form__row">
                 <label className="form__label">Name*</label>
                 <input value={configName.value} autoComplete="off" autoFocus onChange={(e) => setName({ value: e.target.value, error: "" })} type="text" className={`form__input`} placeholder={`random-configmap`} disabled={isUpdate} />
@@ -475,7 +475,7 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                                 subPath
                             </a>
                             for volume mount)<br></br>
-                            {isSubPathChecked ? <span className="mb-0 cn-5 fs-11">Keys will be used as filename for subpath</span> : null}
+                            {isSubPathChecked && <span className="mb-0 cn-5 fs-11">Keys will be used as filename for subpath</span>}
                             {isChartVersion309OrBelow ? <span className="fs-12 fw-5">
                                 <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                                 <span className="cn-7 ml-5">Learn more about </span>
