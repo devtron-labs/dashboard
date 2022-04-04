@@ -119,7 +119,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
 
     const getGrepTokens = (expression) => {
         const options = commandLineParser({
-            args: expression.replace(/[\s]+/, ' ').replace('"', '').split(' '),
+            args: expression.replace(/"/g, '').split(' '),
             booleanKeys: ['v'],
             allowEmbeddedValues: true,
         });
@@ -129,7 +129,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
             B = C || c;
         }
 
-        return _args ? { _args: _args[0], a: Number(A || a), b: Number(B || b), v } : null;
+        return _args ? { _args: _args.join(' '), a: Number(A || a), b: Number(B || b), v } : null;
     };
 
     const handleMessage = (event: any) => {
