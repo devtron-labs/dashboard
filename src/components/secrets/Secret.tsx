@@ -61,6 +61,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
                     }
                     return config
                 })
+            
             }
             setAppChartRef(appChartRefRes.result);
             setList(result);
@@ -209,6 +210,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!props.filePermission)
     const [filePermissionValue, setFilePermissionValue] = useState({ value: props.filePermission, error: "" })
     const isChartVersion309OrBelow = props.appChartRef && isVersionLessThanOrEqualToTarget(props.appChartRef.version, [3, 9]) && isChartRef3090OrBelow(props.appChartRef.id);
+    const [externalSubpathValues, setExternalSubpathValues] = useState<{value: string; error: string}>({value: props.data ? Object.keys(props.data).join(',') : '' , error: "" })
 
     let tempSecretData: any[] = props?.secretData || [];
     tempSecretData = tempSecretData.map((s) => {
@@ -349,8 +351,18 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 setFilePermissionValue({ value: filePermissionValue.value, error: 'Atleast 3 character are required' });
                 return;
             }
-            if (!new RegExp(PATTERNS.ALL_DIGITS_BETWEEN_0_AND_7).test(filePermissionValue.value)) {
-                setFilePermissionValue({ value: filePermissionValue.value, error: 'This is octal number, use numbers between 0 to 7' });
+        }
+        if (!new RegExp(PATTERNS.ALL_DIGITS_BETWEEN_0_AND_7).test(filePermissionValue.value)) {
+            setFilePermissionValue({ value: filePermissionValue.value, error: 'This is octal number, use numbers between 0 to 7' });
+            return;
+        }
+        if(selectedTab === 'Data Volume' && isSubPathChecked ){
+            if (!externalSubpathValues.value) {
+                setExternalSubpathValues({ value: externalSubpathValues.value, error: 'This is a required field' });
+                return;
+            }
+            if (!new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_MULTPLS_KEYS).test(externalSubpathValues.value)) {
+                setExternalSubpathValues({ value: externalSubpathValues.value, error: `Use (a-z), (0-9), (-), (_), (.); Use (,) to separate multiple keys` });
                 return;
             }
         }
@@ -408,11 +420,17 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
 
             if (selectedTab === 'Data Volume') {
                 payload['mountPath'] = volumeMountPath.value;
-                if (isExternalValues && !isChartVersion309OrBelow) {
+                if (!isChartVersion309OrBelow) {
                     payload['subPath'] = isSubPathChecked;
                 }
                 if (isFilePermissionChecked && !isChartVersion309OrBelow) {
                     payload['filePermission'] = filePermissionValue.value.length == 3 ? `0${filePermissionValue.value}` : `${filePermissionValue.value}`;
+                }
+                if (!isExternalValues && isSubPathChecked){
+                    const externalSubpathKey = externalSubpathValues.value.replace(/\s+/g, '').split(',')
+                    const secretKeys = {}
+                    externalSubpathKey.forEach((key)=> secretKeys[key] = '')
+                   payload['data'] = secretKeys
                 }
             }
 
@@ -538,9 +556,9 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             </div>
         </div>
         {externalType === "KubernetesSecret" ? <div className="info__container mb-24">
-            <Info />
+        <Info className="icon-dim-20"/>
             <div className="flex column left">
-                <div className="info__title">Using External Secrets</div>
+           <div className="info__title">Using External Secrets</div>
                 <div className="info__subtitle">Secret will not be created by system. However, they will be used inside the pod. Please make sure that secret with the same name is present in the environment.</div>
             </div>
         </div> : null}
@@ -563,7 +581,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 error={volumeMountPath.error}
                 onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
         </div> : null}
-        {isExternalValues && selectedTab === 'Data Volume' ?
+        {selectedTab === 'Data Volume' &&
             <div className="mb-16">
                 <Checkbox isChecked={isSubPathChecked}
                     onClick={(e) => { e.stopPropagation() }}
@@ -577,7 +595,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                             subPath
                         </a>
                         for volume mount)<br></br>
-                        {isSubPathChecked ? <span className="mb-0 cn-5 fs-11">Keys will be used as filename for subpath</span> : null}
+                        {isSubPathChecked && <span className="mb-0 cn-5 fs-11">{ externalType === "KubernetesSecret" ? 'Please provide keys of secret to be mounted' : 'Keys will be used as filename for subpath'}</span>}
                         {isChartVersion309OrBelow ? <span className="fs-12 fw-5">
                             <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                             <span className="cn-7 ml-5">Learn more about </span>
@@ -585,8 +603,18 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         </span> : null}
                     </span>
                 </Checkbox>
-            </div> : ""}
-        {selectedTab === 'Data Volume' ? <div className="mb-16">
+            </div>}
+            {selectedTab === 'Data Volume' && !isExternalValues && isSubPathChecked && <div className="mb-16">
+            <CustomInput value={externalSubpathValues.value}
+                autoComplete="off"
+                tabIndex={5}
+                label={""}
+                placeholder={"Enter keys (Eg. username,configs.json)"}
+                error={externalSubpathValues.error}
+                onChange={(e) => setExternalSubpathValues({ value: e.target.value, error: "" })}
+            />
+        </div>}
+        {selectedTab === 'Data Volume' && <div className="mb-16">
             <Checkbox isChecked={isFilePermissionChecked}
                 onClick={(e) => { e.stopPropagation() }}
                 rootClassName=""
@@ -605,8 +633,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     </span> : null}
                 </span>
             </Checkbox>
-        </div> : ""}
-        {selectedTab === 'Data Volume' && isFilePermissionChecked ? <div className="mb-16">
+        </div>}
+        {selectedTab === 'Data Volume' && isFilePermissionChecked && <div className="mb-16">
             <CustomInput value={filePermissionValue.value}
                 autoComplete="off"
                 tabIndex={5}
@@ -616,7 +644,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 error={filePermissionValue.error}
                 onChange={(e) => setFilePermissionValue({ value: e.target.value, error: "" })}
             />
-        </div> : ""}
+        </div>}
         {isHashiOrAWS ? <div className="form__row">
             <CustomInput value={roleARN.value}
                 autoComplete="off"
