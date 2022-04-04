@@ -604,7 +604,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     </span>
                 </Checkbox>
             </div> : ""}
-            {selectedTab === 'Data Volume' && !isExternalValues && isSubPathChecked ? <div className="mb-16">
+            {selectedTab === 'Data Volume' && !isExternalValues && isSubPathChecked && <div className="mb-16">
             <CustomInput value={externalSubpathValues.value}
                 autoComplete="off"
                 tabIndex={5}
@@ -613,7 +613,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 error={externalSubpathValues.error}
                 onChange={(e) => setExternalSubpathValues({ value: e.target.value, error: "" })}
             />
-        </div> : ""}
+        </div>}
         {selectedTab === 'Data Volume' ? <div className="mb-16">
             <Checkbox isChecked={isFilePermissionChecked}
                 onClick={(e) => { e.stopPropagation() }}

@@ -439,125 +439,232 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                 {!envId && <div>{isUpdate ? `Edit ConfigMap` : `Add ConfigMap`}</div>}
                 <div className="uncollapse__delete flex">
                     {isUpdate && <Trash className="cursor icon-delete icon-n4" onClick={handleDelete} />}
-                    {typeof collapse === 'function' && !envId && <img onClick={collapse} src={arrowTriangle} className="rotate pointer" style={{ ['--rotateBy' as any]: '-180deg' }} />}
+                    {typeof collapse === 'function' && !envId && (
+                        <img
+                            onClick={collapse}
+                            src={arrowTriangle}
+                            className="rotate pointer"
+                            style={{ ['--rotateBy' as any]: '-180deg' }}
+                        />
+                    )}
                 </div>
             </div>
             <div className="form__row">
                 <label className="form__label">Data type</label>
                 <div className="form-row__select-external-type flex">
-                    <Select value={isExternalValues ? "KubernetesConfigMap" : ""} onChange={e => { toggleExternalValues(e.target.value !== "") }}>
-                        <Select.Button>{isExternalValues ? "Kubernetes External ConfigMap" : "Kubernetes ConfigMap"}</Select.Button>
-                        {Object.entries(EXTERNAL_TYPES).map(([value, name]) => <Select.Option key={value} value={value}>{name}</Select.Option>)}
+                    <Select
+                        value={isExternalValues ? 'KubernetesConfigMap' : ''}
+                        onChange={(e) => {
+                            toggleExternalValues(e.target.value !== '')
+                        }}
+                    >
+                        <Select.Button>
+                            {isExternalValues ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
+                        </Select.Button>
+                        {Object.entries(EXTERNAL_TYPES).map(([value, name]) => (
+                            <Select.Option key={value} value={value}>
+                                {name}
+                            </Select.Option>
+                        ))}
                     </Select>
                 </div>
             </div>
-            {isExternalValues ? <div className="info__container mb-24">
-                <Info />
-                <div className="flex column left">
-                    <div className="info__title">Using External Configmaps</div>
-                    <div className="info__subtitle">Configmap will not be created by system. However, they will be used inside the pod. Please make sure that configmap with the same name is present in the environment.</div>
+            {isExternalValues && (
+                <div className="info__container mb-24">
+                    <Info />
+                    <div className="flex column left">
+                        <div className="info__title">Using External Configmaps</div>
+                        <div className="info__subtitle">
+                            Configmap will not be created by system. However, they will be used inside the pod. Please
+                            make sure that configmap with the same name is present in the environment.
+                        </div>
+                    </div>
                 </div>
-            </div> : null}
+            )}
             <div className="form__row">
                 <label className="form__label">Name*</label>
-                <input value={configName.value} autoComplete="off" autoFocus onChange={(e) => setName({ value: e.target.value, error: "" })} type="text" className={`form__input`} placeholder={`random-configmap`} disabled={isUpdate} />
+                <input
+                    value={configName.value}
+                    autoComplete="off"
+                    autoFocus
+                    onChange={(e) => setName({ value: e.target.value, error: '' })}
+                    type="text"
+                    className={`form__input`}
+                    placeholder={`random-configmap`}
+                    disabled={isUpdate}
+                />
                 {configName.error && <label className="form__error">{configName.error}</label>}
             </div>
             <label className="form__label form__label--lower">{`How do you want to use this ConfigMap?`}</label>
             <div className={`form__row form-row__tab`}>
-                {tabs.map((data, idx) => <Tab {...data} key={idx} onClick={title => selectTab(title)} />)}
+                {tabs.map((data, idx) => (
+                    <Tab {...data} key={idx} onClick={(title) => selectTab(title)} />
+                ))}
             </div>
 
-            {selectedTab === 'Data Volume' ? <div className="form__row">
-                <CustomInput value={volumeMountPath.value}
-                    autoComplete="off"
-                    tabIndex={5}
-                    label={"Volume mount path*"}
-                    placeholder={"/directory-path"}
-                    helperText={"Keys are mounted as files to volume"}
-                    error={volumeMountPath.error}
-                    onChange={e => setVolumeMountPath({ value: e.target.value, error: "" })} />
-            </div> : null}
-            {selectedTab === 'Data Volume' ?
+            {selectedTab === 'Data Volume' ? (
+                <div className="form__row">
+                    <CustomInput
+                        value={volumeMountPath.value}
+                        autoComplete="off"
+                        tabIndex={5}
+                        label={'Volume mount path*'}
+                        placeholder={'/directory-path'}
+                        helperText={'Keys are mounted as files to volume'}
+                        error={volumeMountPath.error}
+                        onChange={(e) => setVolumeMountPath({ value: e.target.value, error: '' })}
+                    />
+                </div>
+            ) : null}
+            {selectedTab === 'Data Volume' ? (
                 <div className="mb-16">
-                    <Checkbox isChecked={isSubPathChecked}
-                        onClick={(e) => { e.stopPropagation(); }}
+                    <Checkbox
+                        isChecked={isSubPathChecked}
+                        onClick={(e) => {
+                            e.stopPropagation()
+                        }}
                         rootClassName="top"
                         disabled={isChartVersion309OrBelow}
                         value={CHECKBOX_VALUE.CHECKED}
-                        onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}>
-                        <span className="mb-0">Set SubPath (same as
-                            <a href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath" className="ml-5 mr-5 anchor" target="_blank" rel="noopener noreferer">
+                        onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}
+                    >
+                        <span className="mb-0">
+                            Set SubPath (same as
+                            <a
+                                href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
+                                className="ml-5 mr-5 anchor"
+                                target="_blank"
+                                rel="noopener noreferer"
+                            >
                                 subPath
                             </a>
                             for volume mount)<br></br>
-                            {isSubPathChecked ? <span className="mb-0 cn-5 fs-11">{ isExternalValues ? 'Please provide keys of config map to be mounted' : 'Keys will be used as filename for subpath'}</span> : null}
-                           
-                            {isChartVersion309OrBelow ? <span className="fs-12 fw-5">
-                                <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
-                                <span className="cn-7 ml-5">Learn more about </span>
-                                <a href="https://docs.devtron.ai/user-guide/creating-application/deployment-template" rel="noreferrer noopener" target="_blank">Deployment Template &gt; Chart Version</a>
-                            </span> : null}
+                            {isSubPathChecked && (
+                                <span className="mb-0 cn-5 fs-11">
+                                    {isExternalValues
+                                        ? 'Please provide keys of config map to be mounted'
+                                        : 'Keys will be used as filename for subpath'}
+                                </span>
+                            )}
+                            {isChartVersion309OrBelow && (
+                                <span className="fs-12 fw-5">
+                                    <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
+                                    <span className="cn-7 ml-5">Learn more about </span>
+                                    <a
+                                        href="https://docs.devtron.ai/user-guide/creating-application/deployment-template"
+                                        rel="noreferrer noopener"
+                                        target="_blank"
+                                    >
+                                        Deployment Template &gt; Chart Version
+                                    </a>
+                                </span>
+                            )}
                         </span>
                     </Checkbox>
-                    { isExternalValues  && isSubPathChecked? <div className="mb-16">
-                        <CustomInput value={externalSubpathValues.value}
-                            autoComplete="off"
-                            tabIndex={5}
-                            label={""}
-                            placeholder={"Enter keys (Eg. username,configs.json)"}
-                            error={externalSubpathValues.error}
-                            onChange={(e) => setExternalSubpathValues({ value: e.target.value, error: "" })}
-            />
-        </div> : ""}
-                </div> : ""}
-           
-            {selectedTab === 'Data Volume' ? <div className="mb-16">
-                <Checkbox isChecked={isFilePermissionChecked}
-                    onClick={(e) => { e.stopPropagation() }}
-                    rootClassName=""
-                    disabled={isChartVersion309OrBelow}
-                    value={CHECKBOX_VALUE.CHECKED}
-                    onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}>
-                    <span className="mr-5"> Set File Permission (same as
-                        <a href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions" className="ml-5 mr-5 anchor" target="_blank" rel="noopener noreferer">
-                            defaultMode
-                        </a>
-                     for secrets in kubernetes)<br></br>
-                        {isChartVersion309OrBelow ? <span className="fs-12 fw-5">
-                            <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
-                            <span className="cn-7 ml-5">Learn more about </span>
-                            <a href="https://docs.devtron.ai/user-guide/creating-application/deployment-template" rel="noreferrer noopener" target="_blank">Deployment Template &gt; Chart Version</a>
-                        </span> : null}
-                    </span>
-                </Checkbox>
-            </div> : ""}
-            {selectedTab === 'Data Volume' && isFilePermissionChecked ? <div className="mb-16">
-                <CustomInput value={filePermissionValue.value}
-                    autoComplete="off"
-                    tabIndex={5}
-                    label={""}
-                    disabled={isChartVersion309OrBelow}
-                    placeholder={"eg. 0400 or 400"}
-                    error={filePermissionValue.error}
-                    onChange={handleFilePermission} />
-            </div> : ""}
-            {!isExternalValues && <div className="flex left mb-16">
-                <b className="mr-5 bold">Data*</b>
-                <RadioGroup className="gui-yaml-switch" name="yaml-mode" initialTab={yamlMode ? 'yaml' : 'gui'} disabled={false} onChange={changeEditorMode}>
-                    <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
-                    <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
-                </RadioGroup>
-            </div>}
-            {!isExternalValues && yamlMode ? <div className="info__container info__container--configmap mb-16">
-                <Info /><div className="flex column left">
-                    <div className="info__subtitle">GUI Recommended for multi-line data.</div>
+                    {isExternalValues && isSubPathChecked && (
+                        <div className="mb-16">
+                            <CustomInput
+                                value={externalSubpathValues.value}
+                                autoComplete="off"
+                                tabIndex={5}
+                                label={''}
+                                placeholder={'Enter keys (Eg. username,configs.json)'}
+                                error={externalSubpathValues.error}
+                                onChange={(e) => setExternalSubpathValues({ value: e.target.value, error: '' })}
+                            />
+                        </div>
+                    )}
                 </div>
-            </div> : null}
+            ) : (
+                ''
+            )}
 
-            {!isExternalValues &&
+            {selectedTab === 'Data Volume' ? (
+                <div className="mb-16">
+                    <Checkbox
+                        isChecked={isFilePermissionChecked}
+                        onClick={(e) => {
+                            e.stopPropagation()
+                        }}
+                        rootClassName=""
+                        disabled={isChartVersion309OrBelow}
+                        value={CHECKBOX_VALUE.CHECKED}
+                        onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}
+                    >
+                        <span className="mr-5">
+                            {' '}
+                            Set File Permission (same as
+                            <a
+                                href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions"
+                                className="ml-5 mr-5 anchor"
+                                target="_blank"
+                                rel="noopener noreferer"
+                            >
+                                defaultMode
+                            </a>
+                            for secrets in kubernetes)<br></br>
+                            {isChartVersion309OrBelow ? (
+                                <span className="fs-12 fw-5">
+                                    <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
+                                    <span className="cn-7 ml-5">Learn more about </span>
+                                    <a
+                                        href="https://docs.devtron.ai/user-guide/creating-application/deployment-template"
+                                        rel="noreferrer noopener"
+                                        target="_blank"
+                                    >
+                                        Deployment Template &gt; Chart Version
+                                    </a>
+                                </span>
+                            ) : null}
+                        </span>
+                    </Checkbox>
+                </div>
+            ) : (
+                ''
+            )}
+            {selectedTab === 'Data Volume' && isFilePermissionChecked ? (
+                <div className="mb-16">
+                    <CustomInput
+                        value={filePermissionValue.value}
+                        autoComplete="off"
+                        tabIndex={5}
+                        label={''}
+                        disabled={isChartVersion309OrBelow}
+                        placeholder={'eg. 0400 or 400'}
+                        error={filePermissionValue.error}
+                        onChange={handleFilePermission}
+                    />
+                </div>
+            ) : (
+                ''
+            )}
+            {!isExternalValues && (
+                <div className="flex left mb-16">
+                    <b className="mr-5 bold">Data*</b>
+                    <RadioGroup
+                        className="gui-yaml-switch"
+                        name="yaml-mode"
+                        initialTab={yamlMode ? 'yaml' : 'gui'}
+                        disabled={false}
+                        onChange={changeEditorMode}
+                    >
+                        <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
+                        <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
+                    </RadioGroup>
+                </div>
+            )}
+            {!isExternalValues && yamlMode && (
+                <div className="info__container info__container--configmap mb-16">
+                    <Info />
+                    <div className="flex column left">
+                        <div className="info__subtitle">GUI Recommended for multi-line data.</div>
+                    </div>
+                </div>
+            )}
+
+            {!isExternalValues && (
                 <>
-                    {yamlMode ?
+                    {yamlMode ? (
                         <div className="yaml-container">
                             <CodeEditor
                                 value={yaml}
@@ -565,29 +672,57 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                                 inline
                                 height={350}
                                 onChange={handleYamlChange}
-                                shebang={!isExternalValues && selectedTab == "Data Volume" ? "#Check sample for multi-line data." : "#key:value"}>
+                                shebang={
+                                    !isExternalValues && selectedTab == 'Data Volume'
+                                        ? '#Check sample for multi-line data.'
+                                        : '#key:value'
+                                }
+                            >
                                 <CodeEditor.Header>
                                     <CodeEditor.ValidationError />
                                     <CodeEditor.Clipboard />
                                 </CodeEditor.Header>
-                                {error &&
+                                {error && (
                                     <div className="validation-error-block">
                                         <Info color="#f32e2e" style={{ height: '16px', width: '16px' }} />
                                         <div>{error}</div>
                                     </div>
-                                }
+                                )}
                             </CodeEditor>
                         </div>
-                        : <>
-                            {externalValues.map((data, idx) => <KeyValueInput keyLabel={selectedTab == "Data Volume" ? "File Name" : "Key"} valueLabel={selectedTab == "Data Volume" ? "File Content" : "Value"} {...data} key={idx} index={idx} onChange={handleChange} onDelete={handleDeleteParam} />)}
-                            <div className="add-parameter bold pointer flex left" onClick={e => setExternalValues(externalValues => [...externalValues, { k: "", v: "", keyError: "", valueError: "" }])}>
-                                <Add />Add parameter
+                    ) : (
+                        <>
+                            {externalValues.map((data, idx) => (
+                                <KeyValueInput
+                                    keyLabel={selectedTab == 'Data Volume' ? 'File Name' : 'Key'}
+                                    valueLabel={selectedTab == 'Data Volume' ? 'File Content' : 'Value'}
+                                    {...data}
+                                    key={idx}
+                                    index={idx}
+                                    onChange={handleChange}
+                                    onDelete={handleDeleteParam}
+                                />
+                            ))}
+                            <div
+                                className="add-parameter bold pointer flex left"
+                                onClick={(e) =>
+                                    setExternalValues((externalValues) => [
+                                        ...externalValues,
+                                        { k: '', v: '', keyError: '', valueError: '' },
+                                    ])
+                                }
+                            >
+                                <Add />
+                                Add parameter
                             </div>
                         </>
-                    }
-                </>}
+                    )}
+                </>
+            )}
             <div className="form__buttons">
-                <button type="button" className="cta" onClick={handleSubmit}>{loading ? <Progressing /> : `${name ? 'Update' : 'Save'} ConfigMap`}</button>
+                <button type="button" className="cta" onClick={handleSubmit}>
+                    {loading ? <Progressing /> : `${name ? 'Update' : 'Save'} ConfigMap`}
+                </button>
             </div>
         </div>
     )
