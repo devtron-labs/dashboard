@@ -34,7 +34,7 @@ export function Sidebar({
         <div className="">
             {activeStageName !== BuildStageType.Build && (
                 <div className="sidebar-action-container sidebar-action-container-border">
-                    <div className="action-title fw-6 fs-12 cn-6">CONFIGURE STAGE USING</div>
+                    <div className="text-uppercase fw-6 fs-12 cn-6">CONFIGURE STAGE USING</div>
                     <RadioLabel
                         className="configuration-container"
                         disabled={false}
@@ -53,7 +53,7 @@ export function Sidebar({
                     </RadioLabel>
                     {configurationType === ConfigurationType.GUI && (
                         <>
-                            <div className="action-title fw-6 fs-12 cn-6">Tasks (IN ORDER OF EXECUTION)</div>
+                            <div className="text-uppercase fw-6 fs-12 cn-6">Tasks (IN ORDER OF EXECUTION)</div>
                             <TaskList
                                 formData={formData}
                                 setFormData={setFormData}
@@ -68,7 +68,7 @@ export function Sidebar({
             )}
             {activeStageName === BuildStageType.Build && (
                 <div className="sidebar-action-container sidebar-action-container-border">
-                    <div className="action-title fw-6 fs-12 cn-6">Trigger BUILD PIPELINE</div>
+                    <div className="text-uppercase fw-6 fs-12 cn-6">Trigger BUILD PIPELINE</div>
                     <div>
                         <RadioGroup
                             className="no-border"
@@ -85,7 +85,7 @@ export function Sidebar({
                 </div>
             )}
             <div className="sidebar-action-container ">
-                <div className="action-title fw-6 fs-13 cn-9">📙 Need help?</div>
+                <div className="text-uppercase fw-6 fs-13 cn-9">📙 Need help?</div>
                 <div>
                     <a
                         className="learn-more__href fs-12"

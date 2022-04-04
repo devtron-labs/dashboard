@@ -41,12 +41,22 @@ export enum PluginType {
     PLUGIN_REF = 'PLUGIN REF',
 }
 
+export enum ConditionContainerType {
+    TRIGGER_SKIP = 'Trigger/Skip',
+    PASS_FAILURE = 'Pass/Failure',
+}
+
+export enum PluginVariableType {
+    INPUT = 'Input',
+    OUTPUT = 'Output',
+}
+
 export enum RefVariableType {
     GLOBAL = 'GLOBAL',
     FROM_PREVIOUS_STEP = 'FROM_PREVIOUS_STEP',
 }
 
-export enum scriptType {
+export enum ScriptType {
     SHELL = 'SHELL',
     DOCKERFILE = 'DOCKERFILE',
 }
@@ -73,34 +83,34 @@ interface VariableType {
 
 interface ConditionDetails {
     id: number
-    ConditionOnVariable: string
-    ConditionOperator: string
-    ConditionType: ConditionType
-    ConditionalValue: string
+    conditionOnVariable: string
+    conditionOperator: string
+    conditionType: ConditionType
+    conditionalValue: string
 }
 
 interface InlineStepDetailType {
-    scriptType: scriptType
-    script: string
-    dockerFileExists: true
-    mountPath: string
-    mountCodeToContainer: true
-    configureMountPath: true
-    mountPathMap: {
+    scriptType: ScriptType
+    script?: string
+    dockerFileExists?: true
+    mountPath?: string
+    mountCodeToContainer?: true
+    configureMountPath?: true
+    mountPathMap?: {
         filePathOnDisk: string
         filePathOnContainer: string
     }
-    inputVariables: VariableType[]
-    outputVariables: VariableType[]
+    inputVariables?: VariableType[]
+    outputVariables?: VariableType[]
     conditionDetails: ConditionDetails[]
 }
 
 interface PluginRefStepDetailType {
     id: number
     pluginId: number
-    inputVariables: VariableType[]
-    outputVariables: VariableType[]
-    conditionDetails: ConditionDetails[]
+    inputVariables?: VariableType[]
+    outputVariables?: VariableType[]
+    conditionDetails?: ConditionDetails[]
 }
 
 interface BuildStageType {

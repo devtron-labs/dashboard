@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { FormType, PluginDetailType, PluginType } from '../ciPipeline/types'
+import { FormType, PluginDetailType, PluginType, ScriptType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
 import PreBuildIcon from '../../assets/icons/ic-cd-stage.svg'
 import { PluginCard } from './PluginCard'
@@ -114,9 +114,21 @@ export function PreBuild({
         setSharedPlugins(_sharedPlugin)
     }
 
-    function setPluginType(pluginType: PluginType): void {
+    function setPluginType(pluginType: PluginType, pluginId: number): void {
         const _form = { ...formData }
         _form.preBuildStage.steps[selectedTaskIndex].stepType = pluginType
+        if (pluginType === PluginType.INLINE) {
+            _form.preBuildStage.steps[selectedTaskIndex].inlineStepDetail = {
+                scriptType: ScriptType.SHELL,
+                conditionDetails: [],
+            }
+        } else {
+            _form.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail = {
+                id: 0,
+                pluginId: pluginId,
+                conditionDetails: [],
+            }
+        }
         setFormData(_form)
     }
 
@@ -134,7 +146,7 @@ export function PreBuild({
             {!formData.preBuildStage.steps[selectedTaskIndex]?.stepType ? (
                 <>
                     <div className="cn-9 fw-6 fs-14">What do you want this task to do?</div>
-                    <div onClick={() => setPluginType(PluginType.INLINE)}>
+                    <div onClick={() => setPluginType(PluginType.INLINE, 0)}>
                         <PluginCard
                             imgSource={PreBuildIcon}
                             title="Execute custom script"
@@ -155,7 +167,12 @@ export function PreBuild({
             ) : formData.preBuildStage.steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
                 <CustomScriptComponent />
             ) : (
-                <PluginDetailComponent />
+                <PluginDetailComponent
+                    setPageState={setPageState}
+                    selectedTaskIndex={selectedTaskIndex}
+                    formData={formData}
+                    setFormData={setFormData}
+                />
             )}
         </div>
     )
