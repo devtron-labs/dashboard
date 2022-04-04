@@ -61,7 +61,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
                     }
                     return config
                 })
-
+            
             }
             setAppChartRef(appChartRefRes.result);
             setList(result);
@@ -600,7 +600,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                             <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                             <span className="cn-7 ml-5">Learn more about </span>
                             <a href="https://docs.devtron.ai/user-guide/creating-application/deployment-template" rel="noreferrer noopener" target="_blank">Deployment Template &gt; Chart Version</a>
-                        </span>}
+                        </span> : null}
                     </span>
                 </Checkbox>
             </div>}
