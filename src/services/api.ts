@@ -118,6 +118,7 @@ async function fetchAPI(url: string, type: string, data: object, signal: AbortSi
                 }
                 else {
                     handleLogout()
+                    return { code: 401, status: 'Unauthorized', result: []}
                 }
             } else  if (response.status >= 300 && response.status <= 599) {
                 return await handleServerError(contentType, response)
