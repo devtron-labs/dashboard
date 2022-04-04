@@ -333,15 +333,15 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                 setFilePermissionValue({ value: filePermissionValue.value, error: 'This is octal number, use numbers between 0 to 7' });
                 return;
             }
-         if(selectedTab === 'Data Volume' && isSubPathChecked && isExternalValues ){
-                if (!externalSubpathValues.value) {
-                    setExternalSubpathValues({ value: externalSubpathValues.value, error: 'This is a required field' });
-                    return;
-                }
-                if (!new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_MULTPLS_KEYS).test(externalSubpathValues.value)) {
-                    setExternalSubpathValues({ value: externalSubpathValues.value, error: `Use (a-z), (0-9), (-), (_),(.); Do not use 'spaces'. Use (,) to separate multiple keys `});
-                    return;
-                }
+        }
+        if(selectedTab === 'Data Volume' && isSubPathChecked && isExternalValues){
+            if (!externalSubpathValues.value) {
+                setExternalSubpathValues({ value: externalSubpathValues.value, error: 'This is a required field' });
+                return;
+            }
+            if (!new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_MULTPLS_KEYS).test(externalSubpathValues.value)) {
+                setExternalSubpathValues({ value: externalSubpathValues.value, error: `Use (a-z), (0-9), (-), (_),(.); Use (,) to separate multiple keys `});
+                return;
             }
         }
 
@@ -377,7 +377,7 @@ export function ConfigMapForm({ appChartRef, id, appId, name = "", external, dat
                     payload['filePermission'] = filePermissionValue.value.length === 3 ? `0${filePermissionValue.value}` : `${filePermissionValue.value}`;
                 }
                 if (isSubPathChecked && isExternalValues){
-                    const externalSubpathKey = externalSubpathValues.value.split(',')
+                    const externalSubpathKey = externalSubpathValues.value.replace(/\s+/g, '').split(',')
                     const secretKeys = {}
                     externalSubpathKey.forEach((key)=> secretKeys[key] = '')
                     payload['data'] = secretKeys

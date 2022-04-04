@@ -362,7 +362,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 return;
             }
             if (!new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_MULTPLS_KEYS).test(externalSubpathValues.value)) {
-                setExternalSubpathValues({ value: externalSubpathValues.value, error: `Use (a-z), (0-9), (-), (_), (.); Do not use 'spaces'. Use (,) to separate multiple keys` });
+                setExternalSubpathValues({ value: externalSubpathValues.value, error: `Use (a-z), (0-9), (-), (_), (.); Use (,) to separate multiple keys` });
                 return;
             }
         }
@@ -427,7 +427,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     payload['filePermission'] = filePermissionValue.value.length == 3 ? `0${filePermissionValue.value}` : `${filePermissionValue.value}`;
                 }
                 if (!isExternalValues && isSubPathChecked){
-                    const externalSubpathKey = externalSubpathValues.value.split(',')
+                    const externalSubpathKey = externalSubpathValues.value.replace(/\s+/g, '').split(',')
                     const secretKeys = {}
                     externalSubpathKey.forEach((key)=> secretKeys[key] = '')
                    payload['data'] = secretKeys
