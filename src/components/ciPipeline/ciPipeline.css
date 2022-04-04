@@ -381,7 +381,7 @@
 
 .condition-container {
     display: grid;
-    grid-template-columns: 80px auto 100px auto 30px;
+    grid-template-columns: 80px auto 70px auto 30px;
 }
 
 .content-fit {
