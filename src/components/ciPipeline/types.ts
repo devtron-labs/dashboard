@@ -113,7 +113,7 @@ interface PluginRefStepDetailType {
     conditionDetails?: ConditionDetails[]
 }
 
-interface BuildStageType {
+export interface BuildStageType {
     id: number
     steps: {
         id: number
@@ -121,7 +121,7 @@ interface BuildStageType {
         name: string
         description: string
         stepType: PluginType
-        directoryPath: string
+        reportDirectoryPath: string
         inlineStepDetail?: InlineStepDetailType
         pluginRefStepDetail?: PluginRefStepDetailType
     }[]
@@ -136,7 +136,7 @@ export interface FormType {
     webhookConditionList: { selectorId: number; value: string }[]
     triggerType: string
     scanEnabled?: boolean
-    beforeDockerBuildScripts: {
+    beforeDockerBuildScripts?: {
         id: number
         name: string
         outputLocation: string
@@ -144,7 +144,7 @@ export interface FormType {
         isCollapsed: boolean
         index: number
     }[]
-    afterDockerBuildScripts: {
+    afterDockerBuildScripts?: {
         id: number
         name: string
         outputLocation: string
