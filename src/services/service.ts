@@ -376,3 +376,13 @@ export function getNamespaceListMin(clusterIdsCsv : string) : Promise<Environmen
     const URL = `${Routes.NAMESPACE}/autocomplete?ids=${clusterIdsCsv}`;
     return get(URL);
 }
+
+export function dashboardAccessed() {
+  const URL = `${Routes.DASHBOARD_ACCESSED}`;
+  return get(URL);
+}
+
+export function dashboardLoggedIn() {
+  const URL = `${Routes.DASHBOARD_LOGGEDIN}`;
+  return get(URL);
+}
