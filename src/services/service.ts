@@ -378,11 +378,9 @@ export function getNamespaceListMin(clusterIdsCsv : string) : Promise<Environmen
 }
 
 export function dashboardAccessed() {
-  const URL = `${Routes.DASHBOARD_ACCESSED}`;
-  return get(URL);
+  return get(Routes.DASHBOARD_ACCESSED);
 }
 
 export function dashboardLoggedIn() {
-  const URL = `${Routes.DASHBOARD_LOGGEDIN}`;
-  return get(URL);
+  return get(Routes.DASHBOARD_LOGGEDIN);
 }
