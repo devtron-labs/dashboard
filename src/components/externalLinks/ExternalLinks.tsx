@@ -29,7 +29,7 @@ function ExternalLinks() {
         setTimeout(() => {
             setLoading(false)
             // setNotAuthorized(true)
-            setExternalLinks([{}])
+            setExternalLinks([])
             setClusters([
                 {
                     label: 'Cluster1',
