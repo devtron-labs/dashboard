@@ -168,8 +168,8 @@ export const PATTERNS = {
     CONFIGMAP_AND_SECRET_NAME: /^[a-z0-9][a-z0-9-.]*[a-z0-9]$/,
     ALL_DIGITS_BETWEEN_0_AND_7: /^[0-7]*$/,
     APP_LABEL_CHIP: /^.+:.+$/,
-    CONFIG_MAP_AND_SECRET_MULTPLS_KEYS: /^[-._a-zA-Z0-9\,\?\s]*[-._a-zA-Z0-9\s]$/
-};
+    CONFIG_MAP_AND_SECRET_MULTPLS_KEYS: /^[-._a-zA-Z0-9\,\?\s]*[-._a-zA-Z0-9\s]$/,
+}
 
 export const TriggerType = {
     Auto: 'AUTOMATIC',
@@ -449,8 +449,14 @@ export const ConfigurationType = {
     YAML: 'YAML',
 }
 
-export const BuildStageType = {
-    PreBuild: 'Pre-build stage',
-    Build: 'Build stage',
-    PostBuild: 'Post-build stage',
+export const BuildStageVariable = {
+    PreBuild: 'preBuildStage',
+    Build: 'buildStage',
+    PostBuild: 'postBuildStage',
+}
+
+export const BuildTabText = {
+    preBuildStage: 'Pre-build stage',
+    buildStage: 'Build stage',
+    postBuildStage: 'Post-build stage',
 }

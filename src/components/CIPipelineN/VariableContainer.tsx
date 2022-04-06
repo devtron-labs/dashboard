@@ -8,17 +8,19 @@ export function VariableContainer({
     selectedTaskIndex,
     formData,
     setFormData,
+    activeStageName,
 }: {
     type: PluginVariableType
     selectedTaskIndex: number
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
+    activeStageName: string
 }) {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
 
     const handleInputValueChange = (e: any, index: number): void => {
         const _formData = { ...formData }
-        _formData.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.inputVariables[index]['value'] =
+        _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables[index]['value'] =
             e.target.value
         setFormData(_formData)
     }
@@ -45,7 +47,7 @@ export function VariableContainer({
                     <label className="p-4 fs-12 fw-6 text-uppercase">
                         {type === PluginVariableType.INPUT ? 'Value' : 'Description'}
                     </label>
-                    {formData.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail[
+                    {formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail[
                         type === PluginVariableType.OUTPUT ? 'outputVariables' : 'inputVariables'
                     ]?.map((variable, index) => (
                         <>

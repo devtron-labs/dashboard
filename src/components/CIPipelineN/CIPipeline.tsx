@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ButtonWithLoader, ConditionalWrap, DeleteDialog, showError, VisibleModal } from '../common'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
-import { BuildStageType, TriggerType, ViewType } from '../../config'
+import { BuildStageVariable, BuildTabText, TriggerType, ViewType } from '../../config'
 import {
     deleteCIPipeline,
     getInitData,
@@ -33,17 +33,19 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         ciPipelineId = null
     }
     const location = useLocation()
-    let activeStageName = BuildStageType.Build
+    let activeStageName = BuildStageVariable.Build
     if (location.pathname.indexOf('/pre-build') >= 0) {
-        activeStageName = BuildStageType.PreBuild
+        activeStageName = BuildStageVariable.PreBuild
     } else if (location.pathname.indexOf('/post-build') >= 0) {
-        activeStageName = BuildStageType.PostBuild
+        activeStageName = BuildStageVariable.PostBuild
     }
     const { path } = useRouteMatch()
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const text = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
     const title = ciPipelineId ? 'Edit build pipeline' : 'Create build pipeline'
-    const [isAdvanced, setIsAdvanced] = useState<boolean>(activeStageName !== BuildStageType.PreBuild && !!ciPipelineId)
+    const [isAdvanced, setIsAdvanced] = useState<boolean>(
+        activeStageName !== BuildStageVariable.PreBuild && !!ciPipelineId,
+    )
     const [showFormError, setShowFormError] = useState<boolean>(false)
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
@@ -266,12 +268,8 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
 
     const addNewTask = () => {
         const _formData = { ...formData }
-        let addTaskTo = 'preBuildStage'
-        if (activeStageName === BuildStageType.PostBuild) {
-            addTaskTo = 'postBuildStage'
-        }
         const index =
-            _formData[addTaskTo].steps.reduce((prev, current) => (prev.index > current.index ? prev : current), {
+            _formData[activeStageName].steps.reduce((prev, current) => (prev.index > current.index ? prev : current), {
                 index: 0,
             }).index + 1
         const stage = {
@@ -282,9 +280,9 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             stepType: '',
             directoryPath: '',
         }
-        _formData[addTaskTo].steps.push(stage)
+        _formData[activeStageName].steps.push(stage)
         setFormData(_formData)
-        setSelectedTaskIndex(_formData[addTaskTo].steps.length - 1)
+        setSelectedTaskIndex(_formData[activeStageName].steps.length - 1)
     }
 
     return (
@@ -317,7 +315,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                     activeClassName="active"
                                     to={`pre-build`}
                                 >
-                                    {BuildStageType.PreBuild}
+                                    {BuildTabText[BuildStageVariable.PreBuild]}
                                 </NavLink>
                             </li>
                         )}
@@ -328,7 +326,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                 activeClassName="active"
                                 to={`build`}
                             >
-                                {BuildStageType.Build}
+                                {BuildTabText[BuildStageVariable.Build]}
                             </NavLink>
                         </li>
                         {isAdvanced && (
@@ -339,7 +337,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                     activeClassName="active"
                                     to={`post-build`}
                                 >
-                                    {BuildStageType.PostBuild}
+                                    {BuildTabText[BuildStageVariable.PostBuild]}
                                 </NavLink>
                             </li>
                         )}
@@ -373,12 +371,25 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                     setPageState={setPageState}
                                     selectedTaskIndex={selectedTaskIndex}
                                     configurationType={configurationType}
+                                    activeStageName={activeStageName}
+                                    setConfigurationType={setConfigurationType}
                                 />
                             </Route>
                         )}
                         {isAdvanced && (
                             <Route path={`${path}/post-build`}>
-                                <PostBuild formData={formData} setFormData={setFormData} addNewTask={addNewTask} />
+                                {/* <PostBuild formData={formData} setFormData={setFormData} addNewTask={addNewTask} /> */}
+                                <PreBuild
+                                    formData={formData}
+                                    setFormData={setFormData}
+                                    addNewTask={addNewTask}
+                                    pageState={pageState}
+                                    setPageState={setPageState}
+                                    selectedTaskIndex={selectedTaskIndex}
+                                    configurationType={configurationType}
+                                    activeStageName={activeStageName}
+                                    setConfigurationType={setConfigurationType}
+                                />
                             </Route>
                         )}
                         <Route path={`${path}/build`}>

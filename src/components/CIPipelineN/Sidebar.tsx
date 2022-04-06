@@ -1,5 +1,5 @@
 import React from 'react'
-import { BuildStageType, ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
+import { BuildStageVariable, ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { RadioGroup as RadioLabel } from '../common'
 import { FormType } from '../ciPipeline/types'
@@ -32,7 +32,7 @@ export function Sidebar({
 
     return (
         <div className="">
-            {activeStageName !== BuildStageType.Build && (
+            {activeStageName !== BuildStageVariable.Build && (
                 <div className="sidebar-action-container sidebar-action-container-border">
                     <div className="text-uppercase fw-6 fs-12 cn-6">CONFIGURE STAGE USING</div>
                     <RadioLabel
@@ -66,7 +66,7 @@ export function Sidebar({
                     )}
                 </div>
             )}
-            {activeStageName === BuildStageType.Build && (
+            {activeStageName === BuildStageVariable.Build && (
                 <div className="sidebar-action-container sidebar-action-container-border">
                     <div className="text-uppercase fw-6 fs-12 cn-6">Trigger BUILD PIPELINE</div>
                     <div>

@@ -23,6 +23,8 @@ export function PreBuild({
     addNewTask,
     selectedTaskIndex,
     configurationType,
+    setConfigurationType,
+    activeStageName,
 }: {
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -31,16 +33,22 @@ export function PreBuild({
     addNewTask: () => void
     selectedTaskIndex: number
     configurationType: string
+    setConfigurationType: React.Dispatch<React.SetStateAction<string>>
+    activeStageName: string
 }) {
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
     const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
-    const [editorValue, setEditorValue] = useState<string>(YAML.stringify(formData.preBuildStage))
+    const [editorValue, setEditorValue] = useState<string>(YAML.stringify(formData[activeStageName]))
 
     useEffect(() => {
         if (configurationType === ConfigurationType.YAML) {
-            setEditorValue(YAML.stringify(formData.preBuildStage))
+            setEditorValue(YAML.stringify(formData[activeStageName]))
         }
     }, [configurationType])
+
+    useEffect(() => {
+        setConfigurationType(ConfigurationType.GUI)
+    }, [activeStageName])
     useEffect(() => {
         setPageState(ViewType.LOADING)
         getPluginsData()
@@ -70,16 +78,16 @@ export function PreBuild({
 
     function setPluginType(pluginType: PluginType, pluginId: number): void {
         const _form = { ...formData }
-        _form.preBuildStage.steps[selectedTaskIndex].stepType = pluginType
+        _form[activeStageName].steps[selectedTaskIndex].stepType = pluginType
         if (pluginType === PluginType.INLINE) {
-            _form.preBuildStage.steps[selectedTaskIndex].inlineStepDetail = {
+            _form[activeStageName].steps[selectedTaskIndex].inlineStepDetail = {
                 scriptType: ScriptType.SHELL,
                 conditionDetails: [],
                 inputVariables: [],
-                outputVariables: []
+                outputVariables: [],
             }
         } else {
-            _form.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail = {
+            _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {
                 id: 0,
                 pluginId: pluginId,
                 conditionDetails: [],
@@ -91,7 +99,7 @@ export function PreBuild({
     const handleEditorValueChange = (editorValue: string): void => {
         setEditorValue(editorValue)
         const _form = { ...formData }
-        _form.preBuildStage = YAML.parse(editorValue)
+        _form[activeStageName] = YAML.parse(editorValue)
         setFormData(_form)
     }
 
@@ -121,13 +129,14 @@ export function PreBuild({
     }
 
     function renderPluginDetail(): JSX.Element {
-        if (formData.preBuildStage.steps[selectedTaskIndex].stepType === PluginType.INLINE) {
+        if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE) {
             return (
                 <CustomScriptComponent
                     setPageState={setPageState}
                     selectedTaskIndex={selectedTaskIndex}
                     formData={formData}
                     setFormData={setFormData}
+                    activeStageName={activeStageName}
                 />
             )
         } else {
@@ -137,13 +146,14 @@ export function PreBuild({
                     selectedTaskIndex={selectedTaskIndex}
                     formData={formData}
                     setFormData={setFormData}
+                    activeStageName={activeStageName}
                 />
             )
         }
     }
 
     function renderGUI(): JSX.Element {
-        if (formData.preBuildStage.steps.length === 0) {
+        if (formData[activeStageName].steps.length === 0) {
             return (
                 <CDEmptyState
                     imgSource={EmptyPreBuild}
@@ -157,7 +167,7 @@ export function PreBuild({
         } else {
             return (
                 <div className="p-20 ci-scrollable-content">
-                    {!formData.preBuildStage.steps[selectedTaskIndex]?.stepType
+                    {!formData[activeStageName].steps[selectedTaskIndex]?.stepType
                         ? renderPluginList()
                         : renderPluginDetail()}
                 </div>

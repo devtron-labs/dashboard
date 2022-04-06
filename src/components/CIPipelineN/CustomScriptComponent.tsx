@@ -18,11 +18,13 @@ export function CustomScriptComponent({
     selectedTaskIndex,
     formData,
     setFormData,
+    activeStageName,
 }: {
     setPageState?: React.Dispatch<React.SetStateAction<string>>
     selectedTaskIndex?: number
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
+    activeStageName: string
 }) {
     const [yamlMode, toggleYamlMode] = useState(false)
     const [configurationType, setConfigurationType] = useState<string>('GUI')

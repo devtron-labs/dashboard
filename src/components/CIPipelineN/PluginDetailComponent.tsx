@@ -14,18 +14,20 @@ export function PluginDetailComponent({
     selectedTaskIndex,
     formData,
     setFormData,
+    activeStageName,
 }: {
     setPageState: React.Dispatch<React.SetStateAction<string>>
     selectedTaskIndex: number
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
+    activeStageName: string
 }) {
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [editorValue, setEditorValue] = useState<string>('')
 
     useEffect(() => {
         setPageState(ViewType.LOADING)
-        getPluginDetail(formData.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.pluginId)
+        getPluginDetail(formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.pluginId)
             .then((response) => {
                 setPageState(ViewType.FORM)
                 processPluginData(response.result)
@@ -38,32 +40,33 @@ export function PluginDetailComponent({
 
     const processPluginData = (pluginData) => {
         const _form = { ...formData }
-        if (!_form.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.outputVariables) {
-            _form.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.outputVariables =
+        if (!_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables) {
+            _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables =
                 pluginData.outputVariables
         }
-        if (!_form.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.inputVariables) {
-            _form.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.inputVariables = pluginData.inputVariables
+        if (!_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables) {
+            _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables =
+                pluginData.inputVariables
         }
         setFormData(_form)
     }
     const handleNameChange = (e: any): void => {
         const _formData = { ...formData }
-        _formData.preBuildStage.steps[selectedTaskIndex].name = e.target.value
+        _formData[activeStageName].steps[selectedTaskIndex].name = e.target.value
         setFormData(_formData)
     }
 
     const handleEditorValueChange = (editorValue: string): void => {
         setEditorValue(editorValue)
         const _formData = { ...formData }
-        _formData.preBuildStage.steps[selectedTaskIndex] = YAML.parse(editorValue)
+        _formData[activeStageName].steps[selectedTaskIndex] = YAML.parse(editorValue)
         setFormData(_formData)
     }
 
     const handleConfigurationChange = (ev: any): void => {
         setConfigurationType(ev.target.value)
         if (ev.target.value === ConfigurationType.YAML) {
-            setEditorValue(YAML.stringify(formData.preBuildStage.steps[selectedTaskIndex]))
+            setEditorValue(YAML.stringify(formData[activeStageName].steps[selectedTaskIndex]))
         }
     }
 
@@ -76,7 +79,7 @@ export function PluginDetailComponent({
                         className="w-100"
                         type="text"
                         onChange={(e) => handleNameChange(e)}
-                        value={formData.preBuildStage.steps[selectedTaskIndex].name}
+                        value={formData[activeStageName].steps[selectedTaskIndex].name}
                     />
                 </div>
                 <div className="row-container mb-10">
@@ -105,6 +108,7 @@ export function PluginDetailComponent({
                         selectedTaskIndex={selectedTaskIndex}
                         formData={formData}
                         setFormData={setFormData}
+                        activeStageName={activeStageName}
                     />
                     <hr />
                     <ConditionContainer
@@ -112,6 +116,7 @@ export function PluginDetailComponent({
                         selectedTaskIndex={selectedTaskIndex}
                         formData={formData}
                         setFormData={setFormData}
+                        activeStageName={activeStageName}
                     />
                     <hr />
                     <VariableContainer
@@ -119,6 +124,7 @@ export function PluginDetailComponent({
                         selectedTaskIndex={selectedTaskIndex}
                         formData={formData}
                         setFormData={setFormData}
+                        activeStageName={activeStageName}
                     />
                     <hr />
                     <ConditionContainer
@@ -126,6 +132,7 @@ export function PluginDetailComponent({
                         selectedTaskIndex={selectedTaskIndex}
                         formData={formData}
                         setFormData={setFormData}
+                        activeStageName={activeStageName}
                     />
                     <hr />
                 </>
