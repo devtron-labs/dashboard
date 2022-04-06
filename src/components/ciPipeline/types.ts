@@ -75,9 +75,9 @@ interface VariableType {
     format: string
     description: string
     defaultValue: string
-    RefVariableUsed: true
+    RefVariableUsed: boolean
     RefVariableType: RefVariableType
-    RefVariableStepIndex: 0
+    RefVariableStepIndex: number
     RefVariableName: string
 }
 
