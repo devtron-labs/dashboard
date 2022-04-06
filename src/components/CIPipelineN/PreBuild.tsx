@@ -13,6 +13,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { CustomScriptComponent } from './CustomScriptComponent'
 import { PluginDetailComponent } from './PluginDetailComponent'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
+import YAML from 'yaml'
 
 export function PreBuild({
     formData,
@@ -33,7 +34,13 @@ export function PreBuild({
 }) {
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
     const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
+    const [editorValue, setEditorValue] = useState<string>(YAML.stringify(formData.preBuildStage))
 
+    useEffect(() => {
+        if (configurationType === ConfigurationType.YAML) {
+            setEditorValue(YAML.stringify(formData.preBuildStage))
+        }
+    }, [configurationType])
     useEffect(() => {
         setPageState(ViewType.LOADING)
         getPluginsData()
@@ -76,6 +83,13 @@ export function PreBuild({
                 conditionDetails: [],
             }
         }
+        setFormData(_form)
+    }
+
+    const handleEditorValueChange = (editorValue: string): void => {
+        setEditorValue(editorValue)
+        const _form = { ...formData }
+        _form.preBuildStage = YAML.parse(editorValue)
         setFormData(_form)
     }
 
@@ -149,5 +163,9 @@ export function PreBuild({
         }
     }
 
-    return configurationType === ConfigurationType.GUI ? renderGUI() : <YAMLScriptComponent formData={formData} />
+    return configurationType === ConfigurationType.GUI ? (
+        renderGUI()
+    ) : (
+        <YAMLScriptComponent editorValue={editorValue} handleEditorValueChange={handleEditorValueChange} />
+    )
 }

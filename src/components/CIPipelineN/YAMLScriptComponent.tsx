@@ -1,10 +1,15 @@
 import React, { useState } from 'react'
-import { FormType, ScriptType } from '../ciPipeline/types'
+import { ScriptType } from '../ciPipeline/types'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import YAML from 'yaml'
 import ReactSelect from 'react-select'
 
-export function YAMLScriptComponent({ formData }: { formData: FormType }) {
+export function YAMLScriptComponent({
+    editorValue,
+    handleEditorValueChange,
+}: {
+    editorValue: string
+    handleEditorValueChange: (string) => void
+}) {
     const scriptTypeOptions: { label: string; value: string }[] = [ScriptType.SHELL, ScriptType.DOCKERFILE].map(
         (scriptType) => ({ label: scriptType, value: scriptType }),
     )
@@ -70,12 +75,7 @@ export function YAMLScriptComponent({ formData }: { formData: FormType }) {
                     menuPortalTarget={document.getElementById('visible-modal')}
                 />
             </div>
-            <CodeEditor
-                value={YAML.stringify(formData.preBuildStage)}
-                height={600}
-                mode="yaml"
-                readOnly={true}
-            ></CodeEditor>
+            <CodeEditor value={editorValue} height={600} mode="yaml" onChange={handleEditorValueChange}></CodeEditor>
         </div>
     )
 }

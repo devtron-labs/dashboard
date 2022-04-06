@@ -20,15 +20,6 @@ export function ConditionContainer({
     const operatorOptions: { label: string; value: string }[] = ['=', '<=', '>=', '!=', '<', '>', '!'].map(
         (operator) => ({ label: operator, value: operator }),
     )
-    const operatorOptions1 = [
-        { label: '=', value: '=' },
-        { label: '<=', value: '<=' },
-        { label: '>=', value: '>=' },
-        { label: '!=', value: '!=' },
-        { label: '<', value: '<' },
-        { label: '>', value: '>' },
-        { label: '!', value: '!' },
-    ]
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
     const [selectedOperator, setSelectedOperator] = useState<{ label: string; value: string }>(operatorOptions[0])
     const [selectedVariable, setSelectedVariable] = useState<{ label: string; value: number }>()
@@ -160,9 +151,10 @@ export function ConditionContainer({
                         </RadioGroupItem>
                     </RadioGroup>
                     <div className="condition-container">
-                        {(formData.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail?.conditionDetails || [])
-                            .filter((condition) => condition.conditionType === conditionType)
-                            .map((conditionDetail, index) => (
+                        {(
+                            formData.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail?.conditionDetails || []
+                        ).map((conditionDetail, index) =>
+                            conditionDetail.conditionType === conditionType ? (
                                 <>
                                     <label className="tp-4 fs-13 fw-4 text-uppercase mr-10">
                                         {conditionDetail.conditionType} If
@@ -222,7 +214,8 @@ export function ConditionContainer({
                                         }}
                                     />
                                 </>
-                            ))}
+                            ) : null,
+                        )}
                     </div>
                     <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit" onClick={addCondition}>
                         <Add className="add-icon" />
