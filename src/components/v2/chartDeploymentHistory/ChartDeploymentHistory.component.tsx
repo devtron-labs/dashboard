@@ -473,15 +473,9 @@ function ChartDeploymentHistory({
 
             if (installedAppInfo) {
                 requestPayload.installedAppId = installedAppInfo.installedAppId
-                requestPayload.installedAppVersionId = isExternal
-                    ? installedAppInfo.installedAppVersionId
-                    : selectedDeploymentHistory.installedAppVersionId
             }
 
-            const { result, errors } = await rollbackApplicationDeployment(
-                requestPayload,
-                isExternal && !installedAppInfo,
-            )
+            const { result, errors } = await rollbackApplicationDeployment(requestPayload)
             setDeploying(false)
             setShowRollbackConfirmation(false)
 

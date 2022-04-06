@@ -40,10 +40,7 @@ interface RollbackReleaseResponse extends ResponseType {
 }
 
 export const getDeploymentHistory = (appId: string, isExternal: boolean): Promise<ChartDeploymentHistoryResponse> => {
-    const url = isExternal
-        ? `${Routes.HELM_RELEASE_DEPLOYMENT_HISTORY_API}?appId=${appId}`
-        : `${Routes.APP_RELEASE_DEPLOYMENT_HISTORY_API}?installedAppId=${appId}`
-    return get(url)
+    return get(`${Routes.HELM_RELEASE_DEPLOYMENT_HISTORY_API}?${isExternal ? 'appId' : 'installedAppId'}=${appId}`)
 }
 
 export const getDeploymentManifestDetails = (
@@ -51,16 +48,13 @@ export const getDeploymentManifestDetails = (
     version: number,
     isExternal: boolean,
 ): Promise<ChartDeploymentManifestDetailResponse> => {
-    const url = isExternal
-        ? `${Routes.HELM_RELEASE_DEPLOYMENT_DETAIL_API}?appId=${appId}&version=${version}`
-        : `${Routes.APP_RELEASE_DEPLOYMENT_DETAIL_API}?installedAppId=${appId}&version=${version}`
-    return get(url)
+    return get(
+        `${Routes.HELM_RELEASE_DEPLOYMENT_MANIFEST_DETAILS_API}?${
+            isExternal ? 'appId' : 'installedAppId'
+        }=${appId}&version=${version}`,
+    )
 }
 
-export const rollbackApplicationDeployment = (
-    request: RollbackReleaseRequest,
-    useDefaultRollbackAPI: boolean,
-): Promise<RollbackReleaseResponse> => {
-    const url = useDefaultRollbackAPI ? Routes.APP_DEPLOYMENT_ROLLBACK_API : Routes.HELM_DEPLOYMENT_ROLLBACK_API
-    return put(url, request)
+export const rollbackApplicationDeployment = (request: RollbackReleaseRequest): Promise<RollbackReleaseResponse> => {
+    return put(Routes.HELM_DEPLOYMENT_ROLLBACK_API, request)
 }
