@@ -379,6 +379,11 @@
     grid-template-columns: 200px 100px auto;
 }
 
+.custom-variable-container{
+    display: grid;
+    grid-template-columns: 200px auto 70px auto 30px;
+}
+
 .condition-container {
     display: grid;
     grid-template-columns: 80px auto 70px auto 30px;

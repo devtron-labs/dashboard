@@ -165,7 +165,12 @@ export function PreBuild({
                     />
                 </>
             ) : formData.preBuildStage.steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
-                <CustomScriptComponent />
+                <CustomScriptComponent 
+                setPageState={setPageState}
+                selectedTaskIndex={selectedTaskIndex}
+                formData={formData}
+                setFormData={setFormData}
+                />
             ) : (
                 <PluginDetailComponent
                     setPageState={setPageState}
