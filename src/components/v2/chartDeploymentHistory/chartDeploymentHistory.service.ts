@@ -40,11 +40,7 @@ interface RollbackReleaseResponse extends ResponseType {
 }
 
 export const getDeploymentHistory = (appId: string, isExternal: boolean): Promise<ChartDeploymentHistoryResponse> => {
-    return get(
-        `${Routes.HELM_RELEASE_DEPLOYMENT_HISTORY_API}?${
-            isExternal ? `appId=${appId}&installedAppId=` : `installedAppId=${appId}&appId=`
-        }`,
-    )
+    return get(`${Routes.HELM_RELEASE_DEPLOYMENT_HISTORY_API}?${isExternal ? 'appId' : 'installedAppId'}=${appId}`)
 }
 
 export const getDeploymentManifestDetails = (
@@ -54,8 +50,8 @@ export const getDeploymentManifestDetails = (
 ): Promise<ChartDeploymentManifestDetailResponse> => {
     return get(
         `${Routes.HELM_RELEASE_DEPLOYMENT_MANIFEST_DETAILS_API}?${
-            isExternal ? `appId=${appId}&installedAppId=` : `installedAppId=${appId}&appId=`
-        }&version=${version}`,
+            isExternal ? 'appId' : 'installedAppId'
+        }=${appId}&version=${version}`,
     )
 }
 
