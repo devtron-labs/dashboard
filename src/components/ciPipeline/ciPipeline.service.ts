@@ -2,7 +2,7 @@ import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { get, post } from '../../services/api'
 import { CiPipelineSourceTypeBaseOptions } from './ciPipeline.util'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
-import { MaterialType, Githost, PatchAction } from './types'
+import { MaterialType, Githost, PatchAction, ScriptType, PluginType, BuildStageType } from './types'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -342,6 +342,37 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: G
     return materials
 }
 
+function migrateOldData(
+    oldDataArr: {
+        id: number
+        name: string
+        outputLocation: string
+        script: string
+        isCollapsed: boolean
+        index: number
+    }[],
+): BuildStageType {
+    const updatedData = {
+        id: 0,
+        steps: oldDataArr.map((data) => {
+            return {
+                id: data.id,
+                name: data.name,
+                description: '',
+                reportDirectoryPath: data.outputLocation,
+                index: data.index,
+                stepType: PluginType.INLINE,
+                inlineStepDetail: {
+                    scriptType: ScriptType.SHELL,
+                    script: data.script,
+                    conditionDetails: [],
+                },
+            }
+        }),
+    }
+    return updatedData
+}
+
 function parseCIResponse(
     responseCode: number,
     ciPipeline,
@@ -351,11 +382,11 @@ function parseCIResponse(
     ciPipelineSourceTypeOptions,
 ) {
     if (ciPipeline) {
-        if (!ciPipeline.beforeDockerBuildScripts) {
-            ciPipeline.beforeDockerBuildScripts = []
+        if (ciPipeline.beforeDockerBuildScripts) {
+            ciPipeline.preBuildStage = migrateOldData(ciPipeline.beforeDockerBuildScripts)
         }
-        if (!ciPipeline.afterDockerBuildScripts) {
-            ciPipeline.afterDockerBuildScripts = []
+        if (ciPipeline.afterDockerBuildScripts) {
+            ciPipeline.postBuildStage = migrateOldData(ciPipeline.afterDockerBuildScripts)
         }
         const materials = createMaterialList(ciPipeline, gitMaterials, gitHost)
 
@@ -399,12 +430,6 @@ function parseCIResponse(
                 triggerType: ciPipeline.isManual ? TriggerType.Manual : TriggerType.Auto,
                 materials: materials,
                 args: args.length ? args : ciPipeline.parentCiPipeline ? [] : [{ key: '', value: '' }],
-                beforeDockerBuildScripts: Array.isArray(ciPipeline.beforeDockerBuildScripts)
-                    ? ciPipeline.beforeDockerBuildScripts.map((d) => ({ ...d, isCollapsed: true }))
-                    : [],
-                afterDockerBuildScripts: Array.isArray(ciPipeline.afterDockerBuildScripts)
-                    ? ciPipeline.afterDockerBuildScripts.map((d) => ({ ...d, isCollapsed: true }))
-                    : [],
                 externalCiConfig: createCurlRequest(ciPipeline.externalCiConfig),
                 scanEnabled: ciPipeline.scanEnabled,
                 gitHost: gitHost,

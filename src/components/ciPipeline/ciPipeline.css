@@ -392,3 +392,15 @@
 .content-fit {
     width: fit-content;
 }
+
+.justify-space {
+    justify-content: space-between;
+}
+
+.border-bottom-1-n2 {
+    border-bottom: 1px solid var(--N200);
+}
+
+.active-tab {
+    border-bottom: 2px solid var(--N900);
+}

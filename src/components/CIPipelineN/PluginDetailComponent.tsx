@@ -20,70 +20,16 @@ export function PluginDetailComponent({
 }) {
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     useEffect(() => {
-        const pluginData = {
-            inputVariables: [
-                {
-                    id: 0,
-                    name: 'Date',
-                    value: 0,
-                    format: 'string',
-                    description: 'string',
-                    defaultValue: '25',
-                    RefVariableUsed: true,
-                    RefVariableType: ['GLOBAL', 'FROM_PREVIOUS_STEP'],
-                    RefVariableStepIndex: 0,
-                    RefVariableName: 'string',
-                },
-                {
-                    id: 1,
-                    name: 'time',
-                    value: 0,
-                    format: 'number',
-                    description: 'string',
-                    defaultValue: '',
-                    RefVariableUsed: true,
-                    RefVariableType: ['GLOBAL', 'FROM_PREVIOUS_STEP'],
-                    RefVariableStepIndex: 0,
-                    RefVariableName: 'string',
-                },
-            ],
-            outputVariables: [
-                {
-                    id: 0,
-                    name: 'Date1',
-                    value: 0,
-                    format: 'string',
-                    description: 'string',
-                    defaultValue: '25',
-                    RefVariableUsed: true,
-                    RefVariableType: ['GLOBAL', 'FROM_PREVIOUS_STEP'],
-                    RefVariableStepIndex: 0,
-                    RefVariableName: 'string',
-                },
-                {
-                    id: 1,
-                    name: 'time1',
-                    value: 0,
-                    format: 'number',
-                    description: 'string',
-                    defaultValue: '',
-                    RefVariableUsed: true,
-                    RefVariableType: ['GLOBAL', 'FROM_PREVIOUS_STEP'],
-                    RefVariableStepIndex: 0,
-                    RefVariableName: 'string',
-                },
-            ],
-        }
-        processPluginData(pluginData)
-        // setPageState(ViewType.LOADING)
-        // getPluginDetail(formData.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.pluginId)
-        //     .then((response) => {
-        //         setPageState(ViewType.FORM)
-        //     })
-        //     .catch((error: ServerErrors) => {
-        //         setPageState(ViewType.ERROR)
-        //         showError(error)
-        //     })
+        setPageState(ViewType.LOADING)
+        getPluginDetail(formData.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.pluginId)
+            .then((response) => {
+                setPageState(ViewType.FORM)
+                processPluginData(response.result)
+            })
+            .catch((error: ServerErrors) => {
+                setPageState(ViewType.ERROR)
+                showError(error)
+            })
     }, [])
 
     const processPluginData = (pluginData) => {

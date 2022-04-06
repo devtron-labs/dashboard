@@ -91,9 +91,10 @@ export function ConditionContainer({
     const tempMultiSelectStyles = {
         control: (base, state) => ({
             ...base,
-            border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
             boxShadow: 'none',
             minHeight: 'auto',
+            border: 'none',
+            width: 'max-content',
         }),
         singleValue: (base, state) => ({
             ...base,
@@ -184,6 +185,9 @@ export function ConditionContainer({
                                             ]?.map((variable) => ({ label: variable.name, value: variable.id }))}
                                             isSearchable={false}
                                             styles={tempMultiSelectStyles}
+                                            components={{
+                                                IndicatorSeparator: null,
+                                            }}
                                         />
                                     </label>
                                     <label className="tp-4 fs-13 fw-4 text-uppercase mr-10">
@@ -196,6 +200,9 @@ export function ConditionContainer({
                                             options={operatorOptions}
                                             isSearchable={false}
                                             styles={tempMultiSelectStyles}
+                                            components={{
+                                                IndicatorSeparator: null,
+                                            }}
                                         />
                                     </label>
                                     <div className="fs-13 mr-10">

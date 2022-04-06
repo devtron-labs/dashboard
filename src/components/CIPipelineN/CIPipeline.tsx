@@ -372,6 +372,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                     pageState={pageState}
                                     setPageState={setPageState}
                                     selectedTaskIndex={selectedTaskIndex}
+                                    configurationType={configurationType}
                                 />
                             </Route>
                         )}
