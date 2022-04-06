@@ -379,7 +379,7 @@
     grid-template-columns: 200px 100px auto;
 }
 
-.custom-variable-container{
+.custom-variable-container {
     display: grid;
     grid-template-columns: auto 70px auto 30px;
 }
@@ -405,6 +405,10 @@
     border-bottom: 2px solid var(--N900);
 }
 
-.row-container .radio-group{
-   justify-content: flex-start;
+.row-container .radio-group {
+    justify-content: flex-start;
+}
+
+.pl-200 {
+    padding-left: 200px;
 }
