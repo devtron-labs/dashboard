@@ -132,6 +132,8 @@ export const Routes = {
     NAMESPACE: 'env/namespace',
     APP_RELEASE_DEPLOYMENT_HISTORY_API: 'app-store/installed-app/deployment-history',
     APP_RELEASE_DEPLOYMENT_DETAIL_API: 'app-store/installed-app/deployment-history/info',
+    DASHBOARD_ACCESSED: '/dashboard-event/dashboardAccessed',
+    DASHBOARD_LOGGEDIN: '/dashboard-event/dashboardLoggedIn'
 };
 
 export const ViewType = {
