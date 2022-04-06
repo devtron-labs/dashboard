@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
-import { ConditionContainerType, ConditionType, FormType } from '../ciPipeline/types'
+import { ConditionContainerType, ConditionType, FormType, PluginType } from '../ciPipeline/types'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -29,6 +29,11 @@ export function ConditionContainer({
         type === ConditionContainerType.PASS_FAILURE ? ConditionType.SUCCESS : ConditionType.TRIGGER,
     )
 
+    const currentStepTypeVariable =
+        formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
+            ? 'inlineStepDetail'
+            : 'pluginRefStepDetail'
+
     useEffect(() => {
         setCollapsedSection(false)
     }, [activeStageName])
@@ -36,7 +41,7 @@ export function ConditionContainer({
     const addCondition = (): void => {
         const _formData = { ...formData }
         const id =
-            _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.conditionDetails?.reduce(
+            _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails?.reduce(
                 (prev, current) => (prev.id > current.id ? prev : current),
                 {
                     id: 0,
@@ -49,19 +54,19 @@ export function ConditionContainer({
             conditionType: conditionType,
             conditionalValue: '',
         }
-        _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.conditionDetails.push(newCondition)
+        _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails.push(newCondition)
         setFormData(_formData)
     }
 
     const deleteCondition = (index: number): void => {
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.conditionDetails.splice(index, 1)
+        _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails.splice(index, 1)
         setFormData(_formData)
     }
 
     const handleConditionalValueChange = (e: any, index: number): void => {
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.conditionDetails[index][
+        _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index][
             'conditionalValue'
         ] = e.target.value
         setFormData(_formData)
@@ -70,7 +75,7 @@ export function ConditionContainer({
     const handleConditionOnVariableChange = (selectedValue: { label: string; value: number }, index: number): void => {
         setSelectedVariable(selectedValue)
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.conditionDetails[index][
+        _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index][
             'conditionOnVariable'
         ] = selectedValue.label
         setFormData(_formData)
@@ -79,7 +84,7 @@ export function ConditionContainer({
     const handleConditionOperatorChange = (selectedValue: { label: string; value: string }, index: number): void => {
         setSelectedOperator(selectedValue)
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.conditionDetails[index][
+        _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index][
             'conditionOperator'
         ] = selectedValue.label
         setFormData(_formData)
@@ -158,8 +163,8 @@ export function ConditionContainer({
                     </RadioGroup>
                     <div className="condition-container">
                         {(
-                            formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail?.conditionDetails ||
-                            []
+                            formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
+                                ?.conditionDetails || []
                         ).map((conditionDetail, index) =>
                             conditionDetail.conditionType === conditionType ? (
                                 <>
@@ -175,9 +180,9 @@ export function ConditionContainer({
                                             onChange={(selectedValue) => {
                                                 handleConditionOnVariableChange(selectedValue, index)
                                             }}
-                                            options={formData[activeStageName].steps[
-                                                selectedTaskIndex
-                                            ].pluginRefStepDetail[
+                                            options={formData[activeStageName].steps[selectedTaskIndex][
+                                                currentStepTypeVariable
+                                            ][
                                                 type === ConditionContainerType.PASS_FAILURE
                                                     ? 'outputVariables'
                                                     : 'inputVariables'

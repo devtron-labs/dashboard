@@ -11,7 +11,7 @@ import { showError } from '../common'
 import CDEmptyState from '../app/details/cdDetails/CDEmptyState'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { CustomScriptComponent } from './CustomScriptComponent'
-import { PluginDetailComponent } from './PluginDetailComponent'
+import { TaskDetailComponent } from './TaskDetailComponent'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 
@@ -128,28 +128,37 @@ export function PreBuild({
         )
     }
 
-    function renderPluginDetail(): JSX.Element {
-        if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE) {
-            return (
-                <CustomScriptComponent
-                    setPageState={setPageState}
-                    selectedTaskIndex={selectedTaskIndex}
-                    formData={formData}
-                    setFormData={setFormData}
-                    activeStageName={activeStageName}
-                />
-            )
-        } else {
-            return (
-                <PluginDetailComponent
-                    setPageState={setPageState}
-                    selectedTaskIndex={selectedTaskIndex}
-                    formData={formData}
-                    setFormData={setFormData}
-                    activeStageName={activeStageName}
-                />
-            )
-        }
+    function renderTaskDetail(): JSX.Element {
+        // if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE) {
+        //     return (
+        //         <CustomScriptComponent
+        //             setPageState={setPageState}
+        //             selectedTaskIndex={selectedTaskIndex}
+        //             formData={formData}
+        //             setFormData={setFormData}
+        //             activeStageName={activeStageName}
+        //         />
+        //     )
+        // } else {
+        //     return (
+        //         <TaskDetailComponent
+        //             setPageState={setPageState}
+        //             selectedTaskIndex={selectedTaskIndex}
+        //             formData={formData}
+        //             setFormData={setFormData}
+        //             activeStageName={activeStageName}
+        //         />
+        //     )
+        // }
+        return (
+            <TaskDetailComponent
+                setPageState={setPageState}
+                selectedTaskIndex={selectedTaskIndex}
+                formData={formData}
+                setFormData={setFormData}
+                activeStageName={activeStageName}
+            />
+        )
     }
 
     function renderGUI(): JSX.Element {
@@ -169,7 +178,7 @@ export function PreBuild({
                 <div className="p-20 ci-scrollable-content">
                     {!formData[activeStageName].steps[selectedTaskIndex]?.stepType
                         ? renderPluginList()
-                        : renderPluginDetail()}
+                        : renderTaskDetail()}
                 </div>
             )
         }
