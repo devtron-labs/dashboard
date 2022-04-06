@@ -16,10 +16,11 @@ function CustomInputOutputVariables({
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
 }) {
+
     const addVariable = (): void => {
         const _formData = { ...formData }
         const id =
-            _formData.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.inputVariables?.reduce(
+            _formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.inputVariables?.reduce(
                 (prev, current) => (prev.id > current.id ? prev : current),
                 {
                     id: 0,
@@ -37,14 +38,14 @@ function CustomInputOutputVariables({
             RefVariableStepIndex: 0,
             RefVariableName: '',
         }
-        _formData.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.inputVariables.push(newCondition)
+        _formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.inputVariables.push(newCondition)
         setFormData(_formData)
     }
 
-    const handleConditionalValueChange = ( e, index ) => {
+    const handleConditionalValueChange = (e, index) => {
         const _formData = { ...formData }
-        // _formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.inputVariables[index]['value'] =
-        //     e.target.value
+        _formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.inputVariables[index]['value'] =
+            e.target.value
         setFormData(_formData)
     }
 
@@ -58,7 +59,7 @@ function CustomInputOutputVariables({
     }
     return (
         <>
-            {formData.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail[
+            {formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail[
                 type === PluginVariableType.OUTPUT ? 'outputVariables' : 'inputVariables'
             ]?.map((variable, index) => (
                 <>
@@ -96,12 +97,12 @@ function CustomInputOutputVariables({
                         {/* </>
                     ))} */}
                     </div>
-                    <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit" onClick={addVariable}>
-                        <Add className="add-icon" />
-                        Add condition
-                    </div>
                 </>
             ))}
+            <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit" onClick={addVariable}>
+                <Add className="add-icon" />
+                Add condition
+            </div>
         </>
     )
 }

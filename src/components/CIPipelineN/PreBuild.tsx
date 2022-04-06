@@ -75,6 +75,8 @@ export function PreBuild({
             _form.preBuildStage.steps[selectedTaskIndex].inlineStepDetail = {
                 scriptType: ScriptType.SHELL,
                 conditionDetails: [],
+                inputVariables: [],
+                outputVariables: []
             }
         } else {
             _form.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail = {
