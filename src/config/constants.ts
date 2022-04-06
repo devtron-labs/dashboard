@@ -129,6 +129,8 @@ export const Routes = {
     HELM_LINK_TO_CHART_STORE_API: 'app-store/deployment/application/helm/link-to-chart-store',
     HELM_DEPLOYMENT_ROLLBACK_API: 'application/rollback',
     NAMESPACE: 'env/namespace',
+    DASHBOARD_ACCESSED: '/dashboard-event/dashboardAccessed',
+    DASHBOARD_LOGGEDIN: '/dashboard-event/dashboardLoggedIn'
 };
 
 export const ViewType = {
