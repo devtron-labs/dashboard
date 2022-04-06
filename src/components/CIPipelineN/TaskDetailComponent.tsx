@@ -157,7 +157,7 @@ export function TaskDetailComponent({
                     <hr />
                     {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
                         <CustomInputOutputVariables
-                            type={PluginVariableType.OUTPUT}
+                            type={PluginVariableType.INPUT}
                             selectedTaskIndex={selectedTaskIndex}
                             formData={formData}
                             setFormData={setFormData}
