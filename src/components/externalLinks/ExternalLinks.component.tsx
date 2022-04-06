@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { multiSelectStyles, Option, VisibleModal } from '../common'
-import Select, { components } from 'react-select'
+import Select, { components, MultiValue } from 'react-select'
 import EmptyState from '../EmptyState/EmptyState'
 import NotAuthorized from '../../assets/img/ic-not-authorized.svg'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
@@ -9,8 +9,9 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
+import { ReactComponent as Delete } from '../../assets/icons/ic-delete-interactive.svg'
 import { URLS } from '../../config'
+import { OptionType } from '../app/types'
 
 export const ClusterFilter = ({ clusters, applyFilter, queryParams, history }) => {
     const [selectedCluster, setSelectedCluster] = useState([])
@@ -260,31 +261,59 @@ export const NoExternalLinksView = ({ handleAddLinkClick }) => {
     )
 }
 
-export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
-    // const [links, setLinks] = useState<Map<number, any>>()
+interface LinkAction {
+    tool: string
+    name: string
+    clusters: string[]
+    url: string
+}
 
-    const getConfigureLinkAction = () => {
-        return (
-            <div className="configure-link-action">
-                <div className="monitoring-tool">
-                    <span>Monitoring Tool</span>
+interface ConfigureLinkActionType extends LinkAction {
+    index: number
+    onMonitoringToolSelection: (key: number, selected: OptionType) => void
+    onClusterSelection: (key: number, selected: MultiValue<OptionType>) => void
+    // handleNameChange: () => void
+    // handleUrlTemplatechange: () => void
+    deleteLinkData: (key: number) => void
+}
+
+const  formatOptionLabelClusters = (option) => {
+    return (
+        <div className="flex left column">
+            <span>{option.label}</span>
+            {option.value === '*' && (
+                <>
+                    <small className="cn-6">All existing and future clusters</small>
+                    <div className="modal__dropdown-divider" />
+                </>
+            )}
+        </div>
+    );
+}
+
+const ConfigureLinkAction = ({ index, tool, name, clusters, url, onMonitoringToolSelection, onClusterSelection, deleteLinkData }: ConfigureLinkActionType) => {
+    return (
+        <div id={`link-action-${index}`} className="configure-link-action-wrapper">
+            <div className="link-monitoring-tool mb-8">
+                <div className="monitoring-tool mr-8">
+                    <span>Monitoring Tool*</span>
                     <Select
                         placeholder="Select tool"
                         name="monitoring-tool"
-                        options={[
-                            {
-                                label: 'Grafana',
-                                value: 'Grafana',
-                            },
-                        ]}
+                        options={MOCK_MONITORING_TOOL}
                         isMulti={false}
                         hideSelectedOptions={false}
+                        onChange={(selected) => onMonitoringToolSelection(index, selected)}
                         components={{
                             IndicatorSeparator: null,
                             ClearIndicator: null,
                         }}
                         styles={{
                             ...multiSelectStyles,
+                            container: (base, state) => ({
+                                ...base,
+                                marginTop: '6px',
+                            }),
                             menu: (base, state) => ({
                                 ...base,
                                 top: 'auto',
@@ -303,7 +332,7 @@ export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
                             }),
                             control: (base, state) => ({
                                 ...base,
-                                width: '160px',
+                                width: '150px',
                                 minHeight: '32px',
                                 border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
                                 backgroundColor: 'var(--N50)',
@@ -322,30 +351,39 @@ export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
                             }),
                             placeholder: (base) => ({
                                 ...base,
-                                color: 'var(--N900)',
+                                color: 'var(--N500)',
                             }),
                         }}
                     />
                 </div>
-                <div className="monitoring-tool">
-                    <span>Monitoring Tool</span>
+                <div className="link-name mr-12">
+                    <label>Name*</label>
+                    <input placeholder="Enter name" />
+                </div>
+                <div className="link-clusters mr-12">
+                    <span>Clusters*</span>
                     <Select
-                        placeholder="Select tool"
-                        name="monitoring-tool"
-                        options={[
-                            {
-                                label: 'Grafana',
-                                value: 'Grafana',
-                            },
-                        ]}
-                        isMulti={false}
+                    menuIsOpen={true}
+                        placeholder="Select clusters"
+                        name="link-clusters"
+                        options={MOCK_GROUP_CLUSTER_IDS}
+                        formatOptionLabel={formatOptionLabelClusters}
+                        onChange={(selected) => onClusterSelection(index, selected)}
+                        isMulti={true}
                         hideSelectedOptions={false}
+                        closeMenuOnSelect={false}
                         components={{
                             IndicatorSeparator: null,
                             ClearIndicator: null,
+                            ValueContainer,
+                            Option,
                         }}
                         styles={{
                             ...multiSelectStyles,
+                            container: (base, state) => ({
+                                ...base,
+                                marginTop: '6px',
+                            }),
                             menu: (base, state) => ({
                                 ...base,
                                 top: 'auto',
@@ -364,7 +402,7 @@ export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
                             }),
                             control: (base, state) => ({
                                 ...base,
-                                width: '160px',
+                                width: '278px',
                                 minHeight: '32px',
                                 border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
                                 backgroundColor: 'var(--N50)',
@@ -383,84 +421,133 @@ export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
                             }),
                             placeholder: (base) => ({
                                 ...base,
-                                color: 'var(--N900)',
+                                color: 'var(--N500)',
                             }),
                         }}
                     />
                 </div>
-                <div className="monitoring-tool">
-                    <span>Monitoring Tool</span>
-                    <Select
-                        placeholder="Select tool"
-                        name="monitoring-tool"
-                        options={[
-                            {
-                                label: 'Grafana',
-                                value: 'Grafana',
-                            },
-                        ]}
-                        isMulti={false}
-                        hideSelectedOptions={false}
-                        components={{
-                            IndicatorSeparator: null,
-                            ClearIndicator: null,
-                        }}
-                        styles={{
-                            ...multiSelectStyles,
-                            menu: (base, state) => ({
-                                ...base,
-                                top: 'auto',
-                                width: '100%',
-                            }),
-                            menuList: (base, state) => ({
-                                ...base,
-                                paddingTop: 0,
-                                paddingBottom: 0,
-                            }),
-                            option: (base, state) => ({
-                                ...base,
-                                padding: '10px 12px',
-                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                color: 'var(--N900)',
-                            }),
-                            control: (base, state) => ({
-                                ...base,
-                                width: '160px',
-                                minHeight: '32px',
-                                border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
-                                backgroundColor: 'var(--N50)',
-                                justifyContent: 'flex-start',
-                            }),
-                            valueContainer: (base) => ({
-                                ...base,
-                                padding: '0 8px',
-                            }),
-                            dropdownIndicator: (base, state) => ({
-                                ...base,
-                                color: 'var(--N400)',
-                                transition: 'all .2s ease',
-                                transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                                padding: '0 8px',
-                            }),
-                            placeholder: (base) => ({
-                                ...base,
-                                color: 'var(--N900)',
-                            }),
-                        }}
-                    />
-                </div>
-                <Delete className="ml-8" />
+                <Delete className="mt-24 cursor" onClick={(selected) => deleteLinkData(index)}/>
             </div>
-        )
+            <div className="link-text-area">
+                <label>URL template*</label>
+                <textarea placeholder="Enter URL template" />
+            </div>
+        </div>
+    )
+}
+
+const MOCK_MONITORING_TOOL = [
+    {
+        label: 'Grafana',
+        value: 'Grafana',
+    },
+    {
+        label: 'Kibana',
+        value: 'Kibana',
+    },
+]
+
+export const MOCK_CLUSTER_IDS = [
+    {
+        label: 'Cluster1',
+        value: '1',
+    },
+    {
+        label: 'Cluster2',
+        value: '2',
+    },
+    {
+        label: 'Cluster3',
+        value: '3',
+    },
+]
+
+export const MOCK_GROUP_CLUSTER_IDS = [
+    {
+        label: 'All clusters',
+        value: '*',
+    },
+    {
+        label: 'Cluster2',
+        value: '2',
+    },
+    {
+        label: 'Cluster3',
+        value: '3',
+    },
+]
+
+
+export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
+    const [linksData, setLinksData] = useState<Map<number, LinkAction>>(null)
+
+    useEffect(() => {
+        if (!linksData) {
+            const _linksData = new Map<number, LinkAction>()
+            _linksData.set(0, {
+                tool: '',
+                name: '',
+                clusters: [],
+                url: '',
+            })
+            setLinksData(_linksData)
+        }
+    }, [linksData])
+
+    const deleteLinkData = (key: number) => {
+        const _linksData = linksData
+        _linksData.delete(key)
+        setLinksData(_linksData)
+    }
+
+    const onMonitoringToolSelection = (key: number, selected: OptionType) => {
+        const _linksData = linksData
+        _linksData.get(key).tool = selected.value
+        setLinksData(_linksData)
+    }
+
+    const onClusterSelection = (key: number, selected: MultiValue<OptionType>) => {
+        const _linksData = linksData
+        _linksData.get(key).clusters = selected.map(value => value.value)
+        setLinksData(_linksData)
+    }
+
+    const addAnother = () => {
+        const _linksData = linksData
+        _linksData.set(linksData.size, {
+            tool: '',
+            name: '',
+            clusters: [],
+            url: '',
+        })
+        setLinksData(_linksData)
     }
 
     const getConfigureLinkActionColumn = () => {
         return (
             <div className="configure-link-action-container">
-                <div>
+                <div className="link-add-another mb-16 cursor" onClick={addAnother}>
                     <AddIcon /> Add another
                 </div>
-                {getConfigureLinkAction()}
+                {linksData &&
+                    [...linksData.values()].map((link, idx) => {
+                        return (
+                            <>
+                                <ConfigureLinkAction
+                                    key={`ConfigureLinkAction-idx`}
+                                    index={idx}
+                                    tool={link.tool}
+                                    name={link.name}
+                                    clusters={link.clusters}
+                                    url={link.url}
+                                    onMonitoringToolSelection={onMonitoringToolSelection}
+                                    onClusterSelection={onClusterSelection}
+                                    deleteLinkData={deleteLinkData}
+                                />
+                                { linksData.size > 1 && (idx !== linksData.size - 1) && <hr className="external-links-divider mt-16 mb-16" />}
+                            </>
+                        )
+                    })}
             </div>
         )
     }
@@ -510,12 +597,12 @@ export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
-                <hr className="checklist__divider mt-0 mb-0" />
+                <hr className="modal__divider mt-0 mb-0" />
                 <div className="modal__content">
                     {getConfigureLinkActionColumn()}
                     {getConfigureLinkInfoColumn()}
                 </div>
-                <hr className="checklist__divider mt-0 mb-0" />
+                <hr className="modal__divider mt-0 mb-0" />
                 <div className="modal__buttons">
                     <button className="cta">Save</button>
                 </div>
@@ -523,3 +610,4 @@ export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
         </VisibleModal>
     )
 }
+

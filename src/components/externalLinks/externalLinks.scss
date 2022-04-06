@@ -23,6 +23,12 @@
         }
     }
 
+    .external-links-divider {
+        border: 0;
+        height: 1px;
+        box-shadow: inset 0 -1px 0 0 var(--N200);
+    }
+
     .add-link.cta {
         width: 108px;
         height: 36px;
@@ -104,6 +110,21 @@
         margin-top: 0;
         padding: 20px 0;
 
+        .modal__divider {
+            border: 0;
+            height: 1px;
+            box-shadow: inset 0 -1px 0 0 var(--N200);
+        }
+
+        .modal__dropdown-divider {
+            height: 3px;
+            width: 100%;
+            margin-left: -40px;
+            position: absolute;
+            top: 59px;
+            border-bottom: 1px solid var(--N200);
+          }
+
         .modal__header {
             padding: 0 16px 20px;
             margin: 0;
@@ -127,6 +148,74 @@
                 width: 720px;
                 padding: 20px;
                 border-right: 1px solid var(--N200);
+                
+                .link-add-another {
+                    display: flex;
+                    align-items: center;
+                    color: var(--B500);
+
+                    svg {
+                        width: 12px;
+                        height: 12px;
+
+                        path {
+                            fill: var(--B500);
+                        }
+                    }
+                }
+
+                .configure-link-action-wrapper,
+                label {
+                    color: var(--N700);
+                    font-size: 13px;
+                    font-weight: 400;
+                }
+
+                .configure-link-action-wrapper {
+                    .link-monitoring-tool {
+                        display: flex;
+                        align-items: center;
+
+                        .link-name {
+                            display: flex;
+                            flex-direction: column;
+
+                            input {
+                                width: 200px;
+                                height: 32px;
+                                padding: 10px 6px;
+                                background-color: var(--N50);
+                                color: var(--N900);
+                                border: 1px solid var(--N200);
+                                border-radius: 4px;
+                            }
+                        }
+                    }
+                }
+
+                .link-text-area {
+                    display: flex;
+                    flex-direction: column;
+
+                    textarea {
+                        width: 648px;
+                        min-height: 72px;
+                        resize: vertical;
+                        padding: 10px 8px;
+                        background-color: var(--N50);
+                        color: var(--N900);
+                        border: 1px solid var(--N200);
+                        border-radius: 4px;
+
+                        &::placeholder {
+                            color: var(--N500);
+                        }
+
+                        &:-ms-input-placeholder {
+                            color: var(--N500);
+                        }
+                    }
+                }
             }
 
             .configure-link-info-container {

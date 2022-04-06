@@ -4,6 +4,7 @@ import {
     AddExternalLinkDialog,
     AddLinkButton,
     ClusterFilter,
+    MOCK_CLUSTER_IDS,
     NoAccessView,
     NoExternalLinksView,
     SearchInput,
@@ -30,20 +31,7 @@ function ExternalLinks() {
             setLoading(false)
             // setNotAuthorized(true)
             setExternalLinks([])
-            setClusters([
-                {
-                    label: 'Cluster1',
-                    value: '1',
-                },
-                {
-                    label: 'Cluster2',
-                    value: '2',
-                },
-                {
-                    label: 'Cluster3',
-                    value: '3',
-                },
-            ])
+            setClusters(MOCK_CLUSTER_IDS)
         }, 500)
     }, [])
 
