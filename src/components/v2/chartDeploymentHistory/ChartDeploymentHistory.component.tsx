@@ -473,7 +473,6 @@ function ChartDeploymentHistory({
 
             if (installedAppInfo) {
                 requestPayload.installedAppId = installedAppInfo.installedAppId
-                requestPayload.installedAppVersionId = installedAppInfo.installedAppVersionId
             }
 
             const { result, errors } = await rollbackApplicationDeployment(requestPayload)
