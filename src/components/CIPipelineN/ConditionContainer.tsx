@@ -39,7 +39,7 @@ export function ConditionContainer({
         const newCondition = {
             id: id,
             conditionOnVariable: '',
-            conditionOperator: '',
+            conditionOperator: operatorOptions[0].label,
             conditionType: conditionType,
             conditionalValue: '',
         }

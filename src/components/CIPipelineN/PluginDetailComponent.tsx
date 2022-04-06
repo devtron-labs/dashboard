@@ -34,12 +34,13 @@ export function PluginDetailComponent({
 
     const processPluginData = (pluginData) => {
         const _form = { ...formData }
-        _form.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.outputVariables =
-            !_form.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.outputVariables &&
-            pluginData.outputVariables
-        _form.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.inputVariables =
-            !_form.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.inputVariables &&
-            pluginData.inputVariables
+        if (!_form.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.outputVariables) {
+            _form.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.outputVariables =
+                pluginData.outputVariables
+        }
+        if (!_form.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.inputVariables) {
+            _form.preBuildStage.steps[selectedTaskIndex].pluginRefStepDetail.inputVariables = pluginData.inputVariables
+        }
         setFormData(_form)
     }
     const handleNameChange = (e: any): void => {
