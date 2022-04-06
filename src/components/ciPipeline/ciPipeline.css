@@ -381,7 +381,7 @@
 
 .custom-variable-container{
     display: grid;
-    grid-template-columns: 200px auto 70px auto 30px;
+    grid-template-columns: auto 70px auto 30px;
 }
 
 .condition-container {
@@ -403,4 +403,8 @@
 
 .active-tab {
     border-bottom: 2px solid var(--N900);
+}
+
+.row-container .radio-group{
+   justify-content: flex-start;
 }

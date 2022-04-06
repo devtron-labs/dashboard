@@ -16,7 +16,6 @@ function CustomInputOutputVariables({
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
 }) {
-
     const addVariable = (): void => {
         const _formData = { ...formData }
         const id =
@@ -59,50 +58,56 @@ function CustomInputOutputVariables({
     }
     return (
         <>
-            {formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail[
-                type === PluginVariableType.OUTPUT ? 'outputVariables' : 'inputVariables'
-            ]?.map((variable, index) => (
-                <>
-                    <div className="custom-variable-container">
-                        <label className="tp-4 fs-13 fw-6 text-uppercase mr-10">{type} variables</label>
-                        <label className="tp-4 fs-13 fw-4 text-uppercase">
-                            <input
-                                className="w-100"
-                                type="text"
-                                onChange={(e) => {
-                                    handleConditionalValueChange(e, index)
-                                }}
-                            />
-                        </label>
-                        <label className="tp-4 en-2 bw-1 fs-13 fw-4 text-uppercase flex">=</label>
-                        <div className="fs-13">
-                            <ReactSelect
-                                autoFocus
-                                tabIndex={1}
-                                placeholder="Select variable"
-                                onChange={(selectedValue) => {
-                                    // handleConditionOnVariableChange(selectedValue, index)
-                                }}
-                                isSearchable={false}
-                                styles={tempMultiSelectStyles}
+            <div className="row-container mb-10">
+                <label className="tp-4 fs-13 fw-6 text-capitalize mr-10">{type} variables</label>
+                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit" onClick={addVariable}>
+                <Add className="add-icon" />
+                Add variables
+               </div>
+               </div>
+                {formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail[
+                    type === PluginVariableType.OUTPUT ? 'outputVariables' : 'inputVariables'
+                ]?.map((variable, index) => (
+                    <>
+                        <div className="custom-variable-container">
+                            <label className="tp-4 fs-13 fw-4 text-uppercase">
+                                <input
+                                    className="w-100"
+                                    type="text"
+                                    onChange={(e) => {
+                                        handleConditionalValueChange(e, index)
+                                    }}
+                                />
+                            </label>
+                            <label className="tp-4 en-2 bw-1 fs-13 fw-4 text-uppercase flex">=</label>
+                            <div className="fs-13">
+                                <ReactSelect
+                                    autoFocus
+                                    tabIndex={1}
+                                    placeholder="Select variable"
+                                    onChange={(selectedValue) => {
+                                        // handleConditionOnVariableChange(selectedValue, index)
+                                    }}
+                                    isSearchable={false}
+                                    styles={tempMultiSelectStyles}
+                                />
+                            </div>
+                            <Close
+                                className="icon-dim-24 pointer"
+                                // onClick={() => {
+                                //     // deleteCondition(index)
+                                // }}
                             />
                         </div>
-                        <Close
-                            className="icon-dim-24 pointer"
-                            // onClick={() => {
-                            //     // deleteCondition(index)
-                            // }}
+                        <input
+                            style={{ width: '80% !important' }}
+                            className="form__input bcn-1 w-80 mb-20"
+                            autoComplete="off"
+                            placeholder="Description"
+                            type="text"
                         />
-
-                        {/* </>
-                    ))} */}
-                    </div>
-                </>
-            ))}
-            <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit" onClick={addVariable}>
-                <Add className="add-icon" />
-                Add condition
-            </div>
+                    </>
+                ))}
         </>
     )
 }
