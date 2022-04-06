@@ -124,12 +124,12 @@ export function CustomScriptComponent({
                 setFormData={setFormData}
             />
             <hr />
-            <CustomInputOutputVariables
+            {/* <CustomInputOutputVariables
                 type={PluginVariableType.OUTPUT}
                 selectedTaskIndex={selectedTaskIndex}
                 formData={formData}
                 setFormData={setFormData}
-            />
+            /> */}
             <hr />
             <ConditionContainer
                 type={ConditionContainerType.PASS_FAILURE}

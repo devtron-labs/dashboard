@@ -43,8 +43,8 @@ function CustomInputOutputVariables({
 
     const handleConditionalValueChange = ( e, index ) => {
         const _formData = { ...formData }
-        _formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.inputVariables[index]['value'] =
-            e.target.value
+        // _formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.inputVariables[index]['value'] =
+        //     e.target.value
         setFormData(_formData)
     }
 
@@ -88,9 +88,9 @@ function CustomInputOutputVariables({
                         </div>
                         <Close
                             className="icon-dim-24 pointer"
-                            onClick={() => {
-                                // deleteCondition(index)
-                            }}
+                            // onClick={() => {
+                            //     // deleteCondition(index)
+                            // }}
                         />
 
                         {/* </>
