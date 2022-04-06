@@ -68,7 +68,7 @@ export function PluginDetailComponent({
     }
 
     return (
-        <div className="p-20 ci-scrollable-content">
+        <div>
             <div>
                 <div className="row-container mb-10">
                     <label className="fw-6 fs-13 cn-7 label-width">Task name*</label>{' '}
@@ -130,7 +130,11 @@ export function PluginDetailComponent({
                     <hr />
                 </>
             ) : (
-                <YAMLScriptComponent editorValue={editorValue} handleEditorValueChange={handleEditorValueChange} />
+                <YAMLScriptComponent
+                    editorValue={editorValue}
+                    handleEditorValueChange={handleEditorValueChange}
+                    height="calc(100vh - 320px)"
+                />
             )}
         </div>
     )
