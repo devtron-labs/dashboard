@@ -65,14 +65,16 @@ export default function NavigationRoutes() {
                     })
                 })
             }
-            if (window._env_.POSTHOG_ENABLED && typeof Storage !== 'undefined') {
-                if (localStorage.isDashboardLoggedIn) return
-                dashboardLoggedIn().then((response) => {
+        }
+        if (typeof Storage !== 'undefined') {
+            if (localStorage.isDashboardLoggedIn) return
+            dashboardLoggedIn()
+                .then((response) => {
                     if (response.result) {
                         localStorage.isDashboardLoggedIn = true
                     }
                 })
-            }
+                .catch((errors) => {})
         }
     }, [])
 

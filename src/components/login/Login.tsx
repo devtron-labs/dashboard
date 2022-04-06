@@ -52,18 +52,15 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 loginList: list,
             })
         })
-        if (
-            process.env.NODE_ENV === 'production' &&
-            window._env_ &&
-            window._env_.POSTHOG_ENABLED &&
-            typeof Storage !== 'undefined'
-        ) {
+        if (typeof Storage !== 'undefined') {
             if (localStorage.isDashboardAccessed) return
-            dashboardAccessed().then((response) => {
-                if (response.result) {
-                    localStorage.isDashboardAccessed = true
-                }
-            })
+            dashboardAccessed()
+                .then((response) => {
+                    if (response.result) {
+                        localStorage.isDashboardAccessed = true
+                    }
+                })
+                .catch((errors) => {})
         }
     }
 
