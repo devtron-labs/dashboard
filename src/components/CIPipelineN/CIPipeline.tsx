@@ -200,7 +200,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
     }
 
     const checkUniqueness = (): boolean => {
-        const list = formData.beforeDockerBuildScripts.concat(formData.afterDockerBuildScripts)
+        const list = formData.preBuildStage.steps.concat(formData.postBuildStage.steps)
         const stageNameList = list.map((l) => {
             return l.name
         })
@@ -218,7 +218,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
     const savePipeline = () => {
         const isUnique = checkUniqueness()
         if (!isUnique) {
-            toast.error('All Stage names must be unique')
+            toast.error('All task names must be unique')
             return
         }
         setLoadingData(true)

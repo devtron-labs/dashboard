@@ -174,7 +174,7 @@ export function ConditionContainer({
                                     <label className="tp-4 fs-13 fw-4 text-uppercase mr-10">
                                         <ReactSelect
                                             autoFocus
-                                            defaultValue={selectedVariable}
+                                            value={selectedVariable}
                                             tabIndex={1}
                                             placeholder="Select variable"
                                             onChange={(selectedValue) => {
