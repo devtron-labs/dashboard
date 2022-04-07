@@ -128,39 +128,6 @@ export function PreBuild({
         )
     }
 
-    function renderTaskDetail(): JSX.Element {
-        // if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE) {
-        //     return (
-        //         <CustomScriptComponent
-        //             setPageState={setPageState}
-        //             selectedTaskIndex={selectedTaskIndex}
-        //             formData={formData}
-        //             setFormData={setFormData}
-        //             activeStageName={activeStageName}
-        //         />
-        //     )
-        // } else {
-        //     return (
-        //         <TaskDetailComponent
-        //             setPageState={setPageState}
-        //             selectedTaskIndex={selectedTaskIndex}
-        //             formData={formData}
-        //             setFormData={setFormData}
-        //             activeStageName={activeStageName}
-        //         />
-        //     )
-        // }
-        return (
-            <TaskDetailComponent
-                setPageState={setPageState}
-                selectedTaskIndex={selectedTaskIndex}
-                formData={formData}
-                setFormData={setFormData}
-                activeStageName={activeStageName}
-            />
-        )
-    }
-
     function renderGUI(): JSX.Element {
         if (formData[activeStageName].steps.length === 0) {
             return (
@@ -176,9 +143,17 @@ export function PreBuild({
         } else {
             return (
                 <div className="p-20 ci-scrollable-content">
-                    {!formData[activeStageName].steps[selectedTaskIndex]?.stepType
-                        ? renderPluginList()
-                        : renderTaskDetail()}
+                    {!formData[activeStageName].steps[selectedTaskIndex]?.stepType ? (
+                        renderPluginList()
+                    ) : (
+                        <TaskDetailComponent
+                            setPageState={setPageState}
+                            selectedTaskIndex={selectedTaskIndex}
+                            formData={formData}
+                            setFormData={setFormData}
+                            activeStageName={activeStageName}
+                        />
+                    )}
                 </div>
             )
         }
