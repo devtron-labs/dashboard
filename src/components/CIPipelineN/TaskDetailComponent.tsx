@@ -26,7 +26,9 @@ export function TaskDetailComponent({
 }) {
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [taskScriptType, setTaskScriptType] = useState<string>(
-        formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.scriptType,
+        formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail
+            ? formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.scriptType
+            : '',
     )
     const [editorValue, setEditorValue] = useState<string>('')
     const currentStepTypeVariable =
@@ -172,8 +174,8 @@ export function TaskDetailComponent({
                         />
                     )}{' '}
                     <hr />
-                    {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables.length >
-                        0 && (
+                    {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.inputVariables
+                        ?.length > 0 && (
                         <>
                             <ConditionContainer
                                 type={ConditionContainerType.TRIGGER_SKIP}
@@ -211,8 +213,8 @@ export function TaskDetailComponent({
                         />
                     )}
                     <hr />
-                    {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].outputVariables
-                        .length > 0 && (
+                    {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.outputVariables
+                        ?.length > 0 && (
                         <>
                             {' '}
                             <ConditionContainer
