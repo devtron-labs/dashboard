@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { multiSelectStyles, Option, VisibleModal } from '../common'
+import { multiSelectStyles, Option, Progressing, VisibleModal } from '../common'
 import Select, { components, MultiValue } from 'react-select'
 import EmptyState from '../EmptyState/EmptyState'
 import NotAuthorized from '../../assets/img/ic-not-authorized.svg'
@@ -36,7 +36,6 @@ export const ClusterFilter = ({ clusters, applyFilter, queryParams, history }) =
         applyFilter(selectedCluster)
 
         if (selectedCluster.length > 0) {
-            console.log(selectedCluster, queryParams.toString())
             const ids = selectedCluster.map((cluster) => cluster.value)
             ids.sort()
             queryParams.set('cluster', ids.toString())
@@ -262,22 +261,23 @@ export const NoExternalLinksView = ({ handleAddLinkClick }) => {
 }
 
 interface LinkAction {
-    tool: string
+    tool: OptionType
     name: string
-    clusters: string[]
-    url: string
+    clusters: MultiValue<OptionType>
+    urlTemplate: string
 }
 
 interface ConfigureLinkActionType extends LinkAction {
     index: number
+    showDelete: boolean
     onMonitoringToolSelection: (key: number, selected: OptionType) => void
     onClusterSelection: (key: number, selected: MultiValue<OptionType>) => void
-    // handleNameChange: () => void
-    // handleUrlTemplatechange: () => void
+    onNameChange: (key: number, name: string) => void,
+    onUrlTemplateChange: (key: number, urlTemplate: string) => void,
     deleteLinkData: (key: number) => void
 }
 
-const  formatOptionLabelClusters = (option) => {
+const formatOptionLabelClusters = (option) => {
     return (
         <div className="flex left column">
             <span>{option.label}</span>
@@ -288,10 +288,22 @@ const  formatOptionLabelClusters = (option) => {
                 </>
             )}
         </div>
-    );
+    )
 }
 
-const ConfigureLinkAction = ({ index, tool, name, clusters, url, onMonitoringToolSelection, onClusterSelection, deleteLinkData }: ConfigureLinkActionType) => {
+const ConfigureLinkAction = ({
+    index,
+    tool,
+    name,
+    clusters,
+    urlTemplate,
+    showDelete,
+    onMonitoringToolSelection,
+    onClusterSelection,
+    onNameChange,
+    onUrlTemplateChange,
+    deleteLinkData,
+}: ConfigureLinkActionType) => {
     return (
         <div id={`link-action-${index}`} className="configure-link-action-wrapper">
             <div className="link-monitoring-tool mb-8">
@@ -300,6 +312,7 @@ const ConfigureLinkAction = ({ index, tool, name, clusters, url, onMonitoringToo
                     <Select
                         placeholder="Select tool"
                         name="monitoring-tool"
+                        value={tool}
                         options={MOCK_MONITORING_TOOL}
                         isMulti={false}
                         hideSelectedOptions={false}
@@ -358,14 +371,14 @@ const ConfigureLinkAction = ({ index, tool, name, clusters, url, onMonitoringToo
                 </div>
                 <div className="link-name mr-12">
                     <label>Name*</label>
-                    <input placeholder="Enter name" />
+                    <input placeholder="Enter name" value={name} onChange={(e) => onNameChange(index, e.target.value)} />
                 </div>
                 <div className="link-clusters mr-12">
                     <span>Clusters*</span>
                     <Select
-                    menuIsOpen={true}
                         placeholder="Select clusters"
                         name="link-clusters"
+                        value={clusters}
                         options={MOCK_GROUP_CLUSTER_IDS}
                         formatOptionLabel={formatOptionLabelClusters}
                         onChange={(selected) => onClusterSelection(index, selected)}
@@ -426,11 +439,11 @@ const ConfigureLinkAction = ({ index, tool, name, clusters, url, onMonitoringToo
                         }}
                     />
                 </div>
-                <Delete className="mt-24 cursor" onClick={(selected) => deleteLinkData(index)}/>
+                {showDelete && <Delete className="mt-24 cursor" onClick={() => deleteLinkData(index)} />}
             </div>
             <div className="link-text-area">
                 <label>URL template*</label>
-                <textarea placeholder="Enter URL template" />
+                <textarea placeholder="Enter URL template" value={urlTemplate} onChange={(e) => onUrlTemplateChange(index, e.target.value)} />
             </div>
         </div>
     )
@@ -477,74 +490,84 @@ export const MOCK_GROUP_CLUSTER_IDS = [
     },
 ]
 
-
 export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
-    const [linksData, setLinksData] = useState<Map<number, LinkAction>>(null)
-
-    useEffect(() => {
-        if (!linksData) {
-            const _linksData = new Map<number, LinkAction>()
-            _linksData.set(0, {
-                tool: '',
-                name: '',
-                clusters: [],
-                url: '',
-            })
-            setLinksData(_linksData)
-        }
-    }, [linksData])
-
-    const deleteLinkData = (key: number) => {
-        const _linksData = linksData
-        _linksData.delete(key)
-        setLinksData(_linksData)
-    }
-
-    const onMonitoringToolSelection = (key: number, selected: OptionType) => {
-        const _linksData = linksData
-        _linksData.get(key).tool = selected.value
-        setLinksData(_linksData)
-    }
-
-    const onClusterSelection = (key: number, selected: MultiValue<OptionType>) => {
-        const _linksData = linksData
-        _linksData.get(key).clusters = selected.map(value => value.value)
-        setLinksData(_linksData)
-    }
-
-    const addAnother = () => {
-        const _linksData = linksData
-        _linksData.set(linksData.size, {
-            tool: '',
+    const [linksData, setLinksData] = useState<LinkAction[]>([
+        {
+            tool: undefined,
             name: '',
-            clusters: [],
-            url: '',
-        })
-        setLinksData(_linksData)
+            clusters: undefined,
+            urlTemplate: '',
+        },
+    ])
+    const [savingLinks, setSavingLinks] = useState(false)
+
+    const handleLinksDataActions = (action: string, key?: number, value?: OptionType | MultiValue<OptionType> | string) => {
+        switch (action) {
+            case 'add':
+                setLinksData(
+                    linksData.concat({
+                        tool: undefined,
+                        name: '',
+                        clusters: undefined,
+                        urlTemplate: '',
+                    }),
+                )
+                break
+            case 'delete':
+                linksData.splice(key, 1)
+                break
+            case 'onMonitoringToolSelection':
+                linksData[key].tool = value as OptionType
+                break
+            case 'onClusterSelection':
+                linksData[key].clusters = value as MultiValue<OptionType>
+                break
+            case 'onNameChange':
+                    linksData[key].name = value as string
+                    break
+            case 'onUrlTemplateChange':
+                    linksData[key].urlTemplate = value as string
+                    break
+            default:
+                break
+        }
+
+        if (action !== 'add') {
+            setLinksData([...linksData])
+        }
     }
 
     const getConfigureLinkActionColumn = () => {
         return (
             <div className="configure-link-action-container">
-                <div className="link-add-another mb-16 cursor" onClick={addAnother}>
+                <div className="link-add-another mb-16 cursor" onClick={() => handleLinksDataActions('add')}>
                     <AddIcon /> Add another
                 </div>
                 {linksData &&
-                    [...linksData.values()].map((link, idx) => {
+                    linksData.map((link, idx) => {
                         return (
                             <>
                                 <ConfigureLinkAction
-                                    key={`ConfigureLinkAction-idx`}
+                                    key={`ConfigureLinkAction-${idx}`}
                                     index={idx}
                                     tool={link.tool}
                                     name={link.name}
                                     clusters={link.clusters}
-                                    url={link.url}
-                                    onMonitoringToolSelection={onMonitoringToolSelection}
-                                    onClusterSelection={onClusterSelection}
-                                    deleteLinkData={deleteLinkData}
+                                    urlTemplate={link.urlTemplate}
+                                    onMonitoringToolSelection={(key, selected) =>
+                                        handleLinksDataActions('onMonitoringToolSelection', key, selected)
+                                    }
+                                    onClusterSelection={(key, selected) =>
+                                        handleLinksDataActions('onClusterSelection', key, selected)
+                                    }
+                                    onNameChange={(key, name) => handleLinksDataActions('onNameChange', key, name)}
+                                    onUrlTemplateChange={(key, urlTemplate) => handleLinksDataActions('onUrlTemplateChange', key, urlTemplate)}
+                                    showDelete={linksData.length > 1}
+                                    deleteLinkData={(key) => handleLinksDataActions('delete', key)}
                                 />
-                                { linksData.size > 1 && (idx !== linksData.size - 1) && <hr className="external-links-divider mt-16 mb-16" />}
+                                {linksData.length > 1 && idx !== linksData.length - 1 && (
+                                    <hr className="external-links-divider mt-16 mb-16" />
+                                )}
                             </>
                         )
                     })}
@@ -588,12 +611,27 @@ export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
         )
     }
 
+    const saveLinks = () => {
+        setSavingLinks(true)
+        const payload = linksData.map((link) => ({
+            tool: link.tool.value,
+            name: link.name,
+            clusters: link.clusters.map((value) => value.value),
+            urlTemplate: link.urlTemplate
+        }))
+
+        setTimeout(() => {
+            setSavingLinks(false)
+            handleDialogVisibility()
+        }, 1500)
+    }
+
     return (
         <VisibleModal className="add-external-link-dialog" onEscape={handleDialogVisibility}>
             <div className="modal__body">
                 <div className="modal__header">
                     <h3 className="modal__title">Add link</h3>
-                    <button type="button" className="transparent" onClick={handleDialogVisibility}>
+                    <button type="button" className="transparent" onClick={handleDialogVisibility} disabled={savingLinks}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
@@ -604,10 +642,11 @@ export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
                 </div>
                 <hr className="modal__divider mt-0 mb-0" />
                 <div className="modal__buttons">
-                    <button className="cta">Save</button>
+                    <button className="cta" onClick={saveLinks} disabled={savingLinks}>
+                        {savingLinks ? <Progressing /> : 'Save'}
+                    </button>
                 </div>
             </div>
         </VisibleModal>
     )
 }
-
