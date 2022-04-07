@@ -1,3 +1,4 @@
+import { IndicatorsContainer } from "react-select/dist/declarations/src/components/containers"
 
 export const tempMultiSelectStyles = {
     control: (base, state) => ({
@@ -30,5 +31,10 @@ export const tempMultiSelectStyles = {
         background: 'var(--N100) !important',
         border: '1ps solid var(--N200) !important',
         padding: '6px 10px 6px 10px'
+     }),
+     indicatorsContainer:(base, state) => ({ 
+        ...base, 
+        background: 'var(--N100) !important',
+        border: '1ps solid var(--N200) !important',
      })
 }
