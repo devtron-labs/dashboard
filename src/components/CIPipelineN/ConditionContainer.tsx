@@ -174,7 +174,14 @@ export function ConditionContainer({
                                     <label className="tp-4 fs-13 fw-4 text-uppercase mr-10">
                                         <ReactSelect
                                             autoFocus
-                                            value={selectedVariable}
+                                            value={
+                                                conditionDetail.conditionOnVariable
+                                                    ? {
+                                                          label: conditionDetail.conditionOnVariable,
+                                                          value: conditionDetail.conditionOnVariable,
+                                                      }
+                                                    : null
+                                            }
                                             tabIndex={1}
                                             placeholder="Select variable"
                                             onChange={(selectedValue) => {
@@ -196,7 +203,14 @@ export function ConditionContainer({
                                     </label>
                                     <label className="tp-4 fs-13 fw-4 text-uppercase mr-10">
                                         <ReactSelect
-                                            defaultValue={selectedOperator}
+                                            defaultValue={
+                                                conditionDetail.conditionOperator
+                                                    ? {
+                                                          label: conditionDetail.conditionOperator,
+                                                          value: conditionDetail.conditionOperator,
+                                                      }
+                                                    : selectedOperator
+                                            }
                                             tabIndex={1}
                                             onChange={(selectedValue) => {
                                                 handleConditionOperatorChange(selectedValue, index)

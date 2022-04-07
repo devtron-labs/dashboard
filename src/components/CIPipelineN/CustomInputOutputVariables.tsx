@@ -81,8 +81,7 @@ function CustomInputOutputVariables({
 
     const handleInputOutputValueChange = (e, index) => {
         const _formData = { ...formData }
-        _formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.inputVariables[index]['value'] =
-            e.target.value
+        _formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.inputVariables[index]['name'] = e.target.value
         setFormData(_formData)
     }
 

@@ -26,8 +26,8 @@ export function TaskDetailComponent({
 }) {
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [taskScriptType, setTaskScriptType] = useState<string>(
-        formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-            ? formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType
+        formData.preBuildStage.steps[selectedTaskIndex]?.inlineStepDetail
+            ? formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.scriptType
             : '',
     )
     const [editorValue, setEditorValue] = useState<string>('')
