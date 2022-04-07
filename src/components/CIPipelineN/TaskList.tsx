@@ -68,7 +68,7 @@ export function TaskList({
                                 <Dots className="rotate" style={{ ['--rotateBy' as any]: '90deg' }} />
                             </PopupMenu.Button>
                             <PopupMenu.Body rootClassName="deployment-table-row__delete">
-                                <div className="flex left" onClick={(e) => deleteTask(index)}>
+                                <div className="flex left p-5 pointer" onClick={(e) => deleteTask(index)}>
                                     <Trash />
                                     Delete
                                 </div>

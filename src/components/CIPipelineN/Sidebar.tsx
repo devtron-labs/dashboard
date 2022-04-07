@@ -36,7 +36,7 @@ export function Sidebar({
                 <div className="sidebar-action-container sidebar-action-container-border">
                     <div className="text-uppercase fw-6 fs-12 cn-6">CONFIGURE STAGE USING</div>
                     <RadioLabel
-                        className="configuration-container"
+                        className="configuration-container mb-10"
                         disabled={false}
                         initialTab={configurationType}
                         name="configuration-type"
