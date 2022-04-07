@@ -75,24 +75,20 @@ export function TaskDetailComponent({
     }
 
     const handleEditorValueChange = (editorValue: string): void => {
-        setEditorValue(editorValue)
-        const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex] = {
-            ..._formData[activeStageName].steps[selectedTaskIndex],
-            ...YAML.parse(editorValue),
-        }
-        setFormData(_formData)
+        try {
+            setEditorValue(editorValue)
+            const _formData = { ...formData }
+            _formData[activeStageName].steps[selectedTaskIndex] = {
+                ..._formData[activeStageName].steps[selectedTaskIndex],
+                ...YAML.parse(editorValue),
+            }
+            setFormData(_formData)
+        } catch (error) {}
     }
 
     const handleConfigurationChange = (ev: any): void => {
         setConfigurationType(ev.target.value)
         if (ev.target.value === ConfigurationType.YAML) {
-            // const _form = { ...formData }
-            // delete _form[activeStageName].steps[selectedTaskIndex].id
-            // delete _form[activeStageName].steps[selectedTaskIndex].index
-            // delete _form[activeStageName].steps[selectedTaskIndex].name
-            // delete _form[activeStageName].steps[selectedTaskIndex].description
-            // delete _form[activeStageName].steps[selectedTaskIndex].stepType
             if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE) {
                 setEditorValue(
                     YAML.stringify({

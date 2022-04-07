@@ -97,10 +97,12 @@ export function PreBuild({
     }
 
     const handleEditorValueChange = (editorValue: string): void => {
-        setEditorValue(editorValue)
-        const _form = { ...formData }
-        _form[activeStageName] = YAML.parse(editorValue)
-        setFormData(_form)
+        try {
+            setEditorValue(editorValue)
+            const _form = { ...formData }
+            _form[activeStageName] = YAML.parse(editorValue)
+            setFormData(_form)
+        } catch (error) {}
     }
 
     function renderPluginList(): JSX.Element {
