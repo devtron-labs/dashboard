@@ -26,8 +26,8 @@ export function TaskDetailComponent({
 }) {
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [taskScriptType, setTaskScriptType] = useState<string>(
-        formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail
-            ? formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.scriptType
+        formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
+            ? formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType
             : '',
     )
     const [editorValue, setEditorValue] = useState<string>('')
@@ -35,6 +35,7 @@ export function TaskDetailComponent({
         formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
             ? 'inlineStepDetail'
             : 'pluginRefStepDetail'
+
     useEffect(() => {
         if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.PLUGIN_REF) {
             setPageState(ViewType.LOADING)
@@ -90,7 +91,7 @@ export function TaskDetailComponent({
     const handleTaskScriptTypeChange = (ev: any): void => {
         setTaskScriptType(ev.target.value)
         const _formData = { ...formData }
-        _formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.scriptType = ev.target.value
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType = ev.target.value
         setFormData(_formData)
     }
 
@@ -100,7 +101,7 @@ export function TaskDetailComponent({
                 <div className="row-container mb-10">
                     <label className="fw-6 fs-13 cn-7 label-width">Task name*</label>{' '}
                     <input
-                        className="w-100"
+                        className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
                         type="text"
                         onChange={(e) => handleNameChange(e)}
                         value={formData[activeStageName].steps[selectedTaskIndex].name}
@@ -109,7 +110,7 @@ export function TaskDetailComponent({
                 <div className="row-container mb-10">
                     <label className="fw-6 fs-13 cn-7 label-width">Description</label>{' '}
                     <input
-                        className="w-100"
+                        className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
                         type="text"
                         onChange={(e) => handleDescriptionChange(e)}
                         value={formData[activeStageName].steps[selectedTaskIndex].description}
@@ -216,7 +217,6 @@ export function TaskDetailComponent({
                     {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.outputVariables
                         ?.length > 0 && (
                         <>
-                            {' '}
                             <ConditionContainer
                                 type={ConditionContainerType.PASS_FAILURE}
                                 selectedTaskIndex={selectedTaskIndex}

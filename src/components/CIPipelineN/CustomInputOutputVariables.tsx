@@ -41,25 +41,23 @@ function CustomInputOutputVariables({
         setFormData(_formData)
     }
 
-    const handleConditionalValueChange = (e, index) => {
+    const handleInputOutputValueChange = (e, index) => {
         const _formData = { ...formData }
         _formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.inputVariables[index]['value'] =
             e.target.value
         setFormData(_formData)
     }
 
-    const deleteCondition = (index: number): void => {
-        // const _formData = { ...formData }
-        // _formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.inputVariables[index]['value'].splice(
-        //     index,
-        //     1,
-        // )
-        // setFormData(_formData)
+    const deleteInputOutputValue = (index: number): void => {
+        const _formData = { ...formData }
+        _formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.inputVariables.splice(index, 1)
+        setFormData(_formData)
     }
+    
     return (
         <>
-            <div className="row-container mb-10">
-                <label className="tp-4 fs-13 fw-6 text-capitalize mr-10">{type} variables</label>
+            <div className="row-container mb-8">
+                <label className="tp-4 fs-13 fw-6 text-capitalize mr-8">{type} variables</label>
                 <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit" onClick={addVariable}>
                     <Add className="add-icon" />
                     Add variables
@@ -70,38 +68,35 @@ function CustomInputOutputVariables({
             ]?.map((variable, index) => (
                 <div className="pl-200">
                     <div className="custom-variable-container">
-                        <label className="tp-4 fs-13 fw-4 text-uppercase">
+                        <div className="tp-4 fs-13 fw-4 text-uppercase">
                             <input
-                                className="w-100"
+                                className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
                                 type="text"
-                                onChange={(e) => {
-                                    handleConditionalValueChange(e, index)
-                                }}
-                            />
-                        </label>
-                        <label className="tp-4 en-2 bw-1 fs-13 fw-4 text-uppercase flex">=</label>
-                        <div className="fs-13">
-                            <ReactSelect
-                                autoFocus
-                                tabIndex={1}
-                                placeholder="Select variable"
-                                onChange={(selectedValue) => {
-                                    // handleConditionOnVariableChange(selectedValue, index)
-                                }}
-                                isSearchable={false}
-                                styles={tempMultiSelectStyles}
+                                placeholder="Variables name"
+                                onChange={(e) => handleInputOutputValueChange(e, index)}
                             />
                         </div>
+                        <div className="tp-4 en-2 bw-1 fs-13 fw-4 text-uppercase flex">=</div>
+                        <ReactSelect
+                            autoFocus
+                            tabIndex={1}
+                            placeholder="Select source or input value"
+                            onChange={(selectedValue) => {
+                                // handleConditionOnVariableChange(selectedValue, index)
+                            }}
+                            isSearchable={false}
+                            styles={tempMultiSelectStyles}
+                        />
                         <Close
                             className="icon-dim-24 pointer"
-                            // onClick={() => {
-                            //     // deleteCondition(index)
-                            // }}
+                            onClick={() => {
+                                deleteInputOutputValue(index)
+                            }}
                         />
                     </div>
                     <input
                         style={{ width: '80% !important' }}
-                        className="form__input bcn-1 w-80 mb-20"
+                        className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 mb-20"
                         autoComplete="off"
                         placeholder="Description"
                         type="text"

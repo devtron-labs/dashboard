@@ -381,7 +381,7 @@
 
 .custom-variable-container {
     display: grid;
-    grid-template-columns: auto 70px auto 30px;
+    grid-template-columns: auto 28px auto 30px;
 }
 
 .condition-container {
