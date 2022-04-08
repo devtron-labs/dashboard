@@ -154,7 +154,7 @@ export default function ScaleWorkloadsModal({
                                     changeDeploymentTab(index)
                                 }
                             }}
-                            key={index}
+                            key={tab}
                             className="tab-list__tab"
                         >
                             <div
@@ -342,7 +342,7 @@ export default function ScaleWorkloadsModal({
                                 <div style={{ minHeight: '240px', overflow: 'scroll' }}>
                                     <>
                                         {Array.from(_workloadsList.values()).map((item) => (
-                                            <div className="check-single-workload">
+                                            <div key={`${item.kind}/${item.name}`} className="check-single-workload">
                                                 <Checkbox
                                                     rootClassName={`mb-0 fs-14 cursor bcn-0 p${
                                                         item.errorMessage ? ' align-baseline' : ''
