@@ -1,25 +1,22 @@
 import React, { useEffect, useState } from 'react'
-import { Checkbox, Progressing, showError, VisibleModal } from '../../../../common'
+import { Checkbox, DetailsProgressing, Progressing, showError, VisibleModal } from '../../../../common'
 import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as ScaleDown } from '../../../../../assets/icons/ic-scale-down.svg'
 import { ReactComponent as Restore } from '../../../../../assets/icons/ic-restore.svg'
-import { HibernateRequest, ScaleWorkloadsType, WorkloadCheckType } from './scaleWorkloadsModal.type'
+import {
+    HibernateRequest,
+    ScaleWorkloadsModalProps,
+    ScaleWorkloadsType,
+    WorkloadCheckType,
+} from './scaleWorkloadsModal.type'
 import { hibernateApp, unhibernateApp } from './scaleWorkloadsModal.service'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import './scaleWorkloadsModal.scss'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 
-export default function ScaleWorkloadsModal({
-    appId,
-    onClose,
-    history,
-}: {
-    appId: string
-    onClose: () => void
-    history: any
-}) {
+export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWorkloadsModalProps) {
     const [nameSelection, setNameSelection] = useState<Record<string, WorkloadCheckType>>({
         scaleDown: {
             isChecked: false,
@@ -43,13 +40,13 @@ export default function ScaleWorkloadsModal({
             setFetchingLatestDetails(false)
         }
 
-        if (fetchingLatestDetails || (!fetchingLatestDetails && appDetails.resourceTree?.nodes)) {
+        if (appDetails.resourceTree?.nodes) {
             const _workloadsToScaleDown = workloadsToScaleDown || new Map<string, ScaleWorkloadsType>()
             const _workloadsToRestore = workloadsToRestore || new Map<string, ScaleWorkloadsType>()
             appDetails.resourceTree.nodes.forEach((node) => {
                 if (node.canBeHibernated) {
                     const workloadKey = `${node.kind}/${node.name}`
-                    const _workloadTarget: ScaleWorkloadsType = {
+                    let _workloadTarget: ScaleWorkloadsType = {
                         kind: node.kind,
                         name: node.name,
                         group: node.group,
@@ -61,25 +58,19 @@ export default function ScaleWorkloadsModal({
                     }
 
                     if (node.isHibernated) {
-                        _workloadsToRestore.set(workloadKey, _workloadTarget)
-
-                        // TODO: confirm about this
-                        if (
-                            _workloadsToScaleDown.has(workloadKey) &&
-                            !_workloadsToScaleDown.get(workloadKey).errorMessage
-                        ) {
-                            _workloadsToScaleDown.delete(workloadKey)
-                        }
+                        checkAndUpdateCurrentWorkload(
+                            _workloadTarget,
+                            workloadKey,
+                            _workloadsToRestore,
+                            _workloadsToScaleDown,
+                        )
                     } else {
-                        _workloadsToScaleDown.set(workloadKey, _workloadTarget)
-
-                        // TODO: confirm about this
-                        if (
-                            _workloadsToRestore.has(workloadKey) &&
-                            !_workloadsToRestore.get(workloadKey).errorMessage
-                        ) {
-                            _workloadsToRestore.delete(workloadKey)
-                        }
+                        checkAndUpdateCurrentWorkload(
+                            _workloadTarget,
+                            workloadKey,
+                            _workloadsToScaleDown,
+                            _workloadsToRestore,
+                        )
                     }
                 }
             })
@@ -89,11 +80,32 @@ export default function ScaleWorkloadsModal({
         }
     }, [appDetails])
 
-    const renderScaleModalHeader = () => {
+    const checkAndUpdateCurrentWorkload = (
+        workloadTarget: ScaleWorkloadsType,
+        workloadKey: string,
+        updateWorkloadsList: Map<string, ScaleWorkloadsType>,
+        deleteFromWorkloadsList: Map<string, ScaleWorkloadsType>,
+    ): void => {
+        const _currentWorkload = updateWorkloadsList.get(workloadKey)
+
+        if (_currentWorkload) {
+            workloadTarget.errorMessage = _currentWorkload.errorMessage
+            workloadTarget.isChecked = _currentWorkload.isChecked
+            workloadTarget.value = _currentWorkload.value
+        }
+
+        updateWorkloadsList.set(workloadKey, workloadTarget)
+
+        if (deleteFromWorkloadsList.has(workloadKey)) {
+            deleteFromWorkloadsList.delete(workloadKey)
+        }
+    }
+
+    const renderScaleModalHeader = (): JSX.Element => {
         return (
             <>
                 <div className="modal__heading flex left">
-                    <h1 className="cn-9 fw-6 fs-20 m-0">Scale workloads</h1>
+                    <h1 className="cn-9 fw-6 fs-16 m-0">Scale workloads</h1>
                     <button
                         type="button"
                         className="transparent p-0"
@@ -125,7 +137,7 @@ export default function ScaleWorkloadsModal({
         )
     }
 
-    function changeDeploymentTab(index: number) {
+    function changeDeploymentTab(index: number): void {
         if (selectedDeploymentTabIndex === index) {
             return
         }
@@ -133,7 +145,7 @@ export default function ScaleWorkloadsModal({
         setSelectedDeploymentTabIndex(index)
     }
 
-    const getTabName = (tab: string, index: number) => {
+    const getTabName = (tab: string, index: number): string => {
         let tabName = tab
 
         if (workloadsToScaleDown && workloadsToRestore) {
@@ -143,7 +155,7 @@ export default function ScaleWorkloadsModal({
         return tabName
     }
 
-    const renderScaleWorkloadTabs = () => {
+    const renderScaleWorkloadTabs = (): JSX.Element => {
         return (
             <ul className="tab-list deployment-tab-list tab-list--borderd mr-20">
                 {scaleWorkloadTabs.map((tab, index) => {
@@ -172,29 +184,19 @@ export default function ScaleWorkloadsModal({
         )
     }
 
-    const handleAllScaleObjectsName = (isActiveWorkloadsTab: boolean) => {
+    const handleAllScaleObjectsName = (isActiveWorkloadsTab: boolean): void => {
         const _nameSelectionKey = isActiveWorkloadsTab ? 'scaleDown' : 'restore'
         const _nameSelection = nameSelection[_nameSelectionKey]
         const _workloadsList = isActiveWorkloadsTab ? workloadsToScaleDown : workloadsToRestore
         const _setWorkloadsList = isActiveWorkloadsTab ? setWorkloadsToScaleDown : setWorkloadsToRestore
 
-        if (!_nameSelection.isChecked) {
-            for (let [key, value] of _workloadsList) {
-                value.value = 'CHECKED'
-                value.isChecked = true
-                _workloadsList.set(key, value)
-            }
-
-            _setWorkloadsList(_workloadsList)
-        } else {
-            for (let [key, value] of _workloadsList) {
-                value.value = 'INTERMEDIATE'
-                value.isChecked = false
-                _workloadsList.set(key, value)
-            }
-
-            _setWorkloadsList(_workloadsList)
+        for (let [key, value] of _workloadsList) {
+            value.value = !_nameSelection.isChecked ? 'CHECKED' : 'INTERMEDIATE'
+            value.isChecked = !_nameSelection.isChecked ? true : false
+            _workloadsList.set(key, value)
         }
+
+        _setWorkloadsList(_workloadsList)
         setNameSelection({
             ...nameSelection,
             [_nameSelectionKey]: {
@@ -204,7 +206,7 @@ export default function ScaleWorkloadsModal({
         })
     }
 
-    const handleWorkloadSelection = (workloadKey: string, isActiveWorkloadsTab: boolean) => {
+    const handleWorkloadSelection = (workloadKey: string, isActiveWorkloadsTab: boolean): void => {
         const _workloadsList = isActiveWorkloadsTab ? workloadsToScaleDown : workloadsToRestore
         const _setWorkloadsList = isActiveWorkloadsTab ? setWorkloadsToScaleDown : setWorkloadsToRestore
 
@@ -223,34 +225,16 @@ export default function ScaleWorkloadsModal({
         const isAnySelected = updatedWorkloads.some((workload) => workload.isChecked)
         const areAllSelected = isAnySelected && updatedWorkloads.every((workload) => workload.isChecked)
 
-        if (areAllSelected) {
-            return setNameSelection({
-                ...nameSelection,
-                [_nameSelectionKey]: {
-                    isChecked: true,
-                    value: 'CHECKED',
-                },
-            })
-        } else if (isAnySelected) {
-            return setNameSelection({
-                ...nameSelection,
-                [_nameSelectionKey]: {
-                    isChecked: true,
-                    value: 'INTERMEDIATE',
-                },
-            })
-        } else {
-            return setNameSelection({
-                ...nameSelection,
-                [_nameSelectionKey]: {
-                    isChecked: false,
-                    value: 'CHECKED',
-                },
-            })
-        }
+        setNameSelection({
+            ...nameSelection,
+            [_nameSelectionKey]: {
+                isChecked: areAllSelected || isAnySelected ? true : false,
+                value: !areAllSelected && isAnySelected ? 'INTERMEDIATE' : 'CHECKED',
+            },
+        })
     }
 
-    const handleWorkloadUpdate = async (isHibernateReq: boolean) => {
+    const handleWorkloadUpdate = async (isHibernateReq: boolean): Promise<void> => {
         const _nameSelectionKey = isHibernateReq ? 'scaleDown' : 'restore'
 
         try {
@@ -301,7 +285,7 @@ export default function ScaleWorkloadsModal({
         }
     }
 
-    const renderScaleWorkloadsList = (isActiveWorkloadsTab: boolean) => {
+    const renderScaleWorkloadsList = (isActiveWorkloadsTab: boolean): JSX.Element => {
         const _nameSelection = nameSelection[isActiveWorkloadsTab ? 'scaleDown' : 'restore']
         const _workloadsList = isActiveWorkloadsTab ? workloadsToScaleDown : workloadsToRestore
         const isWorkloadPresent = _workloadsList && _workloadsList.size > 0
@@ -318,7 +302,13 @@ export default function ScaleWorkloadsModal({
                             flexDirection: 'column',
                         }}
                     >
-                        <Progressing pageLoader />
+                        <DetailsProgressing
+                            pageLoader
+                            fullHeight={true}
+                            loadingText={`${
+                                isActiveWorkloadsTab ? 'Scaling down' : 'Restoring'
+                            } workloads. Please wait...`}
+                        />
                     </div>
                 ) : (
                     <>
@@ -377,8 +367,8 @@ export default function ScaleWorkloadsModal({
                                 icon={MsgUIType.INFO}
                                 msg={`${
                                     isActiveWorkloadsTab
-                                        ? 'No active workloads found'
-                                        : 'No scaled down workloads found'
+                                        ? 'No active workloads available'
+                                        : 'No scaled down workloads available'
                                 }`}
                                 size={20}
                                 theme="white"
@@ -411,7 +401,11 @@ export default function ScaleWorkloadsModal({
                             <Progressing size={24} />
                         ) : (
                             <>
-                                {isActiveWorkloadsTab ? <ScaleDown className="mr-8" /> : <Restore className="mr-8" />}
+                                {isActiveWorkloadsTab ? (
+                                    <ScaleDown className="cta-icon mr-8" />
+                                ) : (
+                                    <Restore className="cta-icon mr-8" />
+                                )}
                                 {isActiveWorkloadsTab ? 'Scale workloads to 0 (zero)' : 'Restore workloads'}
                             </>
                         )}

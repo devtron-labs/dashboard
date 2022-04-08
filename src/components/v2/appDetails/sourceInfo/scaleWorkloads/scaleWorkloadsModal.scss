@@ -14,7 +14,7 @@
     .modal__info {
         background-color: var(--B100);
         border-top: 1px solid var(--N200);
-        padding: 16px 12px;
+        padding: 10px 16px;
 
         .modal__info-wrapper {
             align-items: flex-start;
@@ -24,6 +24,14 @@
     .scale-worklists-container {
         min-height: 240px;
         height: calc(75% - 35px);
+
+        .details-loader {
+            height: 100%;
+            width: 100%;
+            color: var(--N700);
+            font-size: 13px;
+            font-weight: 400;
+        }
     }
 
     .check-all-workloads,
@@ -45,7 +53,7 @@
             margin-right: 0px;
             min-width: 173px;
 
-            svg {
+            svg.cta-icon {
                 width: 16px;
                 height: 16px;
             }

@@ -9,8 +9,10 @@ export interface ScaleWorkloadsType extends HibernateTargetObject, WorkloadCheck
     errorMessage?: string
 }
 
-export interface ExternalAppScaleModalProps {
+export interface ScaleWorkloadsModalProps {
+    appId: string
     onClose: () => void
+    history: any
 }
 
 export interface HibernateTargetObject {
