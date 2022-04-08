@@ -1,13 +1,40 @@
 import React, { Component } from 'react';
-import { ExternalAppScaleModalState, ExternalAppScaleModalProps, ScaleToZero } from './externalAppScaleModal.type';
 import { ViewType } from '../../../../config';
 import { VisibleModal, Checkbox, Progressing } from '../../../common';
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
-import { getScalePodList } from './externalAppModal.service';
+import { getScalePodList } from './scaleWorkloads/scaleWorkloadsModal.service';
 import Restore from '../../../../assets/icons/ic-restore.svg';
 
+export interface ScaleToZero {
+    kind: string;
+    name: string;
+    isChecked: boolean;
+    value: "INTERMEDIATE" | "CHECKED";
+}
+
+export interface ScalePodName {
+    name: {
+        isChecked: boolean;
+        value: "INTERMEDIATE" | "CHECKED";
+    }
+}
+
+export interface ExternalAppScaleModalState {
+    view: string;
+    scalePodsToZero: ScaleToZero[];
+    objectToRestore: ScaleToZero[];
+    scalePodName: ScalePodName;
+    objectToRestoreName: ScalePodName;
+    scalePodLoading: boolean;
+    objectToRestoreLoading: boolean;
+    showRestore: boolean;
+}
+
+export interface ExternalAppScaleModalProps {
+    onClose: () => void
+} 
 export default class ScalePodModalComponent extends Component<ExternalAppScaleModalProps, ExternalAppScaleModalState> {
     constructor(props) {
         super(props);
@@ -158,7 +185,7 @@ export default class ScalePodModalComponent extends Component<ExternalAppScaleMo
         return (
             <>
                 <div className="flex left">
-                    <h1 className="cn-9 fw-6 fs-20 m-0">Select objects to scale</h1>
+                    <h1 className="cn-9 fw-6 fs-20 m-0">Scale workloads</h1>
                     <button
                         type="button"
                         className="transparent p-0"
@@ -249,7 +276,7 @@ export default class ScalePodModalComponent extends Component<ExternalAppScaleMo
                                 </>
                             ) : (
                                 <>
-                                    <ScaleDown className="icon-dim-16 mr-4" /> Scale Pods to 0 (zero)
+                                    <ScaleDown className="icon-dim-16 mr-4" /> Scale workloads to 0 (zero)
                                 </>
                             )}
                         </button>

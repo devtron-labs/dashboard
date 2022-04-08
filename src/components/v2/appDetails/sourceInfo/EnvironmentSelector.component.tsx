@@ -1,27 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import Select, { components } from 'react-select';
-import { multiSelectStyles, SingleSelectOption as Option } from '../../../common';
-import ScalePodModalComponent from './ScalePodModal.component';
+import Select from 'react-select';
+import { multiSelectStyles } from '../../../common';
 import './sourceInfo.css';
 import IndexStore from '../index.store';
 import { AppEnvironment } from './environment.type';
-import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router';
+import { useParams, useHistory, useRouteMatch } from 'react-router';
 
 import { getAppOtherEnvironment } from '../appDetails.api';
 import { useSharedState } from '../../utils/useSharedState';
 import { AppType } from "../appDetails.type";
-import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate.svg';
+import { ReactComponent as ScaleObjects } from '../../../../assets/icons/ic-scale-objects.svg';
+import ScaleWorkloadsModal from './scaleWorkloads/ScaleWorkloadsModal.component';
+import Tippy from '@tippyjs/react';
 
 function EnvironmentSelectorComponent() {
     const params = useParams<{ appId: string; envId?: string }>();
     const { url, path } = useRouteMatch();
     const history = useHistory();
-
-    const [showhiberbateConfirmationModal, setshowHibernateConfirmationModal] = useState(false);
-
+    const [showWorkloadsModal, setWorkloadsModal] = useState(false);
     const [environments, setEnvironments] = useState<Array<AppEnvironment>>();
-
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable());
+    const [canScaleWorkloads, setCanScaleWorkloads] = useState(false)
 
     useEffect(() => {
         if (appDetails.appType != AppType.EXTERNAL_HELM_CHART) {
@@ -41,6 +40,12 @@ function EnvironmentSelectorComponent() {
             handleEnvironmentChange(appDetails.environmentId);
         }
     }, [appDetails.environmentId]);
+
+    useEffect(() => {
+        if (appDetails.appType === AppType.EXTERNAL_HELM_CHART && appDetails.resourceTree?.nodes) {
+            setCanScaleWorkloads(appDetails.resourceTree.nodes.some((node) => node.canBeHibernated))
+        }
+    }, [appDetails])
 
     const handleEnvironmentChange = (envId: number) => {
         history.push(`${url}/${envId}`);
@@ -128,20 +133,34 @@ function EnvironmentSelectorComponent() {
                     </div>
                 </div>
             </div>
-            {/*{
-                appDetails.appType == AppType.EXTERNAL_HELM_CHART && !showhiberbateConfirmationModal &&
-                <div>
-                    <button className="scale-pod__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12" onClick={() => setshowHibernateConfirmationModal(true)}>
-                        <HibernateIcon className="mr-4" /> Scale objects
-                    </button>
-                </div>
-            }*/}
-
-            {
-                showhiberbateConfirmationModal &&
-                <ScalePodModalComponent onClose={() => setshowHibernateConfirmationModal(false)} />
-            }
-
+            {appDetails.appType === AppType.EXTERNAL_HELM_CHART && !showWorkloadsModal && (
+                <>
+                    {canScaleWorkloads ? (
+                        <button
+                            className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2"
+                            onClick={() => setWorkloadsModal(true)}
+                        >
+                            <ScaleObjects className="mr-4" /> Scale workloads
+                        </button>
+                    ) : (
+                        <Tippy
+                            placement="top"
+                            arrow={false}
+                            className="default-tt"
+                            content={'No scalable workloads found'}
+                        >
+                            <button
+                                className="scale-workload__btn flex left cta pb-6 pt-6 pl-12 pr-12 not-allowed"
+                            >
+                                <ScaleObjects className="scale-workload-icon mr-4" /> Scale workloads
+                            </button>
+                        </Tippy>
+                    )}
+                </>
+            )}
+            {showWorkloadsModal && (
+                <ScaleWorkloadsModal appId={params.appId} onClose={() => setWorkloadsModal(false)} history={history} />
+            )}
         </div>
     );
 }

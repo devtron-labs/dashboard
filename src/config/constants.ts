@@ -130,7 +130,9 @@ export const Routes = {
     HELM_DEPLOYMENT_ROLLBACK_API: 'application/rollback',
     NAMESPACE: 'env/namespace',
     DASHBOARD_ACCESSED: '/dashboard-event/dashboardAccessed',
-    DASHBOARD_LOGGEDIN: '/dashboard-event/dashboardLoggedIn'
+    DASHBOARD_LOGGEDIN: '/dashboard-event/dashboardLoggedIn',
+    HELM_APP_HIBERNATE_API: 'application/hibernate',
+    HELM_APP_UNHIBERNATE_API: 'application/unhibernate',
 };
 
 export const ViewType = {
@@ -439,3 +441,8 @@ export const AppCreationType = {
     Blank: 'BLANK',
     Existing: 'EXISTING',
 };
+
+export const HIBERNATION_STATUS_MESSAGE = {
+    HIBERNATED: "This application's workloads are scaled down to 0 replicas",
+    'PARTIALLY HIBERNATED': "Some of this application's workloads are scaled down to 0 replicas."
+}
