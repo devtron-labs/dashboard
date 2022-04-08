@@ -38,7 +38,7 @@ export interface ExternalCIPipelineState {
 
 export enum PluginType {
     INLINE = 'INLINE',
-    PLUGIN_REF = 'PLUGIN REF',
+    PLUGIN_REF = 'REF_PLUGIN',
 }
 
 export enum ConditionContainerType {
