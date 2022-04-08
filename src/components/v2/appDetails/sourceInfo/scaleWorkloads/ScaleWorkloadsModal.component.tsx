@@ -121,12 +121,11 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
-                <div className="modal__info mt-24 mb-8">
+                <div className="modal__info mt-16">
                     <div className="modal__info-wrapper flex left">
                         <Info className="icon-dim-20 mr-10 " />
                         <div className="fs-13 fw-4">
-                            Scaled down workloads will stop using resources until restored or a new deployment is
-                            initiated.&nbsp;
+                            Scaled down workloads will stop using resources until restored.
                             {/* <a href="#" className="cb-5">
                                 How does this work?
                             </a> */}
@@ -294,7 +293,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                     <div
                         className="flex"
                         style={{
-                            minHeight: '276px',
+                            height: '234px',
                             flexDirection: 'column',
                         }}
                     >
@@ -312,7 +311,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                             <>
                                 <div className="check-all-workloads cn-7 fw-6 border-bottom">
                                     <Checkbox
-                                        rootClassName="mb-0 fs-14 cursor bcn-0 p"
+                                        rootClassName="mb-0 fs-13 cursor bcn-0 p"
                                         isChecked={_nameSelection.isChecked}
                                         value={_nameSelection.value}
                                         onChange={(e) => {
@@ -320,17 +319,17 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                                             handleAllScaleObjectsName(isActiveWorkloadsTab)
                                         }}
                                     >
-                                        <div className="pl-16 fw-6">
+                                        <div className="pl-8 fw-6">
                                             <span>NAME</span>
                                         </div>
                                     </Checkbox>
                                 </div>
-                                <div style={{ minHeight: '240px', overflow: 'scroll' }}>
+                                <div style={{ height: '192px', overflow: 'scroll' }}>
                                     <>
                                         {Array.from(_workloadsList.values()).map((item) => (
                                             <div key={`${item.kind}/${item.name}`} className="check-single-workload">
                                                 <Checkbox
-                                                    rootClassName={`mb-0 fs-14 cursor bcn-0 p${
+                                                    rootClassName={`mb-0 fs-13 cursor bcn-0 p${
                                                         item.errorMessage ? ' align-baseline' : ''
                                                     }`}
                                                     isChecked={item.isChecked}
@@ -343,7 +342,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                                                         )
                                                     }}
                                                 >
-                                                    <div className="pl-16">
+                                                    <div className="pl-8">
                                                         <span className="cn-9 fw-6">{item.kind} / </span>
                                                         <span>{item.name}</span>
                                                     </div>
@@ -374,7 +373,8 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                                     display: 'flex',
                                     flexDirection: 'column',
                                     justifyContent: 'center',
-                                    minHeight: '276px',
+                                    minHeight: '0',
+                                    height: '234px',
                                     paddingTop: 0,
                                 }}
                             />
