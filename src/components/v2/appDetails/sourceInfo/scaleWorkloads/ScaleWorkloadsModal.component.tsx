@@ -209,14 +209,10 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const handleWorkloadSelection = (workloadKey: string, isActiveWorkloadsTab: boolean): void => {
         const _workloadsList = isActiveWorkloadsTab ? workloadsToScaleDown : workloadsToRestore
         const _setWorkloadsList = isActiveWorkloadsTab ? setWorkloadsToScaleDown : setWorkloadsToRestore
-
-        for (let [key, value] of _workloadsList) {
-            if (workloadKey === `${value.kind}/${value.name}`) {
-                value.value = !value.isChecked ? 'CHECKED' : 'INTERMEDIATE'
-                value.isChecked = !value.isChecked
-                _workloadsList.set(key, value)
-            }
-        }
+        
+        const selectedWorkload = _workloadsList.get(workloadKey)
+        selectedWorkload.value = !selectedWorkload.isChecked ? 'CHECKED' : 'INTERMEDIATE'
+        selectedWorkload.isChecked = !selectedWorkload.isChecked
 
         _setWorkloadsList(_workloadsList)
 
