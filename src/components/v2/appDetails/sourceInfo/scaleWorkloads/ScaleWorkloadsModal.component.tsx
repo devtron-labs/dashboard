@@ -44,7 +44,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
             const _workloadsToScaleDown = workloadsToScaleDown || new Map<string, ScaleWorkloadsType>()
             const _workloadsToRestore = workloadsToRestore || new Map<string, ScaleWorkloadsType>()
             appDetails.resourceTree.nodes.forEach((node) => {
-                if (node.canBeHibernated) {
+                if (node.canBeHibernated && node.health?.status?.toLowerCase() !== 'missing') {
                     const workloadKey = `${node.kind}/${node.name}`
                     let _workloadTarget: ScaleWorkloadsType = {
                         kind: node.kind,

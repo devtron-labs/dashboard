@@ -43,7 +43,11 @@ function EnvironmentSelectorComponent() {
 
     useEffect(() => {
         if (appDetails.appType === AppType.EXTERNAL_HELM_CHART && appDetails.resourceTree?.nodes) {
-            setCanScaleWorkloads(appDetails.resourceTree.nodes.some((node) => node.canBeHibernated))
+            setCanScaleWorkloads(
+                appDetails.resourceTree.nodes.some(
+                    (node) => node.canBeHibernated && node.health?.status?.toLowerCase() !== 'missing',
+                ),
+            )
         }
     }, [appDetails])
 
