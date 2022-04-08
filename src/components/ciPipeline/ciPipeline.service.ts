@@ -255,8 +255,8 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
     // const afterDockerBuildScripts = formatStages(formData.afterDockerBuildScripts || [])
     // formData.preBuildStage.steps = formatStages(formData.preBuildStage.steps)
     // formData.postBuildStage.steps = formatStages(formData.postBuildStage.steps)
-    const preBuildStage = formData.preBuildStage.steps.length > 0 ? formData.preBuildStage : {}
-    const postBuildStage = formData.postBuildStage.steps.length > 0 ? formData.postBuildStage : {}
+    const preBuildStage = formData.preBuildStage?.steps?.length > 0 ? formData.preBuildStage : {}
+    const postBuildStage = formData.postBuildStage?.steps?.length > 0 ? formData.postBuildStage : {}
     const ci = {
         ...ciPipeline,
         id: ciPipeline.id,
