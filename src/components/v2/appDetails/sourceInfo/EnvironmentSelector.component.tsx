@@ -147,7 +147,7 @@ function EnvironmentSelectorComponent() {
                             placement="top"
                             arrow={false}
                             className="default-tt"
-                            content={'No scalable workloads found'}
+                            content={'No scalable workloads available'}
                         >
                             <button
                                 className="scale-workload__btn flex left cta pb-6 pt-6 pl-12 pr-12 not-allowed"

@@ -127,9 +127,9 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                         <div className="fs-13 fw-4">
                             Scaled down workloads will stop using resources until restored or a new deployment is
                             initiated.&nbsp;
-                            <a href="#" className="cb-5">
+                            {/* <a href="#" className="cb-5">
                                 How does this work?
-                            </a>
+                            </a> */}
                         </div>
                     </div>
                 </div>
