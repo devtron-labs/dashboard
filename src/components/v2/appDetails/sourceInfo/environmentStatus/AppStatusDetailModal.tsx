@@ -5,7 +5,7 @@ import IndexStore from '../../index.store'
 import { AggregatedNodes } from '../../../../app/types'
 import { aggregateNodes } from '../../../../app/details/appDetails/utils'
 import './environmentStatus.scss'
-import { HIBERNATION_STATUS_MESSAGE } from '../../../../../config'
+import { APP_STATUS_CUSTOM_MESSAGES } from '../../../../../config'
 
 interface NodeStreamMap {
     group: string
@@ -18,7 +18,7 @@ interface NodeStreamMap {
     version: string
 }
 
-function AppStatusDetailModal({ close, appStreamData, isHibernated }: { close: () => void; appStreamData: any; isHibernated?: boolean }) {
+function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: { close: () => void; appStreamData: any; showAppStatusMessage?: boolean }) {
     const _appDetails = IndexStore.getAppDetails()
 
     const nodes: AggregatedNodes = useMemo(() => {
@@ -135,11 +135,11 @@ function AppStatusDetailModal({ close, appStreamData, isHibernated }: { close: (
                             {_hasMoreData && renderShowMoreButton()}
                         </div>
                     )}
-                    {isHibernated && (
+                    {showAppStatusMessage && (
                         <div
                             className="bcn-1 cn-9 pt-10 pb-10 pl-20 pr-20"
                         >
-                            <span className="fw-6 ">Message: </span> {HIBERNATION_STATUS_MESSAGE[_appDetails.resourceTree.status.toUpperCase()]}
+                            <span className="fw-6 ">Message: </span> {APP_STATUS_CUSTOM_MESSAGES[_appDetails.resourceTree.status.toUpperCase()]}
                         </div>
                     )}
                     <table>

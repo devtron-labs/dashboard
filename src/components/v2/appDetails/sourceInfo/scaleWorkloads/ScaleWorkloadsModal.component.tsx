@@ -214,8 +214,8 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
             if (workloadKey === `${value.kind}/${value.name}`) {
                 value.value = !value.isChecked ? 'CHECKED' : 'INTERMEDIATE'
                 value.isChecked = !value.isChecked
+                _workloadsList.set(key, value)
             }
-            _workloadsList.set(key, value)
         }
 
         _setWorkloadsList(_workloadsList)
