@@ -67,9 +67,9 @@ export function TaskList({
                             <PopupMenu.Button isKebab>
                                 <Dots className="rotate" style={{ ['--rotateBy' as any]: '90deg' }} />
                             </PopupMenu.Button>
-                            <PopupMenu.Body rootClassName="deployment-table-row__delete">
-                                <div className="flex left p-5 pointer" onClick={(e) => deleteTask(index)}>
-                                    <Trash />
+                            <PopupMenu.Body>
+                                <div className="flex left p-10 pointer" onClick={(e) => deleteTask(index)}>
+                                    <Trash className="delete-icon mr-10" />
                                     Delete
                                 </div>
                             </PopupMenu.Body>
