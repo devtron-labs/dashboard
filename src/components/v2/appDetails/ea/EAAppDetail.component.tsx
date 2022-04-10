@@ -35,7 +35,7 @@ function ExternalAppDetail({appId, appName}) {
             setTimeout(() => {
                 _getAndSetAppDetail();
                 deleteRefetchDataFromUrl(history, location);
-            } , 5000);
+            } , 2000);
         }
     }, [location.search]);
 
