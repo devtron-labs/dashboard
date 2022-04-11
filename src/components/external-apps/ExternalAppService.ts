@@ -73,6 +73,7 @@ export interface ChartMetadata {
     home: string
     sources: string[]
     description: string
+    notes?: string
 }
 
 interface HelmReleaseStatus {

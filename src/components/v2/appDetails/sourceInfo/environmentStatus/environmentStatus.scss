@@ -3,7 +3,8 @@
     min-height: 92px;
 }
 
-.app-status-detail-modal {
+.app-status-detail-modal,
+.app-notes-modal {
     margin: auto;
     margin-right: 0;
     height: 100%;
@@ -76,7 +77,8 @@
     }
 }
 
-.app-status-detail__header {
+.app-status-detail__header,
+.app-notes__header {
     position: absolute;
     width: 100%;
 }
@@ -91,4 +93,26 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+svg.app-notes__icon {
+    path:not(:first-of-type) {
+        stroke: var(--B500);
+    }
+}
+
+.app-notes__body {
+    padding-top: 56px;
+}
+
+.app-notes__markdown {
+    padding: 10px 20px;
+    overflow-wrap: break-word;
+}
+
+.app-status-card__divider {
+    width: 1px;
+    height: 12px;
+    background-color: var(--N200);
+    margin: 0 8px;
 }
