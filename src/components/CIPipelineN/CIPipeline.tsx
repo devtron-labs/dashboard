@@ -270,7 +270,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         const stepsLength = _formData[activeStageName].steps.length
         let index = 1
         let outputVariablesFromPrevSteps = {}
-        for (let i = startIndex || 0; i < stepsLength; i++) {
+        for (let i = 0; i < stepsLength; i++) {
             _formData[activeStageName].steps[i].outputVariablesFromPrevSteps = { ...outputVariablesFromPrevSteps }
             if (index <= _formData[activeStageName].steps[i].index) {
                 index = _formData[activeStageName].steps[i].index
@@ -292,7 +292,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                     refVariableStepIndex: i,
                 }
             }
-            if (startIndex && _formData[activeStageName].steps[i].usedRefVariable) {
+            if (startIndex && i >= startIndex && _formData[activeStageName].steps[i].usedRefVariable) {
                 for (const key in _formData[activeStageName].steps[i].usedRefVariable) {
                     const usedRefVariable = key.split('.')
                     const value = _formData[activeStageName].steps[i].usedRefVariable[key]
