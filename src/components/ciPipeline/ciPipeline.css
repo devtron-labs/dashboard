@@ -396,6 +396,11 @@
     grid-template-columns: 80px auto 70px auto 30px;
 }
 
+.custom-input__port-map{
+    display: grid;
+    grid-template-columns: 80px 28px 80px;
+}
+
 .content-fit {
     width: fit-content;
 }

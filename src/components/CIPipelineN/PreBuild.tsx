@@ -84,6 +84,16 @@ export function PreBuild({
                 conditionDetails: [],
                 inputVariables: [],
                 outputVariables: [],
+                commandArgsMap: [{
+                    command: '',
+                    args: []
+                }],
+                portMap: [{
+                    portOnLocal: '',
+                    portOnContainer: ''
+                }],
+                mountCodeToContainer: '',
+                mountDirectoryFromHost: ''
             }
         } else {
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {

@@ -81,6 +81,15 @@ export interface VariableType {
     RefVariableName: string
 }
 
+interface CommandArgsMap{
+        command: string
+        args: [string]
+}
+
+export interface PortMap {
+    portOnLocal: boolean
+    portOnContainer: boolean
+}
 interface ConditionDetails {
     id: number
     conditionOnVariable: string
@@ -98,18 +107,8 @@ interface InlineStepDetailType {
     mountDirectoryFromHost?: boolean
     containerImagePath?: string
     imagePullSecret?: string
-    commandArgsMap?: [
-        {
-            command: string
-            args: [string]
-        },
-    ]
-    portMap?: [
-        {
-            portOnLocal: boolean
-            portOnContainer: boolean
-        },
-    ]
+    commandArgsMap?: CommandArgsMap[]
+    portMap?: PortMap[]
     mountPathMap?: {
         filePathOnDisk: string
         filePathOnContainer: string
@@ -117,6 +116,7 @@ interface InlineStepDetailType {
     inputVariables?: VariableType[]
     outputVariables?: VariableType[]
     conditionDetails: ConditionDetails[]
+    outputDirectoryPath: string[]
 }
 
 interface PluginRefStepDetailType {

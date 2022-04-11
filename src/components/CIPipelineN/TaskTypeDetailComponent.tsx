@@ -13,15 +13,9 @@ enum MountPath {
     TRUE = 'Yes',
     FALSE = 'No',
 }
-
-interface CommandArgsMap {
-    command: string
-    args: [string]
-}
-
-interface CommandValue {
-    value: string
-    error: string
+enum PortMap {
+    PORTONLOCAL= 'portOnLocal',
+    PORTONCONTAINER = 'portOnContainer'
 }
 
 export function TaskTypeDetailComponent({
@@ -43,7 +37,6 @@ export function TaskTypeDetailComponent({
     const [mountDirectoryFromHost, setMountDirectoryFromHost] = useState<boolean>(false)
     const [containerPath, setContainerPath] = useState<string>('')
     const [imagePullSecret, setImagePullSecret] = useState<string>('')
-    const [command, setCommand] = useState<CommandValue>({value: '', error: ''})
 
     const handleStoreArtifact = (ev) => {
         setStoreArtifact(ev.target.value)
@@ -80,19 +73,21 @@ export function TaskTypeDetailComponent({
 
     const handleMountChange = (e, key: 'mountCodeToContainer' | 'mountDirectoryFromHost') => {
         const _formData = { ...formData }
+        console.log(e.target.value)
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = e.target.value
         setFormData(_formData)
     }
 
     const handleCommandArgs = (e, key: 'command' | 'args') => {
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap[key] = e.target.value
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap[0][key] =   key === 'command' ? e.target.value : e.target.value.replace(/\s+/g, '').split(',')
+        setFormData(_formData)
+    }
 
-      let  commandVal:{value: string, error: string} = {value: '', error: ''}
-        if(key === 'command'){
-            commandVal =  {value :e.target.value.split(','), error: '' }
-        }
-        setCommand(commandVal)
+    const handlePort = (e, key: 'portOnLocal' | 'portOnContainer') => {
+        const _formData = { ...formData }
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[0][key] = e.target.value
+        setFormData(_formData) 
     }
 
     const renderShellScript = () => {
@@ -143,63 +138,80 @@ export function TaskTypeDetailComponent({
                         <label className="fw-6 fs-13 cn-7 label-width">Container image path *</label>{' '}
                         <input
                             style={{ width: '80% !important' }}
-                            className="form__input bcn-1 w-80"
+                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
                             autoComplete="off"
                             placeholder="Enter image path *"
                             type="text"
                             onChange={(e) => handleContainer(e, 'containerImagePath')}
-                            value={containerPath}
+                            value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.containerImagePath}
                         />
                     </div>
                     <div className="row-container mb-10">
                         <label className="fw-6 fs-13 cn-7 label-width">Image pull secret</label>{' '}
                         <input
                             style={{ width: '80% !important' }}
-                            className="form__input bcn-1 w-80"
+                            className="w-100 w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
                             autoComplete="off"
                             placeholder="Select container registry or enter secret path"
                             type="text"
                             onChange={(e) => handleContainer(e, 'imagePullSecret')}
-                            value={imagePullSecret}
+                            value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.imagePullSecret}
                         />
                     </div>
                     <div className="row-container mb-10">
                         <label className="fw-6 fs-13 cn-7 label-width">Command</label>{' '}
                         <input
                             style={{ width: '80% !important' }}
-                            className="form__input bcn-1 w-80"
+                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
                             autoComplete="off"
-                            placeholder="Eg. “echo”, “printenv”"
+                            placeholder="Eg. “echo”"
                             type="text"
-                            onChange={(e) => handleCommandArgs(e, 'command')}
-                            value={command.value}
-                        />
+                            onChange={(e) => handleCommandArgs(e , 'command')}
+                            value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap[0]['command']}
+                            />
                     </div>
                     <div className="row-container mb-10">
                         <label className="fw-6 fs-13 cn-7 label-width">Args</label>{' '}
                         <input
                             style={{ width: '80% !important' }}
-                            className="form__input bcn-1 w-80"
+                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
                             autoComplete="off"
                             placeholder='Eg. "HOSTNAME", "KUBERNETES_PORT"'
                             type="text"
+                            onChange={(e) => handleCommandArgs(e , 'args')}
+                            value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap[0]['args']}
                         />
                     </div>
                     <div className="row-container mb-10">
                         <label className="fw-6 fs-13 cn-7 label-width">Port mapping</label>{' '}
+                        <div className="custom-input__port-map">
                         <input
                             style={{ width: '80% !important' }}
-                            className="form__input bcn-1 w-80"
+                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
                             autoComplete="off"
-                            placeholder="Select container registry or enter secret path"
+                            placeholder="Port"
                             type="text"
+                            onChange={(e) => handlePort(e, PortMap.PORTONLOCAL)}
+                            value= {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[0][PortMap.PORTONLOCAL]}
                         />
+                        <div className='flex'>:</div>
+                        <input
+                            style={{ width: '80% !important' }}
+                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
+                            autoComplete="off"
+                            placeholder="Port"
+                            type="text"
+                            onChange={(e) => handlePort(e, PortMap.PORTONCONTAINER)}
+                            value= {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[0][PortMap.PORTONCONTAINER]}
+                        />
+                        </div>
+                      
                     </div>
                     <div className="row-container mb-10">
                         <label className="fw-6 fs-13 cn-7 label-width">Mount code to container</label>{' '}
                         <RadioGroup
                             className="no-border"
-                            value={MountPath.FALSE}
+                            value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer}
                             disabled={false}
                             name="task-type"
                             onChange={(event) => {
@@ -214,7 +226,7 @@ export function TaskTypeDetailComponent({
                         <label className="fw-6 fs-13 cn-7 label-width">Mount directory from host</label>{' '}
                         <RadioGroup
                             className="no-border"
-                            value={MountPath.FALSE}
+                            value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountDirectoryFromHost}
                             disabled={false}
                             name="task-type"
                             onChange={(event) => {
@@ -232,7 +244,7 @@ export function TaskTypeDetailComponent({
                             autoComplete="off"
                             placeholder="Enter directory path"
                             type="text"
-                            value={storeArtifact}
+                            value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.outputDirectoryPath}
                             onChange={handleStoreArtifact}
                         />
                     </div>
