@@ -68,13 +68,14 @@ function CustomInputOutputVariables({
     }
 
     const getOutputVariableOptions = () => {
-        const previousStepVariables = [{ label: 'prev val', value: 'prev val' }]
+        const previousStepVariables = []
+        formData[activeStageName].steps[selectedTaskIndex].outputVariablesFromPrevSteps.forEach((element) => {
+            previousStepVariables.push({ ...element, label: element.name, value: element.name })
+        })
         return [
             {
                 label: 'From Previous Steps',
-                options: formData[activeStageName].steps[selectedTaskIndex].outputVariablesFromPrevSteps.map((elem) => {
-                    return { ...elem, label: elem.name, value: elem.name }
-                }),
+                options: previousStepVariables,
             },
             {
                 label: 'Global variables',

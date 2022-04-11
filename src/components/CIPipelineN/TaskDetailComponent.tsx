@@ -94,7 +94,7 @@ export function TaskDetailComponent({
             if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE) {
                 setEditorValue(
                     YAML.stringify({
-                        reportDirectoryPath: formData[activeStageName].steps[selectedTaskIndex].reportDirectoryPath,
+                        outputDirectoryPath: formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath,
                         inlineStepDetail: formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail,
                     }),
                 )

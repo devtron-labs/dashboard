@@ -22,7 +22,7 @@ export function TaskList({
     activeStageName: string
     selectedTaskIndex: number
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
-    calculateLastStepDetail: () => { index: number; outputVariablesFromPrevSteps: VariableType[] }
+    calculateLastStepDetail: () => { index: number; outputVariablesFromPrevSteps: Map<string, VariableType> }
 }) {
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
     const [dragAllowed, setDragAllowed] = useState<boolean>(false)
@@ -42,9 +42,16 @@ export function TaskList({
         setFormData(_formData)
     }
 
-    const handleDrop = (): void => {
+    const handleDrop = (index: number): void => {
         setDragAllowed(false)
-        calculateLastStepDetail()
+        const detailsFromLastSteps = calculateLastStepDetail()
+        const currentStepTypeVariable =
+            formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
+                ? 'inlineStepDetail'
+                : 'pluginRefStepDetail'
+        const _formData = { ...formData }
+        //_formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables.map(inputVariable => );
+        setFormData(_formData)
     }
 
     const deleteTask = (index: number): void => {
@@ -69,7 +76,7 @@ export function TaskList({
                         draggable={dragAllowed}
                         onDragStart={() => handleDragStart(index)}
                         onDragEnter={() => handleDragEnter(index)}
-                        onDrop={() => handleDrop()}
+                        onDrop={() => handleDrop(index)}
                         onDragOver={(e) => e.preventDefault()}
                         key={index}
                         onClick={() => handleSelectedTaskChange(index)}

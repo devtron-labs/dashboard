@@ -96,23 +96,20 @@ interface InlineStepDetailType {
     mountPath?: string
     mountCodeToContainer?: boolean
     mountDirectoryFromHost?: boolean
-    configureMountPath?: boolean
     containerImagePath?: string
     imagePullSecret?: string
     commandArgsMap?: [
         {
-          command: string
-          args: [
-            string
-          ]
-        }
-      ],
-      portMap?: [
+            command: string
+            args: [string]
+        },
+    ]
+    portMap?: [
         {
-          portOnLocal: boolean
-          portOnContainer: boolean
-        }
-      ],
+            portOnLocal: boolean
+            portOnContainer: boolean
+        },
+    ]
     mountPathMap?: {
         filePathOnDisk: string
         filePathOnContainer: string
@@ -138,10 +135,11 @@ export interface BuildStageType {
         name: string
         description: string
         stepType: PluginType
-        reportDirectoryPath: string
+        outputDirectoryPath: string[]
         inlineStepDetail?: InlineStepDetailType
         pluginRefStepDetail?: PluginRefStepDetailType
-        outputVariablesFromPrevSteps?: VariableType[]
+        outputVariablesFromPrevSteps?: Map<string, VariableType>
+        usedRefvariable?: string[]
     }[]
 }
 export interface FormType {

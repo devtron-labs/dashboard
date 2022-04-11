@@ -24,7 +24,7 @@ export function Sidebar({
     activeStageName: string
     selectedTaskIndex: number
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
-    calculateLastStepDetail: () => { index: number; outputVariablesFromPrevSteps: VariableType[] }
+    calculateLastStepDetail: () => { index: number; outputVariablesFromPrevSteps: Map<string, VariableType> }
 }) {
     const changeTriggerType = (appCreationType: string): void => {
         const _formData = { ...formData }

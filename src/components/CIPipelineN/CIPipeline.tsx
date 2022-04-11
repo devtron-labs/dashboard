@@ -265,25 +265,44 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             })
     }
 
-    const calculateLastStepDetail = (): { index: number; outputVariablesFromPrevSteps: VariableType[] } => {
+    const calculateLastStepDetail = (): { index: number; outputVariablesFromPrevSteps: Map<string, VariableType> } => {
         const _formData = { ...formData }
         const stepsLength = _formData[activeStageName].steps.length
         let index = 0
-        let outputVariablesFromPrevSteps: VariableType[] = []
+        let outputVariablesFromPrevSteps: Map<string, VariableType> = new Map()
         for (let i = 0; i < stepsLength; i++) {
-            _formData[activeStageName].steps[i].outputVariablesFromPrevSteps = outputVariablesFromPrevSteps
+            _formData[activeStageName].steps[i].outputVariablesFromPrevSteps = new Map(outputVariablesFromPrevSteps)
             if (index <= _formData[activeStageName].steps[i].index) {
                 index = _formData[activeStageName].steps[i].index
             }
-            if (_formData[activeStageName].steps[i].stepType === PluginType.INLINE) {
-                outputVariablesFromPrevSteps = outputVariablesFromPrevSteps.concat(
-                    _formData[activeStageName].steps[i].inlineStepDetail.outputVariables,
-                )
-            } else if (_formData[activeStageName].steps[i].stepType === PluginType.PLUGIN_REF) {
-                outputVariablesFromPrevSteps = outputVariablesFromPrevSteps.concat(
-                    _formData[activeStageName].steps[i].pluginRefStepDetail.outputVariables,
+            if (!_formData[activeStageName].steps[i].stepType) {
+                continue
+            }
+            const currentStepTypeVariable =
+                _formData[activeStageName].steps[i].stepType === PluginType.INLINE
+                    ? 'inlineStepDetail'
+                    : 'pluginRefStepDetail'
+            const outputVariablesLength =
+                _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables.length
+            for (let j = 0; j < outputVariablesLength; j++) {
+                outputVariablesFromPrevSteps.set(
+                    index + '.' + _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name,
+                    _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j],
                 )
             }
+            // if (_formData[activeStageName].steps[i].stepType === PluginType.INLINE) {
+            //     outputVariablesFromPrevSteps = outputVariablesFromPrevSteps.concat(
+            //         _formData[activeStageName].steps[i].inlineStepDetail.outputVariables.map(
+            //             (elem) => index + '._' + elem.name,
+            //         ),
+            //     )
+            // } else if (_formData[activeStageName].steps[i].stepType === PluginType.PLUGIN_REF) {
+            //     outputVariablesFromPrevSteps = outputVariablesFromPrevSteps.concat(
+            //         _formData[activeStageName].steps[i].pluginRefStepDetail.outputVariables.map(
+            //             (elem) => index + '._' + elem.name,
+            //         ),
+            //     )
+            // }
         }
         setFormData(_formData)
         return { index: index + 1, outputVariablesFromPrevSteps: outputVariablesFromPrevSteps }

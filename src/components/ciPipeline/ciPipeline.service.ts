@@ -357,7 +357,7 @@ function migrateOldData(
                 id: data.id,
                 name: data.name,
                 description: '',
-                reportDirectoryPath: data.outputLocation,
+                outputDirectoryPath: [data.outputLocation],
                 index: data.index,
                 stepType: PluginType.INLINE,
                 inlineStepDetail: {
