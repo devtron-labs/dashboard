@@ -6,7 +6,6 @@ import { FormType } from '../ciPipeline/types'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { Progressing } from '../common'
 import error from '../../assets/icons/misc/errorInfo.svg'
-import { CustomScriptComponent } from './CustomScriptComponent'
 
 export function Build({
     formData,
