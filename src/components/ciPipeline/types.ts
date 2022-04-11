@@ -54,6 +54,7 @@ export enum PluginVariableType {
 export enum RefVariableType {
     GLOBAL = 'GLOBAL',
     FROM_PREVIOUS_STEP = 'FROM_PREVIOUS_STEP',
+    NEW = 'NEW',
 }
 
 export enum ScriptType {
@@ -75,10 +76,10 @@ export interface VariableType {
     format: string
     description: string
     defaultValue: string
-    refVariableUsed: boolean
-    refVariableType: RefVariableType
-    refVariableStepIndex: number
-    refVariableName: string
+    RefVariableUsed: boolean
+    RefVariableType: RefVariableType
+    RefVariableStepIndex: number
+    RefVariableName: string
 }
 
 interface CommandArgsMap {

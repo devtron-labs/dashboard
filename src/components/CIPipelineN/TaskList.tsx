@@ -50,24 +50,6 @@ export function TaskList({
         const _formData = { ...formData }
         if (_formData[activeStageName].steps.length > index) {
             const detailsFromLastSteps = calculateLastStepDetail(index)
-            // const currentStepTypeVariable =
-            //     _formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
-            //         ? 'inlineStepDetail'
-            //         : 'pluginRefStepDetail'
-            // _formData[activeStageName].steps[index][currentStepTypeVariable].usedRefVariable.forEach((value, key) => {
-            //     const usedRefvariable = key.split('.')
-            //     if (usedRefvariable[0] >= index) {
-            //         _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
-            //             value
-            //         ].refVariableUsed = false
-            //         _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
-            //             value
-            //         ].refVariableStepIndex = 0
-            //         _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
-            //             value
-            //         ].refVariableName = ''
-            //     }
-            // })
             setFormData(_formData)
         }
     }

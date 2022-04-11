@@ -12,7 +12,7 @@ import {
 import { toast } from 'react-toastify'
 import { ServerErrors } from '../../modals/commonTypes'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { CIPipelineDataType, FormType, PluginType, VariableType } from '../ciPipeline/types'
+import { CIPipelineDataType, FormType, PluginType, RefVariableType, VariableType } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
 import { PreBuild } from './PreBuild'
@@ -268,7 +268,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
     const calculateLastStepDetail = (startIndex?: number): { index: number; outputVariablesFromPrevSteps: object } => {
         const _formData = { ...formData }
         const stepsLength = _formData[activeStageName].steps.length
-        let index = 0
+        let index = 1
         let outputVariablesFromPrevSteps = {}
         for (let i = startIndex || 0; i < stepsLength; i++) {
             _formData[activeStageName].steps[i].outputVariablesFromPrevSteps = { ...outputVariablesFromPrevSteps }
@@ -286,57 +286,32 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                 _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables.length
             for (let j = 0; j < outputVariablesLength; j++) {
                 outputVariablesFromPrevSteps[
-                    index + '.' + _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name
+                    i + '.' + _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name
                 ] = {
                     ..._formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j],
-                    refVariableStepIndex: index,
+                    refVariableStepIndex: i,
                 }
             }
-            if (startIndex && _formData[activeStageName].steps[i][currentStepTypeVariable].usedRefVariable) {
-                for (const key in _formData[activeStageName].steps[i][currentStepTypeVariable].usedRefVariable) {
+            if (startIndex && _formData[activeStageName].steps[i].usedRefVariable) {
+                for (const key in _formData[activeStageName].steps[i].usedRefVariable) {
                     const usedRefVariable = key.split('.')
-                    const value = _formData[activeStageName].steps[i][currentStepTypeVariable].usedRefVariable[key]
-                    if (Number(usedRefVariable[0]) >= index) {
-                        _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
+                    const value = _formData[activeStageName].steps[i].usedRefVariable[key]
+                    if (Number(usedRefVariable[0]) >= startIndex) {
+                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[
                             value
-                        ].refVariableUsed = false
-                        _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
+                        ].RefVariableUsed = false
+                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[
                             value
-                        ].refVariableStepIndex = 0
-                        _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
+                        ].RefVariableStepIndex = 0
+                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[
                             value
-                        ].refVariableName = ''
+                        ].RefVariableName = ''
+                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[
+                            value
+                        ].RefVariableType = RefVariableType.NEW
                     }
                 }
-                // _formData[activeStageName].steps[i][currentStepTypeVariable].usedRefVariable.forEach((value, key) => {
-                //     const usedRefvariable = key.split('.')
-                //     if (usedRefvariable[0] >= index) {
-                //         _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
-                //             value
-                //         ].refVariableUsed = false
-                //         _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
-                //             value
-                //         ].refVariableStepIndex = 0
-                //         _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
-                //             value
-                //         ].refVariableName = ''
-                //     }
-                // })
             }
-
-            // if (_formData[activeStageName].steps[i].stepType === PluginType.INLINE) {
-            //     outputVariablesFromPrevSteps = outputVariablesFromPrevSteps.concat(
-            //         _formData[activeStageName].steps[i].inlineStepDetail.outputVariables.map(
-            //             (elem) => index + '._' + elem.name,
-            //         ),
-            //     )
-            // } else if (_formData[activeStageName].steps[i].stepType === PluginType.PLUGIN_REF) {
-            //     outputVariablesFromPrevSteps = outputVariablesFromPrevSteps.concat(
-            //         _formData[activeStageName].steps[i].pluginRefStepDetail.outputVariables.map(
-            //             (elem) => index + '._' + elem.name,
-            //         ),
-            //     )
-            // }
         }
         setFormData(_formData)
         return { index: index + 1, outputVariablesFromPrevSteps: outputVariablesFromPrevSteps }

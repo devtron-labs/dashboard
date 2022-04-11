@@ -62,8 +62,8 @@ function CustomInputOutputVariables({
             format: '',
             description: '',
             defaultValue: '',
-            RefVariableUsed: true,
-            RefVariableType: RefVariableType.GLOBAL,
+            RefVariableUsed: false,
+            RefVariableType: RefVariableType.NEW,
             RefVariableStepIndex: 0,
             RefVariableName: '',
         }
@@ -113,11 +113,19 @@ function CustomInputOutputVariables({
         setSelectedOutputVariable(selectedValue)
         const _formData = { ...formData }
         if (selectedValue.refVariableStepIndex) {
-            if (!_formData[activeStageName].steps[selectedTaskIndex].usedRefVariable)
+            if (!_formData[activeStageName].steps[selectedTaskIndex].usedRefVariable) {
                 _formData[activeStageName].steps[selectedTaskIndex].usedRefVariable = {}
+            }
             _formData[activeStageName].steps[selectedTaskIndex].usedRefVariable[
                 selectedValue.refVariableStepIndex + '.' + selectedValue.label
             ] = index
+            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.inputVariables[index] = {
+                ..._formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.inputVariables[index],
+                RefVariableUsed: true,
+                RefVariableType: RefVariableType.FROM_PREVIOUS_STEP,
+                RefVariableStepIndex: selectedValue.refVariableStepIndex,
+                RefVariableName: selectedValue.label,
+            }
             setFormData(_formData)
         }
     }
