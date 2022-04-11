@@ -270,8 +270,11 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             })
     }
 
-    const calculateLastStepDetail = (startIndex?: number): { index: number } => {
-        const _formData = { ...formData }
+    const calculateLastStepDetail = (
+        isFromAddNewTask: boolean,
+        _formData: FormType,
+        startIndex?: number,
+    ): { index: number } => {
         const stepsLength = _formData[activeStageName].steps.length
         let index = 1
         let _outputVariablesFromPrevSteps: Map<string, VariableType> = new Map(),
@@ -299,7 +302,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                     },
                 )
             }
-            if (startIndex && i >= startIndex && _formData[activeStageName].steps[i].usedRefVariable) {
+            if (!isFromAddNewTask && i >= startIndex && _formData[activeStageName].steps[i].usedRefVariable) {
                 for (const key in _formData[activeStageName].steps[i].usedRefVariable) {
                     const usedRefVariable = key.split('.')
                     const value = _formData[activeStageName].steps[i].usedRefVariable[key]
@@ -318,10 +321,11 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         ].RefVariableType = RefVariableType.NEW
                     }
                 }
-                setFormData(_formData)
             }
         }
-        _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
+        if (isFromAddNewTask) {
+            _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
+        }
         const _inputVariablesListFromPrevStep = { ...inputVariablesListFromPrevStep }
         _inputVariablesListFromPrevStep[activeStageName] = _inputVariablesListPerTask
         setInputVariablesListFromPrevStep(_inputVariablesListFromPrevStep)
@@ -330,7 +334,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
 
     const addNewTask = () => {
         const _formData = { ...formData }
-        const detailsFromLastStep = calculateLastStepDetail()
+        const detailsFromLastStep = calculateLastStepDetail(true, _formData)
         const stage = {
             id: detailsFromLastStep.index,
             index: detailsFromLastStep.index,

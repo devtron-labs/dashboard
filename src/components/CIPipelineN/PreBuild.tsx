@@ -40,7 +40,11 @@ export function PreBuild({
         preBuildStage: Map<string, VariableType>[]
         postBuildStage: Map<string, VariableType>[]
     }
-    calculateLastStepDetail: (startIndex?: number) => {
+    calculateLastStepDetail: (
+        isFromAddNewTask: boolean,
+        _formData: FormType,
+        startIndex?: number,
+    ) => {
         index: number
     }
 }) {
@@ -56,7 +60,7 @@ export function PreBuild({
 
     useEffect(() => {
         setConfigurationType(ConfigurationType.GUI)
-        calculateLastStepDetail()
+        calculateLastStepDetail(false, formData)
     }, [activeStageName])
     useEffect(() => {
         setPageState(ViewType.LOADING)
