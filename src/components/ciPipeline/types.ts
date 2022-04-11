@@ -75,15 +75,15 @@ export interface VariableType {
     format: string
     description: string
     defaultValue: string
-    RefVariableUsed: boolean
-    RefVariableType: RefVariableType
-    RefVariableStepIndex: number
-    RefVariableName: string
+    refVariableUsed: boolean
+    refVariableType: RefVariableType
+    refVariableStepIndex: number
+    refVariableName: string
 }
 
-interface CommandArgsMap{
-        command: string
-        args: [string]
+interface CommandArgsMap {
+    command: string
+    args: [string]
 }
 
 export interface PortMap {
@@ -116,7 +116,6 @@ interface InlineStepDetailType {
     inputVariables?: VariableType[]
     outputVariables?: VariableType[]
     conditionDetails: ConditionDetails[]
-    outputDirectoryPath: string[]
 }
 
 interface PluginRefStepDetailType {
@@ -138,8 +137,8 @@ export interface BuildStageType {
         outputDirectoryPath: string[]
         inlineStepDetail?: InlineStepDetailType
         pluginRefStepDetail?: PluginRefStepDetailType
-        outputVariablesFromPrevSteps?: Map<string, VariableType>
-        usedRefvariable?: string[]
+        outputVariablesFromPrevSteps?: object
+        usedRefVariable?: object
     }[]
 }
 export interface FormType {

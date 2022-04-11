@@ -265,12 +265,14 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             })
     }
 
-    const calculateLastStepDetail = (): { index: number; outputVariablesFromPrevSteps: Map<string, VariableType> } => {
+    const calculateLastStepDetail = (
+        startIndex?: number,
+    ): { index: number; outputVariablesFromPrevSteps: Map<string, VariableType> } => {
         const _formData = { ...formData }
         const stepsLength = _formData[activeStageName].steps.length
         let index = 0
         let outputVariablesFromPrevSteps: Map<string, VariableType> = new Map()
-        for (let i = 0; i < stepsLength; i++) {
+        for (let i = startIndex || 0; i < stepsLength; i++) {
             _formData[activeStageName].steps[i].outputVariablesFromPrevSteps = new Map(outputVariablesFromPrevSteps)
             if (index <= _formData[activeStageName].steps[i].index) {
                 index = _formData[activeStageName].steps[i].index
@@ -287,9 +289,44 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             for (let j = 0; j < outputVariablesLength; j++) {
                 outputVariablesFromPrevSteps.set(
                     index + '.' + _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name,
-                    _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j],
+                    {
+                        ..._formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j],
+                        refVariableStepIndex: index,
+                    },
                 )
             }
+            if (startIndex && _formData[activeStageName].steps[i][currentStepTypeVariable].usedRefVariable) {
+                for (const key in _formData[activeStageName].steps[i][currentStepTypeVariable].usedRefVariable) {
+                    const usedRefVariable = key.split('.')
+                    const value = _formData[activeStageName].steps[i][currentStepTypeVariable].usedRefVariable[key]
+                    if (Number(usedRefVariable[0]) >= index) {
+                        _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
+                            value
+                        ].refVariableUsed = false
+                        _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
+                            value
+                        ].refVariableStepIndex = 0
+                        _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
+                            value
+                        ].refVariableName = ''
+                    }
+                }
+                // _formData[activeStageName].steps[i][currentStepTypeVariable].usedRefVariable.forEach((value, key) => {
+                //     const usedRefvariable = key.split('.')
+                //     if (usedRefvariable[0] >= index) {
+                //         _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
+                //             value
+                //         ].refVariableUsed = false
+                //         _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
+                //             value
+                //         ].refVariableStepIndex = 0
+                //         _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
+                //             value
+                //         ].refVariableName = ''
+                //     }
+                // })
+            }
+
             // if (_formData[activeStageName].steps[i].stepType === PluginType.INLINE) {
             //     outputVariablesFromPrevSteps = outputVariablesFromPrevSteps.concat(
             //         _formData[activeStageName].steps[i].inlineStepDetail.outputVariables.map(

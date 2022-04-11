@@ -22,7 +22,10 @@ export function TaskList({
     activeStageName: string
     selectedTaskIndex: number
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
-    calculateLastStepDetail: () => { index: number; outputVariablesFromPrevSteps: Map<string, VariableType> }
+    calculateLastStepDetail: (startIndex?: number) => {
+        index: number
+        outputVariablesFromPrevSteps: Map<string, VariableType>
+    }
 }) {
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
     const [dragAllowed, setDragAllowed] = useState<boolean>(false)
@@ -44,14 +47,29 @@ export function TaskList({
 
     const handleDrop = (index: number): void => {
         setDragAllowed(false)
-        const detailsFromLastSteps = calculateLastStepDetail()
-        const currentStepTypeVariable =
-            formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
-                ? 'inlineStepDetail'
-                : 'pluginRefStepDetail'
         const _formData = { ...formData }
-        //_formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables.map(inputVariable => );
-        setFormData(_formData)
+        if (_formData[activeStageName].steps.length > index) {
+            const detailsFromLastSteps = calculateLastStepDetail(index)
+            // const currentStepTypeVariable =
+            //     _formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
+            //         ? 'inlineStepDetail'
+            //         : 'pluginRefStepDetail'
+            // _formData[activeStageName].steps[index][currentStepTypeVariable].usedRefVariable.forEach((value, key) => {
+            //     const usedRefvariable = key.split('.')
+            //     if (usedRefvariable[0] >= index) {
+            //         _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
+            //             value
+            //         ].refVariableUsed = false
+            //         _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
+            //             value
+            //         ].refVariableStepIndex = 0
+            //         _formData[activeStageName].steps[index][currentStepTypeVariable].inputVariables[
+            //             value
+            //         ].refVariableName = ''
+            //     }
+            // })
+            setFormData(_formData)
+        }
     }
 
     const deleteTask = (index: number): void => {
