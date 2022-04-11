@@ -54,7 +54,7 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                             ></figure>
                         </div>
                         <div onClick={() => setShowAppStatusDetail(true)}>
-                            <span className="cursor cb-5 fw-6">Details</span>
+                            <span className="details-hover cursor cb-5 fw-6">Details</span>
                         </div>
                     </div>
                 )}
@@ -136,7 +136,7 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                         </div>
                         <div className="flex left">
                             {appDetails.notes && (
-                                <div className="flex cb-5 fw-6 cursor" onClick={() => setShowNotes(true)}>
+                                <div className="details-hover flex cb-5 fw-6 cursor" onClick={() => setShowNotes(true)}>
                                     <File className="app-notes__icon icon-dim-16 mr-4" /> Notes.txt
                                 </div>
                             )}

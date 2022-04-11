@@ -95,6 +95,10 @@
     text-overflow: ellipsis;
 }
 
+.details-hover:hover {
+    text-decoration: underline;
+}
+
 svg.app-notes__icon {
     path:not(:first-of-type) {
         stroke: var(--B500);
