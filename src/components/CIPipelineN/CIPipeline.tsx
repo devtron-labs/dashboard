@@ -265,7 +265,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             })
     }
 
-    const addNewTask = () => {
+    const calculateLastStepDetail = (): { index: number; outputVariablesFromPrevSteps: VariableType[] } => {
         const _formData = { ...formData }
         const stepsLength = _formData[activeStageName].steps.length
         let index = 0
@@ -285,15 +285,21 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                 )
             }
         }
-        index++
+        setFormData(_formData)
+        return { index: index + 1, outputVariablesFromPrevSteps: outputVariablesFromPrevSteps }
+    }
+
+    const addNewTask = () => {
+        const _formData = { ...formData }
+        const detailsFromLastStep = calculateLastStepDetail()
         const stage = {
-            id: index,
-            index: index,
-            name: `Task ${index}`,
+            id: detailsFromLastStep.index,
+            index: detailsFromLastStep.index,
+            name: `Task ${detailsFromLastStep.index}`,
             description: '',
             stepType: '',
             directoryPath: '',
-            outputVariablesFromPrevSteps: outputVariablesFromPrevSteps,
+            outputVariablesFromPrevSteps: detailsFromLastStep.outputVariablesFromPrevSteps,
         }
         _formData[activeStageName].steps.push(stage)
         setFormData(_formData)
@@ -375,6 +381,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                 activeStageName={activeStageName}
                                 selectedTaskIndex={selectedTaskIndex}
                                 setSelectedTaskIndex={setSelectedTaskIndex}
+                                calculateLastStepDetail={calculateLastStepDetail}
                             />
                         </div>
                     )}

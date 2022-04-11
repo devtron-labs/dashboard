@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { FormType } from '../ciPipeline/types'
+import { FormType, PluginType, VariableType } from '../ciPipeline/types'
 import { ReactComponent as Drag } from '../../assets/icons/drag.svg'
 import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
@@ -14,6 +14,7 @@ export function TaskList({
     activeStageName,
     selectedTaskIndex: selectedTaskIndex,
     setSelectedTaskIndex: setSelectedTaskIndex,
+    calculateLastStepDetail,
 }: {
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -21,31 +22,42 @@ export function TaskList({
     activeStageName: string
     selectedTaskIndex: number
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
+    calculateLastStepDetail: () => { index: number; outputVariablesFromPrevSteps: VariableType[] }
 }) {
-    const [dragItem, setDragItem] = useState(0)
-    const [dragAllowed, setDragAllowed] = useState(false)
-    const handleDragStart = (index) => {
-        setDragItem(index)
+    const [dragItemIndex, setDragItemIndex] = useState<number>(0)
+    const [dragAllowed, setDragAllowed] = useState<boolean>(false)
+    const handleDragStart = (index: number): void => {
+        setDragItemIndex(index)
     }
 
-    const handleDragEnter = (e, index) => {
+    const handleDragEnter = (index: number): void => {
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
-        const item = newList[dragItem]
-        newList.splice(dragItem, 1)
+        const item = newList[dragItemIndex]
+        newList.splice(dragItemIndex, 1)
         newList.splice(index, 0, item)
-        setDragItem(index)
+        setDragItemIndex(index)
         setSelectedTaskIndex(index)
         _formData[activeStageName].steps = newList
         setFormData(_formData)
     }
 
-    const handleDrop = (e) => {
+    const handleDrop = (): void => {
         setDragAllowed(false)
+        calculateLastStepDetail()
     }
 
-    const deleteTask = (index) => {
-        //setDragAllowed(false)
+    const deleteTask = (index: number): void => {
+        const _formData = { ...formData }
+        const newList = [..._formData[activeStageName].steps]
+        newList.splice(index, 1)
+        setSelectedTaskIndex(0)
+        _formData[activeStageName].steps = newList
+        setFormData(_formData)
+    }
+
+    const handleSelectedTaskChange = (index: number): void => {
+        setSelectedTaskIndex(index)
     }
 
     return (
@@ -56,11 +68,11 @@ export function TaskList({
                         className={`task-item fw-4 fs-13 ${selectedTaskIndex === index ? ' bcb-1 eb-5' : ''}`}
                         draggable={dragAllowed}
                         onDragStart={() => handleDragStart(index)}
-                        onDragEnter={(e) => handleDragEnter(e, index)}
-                        onDrop={(e) => handleDrop(e)}
+                        onDragEnter={() => handleDragEnter(index)}
+                        onDrop={() => handleDrop()}
                         onDragOver={(e) => e.preventDefault()}
                         key={index}
-                        onClick={() => setSelectedTaskIndex(index)}
+                        onClick={() => handleSelectedTaskChange(index)}
                     >
                         <Drag className="drag-icon" onMouseDown={() => setDragAllowed(true)} />
                         <span className="w-80 pl-5 task-name-container">{taskDetail.name}</span>

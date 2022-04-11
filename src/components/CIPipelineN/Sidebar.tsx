@@ -2,7 +2,7 @@ import React from 'react'
 import { BuildStageVariable, ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { RadioGroup as RadioLabel } from '../common'
-import { FormType } from '../ciPipeline/types'
+import { FormType, VariableType } from '../ciPipeline/types'
 import { TaskList } from './TaskList'
 
 export function Sidebar({
@@ -12,8 +12,9 @@ export function Sidebar({
     configurationType,
     setConfigurationType,
     activeStageName,
-    selectedTaskIndex: selectedTaskIndex,
-    setSelectedTaskIndex: setSelectedTaskIndex,
+    selectedTaskIndex,
+    setSelectedTaskIndex,
+    calculateLastStepDetail,
 }: {
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -23,6 +24,7 @@ export function Sidebar({
     activeStageName: string
     selectedTaskIndex: number
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
+    calculateLastStepDetail: () => { index: number; outputVariablesFromPrevSteps: VariableType[] }
 }) {
     const changeTriggerType = (appCreationType: string): void => {
         const _formData = { ...formData }
@@ -61,6 +63,7 @@ export function Sidebar({
                                 activeStageName={activeStageName}
                                 selectedTaskIndex={selectedTaskIndex}
                                 setSelectedTaskIndex={setSelectedTaskIndex}
+                                calculateLastStepDetail={calculateLastStepDetail}
                             />
                         </>
                     )}
