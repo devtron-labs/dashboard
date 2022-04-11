@@ -116,7 +116,7 @@ export const Routes = {
     APP_VERSION: 'version',
     HELM_RELEASE_INFO_API: 'application/release-info',
     HELM_RELEASE_DEPLOYMENT_HISTORY_API: 'application/deployment-history',
-    HELM_RELEASE_DEPLOYMENT_DETAIL_API: 'application/deployment-detail',
+    HELM_RELEASE_DEPLOYMENT_MANIFEST_DETAILS_API: 'application/deployment-history/info',
     HELM_RELEASE_APP_DETAIL_API: 'application/app',
     MANIFEST: 'k8s/resource',
     DESIRED_MANIFEST: 'application/desired-manifest',
@@ -127,11 +127,12 @@ export const Routes = {
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
     HELM_RELEASE_APP_UPDATE_API: 'application/update',
     HELM_LINK_TO_CHART_STORE_API: 'app-store/deployment/application/helm/link-to-chart-store',
-    HELM_DEPLOYMENT_ROLLBACK_API: 'app-store/deployment/application/rollback',
-    APP_DEPLOYMENT_ROLLBACK_API: 'application/rollback',
+    HELM_DEPLOYMENT_ROLLBACK_API: 'application/rollback',
     NAMESPACE: 'env/namespace',
-    APP_RELEASE_DEPLOYMENT_HISTORY_API: 'app-store/installed-app/deployment-history',
-    APP_RELEASE_DEPLOYMENT_DETAIL_API: 'app-store/installed-app/deployment-history/info',
+    DASHBOARD_ACCESSED: '/dashboard-event/dashboardAccessed',
+    DASHBOARD_LOGGEDIN: '/dashboard-event/dashboardLoggedIn',
+    HELM_APP_HIBERNATE_API: 'application/hibernate',
+    HELM_APP_UNHIBERNATE_API: 'application/unhibernate',
 };
 
 export const ViewType = {
@@ -440,3 +441,8 @@ export const AppCreationType = {
     Blank: 'BLANK',
     Existing: 'EXISTING',
 };
+
+export const APP_STATUS_CUSTOM_MESSAGES = {
+    HIBERNATED: "This application's workloads are scaled down to 0 replicas",
+    'PARTIALLY HIBERNATED': "Some of this application's workloads are scaled down to 0 replicas."
+}

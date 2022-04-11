@@ -32,6 +32,19 @@
     opacity: 0.6;
 }
 
-.scale-pod__btn{
+.scale-workload__btn {
     max-height: 32px;
+}
+
+.scale-workload__btn.not-allowed {
+    cursor: not-allowed;
+    user-select: none;
+    border: 1px solid var(--N200);
+    color: var(--N700);
+    background: white;
+    opacity: 0.7;
+}
+
+.scale-workload__btn svg.scale-workload-icon path {
+    fill: var(--N700);
 }

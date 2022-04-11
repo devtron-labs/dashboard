@@ -1,0 +1,61 @@
+.scale-workload-modal {
+    .modal__body {
+        width: 600px;
+        height: 454px;
+        padding: 16px 0;
+        margin-top: 40px;
+    }
+
+    .modal__heading {
+        padding: 0 20px;
+    }
+
+    .modal__info {
+        background-color: var(--B100);
+        border-top: 1px solid var(--N200);
+        padding: 10px 16px;
+        margin-bottom: 4px;
+
+        .modal__info-wrapper {
+            align-items: flex-start;
+        }
+    }
+
+    .scale-worklists-container {
+        height: 234px;
+
+        .details-loader {
+            height: 100%;
+            width: 100%;
+            color: var(--N700);
+            font-size: 13px;
+            font-weight: 400;
+        }
+    }
+
+    .check-all-workloads,
+    .check-single-workload {
+        padding: 12px 20px;
+    }
+
+    .cta.not-allowed {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    .scale-workloads-cta {
+        padding: 16px 20px 0;
+        border-top: 1px solid var(--N200);
+
+        button {
+            margin: auto;
+            margin-right: 0px;
+            min-width: 173px;
+
+            svg.cta-icon {
+                width: 16px;
+                height: 16px;
+            }
+        }
+    }
+}
