@@ -224,6 +224,7 @@ export function TaskDetailComponent({
                             selectedTaskIndex={selectedTaskIndex}
                             formData={formData}
                             setFormData={setFormData}
+                            activeStageName={activeStageName}
                         />
                     ) : (
                         <VariableContainer
