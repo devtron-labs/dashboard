@@ -260,6 +260,12 @@
     display: flex;
 }
 
+.task-name-container {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
 .drag-icon {
     cursor: move;
     height: 20px;

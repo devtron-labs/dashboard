@@ -19,6 +19,7 @@ import { PreBuild } from './PreBuild'
 import { PostBuild } from './PostBuild'
 import { Sidebar } from './Sidebar'
 import { Build } from './Build'
+import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 
 interface CIPipelineType {
     appName: string
@@ -325,33 +326,36 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                             <li className="tab-list__tab">
                                 <NavLink
                                     replace
-                                    className="tab-list__tab-link fs-13 pt-5 pb-5"
+                                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
                                     activeClassName="active"
                                     to={`pre-build`}
                                 >
                                     {BuildTabText[BuildStageVariable.PreBuild]}
+                                    <AlertTriangle className="icon-dim-20 mr-5 ml-5" />
                                 </NavLink>
                             </li>
                         )}
                         <li className="tab-list__tab">
                             <NavLink
                                 replace
-                                className="tab-list__tab-link fs-13 pt-5 pb-5"
+                                className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
                                 activeClassName="active"
                                 to={`build`}
                             >
                                 {BuildTabText[BuildStageVariable.Build]}
+                                <AlertTriangle className="icon-dim-20 mr-5 ml-5" />
                             </NavLink>
                         </li>
                         {isAdvanced && (
                             <li className="tab-list__tab">
                                 <NavLink
                                     replace
-                                    className="tab-list__tab-link fs-13 pt-5 pb-5"
+                                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
                                     activeClassName="active"
                                     to={`post-build`}
                                 >
                                     {BuildTabText[BuildStageVariable.PostBuild]}
+                                    <AlertTriangle className="icon-dim-20 mr-5 ml-5" />
                                 </NavLink>
                             </li>
                         )}

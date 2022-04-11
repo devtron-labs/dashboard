@@ -4,6 +4,7 @@ import { FormType } from '../ciPipeline/types'
 import { ReactComponent as Drag } from '../../assets/icons/drag.svg'
 import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
+import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { PopupMenu } from '../common'
 
 export function TaskList({
@@ -62,7 +63,8 @@ export function TaskList({
                         onClick={() => setSelectedTaskIndex(index)}
                     >
                         <Drag className="drag-icon" onMouseDown={() => setDragAllowed(true)} />
-                        <span className="w-80 pl-5">{taskDetail.name}</span>
+                        <span className="w-80 pl-5 task-name-container">{taskDetail.name}</span>
+                        <AlertTriangle className="icon-dim-20 mr-5 ml-5" />
                         <PopupMenu autoClose>
                             <PopupMenu.Button isKebab>
                                 <Dots className="rotate" style={{ ['--rotateBy' as any]: '90deg' }} />
