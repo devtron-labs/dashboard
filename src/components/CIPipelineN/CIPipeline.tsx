@@ -265,15 +265,13 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             })
     }
 
-    const calculateLastStepDetail = (
-        startIndex?: number,
-    ): { index: number; outputVariablesFromPrevSteps: Map<string, VariableType> } => {
+    const calculateLastStepDetail = (startIndex?: number): { index: number; outputVariablesFromPrevSteps: object } => {
         const _formData = { ...formData }
         const stepsLength = _formData[activeStageName].steps.length
         let index = 0
-        let outputVariablesFromPrevSteps: Map<string, VariableType> = new Map()
+        let outputVariablesFromPrevSteps = {}
         for (let i = startIndex || 0; i < stepsLength; i++) {
-            _formData[activeStageName].steps[i].outputVariablesFromPrevSteps = new Map(outputVariablesFromPrevSteps)
+            _formData[activeStageName].steps[i].outputVariablesFromPrevSteps = { ...outputVariablesFromPrevSteps }
             if (index <= _formData[activeStageName].steps[i].index) {
                 index = _formData[activeStageName].steps[i].index
             }
@@ -287,13 +285,12 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             const outputVariablesLength =
                 _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables.length
             for (let j = 0; j < outputVariablesLength; j++) {
-                outputVariablesFromPrevSteps.set(
-                    index + '.' + _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name,
-                    {
-                        ..._formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j],
-                        refVariableStepIndex: index,
-                    },
-                )
+                outputVariablesFromPrevSteps[
+                    index + '.' + _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name
+                ] = {
+                    ..._formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j],
+                    refVariableStepIndex: index,
+                }
             }
             if (startIndex && _formData[activeStageName].steps[i][currentStepTypeVariable].usedRefVariable) {
                 for (const key in _formData[activeStageName].steps[i][currentStepTypeVariable].usedRefVariable) {

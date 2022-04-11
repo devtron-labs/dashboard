@@ -24,7 +24,7 @@ export function TaskList({
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
     calculateLastStepDetail: (startIndex?: number) => {
         index: number
-        outputVariablesFromPrevSteps: Map<string, VariableType>
+        outputVariablesFromPrevSteps: object
     }
 }) {
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
