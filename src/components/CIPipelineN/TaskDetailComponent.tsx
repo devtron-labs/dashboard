@@ -168,8 +168,9 @@ export function TaskDetailComponent({
                             <RadioGroup.Radio className="left-radius" value={ScriptType.SHELL}>
                                 {ScriptType.SHELL}
                             </RadioGroup.Radio>
-                            <RadioGroup.Radio value={ScriptType.CONTAINERIMAGE}>{ScriptType.CONTAINERIMAGE}</RadioGroup.Radio>
-
+                            <RadioGroup.Radio value={ScriptType.CONTAINERIMAGE}>
+                                {ScriptType.CONTAINERIMAGE}
+                            </RadioGroup.Radio>
                         </RadioGroup>
                     </div>
                 )}
@@ -183,6 +184,7 @@ export function TaskDetailComponent({
                             selectedTaskIndex={selectedTaskIndex}
                             formData={formData}
                             setFormData={setFormData}
+                            activeStageName={activeStageName}
                         />
                     ) : (
                         <VariableContainer

@@ -22,11 +22,13 @@ function CustomInputOutputVariables({
     selectedTaskIndex,
     formData,
     setFormData,
+    activeStageName,
 }: {
     type: PluginVariableType
     selectedTaskIndex: number
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
+    activeStageName: string
 }) {
     const [selectedOutputVariable, setSelectedOutputVariable] = useState<{ label: string; value: string }>({
         label: '',
@@ -43,7 +45,7 @@ function CustomInputOutputVariables({
     const addVariable = (): void => {
         const _formData = { ...formData }
         const id =
-            _formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail[pluginType]?.reduce(
+            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[pluginType]?.reduce(
                 (prev, current) => (prev.id > current.id ? prev : current),
                 {
                     id: 0,
@@ -61,7 +63,7 @@ function CustomInputOutputVariables({
             RefVariableStepIndex: 0,
             RefVariableName: '',
         }
-        _formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail[pluginType].push(newCondition)
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[pluginType].push(newCondition)
         setFormData(_formData)
     }
 
@@ -70,7 +72,7 @@ function CustomInputOutputVariables({
         return [
             {
                 label: 'From Previous Steps',
-                options: formData.preBuildStage.steps[selectedTaskIndex].outputVariablesFromPrevSteps.map((elem) => {
+                options: formData[activeStageName].steps[selectedTaskIndex].outputVariablesFromPrevSteps.map((elem) => {
                     return { ...elem, label: elem.name, value: elem.name }
                 }),
             },
@@ -83,13 +85,14 @@ function CustomInputOutputVariables({
 
     const handleInputOutputValueChange = (e, index) => {
         const _formData = { ...formData }
-        _formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.inputVariables[index]['name'] = e.target.value
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.inputVariables[index]['name'] =
+            e.target.value
         setFormData(_formData)
     }
 
     const deleteInputOutputValue = (index: number): void => {
         const _formData = { ...formData }
-        _formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail[pluginType].splice(index, 1)
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[pluginType].splice(index, 1)
         setFormData(_formData)
     }
 
@@ -106,7 +109,7 @@ function CustomInputOutputVariables({
                     Add variables
                 </div>
             </div>
-            {formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail[
+            {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[
                 type === PluginVariableType.OUTPUT ? VariableType.OUTPUT : VariableType.INPUT
             ]?.map((variable, index) => (
                 <div className="pl-200">
