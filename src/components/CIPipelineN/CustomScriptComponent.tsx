@@ -199,7 +199,7 @@ export function CustomScriptComponent({
                         <RadioGroup.Radio value={ScriptType.CONTAINERIMAGE}>
                             {ScriptType.CONTAINERIMAGE}
                         </RadioGroup.Radio>
-                        <RadioGroup.Radio value={ScriptType.DOCKERFILE}>{ScriptType.DOCKERFILE}</RadioGroup.Radio>
+                        <RadioGroup.Radio value={ScriptType.CONTAINERIMAGE}>{ScriptType.CONTAINERIMAGE}</RadioGroup.Radio>
                     </RadioGroup>
                 </div>
             </div>

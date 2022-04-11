@@ -14,7 +14,7 @@ export function YAMLScriptComponent({
     showSample?: boolean
     height?: string
 }) {
-    const scriptTypeOptions: { label: string; value: string }[] = [ScriptType.SHELL, ScriptType.DOCKERFILE].map(
+    const scriptTypeOptions: { label: string; value: string }[] = [ScriptType.SHELL, ScriptType.CONTAINERIMAGE].map(
         (scriptType) => ({ label: scriptType, value: scriptType }),
     )
     const [selectedScriptType, setSelectedScriptType] = useState<{ label: string; value: string }>(scriptTypeOptions[0])

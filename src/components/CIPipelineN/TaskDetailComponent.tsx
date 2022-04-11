@@ -31,6 +31,8 @@ export function TaskDetailComponent({
             : '',
     )
     const [editorValue, setEditorValue] = useState<string>('')
+    const [storeDirectoryPath, setStoreDirectoryPath] = useState<string>('')
+
     const currentStepTypeVariable =
         formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
             ? 'inlineStepDetail'
@@ -170,9 +172,8 @@ export function TaskDetailComponent({
                             <RadioGroup.Radio className="left-radius" value={ScriptType.SHELL}>
                                 {ScriptType.SHELL}
                             </RadioGroup.Radio>
-                            <RadioGroup.Radio className="right-radius" value={ScriptType.DOCKERFILE}>
-                                {ScriptType.DOCKERFILE}
-                            </RadioGroup.Radio>
+                            <RadioGroup.Radio value={ScriptType.CONTAINERIMAGE}>{ScriptType.CONTAINERIMAGE}</RadioGroup.Radio>
+
                         </RadioGroup>
                     </div>
                 )}

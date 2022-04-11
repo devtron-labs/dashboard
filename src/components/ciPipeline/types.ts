@@ -58,7 +58,7 @@ export enum RefVariableType {
 
 export enum ScriptType {
     SHELL = 'SHELL',
-    DOCKERFILE = 'DOCKERFILE',
+    CONTAINERIMAGE = 'CONTAINERIMAGE',
 }
 
 export enum ConditionType {
@@ -92,10 +92,27 @@ interface ConditionDetails {
 interface InlineStepDetailType {
     scriptType: ScriptType
     script?: string
-    dockerFileExists?: true
+    dockerFileExists?: boolean
     mountPath?: string
-    mountCodeToContainer?: true
-    configureMountPath?: true
+    mountCodeToContainer?: boolean
+    mountDirectoryFromHost?: boolean
+    configureMountPath?: boolean
+    containerImagePath?: string
+    imagePullSecret?: string
+    commandArgsMap?: [
+        {
+          command: string
+          args: [
+            string
+          ]
+        }
+      ],
+      portMap?: [
+        {
+          portOnLocal: boolean
+          portOnContainer: boolean
+        }
+      ],
     mountPathMap?: {
         filePathOnDisk: string
         filePathOnContainer: string
