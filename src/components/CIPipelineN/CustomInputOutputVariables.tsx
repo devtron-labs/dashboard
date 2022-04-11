@@ -4,19 +4,18 @@ import { tempMultiSelectStyles } from './ciPipeline.utils'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import ReactSelect, { OptionProps, Options } from 'react-select'
 import { PluginVariableType, FormType, RefVariableType } from '../ciPipeline/types'
+import { element } from 'prop-types'
 
 enum VariableType {
     INPUT = 'inputVariables',
     OUTPUT = 'outputVariables',
 }
 
-
 export const globalVariable = [
     { value: 'docker-image-tag', label: 'docker-image-tag' },
     { value: 'date', label: 'date' },
-    { value: 'time', label: 'time' }
-  ]
-
+    { value: 'time', label: 'time' },
+]
 
 function CustomInputOutputVariables({
     type,
@@ -29,16 +28,17 @@ function CustomInputOutputVariables({
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
 }) {
+    const [selectedOutputVariable, setSelectedOutputVariable] = useState<{ label: string; value: string }>({
+        label: '',
+        value: '',
+    })
 
-    const [selectedOutputVariable, setSelectedOutputVariable] = useState<{label: string, value: string}>({label: '', value: ''})
-    
     let pluginType: string = ''
     if (type === PluginVariableType.INPUT) {
         pluginType = VariableType.INPUT
     } else if (type === PluginVariableType.OUTPUT) {
         pluginType = VariableType.OUTPUT
     }
-
 
     const addVariable = (): void => {
         const _formData = { ...formData }
@@ -66,11 +66,13 @@ function CustomInputOutputVariables({
     }
 
     const getOutputVariableOptions = () => {
-        const previousStepVariables = [{label: 'prev val', value: 'prev val'}]
+        const previousStepVariables = [{ label: 'prev val', value: 'prev val' }]
         return [
             {
                 label: 'From Previous Steps',
-                options: previousStepVariables,
+                options: formData.preBuildStage.steps[selectedTaskIndex].outputVariablesFromPrevSteps.map((elem) => {
+                    return { ...elem, label: elem.name, value: elem.name }
+                }),
             },
             {
                 label: 'Global variables',
@@ -91,7 +93,7 @@ function CustomInputOutputVariables({
         setFormData(_formData)
     }
 
-    const handleOutputVariableSelector = (selectedValue: {label: string, value: string} , index: number) => {
+    const handleOutputVariableSelector = (selectedValue: { label: string; value: string }, index: number) => {
         setSelectedOutputVariable(selectedValue)
     }
 
@@ -129,7 +131,7 @@ function CustomInputOutputVariables({
                                 <ReactSelect
                                     autoFocus
                                     tabIndex={1}
-                                    value = {selectedOutputVariable}
+                                    value={selectedOutputVariable}
                                     options={getOutputVariableOptions()}
                                     placeholder="Select source or input value"
                                     onChange={(selectedValue) => {

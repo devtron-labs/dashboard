@@ -12,7 +12,7 @@ import {
 import { toast } from 'react-toastify'
 import { ServerErrors } from '../../modals/commonTypes'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { CIPipelineDataType, FormType } from '../ciPipeline/types'
+import { CIPipelineDataType, FormType, PluginType, VariableType } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
 import { PreBuild } from './PreBuild'
@@ -56,8 +56,6 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         args: [{ key: '', value: '' }],
         materials: [],
         triggerType: TriggerType.Auto,
-        beforeDockerBuildScripts: [],
-        afterDockerBuildScripts: [],
         scanEnabled: false,
         gitHost: undefined,
         webhookEvents: [],
@@ -268,10 +266,25 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
 
     const addNewTask = () => {
         const _formData = { ...formData }
-        const index =
-            _formData[activeStageName].steps.reduce((prev, current) => (prev.index > current.index ? prev : current), {
-                index: 0,
-            }).index + 1
+        const stepsLength = _formData[activeStageName].steps.length
+        let index = 0
+        let outputVariablesFromPrevSteps: VariableType[] = []
+        for (let i = 0; i < stepsLength; i++) {
+            _formData[activeStageName].steps[i].outputVariablesFromPrevSteps = outputVariablesFromPrevSteps
+            if (index <= _formData[activeStageName].steps[i].index) {
+                index = _formData[activeStageName].steps[i].index
+            }
+            if (_formData[activeStageName].steps[i].stepType === PluginType.INLINE) {
+                outputVariablesFromPrevSteps = outputVariablesFromPrevSteps.concat(
+                    _formData[activeStageName].steps[i].inlineStepDetail.outputVariables,
+                )
+            } else if (_formData[activeStageName].steps[i].stepType === PluginType.PLUGIN_REF) {
+                outputVariablesFromPrevSteps = outputVariablesFromPrevSteps.concat(
+                    _formData[activeStageName].steps[i].pluginRefStepDetail.outputVariables,
+                )
+            }
+        }
+        index++
         const stage = {
             id: index,
             index: index,
@@ -279,6 +292,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             description: '',
             stepType: '',
             directoryPath: '',
+            outputVariablesFromPrevSteps: outputVariablesFromPrevSteps,
         }
         _formData[activeStageName].steps.push(stage)
         setFormData(_formData)

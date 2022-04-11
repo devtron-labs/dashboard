@@ -68,7 +68,7 @@ export enum ConditionType {
     FAIL = 'FAIL',
 }
 
-interface VariableType {
+export interface VariableType {
     id: number
     name: string
     value: number
@@ -141,6 +141,7 @@ export interface BuildStageType {
         reportDirectoryPath: string
         inlineStepDetail?: InlineStepDetailType
         pluginRefStepDetail?: PluginRefStepDetailType
+        outputVariablesFromPrevSteps?: VariableType[]
     }[]
 }
 export interface FormType {
