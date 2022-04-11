@@ -126,6 +126,9 @@ function CustomInputOutputVariables({
                                 className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
                                 type="text"
                                 placeholder="Variables name"
+                                value= {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[
+                                    type === PluginVariableType.OUTPUT ? VariableType.OUTPUT : VariableType.INPUT
+                                ]}
                                 onChange={(e) => handleInputOutputValueChange(e, index, `${ type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'}`)}
                             />
                         </div>
@@ -160,6 +163,7 @@ function CustomInputOutputVariables({
                         autoComplete="off"
                         placeholder="Description"
                         type="text"
+                        
                     />
                 </div>
             ))}

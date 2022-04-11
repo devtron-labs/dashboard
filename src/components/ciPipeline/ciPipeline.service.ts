@@ -364,6 +364,7 @@ function migrateOldData(
                     scriptType: ScriptType.SHELL,
                     script: data.script,
                     conditionDetails: [],
+                    outputDirectoryPath: []
                 },
             }
         }),
