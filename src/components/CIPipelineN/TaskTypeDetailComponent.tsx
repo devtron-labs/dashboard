@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { FormType } from '../ciPipeline/types'
-import { RadioGroup , RadioGroupItem } from '../common/formFields/RadioGroup'
+import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 
 export enum ScriptType {
     SHELL = 'SHELL',
@@ -12,6 +12,16 @@ export enum ScriptType {
 enum MountPath {
     TRUE = 'Yes',
     FALSE = 'No',
+}
+
+interface CommandArgsMap {
+    command: string
+    args: [string]
+}
+
+interface CommandValue {
+    value: string
+    error: string
 }
 
 export function TaskTypeDetailComponent({
@@ -31,8 +41,9 @@ export function TaskTypeDetailComponent({
     const [script, setScript] = useState<string>('')
     const [mountCodeToContainer, setMountCodeToContainer] = useState<boolean>(false)
     const [mountDirectoryFromHost, setMountDirectoryFromHost] = useState<boolean>(false)
-    const  [containerPath, setContainerPath] = useState<string>('')
+    const [containerPath, setContainerPath] = useState<string>('')
     const [imagePullSecret, setImagePullSecret] = useState<string>('')
+    const [command, setCommand] = useState<CommandValue>({value: '', error: ''})
 
     const handleStoreArtifact = (ev) => {
         setStoreArtifact(ev.target.value)
@@ -42,8 +53,12 @@ export function TaskTypeDetailComponent({
     }
 
     const handleContainer = (e: any, key: 'containerImagePath' | 'imagePullSecret'): void => {
-        if(key === 'containerImagePath') {setContainerPath(e.target.value)}
-        if(key === 'imagePullSecret') {setImagePullSecret(e.target.value)}
+        if (key === 'containerImagePath') {
+            setContainerPath(e.target.value)
+        }
+        if (key === 'imagePullSecret') {
+            setImagePullSecret(e.target.value)
+        }
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = e.target.value
         setFormData(_formData)
@@ -67,6 +82,17 @@ export function TaskTypeDetailComponent({
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = e.target.value
         setFormData(_formData)
+    }
+
+    const handleCommandArgs = (e, key: 'command' | 'args') => {
+        const _formData = { ...formData }
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap[key] = e.target.value
+
+      let  commandVal:{value: string, error: string} = {value: '', error: ''}
+        if(key === 'command'){
+            commandVal =  {value :e.target.value.split(','), error: '' }
+        }
+        setCommand(commandVal)
     }
 
     const renderShellScript = () => {
@@ -121,7 +147,7 @@ export function TaskTypeDetailComponent({
                             autoComplete="off"
                             placeholder="Enter image path *"
                             type="text"
-                            onChange= {(e)=>handleContainer(e, 'containerImagePath')}
+                            onChange={(e) => handleContainer(e, 'containerImagePath')}
                             value={containerPath}
                         />
                     </div>
@@ -133,9 +159,8 @@ export function TaskTypeDetailComponent({
                             autoComplete="off"
                             placeholder="Select container registry or enter secret path"
                             type="text"
-                            onChange= {(e)=>handleContainer(e, 'imagePullSecret')}
+                            onChange={(e) => handleContainer(e, 'imagePullSecret')}
                             value={imagePullSecret}
-
                         />
                     </div>
                     <div className="row-container mb-10">
@@ -146,6 +171,8 @@ export function TaskTypeDetailComponent({
                             autoComplete="off"
                             placeholder="Eg. “echo”, “printenv”"
                             type="text"
+                            onChange={(e) => handleCommandArgs(e, 'command')}
+                            value={command.value}
                         />
                     </div>
                     <div className="row-container mb-10">
@@ -170,7 +197,6 @@ export function TaskTypeDetailComponent({
                     </div>
                     <div className="row-container mb-10">
                         <label className="fw-6 fs-13 cn-7 label-width">Mount code to container</label>{' '}
-                        
                         <RadioGroup
                             className="no-border"
                             value={MountPath.FALSE}

@@ -70,7 +70,7 @@ export function TaskList({
     return (
         <>
             <div className="task-container">
-                {formData[activeStageName].steps.map((taskDetail, index) => (
+                {formData[activeStageName].steps?.map((taskDetail, index) => (
                     <div
                         className={`task-item fw-4 fs-13 ${selectedTaskIndex === index ? ' bcb-1 eb-5' : ''}`}
                         draggable={dragAllowed}

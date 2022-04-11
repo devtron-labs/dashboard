@@ -84,9 +84,9 @@ function CustomInputOutputVariables({
         ]
     }
 
-    const handleInputOutputValueChange = (e, index) => {
+    const handleInputOutputValueChange = (e, index, key : 'inputVariables' | 'outputVariables') => {
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.inputVariables[index]['name'] =
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key][index]['name'] =
             e.target.value
         setFormData(_formData)
     }
@@ -126,7 +126,7 @@ function CustomInputOutputVariables({
                                 className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
                                 type="text"
                                 placeholder="Variables name"
-                                onChange={(e) => handleInputOutputValueChange(e, index)}
+                                onChange={(e) => handleInputOutputValueChange(e, index, `${ type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'}`)}
                             />
                         </div>
                         {type === PluginVariableType.INPUT && (
