@@ -312,10 +312,6 @@
     color: var(--N900);
 }
 
-.configuration-container {
-    margin-bottom: 12px;
-}
-
 .configuration-container input + .radio__item-label {
     text-align: center;
     display: table;
@@ -384,8 +380,8 @@
     grid-template-columns: auto 30px;
 }
 
-.custom-input-variable-container{
-   display: grid;
+.custom-input-variable-container {
+    display: grid;
     grid-template-columns: auto 28px auto 30px;
 }
 
@@ -416,4 +412,9 @@
 
 .pl-200 {
     padding-left: 200px;
+}
+
+.delete-icon {
+    width: 16px;
+    height: 16px;
 }

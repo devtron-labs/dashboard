@@ -236,27 +236,27 @@ export function deleteCIPipeline(
     })
 }
 
-function formatStages(allStages): any[] {
-    allStages = allStages.filter((stage) => stage.name && stage.script)
-    for (let i = 0; i < allStages.length; i++) {
-        allStages[i].index = i + 1
-        if (!allStages[i].id) {
-            delete allStages[i].id
-        }
-        delete allStages[i].isCollapsed
-    }
-    return allStages
-}
+// function formatStages(allStages): any[] {
+//     allStages = allStages.filter((stage) => stage.name && stage.script)
+//     for (let i = 0; i < allStages.length; i++) {
+//         allStages[i].index = i + 1
+//         if (!allStages[i].id) {
+//             delete allStages[i].id
+//         }
+//         delete allStages[i].isCollapsed
+//     }
+//     return allStages
+// }
 
 function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webhookConditionList) {
     formData = JSON.parse(JSON.stringify(formData))
     ciPipeline = JSON.parse(JSON.stringify(ciPipeline))
-    const beforeDockerBuildScripts = formatStages(formData.beforeDockerBuildScripts || [])
-    const afterDockerBuildScripts = formatStages(formData.afterDockerBuildScripts || [])
-    formData.preBuildStage.steps = formatStages(formData.preBuildStage.steps)
-    formData.postBuildStage.steps = formatStages(formData.postBuildStage.steps)
-    const preBuildStage = formData.preBuildStage.steps.length > 0 ? formData.preBuildStage : {}
-    const postBuildStage = formData.postBuildStage.steps.length > 0 ? formData.postBuildStage : {}
+    // const beforeDockerBuildScripts = formatStages(formData.beforeDockerBuildScripts || [])
+    // const afterDockerBuildScripts = formatStages(formData.afterDockerBuildScripts || [])
+    // formData.preBuildStage.steps = formatStages(formData.preBuildStage.steps)
+    // formData.postBuildStage.steps = formatStages(formData.postBuildStage.steps)
+    const preBuildStage = formData.preBuildStage?.steps?.length > 0 ? formData.preBuildStage : {}
+    const postBuildStage = formData.postBuildStage?.steps?.length > 0 ? formData.postBuildStage : {}
     const ci = {
         ...ciPipeline,
         id: ciPipeline.id,
@@ -287,8 +287,6 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
                 }
             }),
         name: formData.name,
-        beforeDockerBuildScripts: beforeDockerBuildScripts,
-        afterDockerBuildScripts: afterDockerBuildScripts,
         preBuildStage: preBuildStage,
         postBuildStage: postBuildStage,
         scanEnabled: formData.scanEnabled,

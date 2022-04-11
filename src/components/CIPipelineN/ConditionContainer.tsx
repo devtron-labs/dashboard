@@ -35,7 +35,7 @@ export function ConditionContainer({
             : 'pluginRefStepDetail'
 
     useEffect(() => {
-        setCollapsedSection(false)
+        setCollapsedSection(true)
     }, [activeStageName])
 
     const addCondition = (): void => {

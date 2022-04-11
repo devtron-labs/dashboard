@@ -16,6 +16,7 @@ function EnvironmentStatusComponent({appStreamData}:{appStreamData: any}) {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable());
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false);
     const status = appDetails.resourceTree?.status || '';
+    const showHibernationStatusMessage = status.toLowerCase() === 'hibernated' || status.toLowerCase() === 'partially hibernated'
     const { path, url } = useRouteMatch();
     const history = useHistory();
 
@@ -38,7 +39,7 @@ function EnvironmentStatusComponent({appStreamData}:{appStreamData: any}) {
 
                         <div className={`f-${status.toLowerCase()} text-capitalize fw-6 fs-14 flex left`}>
                             <span>{status}</span>
-                            <figure className={`${status.toLowerCase()} app-summary__icon ml-8 icon-dim-20`}></figure>
+                            <figure className={`${showHibernationStatusMessage ? 'hibernating' : status.toLowerCase()} app-summary__icon ml-8 icon-dim-20`}></figure>
                         </div>
                         <div onClick={() => setShowAppStatusDetail(true)}>
                             <span className="cursor cb-5 fw-6">Details</span>
@@ -141,6 +142,7 @@ function EnvironmentStatusComponent({appStreamData}:{appStreamData: any}) {
                         setShowAppStatusDetail(false);
                     }}
                     appStreamData={appStreamData}
+                    showAppStatusMessage={showHibernationStatusMessage}
                 />
             )}
         </div>
