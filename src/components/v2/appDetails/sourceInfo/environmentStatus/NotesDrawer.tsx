@@ -46,7 +46,7 @@ function NotesDrawer({ notes, close }: { notes: string; close: () => void }) {
                     </div>
                 </div>
                 <div className="app-notes__body">
-                    <MarkDown className="app-notes__markdown" markdown={notes} breaks={true} />
+                    <MarkDown className="app-notes__markdown fs-13" markdown={notes} breaks={true} />
                 </div>
             </div>
         </Drawer>
