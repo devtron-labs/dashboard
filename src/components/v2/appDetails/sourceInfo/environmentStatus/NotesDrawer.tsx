@@ -8,18 +8,14 @@ function NotesDrawer({ notes, close }: { notes: string; close: () => void }) {
     const appNotesRef = useRef<HTMLDivElement>(null)
 
     const escKeyPressHandler = (evt): void => {
-        if (evt && evt.key === 'Escape' && typeof close === 'function') {
+        if (evt && evt.key === 'Escape') {
             evt.preventDefault()
             close()
         }
     }
 
     const outsideClickHandler = (evt): void => {
-        if (
-            appNotesRef.current &&
-            !appNotesRef.current.contains(evt.target) &&
-            typeof close === 'function'
-        ) {
+        if (evt && appNotesRef.current && !appNotesRef.current.contains(evt.target)) {
             close()
         }
     }
