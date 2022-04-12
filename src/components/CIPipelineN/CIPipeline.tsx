@@ -112,24 +112,6 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         scanEnabled: false,
     })
     const validationRules = new ValidationRules()
-
-    let prevLocation
-    const history = useHistory()
-    history.listen((nextLocation) => {
-        if (prevLocation) {
-            if (prevLocation.pathname.indexOf('/pre-build') >= 0) {
-                validateStage(BuildStageVariable.PreBuild)
-            } else if (prevLocation.pathname.indexOf('/build') >= 0) {
-                const _formDataErrorObj = { ...formDataErrorObj }
-                _formDataErrorObj.name = validationRules.name(formData.name)
-                _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
-                setFormDataErrorObj(_formDataErrorObj)
-            } else if (prevLocation.pathname.indexOf('/post-build') >= 0) {
-                validateStage(BuildStageVariable.PostBuild)
-            }
-        }
-        prevLocation = nextLocation
-    })
     useEffect(() => {
         setPageState(ViewType.LOADING)
         if (ciPipelineId) {
@@ -325,19 +307,24 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         }
     }
 
-    const validateStage = (activeStageName: string): void => {
+    const validateStage = (stageName: string): void => {
         const _formDataErrorObj = { ...formDataErrorObj }
-        const stepsLength = formData[activeStageName].steps.length
-        let isStageValid = true
-        for (let i = 0; i < stepsLength; i++) {
-            if (!_formDataErrorObj[activeStageName]['steps'][i])
-                _formDataErrorObj[activeStageName]['steps'].push({ isValid: true })
-            validateTask(formData[activeStageName]['steps'][i], _formDataErrorObj[activeStageName]['steps'][i])
-            isStageValid =
-                _formDataErrorObj[activeStageName]['steps'][i].isValid &&
-                _formDataErrorObj[activeStageName]['steps'][i].isValid
+        if (stageName === BuildStageVariable.Build) {
+            _formDataErrorObj.name = validationRules.name(formData.name)
+            _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
+        } else {
+            const stepsLength = formData[activeStageName].steps.length
+            let isStageValid = true
+            for (let i = 0; i < stepsLength; i++) {
+                if (!_formDataErrorObj[activeStageName]['steps'][i])
+                    _formDataErrorObj[activeStageName]['steps'].push({ isValid: true })
+                validateTask(formData[activeStageName]['steps'][i], _formDataErrorObj[activeStageName]['steps'][i])
+                isStageValid =
+                    _formDataErrorObj[activeStageName]['steps'][i].isValid &&
+                    _formDataErrorObj[activeStageName]['steps'][i].isValid
+            }
+            _formDataErrorObj[activeStageName].isValid = isStageValid
         }
-        _formDataErrorObj[activeStageName].isValid = isStageValid
         setFormDataErrorObj(_formDataErrorObj)
     }
 
@@ -486,6 +473,9 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                     className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
                                     activeClassName="active"
                                     to={`pre-build`}
+                                    onClick={() => {
+                                        validateStage(activeStageName)
+                                    }}
                                 >
                                     {BuildTabText[BuildStageVariable.PreBuild]}
                                     {!formDataErrorObj.preBuildStage.isValid && (
@@ -500,6 +490,9 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                 className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
                                 activeClassName="active"
                                 to={`build`}
+                                onClick={() => {
+                                    validateStage(activeStageName)
+                                }}
                             >
                                 {BuildTabText[BuildStageVariable.Build]}
                                 {!formDataErrorObj.buildStage.isValid && (
@@ -514,6 +507,9 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                     className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
                                     activeClassName="active"
                                     to={`post-build`}
+                                    onClick={() => {
+                                        validateStage(activeStageName)
+                                    }}
                                 >
                                     {BuildTabText[BuildStageVariable.PostBuild]}
                                     {!formDataErrorObj.postBuildStage.isValid && (
