@@ -30,7 +30,10 @@ export default function CDEmptyState({
             </EmptyState.Subtitle>
             {actionButtonText && (
                 <EmptyState.Button>
-                    <div className="task-item add-task-container cb-5 fw-6 fs-13 flexbox" onClick={actionHandler}>
+                    <div
+                        className="cb-5 fw-6 fs-13 flexbox bcn-0 en-2 br-4 pl-16 pr-16 pt-8 pb-8 pointer"
+                        onClick={actionHandler}
+                    >
                         {ActionButtonIcon && <ActionButtonIcon className="add-icon" />}
                         {actionButtonText}
                     </div>

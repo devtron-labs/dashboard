@@ -211,7 +211,7 @@ export function Build({
                             onClick={(event) => {
                                 addDockerArg()
                             }}
-                            className="form__add-parameter mt-20"
+                            className="bcn-0 cb-5 no-border mt-20"
                         >
                             <span className="fa fa-plus mr-5"></span>Add key-value
                         </button>

@@ -255,7 +255,6 @@
     height: 34px;
     background: var(--window-bg);
     border-radius: 4px;
-    margin: 12px 0;
     padding: 6px 10px;
     display: flex;
 }
@@ -401,9 +400,9 @@
     grid-template-columns: 80px 28px 80px 30px;
 }
 
-.custom-script__output-directory{
+.custom-script__output-directory {
     display: grid;
-    grid-template-columns: auto 30px;  
+    grid-template-columns: auto 30px;
 }
 
 .content-fit {
@@ -447,4 +446,11 @@
 
 .no-top-border {
     border-top: none;
+}
+
+.vertical-line-connector {
+    border-left: 1px solid var(--N200);
+    height: 12px;
+    position: relative;
+    left: 50%;
 }

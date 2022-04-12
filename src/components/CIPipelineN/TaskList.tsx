@@ -78,31 +78,37 @@ export function TaskList() {
         <>
             <div className="task-container">
                 {formData[activeStageName].steps?.map((taskDetail, index) => (
-                    <div
-                        className={`task-item fw-4 fs-13 ${selectedTaskIndex === index ? ' bcb-1 eb-5' : ''}`}
-                        draggable={dragAllowed}
-                        onDragStart={() => handleDragStart(index)}
-                        onDragEnter={() => handleDragEnter(index)}
-                        onDrop={() => handleDrop(index)}
-                        onDragOver={(e) => e.preventDefault()}
-                        key={index}
-                        onClick={() => handleSelectedTaskChange(index)}
-                    >
-                        <Drag className="drag-icon" onMouseDown={() => setDragAllowed(true)} />
-                        <span className="w-80 pl-5 task-name-container">{taskDetail.name}</span>
-                        <AlertTriangle className="icon-dim-20 mr-5 ml-5" />
-                        <PopupMenu autoClose>
-                            <PopupMenu.Button isKebab>
-                                <Dots className="rotate" style={{ ['--rotateBy' as any]: '90deg' }} />
-                            </PopupMenu.Button>
-                            <PopupMenu.Body>
-                                <div className="flex left p-10 pointer" onClick={(e) => deleteTask(index)}>
-                                    <Trash className="delete-icon mr-10" />
-                                    Delete
-                                </div>
-                            </PopupMenu.Body>
-                        </PopupMenu>
-                    </div>
+                    <>
+                        <div
+                            className={`task-item fw-4 fs-13 ${selectedTaskIndex === index ? ' bcb-1 eb-5' : ''}`}
+                            draggable={dragAllowed}
+                            onDragStart={() => handleDragStart(index)}
+                            onDragEnter={() => handleDragEnter(index)}
+                            onDrop={() => handleDrop(index)}
+                            onDragOver={(e) => e.preventDefault()}
+                            key={index}
+                            onClick={() => handleSelectedTaskChange(index)}
+                        >
+                            <Drag className="drag-icon" onMouseDown={() => setDragAllowed(true)} />
+                            <span className="w-80 pl-5 task-name-container">{taskDetail.name}</span>
+                            <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-2" />
+                            <PopupMenu autoClose>
+                                <PopupMenu.Button isKebab>
+                                    <Dots
+                                        className="icon-dim-16 mt-2 rotate"
+                                        style={{ ['--rotateBy' as any]: '90deg' }}
+                                    />
+                                </PopupMenu.Button>
+                                <PopupMenu.Body>
+                                    <div className="flex left p-10 pointer" onClick={(e) => deleteTask(index)}>
+                                        <Trash className="delete-icon mr-10" />
+                                        Delete
+                                    </div>
+                                </PopupMenu.Body>
+                            </PopupMenu>
+                        </div>
+                        <div className="vertical-line-connector"></div>
+                    </>
                 ))}
             </div>
             <div className="task-item add-task-container cb-5 fw-6 fs-13 flexbox" onClick={addNewTask}>
