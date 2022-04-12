@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { FormType, PluginDetailType, PluginType, ScriptType, VariableType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
+import EmptyPostBuild from '../../assets/img/post-build-empty.png'
 import PreBuildIcon from '../../assets/icons/ic-cd-stage.svg'
 import { PluginCard } from './PluginCard'
 import { PluginCardListContainer } from './PluginCardListContainer'
-import { ConfigurationType, ViewType } from '../../config'
+import { BuildStageVariable, ConfigurationType, ViewType } from '../../config'
 import { getPluginsData } from '../ciPipeline/ciPipeline.service'
 import { ServerErrors } from '../../modals/commonTypes'
 import { showError } from '../common'
@@ -161,9 +162,13 @@ export function PreBuild({
         if (formData[activeStageName].steps.length === 0) {
             return (
                 <CDEmptyState
-                    imgSource={EmptyPreBuild}
-                    title="No pre-build tasks configured"
-                    subtitle="Here, you can configure tasks to be executed before the container image is built."
+                    imgSource={activeStageName === BuildStageVariable.PreBuild ? EmptyPreBuild : EmptyPostBuild}
+                    title={`No ${
+                        activeStageName === BuildStageVariable.PreBuild ? 'pre-build' : 'post-build'
+                    } tasks configured`}
+                    subtitle={`Here, you can configure tasks to be executed ${
+                        activeStageName === BuildStageVariable.PreBuild ? 'before' : 'after'
+                    } the container image is built.`}
                     actionHandler={addNewTask}
                     actionButtonText="Add task"
                     ActionButtonIcon={Add}

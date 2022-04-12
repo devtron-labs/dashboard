@@ -447,7 +447,6 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         )}
                         {isAdvanced && (
                             <Route path={`${path}/post-build`}>
-                                {/* <PostBuild formData={formData} setFormData={setFormData} addNewTask={addNewTask} /> */}
                                 <PreBuild
                                     formData={formData}
                                     setFormData={setFormData}
