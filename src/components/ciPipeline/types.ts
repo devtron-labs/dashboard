@@ -184,7 +184,7 @@ export interface TaskErrorObj {
     pluginRefStepDetail?: { inputVariables?: ErrorObj[]; outputVariables?: ErrorObj[] }
 }
 export interface FormErrorObjectType {
-    name: string
+    name: ErrorObj
     materials?: MaterialType[]
     preBuildStage?: {
         isValid: boolean

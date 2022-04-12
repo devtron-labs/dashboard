@@ -1,7 +1,7 @@
 import React, { useState, useEffect, createContext } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ButtonWithLoader, ConditionalWrap, DeleteDialog, showError, VisibleModal } from '../common'
-import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation, useHistory } from 'react-router'
 import { BuildStageVariable, BuildTabText, TriggerType, ViewType } from '../../config'
 import {
     deleteCIPipeline,
@@ -86,7 +86,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         },
     })
     const [formDataErrorObj, setFormDataErrorObj] = useState({
-        name: {},
+        name: { isValid: true },
         preBuildStage: {
             steps: [],
             isValid: true,
@@ -113,6 +113,23 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
     })
     const validationRules = new ValidationRules()
 
+    let prevLocation
+    const history = useHistory()
+    history.listen((nextLocation) => {
+        if (prevLocation) {
+            if (prevLocation.pathname.indexOf('/pre-build') >= 0) {
+                validateStage(BuildStageVariable.PreBuild)
+            } else if (prevLocation.pathname.indexOf('/build') >= 0) {
+                const _formDataErrorObj = { ...formDataErrorObj }
+                _formDataErrorObj.name = validationRules.name(formData.name)
+                _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
+                setFormDataErrorObj(_formDataErrorObj)
+            } else if (prevLocation.pathname.indexOf('/post-build') >= 0) {
+                validateStage(BuildStageVariable.PostBuild)
+            }
+        }
+        prevLocation = nextLocation
+    })
     useEffect(() => {
         setPageState(ViewType.LOADING)
         if (ciPipelineId) {
@@ -308,14 +325,14 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         }
     }
 
-    const validateStage = (_formData: FormType): void => {
+    const validateStage = (activeStageName: string): void => {
         const _formDataErrorObj = { ...formDataErrorObj }
-        const stepsLength = _formData[activeStageName].steps.length
+        const stepsLength = formData[activeStageName].steps.length
         let isStageValid = true
         for (let i = 0; i < stepsLength; i++) {
             if (!_formDataErrorObj[activeStageName]['steps'][i])
                 _formDataErrorObj[activeStageName]['steps'].push({ isValid: true })
-            validateTask(_formData[activeStageName]['steps'][i], _formDataErrorObj[activeStageName]['steps'][i])
+            validateTask(formData[activeStageName]['steps'][i], _formDataErrorObj[activeStageName]['steps'][i])
             isStageValid =
                 _formDataErrorObj[activeStageName]['steps'][i].isValid &&
                 _formDataErrorObj[activeStageName]['steps'][i].isValid

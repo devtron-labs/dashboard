@@ -6,10 +6,11 @@ import { ValidationRules } from '../ciPipeline/validationRules'
 import { Progressing } from '../common'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ciPipelineContext } from './CIPipeline'
-import { FormType } from '../ciPipeline/types'
+import { FormErrorObjectType, FormType } from '../ciPipeline/types'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 
 export function Build({
     showFormError,
@@ -24,8 +25,13 @@ export function Build({
         formData,
         setFormData,
         pageState,
-    }: { formData: FormType; setFormData: React.Dispatch<React.SetStateAction<FormType>>; pageState: string } =
-        useContext(ciPipelineContext)
+        formDataErrorObj,
+    }: {
+        formData: FormType
+        setFormData: React.Dispatch<React.SetStateAction<FormType>>
+        pageState: string
+        formDataErrorObj: FormErrorObjectType
+    } = useContext(ciPipelineContext)
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
     const validationRules = new ValidationRules()
 
@@ -268,12 +274,12 @@ export function Build({
                     value={formData.name}
                     onChange={handlePipelineName}
                 />
-                {showFormError && !validationRules.name(formData.name).isValid ? (
-                    <span className="form__error">
-                        <img src={error} className="form__icon" />
-                        {validationRules.name(formData.name).message}
+                {formDataErrorObj.name && !formDataErrorObj.name.isValid && (
+                    <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
+                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                        <span>{formDataErrorObj.name.message}</span>
                     </span>
-                ) : null}
+                )}
             </label>
         )
     }
