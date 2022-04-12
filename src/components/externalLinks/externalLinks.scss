@@ -1,5 +1,11 @@
 .external-links-container {
-    height: 100%;
+    min-width: 1024px;
+    padding: 16px 8%  20px;
+
+    &.error-view {
+        min-width: 100%;
+        height: 100%;
+    }
 
     .empty-state {
         img {
@@ -42,8 +48,6 @@
     }
 
     .external-links-wrapper {
-        padding: 16px 95px 20px;
-
         .title {
             font-size: 16px;
             margin-bottom: 5px;
@@ -97,6 +101,134 @@
                 }
             }
         }
+
+        .saved-filters__wrap {
+            padding: 16px 20px 0 0;
+            display: flex;
+            flex-wrap: wrap;
+
+            .saved-filter {
+                display: flex;
+                align-items: center;
+                border: solid 1px var(--N200);
+                background-color: #f7fafc;
+                text-transform: none;
+                padding-left: 6px;
+                padding-right: 6px;
+                margin: 0 12px 6px 0;
+                min-height: 24px;
+
+                .saved-filter-divider {
+                    height: 24px;
+                    width: 1px;
+                    background-color: var(--N200);
+                }
+
+                .saved-filter__clear-btn {
+                    border: none;
+                    margin: 0;
+                    margin-left: 4px;
+                    padding: 0;
+                    line-height: 0;
+                    background-color: #f7fafc;
+
+                    svg {
+                        stroke: var(--N600);
+
+                        path {
+                            fill: var(--N600);
+                        }
+                    }
+                }
+            }
+
+            .saved-filters__clear-btn {
+                background: none;
+                margin: 0 0 6px;
+                padding: 0;
+            }
+        }
+    }
+
+    .external-links {
+        width: 962px;
+        height: 697px;
+        background: #ffffff;
+        border: 1px solid #d0d4d9;
+        box-sizing: border-box;
+        border-radius: 8px;
+        margin-top: 16px;
+
+        .external-link {
+            padding: 12px 20px;
+
+            .external-link-actions {
+                display: none;
+            }
+
+            &:hover {
+                background-color: var(--N50);
+
+                .external-link-actions {
+                    display: flex;
+                }
+            }
+        }
+    }
+
+    .external-link__divider {
+        height: 1px;
+        width: 100%;
+        background-color: #EDF1F5;
+    }
+
+    .external-links__header {
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: stretch;
+        font-size: 12px;
+        font-weight: 600;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: 1.5;
+        letter-spacing: normal;
+        padding-left: 20px;
+        box-shadow: 0 1px 0 0 var(--N200);
+        background: white;
+        text-transform: uppercase;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        margin-bottom: 1px;
+    }
+
+    .external-links__cell--icon {
+        width: 40px;
+    }
+
+    // .external-links__cell {
+    //     min-width: 0px;
+    //     display: flex;
+    //     align-items: center;
+    //     justify-content: center;
+    //     height: 100%;
+    //     padding: 0px 20px;
+    //     background-color: inherit;
+    // }
+
+    .external-links__cell--tool__name {
+        width: 160px;
+        text-overflow: ellipsis;
+    }
+
+    .external-links__cell--cluster {
+        width: 100px;
+        text-overflow: ellipsis;
+    }
+
+    .external-links__cell--url__template {
+        width: 518px;
+        text-overflow: ellipsis;
     }
 }
 
@@ -123,7 +255,7 @@
             position: absolute;
             top: 59px;
             border-bottom: 1px solid var(--N200);
-          }
+        }
 
         .modal__header {
             padding: 0 16px 20px;
@@ -148,7 +280,7 @@
                 width: 720px;
                 padding: 20px;
                 border-right: 1px solid var(--N200);
-                
+
                 .link-add-another {
                     display: flex;
                     align-items: center;
@@ -172,16 +304,22 @@
                 }
 
                 .configure-link-action-wrapper {
+                    .error-label {
+                        svg g path:nth-of-type(2) {
+                            fill: var(--R500);
+                        }
+                    }
+
                     .link-monitoring-tool {
                         display: flex;
-                        align-items: center;
+                        align-items: flex-start;
 
                         .link-name {
                             display: flex;
                             flex-direction: column;
+                            width: 200px;
 
                             input {
-                                width: 200px;
                                 height: 32px;
                                 padding: 10px 6px;
                                 background-color: var(--N50);
@@ -189,6 +327,14 @@
                                 border: 1px solid var(--N200);
                                 border-radius: 4px;
                             }
+                        }
+
+                        .monitoring-tool {
+                            width: 150px;
+                        }
+
+                        .link-clusters {
+                            width: 278px;
                         }
                     }
                 }

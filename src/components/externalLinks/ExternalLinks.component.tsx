@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { multiSelectStyles, Option, Progressing, VisibleModal } from '../common'
+import { DeleteDialog, multiSelectStyles, Option, Progressing, showError, VisibleModal } from '../common'
 import Select, { components, MultiValue } from 'react-select'
 import EmptyState from '../EmptyState/EmptyState'
-import NotAuthorized from '../../assets/img/ic-not-authorized.svg'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
@@ -10,25 +9,35 @@ import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { URLS } from '../../config'
 import { OptionType } from '../app/types'
+import { ConfigureLinkActionType, ExternalLink, LinkAction, OptionTypeWithIcon } from './ExternalLinks.type'
+import { saveExternalLinks, updateExternalLink } from './ExternalLinks.service'
+import NoResults from '../../assets/img/empty-noresult@2x.png'
+import { toast } from 'react-toastify'
+import { OptionWithIcon, ValueContainerWithIcon } from '../v2/common/ReactSelect.utils'
 
-export const ClusterFilter = ({ clusters, applyFilter, queryParams, history }) => {
+export const ClusterFilter = ({ clusters, appliedClusters, setAppliedClusters, applyFilter, queryParams, history }) => {
     const [selectedCluster, setSelectedCluster] = useState([])
-    const [appliedClusters, setAppliedClusters] = useState([])
     const [isMenuOpen, setMenuOpen] = useState(false)
 
+    // Revisit
     useEffect(() => {
-        if (clusters.length > 0) {
-            const appliedClusterIds = queryParams.get('cluster')?.split(',')
+        if (appliedClusters.length > 0) {
+            setSelectedCluster(appliedClusters)
+        } else if (queryParams.get('cluster')) {
+            const appliedClusterIds = queryParams.get('cluster').split(',')
 
             if (appliedClusterIds && appliedClusterIds.length > 0) {
                 const filteredClusterIds = clusters.filter((cluster) => appliedClusterIds.includes(cluster.value))
                 setSelectedCluster(filteredClusterIds)
                 setAppliedClusters(filteredClusterIds)
             }
+        } else {
+            setSelectedCluster([])
         }
-    }, [clusters])
+    }, [appliedClusters])
 
     const handleFilterQueryChanges = () => {
         setMenuOpen(false)
@@ -38,13 +47,13 @@ export const ClusterFilter = ({ clusters, applyFilter, queryParams, history }) =
         if (selectedCluster.length > 0) {
             const ids = selectedCluster.map((cluster) => cluster.value)
             ids.sort()
-            queryParams.set('cluster', ids.toString())
 
-            history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
+            queryParams.set('cluster', ids.toString())
         } else {
             queryParams.delete('cluster')
-            history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
         }
+
+        history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
     }
 
     const handleMenuState = () => {
@@ -74,6 +83,7 @@ export const ClusterFilter = ({ clusters, applyFilter, queryParams, history }) =
                 isSearchable={isMenuOpen}
                 closeMenuOnSelect={false}
                 hideSelectedOptions={false}
+                blurInputOnSelect={false}
                 onMenuOpen={handleMenuState}
                 onMenuClose={handleCloseFilter}
                 components={{
@@ -164,7 +174,19 @@ export const MenuList = (props) => {
     )
 }
 
-export const SearchInput = ({ queryParams, externalLinks, setFilteredExternalLinks, history }) => {
+export const SearchInput = ({
+    queryParams,
+    externalLinks,
+    monitoringTools,
+    setFilteredExternalLinks,
+    history,
+}: {
+    externalLinks: ExternalLink[]
+    monitoringTools: MultiValue<OptionTypeWithIcon>
+    queryParams: URLSearchParams
+    setFilteredExternalLinks: React.Dispatch<React.SetStateAction<ExternalLink[]>>
+    history: any
+}) => {
     const [searchTerm, setSearchTerm] = useState(queryParams.get('search') || '')
     const [searchApplied, setSearchApplied] = useState(!!queryParams.get('search'))
 
@@ -173,16 +195,29 @@ export const SearchInput = ({ queryParams, externalLinks, setFilteredExternalLin
     }
 
     const filterExternalLinksUsingSearch = (event: React.KeyboardEvent): void => {
-        if (searchTerm && event.key === 'Enter') {
-            const _searchTerm = searchTerm.trim()
-            const _filteredExternalLinks = externalLinks.filter(
-                (link) => link.name === _searchTerm || link.toolName === _searchTerm,
-            )
+        if (event.key === 'Enter') {
+            event.preventDefault()
 
-            setSearchApplied(true)
-            setFilteredExternalLinks(_filteredExternalLinks)
+            if (!searchTerm) {
+                setSearchApplied(false)
+                setFilteredExternalLinks(externalLinks)
+                queryParams.delete('search')
+            } else {
+                const _searchTerm = searchTerm.trim().toLowerCase()
+                const _filteredExternalLinks = externalLinks.filter(
+                    (link: ExternalLink) =>
+                        link.name.toLowerCase().includes(_searchTerm) ||
+                        monitoringTools
+                            .find((tool) => tool.value === link.monitoringToolId)
+                            ?.label.toLowerCase()
+                            .includes(_searchTerm),
+                )
 
-            queryParams.set('search', searchTerm)
+                setSearchApplied(true)
+                setFilteredExternalLinks(_filteredExternalLinks)
+                queryParams.set('search', searchTerm)
+            }
+
             history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
         }
     }
@@ -190,6 +225,7 @@ export const SearchInput = ({ queryParams, externalLinks, setFilteredExternalLin
     const clearSearch = (): void => {
         setSearchTerm('')
         setSearchApplied(false)
+        setFilteredExternalLinks(externalLinks)
 
         queryParams.delete('search')
         history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
@@ -226,21 +262,7 @@ export const AddLinkButton = ({ handleOnClick }) => {
     )
 }
 
-export const NoAccessView = () => {
-    return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={NotAuthorized} alt="Not authorized" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4 className="title">Not authorized</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>Information on this page is available only to superadmin users.</EmptyState.Subtitle>
-        </EmptyState>
-    )
-}
-
-export const NoExternalLinksView = ({ handleAddLinkClick }) => {
+export const NoExternalLinksView = ({ handleAddLinkClick }): JSX.Element => {
     return (
         <EmptyState>
             <EmptyState.Image>
@@ -260,21 +282,18 @@ export const NoExternalLinksView = ({ handleAddLinkClick }) => {
     )
 }
 
-interface LinkAction {
-    tool: OptionType
-    name: string
-    clusters: MultiValue<OptionType>
-    urlTemplate: string
-}
-
-interface ConfigureLinkActionType extends LinkAction {
-    index: number
-    showDelete: boolean
-    onMonitoringToolSelection: (key: number, selected: OptionType) => void
-    onClusterSelection: (key: number, selected: MultiValue<OptionType>) => void
-    onNameChange: (key: number, name: string) => void,
-    onUrlTemplateChange: (key: number, urlTemplate: string) => void,
-    deleteLinkData: (key: number) => void
+export const NoMatchingResults = (): JSX.Element => {
+    return (
+        <EmptyState>
+            <EmptyState.Image>
+                <img src={NoResults} width="250" height="200" alt="No matching results" />
+            </EmptyState.Image>
+            <EmptyState.Title>
+                <h2 className="fs-16 fw-4 c-9">No matching results</h2>
+            </EmptyState.Title>
+            <EmptyState.Subtitle>We couldn't find any matching external link configuration</EmptyState.Subtitle>
+        </EmptyState>
+    )
 }
 
 const formatOptionLabelClusters = (option) => {
@@ -291,12 +310,35 @@ const formatOptionLabelClusters = (option) => {
     )
 }
 
+const getErrorLabel = (field: string) => {
+    const errorLabel = (label: string) => {
+        return (
+            <div className="error-label flex left align-start fs-11 mt-4">
+                <Error className="icon-dim-20" />
+                <div className="ml-4 cr-5">{label}</div>
+            </div>
+        )
+    }
+    switch (field) {
+        case 'tool':
+            return errorLabel('Please select monitoring tool.')
+        case 'name':
+            return errorLabel('Please provide name for the tool you want to link.')
+        case 'cluster':
+            return errorLabel('Please select one or more clusters.')
+        case 'url':
+            return errorLabel('Please enter URL template.')
+        default:
+            return ''
+    }
+}
+
 const ConfigureLinkAction = ({
     index,
-    tool,
-    name,
+    link,
     clusters,
-    urlTemplate,
+    selectedClusters,
+    monitoringTools,
     showDelete,
     onMonitoringToolSelection,
     onClusterSelection,
@@ -304,22 +346,26 @@ const ConfigureLinkAction = ({
     onUrlTemplateChange,
     deleteLinkData,
 }: ConfigureLinkActionType) => {
+    console.log(link.name, link)
     return (
         <div id={`link-action-${index}`} className="configure-link-action-wrapper">
             <div className="link-monitoring-tool mb-8">
                 <div className="monitoring-tool mr-8">
                     <span>Monitoring Tool*</span>
                     <Select
+                        key={`monitoring-tool-${index}`}
                         placeholder="Select tool"
-                        name="monitoring-tool"
-                        value={tool}
-                        options={MOCK_MONITORING_TOOL}
+                        name={`monitoring-tool-${index}`}
+                        value={link.tool}
+                        options={monitoringTools}
                         isMulti={false}
                         hideSelectedOptions={false}
                         onChange={(selected) => onMonitoringToolSelection(index, selected)}
                         components={{
                             IndicatorSeparator: null,
                             ClearIndicator: null,
+                            Option: OptionWithIcon,
+                            ValueContainer: ValueContainerWithIcon,
                         }}
                         styles={{
                             ...multiSelectStyles,
@@ -353,7 +399,7 @@ const ConfigureLinkAction = ({
                             }),
                             valueContainer: (base) => ({
                                 ...base,
-                                padding: '0 8px',
+                                padding: '0 10px',
                             }),
                             dropdownIndicator: (base, state) => ({
                                 ...base,
@@ -368,18 +414,25 @@ const ConfigureLinkAction = ({
                             }),
                         }}
                     />
+                    {link.invalidTool && getErrorLabel('tool')}
                 </div>
                 <div className="link-name mr-12">
                     <label>Name*</label>
-                    <input placeholder="Enter name" value={name} onChange={(e) => onNameChange(index, e.target.value)} />
+                    <input
+                        placeholder="Enter name"
+                        value={link.name}
+                        onChange={(e) => onNameChange(index, e.target.value)}
+                    />
+                    {link.invalidName && getErrorLabel('name')}
                 </div>
                 <div className="link-clusters mr-12">
                     <span>Clusters*</span>
                     <Select
+                        key={`link-clusters-${index}`}
                         placeholder="Select clusters"
-                        name="link-clusters"
-                        value={clusters}
-                        options={MOCK_GROUP_CLUSTER_IDS}
+                        name={`link-clusters-${index}`}
+                        value={selectedClusters}
+                        options={clusters}
                         formatOptionLabel={formatOptionLabelClusters}
                         onChange={(selected) => onClusterSelection(index, selected)}
                         isMulti={true}
@@ -438,77 +491,81 @@ const ConfigureLinkAction = ({
                             }),
                         }}
                     />
+                    {link.invalidClusters && getErrorLabel('cluster')}
                 </div>
                 {showDelete && <Delete className="mt-24 cursor" onClick={() => deleteLinkData(index)} />}
             </div>
             <div className="link-text-area">
                 <label>URL template*</label>
-                <textarea placeholder="Enter URL template" value={urlTemplate} onChange={(e) => onUrlTemplateChange(index, e.target.value)} />
+                <textarea
+                    placeholder="Enter URL template"
+                    value={link.urlTemplate}
+                    onChange={(e) => onUrlTemplateChange(index, e.target.value)}
+                />
+                {link.invalidUrlTemplate && getErrorLabel('url')}
             </div>
         </div>
     )
 }
 
-const MOCK_MONITORING_TOOL = [
-    {
-        label: 'Grafana',
-        value: 'Grafana',
-    },
-    {
-        label: 'Kibana',
-        value: 'Kibana',
-    },
-]
-
-export const MOCK_CLUSTER_IDS = [
-    {
-        label: 'Cluster1',
-        value: '1',
-    },
-    {
-        label: 'Cluster2',
-        value: '2',
-    },
-    {
-        label: 'Cluster3',
-        value: '3',
-    },
-]
-
-export const MOCK_GROUP_CLUSTER_IDS = [
-    {
-        label: 'All clusters',
-        value: '*',
-    },
-    {
-        label: 'Cluster2',
-        value: '2',
-    },
-    {
-        label: 'Cluster3',
-        value: '3',
-    },
-]
-
-export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
-    const [linksData, setLinksData] = useState<LinkAction[]>([
-        {
-            tool: undefined,
-            name: '',
-            clusters: undefined,
-            urlTemplate: '',
-        },
-    ])
+export const AddExternalLinkDialog = ({
+    monitoringTools,
+    clusters,
+    selectedLink,
+    externalLinks,
+    setExternalLinks,
+    handleDialogVisibility,
+}: {
+    monitoringTools: MultiValue<OptionTypeWithIcon>
+    clusters: MultiValue<OptionType>
+    handleDialogVisibility: () => void
+    selectedLink: ExternalLink
+    externalLinks
+    setExternalLinks
+}) => {
+    const [linksData, setLinksData] = useState<LinkAction[]>([])
     const [savingLinks, setSavingLinks] = useState(false)
 
-    const handleLinksDataActions = (action: string, key?: number, value?: OptionType | MultiValue<OptionType> | string) => {
+    useEffect(() => {
+        if (selectedLink) {
+            const monitoringTool = monitoringTools.find((tool) => tool.value === selectedLink.monitoringToolId)
+            const selectedClusters =
+                selectedLink.clusterIds[0] === '*'
+                    ? clusters
+                    : clusters.filter((cluster) => selectedLink.clusterIds.includes(cluster.value))
+
+            setLinksData([
+                {
+                    tool: { label: monitoringTool.label, value: monitoringTool.value, icon: monitoringTool.icon },
+                    name: selectedLink.name,
+                    clusters: selectedClusters,
+                    urlTemplate: selectedLink.url,
+                },
+            ])
+        } else {
+            setLinksData([
+                {
+                    tool: null,
+                    name: '',
+                    clusters: null,
+                    urlTemplate: '',
+                },
+            ])
+        }
+    }, [])
+
+    const handleLinksDataActions = (
+        action: string,
+        key?: number,
+        value?: OptionType | MultiValue<OptionType> | string,
+    ) => {
         switch (action) {
             case 'add':
                 setLinksData(
                     linksData.concat({
-                        tool: undefined,
+                        tool: null,
                         name: '',
-                        clusters: undefined,
+                        clusters: null,
                         urlTemplate: '',
                     }),
                 )
@@ -517,17 +574,17 @@ export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
                 linksData.splice(key, 1)
                 break
             case 'onMonitoringToolSelection':
-                linksData[key].tool = value as OptionType
+                linksData[key].tool = value as OptionTypeWithIcon
                 break
             case 'onClusterSelection':
                 linksData[key].clusters = value as MultiValue<OptionType>
                 break
             case 'onNameChange':
-                    linksData[key].name = value as string
-                    break
+                linksData[key].name = value as string
+                break
             case 'onUrlTemplateChange':
-                    linksData[key].urlTemplate = value as string
-                    break
+                linksData[key].urlTemplate = value as string
+                break
             default:
                 break
         }
@@ -537,12 +594,16 @@ export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
         }
     }
 
+    const linksLen = linksData.length
+
     const getConfigureLinkActionColumn = () => {
         return (
             <div className="configure-link-action-container">
-                <div className="link-add-another mb-16 cursor" onClick={() => handleLinksDataActions('add')}>
-                    <AddIcon /> Add another
-                </div>
+                {!selectedLink && (
+                    <div className="link-add-another mb-16 cursor" onClick={() => handleLinksDataActions('add')}>
+                        <AddIcon /> Add another
+                    </div>
+                )}
                 {linksData &&
                     linksData.map((link, idx) => {
                         return (
@@ -550,22 +611,28 @@ export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
                                 <ConfigureLinkAction
                                     key={`ConfigureLinkAction-${idx}`}
                                     index={idx}
-                                    tool={link.tool}
-                                    name={link.name}
-                                    clusters={link.clusters}
-                                    urlTemplate={link.urlTemplate}
-                                    onMonitoringToolSelection={(key, selected) =>
+                                    link={link}
+                                    clusters={clusters}
+                                    selectedClusters={link.clusters}
+                                    monitoringTools={monitoringTools}
+                                    onMonitoringToolSelection={(key, selected) => {
                                         handleLinksDataActions('onMonitoringToolSelection', key, selected)
-                                    }
+
+                                        if (!link.name) {
+                                            handleLinksDataActions('onNameChange', key, selected.label)
+                                        }
+                                    }}
                                     onClusterSelection={(key, selected) =>
                                         handleLinksDataActions('onClusterSelection', key, selected)
                                     }
                                     onNameChange={(key, name) => handleLinksDataActions('onNameChange', key, name)}
-                                    onUrlTemplateChange={(key, urlTemplate) => handleLinksDataActions('onUrlTemplateChange', key, urlTemplate)}
-                                    showDelete={linksData.length > 1}
+                                    onUrlTemplateChange={(key, urlTemplate) =>
+                                        handleLinksDataActions('onUrlTemplateChange', key, urlTemplate)
+                                    }
+                                    showDelete={linksLen > 1}
                                     deleteLinkData={(key) => handleLinksDataActions('delete', key)}
                                 />
-                                {linksData.length > 1 && idx !== linksData.length - 1 && (
+                                {linksLen > 1 && idx !== linksLen - 1 && (
                                     <hr className="external-links-divider mt-16 mb-16" />
                                 )}
                             </>
@@ -599,7 +666,7 @@ export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
                         <li>{`{containerName}`}</li>
                     </ul>
                     <li>Sample URL template:</li>
-                    <p>{'http://www.domain.com/grafana/{app_name}/details/1/env/4/details/pod'}</p>
+                    <p>{'http://www.domain.com/grafana/{appName}/details/1/env/4/details/pod'}</p>
                     <a
                         href="https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/cd-pipeline"
                         target="_blank"
@@ -611,27 +678,89 @@ export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
         )
     }
 
-    const saveLinks = () => {
-        setSavingLinks(true)
-        const payload = linksData.map((link) => ({
-            tool: link.tool.value,
+    const getValidatedLinksData = (): LinkAction[] => {
+        const validatedLinksData = linksData.map((link) => ({
+            tool: link.tool,
+            invalidTool: !link.tool,
             name: link.name,
-            clusters: link.clusters.map((value) => value.value),
-            urlTemplate: link.urlTemplate
+            invalidName: !link.name,
+            clusters: link.clusters,
+            invalidClusters: !link.clusters,
+            urlTemplate: link.urlTemplate,
+            invalidUrlTemplate: !link.urlTemplate,
         }))
+        setLinksData(validatedLinksData)
 
-        setTimeout(() => {
-            setSavingLinks(false)
+        return validatedLinksData
+    }
+
+    const saveLinks = async () => {
+        try {
+            const validatedLinksData = getValidatedLinksData()
+            const invalidData = validatedLinksData.some(
+                (link) => link.invalidTool || link.invalidName || link.invalidClusters || link.invalidUrlTemplate,
+            )
+
+            if (invalidData) {
+                return
+            }
+
+            setSavingLinks(true)
+            if (selectedLink) {
+                const link = validatedLinksData[0]
+                const payload: ExternalLink = {
+                    id: selectedLink.id,
+                    monitoringToolId: +link.tool.value,
+                    name: link.name,
+                    clusterIds: link.clusters.map((value) => value.value),
+                    url: link.urlTemplate,
+                }
+
+                const updatedLinks = externalLinks.map((link) => {
+                    if (link.id === selectedLink.id) {
+                        link = payload
+                        return link
+                    } else {
+                        return link
+                    }
+                })
+                setExternalLinks(updatedLinks)
+                // updateExternalLink(payload)
+            } else {
+                const payload = validatedLinksData.map((link) => ({
+                    monitoringToolId: +link.tool.value,
+                    name: link.name,
+                    clusterIds: link.clusters.map((value) => value.value),
+                    url: link.urlTemplate,
+                }))
+
+                const updatedLinks = externalLinks.concat(payload)
+                setExternalLinks(updatedLinks)
+
+                // saveExternalLinks(payload)
+            }
+
+            setTimeout(() => {
+                setSavingLinks(false)
+                handleDialogVisibility()
+            }, 1500)
+        } catch (e) {
+            showError(e)
             handleDialogVisibility()
-        }, 1500)
+        }
     }
 
     return (
         <VisibleModal className="add-external-link-dialog" onEscape={handleDialogVisibility}>
             <div className="modal__body">
                 <div className="modal__header">
-                    <h3 className="modal__title">Add link</h3>
-                    <button type="button" className="transparent" onClick={handleDialogVisibility} disabled={savingLinks}>
+                    <h3 className="modal__title">{selectedLink ? 'Update link' : 'Add link'}</h3>
+                    <button
+                        type="button"
+                        className="transparent"
+                        onClick={handleDialogVisibility}
+                        disabled={savingLinks}
+                    >
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
@@ -648,5 +777,123 @@ export const AddExternalLinkDialog = ({ handleDialogVisibility }) => {
                 </div>
             </div>
         </VisibleModal>
+    )
+}
+
+export const DeleteExternalLinkDialog = ({
+    selectedLink,
+    externalLinks,
+    isAPICallInProgress,
+    setAPICallInProgress,
+    setExternalLinks,
+    setShowDeleteConfirmation,
+}: {
+    selectedLink: ExternalLink
+    externalLinks: ExternalLink[]
+    isAPICallInProgress: boolean
+    setAPICallInProgress: React.Dispatch<React.SetStateAction<boolean>>
+    setExternalLinks: React.Dispatch<React.SetStateAction<ExternalLink[]>>
+    setShowDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
+}) => {
+    const deleteLink = async () => {
+        try {
+            setAPICallInProgress(true)
+            // const { result } = await deleteExternalLink(link.id)
+
+            // if (result?.success) {
+            //     const { result } = await getExternalLinks()
+            //     setExternalLinks(result || [])
+            // }
+
+            setExternalLinks(
+                externalLinks.filter((link) => link.id !== selectedLink.id && link.name !== selectedLink.name),
+            )
+
+            setTimeout(() => {
+                toast.success('Deleted successfully!')
+                setAPICallInProgress(false)
+                setShowDeleteConfirmation(false)
+            }, 1500)
+        } catch (e) {
+            showError(e)
+            setAPICallInProgress(false)
+            setShowDeleteConfirmation(false)
+        }
+    }
+
+    return (
+        <DeleteDialog
+            title={`Delete external link "${selectedLink.name}"`}
+            delete={deleteLink}
+            closeDelete={() => setShowDeleteConfirmation(false)}
+            apiCallInProgress={isAPICallInProgress}
+        >
+            <DeleteDialog.Description>
+                <p>{selectedLink.name} links will no longer be shown in applications.</p>
+                <p>Are you sure ?</p>
+            </DeleteDialog.Description>
+        </DeleteDialog>
+    )
+}
+
+export const AppliedFilterChips = ({ clusters, appliedClusters, setAppliedClusters, queryParams, history }) => {
+    // Revisit
+    useEffect(() => {
+        if (appliedClusters.length === 0 && queryParams.get('cluster')) {
+            const appliedClusterIds = queryParams.get('cluster').split(',')
+
+            if (appliedClusterIds && appliedClusterIds.length > 0) {
+                const filteredClusterIds = clusters.filter((cluster) => appliedClusterIds.includes(cluster.value))
+                setAppliedClusters(filteredClusterIds)
+            }
+        }
+    }, [appliedClusters])
+
+    const removeFilter = (filter): void => {
+        const filteredClusters = appliedClusters.filter((cluster) => cluster.value !== filter.value)
+        const ids = filteredClusters.map((cluster) => cluster.value)
+        ids.sort()
+
+        setAppliedClusters(filteredClusters)
+
+        if (ids.length > 0) {
+            queryParams.set('cluster', ids.toString())
+        } else {
+            queryParams.delete('cluster')
+        }
+
+        history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
+    }
+
+    const removeAllFilters = (): void => {
+        setAppliedClusters([])
+        queryParams.delete('cluster')
+        history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
+    }
+
+    return (
+        <div className="saved-filters__wrap position-rel">
+            {appliedClusters.map((filter) => {
+                return (
+                    <div key={filter.key} className="saved-filter">
+                        <span className="fw-6">Cluster</span>
+                        <span className="saved-filter-divider ml-6 mr-6"></span>
+                        <span>{filter.label}</span>
+                        <button type="button" className="saved-filter__clear-btn" onClick={() => removeFilter(filter)}>
+                            <Close className="icon-dim-12" />
+                        </button>
+                    </div>
+                )
+            })}
+            <button
+                type="button"
+                className="saved-filters__clear-btn fs-13"
+                onClick={() => {
+                    removeAllFilters()
+                }}
+            >
+                Clear All Filters
+            </button>
+        </div>
     )
 }
