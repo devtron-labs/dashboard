@@ -364,7 +364,7 @@ function migrateOldData(
                     scriptType: ScriptType.SHELL,
                     script: data.script,
                     conditionDetails: [],
-                    outputDirectoryPath: []
+                    outputDirectoryPath: [],
                 },
             }
         }),
@@ -492,10 +492,10 @@ function createCurlRequest(externalCiConfig): string {
     return curl
 }
 
-export function getPluginsData(): Promise<any> {
-    return get(Routes.PLUGIN_LIST)
+export function getPluginsData(appId: number): Promise<any> {
+    return get(`${Routes.PLUGIN_LIST}?appId=${appId}`)
 }
 
-export function getPluginDetail(pluginID: number): Promise<any> {
-    return get(`${Routes.PLUGIN_DETAIL}/${pluginID}`)
+export function getPluginDetail(pluginID: number, appId: number): Promise<any> {
+    return get(`${Routes.PLUGIN_DETAIL}/${pluginID}?appId=${appId}`)
 }

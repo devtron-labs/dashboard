@@ -6,7 +6,7 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { PopupMenu } from '../common'
 import { ciPipelineContext } from './CIPipeline'
-import { FormType } from '../ciPipeline/types'
+import { FormErrorObjectType, FormType, StepType, TaskErrorObj } from '../ciPipeline/types'
 
 export function TaskList() {
     const {
@@ -17,6 +17,9 @@ export function TaskList() {
         selectedTaskIndex,
         setSelectedTaskIndex,
         calculateLastStepDetail,
+        formDataErrorObj,
+        setFormDataErrorObj,
+        validateTask,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -31,6 +34,9 @@ export function TaskList() {
         ) => {
             index: number
         }
+        formDataErrorObj: FormErrorObjectType
+        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
+        validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
     } = useContext(ciPipelineContext)
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
@@ -50,6 +56,12 @@ export function TaskList() {
         setSelectedTaskIndex(index)
         _formData[activeStageName].steps = newList
         setFormData(_formData)
+        const _formDataErrorObj = { ...formDataErrorObj }
+        const newErrorList = [...formDataErrorObj[activeStageName].steps]
+        newErrorList.splice(dragItemIndex, 1)
+        newErrorList.splice(index, 0, item)
+        _formDataErrorObj[activeStageName].steps = newErrorList
+        setFormDataErrorObj(_formDataErrorObj)
     }
 
     const handleDrop = (index: number): void => {
@@ -68,9 +80,20 @@ export function TaskList() {
         _formData[activeStageName].steps = newList
         calculateLastStepDetail(false, _formData, index)
         setFormData(_formData)
+        const _formDataErrorObj = { ...formDataErrorObj }
+        const newErrorList = [...formDataErrorObj[activeStageName].steps]
+        newErrorList.splice(index, 1)
+        _formDataErrorObj[activeStageName].steps = newErrorList
+        setFormDataErrorObj(_formDataErrorObj)
     }
 
     const handleSelectedTaskChange = (index: number): void => {
+        const _formDataErrorObj = { ...formDataErrorObj }
+        validateTask(
+            formData[activeStageName].steps[selectedTaskIndex],
+            _formDataErrorObj[activeStageName].steps[selectedTaskIndex],
+        )
+        setFormDataErrorObj(_formDataErrorObj)
         setSelectedTaskIndex(index)
     }
 
@@ -91,7 +114,10 @@ export function TaskList() {
                         >
                             <Drag className="drag-icon" onMouseDown={() => setDragAllowed(true)} />
                             <span className="w-80 pl-5 task-name-container">{taskDetail.name}</span>
-                            <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-2" />
+                            {formDataErrorObj[activeStageName].steps[index] &&
+                                !formDataErrorObj[activeStageName].steps[index].isValid && (
+                                    <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-2" />
+                                )}
                             <PopupMenu autoClose>
                                 <PopupMenu.Button isKebab>
                                     <Dots

@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { FormType, PluginDetailType, PluginType, ScriptType, VariableType } from '../ciPipeline/types'
+import {
+    FormErrorObjectType,
+    FormType,
+    PluginDetailType,
+    PluginType,
+    ScriptType,
+    VariableType,
+} from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
 import EmptyPostBuild from '../../assets/img/post-build-empty.png'
 import PreBuildIcon from '../../assets/icons/ic-cd-stage.svg'
@@ -27,6 +34,9 @@ export function PreBuild() {
         setConfigurationType,
         activeStageName,
         calculateLastStepDetail,
+        appId,
+        formDataErrorObj,
+        setFormDataErrorObj,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -44,6 +54,9 @@ export function PreBuild() {
         ) => {
             index: number
         }
+        appId: number
+        formDataErrorObj: FormErrorObjectType
+        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
     } = useContext(ciPipelineContext)
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
     const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
@@ -59,9 +72,10 @@ export function PreBuild() {
         setConfigurationType(ConfigurationType.GUI)
         calculateLastStepDetail(false, formData)
     }, [activeStageName])
+
     useEffect(() => {
         setPageState(ViewType.LOADING)
-        getPluginsData()
+        getPluginsData(appId)
             .then((response) => {
                 processPluginList(response?.result || [])
                 setPageState(ViewType.FORM)
@@ -71,6 +85,7 @@ export function PreBuild() {
                 showError(error)
             })
     }, [])
+
     function processPluginList(pluginList: PluginDetailType[]): void {
         const _presetPlugin = []
         const _sharedPlugin = []
@@ -88,6 +103,7 @@ export function PreBuild() {
 
     function setPluginType(pluginType: PluginType, pluginId: number): void {
         const _form = { ...formData }
+        const _formDataErrorObj = { ...formDataErrorObj }
         _form[activeStageName].steps[selectedTaskIndex].stepType = pluginType
         if (pluginType === PluginType.INLINE) {
             _form[activeStageName].steps[selectedTaskIndex].inlineStepDetail = {
@@ -109,7 +125,11 @@ export function PreBuild() {
                 ],
                 mountCodeToContainer: false,
                 mountDirectoryFromHost: false,
-                script: ''
+                script: '',
+            }
+            _formDataErrorObj[activeStageName]['steps'][selectedTaskIndex] = {
+                ..._formDataErrorObj[activeStageName]['steps'][selectedTaskIndex],
+                inlineStepDetail: { inputVariables: [], outputVariables: [] },
             }
         } else {
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {
@@ -117,8 +137,13 @@ export function PreBuild() {
                 pluginId: pluginId,
                 conditionDetails: [],
             }
+            _formDataErrorObj[activeStageName]['steps'][selectedTaskIndex] = {
+                ..._formDataErrorObj[activeStageName]['steps'][selectedTaskIndex],
+                pluginRefStepDetail: { inputVariables: [] },
+            }
         }
         setFormData(_form)
+        setFormDataErrorObj(_formDataErrorObj)
     }
 
     const handleEditorValueChange = (editorValue: string): void => {

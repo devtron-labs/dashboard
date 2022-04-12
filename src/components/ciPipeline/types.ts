@@ -127,18 +127,20 @@ interface PluginRefStepDetailType {
     conditionDetails?: ConditionDetails[]
 }
 
+export interface StepType {
+    id: number
+    index: number
+    name: string
+    description: string
+    stepType: PluginType
+    outputDirectoryPath: string[]
+    inlineStepDetail?: InlineStepDetailType
+    pluginRefStepDetail?: PluginRefStepDetailType
+}
+
 export interface BuildStageType {
     id: number
-    steps: {
-        id: number
-        index: number
-        name: string
-        description: string
-        stepType: PluginType
-        outputDirectoryPath: string[]
-        inlineStepDetail?: InlineStepDetailType
-        pluginRefStepDetail?: PluginRefStepDetailType
-    }[]
+    steps: StepType[]
 }
 export interface FormType {
     name: string
@@ -169,6 +171,33 @@ export interface FormType {
     ciPipelineEditable: true
     preBuildStage?: BuildStageType
     postBuildStage?: BuildStageType
+}
+
+interface ErrorObj {
+    isValid: boolean
+    message: string
+}
+export interface TaskErrorObj {
+    isValid: boolean
+    name: ErrorObj
+    inlineStepDetail?: { inputVariables?: ErrorObj[]; outputVariables?: ErrorObj[] }
+    pluginRefStepDetail?: { inputVariables?: ErrorObj[]; outputVariables?: ErrorObj[] }
+}
+export interface FormErrorObjectType {
+    name: string
+    materials?: MaterialType[]
+    preBuildStage?: {
+        isValid: boolean
+        steps: TaskErrorObj[]
+    }
+    buildStage?: {
+        isValid: boolean
+        name: ErrorObj
+    }
+    postBuildStage?: {
+        isValid: boolean
+        steps: TaskErrorObj[]
+    }
 }
 
 export interface CIPipelineDataType {
