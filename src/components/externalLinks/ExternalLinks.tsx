@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ErrorScreenManager, Progressing, showError } from '../common'
+import { ErrorScreenManager, Progressing, showError, sortOptionsByLabel, sortOptionsByValue } from '../common'
 import {
     AddExternalLinkDialog,
     AddLinkButton,
@@ -40,7 +40,6 @@ function ExternalLinks() {
         setLoading(true)
         Promise.all([getMonitoringTools(), getExternalLinks(), getClusterList()])
             .then(([monitoringToolsRes, externalLinksRes, clustersResp]) => {
-                console.log(monitoringToolsRes, externalLinksRes)
                 setExternalLinks(externalLinksRes.result || [])
                 setMonitoringTools(
                     monitoringToolsRes.result
@@ -78,24 +77,6 @@ function ExternalLinks() {
             setFilteredExternalLinks(externalLinks)
         }
     }, [appliedClusters, externalLinks])
-
-    const sortOptionsByLabel = (optionA, optionB) => {
-        if (optionA.label < optionB.label) {
-            return -1
-        } else if (optionA.label > optionB.label) {
-            return 1
-        }
-        return 0
-    }
-
-    const sortOptionsByValue = (optionA, optionB) => {
-        if (optionA.value < optionB.value) {
-            return -1
-        } else if (optionA.value > optionB.value) {
-            return 1
-        }
-        return 0
-    }
 
     const applyFilter = (): void => {
         // filter external links

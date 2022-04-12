@@ -10,9 +10,17 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
+import { ReactComponent as Link } from '../../assets/icons/ic-link.svg'
 import { URLS } from '../../config'
-import { OptionType } from '../app/types'
-import { ConfigureLinkActionType, ExternalLink, LinkAction, OptionTypeWithIcon } from './ExternalLinks.type'
+import { AppDetails, OptionType } from '../app/types'
+import { AppDetails as HelmAppDetails } from '../v2/appDetails/appDetails.type'
+import {
+    ConfigureLinkActionType,
+    ExternalLink,
+    LinkAction,
+    MonitoringTool,
+    OptionTypeWithIcon,
+} from './ExternalLinks.type'
 import { saveExternalLinks, updateExternalLink } from './ExternalLinks.service'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { toast } from 'react-toastify'
@@ -618,7 +626,7 @@ export const AddExternalLinkDialog = ({
                                     onMonitoringToolSelection={(key, selected) => {
                                         handleLinksDataActions('onMonitoringToolSelection', key, selected)
 
-                                        if (!link.name) {
+                                        if (!link.name && selected.label.toLowerCase() !== 'other') {
                                             handleLinksDataActions('onNameChange', key, selected.label)
                                         }
                                     }}
@@ -896,4 +904,94 @@ export const AppliedFilterChips = ({ clusters, appliedClusters, setAppliedCluste
             </button>
         </div>
     )
+}
+
+const getParsedURL = (
+    isAppLevel: boolean,
+    url: string,
+    appDetails: AppDetails | HelmAppDetails,
+    podName?: string,
+    containerName?: string,
+): string => {
+    let parsedUrl = url
+        .replace('{appName}', appDetails.appName)
+        .replace('{appId}', `${appDetails.appId}`)
+        .replace('{envId}', `${appDetails.environmentId}`)
+        .replace('{namespace}', `${appDetails.namespace}`)
+
+    if (!isAppLevel) {
+        parsedUrl = parsedUrl.replace('{podName}', podName).replace('{containerName}', `${containerName}`)
+    }
+
+    return parsedUrl
+}
+
+export const AppLevelExternalLinks = ({
+    appDetails,
+    helmAppDetails,
+    externalLinks,
+    monitoringTools,
+}: {
+    appDetails?: AppDetails
+    helmAppDetails?: HelmAppDetails
+    externalLinks: ExternalLink[]
+    monitoringTools: OptionTypeWithIcon[]
+}): JSX.Element | null => {
+    const [appLevelExternalLinks, setAppLevelExternalLinks] = useState<ExternalLink[]>([])
+    const details = appDetails || helmAppDetails
+
+    useEffect(() => {
+        if (externalLinks.length > 0) {
+            const filteredLinks = externalLinks.filter(
+                (link) => !link.url.includes('{podName}') && !link.url.includes('{containerName}'),
+            )
+            setAppLevelExternalLinks(filteredLinks)
+        }
+    }, [externalLinks])
+
+    const getExternalLinkChip = (link: ExternalLink) => {
+        const monitoringTool = monitoringTools.find((tool) => tool.value === link.monitoringToolId)
+
+        return (
+            <a
+                key={link.name}
+                href={getParsedURL(true, link.url, details)}
+                target="_blank"
+                className="flex left br-4 ml-8"
+                style={{
+                    border: '1px solid var(--N200)',
+                    backgroundColor: 'var(--N50)',
+                    height: '24px',
+                    padding: '4px 6px',
+                    textDecoration: 'none',
+                    color: 'var(--N700)',
+                }}
+            >
+                <img
+                    src={monitoringTool.icon}
+                    alt={link.name}
+                    style={{
+                        width: '16px',
+                        height: '16px',
+                        marginRight: '12px',
+                    }}
+                />
+                {link.name}
+            </a>
+        )
+    }
+
+    return appLevelExternalLinks.length > 0 ? (
+        <div
+            className="flex left mb-14 pt-16 pb-16 pl-20 pr-20"
+            style={{
+                width: '100%',
+                height: '56px',
+                background: '#FFFFFF',
+            }}
+        >
+            <Link className="icon-dim-20 mr-16" />
+            {appLevelExternalLinks.map((link) => getExternalLinkChip(link))}
+        </div>
+    ) : null
 }

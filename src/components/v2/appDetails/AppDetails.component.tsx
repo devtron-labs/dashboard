@@ -18,8 +18,16 @@ import EnvironmentStatusComponent from './sourceInfo/environmentStatus/Environme
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component';
 import SyncErrorComponent from './SyncError.component';
 import { useEventSource } from '../../common';
+import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component';
+import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type';
 
-const AppDetailsComponent = () => {
+const AppDetailsComponent = ({
+    externalLinks,
+    monitoringTools,
+}: {
+    externalLinks: ExternalLink[]
+    monitoringTools: OptionTypeWithIcon[]
+}) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
     const { path, url } = useRouteMatch();
     const history = useHistory();
@@ -94,6 +102,7 @@ const AppDetailsComponent = () => {
             </div>
 
             <SyncErrorComponent appStreamData={streamData} />
+            <AppLevelExternalLinks helmAppDetails={appDetails} externalLinks={externalLinks} monitoringTools={monitoringTools} />
 
             {appDetails.resourceTree?.nodes?.length > 0 && (
                 <>

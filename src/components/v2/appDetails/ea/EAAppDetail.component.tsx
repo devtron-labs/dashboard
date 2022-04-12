@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {useLocation, useHistory} from 'react-router';
-import { showError, Progressing, ErrorScreenManager,  } from '../../../common';
+import { showError, Progressing, ErrorScreenManager, sortOptionsByValue,  } from '../../../common';
 import { getAppDetail, HelmAppDetailResponse, HelmAppDetail, HelmAppDetailAndInstalledAppInfo } from '../../../external-apps/ExternalAppService';
 import { ServerErrors } from '../../../../modals/commonTypes';
 import IndexStore from '../index.store';
@@ -10,12 +10,16 @@ import moment from 'moment'
 import * as queryString from 'query-string';
 import '../../lib/bootstrap-grid.min.css';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../../../util/URLUtil';
+import { getExternalLinks, getMonitoringTools, MOCK_MONITORING_TOOL } from '../../../externalLinks/ExternalLinks.service';
+import { ExternalLink, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
 
 function ExternalAppDetail({appId, appName}) {
     const location = useLocation();
     const history = useHistory();
     const [isLoading, setIsLoading] = useState(true);
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
+    const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([])
+    const [monitoringTools, setMonitoringTools] = useState<OptionTypeWithIcon[]>(MOCK_MONITORING_TOOL)
 
     let initTimer = null;
     let isAPICallInProgress = false;
@@ -76,13 +80,34 @@ function ExternalAppDetail({appId, appName}) {
         return genericAppDetail
     }
 
-    const _getAndSetAppDetail = () => {
+    const _getAndSetAppDetail = async () => {
         isAPICallInProgress = true;
         getAppDetail(appId)
             .then((appDetailResponse: HelmAppDetailResponse) => {
                 IndexStore.publishAppDetails(_convertToGenericAppDetailModel(appDetailResponse.result));
-                setIsLoading(false);
-                isAPICallInProgress = false;
+
+                Promise.all([getMonitoringTools(), getExternalLinks(appDetailResponse.result.appDetail.environmentDetails.clusterId)])
+                .then(([monitoringToolsRes, externalLinksRes]) => {
+                    setExternalLinks(externalLinksRes.result || [])
+                    setMonitoringTools(
+                        monitoringToolsRes.result
+                            ?.map((tool) => ({
+                                label: tool.name,
+                                value: tool.id,
+                                icon: tool.icon,
+                            }))
+                            .sort(sortOptionsByValue) || [],
+                    )             
+                    setIsLoading(false);
+                    isAPICallInProgress = false;
+                })
+                .catch((e) => {
+                    setMonitoringTools(monitoringTools)
+                    setExternalLinks(externalLinks)                 
+                    setIsLoading(false);
+                    isAPICallInProgress = false;
+                })
+
                 setErrorResponseCode(undefined);
             })
             .catch((errors: ServerErrors) => {
@@ -108,7 +133,7 @@ function ExternalAppDetail({appId, appName}) {
             }
 
             { !isLoading && !errorResponseCode &&
-                <AppDetailsComponent />
+                <AppDetailsComponent externalLinks={externalLinks} monitoringTools={monitoringTools} />
             }
 
         </>

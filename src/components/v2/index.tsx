@@ -2,7 +2,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { useRouteMatch, useParams, Redirect,useLocation, useHistory } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
 import { URLS } from '../../config';
-import { DetailsProgressing, showError, ErrorScreenManager } from '../common';
+import { DetailsProgressing, showError, ErrorScreenManager, sortOptionsByValue } from '../common';
 import './lib/bootstrap-grid.min.css';
 import ValuesComponent from './values/ChartValues.component';
 import AppHeaderComponent from './headers/AppHeader.component';
@@ -14,6 +14,8 @@ import IndexStore from './appDetails/index.store';
 import ErrorImage from './assets/icons/ic-404-error.png';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil';
 import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHistory.component';
+import { ExternalLink, OptionTypeWithIcon } from '../externalLinks/ExternalLinks.type';
+import { getExternalLinks, getMonitoringTools, MOCK_MONITORING_TOOL } from '../externalLinks/ExternalLinks.service';
 
 let initTimer = null;
 
@@ -24,6 +26,8 @@ function RouterComponent({ envType }) {
     const location = useLocation();
     const history = useHistory();
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
+    const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([])
+    const [monitoringTools, setMonitoringTools] = useState<OptionTypeWithIcon[]>(MOCK_MONITORING_TOOL)
 
     useEffect(() => {
         IndexStore.setEnvDetails(envType, +params.appId, +params.envId);
@@ -73,7 +77,26 @@ function RouterComponent({ envType }) {
                 response = await getInstalledAppDetail(+params.appId, +params.envId);
             }
             IndexStore.publishAppDetails(response.result);
-            setIsLoading(false);
+
+            Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId)])
+                .then(([monitoringToolsRes, externalLinksRes]) => {
+                    setExternalLinks(externalLinksRes.result || [])
+                    setMonitoringTools(
+                        monitoringToolsRes.result
+                            ?.map((tool) => ({
+                                label: tool.name,
+                                value: tool.id,
+                                icon: tool.icon,
+                            }))
+                            .sort(sortOptionsByValue) || [],
+                    )
+                    setIsLoading(false);
+                })
+                .catch((e) => {
+                    setMonitoringTools(monitoringTools)
+                    setExternalLinks(externalLinks)
+                    setIsLoading(false);
+                })
             setErrorResponseCode(undefined);
         } catch (e: any) {
             showError(e);
@@ -116,7 +139,9 @@ function RouterComponent({ envType }) {
                     {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
                     <Suspense fallback={<DetailsProgressing loadingText="Please wait…" size={24} />}>
                         <Switch>
-                            <Route path={`${path}/${URLS.APP_DETAILS}`} component={AppDetailsComponent} />
+                            <Route path={`${path}/${URLS.APP_DETAILS}`}>
+                                <AppDetailsComponent externalLinks={externalLinks} monitoringTools={monitoringTools} />
+                            </Route>
                             <Route path={`${path}/${URLS.APP_VALUES}`} component={ValuesComponent} />
                             <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}>
                                 <ChartDeploymentHistory appId={params.appId} isExternal={false} />
