@@ -305,28 +305,19 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             if (
                 !isFromAddNewTask &&
                 i >= startIndex &&
-                _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables
+                _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables
             ) {
-                for (const key in _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables) {
-                    const value = _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[key]
+                for (const key in _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables) {
+                    const variableDetail =
+                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[key]
                     if (
-                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[key]
-                            .RefVariableUsed &&
-                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[key]
-                            .RefVariableType === RefVariableType.FROM_PREVIOUS_STEP
+                        variableDetail.RefVariableUsed &&
+                        variableDetail.RefVariableType === RefVariableType.FROM_PREVIOUS_STEP
                     ) {
-                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[
-                            key
-                        ].RefVariableUsed = false
-                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[
-                            key
-                        ].RefVariableStepIndex = 0
-                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[
-                            key
-                        ].RefVariableName = ''
-                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[
-                            key
-                        ].RefVariableType = RefVariableType.NEW
+                        variableDetail.RefVariableUsed = false
+                        variableDetail.RefVariableStepIndex = 0
+                        variableDetail.RefVariableName = ''
+                        variableDetail.RefVariableType = RefVariableType.NEW
                     }
                 }
             }

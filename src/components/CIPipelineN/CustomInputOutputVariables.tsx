@@ -17,11 +17,19 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         setFormData,
         selectedTaskIndex,
         activeStageName,
+        calculateLastStepDetail,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         selectedTaskIndex: number
         activeStageName: string
+        calculateLastStepDetail: (
+            isFromAddNewTask: boolean,
+            _formData: FormType,
+            startIndex?: number,
+        ) => {
+            index: number
+        }
     } = useContext(ciPipelineContext)
     const addVariable = (): void => {
         const _formData = { ...formData }
@@ -59,6 +67,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const deleteInputOutputValue = (index: number): void => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].splice(index, 1)
+        if (type === PluginVariableType.OUTPUT) {
+            calculateLastStepDetail(false, _formData, selectedTaskIndex)
+        }
         setFormData(_formData)
     }
 
