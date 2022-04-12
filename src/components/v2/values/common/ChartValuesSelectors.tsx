@@ -155,12 +155,21 @@ export const ChartRepoSelector = ({
     }
 
     function repoChartOptionLabel(props: any) {
-        const { innerProps, innerRef } = props;
-        const isCurrentlySelected = props.data.chartId === repoChartValue.chartId;
+        const { innerProps, innerRef } = props
+        const isCurrentlySelected = props.data.chartId === repoChartValue.chartId
         return (
-            <div ref={innerRef} {...innerProps} className="repochart-dropdown-wrap">
+            <div
+                ref={innerRef}
+                {...innerProps}
+                className="repochart-dropdown-wrap"
+                style={{
+                    padding: '12px 16px',
+                    cursor: 'pointer',
+                    backgroundColor: isCurrentlySelected ? '#f0f7ff' : props.isFocused ? 'var(--N100)' : 'white',
+                    color: isCurrentlySelected ? 'var(--B500)' : 'var(--N900)',
+                }}
+            >
                 <div className="flex left">
-                    {isCurrentlySelected && <img src={checkIcon} className="select__check-icon"></img>}
                     <span>
                         {props.data.chartRepoName}/{props.data.chartName}
                     </span>

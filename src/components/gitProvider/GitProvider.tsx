@@ -5,7 +5,8 @@ import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ErrorSc
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration';
 import { toast } from 'react-toastify';
 import { DOCUMENTATION } from '../../config';
-import { DropdownIndicator, Option } from './gitProvider.util';
+import { DropdownIndicator } from './gitProvider.util';
+import { Option } from '../v2/common/ReactSelect.utils';
 import Tippy from '@tippyjs/react';
 import ReactSelect, { components } from 'react-select';
 import { multiSelectStyles, VisibleModal } from '../common';

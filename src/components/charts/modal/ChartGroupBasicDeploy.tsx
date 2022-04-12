@@ -4,6 +4,7 @@ import { ProjectType, ChartGroupEntry } from '../charts.types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-edit.svg';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 import { styles, smallMenuList, menuList, DropdownIndicator } from '../charts.util';
+import { Option } from '../../v2/common/ReactSelect.utils';
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg';
 import ReactSelect from 'react-select';
 
@@ -104,7 +105,8 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                         autoFocus
                         defaultValue={selectedProject}
                         components={{
-                            DropdownIndicator
+                            DropdownIndicator,
+                            Option
                         }}
                         tabIndex={1}
                         placeholder="Select Project"
@@ -125,7 +127,8 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                     <ReactSelect
                         defaultValue={selectedEnvironment}
                         components={{
-                            DropdownIndicator
+                            DropdownIndicator,
+                            Option
                         }}
                         tabIndex={2}
                         placeholder="Select Environment"

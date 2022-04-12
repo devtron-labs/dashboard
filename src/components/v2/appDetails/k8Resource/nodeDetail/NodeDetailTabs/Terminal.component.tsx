@@ -12,7 +12,7 @@ import { multiSelectStyles } from '../../../../common/ReactSelectCustomization';
 import { SocketConnectionType } from './node.type';
 import TerminalView from './terminal/Terminal';
 import MessageUI from '../../../../common/message.ui';
-import { SingleSelectOption as Option } from '../../../../../common';
+import { Option } from '../../../../common/ReactSelect.utils';
 
 const shellTypes = [
     { label: 'sh', value: 'sh' },
@@ -123,20 +123,20 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                                 minHeight: '24px !important',
                                 cursor: 'pointer',
                             }),
-                            singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c', direction: 'rtl', marginLeft: 0 }),
+                            singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c', direction: 'rtl', textAlign: 'left', marginLeft: '2px' }),
                             indicatorsContainer: (provided, state) => ({
                                 ...provided,
                             }),
                             option: (base, state) => ({
-                              ...base,
-                              backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                              color: 'var(--N900)',
-                              textOverflow: 'ellipsis',
-                              overflow: 'hidden',
-                              whiteSpace: 'nowrap',
-                              direction: 'rtl',
-                              cursor: 'pointer',
-                          }),
+                                ...base,
+                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                color: 'var(--N900)',
+                                textOverflow: 'ellipsis',
+                                overflow: 'hidden',
+                                whiteSpace: 'nowrap',
+                                direction: 'rtl',
+                                cursor: 'pointer',
+                            }),
                         }}
                         components={{
                             IndicatorSeparator: null,
@@ -167,20 +167,20 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                                 minHeight: '24px !important',
                                 cursor: 'pointer',
                             }),
-                            singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
+                            singleValue: (base, state) => ({ ...base, fontWeight: 600, textAlign: 'left', color: '#06c' }),
                             indicatorsContainer: (provided, state) => ({
                                 ...provided,
                             }),
                             option: (base, state) => ({
-                              ...base,
-                              backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                              color: 'var(--N900)',
-                              textOverflow: 'ellipsis',
-                              overflow: 'hidden',
-                              whiteSpace: 'nowrap',
-                              direction: 'rtl',
-                              cursor: 'pointer',
-                          }),
+                                ...base,
+                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                color: 'var(--N900)',
+                                textOverflow: 'ellipsis',
+                                overflow: 'hidden',
+                                whiteSpace: 'nowrap',
+                                direction: 'rtl',
+                                cursor: 'pointer',
+                            }),
                         }}
                         components={{
                             IndicatorSeparator: null,

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Select } from '../common';
 import { SourceTypeMap, URLS } from '../../config';
-import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import { components } from 'react-select';
 import { MaterialType, Githost, WebhookEvent, CiPipelineSourceTypeOption } from './types';
 import { Link } from 'react-router-dom'
@@ -9,6 +8,7 @@ import ReactSelect from 'react-select';
 import error from '../../assets/icons/misc/errorInfo.svg';
 import git from '../../assets/icons/git/git.svg';
 import { reactSelectStyles } from './ciPipeline.util';
+import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { DropdownIndicator } from '../charts/charts.util';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outline-purple.svg';
 import { ConfigureWebhook } from './ConfigureWebhook';
@@ -74,17 +74,19 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
     }
 
     function Option(_props) {
-        const { selectOption, data } = _props;
-        const onClick = (e) => selectOption(data);
+        const { selectProps, selectOption, data } = _props
+        selectProps.styles.option = getCustomOptionSelectionStyle({
+            backgroundColor: data.isSelected ? '#f0f7ff' : _props.isFocused ? 'var(--N100)' : 'white',
+            color: data.isSelected ? 'var(--B500)' : 'var(--N900)',
+        })
 
-        return <div className="pl-12" style={{ background: _props.isFocused ? 'var(--N100)' : 'transparent' }}>
+        return (
             <div className="flex left">
-                {_props.data.isSelected ? <Check onClick={onClick} className="mr-8 icon-dim-16 scb-5" /> : <span onClick={onClick} className="mr-8 icon-dim-16" />}
-                <components.Option {..._props} >
+                <components.Option {..._props}>
                     {_props.children}
                 </components.Option>
             </div>
-        </div>
+        )
     };
 
     return <>
@@ -99,7 +101,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
             }
 
             let errorObj = props.validationRules?.sourceValue(mat.value);
-
+ 
             return <>
                 <div className="mt-20" key={mat.gitMaterialId}>
                     <div className="mb-10 fs-14 cn-9 fw-5 lh-1-43">
