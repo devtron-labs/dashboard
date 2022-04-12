@@ -1,29 +1,33 @@
-import React, { useState } from 'react';
-import AppStatusDetailModal from './AppStatusDetailModal';
-import './environmentStatus.scss';
-import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg';
-import { ReactComponent as Alert } from '../../../assets/icons/ic-alert-triangle.svg';
-import IndexStore from '../../index.store';
-import moment from 'moment';
-import { URLS } from '../../../../../config';
-import { AppType } from "../../../appDetails/appDetails.type";
-import { useSharedState } from '../../../utils/useSharedState';
-import { Link } from 'react-router-dom';
-import { useRouteMatch, useHistory } from 'react-router';
-import Tippy from '@tippyjs/react';
+import React, { useState } from 'react'
+import AppStatusDetailModal from './AppStatusDetailModal'
+import './environmentStatus.scss'
+import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg'
+import { ReactComponent as Alert } from '../../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
+import IndexStore from '../../index.store'
+import moment from 'moment'
+import { URLS } from '../../../../../config'
+import { AppType } from '../../../appDetails/appDetails.type'
+import { useSharedState } from '../../../utils/useSharedState'
+import { Link } from 'react-router-dom'
+import { useRouteMatch, useHistory } from 'react-router'
+import Tippy from '@tippyjs/react'
+import NotesDrawer from './NotesDrawer'
 
-function EnvironmentStatusComponent({appStreamData}:{appStreamData: any}) {
-    const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable());
-    const [showAppStatusDetail, setShowAppStatusDetail] = useState(false);
-    const status = appDetails.resourceTree?.status || '';
-    const showHibernationStatusMessage = status.toLowerCase() === 'hibernated' || status.toLowerCase() === 'partially hibernated'
-    const { path, url } = useRouteMatch();
-    const history = useHistory();
+function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
+    const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
+    const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
+    const [showNotes, setShowNotes] = useState(false)
+    const status = appDetails.resourceTree?.status || ''
+    const showHibernationStatusMessage =
+        status.toLowerCase() === 'hibernated' || status.toLowerCase() === 'partially hibernated'
+    const { path, url } = useRouteMatch()
+    const history = useHistory()
 
     const onClickUpgrade = () => {
-        let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`;
-        history.push(_url);
-    };
+        let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
+        history.push(_url)
+    }
 
     return (
         <div>
@@ -32,17 +36,25 @@ function EnvironmentStatusComponent({appStreamData}:{appStreamData: any}) {
                     <div className="app-status-card bcn-0 mr-12 br-8 p-16">
                         <div className="lh-1-33 cn-9 flex left">
                             <span>Application status</span>
-                            <Tippy className="default-tt cursor" arrow={false} content={'The health status of your app'}>
+                            <Tippy
+                                className="default-tt cursor"
+                                arrow={false}
+                                content={'The health status of your app'}
+                            >
                                 <Question className="cursor icon-dim-16 ml-4" />
                             </Tippy>
                         </div>
 
                         <div className={`f-${status.toLowerCase()} text-capitalize fw-6 fs-14 flex left`}>
                             <span>{status}</span>
-                            <figure className={`${showHibernationStatusMessage ? 'hibernating' : status.toLowerCase()} app-summary__icon ml-8 icon-dim-20`}></figure>
+                            <figure
+                                className={`${
+                                    showHibernationStatusMessage ? 'hibernating' : status.toLowerCase()
+                                } app-summary__icon ml-8 icon-dim-20`}
+                            ></figure>
                         </div>
                         <div onClick={() => setShowAppStatusDetail(true)}>
-                            <span className="cursor cb-5 fw-6">Details</span>
+                            <span className="details-hover cursor cb-5 fw-6">Details</span>
                         </div>
                     </div>
                 )}
@@ -51,16 +63,28 @@ function EnvironmentStatusComponent({appStreamData}:{appStreamData: any}) {
                     <div className="app-status-card bcn-0 mr-12 br-8 p-16">
                         <div className="lh-1-33 cn-9 flex left">
                             <span>Config apply status</span>
-                            <Tippy className="default-tt cursor" arrow={false} content={'Whether or not your last helm install was successful'}>
+                            <Tippy
+                                className="default-tt cursor"
+                                arrow={false}
+                                content={'Whether or not your last helm install was successful'}
+                            >
                                 <Question className="cursor icon-dim-16 ml-4" />
                             </Tippy>
                         </div>
-                        <div className={`f-${appDetails.additionalData["status"].toLowerCase()} text-capitalize fw-6 fs-14 flex left`}>
-                            <span>{appDetails.additionalData["status"]}</span>
-                            <figure className={`${appDetails.additionalData["status"].toLowerCase()} app-summary__icon ml-8 icon-dim-20`}></figure>
+                        <div
+                            className={`f-${appDetails.additionalData[
+                                'status'
+                            ].toLowerCase()} text-capitalize fw-6 fs-14 flex left`}
+                        >
+                            <span>{appDetails.additionalData['status']}</span>
+                            <figure
+                                className={`${appDetails.additionalData[
+                                    'status'
+                                ].toLowerCase()} app-summary__icon ml-8 icon-dim-20`}
+                            ></figure>
                         </div>
                         <div className="lh-1-33 cn-9 flex left">
-                            <span>{appDetails.additionalData["message"]}</span>
+                            <span>{appDetails.additionalData['message']}</span>
                         </div>
                     </div>
                 )}
@@ -69,7 +93,11 @@ function EnvironmentStatusComponent({appStreamData}:{appStreamData: any}) {
                     <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
                         <div className="cn-9 lh-1-33 flex left">
                             <span>Last updated</span>
-                            <Tippy className="default-tt cursor" arrow={false} content={'When was this app last updated'}>
+                            <Tippy
+                                className="default-tt cursor"
+                                arrow={false}
+                                content={'When was this app last updated'}
+                            >
                                 <Question className="cursor icon-dim-16 ml-4" />
                             </Tippy>
                         </div>
@@ -77,8 +105,7 @@ function EnvironmentStatusComponent({appStreamData}:{appStreamData: any}) {
                             {moment(appDetails?.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()}
                         </div>
                         {appDetails?.lastDeployedBy && appDetails?.lastDeployedBy}
-                        {
-                            appDetails.appType == AppType.EXTERNAL_HELM_CHART &&
+                        {appDetails.appType == AppType.EXTERNAL_HELM_CHART && (
                             <div>
                                 <Link
                                     className="cb-5 fw-6"
@@ -87,7 +114,7 @@ function EnvironmentStatusComponent({appStreamData}:{appStreamData: any}) {
                                     Details
                                 </Link>
                             </div>
-                        }
+                        )}
                     </div>
                 )}
 
@@ -95,28 +122,38 @@ function EnvironmentStatusComponent({appStreamData}:{appStreamData: any}) {
                     <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
                         <div className="cn-9 lh-1-33 flex left">
                             <span>Chart used</span>
-                            <Tippy className="default-tt cursor" arrow={false} content={'Chart used to deploy to this application'}>
+                            <Tippy
+                                className="default-tt cursor"
+                                arrow={false}
+                                content={'Chart used to deploy to this application'}
+                            >
                                 <Question className="cursor icon-dim-16 ml-4" />
                             </Tippy>
                         </div>
                         <div className=" fw-6 fs-14">
-                            {
-                                appDetails.appStoreChartName &&
-                                <span>{appDetails.appStoreChartName}/</span>
-                            }
+                            {appDetails.appStoreChartName && <span>{appDetails.appStoreChartName}/</span>}
                             {appDetails.appStoreAppName}({appDetails.appStoreAppVersion})
                         </div>
-                        {
-                            appDetails.appStoreChartId &&
-                            <div>
-                                <Link
-                                    className="cb-5 fw-6"
-                                    to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
-                                >
-                                    View Chart
-                                </Link>
-                            </div>
-                        }
+                        <div className="flex left">
+                            {appDetails.notes && (
+                                <div className="details-hover flex cb-5 fw-6 cursor" onClick={() => setShowNotes(true)}>
+                                    <File className="app-notes__icon icon-dim-16 mr-4" /> Notes.txt
+                                </div>
+                            )}
+                            {appDetails.notes && appDetails.appStoreChartId && (
+                                <div className="app-status-card__divider" />
+                            )}
+                            {appDetails.appStoreChartId && (
+                                <div>
+                                    <Link
+                                        className="cb-5 fw-6"
+                                        to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
+                                    >
+                                        View Chart
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
 
@@ -139,14 +176,22 @@ function EnvironmentStatusComponent({appStreamData}:{appStreamData: any}) {
             {showAppStatusDetail && (
                 <AppStatusDetailModal
                     close={() => {
-                        setShowAppStatusDetail(false);
+                        setShowAppStatusDetail(false)
                     }}
                     appStreamData={appStreamData}
                     showAppStatusMessage={showHibernationStatusMessage}
                 />
             )}
+            {showNotes && (
+                <NotesDrawer
+                    notes={appDetails.notes}
+                    close={() => {
+                        setShowNotes(false)
+                    }}
+                />
+            )}
         </div>
-    );
+    )
 }
 
-export default EnvironmentStatusComponent;
+export default EnvironmentStatusComponent

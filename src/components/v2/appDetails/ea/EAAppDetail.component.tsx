@@ -66,6 +66,7 @@ function ExternalAppDetail({appId, appName}) {
             appStoreAppVersion : helmAppDetail.chartMetadata.chartVersion,
             additionalData : helmAppDetail.releaseStatus,
             clusterId: helmAppDetail.environmentDetails.clusterId,
+            notes: helmAppDetail.chartMetadata.notes,
         }
 
         if(installedAppInfo){
