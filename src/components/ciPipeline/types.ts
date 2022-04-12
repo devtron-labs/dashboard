@@ -138,8 +138,6 @@ export interface BuildStageType {
         outputDirectoryPath: string[]
         inlineStepDetail?: InlineStepDetailType
         pluginRefStepDetail?: PluginRefStepDetailType
-        outputVariablesFromPrevSteps?: object
-        usedRefVariable?: object
     }[]
 }
 export interface FormType {

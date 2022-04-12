@@ -57,7 +57,6 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         preBuildStage: Map<string, VariableType>[]
         postBuildStage: Map<string, VariableType>[]
     }>({ preBuildStage: [], postBuildStage: [] })
-
     const [formData, setFormData] = useState<FormType>({
         name: '',
         args: [{ key: '', value: '' }],
@@ -303,22 +302,30 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                     },
                 )
             }
-            if (!isFromAddNewTask && i >= startIndex && _formData[activeStageName].steps[i].usedRefVariable) {
-                for (const key in _formData[activeStageName].steps[i].usedRefVariable) {
-                    const usedRefVariable = key.split('.')
-                    const value = _formData[activeStageName].steps[i].usedRefVariable[key]
-                    if (Number(usedRefVariable[0]) >= startIndex) {
+            if (
+                !isFromAddNewTask &&
+                i >= startIndex &&
+                _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables
+            ) {
+                for (const key in _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables) {
+                    const value = _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[key]
+                    if (
+                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[key]
+                            .RefVariableUsed &&
+                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[key]
+                            .RefVariableType === RefVariableType.FROM_PREVIOUS_STEP
+                    ) {
                         _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[
-                            value
+                            key
                         ].RefVariableUsed = false
                         _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[
-                            value
+                            key
                         ].RefVariableStepIndex = 0
                         _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[
-                            value
+                            key
                         ].RefVariableName = ''
                         _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[
-                            value
+                            key
                         ].RefVariableType = RefVariableType.NEW
                     }
                 }
