@@ -40,10 +40,10 @@ export function Sidebar() {
                             setConfigurationType(event.target.value)
                         }}
                     >
-                        <RadioLabel.Radio className="left-radius" value={ConfigurationType.GUI}>
+                        <RadioLabel.Radio className="left-radius width-120px" value={ConfigurationType.GUI}>
                             {ConfigurationType.GUI}
                         </RadioLabel.Radio>
-                        <RadioLabel.Radio className="right-radius" value={ConfigurationType.YAML}>
+                        <RadioLabel.Radio className="right-radius width-120px" value={ConfigurationType.YAML}>
                             {ConfigurationType.YAML}
                         </RadioLabel.Radio>
                     </RadioLabel>

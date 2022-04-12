@@ -320,11 +320,14 @@
 .configuration-container input + .radio__item-label {
     text-align: center;
     display: table;
-    padding: 3px;
+    padding: 2px 8px;
     background: var(--N0);
     border: 1px solid var(--N200);
-    width: 120px;
     color: var(--N400);
+}
+
+.configuration-container .width-120px input + .radio__item-label {
+    width: 120px;
 }
 
 .configuration-container .left-radius input + .radio__item-label {
