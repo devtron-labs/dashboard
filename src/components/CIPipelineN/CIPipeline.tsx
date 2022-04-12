@@ -16,7 +16,6 @@ import { CIPipelineDataType, FormType, PluginType, RefVariableType, VariableType
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
 import { PreBuild } from './PreBuild'
-import { PostBuild } from './PostBuild'
 import { Sidebar } from './Sidebar'
 import { Build } from './Build'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -472,11 +471,6 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                 ciPipelineId={ciPipeline.id}
                             />
                         </Route>
-                        {isAdvanced && (
-                            <Route path={`${path}/post-build`}>
-                                <PostBuild formData={formData} setFormData={setFormData} addNewTask={addNewTask} />
-                            </Route>
-                        )}
                         <Redirect to={`${path}/build`} />
                     </Switch>
                 </div>
