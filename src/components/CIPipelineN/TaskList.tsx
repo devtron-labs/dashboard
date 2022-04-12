@@ -1,35 +1,22 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { FormType, PluginType, VariableType } from '../ciPipeline/types'
 import { ReactComponent as Drag } from '../../assets/icons/drag.svg'
 import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { PopupMenu } from '../common'
+import { ciPipelineContext } from './CIPipeline'
 
-export function TaskList({
-    formData,
-    setFormData,
-    addNewTask,
-    activeStageName,
-    selectedTaskIndex: selectedTaskIndex,
-    setSelectedTaskIndex: setSelectedTaskIndex,
-    calculateLastStepDetail,
-}: {
-    formData: FormType
-    setFormData: React.Dispatch<React.SetStateAction<FormType>>
-    addNewTask: () => void
-    activeStageName: string
-    selectedTaskIndex: number
-    setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
-    calculateLastStepDetail: (
-        isFromAddNewTask: boolean,
-        _formData: FormType,
-        startIndex?: number,
-    ) => {
-        index: number
-    }
-}) {
+export function TaskList() {
+    const {
+        formData,
+        setFormData,
+        addNewTask,
+        activeStageName,
+        selectedTaskIndex,
+        setSelectedTaskIndex,
+        calculateLastStepDetail,
+    } = useContext(ciPipelineContext)
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
     const [dragAllowed, setDragAllowed] = useState<boolean>(false)

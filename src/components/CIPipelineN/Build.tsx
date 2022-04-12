@@ -1,27 +1,24 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
 import { SourceMaterials, WebhookCIProps } from '../ciPipeline/SourceMaterials'
-import { FormType } from '../ciPipeline/types'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { Progressing } from '../common'
 import error from '../../assets/icons/misc/errorInfo.svg'
+import { ciPipelineContext } from './CIPipeline'
 
 export function Build({
-    formData,
     pageState,
-    setFormData,
     showFormError,
     isAdvanced,
     ciPipelineId,
 }: {
-    formData: FormType
     pageState: string
-    setFormData: React.Dispatch<React.SetStateAction<FormType>>
     showFormError: boolean
     isAdvanced: boolean
     ciPipelineId: number
 }) {
+    const { formData, setFormData } = useContext(ciPipelineContext)
     const validationRules = new ValidationRules()
 
     const handleSourceChange = (event, gitMaterialId: number): void => {

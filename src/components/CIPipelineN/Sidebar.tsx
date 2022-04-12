@@ -1,37 +1,13 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { BuildStageVariable, ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { RadioGroup as RadioLabel } from '../common'
-import { FormType, VariableType } from '../ciPipeline/types'
 import { TaskList } from './TaskList'
+import { ciPipelineContext } from './CIPipeline'
 
-export function Sidebar({
-    formData,
-    setFormData,
-    addNewTask,
-    configurationType,
-    setConfigurationType,
-    activeStageName,
-    selectedTaskIndex,
-    setSelectedTaskIndex,
-    calculateLastStepDetail,
-}: {
-    formData: FormType
-    setFormData: React.Dispatch<React.SetStateAction<FormType>>
-    addNewTask: () => void
-    configurationType: string
-    setConfigurationType: React.Dispatch<React.SetStateAction<string>>
-    activeStageName: string
-    selectedTaskIndex: number
-    setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
-    calculateLastStepDetail: (
-        isFromAddNewTask: boolean,
-        _formData: FormType,
-        startIndex?: number,
-    ) => {
-        index: number
-    }
-}) {
+export function Sidebar() {
+    const { formData, setFormData, configurationType, setConfigurationType, activeStageName } =
+        useContext(ciPipelineContext)
     const changeTriggerType = (appCreationType: string): void => {
         const _formData = { ...formData }
         _formData.triggerType = appCreationType
@@ -62,15 +38,7 @@ export function Sidebar({
                     {configurationType === ConfigurationType.GUI && (
                         <>
                             <div className="text-uppercase fw-6 fs-12 cn-6">Tasks (IN ORDER OF EXECUTION)</div>
-                            <TaskList
-                                formData={formData}
-                                setFormData={setFormData}
-                                addNewTask={addNewTask}
-                                activeStageName={activeStageName}
-                                selectedTaskIndex={selectedTaskIndex}
-                                setSelectedTaskIndex={setSelectedTaskIndex}
-                                calculateLastStepDetail={calculateLastStepDetail}
-                            />
+                            <TaskList />
                         </>
                     )}
                 </div>

@@ -1,14 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { ConfigurationType, ViewType } from '../../config'
 import { RadioGroup, showError } from '../common'
-import {
-    ConditionContainerType,
-    FormType,
-    PluginType,
-    PluginVariableType,
-    ScriptType,
-    VariableType,
-} from '../ciPipeline/types'
+import { ConditionContainerType, PluginType, PluginVariableType, ScriptType } from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
 import { getPluginDetail } from '../ciPipeline/ciPipeline.service'
@@ -17,25 +10,11 @@ import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
+import { ciPipelineContext } from './CIPipeline'
 
-export function TaskDetailComponent({
-    setPageState,
-    selectedTaskIndex,
-    formData,
-    setFormData,
-    activeStageName,
-    inputVariablesListFromPrevStep,
-}: {
-    setPageState: React.Dispatch<React.SetStateAction<string>>
-    selectedTaskIndex: number
-    formData: FormType
-    setFormData: React.Dispatch<React.SetStateAction<FormType>>
-    activeStageName: string
-    inputVariablesListFromPrevStep: {
-        preBuildStage: Map<string, VariableType>[]
-        postBuildStage: Map<string, VariableType>[]
-    }
-}) {
+export function TaskDetailComponent() {
+    const { formData, setFormData, setPageState, selectedTaskIndex, activeStageName, inputVariablesListFromPrevStep } =
+        useContext(ciPipelineContext)
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [taskScriptType, setTaskScriptType] = useState<string>(
         formData.preBuildStage.steps[selectedTaskIndex]?.inlineStepDetail
@@ -190,77 +169,31 @@ export function TaskDetailComponent({
                 <>
                     <hr />
                     {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
-                        <CustomInputOutputVariables
-                            type={PluginVariableType.INPUT}
-                            selectedTaskIndex={selectedTaskIndex}
-                            formData={formData}
-                            setFormData={setFormData}
-                            activeStageName={activeStageName}
-                            inputVariablesListFromPrevStep={inputVariablesListFromPrevStep}
-                        />
+                        <CustomInputOutputVariables type={PluginVariableType.INPUT} />
                     ) : (
-                        <VariableContainer
-                            type={PluginVariableType.INPUT}
-                            selectedTaskIndex={selectedTaskIndex}
-                            formData={formData}
-                            setFormData={setFormData}
-                            activeStageName={activeStageName}
-                            inputVariablesListFromPrevStep={inputVariablesListFromPrevStep}
-                        />
+                        <VariableContainer type={PluginVariableType.INPUT} />
                     )}{' '}
                     <hr />
                     {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.inputVariables
                         ?.length > 0 && (
                         <>
-                            <ConditionContainer
-                                type={ConditionContainerType.TRIGGER_SKIP}
-                                selectedTaskIndex={selectedTaskIndex}
-                                formData={formData}
-                                setFormData={setFormData}
-                                activeStageName={activeStageName}
-                            />
+                            <ConditionContainer type={ConditionContainerType.TRIGGER_SKIP} />
                             <hr />
                         </>
                     )}
                     {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE && (
-                        <TaskTypeDetailComponent
-                            selectedTaskIndex={selectedTaskIndex}
-                            formData={formData}
-                            setFormData={setFormData}
-                            activeStageName={activeStageName}
-                            taskScriptType={taskScriptType}
-                        />
+                        <TaskTypeDetailComponent taskScriptType={taskScriptType} />
                     )}
                     {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
-                        <CustomInputOutputVariables
-                            type={PluginVariableType.OUTPUT}
-                            selectedTaskIndex={selectedTaskIndex}
-                            formData={formData}
-                            setFormData={setFormData}
-                            activeStageName={activeStageName}
-                            inputVariablesListFromPrevStep={inputVariablesListFromPrevStep}
-                        />
+                        <CustomInputOutputVariables type={PluginVariableType.OUTPUT} />
                     ) : (
-                        <VariableContainer
-                            type={PluginVariableType.OUTPUT}
-                            selectedTaskIndex={selectedTaskIndex}
-                            formData={formData}
-                            setFormData={setFormData}
-                            activeStageName={activeStageName}
-                            inputVariablesListFromPrevStep={inputVariablesListFromPrevStep}
-                        />
+                        <VariableContainer type={PluginVariableType.INPUT} />
                     )}
                     <hr />
                     {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.outputVariables
                         ?.length > 0 && (
                         <>
-                            <ConditionContainer
-                                type={ConditionContainerType.PASS_FAILURE}
-                                selectedTaskIndex={selectedTaskIndex}
-                                formData={formData}
-                                setFormData={setFormData}
-                                activeStageName={activeStageName}
-                            />
+                            <ConditionContainer type={ConditionContainerType.PASS_FAILURE} />
                             <hr />
                         </>
                     )}

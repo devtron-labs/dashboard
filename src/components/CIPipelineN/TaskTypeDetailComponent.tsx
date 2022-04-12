@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { FormType } from '../ciPipeline/types'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
+import { ciPipelineContext } from './CIPipeline'
 
 export enum ScriptType {
     SHELL = 'SHELL',
@@ -18,19 +18,8 @@ enum PortMap {
     PORTONCONTAINER = 'portOnContainer',
 }
 
-export function TaskTypeDetailComponent({
-    selectedTaskIndex,
-    formData,
-    setFormData,
-    activeStageName,
-    taskScriptType,
-}: {
-    selectedTaskIndex: number
-    formData: FormType
-    setFormData: React.Dispatch<React.SetStateAction<FormType>>
-    activeStageName: string
-    taskScriptType: string
-}) {
+export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: string }) {
+    const { formData, setFormData, selectedTaskIndex, activeStageName } = useContext(ciPipelineContext)
     const [storeArtifact, setStoreArtifact] = useState<string>('')
     const [script, setScript] = useState<string>('')
     const [mountCodeToContainer, setMountCodeToContainer] = useState<boolean>(false)

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { tempMultiSelectStyles } from './ciPipeline.utils'
 import ReactSelect from 'react-select'
-import { PluginVariableType, FormType, RefVariableType, VariableType, PluginType } from '../ciPipeline/types'
+import { RefVariableType, PluginType } from '../ciPipeline/types'
+import { ciPipelineContext } from './CIPipeline'
 
 export const globalVariable = [
     { value: 'docker-image-tag', label: 'docker-image-tag' },
@@ -9,24 +10,9 @@ export const globalVariable = [
     { value: 'time', label: 'time' },
 ]
 
-function CustomInputVariableSelect({
-    selectedTaskIndex,
-    formData,
-    setFormData,
-    activeStageName,
-    inputVariablesListFromPrevStep,
-    selectedVariableIndex,
-}: {
-    selectedTaskIndex: number
-    formData: FormType
-    setFormData: React.Dispatch<React.SetStateAction<FormType>>
-    activeStageName: string
-    inputVariablesListFromPrevStep: {
-        preBuildStage: Map<string, VariableType>[]
-        postBuildStage: Map<string, VariableType>[]
-    }
-    selectedVariableIndex: number
-}) {
+function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
+    const { formData, setFormData, selectedTaskIndex, activeStageName, inputVariablesListFromPrevStep } =
+        useContext(ciPipelineContext)
     const [selectedOutputVariable, setSelectedOutputVariable] = useState<{
         label: string
         value: string
