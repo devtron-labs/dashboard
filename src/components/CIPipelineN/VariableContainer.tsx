@@ -1,35 +1,20 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
-import { FormType, PluginVariableType, VariableType } from '../ciPipeline/types'
-import CustomInputOutputVariables from './CustomInputOutputVariables'
+import { FormType, PluginVariableType } from '../ciPipeline/types'
+import { ciPipelineContext } from './CIPipeline'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 
-export function VariableContainer({
-    type,
-    selectedTaskIndex,
-    formData,
-    setFormData,
-    activeStageName,
-    inputVariablesListFromPrevStep,
-}: {
-    type: PluginVariableType
-    selectedTaskIndex: number
-    formData: FormType
-    setFormData: React.Dispatch<React.SetStateAction<FormType>>
-    activeStageName: string
-    inputVariablesListFromPrevStep: {
-        preBuildStage: Map<string, VariableType>[]
-        postBuildStage: Map<string, VariableType>[]
-    }
-}) {
+export function VariableContainer({ type }: { type: PluginVariableType }) {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
-
-    const handleInputValueChange = (e: any, index: number): void => {
-        const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables[index]['value'] =
-            e.target.value
-        setFormData(_formData)
-    }
+    const {
+        formData,
+        selectedTaskIndex,
+        activeStageName,
+    }: {
+        formData: FormType
+        selectedTaskIndex: number
+        activeStageName: string
+    } = useContext(ciPipelineContext)
     return (
         <div>
             <div
@@ -61,14 +46,7 @@ export function VariableContainer({
                             <label className="p-4 fs-13 fw-4">{variable.format}</label>
                             {type === PluginVariableType.INPUT ? (
                                 <div className="p-4 fs-14">
-                                    <CustomInputVariableSelect
-                                        selectedTaskIndex={selectedTaskIndex}
-                                        formData={formData}
-                                        setFormData={setFormData}
-                                        activeStageName={activeStageName}
-                                        inputVariablesListFromPrevStep={inputVariablesListFromPrevStep}
-                                        selectedVariableIndex={index}
-                                    />
+                                    <CustomInputVariableSelect selectedVariableIndex={index} />
                                 </div>
                             ) : (
                                 <label className="p-4 fs-13 fw-4">{variable.description}</label>

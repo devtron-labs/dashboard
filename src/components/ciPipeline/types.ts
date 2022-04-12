@@ -72,7 +72,7 @@ export enum ConditionType {
 export interface VariableType {
     id: number
     name: string
-    value: number
+    value: string
     format: string
     description: string
     defaultValue: string
@@ -88,8 +88,8 @@ interface CommandArgsMap {
 }
 
 export interface PortMap {
-    portOnLocal: boolean
-    portOnContainer: boolean
+    portOnLocal: number
+    portOnContainer: number
 }
 interface ConditionDetails {
     id: number

@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import { ConditionContainerType, ConditionType, FormType, PluginType } from '../ciPipeline/types'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import ReactSelect from 'react-select'
+import { ciPipelineContext } from './CIPipeline'
 
-export function ConditionContainer({
-    type,
-    selectedTaskIndex,
-    formData,
-    setFormData,
-    activeStageName,
-}: {
-    type: ConditionContainerType
-    selectedTaskIndex: number
-    formData: FormType
-    setFormData: React.Dispatch<React.SetStateAction<FormType>>
-    activeStageName: string
-}) {
+export function ConditionContainer({ type }: { type: ConditionContainerType }) {
+    const {
+        formData,
+        setFormData,
+        selectedTaskIndex,
+        activeStageName,
+    }: {
+        formData: FormType
+        setFormData: React.Dispatch<React.SetStateAction<FormType>>
+        selectedTaskIndex: number
+        activeStageName: string
+    } = useContext(ciPipelineContext)
     const operatorOptions: { label: string; value: string }[] = ['=', '<=', '>=', '!=', '<', '>', '!'].map(
         (operator) => ({ label: operator, value: operator }),
     )

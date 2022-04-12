@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, createContext } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ButtonWithLoader, ConditionalWrap, DeleteDialog, showError, VisibleModal } from '../common'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
@@ -16,7 +16,6 @@ import { CIPipelineDataType, FormType, PluginType, RefVariableType, VariableType
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
 import { PreBuild } from './PreBuild'
-import { PostBuild } from './PostBuild'
 import { Sidebar } from './Sidebar'
 import { Build } from './Build'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -27,6 +26,8 @@ interface CIPipelineType {
     getWorkflows: () => void
     close: () => void
 }
+
+export const ciPipelineContext = createContext(null)
 
 export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, close }: CIPipelineType) {
     let { appId, workflowId, ciPipelineId } = useParams<{ appId: string; workflowId: string; ciPipelineId: string }>()
@@ -276,7 +277,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         startIndex?: number,
     ): { index: number } => {
         const stepsLength = _formData[activeStageName].steps.length
-        let index = 1
+        let index = 0
         let _outputVariablesFromPrevSteps: Map<string, VariableType> = new Map(),
             _inputVariablesListPerTask: Map<string, VariableType>[] = []
         for (let i = 0; i < stepsLength; i++) {
@@ -325,11 +326,12 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         }
         if (isFromAddNewTask) {
             _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
+            index++
         }
         const _inputVariablesListFromPrevStep = { ...inputVariablesListFromPrevStep }
         _inputVariablesListFromPrevStep[activeStageName] = _inputVariablesListPerTask
         setInputVariablesListFromPrevStep(_inputVariablesListFromPrevStep)
-        return { index: index + 1 }
+        return { index: index }
     }
 
     const addNewTask = () => {
@@ -410,77 +412,49 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                     </ul>
                 )}
                 <hr className="divider m-0" />
-
-                <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''}`}>
-                    {isAdvanced && (
-                        <div className="sidebar-container">
-                            <Sidebar
-                                formData={formData}
-                                setFormData={setFormData}
-                                addNewTask={addNewTask}
-                                configurationType={configurationType}
-                                setConfigurationType={setConfigurationType}
-                                activeStageName={activeStageName}
-                                selectedTaskIndex={selectedTaskIndex}
-                                setSelectedTaskIndex={setSelectedTaskIndex}
-                                calculateLastStepDetail={calculateLastStepDetail}
-                            />
-                        </div>
-                    )}
-                    <Switch>
+                <ciPipelineContext.Provider
+                    value={{
+                        formData,
+                        setFormData,
+                        addNewTask,
+                        configurationType,
+                        setConfigurationType,
+                        activeStageName,
+                        selectedTaskIndex,
+                        setSelectedTaskIndex,
+                        calculateLastStepDetail,
+                        setPageState,
+                        inputVariablesListFromPrevStep,
+                    }}
+                >
+                    <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''}`}>
                         {isAdvanced && (
-                            <Route path={`${path}/pre-build`}>
-                                <PreBuild
-                                    formData={formData}
-                                    setFormData={setFormData}
-                                    addNewTask={addNewTask}
-                                    pageState={pageState}
-                                    setPageState={setPageState}
-                                    selectedTaskIndex={selectedTaskIndex}
-                                    configurationType={configurationType}
-                                    activeStageName={activeStageName}
-                                    setConfigurationType={setConfigurationType}
-                                    inputVariablesListFromPrevStep={inputVariablesListFromPrevStep}
-                                    calculateLastStepDetail={calculateLastStepDetail}
+                            <div className="sidebar-container">
+                                <Sidebar />
+                            </div>
+                        )}
+                        <Switch>
+                            {isAdvanced && (
+                                <Route path={`${path}/pre-build`}>
+                                    <PreBuild />
+                                </Route>
+                            )}
+                            {isAdvanced && (
+                                <Route path={`${path}/post-build`}>
+                                    <PreBuild />
+                                </Route>
+                            )}
+                            <Route path={`${path}/build`}>
+                                <Build
+                                    showFormError={showFormError}
+                                    isAdvanced={isAdvanced}
+                                    ciPipelineId={ciPipeline.id}
                                 />
                             </Route>
-                        )}
-                        {isAdvanced && (
-                            <Route path={`${path}/post-build`}>
-                                {/* <PostBuild formData={formData} setFormData={setFormData} addNewTask={addNewTask} /> */}
-                                <PreBuild
-                                    formData={formData}
-                                    setFormData={setFormData}
-                                    addNewTask={addNewTask}
-                                    pageState={pageState}
-                                    setPageState={setPageState}
-                                    selectedTaskIndex={selectedTaskIndex}
-                                    configurationType={configurationType}
-                                    activeStageName={activeStageName}
-                                    setConfigurationType={setConfigurationType}
-                                    inputVariablesListFromPrevStep={inputVariablesListFromPrevStep}
-                                    calculateLastStepDetail={calculateLastStepDetail}
-                                />
-                            </Route>
-                        )}
-                        <Route path={`${path}/build`}>
-                            <Build
-                                formData={formData}
-                                setFormData={setFormData}
-                                pageState={pageState}
-                                showFormError={showFormError}
-                                isAdvanced={isAdvanced}
-                                ciPipelineId={ciPipeline.id}
-                            />
-                        </Route>
-                        {isAdvanced && (
-                            <Route path={`${path}/post-build`}>
-                                <PostBuild formData={formData} setFormData={setFormData} addNewTask={addNewTask} />
-                            </Route>
-                        )}
-                        <Redirect to={`${path}/build`} />
-                    </Switch>
-                </div>
+                            <Redirect to={`${path}/build`} />
+                        </Switch>
+                    </div>
+                </ciPipelineContext.Provider>
                 {pageState !== ViewType.LOADING && (
                     <>
                         <div

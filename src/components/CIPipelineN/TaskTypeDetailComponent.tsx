@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { FormType, PluginVariableType } from '../ciPipeline/types'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import OutputDirectoryPath from './OutputDirectoryPath'
 import YAML from 'yaml'
 import MultiplePort from './MultiplsPort'
+import { ciPipelineContext } from './CIPipeline'
 
 export enum ScriptType {
     SHELL = 'SHELL',
@@ -16,24 +17,19 @@ enum MountPath {
     TRUE = 'Yes',
     FALSE = 'No',
 }
-enum PortMap {
-    PORTONLOCAL = 'portOnLocal',
-    PORTONCONTAINER = 'portOnContainer',
-}
 
-export function TaskTypeDetailComponent({
+export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: string }){
+    const {
     selectedTaskIndex,
     formData,
     setFormData,
     activeStageName,
-    taskScriptType,
 }: {
     selectedTaskIndex: number
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
     activeStageName: string
-    taskScriptType: string
-}) {
+} = useContext(ciPipelineContext)
     const handleContainer = (e: any, key: 'containerImagePath' | 'imagePullSecret'): void => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = e.target.value
