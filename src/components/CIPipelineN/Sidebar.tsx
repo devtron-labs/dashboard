@@ -49,7 +49,7 @@ export function Sidebar() {
                     </RadioLabel>
                     {configurationType === ConfigurationType.GUI && (
                         <>
-                            <div className="text-uppercase fw-6 fs-12 cn-6">Tasks (IN ORDER OF EXECUTION)</div>
+                            <div className="text-uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
                             <TaskList />
                         </>
                     )}
