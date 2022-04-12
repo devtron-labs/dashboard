@@ -8,7 +8,7 @@ import error from '../../assets/icons/misc/errorInfo.svg'
 import { ciPipelineContext } from './CIPipeline'
 import { FormType } from '../ciPipeline/types'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
-import trash from '../../assets/icons/misc/delete.svg'
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 
 export function Build({
     showFormError,
@@ -217,24 +217,32 @@ export function Build({
                         </button>
                         {formData.args.map((arg, index) => {
                             return (
-                                <div key={index} className="mt-8">
-                                    <input
-                                        className="form__input"
-                                        autoComplete="off"
-                                        placeholder="Key"
-                                        type="text"
-                                        value={arg.key}
-                                        onChange={(event) => {
-                                            handleDockerArgChange(event, index, 'key')
+                                <div className="flexbox justify-space">
+                                    <div key={index} className="mt-8 w-100">
+                                        <input
+                                            className="w-100 top-radius pl-10 pr-10 pt-6 pb-6 bcn-1 en-2"
+                                            autoComplete="off"
+                                            placeholder="Key"
+                                            type="text"
+                                            value={arg.key}
+                                            onChange={(event) => {
+                                                handleDockerArgChange(event, index, 'key')
+                                            }}
+                                        />
+                                        <textarea
+                                            className="w-100 bottom-radius no-top-border pl-10 pr-10 pt-6 pb-6 bcn-1 en-2"
+                                            value={arg.value}
+                                            onChange={(event) => {
+                                                handleDockerArgChange(event, index, 'value')
+                                            }}
+                                            placeholder="Value"
+                                        />
+                                    </div>
+                                    <Close
+                                        className="icon-dim-24 pointer mt-6 ml-6"
+                                        onClick={() => {
+                                            removeDockerArgs(index)
                                         }}
-                                    />
-                                    <textarea
-                                        className="w-100"
-                                        value={arg.value}
-                                        onChange={(event) => {
-                                            handleDockerArgChange(event, index, 'value')
-                                        }}
-                                        placeholder="Value"
                                     />
                                 </div>
                             )

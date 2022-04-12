@@ -396,7 +396,7 @@
     grid-template-columns: 80px auto 70px auto 30px;
 }
 
-.custom-input__port-map{
+.custom-input__port-map {
     display: grid;
     grid-template-columns: 80px 28px 80px 30px;
 }
@@ -433,4 +433,18 @@
 .delete-icon {
     width: 16px;
     height: 16px;
+}
+
+.bottom-radius {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.top-radius {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+.no-top-border {
+    border-top: none;
 }
