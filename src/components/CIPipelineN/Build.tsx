@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
 import { SourceMaterials, WebhookCIProps } from '../ciPipeline/SourceMaterials'
@@ -7,6 +7,8 @@ import { Progressing } from '../common'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ciPipelineContext } from './CIPipeline'
 import { FormType } from '../ciPipeline/types'
+import dropdown from '../../assets/icons/ic-chevron-down.svg'
+import trash from '../../assets/icons/misc/delete.svg'
 
 export function Build({
     showFormError,
@@ -23,6 +25,7 @@ export function Build({
         pageState,
     }: { formData: FormType; setFormData: React.Dispatch<React.SetStateAction<FormType>>; pageState: string } =
         useContext(ciPipelineContext)
+    const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
     const validationRules = new ValidationRules()
 
     const handleSourceChange = (event, gitMaterialId: number): void => {
@@ -129,6 +132,28 @@ export function Build({
         callback()
     }
 
+    const addDockerArg = (): void => {
+        const _form = { ...formData }
+        _form.args.push({ key: '', value: '' })
+        setFormData(_form)
+    }
+
+    const handleDockerArgChange = (event, index: number, key: 'key' | 'value'): void => {
+        const _form = { ...formData }
+        _form.args[index][key] = event.target.value
+        setFormData(_form)
+    }
+
+    const removeDockerArgs = (index: number): void => {
+        const _form = { ...formData }
+        const newArgs = []
+        for (let i = 0; i < _form.args.length; i++) {
+            if (index != i) newArgs.push(_form.args[i])
+        }
+        _form.args = newArgs
+        setFormData(_form)
+    }
+
     const renderBasicCI = () => {
         const _webhookData: WebhookCIProps = {
             webhookConditionList: formData.webhookConditionList,
@@ -142,7 +167,7 @@ export function Build({
         }
 
         return (
-            <div className="pl-20 pr-20 pt-20 pb-20 ci-scrollable-content">
+            <>
                 {isAdvanced && renderPipelineName()}
                 <SourceMaterials
                     showError={showFormError}
@@ -155,6 +180,67 @@ export function Build({
                     webhookData={_webhookData}
                     canEditPipeline={formData.ciPipelineEditable}
                 />
+            </>
+        )
+    }
+
+    const renderDockerArgs = () => {
+        return (
+            <div>
+                <hr />
+                <div
+                    className="flexbox justify-space pointer"
+                    onClick={(event) => {
+                        setCollapsedSection(!collapsedSection)
+                    }}
+                >
+                    <div>
+                        <div className="fs-14 fw-6 cn-9">Docker/container/build arguments</div>
+                        <div className="fs-12 fw-4 cn-7">Override docker build configurations for this pipeline.</div>
+                    </div>
+                    <img
+                        src={dropdown}
+                        alt="dropDown"
+                        style={{ transform: collapsedSection ? 'rotate(180deg)' : 'rotate(0)' }}
+                    />
+                </div>
+                {collapsedSection ? (
+                    <div>
+                        <button
+                            type="button"
+                            onClick={(event) => {
+                                addDockerArg()
+                            }}
+                            className="form__add-parameter mt-20"
+                        >
+                            <span className="fa fa-plus mr-5"></span>Add key-value
+                        </button>
+                        {formData.args.map((arg, index) => {
+                            return (
+                                <div key={index} className="mt-8">
+                                    <input
+                                        className="form__input"
+                                        autoComplete="off"
+                                        placeholder="Key"
+                                        type="text"
+                                        value={arg.key}
+                                        onChange={(event) => {
+                                            handleDockerArgChange(event, index, 'key')
+                                        }}
+                                    />
+                                    <textarea
+                                        className="w-100"
+                                        value={arg.value}
+                                        onChange={(event) => {
+                                            handleDockerArgChange(event, index, 'value')
+                                        }}
+                                        placeholder="Value"
+                                    />
+                                </div>
+                            )
+                        })}
+                    </div>
+                ) : null}
             </div>
         )
     }
@@ -188,11 +274,14 @@ export function Build({
         )
     }
 
-    return pageState == ViewType.LOADING ? (
+    return pageState === ViewType.LOADING.toString() ? (
         <div style={{ minHeight: '200px' }} className="flex">
             <Progressing pageLoader />
         </div>
     ) : (
-        renderBasicCI()
+        <div className="pl-20 pr-20 pt-20 pb-20 ci-scrollable-content">
+            {renderBasicCI()}
+            {isAdvanced && renderDockerArgs()}
+        </div>
     )
 }
