@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { FormType, PluginDetailType, PluginType, ScriptType } from '../ciPipeline/types'
+import { FormType, PluginDetailType, PluginType, ScriptType, VariableType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
 import PreBuildIcon from '../../assets/icons/ic-cd-stage.svg'
 import { PluginCard } from './PluginCard'
@@ -24,6 +24,8 @@ export function PreBuild({
     configurationType,
     setConfigurationType,
     activeStageName,
+    inputVariablesListFromPrevStep,
+    calculateLastStepDetail,
 }: {
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -34,6 +36,17 @@ export function PreBuild({
     configurationType: string
     setConfigurationType: React.Dispatch<React.SetStateAction<string>>
     activeStageName: string
+    inputVariablesListFromPrevStep: {
+        preBuildStage: Map<string, VariableType>[]
+        postBuildStage: Map<string, VariableType>[]
+    }
+    calculateLastStepDetail: (
+        isFromAddNewTask: boolean,
+        _formData: FormType,
+        startIndex?: number,
+    ) => {
+        index: number
+    }
 }) {
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
     const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
@@ -47,6 +60,7 @@ export function PreBuild({
 
     useEffect(() => {
         setConfigurationType(ConfigurationType.GUI)
+        calculateLastStepDetail(false, formData)
     }, [activeStageName])
     useEffect(() => {
         setPageState(ViewType.LOADING)
@@ -84,16 +98,20 @@ export function PreBuild({
                 conditionDetails: [],
                 inputVariables: [],
                 outputVariables: [],
-                commandArgsMap: [{
-                    command: '',
-                    args: []
-                }],
-                portMap: [{
-                    portOnLocal: '',
-                    portOnContainer: ''
-                }],
+                commandArgsMap: [
+                    {
+                        command: '',
+                        args: [],
+                    },
+                ],
+                portMap: [
+                    {
+                        portOnLocal: '',
+                        portOnContainer: '',
+                    },
+                ],
                 mountCodeToContainer: '',
-                mountDirectoryFromHost: ''
+                mountDirectoryFromHost: '',
             }
         } else {
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {
@@ -163,6 +181,7 @@ export function PreBuild({
                             formData={formData}
                             setFormData={setFormData}
                             activeStageName={activeStageName}
+                            inputVariablesListFromPrevStep={inputVariablesListFromPrevStep}
                         />
                     )}
                 </div>

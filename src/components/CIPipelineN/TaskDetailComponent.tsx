@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { ConfigurationType, ViewType } from '../../config'
 import { RadioGroup, showError } from '../common'
-import { ConditionContainerType, FormType, PluginType, PluginVariableType, ScriptType } from '../ciPipeline/types'
+import {
+    ConditionContainerType,
+    FormType,
+    PluginType,
+    PluginVariableType,
+    ScriptType,
+    VariableType,
+} from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
 import { getPluginDetail } from '../ciPipeline/ciPipeline.service'
@@ -17,12 +24,17 @@ export function TaskDetailComponent({
     formData,
     setFormData,
     activeStageName,
+    inputVariablesListFromPrevStep,
 }: {
     setPageState: React.Dispatch<React.SetStateAction<string>>
     selectedTaskIndex: number
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
     activeStageName: string
+    inputVariablesListFromPrevStep: {
+        preBuildStage: Map<string, VariableType>[]
+        postBuildStage: Map<string, VariableType>[]
+    }
 }) {
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [taskScriptType, setTaskScriptType] = useState<string>(
@@ -31,7 +43,6 @@ export function TaskDetailComponent({
             : '',
     )
     const [editorValue, setEditorValue] = useState<string>('')
-    const [storeDirectoryPath, setStoreDirectoryPath] = useState<string>('')
 
     const currentStepTypeVariable =
         formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
@@ -185,6 +196,7 @@ export function TaskDetailComponent({
                             formData={formData}
                             setFormData={setFormData}
                             activeStageName={activeStageName}
+                            inputVariablesListFromPrevStep={inputVariablesListFromPrevStep}
                         />
                     ) : (
                         <VariableContainer
@@ -193,6 +205,7 @@ export function TaskDetailComponent({
                             formData={formData}
                             setFormData={setFormData}
                             activeStageName={activeStageName}
+                            inputVariablesListFromPrevStep={inputVariablesListFromPrevStep}
                         />
                     )}{' '}
                     <hr />
@@ -225,6 +238,7 @@ export function TaskDetailComponent({
                             formData={formData}
                             setFormData={setFormData}
                             activeStageName={activeStageName}
+                            inputVariablesListFromPrevStep={inputVariablesListFromPrevStep}
                         />
                     ) : (
                         <VariableContainer
@@ -233,6 +247,7 @@ export function TaskDetailComponent({
                             formData={formData}
                             setFormData={setFormData}
                             activeStageName={activeStageName}
+                            inputVariablesListFromPrevStep={inputVariablesListFromPrevStep}
                         />
                     )}
                     <hr />

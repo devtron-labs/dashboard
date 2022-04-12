@@ -22,15 +22,20 @@ export function TaskList({
     activeStageName: string
     selectedTaskIndex: number
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
-    calculateLastStepDetail: (startIndex?: number) => {
+    calculateLastStepDetail: (
+        isFromAddNewTask: boolean,
+        _formData: FormType,
+        startIndex?: number,
+    ) => {
         index: number
-        outputVariablesFromPrevSteps: object
     }
 }) {
+    const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
     const [dragAllowed, setDragAllowed] = useState<boolean>(false)
     const handleDragStart = (index: number): void => {
         setDragItemIndex(index)
+        setDragItemStartIndex(index)
     }
 
     const handleDragEnter = (index: number): void => {
@@ -48,10 +53,9 @@ export function TaskList({
     const handleDrop = (index: number): void => {
         setDragAllowed(false)
         const _formData = { ...formData }
-        if (_formData[activeStageName].steps.length > index) {
-            const detailsFromLastSteps = calculateLastStepDetail(index)
-            setFormData(_formData)
-        }
+        calculateLastStepDetail(false, _formData, dragItemStartIndex < index ? dragItemStartIndex : index)
+        setFormData(_formData)
+        setDragItemStartIndex(index)
     }
 
     const deleteTask = (index: number): void => {
@@ -60,6 +64,7 @@ export function TaskList({
         newList.splice(index, 1)
         setSelectedTaskIndex(0)
         _formData[activeStageName].steps = newList
+        calculateLastStepDetail(false, _formData, index)
         setFormData(_formData)
     }
 

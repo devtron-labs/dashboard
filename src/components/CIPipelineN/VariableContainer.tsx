@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
-import { FormType, PluginVariableType } from '../ciPipeline/types'
+import { FormType, PluginVariableType, VariableType } from '../ciPipeline/types'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
+import CustomInputVariableSelect from './CustomInputVariableSelect'
 
 export function VariableContainer({
     type,
@@ -9,12 +10,17 @@ export function VariableContainer({
     formData,
     setFormData,
     activeStageName,
+    inputVariablesListFromPrevStep,
 }: {
     type: PluginVariableType
     selectedTaskIndex: number
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
     activeStageName: string
+    inputVariablesListFromPrevStep: {
+        preBuildStage: Map<string, VariableType>[]
+        postBuildStage: Map<string, VariableType>[]
+    }
 }) {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
 
@@ -55,11 +61,13 @@ export function VariableContainer({
                             <label className="p-4 fs-13 fw-4">{variable.format}</label>
                             {type === PluginVariableType.INPUT ? (
                                 <div className="p-4 fs-14">
-                                    <input
-                                        className="w-100"
-                                        type="text"
-                                        value={variable.value || variable.defaultValue}
-                                        onChange={(e) => handleInputValueChange(e, index)}
+                                    <CustomInputVariableSelect
+                                        selectedTaskIndex={selectedTaskIndex}
+                                        formData={formData}
+                                        setFormData={setFormData}
+                                        activeStageName={activeStageName}
+                                        inputVariablesListFromPrevStep={inputVariablesListFromPrevStep}
+                                        selectedVariableIndex={index}
                                     />
                                 </div>
                             ) : (

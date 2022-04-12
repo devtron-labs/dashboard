@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { tempMultiSelectStyles } from './ciPipeline.utils'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import ReactSelect, { OptionProps, Options } from 'react-select'
-import { PluginVariableType, FormType, RefVariableType } from '../ciPipeline/types'
-import { element } from 'prop-types'
+import ReactSelect from 'react-select'
+import { PluginVariableType, FormType, RefVariableType, VariableType } from '../ciPipeline/types'
+import CustomInputVariableSelect from './CustomInputVariableSelect'
 
-enum VariableType {
-    INPUT = 'inputVariables',
-    OUTPUT = 'outputVariables',
+enum VariableFieldType {
+    Input = 'inputVariables',
+    Output = 'outputVariables',
 }
 
 export const globalVariable = [
@@ -23,29 +23,22 @@ function CustomInputOutputVariables({
     formData,
     setFormData,
     activeStageName,
+    inputVariablesListFromPrevStep,
 }: {
     type: PluginVariableType
     selectedTaskIndex: number
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
     activeStageName: string
-}) {
-    const [selectedOutputVariable, setSelectedOutputVariable] = useState<{ label: string; value: string }>({
-        label: '',
-        value: '',
-    })
-
-    let pluginType: string = ''
-    if (type === PluginVariableType.INPUT) {
-        pluginType = VariableType.INPUT
-    } else if (type === PluginVariableType.OUTPUT) {
-        pluginType = VariableType.OUTPUT
+    inputVariablesListFromPrevStep: {
+        preBuildStage: Map<string, VariableType>[]
+        postBuildStage: Map<string, VariableType>[]
     }
-
+}) {
     const addVariable = (): void => {
         const _formData = { ...formData }
         const id =
-            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[pluginType]?.reduce(
+            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.reduce(
                 (prev, current) => (prev.id > current.id ? prev : current),
                 {
                     id: 0,
@@ -63,42 +56,22 @@ function CustomInputOutputVariables({
             RefVariableStepIndex: 0,
             RefVariableName: '',
         }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[pluginType].push(newCondition)
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].push(newCondition)
         setFormData(_formData)
     }
 
-    const getOutputVariableOptions = () => {
-        const previousStepVariables = []
-        //Need to check this
-        formData[activeStageName].steps[selectedTaskIndex]?.outputVariablesFromPrevSteps?.forEach((element) => {
-            previousStepVariables.push({ ...element, label: element.name, value: element.name })
-        })
-        return [
-            {
-                label: 'From Previous Steps',
-                options: previousStepVariables,
-            },
-            {
-                label: 'Global variables',
-                options: globalVariable,
-            },
-        ]
-    }
-
-    const handleInputOutputValueChange = (e, index, variable: 'inputVariables' | 'outputVariables', key: 'name' | 'description') => {
+    const handleInputOutputValueChange = (e, index) => {
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[variable][index][key] = e.target.value
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]][index][
+            e.target.name
+        ] = e.target.value
         setFormData(_formData)
     }
 
     const deleteInputOutputValue = (index: number): void => {
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[pluginType].splice(index, 1)
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].splice(index, 1)
         setFormData(_formData)
-    }
-
-    const handleOutputVariableSelector = (selectedValue: { label: string; value: string }, index: number) => {
-        setSelectedOutputVariable(selectedValue)
     }
 
     return (
@@ -110,82 +83,60 @@ function CustomInputOutputVariables({
                     Add variables
                 </div>
             </div>
-            {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[
-                type === PluginVariableType.OUTPUT ? VariableType.OUTPUT : VariableType.INPUT
-            ]?.map((variable, index) => (
-                <div className="pl-200">
-                    <div
-                        className={
-                            type === PluginVariableType.INPUT
-                                ? 'custom-input-variable-container'
-                                : 'custom-output-variable-container'
-                        }
-                    >
-                        <div className="tp-4 fs-13 fw-4 text-uppercase">
-                            <input
-                                className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
-                                type="text"
-                                placeholder="Variables name"
-                                onChange={(e) =>
-                                    handleInputOutputValueChange(
-                                        e,
-                                        index,
-                                        `${type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'}`,
-                                        'name'
-                                    )
-                                }
-                                value={
-                                    formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[
-                                        type === PluginVariableType.OUTPUT ? VariableType.OUTPUT : VariableType.INPUT
-                                    ][index]['name']
-                                }
+            {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.map(
+                (variable, index) => (
+                    <div className="pl-200">
+                        <div
+                            className={
+                                type === PluginVariableType.INPUT
+                                    ? 'custom-input-variable-container'
+                                    : 'custom-output-variable-container'
+                            }
+                        >
+                            <div className="tp-4 fs-13 fw-4 text-uppercase">
+                                <input
+                                    className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
+                                    type="text"
+                                    placeholder="Variables name"
+                                    value={variable.name}
+                                    name="name"
+                                    onChange={(e) => handleInputOutputValueChange(e, index)}
+                                />
+                            </div>
+                            {type === PluginVariableType.INPUT && (
+                                <>
+                                    <div className="tp-4 en-2 bw-1 fs-13 fw-4 text-uppercase flex">=</div>
+                                    <CustomInputVariableSelect
+                                        selectedTaskIndex={selectedTaskIndex}
+                                        formData={formData}
+                                        setFormData={setFormData}
+                                        activeStageName={activeStageName}
+                                        inputVariablesListFromPrevStep={inputVariablesListFromPrevStep}
+                                        selectedVariableIndex={index}
+                                    />
+                                </>
+                            )}
+                            <Close
+                                className="icon-dim-24 pointer mt-6 ml-6"
+                                onClick={() => {
+                                    deleteInputOutputValue(index)
+                                }}
                             />
                         </div>
-                        {type === PluginVariableType.INPUT && (
-                            <>
-                                <div className="tp-4 en-2 bw-1 fs-13 fw-4 text-uppercase flex">=</div>
-                                <ReactSelect
-                                    autoFocus
-                                    tabIndex={1}
-                                    value={selectedOutputVariable}
-                                    options={getOutputVariableOptions()}
-                                    placeholder="Select source or input value"
-                                    onChange={(selectedValue) => {
-                                        handleOutputVariableSelector(selectedValue, index)
-                                    }}
-                                    isSearchable={false}
-                                    styles={tempMultiSelectStyles}
-                                />{' '}
-                            </>
-                        )}
-                        <Close
-                            className="icon-dim-24 pointer mt-6 ml-6"
-                            onClick={() => {
-                                deleteInputOutputValue(index)
-                            }}
+
+                        <input
+                            style={{ width: '80% !important' }}
+                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 mb-20"
+                            autoComplete="off"
+                            placeholder="Description"
+                            type="text"
+                            value={variable.description}
+                            name="description"
+                            onChange={(e) => handleInputOutputValueChange(e, index)}
                         />
                     </div>
-
-                    <input
-                        style={{ width: '80% !important' }}
-                        className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 mb-20"
-                        autoComplete="off"
-                        placeholder="Description"
-                        type="text"
-                        value={
-                            formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[
-                                type === PluginVariableType.OUTPUT ? VariableType.OUTPUT : VariableType.INPUT
-                            ][index]['description']
-                        }
-                        onChange={(e) => handleInputOutputValueChange(
-                            e,
-                            index,
-                            `${type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'}`,
-                            'description'
-                        )}
-                    />
-                </div>
-            ))}
+                ),
+            )}
         </>
     )
 }
