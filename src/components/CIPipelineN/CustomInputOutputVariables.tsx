@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { PluginVariableType, RefVariableType } from '../ciPipeline/types'
+import { FormType, PluginVariableType, RefVariableType } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ciPipelineContext } from './CIPipeline'
 
@@ -17,7 +17,17 @@ export const globalVariable = [
 ]
 
 function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
-    const { formData, setFormData, selectedTaskIndex, activeStageName } = useContext(ciPipelineContext)
+    const {
+        formData,
+        setFormData,
+        selectedTaskIndex,
+        activeStageName,
+    }: {
+        formData: FormType
+        setFormData: React.Dispatch<React.SetStateAction<FormType>>
+        selectedTaskIndex: number
+        activeStageName: string
+    } = useContext(ciPipelineContext)
     const addVariable = (): void => {
         const _formData = { ...formData }
         const id =

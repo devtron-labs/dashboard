@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { tempMultiSelectStyles } from './ciPipeline.utils'
 import ReactSelect from 'react-select'
-import { RefVariableType, PluginType } from '../ciPipeline/types'
+import { RefVariableType, PluginType, FormType, VariableType } from '../ciPipeline/types'
 import { ciPipelineContext } from './CIPipeline'
 
 export const globalVariable = [
@@ -11,8 +11,22 @@ export const globalVariable = [
 ]
 
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
-    const { formData, setFormData, selectedTaskIndex, activeStageName, inputVariablesListFromPrevStep } =
-        useContext(ciPipelineContext)
+    const {
+        formData,
+        setFormData,
+        selectedTaskIndex,
+        activeStageName,
+        inputVariablesListFromPrevStep,
+    }: {
+        formData: FormType
+        setFormData: React.Dispatch<React.SetStateAction<FormType>>
+        selectedTaskIndex: number
+        activeStageName: string
+        inputVariablesListFromPrevStep: {
+            preBuildStage: Map<string, VariableType>[]
+            postBuildStage: Map<string, VariableType>[]
+        }
+    } = useContext(ciPipelineContext)
     const [selectedOutputVariable, setSelectedOutputVariable] = useState<{
         label: string
         value: string

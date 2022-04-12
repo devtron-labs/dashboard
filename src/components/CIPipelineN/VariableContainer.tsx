@@ -1,13 +1,20 @@
 import React, { useState, useContext } from 'react'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
-import { PluginVariableType } from '../ciPipeline/types'
+import { FormType, PluginVariableType } from '../ciPipeline/types'
 import { ciPipelineContext } from './CIPipeline'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 
 export function VariableContainer({ type }: { type: PluginVariableType }) {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
-    const { formData, setFormData, selectedTaskIndex, activeStageName, inputVariablesListFromPrevStep } =
-        useContext(ciPipelineContext)
+    const {
+        formData,
+        selectedTaskIndex,
+        activeStageName,
+    }: {
+        formData: FormType
+        selectedTaskIndex: number
+        activeStageName: string
+    } = useContext(ciPipelineContext)
     return (
         <div>
             <div

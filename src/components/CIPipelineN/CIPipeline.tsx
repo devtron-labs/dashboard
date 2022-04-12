@@ -446,7 +446,6 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                             )}
                             <Route path={`${path}/build`}>
                                 <Build
-                                    pageState={pageState}
                                     showFormError={showFormError}
                                     isAdvanced={isAdvanced}
                                     ciPipelineId={ciPipeline.id}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { ConfigurationType, ViewType } from '../../config'
 import { RadioGroup, showError } from '../common'
-import { ConditionContainerType, PluginType, PluginVariableType, ScriptType } from '../ciPipeline/types'
+import { ConditionContainerType, FormType, PluginType, PluginVariableType, ScriptType } from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
 import { getPluginDetail } from '../ciPipeline/ciPipeline.service'
@@ -13,8 +13,19 @@ import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
 import { ciPipelineContext } from './CIPipeline'
 
 export function TaskDetailComponent() {
-    const { formData, setFormData, setPageState, selectedTaskIndex, activeStageName, inputVariablesListFromPrevStep } =
-        useContext(ciPipelineContext)
+    const {
+        formData,
+        setFormData,
+        setPageState,
+        selectedTaskIndex,
+        activeStageName,
+    }: {
+        formData: FormType
+        setFormData: React.Dispatch<React.SetStateAction<FormType>>
+        setPageState: React.Dispatch<React.SetStateAction<string>>
+        selectedTaskIndex: number
+        activeStageName: string
+    } = useContext(ciPipelineContext)
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [taskScriptType, setTaskScriptType] = useState<string>(
         formData.preBuildStage.steps[selectedTaskIndex]?.inlineStepDetail
@@ -187,7 +198,7 @@ export function TaskDetailComponent() {
                     {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
                         <CustomInputOutputVariables type={PluginVariableType.OUTPUT} />
                     ) : (
-                        <VariableContainer type={PluginVariableType.INPUT} />
+                        <VariableContainer type={PluginVariableType.OUTPUT} />
                     )}
                     <hr />
                     {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.outputVariables

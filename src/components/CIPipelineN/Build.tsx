@@ -6,19 +6,23 @@ import { ValidationRules } from '../ciPipeline/validationRules'
 import { Progressing } from '../common'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ciPipelineContext } from './CIPipeline'
+import { FormType } from '../ciPipeline/types'
 
 export function Build({
-    pageState,
     showFormError,
     isAdvanced,
     ciPipelineId,
 }: {
-    pageState: string
     showFormError: boolean
     isAdvanced: boolean
     ciPipelineId: number
 }) {
-    const { formData, setFormData } = useContext(ciPipelineContext)
+    const {
+        formData,
+        setFormData,
+        pageState,
+    }: { formData: FormType; setFormData: React.Dispatch<React.SetStateAction<FormType>>; pageState: string } =
+        useContext(ciPipelineContext)
     const validationRules = new ValidationRules()
 
     const handleSourceChange = (event, gitMaterialId: number): void => {
@@ -184,7 +188,7 @@ export function Build({
         )
     }
 
-    return pageState.toString() == ViewType.LOADING ? (
+    return pageState == ViewType.LOADING ? (
         <div style={{ minHeight: '200px' }} className="flex">
             <Progressing pageLoader />
         </div>

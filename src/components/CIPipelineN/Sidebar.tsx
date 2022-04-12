@@ -4,10 +4,22 @@ import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { RadioGroup as RadioLabel } from '../common'
 import { TaskList } from './TaskList'
 import { ciPipelineContext } from './CIPipeline'
+import { FormType } from '../ciPipeline/types'
 
 export function Sidebar() {
-    const { formData, setFormData, configurationType, setConfigurationType, activeStageName } =
-        useContext(ciPipelineContext)
+    const {
+        formData,
+        setFormData,
+        configurationType,
+        setConfigurationType,
+        activeStageName,
+    }: {
+        formData: FormType
+        setFormData: React.Dispatch<React.SetStateAction<FormType>>
+        configurationType: string
+        setConfigurationType: React.Dispatch<React.SetStateAction<string>>
+        activeStageName: string
+    } = useContext(ciPipelineContext)
     const changeTriggerType = (appCreationType: string): void => {
         const _formData = { ...formData }
         _formData.triggerType = appCreationType

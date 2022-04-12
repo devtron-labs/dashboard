@@ -26,8 +26,24 @@ export function PreBuild() {
         configurationType,
         setConfigurationType,
         activeStageName,
-        inputVariablesListFromPrevStep,
         calculateLastStepDetail,
+    }: {
+        formData: FormType
+        setFormData: React.Dispatch<React.SetStateAction<FormType>>
+        pageState: string
+        setPageState: React.Dispatch<React.SetStateAction<string>>
+        addNewTask: () => void
+        selectedTaskIndex: number
+        configurationType: string
+        setConfigurationType: React.Dispatch<React.SetStateAction<string>>
+        activeStageName: string
+        calculateLastStepDetail: (
+            isFromAddNewTask: boolean,
+            _formData: FormType,
+            startIndex?: number,
+        ) => {
+            index: number
+        }
     } = useContext(ciPipelineContext)
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
     const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])

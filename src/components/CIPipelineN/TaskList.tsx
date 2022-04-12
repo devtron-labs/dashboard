@@ -6,6 +6,7 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { PopupMenu } from '../common'
 import { ciPipelineContext } from './CIPipeline'
+import { FormType } from '../ciPipeline/types'
 
 export function TaskList() {
     const {
@@ -16,6 +17,20 @@ export function TaskList() {
         selectedTaskIndex,
         setSelectedTaskIndex,
         calculateLastStepDetail,
+    }: {
+        formData: FormType
+        setFormData: React.Dispatch<React.SetStateAction<FormType>>
+        addNewTask: () => void
+        activeStageName: string
+        selectedTaskIndex: number
+        setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
+        calculateLastStepDetail: (
+            isFromAddNewTask: boolean,
+            _formData: FormType,
+            startIndex?: number,
+        ) => {
+            index: number
+        }
     } = useContext(ciPipelineContext)
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
