@@ -1,15 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { tempMultiSelectStyles } from './ciPipeline.utils'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import ReactSelect from 'react-select'
-import { PluginVariableType, FormType, RefVariableType, VariableType } from '../ciPipeline/types'
+import { PluginVariableType, FormType, RefVariableType, VariableType, VariableFieldType } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
-
-enum VariableFieldType {
-    Input = 'inputVariables',
-    Output = 'outputVariables',
-}
 
 export const globalVariable = [
     { value: 'docker-image-tag', label: 'docker-image-tag' },

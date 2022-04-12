@@ -398,7 +398,12 @@
 
 .custom-input__port-map{
     display: grid;
-    grid-template-columns: 80px 28px 80px;
+    grid-template-columns: 80px 28px 80px 30px;
+}
+
+.custom-script__output-directory{
+    display: grid;
+    grid-template-columns: auto 30px;  
 }
 
 .content-fit {

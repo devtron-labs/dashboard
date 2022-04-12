@@ -106,12 +106,13 @@ export function PreBuild({
                 ],
                 portMap: [
                     {
-                        portOnLocal: '',
-                        portOnContainer: '',
+                        portOnLocal: null,
+                        portOnContainer: null,
                     },
                 ],
                 mountCodeToContainer: '',
                 mountDirectoryFromHost: '',
+                script: ''
             }
         } else {
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {

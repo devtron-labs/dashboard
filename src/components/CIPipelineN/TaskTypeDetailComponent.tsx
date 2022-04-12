@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { FormType } from '../ciPipeline/types'
+import { FormType, PluginVariableType } from '../ciPipeline/types'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
+import OutputDirectoryPath from './OutputDirectoryPath'
+import YAML from 'yaml'
+import MultiplePort from './MultiplsPort'
 
 export enum ScriptType {
     SHELL = 'SHELL',
@@ -31,49 +34,20 @@ export function TaskTypeDetailComponent({
     activeStageName: string
     taskScriptType: string
 }) {
-    const [storeArtifact, setStoreArtifact] = useState<string>('')
-    const [script, setScript] = useState<string>('')
-    const [mountCodeToContainer, setMountCodeToContainer] = useState<boolean>(false)
-    const [mountDirectoryFromHost, setMountDirectoryFromHost] = useState<boolean>(false)
-    const [containerPath, setContainerPath] = useState<string>('')
-    const [imagePullSecret, setImagePullSecret] = useState<string>('')
-
-    const handleStoreArtifact = (ev) => {
-        setStoreArtifact(ev.target.value)
-        const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountPath = ev.target.value
-        setFormData(_formData)
-    }
-
     const handleContainer = (e: any, key: 'containerImagePath' | 'imagePullSecret'): void => {
-        if (key === 'containerImagePath') {
-            setContainerPath(e.target.value)
-        }
-        if (key === 'imagePullSecret') {
-            setImagePullSecret(e.target.value)
-        }
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = e.target.value
         setFormData(_formData)
     }
 
-    const handleChange = (
-        event,
-        stageId: number,
-        stageType: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts',
-        key: 'script',
-    ) => {
-        let stages = formData[stageType]
-        // stages[script][selectedTaskIndex] = event.target.value;
-        // setFormData({
-        //     ...formData,
-        //     [stageType]: stages
-        // } );
+    const handleScriptChange = (event, stageId: number) => {
+        const _formData = { ...formData }
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script = event.target.value
+        setFormData(_formData)
     }
 
     const handleMountChange = (e, key: 'mountCodeToContainer' | 'mountDirectoryFromHost') => {
         const _formData = { ...formData }
-        console.log(e.target.value)
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = e.target.value
         setFormData(_formData)
     }
@@ -102,30 +76,22 @@ export function TaskTypeDetailComponent({
                                 mode="shell"
                                 shebang="#!/bin/sh"
                                 onChange={(value) =>
-                                    handleChange(
-                                        { target: { value } },
-                                        formData[activeStageName].id,
-                                        'beforeDockerBuildScripts',
-                                        'script',
-                                    )
+                                    handleScriptChange({ target: { value } }, formData[activeStageName].id)
                                 }
                                 inline
                                 height={300}
+                                value = {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script}
                             ></CodeEditor>
                         </div>
                     </div>
                     <hr />
-                    <div className="row-container mb-10">
-                        <label className="fw-6 fs-13 cn-7 label-width">Output directory path</label>{' '}
-                        <input
-                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
-                            autoComplete="off"
-                            placeholder="Enter directory path"
-                            type="text"
-                            value={storeArtifact}
-                            onChange={handleStoreArtifact}
-                        />
-                    </div>
+                    <OutputDirectoryPath
+                        type={PluginVariableType.INPUT}
+                        selectedTaskIndex={selectedTaskIndex}
+                        formData={formData}
+                        setFormData={setFormData}
+                        activeStageName={activeStageName}
+                    />
                 </>
             )
         }
@@ -193,38 +159,13 @@ export function TaskTypeDetailComponent({
                             }
                         />
                     </div>
-                    <div className="row-container mb-10">
-                        <label className="fw-6 fs-13 cn-7 label-width">Port mapping</label>{' '}
-                        <div className="custom-input__port-map">
-                            <input
-                                style={{ width: '80% !important' }}
-                                className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
-                                autoComplete="off"
-                                placeholder="Port"
-                                type="text"
-                                onChange={(e) => handlePort(e, PortMap.PORTONLOCAL)}
-                                value={
-                                    formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[0][
-                                        PortMap.PORTONLOCAL
-                                    ]
-                                }
-                            />
-                            <div className="flex">:</div>
-                            <input
-                                style={{ width: '80% !important' }}
-                                className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
-                                autoComplete="off"
-                                placeholder="Port"
-                                type="text"
-                                onChange={(e) => handlePort(e, PortMap.PORTONCONTAINER)}
-                                value={
-                                    formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[0][
-                                        PortMap.PORTONCONTAINER
-                                    ]
-                                }
-                            />
-                        </div>
-                    </div>
+                    <MultiplePort
+                        type={PluginVariableType.INPUT}
+                        selectedTaskIndex={selectedTaskIndex}
+                        formData={formData}
+                        setFormData={setFormData}
+                        activeStageName={activeStageName}
+                    />
                     <div className="row-container mb-10">
                         <label className="fw-6 fs-13 cn-7 label-width">Mount code to container</label>{' '}
                         <RadioGroup
@@ -233,9 +174,9 @@ export function TaskTypeDetailComponent({
                                 formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer
                             }
                             disabled={false}
-                            name="task-type"
+                            name="mountCodeToContainer"
                             onChange={(event) => {
-                                handleMountChange(event.target.value, 'mountCodeToContainer')
+                                handleMountChange(event, 'mountCodeToContainer')
                             }}
                         >
                             <RadioGroupItem value={MountPath.FALSE}> {MountPath.FALSE} </RadioGroupItem>
@@ -251,26 +192,22 @@ export function TaskTypeDetailComponent({
                                     .mountDirectoryFromHost
                             }
                             disabled={false}
-                            name="task-type"
+                            name="mountDirectoryFromHost"
                             onChange={(event) => {
-                                handleMountChange(event.target.value, 'mountDirectoryFromHost')
+                                handleMountChange(event, 'mountDirectoryFromHost')
                             }}
                         >
                             <RadioGroupItem value={MountPath.FALSE}> {MountPath.FALSE} </RadioGroupItem>
                             <RadioGroupItem value={MountPath.TRUE}> {MountPath.TRUE} </RadioGroupItem>
                         </RadioGroup>
                     </div>
-                    <div className="row-container mb-10">
-                        <label className="fw-6 fs-13 cn-7 label-width">Output directory path</label>{' '}
-                        <input
-                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
-                            autoComplete="off"
-                            placeholder="Enter directory path"
-                            type="text"
-                            value={formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath}
-                            onChange={handleStoreArtifact}
-                        />
-                    </div>
+                    <OutputDirectoryPath
+                        type={PluginVariableType.INPUT}
+                        selectedTaskIndex={selectedTaskIndex}
+                        formData={formData}
+                        setFormData={setFormData}
+                        activeStageName={activeStageName}
+                    />
                 </>
             )
         }

@@ -297,3 +297,8 @@ export interface PluginDetailType {
     icon: string
     tags: string[]
 }
+
+export enum VariableFieldType {
+    Input = 'inputVariables',
+    Output = 'outputVariables',
+}
