@@ -40,13 +40,37 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
 
     const addCondition = (): void => {
         const _formData = { ...formData }
-        const id =
-            _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails?.reduce(
-                (prev, current) => (prev.id > current.id ? prev : current),
-                {
-                    id: 0,
-                },
-            ).id + 1
+        let id = 0
+        let conditionTypeToRemove
+        if (type === ConditionContainerType.PASS_FAILURE) {
+            conditionTypeToRemove = conditionType === ConditionType.SUCCESS ? ConditionType.FAIL : ConditionType.SUCCESS
+        } else {
+            conditionTypeToRemove = conditionType === ConditionType.TRIGGER ? ConditionType.SKIP : ConditionType.TRIGGER
+        }
+        for (
+            var i = 0;
+            i < _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails.length;
+            i++
+        ) {
+            if (
+                _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[i]
+                    .conditionType === conditionTypeToRemove
+            ) {
+                _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails.splice(
+                    i,
+                    1,
+                )
+                i--
+            } else {
+                id =
+                    id <
+                    _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[i].id
+                        ? _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[
+                              i
+                          ].id
+                        : id
+            }
+        }
         const newCondition = {
             id: id,
             conditionOnVariable: '',
