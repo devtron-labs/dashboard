@@ -51,8 +51,8 @@ function CustomInputOutputVariables({
             format: '',
             description: '',
             defaultValue: '',
-            RefVariableUsed: true,
-            RefVariableType: RefVariableType.GLOBAL,
+            RefVariableUsed: false,
+            RefVariableType: RefVariableType.NEW,
             RefVariableStepIndex: 0,
             RefVariableName: '',
         }
