@@ -9,6 +9,7 @@ import { ciPipelineContext } from './CIPipeline'
 import { FormType } from '../ciPipeline/types'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 
 export function Build({
     showFormError,
@@ -206,15 +207,10 @@ export function Build({
                 </div>
                 {collapsedSection ? (
                     <div>
-                        <button
-                            type="button"
-                            onClick={(event) => {
-                                addDockerArg()
-                            }}
-                            className="bcn-0 cb-5 no-border mt-20"
-                        >
-                            <span className="fa fa-plus mr-5"></span>Add key-value
-                        </button>
+                        <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit mt-20" onClick={addDockerArg}>
+                            <Add className="add-icon" />
+                            Add variables
+                        </div>
                         {formData.args.map((arg, index) => {
                             return (
                                 <div className="flexbox justify-space">
