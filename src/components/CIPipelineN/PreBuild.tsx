@@ -136,6 +136,8 @@ export function PreBuild() {
                 id: 0,
                 pluginId: pluginId,
                 conditionDetails: [],
+                inputVariables: [],
+                outputVariables: [],
             }
             _formDataErrorObj[activeStageName]['steps'][selectedTaskIndex] = {
                 ..._formDataErrorObj[activeStageName]['steps'][selectedTaskIndex],

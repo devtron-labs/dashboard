@@ -68,11 +68,11 @@ export function TaskDetailComponent() {
 
     const processPluginData = (pluginData) => {
         const _form = { ...formData }
-        if (!_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables) {
+        if (_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables?.length === 0) {
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables =
                 pluginData.outputVariables
         }
-        if (!_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables) {
+        if (_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables?.length === 0) {
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables =
                 pluginData.inputVariables
         }

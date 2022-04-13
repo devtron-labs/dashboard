@@ -1,3 +1,5 @@
+import { RefVariableType } from './types'
+
 export class ValidationRules {
     name = (value: string): { message: string | null; isValid: boolean } => {
         let str = '^[a-z][a-z0-9-.]+[a-z0-9]$'
@@ -23,13 +25,21 @@ export class ValidationRules {
     inputVariable = (value: object): { message: string | null; isValid: boolean } => {
         let str = '^[a-z][a-z0-9-.]+[a-z0-9]$'
         let re = new RegExp(str)
-        if (!value['name'] && !value['value'] && !value['description']) {
+        const variableValue =
+            (value['refVariableType'] === RefVariableType.NEW && value['value']) ||
+            (value['refVariableUsed'] &&
+                value['refVariableName'] &&
+                (value['refVariableType'] === RefVariableType.GLOBAL ||
+                    (value['refVariableType'] === RefVariableType.FROM_PREVIOUS_STEP &&
+                        value['refVariableStepIndex'] &&
+                        value['refVariableStage'])))
+        if (!value['name'] && !variableValue && !value['description']) {
             return { message: 'Please complete or remove this variable', isValid: false }
-        } else if (!value['name'] && !value['value']) {
+        } else if (!value['name'] && !variableValue) {
             return { message: 'Variable Name and Value both are required field', isValid: false }
         } else if (!value['name']) {
             return { message: 'Variable Name is required field', isValid: false }
-        } else if (!value['value']) {
+        } else if (!variableValue) {
             return { message: 'Variable Value is required field', isValid: false }
         } else {
             return { message: null, isValid: true }

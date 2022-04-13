@@ -72,7 +72,6 @@ export enum ConditionType {
 export enum RefVariableStageType {
     PRE_CI = 'PRE_CI',
     POST_CI = 'POST_CI',
-    NO_REF = 'NO_REF',
 }
 
 export interface VariableType {

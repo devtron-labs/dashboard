@@ -33,12 +33,10 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         label: string
         value: string
         refVariableStepIndex: number
-        refVariableStage: RefVariableStageType
     }>({
         label: '',
         value: '',
         refVariableStepIndex: 0,
-        refVariableStage: RefVariableStageType.NO_REF,
     })
 
     const [inputVariableOptions, setInputVariableOptions] = useState<
@@ -78,6 +76,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                         label: currentVariableDetails.name,
                         value: currentVariableDetails.name,
                         refVariableStepIndex: preBuildTaskLength - 1,
+                        refVariableStage: RefVariableStageType.PRE_CI,
                     })
                 }
                 setInputVariableOptions([
@@ -113,7 +112,6 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         label: string
         value: string
         refVariableStepIndex: number
-        refVariableStage: RefVariableStageType
     }) => {
         setSelectedOutputVariable(selectedValue)
         const _formData = { ...formData }
@@ -132,7 +130,10 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 refVariableType: RefVariableType.FROM_PREVIOUS_STEP,
                 refVariableStepIndex: selectedValue.refVariableStepIndex,
                 refVariableName: selectedValue.label,
-                refVariableStage: selectedValue.refVariableStage,
+                refVariableStage:
+                    activeStageName === BuildStageVariable.PreBuild
+                        ? RefVariableStageType.PRE_CI
+                        : RefVariableStageType.POST_CI,
             }
             setFormData(_formData)
         }

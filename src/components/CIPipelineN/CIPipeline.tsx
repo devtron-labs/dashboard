@@ -334,25 +334,11 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         _formData: FormType,
         startIndex?: number,
     ): { index: number } => {
-        //const _formDataErrorObj = { ...formDataErrorObj }
         const stepsLength = _formData[activeStageName].steps.length
         let index = 0
         let _outputVariablesFromPrevSteps: Map<string, VariableType> = new Map(),
             _inputVariablesListPerTask: Map<string, VariableType>[] = []
-        // let isStageValid = true
-        // validateStage(_formData)
         for (let i = 0; i < stepsLength; i++) {
-            // if (!_formDataErrorObj[activeStageName]['steps'][i]) {
-            //     _formDataErrorObj[activeStageName]['steps'].push({
-            //         name: validationRules.taskName(_formData[activeStageName]['steps'][i].name),
-            //     })
-            // } else {
-            //     _formDataErrorObj[activeStageName]['steps'][i].name = validationRules.taskName(
-            //         _formData[activeStageName]['steps'][i].name,
-            //     )
-            // }
-            // _formDataErrorObj[activeStageName]['steps'][i].isValid =
-            //     _formDataErrorObj[activeStageName]['steps'][i].name.isValid
             _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
             if (index <= _formData[activeStageName].steps[i].index) {
                 index = _formData[activeStageName].steps[i].index
@@ -372,18 +358,13 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                     {
                         ..._formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j],
                         refVariableStepIndex: index,
+                        refVariableStage:
+                            activeStageName === BuildStageVariable.PreBuild
+                                ? RefVariableStageType.PRE_CI
+                                : RefVariableStageType.POST_CI,
                     },
                 )
             }
-            // _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].inputVariables = []
-            // _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables.forEach((element, index) => {
-            //     _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].inputVariables.push(
-            //         validationRules.inputVariable(element),
-            //     )
-            //     _formDataErrorObj[activeStageName]['steps'][i].isValid =
-            //         _formDataErrorObj[activeStageName]['steps'][i].isValid &&
-            //         _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].inputVariables[index].isValid
-            // })
             if (
                 !isFromAddNewTask &&
                 i >= startIndex &&
@@ -394,33 +375,29 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[key]
                     if (
                         variableDetail.refVariableUsed &&
-                        variableDetail.refVariableType === RefVariableType.FROM_PREVIOUS_STEP
+                        variableDetail.refVariableType === RefVariableType.FROM_PREVIOUS_STEP &&
+                        variableDetail.refVariableStage ===
+                            (activeStageName === BuildStageVariable.PreBuild
+                                ? RefVariableStageType.PRE_CI
+                                : RefVariableStageType.POST_CI) &&
+                        variableDetail.refVariableStepIndex > startIndex
                     ) {
                         variableDetail.refVariableUsed = false
                         variableDetail.refVariableStepIndex = 0
                         variableDetail.refVariableName = ''
                         variableDetail.refVariableType = RefVariableType.NEW
-                        variableDetail.RefVariableStageType = RefVariableStageType.NO_REF
+                        delete variableDetail.refVariableStage
                     }
                 }
             }
-            // isStageValid =
-            //     _formDataErrorObj[activeStageName]['steps'][i].isValid &&
-            //     _formDataErrorObj[activeStageName]['steps'][i].isValid
         }
         if (isFromAddNewTask) {
             _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
-            // _formDataErrorObj[activeStageName]['steps'].push({
-            //     name: { isValid: true, message: null },
-            //     isValid: true,
-            // })
             index++
         }
         const _inputVariablesListFromPrevStep = { ...inputVariablesListFromPrevStep }
         _inputVariablesListFromPrevStep[activeStageName] = _inputVariablesListPerTask
         setInputVariablesListFromPrevStep(_inputVariablesListFromPrevStep)
-        //_formDataErrorObj[activeStageName].isValid = isStageValid
-        //setFormDataErrorObj(_formDataErrorObj)
         return { index: index }
     }
 
