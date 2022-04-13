@@ -437,6 +437,25 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         setSelectedTaskIndex(_formData[activeStageName].steps.length - 1)
     }
 
+    const getNavLink = (toLink: string, stageName: string) => {
+        return (
+            <li className="tab-list__tab">
+                <NavLink
+                    replace
+                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
+                    activeClassName="active"
+                    to={toLink}
+                    onClick={() => {
+                        validateStage(activeStageName)
+                    }}
+                >
+                    {BuildTabText[stageName]}
+                    {!formDataErrorObj[stageName].isValid && <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-3" />}
+                </NavLink>
+            </li>
+        )
+    }
+
     return (
         <VisibleModal className="">
             {' '}
@@ -459,58 +478,9 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                 </div>
                 {isAdvanced && (
                     <ul className="ml-20 tab-list w-90">
-                        {isAdvanced && (
-                            <li className="tab-list__tab">
-                                <NavLink
-                                    replace
-                                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
-                                    activeClassName="active"
-                                    to={`pre-build`}
-                                    onClick={() => {
-                                        validateStage(activeStageName)
-                                    }}
-                                >
-                                    {BuildTabText[BuildStageVariable.PreBuild]}
-                                    {!formDataErrorObj.preBuildStage.isValid && (
-                                        <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-3" />
-                                    )}
-                                </NavLink>
-                            </li>
-                        )}
-                        <li className="tab-list__tab">
-                            <NavLink
-                                replace
-                                className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
-                                activeClassName="active"
-                                to={`build`}
-                                onClick={() => {
-                                    validateStage(activeStageName)
-                                }}
-                            >
-                                {BuildTabText[BuildStageVariable.Build]}
-                                {!formDataErrorObj.buildStage.isValid && (
-                                    <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-3" />
-                                )}
-                            </NavLink>
-                        </li>
-                        {isAdvanced && (
-                            <li className="tab-list__tab">
-                                <NavLink
-                                    replace
-                                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
-                                    activeClassName="active"
-                                    to={`post-build`}
-                                    onClick={() => {
-                                        validateStage(activeStageName)
-                                    }}
-                                >
-                                    {BuildTabText[BuildStageVariable.PostBuild]}
-                                    {!formDataErrorObj.postBuildStage.isValid && (
-                                        <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-3" />
-                                    )}
-                                </NavLink>
-                            </li>
-                        )}
+                        {isAdvanced && getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
+                        {getNavLink(`build`, BuildStageVariable.Build)}
+                        {isAdvanced && getNavLink(`post-build`, BuildStageVariable.PostBuild)}
                     </ul>
                 )}
                 <hr className="divider m-0" />
