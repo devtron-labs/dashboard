@@ -4,13 +4,13 @@ const MANIFEST_METADATA_REQUIRED_FIELDS : string[] = ['name', 'namespace', 'labe
 // Remove Auto-generated fields from kubernetes manifest
 // input - jsonString
 // output - jsonString
-export function CleanKubeManifest(manifestJsonString: string): string {
+export function cleanKubeManifest(manifestJsonString: string): string {
     if (!manifestJsonString) {
         return manifestJsonString;
     }
 
     try{
-        let obj = JSON.parse(manifestJsonString);
+        const obj = JSON.parse(manifestJsonString);
 
         // 1 - delete status
         delete obj['status'];
