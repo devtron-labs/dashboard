@@ -28,7 +28,7 @@ export const tempMultiSelectStyles = {
         color: 'var(--N900)',
         background: 'var(--N100) !important',
         border: '1ps solid var(--N200) !important',
-        padding: '6px 10px 6px 10px',
+        padding: '3px 10px 3px 10px',
     }),
     indicatorsContainer: (base, state) => ({
         ...base,

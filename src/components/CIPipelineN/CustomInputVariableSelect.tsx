@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { tempMultiSelectStyles } from './ciPipeline.utils'
-import ReactSelect from 'react-select'
 import { RefVariableType, PluginType, FormType, VariableType } from '../ciPipeline/types'
 import { ciPipelineContext } from './CIPipeline'
+import CreatableSelect from 'react-select/creatable';
+import { components } from 'react-select';
 
 export const globalVariable = [
     { value: 'docker-image-tag', label: 'docker-image-tag' },
@@ -95,15 +96,23 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
     }
 
     return (
-        <ReactSelect
+        <CreatableSelect
             autoFocus
             tabIndex={1}
             value={selectedOutputVariable}
             options={inputVariableOptions}
             placeholder="Select source or input value"
             onChange={handleOutputVariableSelector}
-            isSearchable={false}
             styles={tempMultiSelectStyles}
+            components={{
+                MenuList: (props) => {
+                return <components.MenuList {...props}>
+                    <div className="cn-5 pl-12 pt-4 pb-4" style={{fontStyle:"italic"}}>
+                        Type to enter a custom value
+                    </div>
+                    {props.children} 
+                </components.MenuList>
+            }}}
         />
     )
 }
