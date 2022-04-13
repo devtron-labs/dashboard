@@ -8,7 +8,7 @@ import {
     MonitoringToolResponse,
 } from './ExternalLinks.type'
 
-export const MOCK_MONITORING_TOOL = [
+const MOCK_MONITORING_TOOL = [
     {
         label: 'Grafana',
         value: 'Grafana',
@@ -19,6 +19,13 @@ export const MOCK_MONITORING_TOOL = [
         value: 'Kibana',
         icon: 'https://bitnami.com/assets/stacks/kibana/img/kibana-stack-220x234.png',
     },
+]
+
+const MOCK_URLS = [
+    '/app/{appId}/details/{envId}',
+    '/app/{appId}/edit/workflow/{containerName}',
+    '/app/{appId}/env/{envId}/details/pod/{podName}',
+    '/app/{appId}/env/{envId}/details/container/',
 ]
 
 export const getMonitoringTools = (): Promise<MonitoringToolResponse> => {
@@ -35,23 +42,16 @@ export const getMonitoringTools = (): Promise<MonitoringToolResponse> => {
     })
 }
 
-// Todo: use clusterId query param
 export const getExternalLinks = (clusterId?: number): Promise<ExternalLinkResponse> => {
     // return get(`${Routes.EXTERNAL_LINKS_API}${clusterId ? '?clusterId=${clusterId}' : ''}`)
 
     const externalLinks: ExternalLink[] = []
-    const MOCK_URLS = [
-        '/app/{appId}/details/{envId}',
-        '/app/{appId}/edit/workflow',
-        '/app/{appId}/env/{envId}/details/pod/{podName}',
-        '/app/{appId}/env/{envId}/details/pod/{podName}/container/{containerName}',
-    ]
 
     for (let i = 0; i < 4; i++) {
         externalLinks.push({
             id: i,
             monitoringToolId: [0, 1].includes(i) ? 0 : 1,
-            name: 'External Link ' + i,
+            name: [0, 1].includes(i) ? 'Grafana' : 'Kibana',
             url: MOCK_URLS[i],
             clusterIds: i === 0 ? ['*'] : i === 1 ? ['1'] : ['1', '2', '3'],
         })

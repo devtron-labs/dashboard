@@ -10,7 +10,7 @@ import moment from 'moment'
 import * as queryString from 'query-string';
 import '../../lib/bootstrap-grid.min.css';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../../../util/URLUtil';
-import { getExternalLinks, getMonitoringTools, MOCK_MONITORING_TOOL } from '../../../externalLinks/ExternalLinks.service';
+import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service';
 import { ExternalLink, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
 
 function ExternalAppDetail({appId, appName}) {
@@ -18,8 +18,12 @@ function ExternalAppDetail({appId, appName}) {
     const history = useHistory();
     const [isLoading, setIsLoading] = useState(true);
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
-    const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([])
-    const [monitoringTools, setMonitoringTools] = useState<OptionTypeWithIcon[]>(MOCK_MONITORING_TOOL)
+    const [externalLinksAndTools, setExternalLinksAndTools] = useState<
+        Record<string, ExternalLink[] | OptionTypeWithIcon[]>
+    >({
+        externalLinks: [],
+        monitoringTools: [],
+    })
 
     let initTimer = null;
     let isAPICallInProgress = false;
@@ -88,22 +92,22 @@ function ExternalAppDetail({appId, appName}) {
 
                 Promise.all([getMonitoringTools(), getExternalLinks(appDetailResponse.result.appDetail.environmentDetails.clusterId)])
                 .then(([monitoringToolsRes, externalLinksRes]) => {
-                    setExternalLinks(externalLinksRes.result || [])
-                    setMonitoringTools(
-                        monitoringToolsRes.result
-                            ?.map((tool) => ({
-                                label: tool.name,
-                                value: tool.id,
-                                icon: tool.icon,
-                            }))
-                            .sort(sortOptionsByValue) || [],
-                    )             
+                    setExternalLinksAndTools({
+                        externalLinks:  externalLinksRes.result || [],
+                        monitoringTools:
+                            monitoringToolsRes.result
+                                ?.map((tool) => ({
+                                    label: tool.name,
+                                    value: tool.id,
+                                    icon: tool.icon,
+                                }))
+                                .sort(sortOptionsByValue) || [],
+                    })
                     setIsLoading(false);
                     isAPICallInProgress = false;
                 })
                 .catch((e) => {
-                    setMonitoringTools(monitoringTools)
-                    setExternalLinks(externalLinks)                 
+                    setExternalLinksAndTools(externalLinksAndTools)
                     setIsLoading(false);
                     isAPICallInProgress = false;
                 })
@@ -133,7 +137,10 @@ function ExternalAppDetail({appId, appName}) {
             }
 
             { !isLoading && !errorResponseCode &&
-                <AppDetailsComponent externalLinks={externalLinks} monitoringTools={monitoringTools} />
+                 <AppDetailsComponent
+                    externalLinks={externalLinksAndTools.externalLinks as ExternalLink[]}
+                    monitoringTools={externalLinksAndTools.monitoringTools as OptionTypeWithIcon[]}
+                />
             }
 
         </>

@@ -15,7 +15,7 @@ import ErrorImage from './assets/icons/ic-404-error.png';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil';
 import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHistory.component';
 import { ExternalLink, OptionTypeWithIcon } from '../externalLinks/ExternalLinks.type';
-import { getExternalLinks, getMonitoringTools, MOCK_MONITORING_TOOL } from '../externalLinks/ExternalLinks.service';
+import { getExternalLinks, getMonitoringTools } from '../externalLinks/ExternalLinks.service';
 
 let initTimer = null;
 
@@ -26,8 +26,12 @@ function RouterComponent({ envType }) {
     const location = useLocation();
     const history = useHistory();
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
-    const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([])
-    const [monitoringTools, setMonitoringTools] = useState<OptionTypeWithIcon[]>(MOCK_MONITORING_TOOL)
+    const [externalLinksAndTools, setExternalLinksAndTools] = useState<
+        Record<string, ExternalLink[] | OptionTypeWithIcon[]>
+    >({
+        externalLinks: [],
+        monitoringTools: [],
+    })
 
     useEffect(() => {
         IndexStore.setEnvDetails(envType, +params.appId, +params.envId);
@@ -80,21 +84,21 @@ function RouterComponent({ envType }) {
 
             Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId)])
                 .then(([monitoringToolsRes, externalLinksRes]) => {
-                    setExternalLinks(externalLinksRes.result || [])
-                    setMonitoringTools(
-                        monitoringToolsRes.result
-                            ?.map((tool) => ({
-                                label: tool.name,
-                                value: tool.id,
-                                icon: tool.icon,
-                            }))
-                            .sort(sortOptionsByValue) || [],
-                    )
+                    setExternalLinksAndTools({
+                        externalLinks:  externalLinksRes.result || [],
+                        monitoringTools:
+                            monitoringToolsRes.result
+                                ?.map((tool) => ({
+                                    label: tool.name,
+                                    value: tool.id,
+                                    icon: tool.icon,
+                                }))
+                                .sort(sortOptionsByValue) || [],
+                    })
                     setIsLoading(false);
                 })
                 .catch((e) => {
-                    setMonitoringTools(monitoringTools)
-                    setExternalLinks(externalLinks)
+                    setExternalLinksAndTools(externalLinksAndTools)
                     setIsLoading(false);
                 })
             setErrorResponseCode(undefined);
@@ -140,7 +144,10 @@ function RouterComponent({ envType }) {
                     <Suspense fallback={<DetailsProgressing loadingText="Please wait…" size={24} />}>
                         <Switch>
                             <Route path={`${path}/${URLS.APP_DETAILS}`}>
-                                <AppDetailsComponent externalLinks={externalLinks} monitoringTools={monitoringTools} />
+                                <AppDetailsComponent
+                                    externalLinks={externalLinksAndTools.externalLinks as ExternalLink[]}
+                                    monitoringTools={externalLinksAndTools.monitoringTools as OptionTypeWithIcon[]}
+                                />
                             </Route>
                             <Route path={`${path}/${URLS.APP_VALUES}`} component={ValuesComponent} />
                             <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}>

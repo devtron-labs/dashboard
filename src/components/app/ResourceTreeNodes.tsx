@@ -7,7 +7,7 @@ import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 
 import { toast } from 'react-toastify'
 import { deleteResource } from './service'
 import { ReactComponent as DropDown } from '../../assets/icons/ic-dropdown-filled.svg'
-import { AggregatedNodes, Nodes, NodeType, NodeDetailTabs, NodeDetailTabsType, AggregationKeys, AggregationKeysType } from './types'
+import { AggregatedNodes, Nodes, NodeType, NodeDetailTabs, NodeDetailTabsType, AggregationKeys, AggregationKeysType, AppDetails } from './types'
 import { ReactComponent as ErrorImage } from '../../assets/icons/misc/errorInfo.svg';
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as CubeIcon } from '../../assets/icons/ic-object.svg';
@@ -25,6 +25,7 @@ interface ResourceTree {
     appId: number;
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
+    appDetails: AppDetails
 }
 
 function ignoreCaseCompare(a: string, b: string): boolean {
@@ -36,7 +37,7 @@ function getGenricRowFields(kind: NodeType): string[] {
         case Nodes.Service:
             return ['name', 'url', '']
         case Nodes.Pod:
-            return ['name', 'ready', 'external-links', ''] // empty string denotes menu
+            return ['name', 'external-links', 'ready', ''] // empty string denotes menu
         case Nodes.Containers:
             return ['name', 'external-links']
         default:
@@ -81,7 +82,7 @@ export const StatusFilterButton: React.FC<{ status: string; count?: number }> = 
         </Tippy>
     );
 }
-const ResourceTreeNodes: React.FC<ResourceTree> = ({ nodes, describeNode, isAppDeployment = false, appName, environmentName, appId, externalLinks, monitoringTools }) => {
+const ResourceTreeNodes: React.FC<ResourceTree> = ({ nodes, describeNode, isAppDeployment = false, appName, environmentName, appId, externalLinks, monitoringTools, appDetails }) => {
     const { url, path } = useRouteMatch()
     const params = useParams<{ appId: string, envId: string, kind?: NodeType }>()
     const history = useHistory()
@@ -100,9 +101,9 @@ const ResourceTreeNodes: React.FC<ResourceTree> = ({ nodes, describeNode, isAppD
     ];
 
     useEffect(() => {
-        if (externalLinks.length > 0) {
-            const _podLevelExternalLinks = podLevelExternalLinks
-            const _containerLevelExternalLinks = containerLevelExternalLinks
+        if (externalLinks.length > 0 && monitoringTools.length > 0) {
+            const _podLevelExternalLinks = []
+            const _containerLevelExternalLinks = []
 
             externalLinks.forEach(
                 (link) => {
@@ -122,9 +123,12 @@ const ResourceTreeNodes: React.FC<ResourceTree> = ({ nodes, describeNode, isAppD
                 }
             )
             setPodLevelExternalLinks(_podLevelExternalLinks)
-            setContainerLevelExternalLinks(containerLevelExternalLinks)
+            setContainerLevelExternalLinks(_containerLevelExternalLinks)
+        } else {
+            setPodLevelExternalLinks([])
+            setContainerLevelExternalLinks([])
         }
-    }, [])
+    }, [externalLinks, monitoringTools])
 
     useEffect(() => {
         if (!searchParams.status || !params.kind) return;
@@ -219,6 +223,7 @@ const ResourceTreeNodes: React.FC<ResourceTree> = ({ nodes, describeNode, isAppD
                                 appId={appId}
                                 podLevelExternalLinks={podLevelExternalLinks}
                                 containerLevelExternalLinks={containerLevelExternalLinks}
+                                appDetails={appDetails}
                             />
                         ) : null;
                     } else {
@@ -233,6 +238,7 @@ const ResourceTreeNodes: React.FC<ResourceTree> = ({ nodes, describeNode, isAppD
                                 appId={appId}
                                 podLevelExternalLinks={podLevelExternalLinks}
                                 containerLevelExternalLinks={containerLevelExternalLinks}
+                                appDetails={appDetails}
                             />
                         ) : null;
                     }
@@ -324,8 +330,9 @@ interface AllPods {
     appId: number;
     podLevelExternalLinks: OptionTypeWithIcon[]
     containerLevelExternalLinks: OptionTypeWithIcon[]
+    appDetails: AppDetails
 }
-export const AllPods: React.FC<AllPods> = ({ isAppDeployment, pods, describeNode, appName, environmentName, nodes, appId, podLevelExternalLinks, containerLevelExternalLinks }) => {
+export const AllPods: React.FC<AllPods> = ({ isAppDeployment, pods, describeNode, appName, environmentName, nodes, appId, podLevelExternalLinks, containerLevelExternalLinks, appDetails }) => {
     const params = useParams<{ appId: string, envId: string }>()
     const podsArray = Array.from(pods).map(([podName, pod], idx) => pod)
     const [podTab, selectPodTab] = useState<'old' | 'new'>('new')
@@ -411,6 +418,7 @@ export const AllPods: React.FC<AllPods> = ({ isAppDeployment, pods, describeNode
                         appId={appId}
                         podLevelExternalLinks={podLevelExternalLinks}
                         containerLevelExternalLinks={containerLevelExternalLinks}
+                        appDetails={appDetails}
                     />
                 </>
             ) : (
@@ -425,13 +433,14 @@ export const AllPods: React.FC<AllPods> = ({ isAppDeployment, pods, describeNode
                     appId={appId}
                     podLevelExternalLinks={podLevelExternalLinks}
                     containerLevelExternalLinks={containerLevelExternalLinks}
+                    appDetails={appDetails}
                 />
             )}
         </div>
     );
 }
 
-export const GenericInfo: React.FC<{ appName: string; environmentName: string; nodes: AggregatedNodes; level?: number; Data: Map<string, any>; type: NodeType; describeNode: (nodeName: string, containerName?: string) => void, appId: number, podLevelExternalLinks: OptionTypeWithIcon[], containerLevelExternalLinks: OptionTypeWithIcon[] }> = ({ appName, environmentName, nodes, Data, type, describeNode, level = 1 , appId, podLevelExternalLinks, containerLevelExternalLinks}) => {
+export const GenericInfo: React.FC<{ appName: string; environmentName: string; nodes: AggregatedNodes; level?: number; Data: Map<string, any>; type: NodeType; describeNode: (nodeName: string, containerName?: string) => void, appId: number, podLevelExternalLinks: OptionTypeWithIcon[], containerLevelExternalLinks: OptionTypeWithIcon[], appDetails: AppDetails }> = ({ appName, environmentName, nodes, Data, type, describeNode, level = 1 , appId, podLevelExternalLinks, containerLevelExternalLinks, appDetails }) => {
     return (
         <div className={`generic-info-container flex left column top w-100`}>
             {level === 1 && (
@@ -465,12 +474,13 @@ export const GenericInfo: React.FC<{ appName: string; environmentName: string; n
                 appId={appId}
                 podLevelExternalLinks={podLevelExternalLinks}
                 containerLevelExternalLinks={containerLevelExternalLinks}
+                appDetails={appDetails}
             />
         </div>
     );
 }
 
-export const NestedTable: React.FC<{ appName: string; environmentName: string; level: number; type: NodeType; Data: Map<string, any>; nodes: AggregatedNodes; describeNode: (nodeName: string, containerName: string) => void , appId: number, podLevelExternalLinks: OptionTypeWithIcon[], containerLevelExternalLinks: OptionTypeWithIcon[]}> = ({ appName, environmentName, level, type, Data, nodes, describeNode , appId, podLevelExternalLinks, containerLevelExternalLinks}) => {
+export const NestedTable: React.FC<{ appName: string; environmentName: string; level: number; type: NodeType; Data: Map<string, any>; nodes: AggregatedNodes; describeNode: (nodeName: string, containerName: string) => void , appId: number, podLevelExternalLinks: OptionTypeWithIcon[], containerLevelExternalLinks: OptionTypeWithIcon[], appDetails: AppDetails }> = ({ appName, environmentName, level, type, Data, nodes, describeNode , appId, podLevelExternalLinks, containerLevelExternalLinks, appDetails }) => {
     const tableColumns = getGenricRowFields(type)
     return (
         <table className={`resource-tree ${level === 1 ? 'ml-10' : ''}`} style={{ width: level === 1 ? 'calc( 100% - 10px )' : '100%' }}>
@@ -479,7 +489,9 @@ export const NestedTable: React.FC<{ appName: string; environmentName: string; l
                     <th></th>
                     {/* for dropdown */}
                     {tableColumns.map((field) => (
-                        <th key={field}>{field === 'name' && level > 1 ? type : field}</th>
+                        <th key={field}>
+                            {field === 'name' && level > 1 ? type : field === 'external-links' ? '' : field}
+                        </th>
                     ))}
                 </tr>
             </thead>
@@ -497,6 +509,7 @@ export const NestedTable: React.FC<{ appName: string; environmentName: string; l
                         appId={appId}
                         podLevelExternalLinks={podLevelExternalLinks}
                         containerLevelExternalLinks={containerLevelExternalLinks}
+                        appDetails={appDetails}
                     />
                 ))}
                 {Data.size === 0 && (
@@ -528,7 +541,7 @@ const URL: React.FC<{ url: string }> = ({ url }) => {
     );
 };
 
-export const Name: React.FC<{ nodeDetails: any, describeNode: (nodeName: string, containerName?: string) => void }> = ({ nodeDetails, describeNode }) => {
+export const Name: React.FC<{ nodeDetails: any, describeNode: (nodeName: string, containerName?: string) => void, addExtraSpace: boolean }> = ({ nodeDetails, describeNode, addExtraSpace }) => {
     const { path } = useRouteMatch();
     const history = useHistory();
     const params = useParams();
@@ -548,7 +561,7 @@ export const Name: React.FC<{ nodeDetails: any, describeNode: (nodeName: string,
     }
     return (
         <td className="hover-trigger" data-testid={`${nodeDetails.name}-hover-trigger`}>
-            <div className="flex left top">
+            <div className="flex left top" {...(addExtraSpace && { style: { marginRight: '48px' }})}>
                 <div className="flex left column">
                     <div className="flex left">
                         {nodeDetails?.name}
@@ -659,11 +672,9 @@ export const Menu: React.FC<MenuProps> = ({ appName, environmentName, nodeDetail
     );
 }
 
-export const GenericRow: React.FC<{ appName: string; environmentName: string; nodes: AggregatedNodes, nodeName: string; nodeDetails: any; describeNode: (nodeName: string, containerName?: string) => void; level?: number, appId: number, podLevelExternalLinks: OptionTypeWithIcon[], containerLevelExternalLinks: OptionTypeWithIcon[] }> = ({ appName, environmentName, nodes, nodeName, nodeDetails, describeNode, level, appId, podLevelExternalLinks, containerLevelExternalLinks }) => {
+export const GenericRow: React.FC<{ appName: string; environmentName: string; nodes: AggregatedNodes, nodeName: string; nodeDetails: any; describeNode: (nodeName: string, containerName?: string) => void; level?: number, appId: number, podLevelExternalLinks: OptionTypeWithIcon[], containerLevelExternalLinks: OptionTypeWithIcon[], appDetails: AppDetails }> = ({ appName, environmentName, nodes, nodeName, nodeDetails, describeNode, level, appId, podLevelExternalLinks, containerLevelExternalLinks, appDetails }) => {
     const [collapsed, setCollapsed] = useState<boolean>(true);
     const tableColumns = getGenricRowFields(nodeDetails.kind)
-
-    console.log(nodeName, nodeDetails, nodes, appName)
 
     return (
         <React.Fragment>
@@ -686,11 +697,28 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                     if (column === 'url') {
                         return <URL key={column} url={nodeDetails.url} />;
                     } else if (column === 'name') {
-                        return <Name key={column} nodeDetails={nodeDetails} describeNode={describeNode} />;
-                    } else if (column === 'external-links' && nodeDetails.kind === Nodes.Pod) {
-                        return <NodeLevelExternalLinks nodeLevelExternalLinks={podLevelExternalLinks} podName={nodeName} />
-                    } else if (column === 'external-links' && nodeDetails.kind === Nodes.Containers) {
-                        return <NodeLevelExternalLinks nodeLevelExternalLinks={containerLevelExternalLinks} podName={nodeName} containerName={nodeName} />
+                        return <Name key={column} nodeDetails={nodeDetails} describeNode={describeNode} addExtraSpace={nodeDetails.kind === Nodes.Containers && containerLevelExternalLinks.length > 0} />;
+                    } else if (column === 'external-links' && nodeDetails.kind === Nodes.Pod && podLevelExternalLinks.length > 0) {
+                        return (
+                            <td>
+                                <NodeLevelExternalLinks
+                                    appDetails={appDetails}
+                                    nodeLevelExternalLinks={podLevelExternalLinks}
+                                    podName={nodeName}
+                                />
+                            </td>
+                        )
+                    } else if (column === 'external-links' && nodeDetails.kind === Nodes.Containers && containerLevelExternalLinks.length > 0) {
+                        return (
+                            <td>
+                                <NodeLevelExternalLinks
+                                    appDetails={appDetails}
+                                    nodeLevelExternalLinks={containerLevelExternalLinks}
+                                    podName={nodeName}
+                                    containerName={nodeName}
+                                />
+                            </td>
+                        )
                     } else if (column === '') {
                         return (
                             <Menu nodeDetails={nodeDetails}
@@ -727,6 +755,7 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                                     appId={appId}
                                     podLevelExternalLinks={podLevelExternalLinks}
                                     containerLevelExternalLinks={containerLevelExternalLinks}
+                                    appDetails={appDetails}
                                 />
                             ))}
                         {nodeDetails.kind === Nodes.Pod && nodeDetails?.containers?.length ?
@@ -744,6 +773,7 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                                 appId={appId}
                                 podLevelExternalLinks={podLevelExternalLinks}
                                 containerLevelExternalLinks={containerLevelExternalLinks}
+                                appDetails={appDetails}
                             /> : ''}
                         {nodeDetails.kind === Nodes.Pod && nodeDetails?.initContainers?.length ?
                             <NestedTable
@@ -760,6 +790,7 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                                 appId={appId}
                                 podLevelExternalLinks={podLevelExternalLinks}
                                 containerLevelExternalLinks={containerLevelExternalLinks}
+                                appDetails={appDetails}
                             /> : ''}
                     </td>
                 </tr>

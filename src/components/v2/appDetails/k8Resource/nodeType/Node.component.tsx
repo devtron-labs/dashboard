@@ -46,8 +46,8 @@ function NodeComponent({
 
     useEffect(() => {
         if (externalLinks.length > 0) {
-            const _podLevelExternalLinks = podLevelExternalLinks
-            const _containerLevelExternalLinks = containerLevelExternalLinks
+            const _podLevelExternalLinks = []
+            const _containerLevelExternalLinks = []
 
             externalLinks.forEach(
                 (link) => {
@@ -67,9 +67,12 @@ function NodeComponent({
                 }
             )
             setPodLevelExternalLinks(_podLevelExternalLinks)
-            setContainerLevelExternalLinks(containerLevelExternalLinks)
+            setContainerLevelExternalLinks(_containerLevelExternalLinks)
+        } else {
+            setPodLevelExternalLinks([])
+            setContainerLevelExternalLinks([])
         }
-    }, [])
+    }, [externalLinks])
 
     useEffect(() => {
         if (!copied) return;
@@ -177,71 +180,89 @@ function NodeComponent({
                         </div>
                     )}
                     <div className="row m-0 resource-row">
-                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor`}>
-                            <div
-                                className="flex left top ml-2"
-                                onClick={() => {
-                                    setSelectedNodes(markNodeSelected(selectedNodes, node.name));
-                                }}
-                            >
-                                {node.childNodes?.length > 0 ? (
-                                    <DropDown
-                                        className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'} `}
-                                        style={{ ['--rotateBy' as any]: !node.isSelected ? '-90deg' : '0deg' }}
-                                    />
-                                ) : (
-                                    <span className="pl-12 pr-12"></span>
-                                )}
-                                <div>
-                                    <div>{node.name}</div>
-                                    <div
-                                        className={` app-summary__status-name f-${(
-                                            node?.status ||
-                                            node?.health?.status ||
-                                            ''
-                                        ).toLowerCase()}`}
-                                    >
-                                        {getNodeStatus(node)}
+                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor content-space`}>
+                            <div className="flex align-start">
+                                <div
+                                    className="flex left top ml-2"
+                                    onClick={() => {
+                                        setSelectedNodes(markNodeSelected(selectedNodes, node.name));
+                                    }}
+                                >
+                                    {node.childNodes?.length > 0 ? (
+                                        <DropDown
+                                            className={`rotate icon-dim-24 pointer ${node.isSelected ? 'fcn-9' : 'fcn-5'} `}
+                                            style={{ ['--rotateBy' as any]: !node.isSelected ? '-90deg' : '0deg' }}
+                                        />
+                                    ) : (
+                                        <span className="pl-12 pr-12"></span>
+                                    )}
+                                    <div>
+                                        <div>{node.name}</div>
+                                        <div
+                                            className={` app-summary__status-name f-${(
+                                                node?.status ||
+                                                node?.health?.status ||
+                                                ''
+                                            ).toLowerCase()}`}
+                                        >
+                                            {getNodeStatus(node)}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div>
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="bottom"
-                                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                                    trigger="mouseenter click"
-                                >
-                                    <Clipboard
-                                        className="resource-action-tabs__active icon-dim-12 pointer ml-8 mr-8"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            copyToClipboard(node?.name, () => setCopied(true));
-                                        }}
-                                    />
-                                </Tippy>
-                                {getNodeDetailTabs(node.kind).map((kind, index) => {
-                                    return (
-                                        <a
-                                            key={'tab__' + index}
-                                            onClick={() => {
-                                                if (node.kind === NodeType.Containers) {
-                                                    handleActionTabClick(node['pNode'], kind, node.name);
-                                                } else {
-                                                    handleActionTabClick(node, kind);
-                                                }
-                                                handleFocusTabs();
+                                <div>
+                                    <Tippy
+                                        className="default-tt"
+                                        arrow={false}
+                                        placement="bottom"
+                                        content={copied ? 'Copied!' : 'Copy to clipboard.'}
+                                        trigger="mouseenter click"
+                                    >
+                                        <Clipboard
+                                            className="resource-action-tabs__active icon-dim-12 pointer ml-8 mr-8"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                copyToClipboard(node?.name, () => setCopied(true));
                                             }}
-                                            className="fw-6 cb-5 ml-6 cursor resource-action-tabs__active"
+                                        />
+                                    </Tippy>
+                                    {getNodeDetailTabs(node.kind).map((kind, index) => {
+                                        return (
+                                            <a
+                                                key={'tab__' + index}
+                                                onClick={() => {
+                                                    if (node.kind === NodeType.Containers) {
+                                                        handleActionTabClick(node['pNode'], kind, node.name);
+                                                    } else {
+                                                        handleActionTabClick(node, kind);
+                                                    }
+                                                    handleFocusTabs();
+                                                }}
+                                                className="fw-6 cb-5 ml-6 cursor resource-action-tabs__active"
 
-                                        >
-                                            {kind}
-                                        </a>
-                                    );
-                                })}
+                                            >
+                                                {kind}
+                                            </a>
+                                        );
+                                    })}
+                                </div>
                             </div>
+                            {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
+                                <NodeLevelExternalLinks
+                                    helmAppDetails={appDetails}
+                                    nodeLevelExternalLinks={podLevelExternalLinks}
+                                    podName={node.name}
+                                />
+                            )}
+                            {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (
+                                <NodeLevelExternalLinks
+                                    helmAppDetails={appDetails}
+                                    nodeLevelExternalLinks={containerLevelExternalLinks}
+                                    podName={node['pNode']?.name}
+                                    containerName={node.name}
+                                    addExtraSpace={true}
+                                />
+                            )}
                         </div>
 
                         {params.nodeType === NodeType.Service.toLowerCase() && (
@@ -263,22 +284,6 @@ function NodeComponent({
                                     />
                                 </Tippy>
                             </div>
-                        )}
-
-                        {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
-                            <NodeLevelExternalLinks
-                                helmAppDetails={appDetails}
-                                nodeLevelExternalLinks={podLevelExternalLinks}
-                                podName={node.name}
-                            />
-                        )}
-                        {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (
-                            <NodeLevelExternalLinks
-                                helmAppDetails={appDetails}
-                                nodeLevelExternalLinks={containerLevelExternalLinks}
-                                podName={node['pNode']?.name}
-                                containerName={node.name}
-                            />
                         )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (

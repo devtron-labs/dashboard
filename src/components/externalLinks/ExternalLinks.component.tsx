@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { DeleteDialog, multiSelectStyles, Option, Progressing, showError, VisibleModal } from '../common'
 import Select, { components, MultiValue } from 'react-select'
 import EmptyState from '../EmptyState/EmptyState'
@@ -25,6 +25,8 @@ import { saveExternalLinks, updateExternalLink } from './ExternalLinks.service'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { toast } from 'react-toastify'
 import { OptionWithIcon, ValueContainerWithIcon } from '../v2/common/ReactSelect.utils'
+import './externalLinks.component.scss'
+import Tippy from '@tippyjs/react'
 
 export const ClusterFilter = ({ clusters, appliedClusters, setAppliedClusters, applyFilter, queryParams, history }) => {
     const [selectedCluster, setSelectedCluster] = useState([])
@@ -937,59 +939,49 @@ export const AppLevelExternalLinks = ({
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
 }): JSX.Element | null => {
-    const [appLevelExternalLinks, setAppLevelExternalLinks] = useState<ExternalLink[]>([])
+    const [appLevelExternalLinks, setAppLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
     const details = appDetails || helmAppDetails
 
     useEffect(() => {
-        if (externalLinks.length > 0) {
+        if (externalLinks.length > 0 && monitoringTools.length > 0) {
             const filteredLinks = externalLinks.filter(
                 (link) => !link.url.includes('{podName}') && !link.url.includes('{containerName}'),
             )
-            setAppLevelExternalLinks(filteredLinks)
+            setAppLevelExternalLinks(
+                filteredLinks.map((link) => ({
+                    label: link.name,
+                    value: link.url,
+                    icon: monitoringTools.find((tool) => tool.value === link.monitoringToolId)?.icon,
+                })),
+            )
+        } else {
+            setAppLevelExternalLinks([])
         }
-    }, [externalLinks])
+    }, [externalLinks, monitoringTools])
 
-    const getExternalLinkChip = (link: ExternalLink) => {
-        const monitoringTool = monitoringTools.find((tool) => tool.value === link.monitoringToolId)
-
+    const getExternalLinkChip = (linkOption: OptionTypeWithIcon) => {
         return (
-            <a
-                key={link.name}
-                href={getParsedURL(true, link.url, details)}
-                target="_blank"
-                className="flex left br-4 ml-8"
-                style={{
-                    border: '1px solid var(--N200)',
-                    backgroundColor: 'var(--N50)',
-                    height: '24px',
-                    padding: '4px 6px',
-                    textDecoration: 'none',
-                    color: 'var(--N700)',
-                }}
+            <Tippy
+                className="default-tt"
+                arrow={false}
+                placement="top"
+                content={`${linkOption.label} (open in new tab)`}
             >
-                <img
-                    src={monitoringTool.icon}
-                    alt={link.name}
-                    style={{
-                        width: '16px',
-                        height: '16px',
-                        marginRight: '12px',
-                    }}
-                />
-                {link.name}
-            </a>
+                <a
+                    key={linkOption.label}
+                    href={getParsedURL(true, linkOption.value, details)}
+                    target="_blank"
+                    className="external-link-chip flex left br-4 mr-8"
+                >
+                    <img src={linkOption.icon} alt={linkOption.label} />
+                    <span className="ellipsis-right">{linkOption.label}</span>
+                </a>
+            </Tippy>
         )
     }
 
     return appLevelExternalLinks.length > 0 ? (
-        <div
-            className="flex left mb-14 pt-16 pb-16 pl-20 pr-20"
-            style={{
-                width: '100%',
-                height: '56px',
-                background: '#FFFFFF',
-            }}
-        >
+        <div className="app-level__external-links flex left mb-14">
             <Link className="icon-dim-20 mr-16" />
             {appLevelExternalLinks.map((link) => getExternalLinkChip(link))}
         </div>
@@ -1002,50 +994,38 @@ export const NodeLevelExternalLinks = ({
     nodeLevelExternalLinks,
     podName,
     containerName,
+    addExtraSpace
 }: {
     appDetails?: AppDetails
     helmAppDetails?: HelmAppDetails
     nodeLevelExternalLinks: OptionTypeWithIcon[]
     podName?: string
     containerName?: string
+    addExtraSpace?: boolean
 }): JSX.Element | null => {
     const details = appDetails || helmAppDetails
 
     const Option = (props: any) => {
         const { data } = props
+
         return (
-            <a
-                key={data.label}
-                href={getParsedURL(false, data.value, details, podName, containerName)}
-                target="_blank"
-                className="flex left br-4 ml-8"
-                style={{
-                    border: '1px solid var(--N200)',
-                    backgroundColor: 'var(--N50)',
-                    height: '24px',
-                    padding: '4px 6px',
-                    textDecoration: 'none',
-                    color: 'var(--N700)',
-                }}
-            >
-                <img
-                    src={data.icon}
-                    alt={data.label}
-                    style={{
-                        width: '16px',
-                        height: '16px',
-                        marginRight: '12px',
-                    }}
-                />
-                {data.label}
-            </a>
+            <Tippy className="default-tt" arrow={false} placement="left" content={`${data.label} (open in new tab)`}>
+                <a
+                    key={data.label}
+                    href={getParsedURL(false, data.value, details, podName, containerName)}
+                    target="_blank"
+                    className="external-link-option flex left br-4"
+                >
+                    <img src={data.icon} alt={data.label} />
+                    <span className="ellipsis-right">{data.label}</span>
+                </a>
+            </Tippy>
         )
     }
 
-    return (
-        <div>
+    return nodeLevelExternalLinks.length > 0 ? (
+        <div className={`node-level__external-links flex column${addExtraSpace ? ' mr-4' : ''}`}>
             <Select
-                // menuIsOpen={true}
                 placeholder={`${nodeLevelExternalLinks.length} Link${nodeLevelExternalLinks.length > 1 ? 's' : ''}`}
                 name={`${podName}-external-links`}
                 options={nodeLevelExternalLinks}
@@ -1058,6 +1038,10 @@ export const NodeLevelExternalLinks = ({
                     Option,
                 }}
                 styles={{
+                    menu: (base) => ({
+                        ...base,
+                        width: '150px',
+                    }),
                     control: (base) => ({
                         ...base,
                         minWidth: '67px',
@@ -1065,11 +1049,12 @@ export const NodeLevelExternalLinks = ({
                         minHeight: '24px',
                         backgroundColor: 'var(--N50)',
                         border: '1px solid var(--N200)',
+                        cursor: 'pointer',
                     }),
                     valueContainer: (base) => ({
                         ...base,
                         padding: 0,
-                        paddingLeft: '8px'
+                        paddingLeft: '8px',
                     }),
                     dropdownIndicator: (base, state) => ({
                         ...base,
@@ -1083,10 +1068,10 @@ export const NodeLevelExternalLinks = ({
                         color: 'var(--N700)',
                         margin: 0,
                         minWidth: '45px',
-                        maxWidth: '60px'
+                        maxWidth: '60px',
                     }),
                 }}
             />
         </div>
-    )
+    ) : null
 }
