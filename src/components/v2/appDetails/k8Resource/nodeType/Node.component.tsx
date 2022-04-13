@@ -14,8 +14,18 @@ import AppDetailsStore from '../../appDetails.store';
 import { toast } from 'react-toastify';
 import { getNodeStatus } from './nodeType.util';
 import { useSharedState } from '../../../utils/useSharedState';
+import { NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component';
+import { ExternalLink, OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type';
 
-function NodeComponent({handleFocusTabs}: {handleFocusTabs: () => void}) {
+function NodeComponent({ 
+    handleFocusTabs,
+    externalLinks,
+    monitoringTools
+}: { 
+    handleFocusTabs: () => void,
+    externalLinks: ExternalLink[]
+    monitoringTools: OptionTypeWithIcon[]
+}) {
     const { path, url } = useRouteMatch();
     const history = useHistory();
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
@@ -31,7 +41,35 @@ function NodeComponent({handleFocusTabs}: {handleFocusTabs: () => void}) {
         IndexStore.getAppDetailsFilteredNodes(),
         IndexStore.getAppDetailsNodesFilteredObservable(),
     );
+    const [podLevelExternalLinks, setPodLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
+    const [containerLevelExternalLinks, setContainerLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
 
+    useEffect(() => {
+        if (externalLinks.length > 0) {
+            const _podLevelExternalLinks = podLevelExternalLinks
+            const _containerLevelExternalLinks = containerLevelExternalLinks
+
+            externalLinks.forEach(
+                (link) => {
+                    if (link.url.includes('{podName}') && !link.url.includes('{containerName}')) {
+                        _podLevelExternalLinks.push({
+                            label: link.name,
+                            value: link.url,
+                            icon: monitoringTools.find((tool) => tool.value === link.monitoringToolId)?.icon,
+                        })
+                    } else if (link.url.includes('{containerName}')) {
+                        _containerLevelExternalLinks.push({
+                            label: link.name,
+                            value: link.url,
+                            icon: monitoringTools.find((tool) => tool.value === link.monitoringToolId)?.icon,
+                        })
+                    }
+                }
+            )
+            setPodLevelExternalLinks(_podLevelExternalLinks)
+            setContainerLevelExternalLinks(containerLevelExternalLinks)
+        }
+    }, [])
 
     useEffect(() => {
         if (!copied) return;
@@ -225,6 +263,22 @@ function NodeComponent({handleFocusTabs}: {handleFocusTabs: () => void}) {
                                     />
                                 </Tippy>
                             </div>
+                        )}
+
+                        {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
+                            <NodeLevelExternalLinks
+                                helmAppDetails={appDetails}
+                                nodeLevelExternalLinks={podLevelExternalLinks}
+                                podName={node.name}
+                            />
+                        )}
+                        {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (
+                            <NodeLevelExternalLinks
+                                helmAppDetails={appDetails}
+                                nodeLevelExternalLinks={containerLevelExternalLinks}
+                                podName={node['pNode']?.name}
+                                containerName={node.name}
+                            />
                         )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (

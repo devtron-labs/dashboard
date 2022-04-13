@@ -214,6 +214,8 @@ const AppDetailsComponent = ({
                                         clickedNodes={clickedNodes}
                                         registerNodeClick={registerNodeClick}
                                         handleFocusTabs={handleFocusTabs}
+                                        externalLinks={externalLinks}
+                                        monitoringTools={monitoringTools}
                                     />
                                 );
                             }}
@@ -237,6 +239,8 @@ const AppDetailsComponent = ({
                                         clickedNodes={clickedNodes}
                                         registerNodeClick={registerNodeClick}
                                         handleFocusTabs={handleFocusTabs}
+                                        externalLinks={externalLinks}
+                                        monitoringTools={monitoringTools}
                                     />
                                 );
                             }}
@@ -249,6 +253,8 @@ const AppDetailsComponent = ({
                                         clickedNodes={clickedNodes}
                                         registerNodeClick={registerNodeClick}
                                         handleFocusTabs={handleFocusTabs}
+                                        externalLinks={externalLinks}
+                                        monitoringTools={monitoringTools}
                                     />
                                 );
                             }}

@@ -995,3 +995,98 @@ export const AppLevelExternalLinks = ({
         </div>
     ) : null
 }
+
+export const NodeLevelExternalLinks = ({
+    appDetails,
+    helmAppDetails,
+    nodeLevelExternalLinks,
+    podName,
+    containerName,
+}: {
+    appDetails?: AppDetails
+    helmAppDetails?: HelmAppDetails
+    nodeLevelExternalLinks: OptionTypeWithIcon[]
+    podName?: string
+    containerName?: string
+}): JSX.Element | null => {
+    const details = appDetails || helmAppDetails
+
+    const Option = (props: any) => {
+        const { data } = props
+        return (
+            <a
+                key={data.label}
+                href={getParsedURL(false, data.value, details, podName, containerName)}
+                target="_blank"
+                className="flex left br-4 ml-8"
+                style={{
+                    border: '1px solid var(--N200)',
+                    backgroundColor: 'var(--N50)',
+                    height: '24px',
+                    padding: '4px 6px',
+                    textDecoration: 'none',
+                    color: 'var(--N700)',
+                }}
+            >
+                <img
+                    src={data.icon}
+                    alt={data.label}
+                    style={{
+                        width: '16px',
+                        height: '16px',
+                        marginRight: '12px',
+                    }}
+                />
+                {data.label}
+            </a>
+        )
+    }
+
+    return (
+        <div>
+            <Select
+                // menuIsOpen={true}
+                placeholder={`${nodeLevelExternalLinks.length} Link${nodeLevelExternalLinks.length > 1 ? 's' : ''}`}
+                name={`${podName}-external-links`}
+                options={nodeLevelExternalLinks}
+                isMulti={false}
+                isSearchable={false}
+                closeMenuOnSelect={true}
+                components={{
+                    IndicatorSeparator: null,
+                    ClearIndicator: null,
+                    Option,
+                }}
+                styles={{
+                    control: (base) => ({
+                        ...base,
+                        minWidth: '67px',
+                        maxWidth: '112px',
+                        minHeight: '24px',
+                        backgroundColor: 'var(--N50)',
+                        border: '1px solid var(--N200)',
+                    }),
+                    valueContainer: (base) => ({
+                        ...base,
+                        padding: 0,
+                        paddingLeft: '8px'
+                    }),
+                    dropdownIndicator: (base, state) => ({
+                        ...base,
+                        color: 'var(--N400)',
+                        transition: 'all .2s ease',
+                        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                        padding: '0 8px 0 4px',
+                    }),
+                    placeholder: (base) => ({
+                        ...base,
+                        color: 'var(--N700)',
+                        margin: 0,
+                        minWidth: '45px',
+                        maxWidth: '60px'
+                    }),
+                }}
+            />
+        </div>
+    )
+}

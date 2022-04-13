@@ -332,7 +332,7 @@ export const Details: React.FC<{
                 environment={environment}
                 podMap={aggregatedNodes.nodes.Pod}
                 k8sVersion={appDetails.k8sVersion} />}
-            <AppLevelExternalLinks appDetails={appDetails} externalLinks={externalLinks} monitoringTools={monitoringTools} />
+            {externalLinks.length > 0 && <AppLevelExternalLinks appDetails={appDetails} externalLinks={externalLinks} monitoringTools={monitoringTools} />}
             <Route path={`${path}/:kind?/:tab?`}>
                 <NodeDetails
                     nodes={aggregatedNodes}
@@ -341,6 +341,8 @@ export const Details: React.FC<{
                     nodeName={detailedNode?.name}
                     containerName={detailedNode?.containerName}
                     isAppDeployment={isAppDeployment}
+                    externalLinks={externalLinks}
+                    monitoringTools={monitoringTools}
                 />
             </Route>
 
@@ -419,7 +421,9 @@ const NodeDetails: React.FC<{
     appDetails: AppDetails;
     isAppDeployment: boolean;
     describeNode: (name: string, containerName?: string) => void;
-}> = ({ nodes, describeNode, appDetails, nodeName, containerName, isAppDeployment }) => {
+    externalLinks: ExternalLink[]
+    monitoringTools: OptionTypeWithIcon[]
+}> = ({ nodes, describeNode, appDetails, nodeName, containerName, isAppDeployment, externalLinks, monitoringTools }) => {
     const [selectedNode, selectNode] = useState<string>(null);
     const [selectedNodes, setSelectNode] = useState<string>(null);
     const [nodeItems, setNodeItems] = useState([]);
@@ -519,6 +523,8 @@ const NodeDetails: React.FC<{
                 appName={appDetails?.appName}
                 environmentName={appDetails?.environmentName}
                 appId={appDetails?.appId}
+                externalLinks={externalLinks}
+                monitoringTools={monitoringTools}
             />
             <ResponsiveDrawer
                 className="events-logs"
