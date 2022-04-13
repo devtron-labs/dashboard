@@ -96,8 +96,6 @@ function Option({ children, value, disabled = false, style = {}, active = false,
         <div className={`select__option ${rootClassName} ${active ? 'selected' : ''}`}
             style={{ ...style, }}
             onClick={e => { if (!disabled) { e.persist(); handleClick(e, value) } }}>
-            {active && <img src={checkIcon} className="select__check-icon" />}
-            {!active && <div className="select__check-icon"></div>}
             {children}
         </div> : null
 }

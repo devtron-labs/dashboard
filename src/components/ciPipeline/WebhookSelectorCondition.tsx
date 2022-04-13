@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactSelect from 'react-select';
-import { Option } from './ciPipeline.util';
+import { Option } from '../v2/common/ReactSelect.utils';
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg';
 import { multiSelectStyles } from '../common'
 
@@ -12,7 +12,7 @@ export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, s
                 components={{
                     IndicatorSeparator: null,
                     ClearIndicator: null,
-                    // Option,
+                    Option,
                 }}
                 isSearchable={true}
                 tabIndex={1}

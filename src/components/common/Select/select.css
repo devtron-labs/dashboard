@@ -65,6 +65,11 @@
     background-color: var(--N000);
 }
 
+.select__option.selected {
+    color: var(--B500);
+    background-color: var(--B100);
+}
+
 .select-button__selected-option {
     display: inline-block;
     white-space: nowrap;

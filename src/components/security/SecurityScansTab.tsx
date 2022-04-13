@@ -4,8 +4,9 @@ import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-error.svg';
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg';
 import { getInitData, getSecurityScanList } from './security.service';
+import { Option as SelectSingleOption } from '../v2/common/ReactSelect.utils';
 import { DropdownIndicator, styles, ValueContainer, Option } from './security.util';
-import { ScanDetailsModal, Pagination, Progressing, showError, ErrorScreenManager as ErrorScreen } from '../common'
+import { ScanDetailsModal, Pagination, Progressing, showError, ErrorScreenManager as ErrorScreen, SingleSelectOption } from '../common'
 import { ViewType } from '../../config';
 import { ReactSelectOptionType, SecurityScansTabState } from './security.types';
 import ReactSelect from 'react-select';
@@ -250,7 +251,8 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                 { label: 'Deployment Object', value: 'objectName' }
               ]}
               components={{
-                DropdownIndicator
+                DropdownIndicator,
+                Option: SelectSingleOption,
               }}
               styles={{
                 ...styles,

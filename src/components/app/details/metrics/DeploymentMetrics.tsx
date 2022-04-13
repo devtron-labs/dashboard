@@ -9,8 +9,9 @@ import { getAppOtherEnvironment } from '../../../../services/service';
 import { DeploymentTableModal } from './DeploymentTableModal';
 import { BenchmarkModal } from './BenchmarkModal';
 import moment, { Moment } from 'moment';
-import { DropdownIndicator, styles, BenchmarkLine, frequencyXAxisLabel, leadTimeXAxisLabel, recoveryTimeLabel, ReferenceLineLegend, renderCategoryTag, FrequencyTooltip, RecoveryTimeTooltip, LeadTimeTooltip, EliteCategoryMessage, FailureLegendEmptyState, Option } from './deploymentMetrics.util';
+import { DropdownIndicator, styles, BenchmarkLine, frequencyXAxisLabel, leadTimeXAxisLabel, recoveryTimeLabel, ReferenceLineLegend, renderCategoryTag, FrequencyTooltip, RecoveryTimeTooltip, LeadTimeTooltip, EliteCategoryMessage, FailureLegendEmptyState } from './deploymentMetrics.util';
 import ReactSelect from 'react-select';
+import { Option } from '../../../v2/common/ReactSelect.utils';
 import EmptyState from '../../../EmptyState/EmptyState'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png';
 import SelectEnvImage from '../../../../assets/img/ic-empty-dep-metrics@2x.png';
