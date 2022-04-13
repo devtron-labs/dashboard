@@ -30,6 +30,7 @@ export function PreBuild() {
         setPageState,
         addNewTask,
         selectedTaskIndex,
+        setSelectedTaskIndex,
         configurationType,
         setConfigurationType,
         activeStageName,
@@ -43,6 +44,7 @@ export function PreBuild() {
         setPageState: React.Dispatch<React.SetStateAction<string>>
         addNewTask: () => void
         selectedTaskIndex: number
+        setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
         configurationType: string
         setConfigurationType: React.Dispatch<React.SetStateAction<string>>
         activeStageName: string
@@ -62,6 +64,7 @@ export function PreBuild() {
 
     useEffect(() => {
         setConfigurationType(ConfigurationType.GUI)
+        setSelectedTaskIndex(0)
     }, [activeStageName])
 
     useEffect(() => {
