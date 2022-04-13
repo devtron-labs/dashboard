@@ -165,7 +165,7 @@ export const ChartRepoSelector = ({
                 style={{
                     padding: '12px 16px',
                     cursor: 'pointer',
-                    backgroundColor: isCurrentlySelected ? '#f0f7ff' : props.isFocused ? 'var(--N100)' : 'white',
+                    backgroundColor: isCurrentlySelected ? 'var(--B100)' : props.isFocused ? 'var(--N100)' : 'white',
                     color: isCurrentlySelected ? 'var(--B500)' : 'var(--N900)',
                 }}
             >

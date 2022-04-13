@@ -76,7 +76,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
     function Option(_props) {
         const { selectProps, selectOption, data } = _props
         selectProps.styles.option = getCustomOptionSelectionStyle({
-            backgroundColor: data.isSelected ? '#f0f7ff' : _props.isFocused ? 'var(--N100)' : 'white',
+            backgroundColor: data.isSelected ? 'var(--B100)' : _props.isFocused ? 'var(--N100)' : 'white',
             color: data.isSelected ? 'var(--B500)' : 'var(--N900)',
         })
 
