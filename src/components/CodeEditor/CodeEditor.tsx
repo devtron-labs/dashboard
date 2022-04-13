@@ -18,7 +18,7 @@ import EditorWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worke
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import YamlWorker from 'worker-loader!monaco-yaml/lib/esm/yaml.worker';
 import { MODES } from '../../../src/config/constants';
-import { CleanKubeManifest } from '../../../src/util/Util';
+import { cleanKubeManifest } from '../../../src/util/Util';
 
 // @ts-ignore
 window.MonacoEnvironment = {
@@ -114,8 +114,8 @@ interface CodeEditorState {
 }
 const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema ,isKubernetes = true, cleanData = false}) {
     if (cleanData) {
-        value = CleanKubeManifest(value);
-        defaultValue = CleanKubeManifest(defaultValue);
+        value = cleanKubeManifest(value);
+        defaultValue = cleanKubeManifest(defaultValue);
     }
     
     const editorRef = useRef(null)
