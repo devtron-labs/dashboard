@@ -67,6 +67,14 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         setFormData(_formData)
     }
 
+    const handleBlur = () => {
+        if (type === PluginVariableType.OUTPUT) {
+            const _formData = { ...formData }
+            calculateLastStepDetail(false, _formData, selectedTaskIndex)
+            setFormData(_formData)
+        }
+    }
+
     const deleteInputOutputValue = (index: number): void => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].splice(index, 1)
@@ -103,6 +111,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                     value={variable.name}
                                     name="name"
                                     onChange={(e) => handleInputOutputValueChange(e, index)}
+                                    onBlur={(e) => handleBlur()}
                                 />
                             </div>
                             {type === PluginVariableType.INPUT && (

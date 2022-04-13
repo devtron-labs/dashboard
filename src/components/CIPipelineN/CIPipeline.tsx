@@ -306,6 +306,16 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                     taskErrorobj.isValid =
                         taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable].inputVariables[index].isValid
                 })
+                if (taskData.stepType === PluginType.INLINE) {
+                    taskErrorobj[currentStepTypeVariable].outputVariables = []
+                    taskData[currentStepTypeVariable].inputVariables.forEach((element, index) => {
+                        taskErrorobj[currentStepTypeVariable].outputVariables.push(
+                            validationRules.outputVariable(element),
+                        )
+                        taskErrorobj.isValid =
+                            taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable].outputVariables[index].isValid
+                    })
+                }
             }
         }
     }
@@ -355,17 +365,21 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             const outputVariablesLength =
                 _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables.length
             for (let j = 0; j < outputVariablesLength; j++) {
-                _outputVariablesFromPrevSteps.set(
-                    index + '.' + _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name,
-                    {
-                        ..._formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j],
-                        refVariableStepIndex: index,
-                        refVariableStage:
-                            activeStageName === BuildStageVariable.PreBuild
-                                ? RefVariableStageType.PRE_CI
-                                : RefVariableStageType.POST_CI,
-                    },
-                )
+                if (_formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name) {
+                    _outputVariablesFromPrevSteps.set(
+                        index +
+                            '.' +
+                            _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name,
+                        {
+                            ..._formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j],
+                            refVariableStepIndex: index,
+                            refVariableStage:
+                                activeStageName === BuildStageVariable.PreBuild
+                                    ? RefVariableStageType.PRE_CI
+                                    : RefVariableStageType.POST_CI,
+                        },
+                    )
+                }
             }
             if (
                 !isFromAddNewTask &&

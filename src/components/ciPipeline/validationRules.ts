@@ -23,7 +23,7 @@ export class ValidationRules {
     }
 
     inputVariable = (value: object): { message: string | null; isValid: boolean } => {
-        let str = '^[a-z][a-z0-9-.]+[a-z0-9]$'
+        let str = `^[a-z0-9-_]+$`
         let re = new RegExp(str)
         const variableValue =
             (value['refVariableType'] === RefVariableType.NEW && value['value']) ||
@@ -39,8 +39,22 @@ export class ValidationRules {
             return { message: 'Variable Name and Value both are required field', isValid: false }
         } else if (!value['name']) {
             return { message: 'Variable Name is required field', isValid: false }
+        } else if (!re.test(value['name'])) {
+            return { message: `Invalid name. Only alphanumeric chars and (_) is allowed`, isValid: false }
         } else if (!variableValue) {
             return { message: 'Variable Value is required field', isValid: false }
+        } else {
+            return { message: null, isValid: true }
+        }
+    }
+
+    outputVariable = (value: object): { message: string | null; isValid: boolean } => {
+        let str = `^[a-z0-9-_]+$`
+        let re = new RegExp(str)
+        if (!value['name']) {
+            return { message: 'Variable Name is required field', isValid: false }
+        } else if (!re.test(value['name'])) {
+            return { message: `Invalid name. Only alphanumeric chars and (_) is allowed`, isValid: false }
         } else {
             return { message: null, isValid: true }
         }

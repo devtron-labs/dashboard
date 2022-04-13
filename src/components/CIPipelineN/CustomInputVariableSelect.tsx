@@ -53,7 +53,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         })
         if (activeStageName === BuildStageVariable.PostBuild) {
             const preBuildTaskLength = formData[BuildStageVariable.PreBuild].steps.length
-            if (preBuildTaskLength > 1) {
+            if (preBuildTaskLength >= 1) {
                 const preBuildStageVariables = []
                 inputVariablesListFromPrevStep[BuildStageVariable.PreBuild][preBuildTaskLength - 1].forEach(
                     (element) => {
@@ -66,7 +66,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                         : 'pluginRefStepDetail'
                 const outputVariablesLength =
                     formData[BuildStageVariable.PreBuild].steps[preBuildTaskLength - 1][stepTypeVariable]
-                        .outputVariables.length
+                        ?.outputVariables?.length || 0
                 for (let j = 0; j < outputVariablesLength; j++) {
                     const currentVariableDetails =
                         formData[BuildStageVariable.PreBuild].steps[preBuildTaskLength - 1][stepTypeVariable]
