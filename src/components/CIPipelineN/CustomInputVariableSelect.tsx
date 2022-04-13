@@ -77,6 +77,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                         ...currentVariableDetails,
                         label: currentVariableDetails.name,
                         value: currentVariableDetails.name,
+                        refVariableStepIndex: preBuildTaskLength - 1,
                     })
                 }
                 setInputVariableOptions([
