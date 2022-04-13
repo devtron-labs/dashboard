@@ -1,7 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { ConfigurationType, ViewType } from '../../config'
 import { RadioGroup, showError } from '../common'
-import { ConditionContainerType, FormType, PluginType, PluginVariableType, ScriptType } from '../ciPipeline/types'
+import {
+    ConditionContainerType,
+    FormErrorObjectType,
+    FormType,
+    PluginType,
+    PluginVariableType,
+    ScriptType,
+} from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
 import { getPluginDetail } from '../ciPipeline/ciPipeline.service'
@@ -11,6 +18,7 @@ import YAML from 'yaml'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
 import { ciPipelineContext } from './CIPipeline'
+import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 
 export function TaskDetailComponent() {
     const {
@@ -19,12 +27,16 @@ export function TaskDetailComponent() {
         setPageState,
         selectedTaskIndex,
         activeStageName,
+        appId,
+        formDataErrorObj,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         setPageState: React.Dispatch<React.SetStateAction<string>>
         selectedTaskIndex: number
         activeStageName: string
+        appId: number
+        formDataErrorObj: FormErrorObjectType
     } = useContext(ciPipelineContext)
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [taskScriptType, setTaskScriptType] = useState<string>(
@@ -42,7 +54,7 @@ export function TaskDetailComponent() {
     useEffect(() => {
         if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.PLUGIN_REF) {
             setPageState(ViewType.LOADING)
-            getPluginDetail(formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.pluginId)
+            getPluginDetail(formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.pluginId, appId)
                 .then((response) => {
                     setPageState(ViewType.FORM)
                     processPluginData(response.result)
@@ -121,12 +133,23 @@ export function TaskDetailComponent() {
             <div>
                 <div className="row-container mb-10">
                     <label className="fw-6 fs-13 cn-7 label-width">Task name*</label>{' '}
-                    <input
-                        className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
-                        type="text"
-                        onChange={(e) => handleNameChange(e)}
-                        value={formData[activeStageName].steps[selectedTaskIndex].name}
-                    />
+                    <div>
+                        <input
+                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
+                            type="text"
+                            onChange={(e) => handleNameChange(e)}
+                            value={formData[activeStageName].steps[selectedTaskIndex].name}
+                        />
+                        {formDataErrorObj[activeStageName].steps[selectedTaskIndex].name &&
+                            !formDataErrorObj[activeStageName].steps[selectedTaskIndex].name.isValid && (
+                                <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
+                                    <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                    <span>
+                                        {formDataErrorObj[activeStageName].steps[selectedTaskIndex].name.message}
+                                    </span>
+                                </span>
+                            )}
+                    </div>
                 </div>
                 <div className="row-container mb-10">
                     <label className="fw-6 fs-13 cn-7 label-width">Description</label>{' '}

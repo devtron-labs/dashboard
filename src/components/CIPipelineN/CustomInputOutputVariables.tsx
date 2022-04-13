@@ -4,6 +4,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { FormType, PluginVariableType, RefVariableType, VariableFieldType } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ciPipelineContext } from './CIPipeline'
+import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 
 export const globalVariable = [
     { value: 'docker-image-tag', label: 'docker-image-tag' },
@@ -17,11 +18,21 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         setFormData,
         selectedTaskIndex,
         activeStageName,
+        calculateLastStepDetail,
+        formDataErrorObj,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         selectedTaskIndex: number
         activeStageName: string
+        calculateLastStepDetail: (
+            isFromAddNewTask: boolean,
+            _formData: FormType,
+            startIndex?: number,
+        ) => {
+            index: number
+        }
+        formDataErrorObj: object
     } = useContext(ciPipelineContext)
     const addVariable = (): void => {
         const _formData = { ...formData }
@@ -59,6 +70,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const deleteInputOutputValue = (index: number): void => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].splice(index, 1)
+        if (type === PluginVariableType.OUTPUT) {
+            calculateLastStepDetail(false, _formData, selectedTaskIndex)
+        }
         setFormData(_formData)
     }
 
@@ -73,7 +87,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.map(
                 (variable, index) => (
-                    <div className="pl-200">
+                    <div className="pl-200 mb-20">
                         <div
                             className={
                                 type === PluginVariableType.INPUT
@@ -107,7 +121,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
 
                         <input
                             style={{ width: '80% !important' }}
-                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 mb-20"
+                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
                             autoComplete="off"
                             placeholder="Description"
                             type="text"
@@ -115,6 +129,23 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                             name="description"
                             onChange={(e) => handleInputOutputValueChange(e, index)}
                         />
+                        {formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail[
+                            VariableFieldType[type]
+                        ][index] &&
+                            !formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail[
+                                VariableFieldType[type]
+                            ][index].isValid && (
+                                <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
+                                    <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                    <span>
+                                        {
+                                            formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail[
+                                                VariableFieldType[type]
+                                            ][index].message
+                                        }
+                                    </span>
+                                </span>
+                            )}
                     </div>
                 ),
             )}

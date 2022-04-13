@@ -74,12 +74,6 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
                     ? 'inlineStepDetail'
                     : 'pluginRefStepDetail'
-            if (!_formData[activeStageName].steps[selectedTaskIndex].usedRefVariable) {
-                _formData[activeStageName].steps[selectedTaskIndex].usedRefVariable = {}
-            }
-            _formData[activeStageName].steps[selectedTaskIndex].usedRefVariable[
-                selectedValue.refVariableStepIndex + '.' + selectedValue.label
-            ] = selectedVariableIndex
             _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
                 selectedVariableIndex
             ] = {

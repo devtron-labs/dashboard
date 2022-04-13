@@ -1,7 +1,7 @@
 import React, { useState, useEffect, createContext } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ButtonWithLoader, ConditionalWrap, DeleteDialog, showError, VisibleModal } from '../common'
-import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation, useHistory } from 'react-router'
 import { BuildStageVariable, BuildTabText, TriggerType, ViewType } from '../../config'
 import {
     deleteCIPipeline,
@@ -12,7 +12,15 @@ import {
 import { toast } from 'react-toastify'
 import { ServerErrors } from '../../modals/commonTypes'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { CIPipelineDataType, FormType, PluginType, RefVariableType, VariableType } from '../ciPipeline/types'
+import {
+    CIPipelineDataType,
+    FormType,
+    PluginType,
+    RefVariableType,
+    StepType,
+    TaskErrorObj,
+    VariableType,
+} from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
 import { PreBuild } from './PreBuild'
@@ -57,7 +65,6 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         preBuildStage: Map<string, VariableType>[]
         postBuildStage: Map<string, VariableType>[]
     }>({ preBuildStage: [], postBuildStage: [] })
-
     const [formData, setFormData] = useState<FormType>({
         name: '',
         args: [{ key: '', value: '' }],
@@ -78,6 +85,20 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             steps: [],
         },
     })
+    const [formDataErrorObj, setFormDataErrorObj] = useState({
+        name: { isValid: true },
+        preBuildStage: {
+            steps: [],
+            isValid: true,
+        },
+        buildStage: {
+            isValid: true,
+        },
+        postBuildStage: {
+            steps: [],
+            isValid: true,
+        },
+    })
     const [ciPipeline, setCIPipeline] = useState<CIPipelineDataType>({
         active: true,
         ciMaterial: [],
@@ -91,7 +112,6 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         scanEnabled: false,
     })
     const validationRules = new ValidationRules()
-
     useEffect(() => {
         setPageState(ViewType.LOADING)
         if (ciPipelineId) {
@@ -271,16 +291,67 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             })
     }
 
+    const validateTask = (taskData: StepType, taskErrorobj: TaskErrorObj): void => {
+        taskErrorobj.name = validationRules.taskName(taskData.name)
+        taskErrorobj.isValid = taskErrorobj.name.isValid
+
+        if (taskData.stepType) {
+            const currentStepTypeVariable =
+                taskData.stepType === PluginType.INLINE ? 'inlineStepDetail' : 'pluginRefStepDetail'
+            taskErrorobj[currentStepTypeVariable].inputVariables = []
+            taskData[currentStepTypeVariable].inputVariables.forEach((element, index) => {
+                taskErrorobj[currentStepTypeVariable].inputVariables.push(validationRules.inputVariable(element))
+                taskErrorobj.isValid =
+                    taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable].inputVariables[index].isValid
+            })
+        }
+    }
+
+    const validateStage = (stageName: string): void => {
+        const _formDataErrorObj = { ...formDataErrorObj }
+        if (stageName === BuildStageVariable.Build) {
+            _formDataErrorObj.name = validationRules.name(formData.name)
+            _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
+        } else {
+            const stepsLength = formData[activeStageName].steps.length
+            let isStageValid = true
+            for (let i = 0; i < stepsLength; i++) {
+                if (!_formDataErrorObj[activeStageName]['steps'][i])
+                    _formDataErrorObj[activeStageName]['steps'].push({ isValid: true })
+                validateTask(formData[activeStageName]['steps'][i], _formDataErrorObj[activeStageName]['steps'][i])
+                isStageValid =
+                    _formDataErrorObj[activeStageName]['steps'][i].isValid &&
+                    _formDataErrorObj[activeStageName]['steps'][i].isValid
+            }
+            _formDataErrorObj[activeStageName].isValid = isStageValid
+        }
+        setFormDataErrorObj(_formDataErrorObj)
+    }
+
     const calculateLastStepDetail = (
         isFromAddNewTask: boolean,
         _formData: FormType,
         startIndex?: number,
     ): { index: number } => {
+        //const _formDataErrorObj = { ...formDataErrorObj }
         const stepsLength = _formData[activeStageName].steps.length
         let index = 0
         let _outputVariablesFromPrevSteps: Map<string, VariableType> = new Map(),
             _inputVariablesListPerTask: Map<string, VariableType>[] = []
+        // let isStageValid = true
+        // validateStage(_formData)
         for (let i = 0; i < stepsLength; i++) {
+            // if (!_formDataErrorObj[activeStageName]['steps'][i]) {
+            //     _formDataErrorObj[activeStageName]['steps'].push({
+            //         name: validationRules.taskName(_formData[activeStageName]['steps'][i].name),
+            //     })
+            // } else {
+            //     _formDataErrorObj[activeStageName]['steps'][i].name = validationRules.taskName(
+            //         _formData[activeStageName]['steps'][i].name,
+            //     )
+            // }
+            // _formDataErrorObj[activeStageName]['steps'][i].isValid =
+            //     _formDataErrorObj[activeStageName]['steps'][i].name.isValid
             _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
             if (index <= _formData[activeStageName].steps[i].index) {
                 index = _formData[activeStageName].steps[i].index
@@ -303,34 +374,51 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                     },
                 )
             }
-            if (!isFromAddNewTask && i >= startIndex && _formData[activeStageName].steps[i].usedRefVariable) {
-                for (const key in _formData[activeStageName].steps[i].usedRefVariable) {
-                    const usedRefVariable = key.split('.')
-                    const value = _formData[activeStageName].steps[i].usedRefVariable[key]
-                    if (Number(usedRefVariable[0]) >= startIndex) {
-                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[
-                            value
-                        ].RefVariableUsed = false
-                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[
-                            value
-                        ].RefVariableStepIndex = 0
-                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[
-                            value
-                        ].RefVariableName = ''
-                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[
-                            value
-                        ].RefVariableType = RefVariableType.NEW
+            // _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].inputVariables = []
+            // _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables.forEach((element, index) => {
+            //     _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].inputVariables.push(
+            //         validationRules.inputVariable(element),
+            //     )
+            //     _formDataErrorObj[activeStageName]['steps'][i].isValid =
+            //         _formDataErrorObj[activeStageName]['steps'][i].isValid &&
+            //         _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].inputVariables[index].isValid
+            // })
+            if (
+                !isFromAddNewTask &&
+                i >= startIndex &&
+                _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables
+            ) {
+                for (const key in _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables) {
+                    const variableDetail =
+                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[key]
+                    if (
+                        variableDetail.RefVariableUsed &&
+                        variableDetail.RefVariableType === RefVariableType.FROM_PREVIOUS_STEP
+                    ) {
+                        variableDetail.RefVariableUsed = false
+                        variableDetail.RefVariableStepIndex = 0
+                        variableDetail.RefVariableName = ''
+                        variableDetail.RefVariableType = RefVariableType.NEW
                     }
                 }
             }
+            // isStageValid =
+            //     _formDataErrorObj[activeStageName]['steps'][i].isValid &&
+            //     _formDataErrorObj[activeStageName]['steps'][i].isValid
         }
         if (isFromAddNewTask) {
             _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
+            // _formDataErrorObj[activeStageName]['steps'].push({
+            //     name: { isValid: true, message: null },
+            //     isValid: true,
+            // })
             index++
         }
         const _inputVariablesListFromPrevStep = { ...inputVariablesListFromPrevStep }
         _inputVariablesListFromPrevStep[activeStageName] = _inputVariablesListPerTask
         setInputVariablesListFromPrevStep(_inputVariablesListFromPrevStep)
+        //_formDataErrorObj[activeStageName].isValid = isStageValid
+        //setFormDataErrorObj(_formDataErrorObj)
         return { index: index }
     }
 
@@ -347,6 +435,12 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         }
         _formData[activeStageName].steps.push(stage)
         setFormData(_formData)
+        const _formDataErrorObj = { ...formDataErrorObj }
+        _formDataErrorObj[activeStageName]['steps'].push({
+            name: { isValid: true, message: null },
+            isValid: true,
+        })
+        setFormDataErrorObj(_formDataErrorObj)
         setSelectedTaskIndex(_formData[activeStageName].steps.length - 1)
     }
 
@@ -379,9 +473,14 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                     className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
                                     activeClassName="active"
                                     to={`pre-build`}
+                                    onClick={() => {
+                                        validateStage(activeStageName)
+                                    }}
                                 >
                                     {BuildTabText[BuildStageVariable.PreBuild]}
-                                    <AlertTriangle className="icon-dim-20 mr-5 ml-5" />
+                                    {!formDataErrorObj.preBuildStage.isValid && (
+                                        <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-3" />
+                                    )}
                                 </NavLink>
                             </li>
                         )}
@@ -391,9 +490,14 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                 className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
                                 activeClassName="active"
                                 to={`build`}
+                                onClick={() => {
+                                    validateStage(activeStageName)
+                                }}
                             >
                                 {BuildTabText[BuildStageVariable.Build]}
-                                <AlertTriangle className="icon-dim-20 mr-5 ml-5" />
+                                {!formDataErrorObj.buildStage.isValid && (
+                                    <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-3" />
+                                )}
                             </NavLink>
                         </li>
                         {isAdvanced && (
@@ -403,9 +507,14 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                     className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
                                     activeClassName="active"
                                     to={`post-build`}
+                                    onClick={() => {
+                                        validateStage(activeStageName)
+                                    }}
                                 >
                                     {BuildTabText[BuildStageVariable.PostBuild]}
-                                    <AlertTriangle className="icon-dim-20 mr-5 ml-5" />
+                                    {!formDataErrorObj.postBuildStage.isValid && (
+                                        <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-3" />
+                                    )}
                                 </NavLink>
                             </li>
                         )}
@@ -425,6 +534,11 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         calculateLastStepDetail,
                         setPageState,
                         inputVariablesListFromPrevStep,
+                        appId,
+                        formDataErrorObj,
+                        setFormDataErrorObj,
+                        validateTask,
+                        validateStage,
                     }}
                 >
                     <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''}`}>
