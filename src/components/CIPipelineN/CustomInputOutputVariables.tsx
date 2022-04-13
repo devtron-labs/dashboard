@@ -1,7 +1,13 @@
 import React, { useContext } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { FormType, PluginVariableType, RefVariableType, VariableFieldType } from '../ciPipeline/types'
+import {
+    FormType,
+    PluginVariableType,
+    RefVariableStageType,
+    RefVariableType,
+    VariableFieldType,
+} from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -50,10 +56,11 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             format: '',
             description: '',
             defaultValue: '',
-            RefVariableUsed: false,
-            RefVariableType: RefVariableType.NEW,
-            RefVariableStepIndex: 0,
-            RefVariableName: '',
+            refVariableUsed: false,
+            refVariableType: RefVariableType.NEW,
+            refVariableStepIndex: 0,
+            refVariableName: '',
+            refVariableStage: RefVariableStageType.NO_REF,
         }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].push(newCondition)
         setFormData(_formData)

@@ -16,6 +16,7 @@ import {
     CIPipelineDataType,
     FormType,
     PluginType,
+    RefVariableStageType,
     RefVariableType,
     StepType,
     TaskErrorObj,
@@ -392,13 +393,14 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                     const variableDetail =
                         _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[key]
                     if (
-                        variableDetail.RefVariableUsed &&
-                        variableDetail.RefVariableType === RefVariableType.FROM_PREVIOUS_STEP
+                        variableDetail.refVariableUsed &&
+                        variableDetail.refVariableType === RefVariableType.FROM_PREVIOUS_STEP
                     ) {
-                        variableDetail.RefVariableUsed = false
-                        variableDetail.RefVariableStepIndex = 0
-                        variableDetail.RefVariableName = ''
-                        variableDetail.RefVariableType = RefVariableType.NEW
+                        variableDetail.refVariableUsed = false
+                        variableDetail.refVariableStepIndex = 0
+                        variableDetail.refVariableName = ''
+                        variableDetail.refVariableType = RefVariableType.NEW
+                        variableDetail.RefVariableStageType = RefVariableStageType.NO_REF
                     }
                 }
             }

@@ -69,6 +69,12 @@ export enum ConditionType {
     FAIL = 'FAIL',
 }
 
+export enum RefVariableStageType {
+    PRE_CI = 'PRE_CI',
+    POST_CI = 'POST_CI',
+    NO_REF = 'NO_REF',
+}
+
 export interface VariableType {
     id: number
     name: string
@@ -76,10 +82,11 @@ export interface VariableType {
     format: string
     description: string
     defaultValue: string
-    RefVariableUsed: boolean
-    RefVariableType: RefVariableType
-    RefVariableStepIndex: number
-    RefVariableName: string
+    refVariableUsed: boolean
+    refVariableType: RefVariableType
+    refVariableStepIndex: number
+    refVariableName: string
+    refVariableStage?: RefVariableStageType
 }
 
 interface CommandArgsMap {
