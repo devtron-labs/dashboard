@@ -1,33 +1,33 @@
-import React from 'react'
-import { FormType, PluginVariableType, VariableFieldType } from '../ciPipeline/types'
+import React, { useContext } from 'react'
+import { FormType } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { ciPipelineContext } from './CIPipeline'
 
 enum PortMap {
     PORTONLOCAL = 'portOnLocal',
     PORTONCONTAINER = 'portOnContainer',
 }
 
-function MultiplePort({
-    type,
-    selectedTaskIndex,
-    formData,
-    setFormData,
-    activeStageName,
-}: {
-    type: PluginVariableType
-    selectedTaskIndex: number
-    formData: FormType
-    setFormData: React.Dispatch<React.SetStateAction<FormType>>
-    activeStageName: string
-}) {
+function MultiplePort() {
+    const {
+        selectedTaskIndex,
+        formData,
+        setFormData,
+        activeStageName,
+    }: {
+        selectedTaskIndex: number
+        formData: FormType
+        setFormData: React.Dispatch<React.SetStateAction<FormType>>
+        activeStageName: string
+    } = useContext(ciPipelineContext)
     const addMultiplePort = (): void => {
         const _formData = { ...formData }
 
         if (!_formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap) {
             _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap = []
         }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap.push({ 
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap.push({
             portOnLocal: null,
             portOnContainer: null,
         })
@@ -36,7 +36,8 @@ function MultiplePort({
 
     const handlePort = (e, index) => {
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[index][e.target.name] = e.target.value
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[index][e.target.name] =
+            e.target.value
         setFormData(_formData)
     }
 

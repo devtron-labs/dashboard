@@ -6,12 +6,6 @@ import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 
-export const globalVariable = [
-    { value: 'docker-image-tag', label: 'docker-image-tag' },
-    { value: 'date', label: 'date' },
-    { value: 'time', label: 'time' },
-]
-
 function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const {
         formData,
