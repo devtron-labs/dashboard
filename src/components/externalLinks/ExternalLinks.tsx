@@ -6,6 +6,7 @@ import {
     AppliedFilterChips,
     ClusterFilter,
     DeleteExternalLinkDialog,
+    getMonitoringToolIcon,
     NoExternalLinksView,
     NoMatchingResults,
     SearchInput,
@@ -13,7 +14,7 @@ import {
 import { useHistory, useLocation } from 'react-router-dom'
 import './externalLinks.scss'
 import { deleteExternalLink, getExternalLinks, getMonitoringTools } from './ExternalLinks.service'
-import { ExternalLink, MonitoringTool, OptionTypeWithIcon } from './ExternalLinks.type'
+import { ExternalLink, OptionTypeWithIcon } from './ExternalLinks.type'
 import { getClusterListMinWithoutAuth as getClusterList } from '../../services/service'
 import { OptionType } from '../app/types'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
@@ -67,20 +68,77 @@ function ExternalLinks() {
             })
     }, [])
 
-    useEffect(() => {
-        if (appliedClusters.length > 0) {
-            const appliedClustersIds = appliedClusters.map((cluster) => cluster.value)
-            setFilteredExternalLinks(
-                externalLinks.filter((link) => link.clusterIds.some((id) =>  id === '*' || appliedClustersIds.includes(id))),
+    const filterByClusterIds = (_appliedClustersIds: string[]) => {
+        /**
+         * 1. If clusters query param is present but doesn't have any value then return default externalLinks
+         * 2. If clusters query param is present and has value then filter & return filtered external links
+         * 3. Else return empty array
+         */
+        if (_appliedClustersIds.length === 1 && !_appliedClustersIds[0]) {
+            return externalLinks
+        } else if (_appliedClustersIds.length > 0) {
+            return externalLinks.filter((link) =>
+                link.clusterIds.some((id) => id === '*' || _appliedClustersIds.includes(id)),
             )
-        } else {
-            setFilteredExternalLinks(externalLinks)
         }
-    }, [appliedClusters, externalLinks])
 
-    const applyFilter = (): void => {
-        // filter external links
+        return []
     }
+
+    const filterBySearchTerm = (_externalLinks: ExternalLink[]) => {
+        const _searchTerm = queryParams.get('search').trim().toLowerCase()
+
+        /**
+         * 1. If search query param is present and has value then filter & return filtered external links
+         * 2. Else return passed _externalLinks
+         */
+        if (_searchTerm) {
+            return _externalLinks.filter(
+                (link: ExternalLink) =>
+                    link.name.toLowerCase().includes(_searchTerm) ||
+                    monitoringTools
+                        .find((tool) => tool.value === link.monitoringToolId)
+                        ?.label.toLowerCase()
+                        .includes(_searchTerm),
+            )
+        }
+
+        return _externalLinks
+    }
+
+    useEffect(() => {
+        if (externalLinks.length > 0) {
+            /**
+             * 1. If both clusters & search query params are present then filter by both and set filtered external links
+             * 2. If only clusters query param is present then filter by cluster ids & set filtered external links
+             * 3. If only search query param is present then filter by searched term & set filtered external links
+             * 4. Else set default external links
+             */
+            if (queryParams.has('clusters') && queryParams.has('search')) {
+                const _appliedClustersIds = queryParams.get('clusters').split(',')
+
+                // #1 - Filter the links by applied clusterIds
+                let _filteredExternalLinks = filterByClusterIds(_appliedClustersIds)
+
+                // #2 - Check if we have any external links filtered by applied clusterIds
+                if (_filteredExternalLinks.length > 0) {
+                    // #3 - If yes then filter the filtered external links further by searched term
+                    _filteredExternalLinks = filterBySearchTerm(_filteredExternalLinks)
+                }
+
+                // #4 - Set filtered external links
+                setFilteredExternalLinks(_filteredExternalLinks)
+            } else if (queryParams.has('clusters')) {
+                const _appliedClustersIds = queryParams.get('clusters').split(',')
+
+                setFilteredExternalLinks(filterByClusterIds(_appliedClustersIds))
+            } else if (queryParams.has('search')) {
+                setFilteredExternalLinks(filterBySearchTerm(externalLinks))
+            } else {
+                setFilteredExternalLinks(externalLinks)
+            }
+        }
+    }, [location.search, externalLinks])
 
     const handleAddLinkClick = () => {
         setShowAddLinkDialog(true)
@@ -90,18 +148,11 @@ function ExternalLinks() {
     const getSearchFilterWrapper = (): JSX.Element => {
         return (
             <div className="search-filter-wrapper">
-                <SearchInput
-                    externalLinks={externalLinks}
-                    monitoringTools={monitoringTools}
-                    setFilteredExternalLinks={setFilteredExternalLinks}
-                    queryParams={queryParams}
-                    history={history}
-                />
+                <SearchInput queryParams={queryParams} history={history} />
                 <ClusterFilter
                     clusters={clusters}
                     appliedClusters={appliedClusters}
                     setAppliedClusters={setAppliedClusters}
-                    applyFilter={applyFilter}
                     queryParams={queryParams}
                     history={history}
                 />
@@ -124,6 +175,66 @@ function ExternalLinks() {
         setShowAddLinkDialog(true)
     }
 
+    const renderExternalLinksHeader = (): JSX.Element => {
+        return (
+            <div className="external-links__header">
+                <div className="external-links__cell--icon"></div>
+                <div className="external-links__cell--tool__name">
+                    <span className="external-links__cell-header">Tool Name</span>
+                </div>
+                <div className="external-links__cell--cluster">
+                    <span className="external-links__cell-header">Cluster</span>
+                </div>
+                <div className="external-links__cell--url__template">
+                    <span className="external-links__cell-header">Url Template</span>
+                </div>
+            </div>
+        )
+    }
+
+    const renderExternalLinks = (filteredLinksLen: number): JSX.Element => {
+        return (
+            <>
+                {filteredExternalLinks.map((link, idx) => {
+                    return (
+                        <>
+                            <div className="external-link flex left">
+                                <div className="external-links__cell--icon">
+                                    <img
+                                        src={getMonitoringToolIcon(monitoringTools, link.monitoringToolId)}
+                                        style={{
+                                            width: '24px',
+                                            height: '24px',
+                                        }}
+                                    />
+                                </div>
+                                <div className="external-links__cell--tool__name">{link.name}</div>
+                                <div className="external-links__cell--cluster">{getClusterLabel(link)}</div>
+                                <div className="external-links__cell--url__template">{link.url}</div>
+                                <div className="external-link-actions ml-16px">
+                                    <Edit
+                                        className="icon-dim-20 cursor mr-16"
+                                        onClick={() => {
+                                            editLink(link)
+                                        }}
+                                    />
+                                    <Delete
+                                        className="icon-dim-20 cursor"
+                                        onClick={() => {
+                                            setSelectedLink(link)
+                                            setShowDeleteDialog(true)
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            {idx !== filteredLinksLen - 1 && <div className="external-link__divider" />}
+                        </>
+                    )
+                })}
+            </>
+        )
+    }
+
     const getExternalLinksView = (): JSX.Element => {
         const filteredLinksLen = filteredExternalLinks.length
 
@@ -140,7 +251,6 @@ function ExternalLinks() {
                 </div>
                 {appliedClusters.length > 0 && (
                     <AppliedFilterChips
-                        clusters={clusters}
                         appliedClusters={appliedClusters}
                         setAppliedClusters={setAppliedClusters}
                         queryParams={queryParams}
@@ -152,66 +262,11 @@ function ExternalLinks() {
                         <Progressing pageLoader />
                     ) : (
                         <>
-                            {(appliedClusters.length > 0 || queryParams.get('search')) &&
-                                filteredExternalLinks.length === 0 && <NoMatchingResults />}
-                            {filteredExternalLinks.length > 0 && (
-                                <>
-                                    <div className="external-links__header">
-                                        <div className="external-links__cell--icon"></div>
-                                        <div className="external-links__cell--tool__name">
-                                            <span className="external-links__cell-header">Tool Name</span>
-                                        </div>
-                                        <div className="external-links__cell--cluster">
-                                            <span className="external-links__cell-header">Cluster</span>
-                                        </div>
-                                        <div className="external-links__cell--url__template">
-                                            <span className="external-links__cell-header">Url Template</span>
-                                        </div>
-                                    </div>
-                                    {filteredExternalLinks.map((link, idx) => {
-                                        return (
-                                            <>
-                                                <div className="external-link flex left">
-                                                    <div className="external-links__cell--icon">
-                                                        <img
-                                                            src={monitoringTools[link.monitoringToolId].icon}
-                                                            style={{
-                                                                width: '24px',
-                                                                height: '24px',
-                                                            }}
-                                                        />
-                                                    </div>
-                                                    <div className="external-links__cell--tool__name">{link.name}</div>
-                                                    <div className="external-links__cell--cluster">
-                                                        {getClusterLabel(link)}
-                                                    </div>
-                                                    <div className="external-links__cell--url__template">
-                                                        {link.url}
-                                                    </div>
-                                                    <div className="external-link-actions ml-16px">
-                                                        <Edit
-                                                            className="icon-dim-20 cursor mr-16"
-                                                            onClick={() => {
-                                                                editLink(link)
-                                                            }}
-                                                        />
-                                                        <Delete
-                                                            className="icon-dim-20 cursor"
-                                                            onClick={() => {
-                                                                setSelectedLink(link)
-                                                                setShowDeleteDialog(true)
-                                                            }}
-                                                        />
-                                                    </div>
-                                                </div>
-                                                {idx !== filteredLinksLen - 1 && (
-                                                    <div className="external-link__divider" />
-                                                )}
-                                            </>
-                                        )
-                                    })}
-                                </>
+                            {renderExternalLinksHeader()}
+                            {(appliedClusters.length > 0 || queryParams.get('search')) && filteredLinksLen === 0 && (
+                                <NoMatchingResults />
                             )}
+                            {filteredLinksLen > 0 && renderExternalLinks(filteredLinksLen)}
                         </>
                     )}
                 </div>

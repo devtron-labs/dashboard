@@ -14,7 +14,7 @@ import AppDetailsStore from '../../appDetails.store';
 import { toast } from 'react-toastify';
 import { getNodeStatus } from './nodeType.util';
 import { useSharedState } from '../../../utils/useSharedState';
-import { NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component';
+import { getMonitoringToolIcon, NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component';
 import { ExternalLink, OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type';
 
 function NodeComponent({ 
@@ -55,13 +55,13 @@ function NodeComponent({
                         _podLevelExternalLinks.push({
                             label: link.name,
                             value: link.url,
-                            icon: monitoringTools.find((tool) => tool.value === link.monitoringToolId)?.icon,
+                            icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
                         })
                     } else if (link.url.includes('{containerName}')) {
                         _containerLevelExternalLinks.push({
                             label: link.name,
                             value: link.url,
-                            icon: monitoringTools.find((tool) => tool.value === link.monitoringToolId)?.icon,
+                            icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
                         })
                     }
                 }

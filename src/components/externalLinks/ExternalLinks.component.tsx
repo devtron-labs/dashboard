@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { DeleteDialog, multiSelectStyles, Option, Progressing, showError, VisibleModal } from '../common'
 import Select, { components, MultiValue } from 'react-select'
 import EmptyState from '../EmptyState/EmptyState'
@@ -14,53 +14,43 @@ import { ReactComponent as Link } from '../../assets/icons/ic-link.svg'
 import { URLS } from '../../config'
 import { AppDetails, OptionType } from '../app/types'
 import { AppDetails as HelmAppDetails } from '../v2/appDetails/appDetails.type'
-import {
-    ConfigureLinkActionType,
-    ExternalLink,
-    LinkAction,
-    MonitoringTool,
-    OptionTypeWithIcon,
-} from './ExternalLinks.type'
+import { ConfigureLinkActionType, ExternalLink, LinkAction, OptionTypeWithIcon } from './ExternalLinks.type'
 import { saveExternalLinks, updateExternalLink } from './ExternalLinks.service'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { toast } from 'react-toastify'
 import { OptionWithIcon, ValueContainerWithIcon } from '../v2/common/ReactSelect.utils'
 import './externalLinks.component.scss'
 import Tippy from '@tippyjs/react'
+import OtherToolIcon from '../../assets/icons/ic-browser.svg'
 
-export const ClusterFilter = ({ clusters, appliedClusters, setAppliedClusters, applyFilter, queryParams, history }) => {
+export const ClusterFilter = ({ clusters, appliedClusters, setAppliedClusters, queryParams, history }) => {
     const [selectedCluster, setSelectedCluster] = useState([])
     const [isMenuOpen, setMenuOpen] = useState(false)
 
-    // Revisit
+    // To update the dropdown selections on query param value change or page reload
     useEffect(() => {
-        if (appliedClusters.length > 0) {
-            setSelectedCluster(appliedClusters)
-        } else if (queryParams.get('cluster')) {
-            const appliedClusterIds = queryParams.get('cluster').split(',')
+        if (clusters.length > 0 && queryParams.has('clusters')) {
+            const _appliedClustersIds = queryParams.get('clusters').split(',')
+            const _appliedClusters = clusters.filter((cluster) => _appliedClustersIds.includes(cluster.value))
 
-            if (appliedClusterIds && appliedClusterIds.length > 0) {
-                const filteredClusterIds = clusters.filter((cluster) => appliedClusterIds.includes(cluster.value))
-                setSelectedCluster(filteredClusterIds)
-                setAppliedClusters(filteredClusterIds)
-            }
+            setAppliedClusters(_appliedClusters)
+            setSelectedCluster(_appliedClusters)
         } else {
             setSelectedCluster([])
         }
-    }, [appliedClusters])
+    }, [clusters, queryParams.get('clusters')])
 
     const handleFilterQueryChanges = () => {
         setMenuOpen(false)
         setAppliedClusters(selectedCluster)
-        applyFilter(selectedCluster)
 
         if (selectedCluster.length > 0) {
             const ids = selectedCluster.map((cluster) => cluster.value)
             ids.sort()
 
-            queryParams.set('cluster', ids.toString())
+            queryParams.set('clusters', ids.toString())
         } else {
-            queryParams.delete('cluster')
+            queryParams.delete('clusters')
         }
 
         history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
@@ -184,19 +174,7 @@ export const MenuList = (props) => {
     )
 }
 
-export const SearchInput = ({
-    queryParams,
-    externalLinks,
-    monitoringTools,
-    setFilteredExternalLinks,
-    history,
-}: {
-    externalLinks: ExternalLink[]
-    monitoringTools: MultiValue<OptionTypeWithIcon>
-    queryParams: URLSearchParams
-    setFilteredExternalLinks: React.Dispatch<React.SetStateAction<ExternalLink[]>>
-    history: any
-}) => {
+export const SearchInput = ({ queryParams, history }: { queryParams: URLSearchParams; history: any }) => {
     const [searchTerm, setSearchTerm] = useState(queryParams.get('search') || '')
     const [searchApplied, setSearchApplied] = useState(!!queryParams.get('search'))
 
@@ -210,21 +188,9 @@ export const SearchInput = ({
 
             if (!searchTerm) {
                 setSearchApplied(false)
-                setFilteredExternalLinks(externalLinks)
                 queryParams.delete('search')
             } else {
-                const _searchTerm = searchTerm.trim().toLowerCase()
-                const _filteredExternalLinks = externalLinks.filter(
-                    (link: ExternalLink) =>
-                        link.name.toLowerCase().includes(_searchTerm) ||
-                        monitoringTools
-                            .find((tool) => tool.value === link.monitoringToolId)
-                            ?.label.toLowerCase()
-                            .includes(_searchTerm),
-                )
-
                 setSearchApplied(true)
-                setFilteredExternalLinks(_filteredExternalLinks)
                 queryParams.set('search', searchTerm)
             }
 
@@ -235,7 +201,6 @@ export const SearchInput = ({
     const clearSearch = (): void => {
         setSearchTerm('')
         setSearchApplied(false)
-        setFilteredExternalLinks(externalLinks)
 
         queryParams.delete('search')
         history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
@@ -501,7 +466,7 @@ const ConfigureLinkAction = ({
                             }),
                         }}
                     />
-                    {link.invalidClusters && getErrorLabel('cluster')}
+                    {link.invalidClusters && getErrorLabel('clusters')}
                 </div>
                 {showDelete && <Delete className="mt-24 cursor" onClick={() => deleteLinkData(index)} />}
             </div>
@@ -844,19 +809,7 @@ export const DeleteExternalLinkDialog = ({
     )
 }
 
-export const AppliedFilterChips = ({ clusters, appliedClusters, setAppliedClusters, queryParams, history }) => {
-    // Revisit
-    useEffect(() => {
-        if (appliedClusters.length === 0 && queryParams.get('cluster')) {
-            const appliedClusterIds = queryParams.get('cluster').split(',')
-
-            if (appliedClusterIds && appliedClusterIds.length > 0) {
-                const filteredClusterIds = clusters.filter((cluster) => appliedClusterIds.includes(cluster.value))
-                setAppliedClusters(filteredClusterIds)
-            }
-        }
-    }, [appliedClusters])
-
+export const AppliedFilterChips = ({ appliedClusters, setAppliedClusters, queryParams, history }) => {
     const removeFilter = (filter): void => {
         const filteredClusters = appliedClusters.filter((cluster) => cluster.value !== filter.value)
         const ids = filteredClusters.map((cluster) => cluster.value)
@@ -865,9 +818,9 @@ export const AppliedFilterChips = ({ clusters, appliedClusters, setAppliedCluste
         setAppliedClusters(filteredClusters)
 
         if (ids.length > 0) {
-            queryParams.set('cluster', ids.toString())
+            queryParams.set('clusters', ids.toString())
         } else {
-            queryParams.delete('cluster')
+            queryParams.delete('clusters')
         }
 
         history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
@@ -875,7 +828,7 @@ export const AppliedFilterChips = ({ clusters, appliedClusters, setAppliedCluste
 
     const removeAllFilters = (): void => {
         setAppliedClusters([])
-        queryParams.delete('cluster')
+        queryParams.delete('clusters')
         history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
     }
 
@@ -904,6 +857,10 @@ export const AppliedFilterChips = ({ clusters, appliedClusters, setAppliedCluste
             </button>
         </div>
     )
+}
+
+export const getMonitoringToolIcon = (monitoringTools: MultiValue<OptionTypeWithIcon>, toolId: number): string => {
+    return monitoringTools.find((tool) => tool.value === toolId)?.icon || OtherToolIcon
 }
 
 const getParsedURL = (
@@ -949,7 +906,7 @@ export const AppLevelExternalLinks = ({
                 filteredLinks.map((link) => ({
                     label: link.name,
                     value: link.url,
-                    icon: monitoringTools.find((tool) => tool.value === link.monitoringToolId)?.icon,
+                    icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
                 })),
             )
         } else {

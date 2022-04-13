@@ -13,7 +13,7 @@ import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as CubeIcon } from '../../assets/icons/ic-object.svg';
 import { getAggregator } from './details/appDetails/utils';
 import Tippy from '@tippyjs/react';
-import { NodeLevelExternalLinks } from '../externalLinks/ExternalLinks.component';
+import { getMonitoringToolIcon, NodeLevelExternalLinks } from '../externalLinks/ExternalLinks.component';
 import { ExternalLink, OptionTypeWithIcon } from '../externalLinks/ExternalLinks.type';
 
 interface ResourceTree {
@@ -111,13 +111,13 @@ const ResourceTreeNodes: React.FC<ResourceTree> = ({ nodes, describeNode, isAppD
                         _podLevelExternalLinks.push({
                             label: link.name,
                             value: link.url,
-                            icon: monitoringTools.find((tool) => tool.value === link.monitoringToolId)?.icon,
+                            icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
                         })
                     } else if (link.url.includes('{containerName}')) {
                         _containerLevelExternalLinks.push({
                             label: link.name,
                             value: link.url,
-                            icon: monitoringTools.find((tool) => tool.value === link.monitoringToolId)?.icon,
+                            icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
                         })
                     }
                 }

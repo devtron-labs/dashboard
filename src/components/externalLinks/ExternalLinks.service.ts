@@ -50,7 +50,7 @@ export const getExternalLinks = (clusterId?: number): Promise<ExternalLinkRespon
     for (let i = 0; i < 4; i++) {
         externalLinks.push({
             id: i,
-            monitoringToolId: [0, 1].includes(i) ? 0 : 1,
+            monitoringToolId: i,
             name: [0, 1].includes(i) ? 'Grafana' : 'Kibana',
             url: MOCK_URLS[i],
             clusterIds: i === 0 ? ['*'] : i === 1 ? ['1'] : ['1', '2', '3'],
