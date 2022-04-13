@@ -423,7 +423,7 @@ function ReadmeRowHorizontal({ readme = null, version = '', ...props }) {
     );
 }
 
-export function MarkDown({ markdown = '', className = '', ...props }) {
+export function MarkDown({ markdown = '', className = '', breaks = false, ...props }) {
     const { hash } = useLocation();
     const renderer = new marked.Renderer();
     renderer.table = function (header, body) {
@@ -453,6 +453,7 @@ export function MarkDown({ markdown = '', className = '', ...props }) {
         renderer,
         gfm: true,
         smartLists: true,
+        ...(breaks && { breaks: true })
     });
 
     function createMarkup() {

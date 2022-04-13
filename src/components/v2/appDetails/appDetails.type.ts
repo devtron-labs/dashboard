@@ -140,6 +140,7 @@ export interface AppDetails {
     appType?: AppType;
     additionalData?: any;
     clusterId?: number;
+    notes?: string;
 }
 
 interface MaterialInfo {
