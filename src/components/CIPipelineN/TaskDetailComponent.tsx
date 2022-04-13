@@ -29,6 +29,7 @@ export function TaskDetailComponent() {
         activeStageName,
         appId,
         formDataErrorObj,
+        calculateLastStepDetail,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -37,6 +38,13 @@ export function TaskDetailComponent() {
         activeStageName: string
         appId: number
         formDataErrorObj: FormErrorObjectType
+        calculateLastStepDetail: (
+            isFromAddNewTask: boolean,
+            _formData: FormType,
+            startIndex?: number,
+        ) => {
+            index: number
+        }
     } = useContext(ciPipelineContext)
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [taskScriptType, setTaskScriptType] = useState<string>(
@@ -71,6 +79,9 @@ export function TaskDetailComponent() {
         if (_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables?.length === 0) {
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables =
                 pluginData.outputVariables
+            if (_form[activeStageName]['steps'].length > selectedTaskIndex) {
+                calculateLastStepDetail(false, _form, selectedTaskIndex)
+            }
         }
         if (_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables?.length === 0) {
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables =

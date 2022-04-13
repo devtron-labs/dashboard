@@ -293,18 +293,20 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
     }
 
     const validateTask = (taskData: StepType, taskErrorobj: TaskErrorObj): void => {
-        taskErrorobj.name = validationRules.taskName(taskData.name)
-        taskErrorobj.isValid = taskErrorobj.name.isValid
+        if (taskData && taskErrorobj) {
+            taskErrorobj.name = validationRules.taskName(taskData.name)
+            taskErrorobj.isValid = taskErrorobj.name.isValid
 
-        if (taskData.stepType) {
-            const currentStepTypeVariable =
-                taskData.stepType === PluginType.INLINE ? 'inlineStepDetail' : 'pluginRefStepDetail'
-            taskErrorobj[currentStepTypeVariable].inputVariables = []
-            taskData[currentStepTypeVariable].inputVariables.forEach((element, index) => {
-                taskErrorobj[currentStepTypeVariable].inputVariables.push(validationRules.inputVariable(element))
-                taskErrorobj.isValid =
-                    taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable].inputVariables[index].isValid
-            })
+            if (taskData.stepType) {
+                const currentStepTypeVariable =
+                    taskData.stepType === PluginType.INLINE ? 'inlineStepDetail' : 'pluginRefStepDetail'
+                taskErrorobj[currentStepTypeVariable].inputVariables = []
+                taskData[currentStepTypeVariable].inputVariables.forEach((element, index) => {
+                    taskErrorobj[currentStepTypeVariable].inputVariables.push(validationRules.inputVariable(element))
+                    taskErrorobj.isValid =
+                        taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable].inputVariables[index].isValid
+                })
+            }
         }
     }
 

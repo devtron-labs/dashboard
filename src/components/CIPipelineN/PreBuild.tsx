@@ -33,7 +33,6 @@ export function PreBuild() {
         configurationType,
         setConfigurationType,
         activeStageName,
-        calculateLastStepDetail,
         appId,
         formDataErrorObj,
         setFormDataErrorObj,
@@ -47,13 +46,6 @@ export function PreBuild() {
         configurationType: string
         setConfigurationType: React.Dispatch<React.SetStateAction<string>>
         activeStageName: string
-        calculateLastStepDetail: (
-            isFromAddNewTask: boolean,
-            _formData: FormType,
-            startIndex?: number,
-        ) => {
-            index: number
-        }
         appId: number
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
@@ -70,7 +62,6 @@ export function PreBuild() {
 
     useEffect(() => {
         setConfigurationType(ConfigurationType.GUI)
-        calculateLastStepDetail(false, formData)
     }, [activeStageName])
 
     useEffect(() => {

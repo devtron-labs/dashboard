@@ -55,12 +55,13 @@ export function TaskList() {
         setDragItemIndex(index)
         setSelectedTaskIndex(index)
         _formData[activeStageName].steps = newList
-        setFormData(_formData)
         const _formDataErrorObj = { ...formDataErrorObj }
         const newErrorList = [...formDataErrorObj[activeStageName].steps]
+        const errorItem = newErrorList[dragItemIndex]
         newErrorList.splice(dragItemIndex, 1)
-        newErrorList.splice(index, 0, item)
+        newErrorList.splice(index, 0, errorItem)
         _formDataErrorObj[activeStageName].steps = newErrorList
+        setFormData(_formData)
         setFormDataErrorObj(_formDataErrorObj)
     }
 
@@ -68,6 +69,7 @@ export function TaskList() {
         setDragAllowed(false)
         const _formData = { ...formData }
         calculateLastStepDetail(false, _formData, dragItemStartIndex < index ? dragItemStartIndex : index)
+        validateCurrentTask(index)
         setFormData(_formData)
         setDragItemStartIndex(index)
     }
@@ -87,13 +89,17 @@ export function TaskList() {
         setFormDataErrorObj(_formDataErrorObj)
     }
 
-    const handleSelectedTaskChange = (index: number): void => {
+    function validateCurrentTask(index?: number): void {
         const _formDataErrorObj = { ...formDataErrorObj }
         validateTask(
-            formData[activeStageName].steps[selectedTaskIndex],
-            _formDataErrorObj[activeStageName].steps[selectedTaskIndex],
+            formData[activeStageName].steps[index || selectedTaskIndex],
+            _formDataErrorObj[activeStageName].steps[index || selectedTaskIndex],
         )
         setFormDataErrorObj(_formDataErrorObj)
+    }
+
+    const handleSelectedTaskChange = (index: number): void => {
+        validateCurrentTask()
         setSelectedTaskIndex(index)
     }
 
