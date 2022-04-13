@@ -332,9 +332,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                 if (!_formDataErrorObj[activeStageName]['steps'][i])
                     _formDataErrorObj[activeStageName]['steps'].push({ isValid: true })
                 validateTask(formData[activeStageName]['steps'][i], _formDataErrorObj[activeStageName]['steps'][i])
-                isStageValid =
-                    _formDataErrorObj[activeStageName]['steps'][i].isValid &&
-                    _formDataErrorObj[activeStageName]['steps'][i].isValid
+                isStageValid = isStageValid && _formDataErrorObj[activeStageName]['steps'][i].isValid
             }
             _formDataErrorObj[activeStageName].isValid = isStageValid
         }

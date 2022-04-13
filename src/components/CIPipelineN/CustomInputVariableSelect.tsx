@@ -68,16 +68,21 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                     formData[BuildStageVariable.PreBuild].steps[preBuildTaskLength - 1][stepTypeVariable]
                         ?.outputVariables?.length || 0
                 for (let j = 0; j < outputVariablesLength; j++) {
-                    const currentVariableDetails =
+                    if (
                         formData[BuildStageVariable.PreBuild].steps[preBuildTaskLength - 1][stepTypeVariable]
-                            .outputVariables[j]
-                    preBuildStageVariables.push({
-                        ...currentVariableDetails,
-                        label: currentVariableDetails.name,
-                        value: currentVariableDetails.name,
-                        refVariableStepIndex: preBuildTaskLength - 1,
-                        refVariableStage: RefVariableStageType.PRE_CI,
-                    })
+                            .outputVariables[j].name
+                    ) {
+                        const currentVariableDetails =
+                            formData[BuildStageVariable.PreBuild].steps[preBuildTaskLength - 1][stepTypeVariable]
+                                .outputVariables[j]
+                        preBuildStageVariables.push({
+                            ...currentVariableDetails,
+                            label: currentVariableDetails.name,
+                            value: currentVariableDetails.name,
+                            refVariableStepIndex: preBuildTaskLength - 1,
+                            refVariableStage: RefVariableStageType.PRE_CI,
+                        })
+                    }
                 }
                 setInputVariableOptions([
                     {
