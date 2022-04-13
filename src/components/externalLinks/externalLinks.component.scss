@@ -220,6 +220,12 @@
     background-color: white;
     padding: 16px 20px;
 
+    .external-links-icon {
+        path:nth-of-type(2) {
+            fill: var(--N900)
+        }
+    }
+
     .external-link-chip {
         border: 1px solid var(--N200);
         background-color: var(--N50);

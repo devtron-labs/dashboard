@@ -287,13 +287,13 @@ function NodeComponent({
                         )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
-                            <div className={'col-1 pt-9 pb-9'}>
+                            <div className={'flex left col-1 pt-9 pb-9'}>
                                 {' '}
                                 {node.info?.filter((_info) => _info.name === 'Containers')[0]?.value}{' '}
                             </div>
                         )}
 
-                        <div className={'col-1 pt-9 pb-9 d-flex flex-row-reverse'}>
+                        <div className={'flex col-1 pt-9 pb-9 flex-row-reverse'}>
                             <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
                         </div>
                     </div>

@@ -23,9 +23,9 @@ const MOCK_MONITORING_TOOL = [
 
 const MOCK_URLS = [
     '/app/{appId}/details/{envId}',
-    '/app/{appId}/edit/workflow/{containerName}',
+    '/app/{appId}/edit/workflow/{podName}',
     '/app/{appId}/env/{envId}/details/pod/{podName}',
-    '/app/{appId}/env/{envId}/details/container/',
+    '/app/{appId}/env/{envId}/details/container/{containerName}',
 ]
 
 export const getMonitoringTools = (): Promise<MonitoringToolResponse> => {

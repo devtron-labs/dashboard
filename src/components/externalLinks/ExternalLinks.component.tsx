@@ -815,9 +815,7 @@ export const DeleteExternalLinkDialog = ({
             //     setExternalLinks(result || [])
             // }
 
-            setExternalLinks(
-                externalLinks.filter((link) => link.id !== selectedLink.id && link.name !== selectedLink.name),
-            )
+            setExternalLinks(externalLinks.filter((link) => link.id !== selectedLink.id))
 
             setTimeout(() => {
                 toast.success('Deleted successfully!')
@@ -982,7 +980,7 @@ export const AppLevelExternalLinks = ({
 
     return appLevelExternalLinks.length > 0 ? (
         <div className="app-level__external-links flex left mb-14">
-            <Link className="icon-dim-20 mr-16" />
+            <Link className="external-links-icon icon-dim-20 mr-16 fc-9" />
             {appLevelExternalLinks.map((link) => getExternalLinkChip(link))}
         </div>
     ) : null
@@ -994,7 +992,7 @@ export const NodeLevelExternalLinks = ({
     nodeLevelExternalLinks,
     podName,
     containerName,
-    addExtraSpace
+    addExtraSpace,
 }: {
     appDetails?: AppDetails
     helmAppDetails?: HelmAppDetails
