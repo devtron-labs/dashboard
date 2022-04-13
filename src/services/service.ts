@@ -368,7 +368,7 @@ export function getVersionConfig() {
 }
 
 export function getClusterListMinWithoutAuth() : Promise<ClusterListResponse> {
-    const URL = `${Routes.CLUSTER}/autocomplete`;
+    const URL = `${Routes.CLUSTER}/autocomplete?auth=false`;
     return get(URL);
 }
 

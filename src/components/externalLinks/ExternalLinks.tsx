@@ -15,7 +15,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 import './externalLinks.scss'
 import { deleteExternalLink, getExternalLinks, getMonitoringTools } from './ExternalLinks.service'
 import { ExternalLink, OptionTypeWithIcon } from './ExternalLinks.type'
-import { getClusterListMinWithoutAuth as getClusterList } from '../../services/service'
+import { getClusterListMin } from '../../services/service'
 import { OptionType } from '../app/types'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete-interactive.svg'
@@ -39,7 +39,7 @@ function ExternalLinks() {
 
     useEffect(() => {
         setLoading(true)
-        Promise.all([getMonitoringTools(), getExternalLinks(), getClusterList()])
+        Promise.all([getMonitoringTools(), getExternalLinks(), getClusterListMin()])
             .then(([monitoringToolsRes, externalLinksRes, clustersResp]) => {
                 setExternalLinks(externalLinksRes.result || [])
                 setMonitoringTools(
@@ -67,44 +67,6 @@ function ExternalLinks() {
                 setLoading(false)
             })
     }, [])
-
-    const filterByClusterIds = (_appliedClustersIds: string[]) => {
-        /**
-         * 1. If clusters query param is present but doesn't have any value then return default externalLinks
-         * 2. If clusters query param is present and has value then filter & return filtered external links
-         * 3. Else return empty array
-         */
-        if (_appliedClustersIds.length === 1 && !_appliedClustersIds[0]) {
-            return externalLinks
-        } else if (_appliedClustersIds.length > 0) {
-            return externalLinks.filter((link) =>
-                link.clusterIds.some((id) => id === '*' || _appliedClustersIds.includes(id)),
-            )
-        }
-
-        return []
-    }
-
-    const filterBySearchTerm = (_externalLinks: ExternalLink[]) => {
-        const _searchTerm = queryParams.get('search').trim().toLowerCase()
-
-        /**
-         * 1. If search query param is present and has value then filter & return filtered external links
-         * 2. Else return passed _externalLinks
-         */
-        if (_searchTerm) {
-            return _externalLinks.filter(
-                (link: ExternalLink) =>
-                    link.name.toLowerCase().includes(_searchTerm) ||
-                    monitoringTools
-                        .find((tool) => tool.value === link.monitoringToolId)
-                        ?.label.toLowerCase()
-                        .includes(_searchTerm),
-            )
-        }
-
-        return _externalLinks
-    }
 
     useEffect(() => {
         if (externalLinks.length > 0) {
@@ -139,13 +101,51 @@ function ExternalLinks() {
             }
         }
     }, [location.search, externalLinks])
+    
+    const filterByClusterIds = (_appliedClustersIds: string[]): ExternalLink[] => {
+        /**
+         * 1. If clusters query param is present but doesn't have any value then return default externalLinks
+         * 2. If clusters query param is present and has value then filter & return filtered external links
+         * 3. Else return empty array
+         */
+        if (_appliedClustersIds.length === 1 && !_appliedClustersIds[0]) {
+            return externalLinks
+        } else if (_appliedClustersIds.length > 0) {
+            return externalLinks.filter((link) =>
+                link.clusterIds.some((id) => id === '*' || _appliedClustersIds.includes(id)),
+            )
+        }
 
-    const handleAddLinkClick = () => {
+        return []
+    }
+
+    const filterBySearchTerm = (_externalLinks: ExternalLink[]): ExternalLink[] => {
+        const _searchTerm = queryParams.get('search').trim().toLowerCase()
+
+        /**
+         * 1. If search query param is present and has value then filter & return filtered external links
+         * 2. Else return passed _externalLinks
+         */
+        if (_searchTerm) {
+            return _externalLinks.filter(
+                (link: ExternalLink) =>
+                    link.name.toLowerCase().includes(_searchTerm) ||
+                    monitoringTools
+                        .find((tool) => tool.value === link.monitoringToolId)
+                        ?.label.toLowerCase()
+                        .includes(_searchTerm),
+            )
+        }
+
+        return _externalLinks
+    }
+
+    const handleAddLinkClick = (): void => {
         setShowAddLinkDialog(true)
         setSelectedLink(undefined)
     }
 
-    const getSearchFilterWrapper = (): JSX.Element => {
+    const renderSearchFilterWrapper = (): JSX.Element => {
         return (
             <div className="search-filter-wrapper">
                 <SearchInput queryParams={queryParams} history={history} />
@@ -160,7 +160,7 @@ function ExternalLinks() {
         )
     }
 
-    const getClusterLabel = (link: ExternalLink) => {
+    const getClusterLabel = (link: ExternalLink): string => {
         if (link.clusterIds[0] === '*' || clusters.every((cluster) => link.clusterIds.includes(cluster.value))) {
             return 'All clusters'
         } else if (link.clusterIds.length > 1) {
@@ -170,7 +170,7 @@ function ExternalLinks() {
         return clusters.find((cluster) => cluster.value === link.clusterIds[0])?.label || '1 cluster'
     }
 
-    const editLink = (link: ExternalLink) => {
+    const editLink = (link: ExternalLink): void => {
         setSelectedLink(link)
         setShowAddLinkDialog(true)
     }
@@ -235,7 +235,7 @@ function ExternalLinks() {
         )
     }
 
-    const getExternalLinksView = (): JSX.Element => {
+    const renderExternalLinksView = (): JSX.Element => {
         const filteredLinksLen = filteredExternalLinks.length
 
         return (
@@ -247,7 +247,7 @@ function ExternalLinks() {
                 </p>
                 <div className="cta-search-filter-container flex content-space">
                     <AddLinkButton handleOnClick={handleAddLinkClick} />
-                    {getSearchFilterWrapper()}
+                    {renderSearchFilterWrapper()}
                 </div>
                 {appliedClusters.length > 0 && (
                     <AppliedFilterChips
@@ -291,7 +291,7 @@ function ExternalLinks() {
         } else if (!externalLinks || externalLinks.length === 0) {
             return <NoExternalLinksView handleAddLinkClick={handleAddLinkClick} />
         } else {
-            return getExternalLinksView()
+            return renderExternalLinksView()
         }
     }
 

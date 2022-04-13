@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { DeleteDialog, multiSelectStyles, Option, Progressing, showError, VisibleModal } from '../common'
 import Select, { components, MultiValue } from 'react-select'
 import EmptyState from '../EmptyState/EmptyState'
@@ -14,7 +14,19 @@ import { ReactComponent as Link } from '../../assets/icons/ic-link.svg'
 import { URLS } from '../../config'
 import { AppDetails, OptionType } from '../app/types'
 import { AppDetails as HelmAppDetails } from '../v2/appDetails/appDetails.type'
-import { ConfigureLinkActionType, ExternalLink, LinkAction, OptionTypeWithIcon } from './ExternalLinks.type'
+import {
+    AddExternalLinkType,
+    AppLevelExternalLinksType,
+    AppliedFilterChipsType,
+    ClusterFilterType,
+    ConfigureLinkActionType,
+    DeleteExternalLinkType,
+    ExternalLink,
+    LinkAction,
+    NodeLevelExternalLinksType,
+    OptionTypeWithIcon,
+    URLModificationType,
+} from './ExternalLinks.type'
 import { saveExternalLinks, updateExternalLink } from './ExternalLinks.service'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { toast } from 'react-toastify'
@@ -23,8 +35,14 @@ import './externalLinks.component.scss'
 import Tippy from '@tippyjs/react'
 import OtherToolIcon from '../../assets/icons/ic-browser.svg'
 
-export const ClusterFilter = ({ clusters, appliedClusters, setAppliedClusters, queryParams, history }) => {
-    const [selectedCluster, setSelectedCluster] = useState([])
+export const ClusterFilter = ({
+    clusters,
+    appliedClusters,
+    setAppliedClusters,
+    queryParams,
+    history,
+}: ClusterFilterType): JSX.Element => {
+    const [selectedCluster, setSelectedCluster] = useState<MultiValue<OptionType>>([])
     const [isMenuOpen, setMenuOpen] = useState(false)
 
     // To update the dropdown selections on query param value change or page reload
@@ -40,7 +58,7 @@ export const ClusterFilter = ({ clusters, appliedClusters, setAppliedClusters, q
         }
     }, [clusters, queryParams.get('clusters')])
 
-    const handleFilterQueryChanges = () => {
+    const handleFilterQueryChanges = (): void => {
         setMenuOpen(false)
         setAppliedClusters(selectedCluster)
 
@@ -56,15 +74,15 @@ export const ClusterFilter = ({ clusters, appliedClusters, setAppliedClusters, q
         history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
     }
 
-    const handleMenuState = () => {
+    const handleMenuState = (): void => {
         setMenuOpen(!isMenuOpen)
     }
 
-    const handleSelectedFilters = (selected) => {
+    const handleSelectedFilters = (selected): void => {
         setSelectedCluster(selected as Array<any>)
     }
 
-    const handleCloseFilter = () => {
+    const handleCloseFilter = (): void => {
         handleMenuState()
         setSelectedCluster(appliedClusters)
     }
@@ -140,7 +158,7 @@ export const ClusterFilter = ({ clusters, appliedClusters, setAppliedClusters, q
     )
 }
 
-export const ValueContainer = (props) => {
+export const ValueContainer = (props: any): JSX.Element => {
     const length = props.getValue().length
 
     return (
@@ -161,7 +179,7 @@ export const ValueContainer = (props) => {
     )
 }
 
-export const MenuList = (props) => {
+export const MenuList = (props: any): JSX.Element => {
     return (
         <components.MenuList {...props}>
             {props.children}
@@ -174,7 +192,7 @@ export const MenuList = (props) => {
     )
 }
 
-export const SearchInput = ({ queryParams, history }: { queryParams: URLSearchParams; history: any }) => {
+export const SearchInput = ({ queryParams, history }: URLModificationType): JSX.Element => {
     const [searchTerm, setSearchTerm] = useState(queryParams.get('search') || '')
     const [searchApplied, setSearchApplied] = useState(!!queryParams.get('search'))
 
@@ -228,7 +246,7 @@ export const SearchInput = ({ queryParams, history }: { queryParams: URLSearchPa
     )
 }
 
-export const AddLinkButton = ({ handleOnClick }) => {
+export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
     return (
         <button onClick={handleOnClick} className="add-link cta flex">
             <AddIcon className="mr-8" />
@@ -237,7 +255,7 @@ export const AddLinkButton = ({ handleOnClick }) => {
     )
 }
 
-export const NoExternalLinksView = ({ handleAddLinkClick }): JSX.Element => {
+export const NoExternalLinksView = ({ handleAddLinkClick }: { handleAddLinkClick: () => void }): JSX.Element => {
     return (
         <EmptyState>
             <EmptyState.Image>
@@ -271,7 +289,7 @@ export const NoMatchingResults = (): JSX.Element => {
     )
 }
 
-const formatOptionLabelClusters = (option) => {
+const formatOptionLabelClusters = (option: OptionType): JSX.Element => {
     return (
         <div className="flex left column">
             <span>{option.label}</span>
@@ -285,8 +303,8 @@ const formatOptionLabelClusters = (option) => {
     )
 }
 
-const getErrorLabel = (field: string) => {
-    const errorLabel = (label: string) => {
+const getErrorLabel = (field: string): JSX.Element => {
+    const errorLabel = (label: string): JSX.Element => {
         return (
             <div className="error-label flex left align-start fs-11 mt-4">
                 <Error className="icon-dim-20" />
@@ -304,7 +322,7 @@ const getErrorLabel = (field: string) => {
         case 'url':
             return errorLabel('Please enter URL template.')
         default:
-            return ''
+            return <></>
     }
 }
 
@@ -320,8 +338,7 @@ const ConfigureLinkAction = ({
     onNameChange,
     onUrlTemplateChange,
     deleteLinkData,
-}: ConfigureLinkActionType) => {
-    console.log(link.name, link)
+}: ConfigureLinkActionType): JSX.Element => {
     return (
         <div id={`link-action-${index}`} className="configure-link-action-wrapper">
             <div className="link-monitoring-tool mb-8">
@@ -490,14 +507,7 @@ export const AddExternalLinkDialog = ({
     externalLinks,
     setExternalLinks,
     handleDialogVisibility,
-}: {
-    monitoringTools: MultiValue<OptionTypeWithIcon>
-    clusters: MultiValue<OptionType>
-    handleDialogVisibility: () => void
-    selectedLink: ExternalLink
-    externalLinks
-    setExternalLinks
-}) => {
+}: AddExternalLinkType): JSX.Element => {
     const [linksData, setLinksData] = useState<LinkAction[]>([])
     const [savingLinks, setSavingLinks] = useState(false)
 
@@ -533,7 +543,7 @@ export const AddExternalLinkDialog = ({
         action: string,
         key?: number,
         value?: OptionType | MultiValue<OptionType> | string,
-    ) => {
+    ): void => {
         switch (action) {
             case 'add':
                 setLinksData(
@@ -571,7 +581,7 @@ export const AddExternalLinkDialog = ({
 
     const linksLen = linksData.length
 
-    const getConfigureLinkActionColumn = () => {
+    const renderConfigureLinkActionColumn = (): JSX.Element => {
         return (
             <div className="configure-link-action-container">
                 {!selectedLink && (
@@ -582,9 +592,8 @@ export const AddExternalLinkDialog = ({
                 {linksData &&
                     linksData.map((link, idx) => {
                         return (
-                            <>
+                            <Fragment key={`ConfigureLinkAction-${link.name}`}>
                                 <ConfigureLinkAction
-                                    key={`ConfigureLinkAction-${idx}`}
                                     index={idx}
                                     link={link}
                                     clusters={clusters}
@@ -610,14 +619,14 @@ export const AddExternalLinkDialog = ({
                                 {linksLen > 1 && idx !== linksLen - 1 && (
                                     <hr className="external-links-divider mt-16 mb-16" />
                                 )}
-                            </>
+                            </Fragment>
                         )
                     })}
             </div>
         )
     }
 
-    const getConfigureLinkInfoColumn = () => {
+    const renderConfigureLinkInfoColumn = (): JSX.Element => {
         return (
             <div className="configure-link-info-container">
                 <div className="configure-link-info-heading">
@@ -669,7 +678,7 @@ export const AddExternalLinkDialog = ({
         return validatedLinksData
     }
 
-    const saveLinks = async () => {
+    const saveLinks = async (): Promise<void> => {
         try {
             const validatedLinksData = getValidatedLinksData()
             const invalidData = validatedLinksData.some(
@@ -700,7 +709,8 @@ export const AddExternalLinkDialog = ({
                     }
                 })
                 setExternalLinks(updatedLinks)
-                // updateExternalLink(payload)
+                toast.success('Updated successfully!')
+                // await updateExternalLink(payload)
             } else {
                 const payload = validatedLinksData.map((link) => ({
                     monitoringToolId: +link.tool.value,
@@ -712,7 +722,8 @@ export const AddExternalLinkDialog = ({
                 const updatedLinks = externalLinks.concat(payload)
                 setExternalLinks(updatedLinks)
 
-                // saveExternalLinks(payload)
+                toast.success('Saved successfully!')
+                // await saveExternalLinks(payload)
             }
 
             setTimeout(() => {
@@ -741,8 +752,8 @@ export const AddExternalLinkDialog = ({
                 </div>
                 <hr className="modal__divider mt-0 mb-0" />
                 <div className="modal__content">
-                    {getConfigureLinkActionColumn()}
-                    {getConfigureLinkInfoColumn()}
+                    {renderConfigureLinkActionColumn()}
+                    {renderConfigureLinkInfoColumn()}
                 </div>
                 <hr className="modal__divider mt-0 mb-0" />
                 <div className="modal__buttons">
@@ -762,15 +773,8 @@ export const DeleteExternalLinkDialog = ({
     setAPICallInProgress,
     setExternalLinks,
     setShowDeleteConfirmation,
-}: {
-    selectedLink: ExternalLink
-    externalLinks: ExternalLink[]
-    isAPICallInProgress: boolean
-    setAPICallInProgress: React.Dispatch<React.SetStateAction<boolean>>
-    setExternalLinks: React.Dispatch<React.SetStateAction<ExternalLink[]>>
-    setShowDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
-}) => {
-    const deleteLink = async () => {
+}: DeleteExternalLinkType): JSX.Element => {
+    const deleteLink = async (): Promise<void> => {
         try {
             setAPICallInProgress(true)
             // const { result } = await deleteExternalLink(link.id)
@@ -809,8 +813,13 @@ export const DeleteExternalLinkDialog = ({
     )
 }
 
-export const AppliedFilterChips = ({ appliedClusters, setAppliedClusters, queryParams, history }) => {
-    const removeFilter = (filter): void => {
+export const AppliedFilterChips = ({
+    appliedClusters,
+    setAppliedClusters,
+    queryParams,
+    history,
+}: AppliedFilterChipsType): JSX.Element => {
+    const removeFilter = (filter: OptionType): void => {
         const filteredClusters = appliedClusters.filter((cluster) => cluster.value !== filter.value)
         const ids = filteredClusters.map((cluster) => cluster.value)
         ids.sort()
@@ -836,7 +845,7 @@ export const AppliedFilterChips = ({ appliedClusters, setAppliedClusters, queryP
         <div className="saved-filters__wrap position-rel">
             {appliedClusters.map((filter) => {
                 return (
-                    <div key={filter.key} className="saved-filter">
+                    <div key={filter.label} className="saved-filter">
                         <span className="fw-6">Cluster</span>
                         <span className="saved-filter-divider ml-6 mr-6"></span>
                         <span>{filter.label}</span>
@@ -888,12 +897,7 @@ export const AppLevelExternalLinks = ({
     helmAppDetails,
     externalLinks,
     monitoringTools,
-}: {
-    appDetails?: AppDetails
-    helmAppDetails?: HelmAppDetails
-    externalLinks: ExternalLink[]
-    monitoringTools: OptionTypeWithIcon[]
-}): JSX.Element | null => {
+}: AppLevelExternalLinksType): JSX.Element | null => {
     const [appLevelExternalLinks, setAppLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
     const details = appDetails || helmAppDetails
 
@@ -917,6 +921,7 @@ export const AppLevelExternalLinks = ({
     const getExternalLinkChip = (linkOption: OptionTypeWithIcon) => {
         return (
             <Tippy
+                key={linkOption.label}
                 className="default-tt"
                 arrow={false}
                 placement="top"
@@ -950,17 +955,10 @@ export const NodeLevelExternalLinks = ({
     podName,
     containerName,
     addExtraSpace,
-}: {
-    appDetails?: AppDetails
-    helmAppDetails?: HelmAppDetails
-    nodeLevelExternalLinks: OptionTypeWithIcon[]
-    podName?: string
-    containerName?: string
-    addExtraSpace?: boolean
-}): JSX.Element | null => {
+}: NodeLevelExternalLinksType): JSX.Element | null => {
     const details = appDetails || helmAppDetails
 
-    const Option = (props: any) => {
+    const Option = (props: any): JSX.Element => {
         const { data } = props
 
         return (
