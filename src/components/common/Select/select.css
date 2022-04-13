@@ -67,7 +67,7 @@
 
 .select__option.selected {
     color: var(--B500);
-    background-color: #f0f7ff;
+    background-color: var(--B100);
 }
 
 .select-button__selected-option {

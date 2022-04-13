@@ -368,17 +368,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                                 }),
                                                 indicatorsContainer: (provided, state) => ({
                                                     ...provided,
-                                                }),
-                                                option: (base, state) => ({
-                                                    ...base,
-                                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                                    color: 'var(--N900)',
-                                                    textOverflow: 'ellipsis',
-                                                    overflow: 'hidden',
-                                                    whiteSpace: 'nowrap',
-                                                    direction: 'rtl',
-                                                    cursor: 'pointer',
-                                                }),
+                                                })
                                             }}
                                             components={{
                                                 IndicatorSeparator: null,
@@ -432,17 +422,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                             }),
                                             indicatorsContainer: (provided, state) => ({
                                                 ...provided,
-                                            }),
-                                            option: (base, state) => ({
-                                                ...base,
-                                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                                color: 'var(--N900)',
-                                                textOverflow: 'ellipsis',
-                                                overflow: 'hidden',
-                                                whiteSpace: 'nowrap',
-                                                direction: 'rtl',
-                                                cursor: 'pointer',
-                                            }),
+                                            })
                                         }}
                                         components={{
                                             IndicatorSeparator: null,
