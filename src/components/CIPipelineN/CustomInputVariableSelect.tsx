@@ -28,11 +28,9 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
     const [selectedOutputVariable, setSelectedOutputVariable] = useState<{
         label: string
         value: string
-        refVariableStepIndex: number
     }>({
         label: '',
         value: '',
-        refVariableStepIndex: 0,
     })
 
     const [inputVariableOptions, setInputVariableOptions] = useState<
@@ -110,11 +108,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         setSelectedVariableValue()
     }, [inputVariablesListFromPrevStep])
 
-    const handleOutputVariableSelector = (selectedValue: {
-        label: string
-        value: string
-        refVariableStepIndex: number
-    }) => {
+    const handleOutputVariableSelector = (selectedValue: { label: string; value: string }) => {
         setSelectedOutputVariable(selectedValue)
         const currentStepTypeVariable =
             formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
@@ -122,27 +116,30 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 : 'pluginRefStepDetail'
         const _formData = { ...formData }
         let _variableDetail
-        if (selectedValue.refVariableStepIndex) {
+        if (selectedValue['refVariableStepIndex']) {
             _variableDetail = {
                 refVariableUsed: true,
                 refVariableType: RefVariableType.FROM_PREVIOUS_STEP,
-                refVariableStepIndex: selectedValue.refVariableStepIndex,
+                refVariableStepIndex: selectedValue['refVariableStepIndex'],
                 refVariableName: selectedValue.label,
                 refVariableStage:
                     activeStageName === BuildStageVariable.PreBuild
                         ? RefVariableStageType.PRE_CI
                         : RefVariableStageType.POST_CI,
+                format: selectedValue['format'],
             }
-        } else if (selectedValue.refVariableStepIndex) {
+        } else if (selectedValue['refVariableStepIndex']) {
             _variableDetail = {
                 refVariableUsed: true,
                 refVariableType: RefVariableType.GLOBAL,
                 refVariableStepIndex: 0,
                 refVariableName: selectedValue.label,
+                format: selectedValue['format'],
             }
         } else {
             _variableDetail = {
                 value: selectedValue.label,
+                format: '',
             }
         }
         _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
