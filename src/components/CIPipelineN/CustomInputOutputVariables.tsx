@@ -110,15 +110,37 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                             <Equal className="icon-dim-40 variable-equal-icon" />
 
                             <div className="tp-4 fs-13 fw-4 text-uppercase">
-                                <input
-                                    className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 top-radius"
-                                    type="text"
-                                    placeholder="Variables name"
-                                    value={variable.name}
-                                    name="name"
-                                    onChange={(e) => handleInputOutputValueChange(e, index)}
-                                    onBlur={(e) => handleBlur()}
-                                />
+                                <div className="flexbox">
+                                    <div style={{ width: type === PluginVariableType.OUTPUT ? '80%' : '100%' }}>
+                                        <input
+                                            className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 top-radius"
+                                            type="text"
+                                            placeholder="Variables name"
+                                            value={variable.name}
+                                            name="name"
+                                            onChange={(e) => handleInputOutputValueChange(e, index)}
+                                            onBlur={(e) => handleBlur()}
+                                        />
+                                    </div>
+
+                                    {type === PluginVariableType.OUTPUT && (
+                                        <div style={{ width: '20%' }}>
+                                            <ReactSelect
+                                                defaultValue={selectedFormat}
+                                                tabIndex={1}
+                                                onChange={(selectedValue) => {
+                                                    handleFormatChange(selectedValue, index)
+                                                }}
+                                                options={formatOptions}
+                                                isSearchable={false}
+                                                components={{
+                                                    IndicatorSeparator: null,
+                                                }}
+                                                styles={tempMultiSelectStyles}
+                                            />
+                                        </div>
+                                    )}
+                                </div>{' '}
                             </div>
                             {type === PluginVariableType.INPUT && (
                                 <div className="flexbox">
@@ -127,9 +149,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                     </div>
                                     <div style={{ width: '20%' }}>
                                         {variable.refVariableUsed ? (
-                                            <label className="tp-4 fs-13 fw-4 text-uppercase mr-10">
-                                                {variable.format}
-                                            </label>
+                                            <label className="fs-13 fw-4 p-5 bcn-1 w-100">{variable.format}</label>
                                         ) : (
                                             <ReactSelect
                                                 defaultValue={selectedFormat}
