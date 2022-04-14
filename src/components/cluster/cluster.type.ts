@@ -5,7 +5,8 @@ export const POLLING_INTERVAL = 30000;
 
 export const AuthenticationType = {
     BASIC: "BASIC",
-    ANONYMOUS: "ANONYMOUS"
+    ANONYMOUS: "ANONYMOUS",
+    IAM: 'IAM'
 }
 
 export enum ClusterComponentStatus {
