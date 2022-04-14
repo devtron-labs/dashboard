@@ -6,12 +6,6 @@ import CreatableSelect from 'react-select/creatable'
 import { components } from 'react-select'
 import { BuildStageVariable } from '../../config'
 
-export const globalVariable = [
-    { value: 'docker-image-tag', label: 'docker-image-tag' },
-    { value: 'date', label: 'date' },
-    { value: 'time', label: 'time' },
-]
-
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
     const {
         formData,
@@ -19,6 +13,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         selectedTaskIndex,
         activeStageName,
         inputVariablesListFromPrevStep,
+        globalVariables,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -28,6 +23,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             preBuildStage: Map<string, VariableType>[]
             postBuildStage: Map<string, VariableType>[]
         }
+        globalVariables: { label: string; value: string; format: string }[]
     } = useContext(ciPipelineContext)
     const [selectedOutputVariable, setSelectedOutputVariable] = useState<{
         label: string
@@ -95,7 +91,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                     },
                     {
                         label: 'Global variables',
-                        options: globalVariable,
+                        options: globalVariables,
                     },
                 ])
             }
@@ -107,10 +103,11 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 },
                 {
                     label: 'Global variables',
-                    options: globalVariable,
+                    options: globalVariables,
                 },
             ])
         }
+        setSelectedVariableValue()
     }, [inputVariablesListFromPrevStep])
 
     const handleOutputVariableSelector = (selectedValue: {
@@ -119,18 +116,14 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         refVariableStepIndex: number
     }) => {
         setSelectedOutputVariable(selectedValue)
+        const currentStepTypeVariable =
+            formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
+                ? 'inlineStepDetail'
+                : 'pluginRefStepDetail'
         const _formData = { ...formData }
+        let _variableDetail
         if (selectedValue.refVariableStepIndex) {
-            const currentStepTypeVariable =
-                formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
-                    ? 'inlineStepDetail'
-                    : 'pluginRefStepDetail'
-            _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
-                selectedVariableIndex
-            ] = {
-                ..._formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
-                    selectedVariableIndex
-                ],
+            _variableDetail = {
                 refVariableUsed: true,
                 refVariableType: RefVariableType.FROM_PREVIOUS_STEP,
                 refVariableStepIndex: selectedValue.refVariableStepIndex,
@@ -140,8 +133,41 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                         ? RefVariableStageType.PRE_CI
                         : RefVariableStageType.POST_CI,
             }
-            setFormData(_formData)
+        } else if (selectedValue.refVariableStepIndex) {
+            _variableDetail = {
+                refVariableUsed: true,
+                refVariableType: RefVariableType.GLOBAL,
+                refVariableStepIndex: 0,
+                refVariableName: selectedValue.label,
+            }
+        } else {
+            _variableDetail = {
+                value: selectedValue.label,
+            }
         }
+        _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
+            selectedVariableIndex
+        ] = {
+            ..._formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
+                selectedVariableIndex
+            ],
+            ..._variableDetail,
+        }
+        setFormData(_formData)
+    }
+
+    const setSelectedVariableValue = () => {
+        const selectedVariable =
+            formData[activeStageName].steps[selectedTaskIndex][
+                formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
+                    ? 'inlineStepDetail'
+                    : 'pluginRefStepDetail'
+            ].inputVariables[selectedVariableIndex]
+        const selectedValueLabel =
+            selectedVariable.refVariableType === RefVariableType.NEW
+                ? selectedVariable.value
+                : selectedVariable.refVariableName
+        setSelectedOutputVariable({ ...selectedVariable, label: selectedValueLabel, value: selectedValueLabel })
     }
 
     return (

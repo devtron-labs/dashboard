@@ -5,6 +5,7 @@ import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation, useHist
 import { BuildStageVariable, BuildTabText, TriggerType, ViewType } from '../../config'
 import {
     deleteCIPipeline,
+    getGlobalVariable,
     getInitData,
     getInitDataWithCIPipeline,
     saveCIPipeline,
@@ -62,6 +63,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0)
+    const [globalVariables, setGlobalVariables] = useState<{ label: string; value: string; format: string }[]>([])
     const [inputVariablesListFromPrevStep, setInputVariablesListFromPrevStep] = useState<{
         preBuildStage: Map<string, VariableType>[]
         postBuildStage: Map<string, VariableType>[]
@@ -138,6 +140,22 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                     showError(error)
                 })
         }
+    }, [])
+    useEffect(() => {
+        getGlobalVariable(Number(appId))
+            .then((response) => {
+                const _globalVariableOptions = response.result.map((variable) => {
+                    variable.label = variable.name
+                    variable.value = variable.name
+                    variable.format = 'string'
+                    delete variable.name
+                    return variable
+                })
+                setGlobalVariables(_globalVariableOptions || [])
+            })
+            .catch((error: ServerErrors) => {
+                showError(error)
+            })
     }, [])
 
     const deletePipeline = (): void => {
@@ -502,6 +520,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         setFormDataErrorObj,
                         validateTask,
                         validateStage,
+                        globalVariables,
                     }}
                 >
                     <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''}`}>
