@@ -208,6 +208,24 @@ p.sentence-case:first-letter {
     border: solid 1px var(--N200);
     border-radius: 4px;
     background-color: var(--white);
+
+    &.ecr-authType__radio-group {
+        border: none;
+
+        .form__radio-item {
+            border-right: none;
+            flex: unset;
+
+            .form__radio-item-content {
+                padding: 12px 16px 12px 0;
+            }
+
+            input:checked ~ .form__radio-item-content .radio__button {
+                background: radial-gradient(var(--B500) 0, var(--B500) 40%, var(--white) 45%, var(--white) 100%);
+                border: 1.5px solid var(--B500);
+            }
+        }
+    }
 }
 
 .form__checkbox {
