@@ -46,7 +46,7 @@ function ExternalLinks() {
                     monitoringToolsRes.result
                         ?.map((tool) => ({
                             label: tool.name,
-                            value: tool.id,
+                            value: tool.Id, // tool.id,
                             icon: tool.icon,
                         }))
                         .sort(sortOptionsByValue) || [],
@@ -101,7 +101,7 @@ function ExternalLinks() {
             }
         }
     }, [location.search, externalLinks])
-    
+
     const filterByClusterIds = (_appliedClustersIds: string[]): ExternalLink[] => {
         /**
          * 1. If clusters query param is present but doesn't have any value then return default externalLinks
@@ -179,10 +179,10 @@ function ExternalLinks() {
         return (
             <div className="external-links__header">
                 <div className="external-links__cell--icon"></div>
-                <div className="external-links__cell--tool__name">
+                <div className="external-links__cell--tool__name mr-16">
                     <span className="external-links__cell-header">Tool Name</span>
                 </div>
-                <div className="external-links__cell--cluster">
+                <div className="external-links__cell--cluster mr-16">
                     <span className="external-links__cell-header">Cluster</span>
                 </div>
                 <div className="external-links__cell--url__template">
@@ -208,10 +208,10 @@ function ExternalLinks() {
                                         }}
                                     />
                                 </div>
-                                <div className="external-links__cell--tool__name">{link.name}</div>
-                                <div className="external-links__cell--cluster">{getClusterLabel(link)}</div>
-                                <div className="external-links__cell--url__template">{link.url}</div>
-                                <div className="external-link-actions ml-16px">
+                                <div className="external-links__cell--tool__name ellipsis-right mr-16">{link.name}</div>
+                                <div className="external-links__cell--cluster mr-16">{getClusterLabel(link)}</div>
+                                <div className="external-links__cell--url__template ellipsis-right">{link.url}</div>
+                                <div className="external-link-actions ml-16">
                                     <Edit
                                         className="icon-dim-20 cursor mr-16"
                                         onClick={() => {
@@ -305,15 +305,13 @@ function ExternalLinks() {
                     handleDialogVisibility={handleDialogVisibility}
                     selectedLink={selectedLink}
                     monitoringTools={monitoringTools}
-                    clusters={clusters}
-                    externalLinks={externalLinks}
+                    clusters={[{ label: 'All clusters', value: '*' }].concat(clusters)}
                     setExternalLinks={setExternalLinks}
                 />
             )}
             {showDeleteDialog && selectedLink && (
                 <DeleteExternalLinkDialog
                     selectedLink={selectedLink}
-                    externalLinks={externalLinks}
                     isAPICallInProgress={isAPICallInProgress}
                     setAPICallInProgress={setAPICallInProgress}
                     setExternalLinks={setExternalLinks}

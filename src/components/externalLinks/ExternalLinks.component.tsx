@@ -27,7 +27,7 @@ import {
     OptionTypeWithIcon,
     URLModificationType,
 } from './ExternalLinks.type'
-import { saveExternalLinks, updateExternalLink } from './ExternalLinks.service'
+import { deleteExternalLink, getExternalLinks, saveExternalLinks, updateExternalLink } from './ExternalLinks.service'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { toast } from 'react-toastify'
 import { OptionWithIcon, ValueContainerWithIcon } from '../v2/common/ReactSelect.utils'
@@ -79,7 +79,7 @@ export const ClusterFilter = ({
     }
 
     const handleSelectedFilters = (selected): void => {
-        setSelectedCluster(selected as Array<any>)
+        setSelectedCluster(selected)
     }
 
     const handleCloseFilter = (): void => {
@@ -136,6 +136,7 @@ export const ClusterFilter = ({
                         border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
                         backgroundColor: 'var(--N50)',
                         justifyContent: 'flex-start',
+                        cursor: 'pointer',
                     }),
                     valueContainer: (base) => ({
                         ...base,
@@ -317,7 +318,7 @@ const getErrorLabel = (field: string): JSX.Element => {
             return errorLabel('Please select monitoring tool.')
         case 'name':
             return errorLabel('Please provide name for the tool you want to link.')
-        case 'cluster':
+        case 'clusters':
             return errorLabel('Please select one or more clusters.')
         case 'url':
             return errorLabel('Please enter URL template.')
@@ -388,6 +389,7 @@ const ConfigureLinkAction = ({
                                 border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
                                 backgroundColor: 'var(--N50)',
                                 justifyContent: 'flex-start',
+                                cursor: 'pointer',
                             }),
                             valueContainer: (base) => ({
                                 ...base,
@@ -465,6 +467,7 @@ const ConfigureLinkAction = ({
                                 border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
                                 backgroundColor: 'var(--N50)',
                                 justifyContent: 'flex-start',
+                                cursor: 'pointer',
                             }),
                             valueContainer: (base) => ({
                                 ...base,
@@ -504,7 +507,6 @@ export const AddExternalLinkDialog = ({
     monitoringTools,
     clusters,
     selectedLink,
-    externalLinks,
     setExternalLinks,
     handleDialogVisibility,
 }: AddExternalLinkType): JSX.Element => {
@@ -532,7 +534,7 @@ export const AddExternalLinkDialog = ({
                 {
                     tool: null,
                     name: '',
-                    clusters: null,
+                    clusters: [],
                     urlTemplate: '',
                 },
             ])
@@ -550,7 +552,7 @@ export const AddExternalLinkDialog = ({
                     linksData.concat({
                         tool: null,
                         name: '',
-                        clusters: null,
+                        clusters: [],
                         urlTemplate: '',
                     }),
                 )
@@ -562,7 +564,23 @@ export const AddExternalLinkDialog = ({
                 linksData[key].tool = value as OptionTypeWithIcon
                 break
             case 'onClusterSelection':
-                linksData[key].clusters = value as MultiValue<OptionType>
+                const _selectedOption = value as MultiValue<OptionType>
+                const _selectedClusterIds = _selectedOption.map((option) => option.value)
+                const selectedOptionLen = _selectedOption.length
+                const areAllOptionsSelected = _selectedClusterIds.indexOf('*') !== -1
+                const areAllOptionsAlredySeleted =
+                    Array.isArray(linksData[key].clusters) && linksData[key].clusters[0]?.value === '*'
+
+                if (areAllOptionsSelected && !areAllOptionsAlredySeleted) {
+                    linksData[key].clusters = [{ label: 'All clusters', value: '*' }]
+                } else if (!areAllOptionsSelected && areAllOptionsAlredySeleted) {
+                    linksData[key].clusters = []
+                } else if (areAllOptionsSelected && selectedOptionLen !== clusters.length) {
+                    linksData[key].clusters = _selectedOption.filter((option) => option.value !== '*')
+                } else {
+                    // if (!isAllOptionSelected && linksData[key].clusters[0].value === '*' && selectedOptionLen !== clusters.length) {
+                    linksData[key].clusters = _selectedOption
+                }
                 break
             case 'onNameChange':
                 linksData[key].name = value as string
@@ -597,7 +615,11 @@ export const AddExternalLinkDialog = ({
                                     index={idx}
                                     link={link}
                                     clusters={clusters}
-                                    selectedClusters={link.clusters}
+                                    selectedClusters={
+                                        Array.isArray(link.clusters) && link.clusters[0]?.value === '*'
+                                            ? clusters
+                                            : link.clusters
+                                    }
                                     monitoringTools={monitoringTools}
                                     onMonitoringToolSelection={(key, selected) => {
                                         handleLinksDataActions('onMonitoringToolSelection', key, selected)
@@ -669,7 +691,7 @@ export const AddExternalLinkDialog = ({
             name: link.name,
             invalidName: !link.name,
             clusters: link.clusters,
-            invalidClusters: !link.clusters,
+            invalidClusters: !link.clusters || link.clusters?.length <= 0,
             urlTemplate: link.urlTemplate,
             invalidUrlTemplate: !link.urlTemplate,
         }))
@@ -696,42 +718,42 @@ export const AddExternalLinkDialog = ({
                     id: selectedLink.id,
                     monitoringToolId: +link.tool.value,
                     name: link.name,
-                    clusterIds: link.clusters.map((value) => value.value),
+                    clusterIds:
+                        link.clusters.findIndex((_cluster) => _cluster.value === '*') === -1
+                            ? link.clusters.map((value) => +value.value)
+                            : [],
                     url: link.urlTemplate,
                 }
 
-                const updatedLinks = externalLinks.map((link) => {
-                    if (link.id === selectedLink.id) {
-                        link = payload
-                        return link
-                    } else {
-                        return link
-                    }
-                })
-                setExternalLinks(updatedLinks)
-                toast.success('Updated successfully!')
-                // await updateExternalLink(payload)
+                const { result } = await updateExternalLink(payload)
+
+                if (result?.success) {
+                    toast.success('Updated successfully!')
+                }
             } else {
                 const payload = validatedLinksData.map((link) => ({
                     monitoringToolId: +link.tool.value,
                     name: link.name,
-                    clusterIds: link.clusters.map((value) => value.value),
+                    clusterIds:
+                        link.clusters.findIndex((_cluster) => _cluster.value === '*') !== -1
+                            ? link.clusters.map((value) => +value.value)
+                            : [],
                     url: link.urlTemplate,
                 }))
 
-                const updatedLinks = externalLinks.concat(payload)
-                setExternalLinks(updatedLinks)
+                const { result } = await saveExternalLinks(payload)
 
-                toast.success('Saved successfully!')
-                // await saveExternalLinks(payload)
+                if (result?.success) {
+                    toast.success('Saved successfully!')
+                }
             }
 
-            setTimeout(() => {
-                setSavingLinks(false)
-                handleDialogVisibility()
-            }, 1500)
+            const { result } = await getExternalLinks()
+            setExternalLinks(result || [])
         } catch (e) {
             showError(e)
+        } finally {
+            setSavingLinks(false)
             handleDialogVisibility()
         }
     }
@@ -768,7 +790,6 @@ export const AddExternalLinkDialog = ({
 
 export const DeleteExternalLinkDialog = ({
     selectedLink,
-    externalLinks,
     isAPICallInProgress,
     setAPICallInProgress,
     setExternalLinks,
@@ -777,22 +798,17 @@ export const DeleteExternalLinkDialog = ({
     const deleteLink = async (): Promise<void> => {
         try {
             setAPICallInProgress(true)
-            // const { result } = await deleteExternalLink(link.id)
+            const { result } = await deleteExternalLink(selectedLink.id)
 
-            // if (result?.success) {
-            //     const { result } = await getExternalLinks()
-            //     setExternalLinks(result || [])
-            // }
-
-            setExternalLinks(externalLinks.filter((link) => link.id !== selectedLink.id))
-
-            setTimeout(() => {
+            if (result?.success) {
                 toast.success('Deleted successfully!')
-                setAPICallInProgress(false)
-                setShowDeleteConfirmation(false)
-            }, 1500)
+
+                const { result } = await getExternalLinks()
+                setExternalLinks(result || [])
+            }
         } catch (e) {
             showError(e)
+        } finally {
             setAPICallInProgress(false)
             setShowDeleteConfirmation(false)
         }

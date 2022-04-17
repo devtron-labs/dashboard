@@ -99,7 +99,7 @@ function ExternalAppDetail({appId, appName}) {
                             monitoringToolsRes.result
                                 ?.map((tool) => ({
                                     label: tool.name,
-                                    value: tool.id,
+                                    value: tool.Id, // tool.id,
                                     icon: tool.icon,
                                 }))
                                 .sort(sortOptionsByValue) || [],

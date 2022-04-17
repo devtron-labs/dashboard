@@ -1,6 +1,7 @@
 import React from 'react'
 import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Check } from '../assets/icons/ic-check.svg'
+import DefaultIcon from '../../../assets/icons/ic-browser.svg'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 
@@ -59,6 +60,12 @@ export function Option(props) {
     )
 }
 
+function onImageLoadError(e) {
+    if (e && e.target) {
+        e.target.src = DefaultIcon
+    }
+}
+
 export function OptionWithIcon(props) {
     const { data } = props
     return (
@@ -72,6 +79,7 @@ export function OptionWithIcon(props) {
                         height: '20px',
                         marginRight: '12px',
                     }}
+                    onError={onImageLoadError}
                 />
                 {data.label}
             </div>
@@ -93,6 +101,7 @@ export function ValueContainerWithIcon(props) {
                             height: '20px',
                             marginRight: '12px',
                         }}
+                        onError={onImageLoadError}
                     />
                     {selectProps.value.label}
                 </div>

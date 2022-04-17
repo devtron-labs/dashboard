@@ -12,7 +12,7 @@ export interface OptionTypeWithIcon {
 }
 
 export interface MonitoringTool {
-    id: number
+    Id: number // id: number
     name: string
     icon: string
 }
@@ -22,7 +22,7 @@ export interface ExternalLink {
     monitoringToolId: number
     name: string
     url: string
-    clusterIds: string[]
+    clusterIds: any[]
 }
 
 export interface LinkAction {
@@ -81,13 +81,11 @@ export interface AddExternalLinkType {
     clusters: MultiValue<OptionType>
     handleDialogVisibility: () => void
     selectedLink: ExternalLink
-    externalLinks: ExternalLink[]
     setExternalLinks: React.Dispatch<React.SetStateAction<ExternalLink[]>>
 }
 
 export interface DeleteExternalLinkType  {
     selectedLink: ExternalLink
-    externalLinks: ExternalLink[]
     isAPICallInProgress: boolean
     setAPICallInProgress: React.Dispatch<React.SetStateAction<boolean>>
     setExternalLinks: React.Dispatch<React.SetStateAction<ExternalLink[]>>
