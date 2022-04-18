@@ -10,6 +10,7 @@ import {
     NoExternalLinksView,
     NoMatchingResults,
     SearchInput,
+    sortByUpdatedOn,
 } from './ExternalLinks.component'
 import { useHistory, useLocation } from 'react-router-dom'
 import './externalLinks.scss'
@@ -42,7 +43,7 @@ function ExternalLinks() {
         setLoading(true)
         Promise.all([getMonitoringTools(), getExternalLinks(), getClusterListMin()])
             .then(([monitoringToolsRes, externalLinksRes, clustersResp]) => {
-                setExternalLinks(externalLinksRes.result || [])
+                setExternalLinks(externalLinksRes.result?.sort(sortByUpdatedOn) || [])
                 setMonitoringTools(
                     monitoringToolsRes.result
                         ?.map((tool) => ({
@@ -181,10 +182,10 @@ function ExternalLinks() {
         return (
             <div className="external-links__header">
                 <div className="external-links__cell--icon"></div>
-                <div className="external-links__cell--tool__name mr-16">
+                <div className="external-links__cell--tool__name">
                     <span className="external-links__cell-header">Tool Name</span>
                 </div>
-                <div className="external-links__cell--cluster mr-16">
+                <div className="external-links__cell--cluster">
                     <span className="external-links__cell-header">Cluster</span>
                 </div>
                 <div className="external-links__cell--url__template">
@@ -200,7 +201,7 @@ function ExternalLinks() {
                 {filteredExternalLinks.map((link, idx) => {
                     return (
                         <>
-                            <div className="external-link flex left">
+                            <div className="external-link">
                                 <div className="external-links__cell--icon">
                                     <img
                                         src={getMonitoringToolIcon(monitoringTools, link.monitoringToolId)}
@@ -211,8 +212,10 @@ function ExternalLinks() {
                                         onError={onImageLoadError}
                                     />
                                 </div>
-                                <div className="external-links__cell--tool__name ellipsis-right mr-16">{link.name}</div>
-                                <div className="external-links__cell--cluster mr-16">{getClusterLabel(link)}</div>
+                                <div className="external-links__cell--tool__name ellipsis-right">{link.name}</div>
+                                <div className="external-links__cell--cluster ellipsis-right">
+                                    {getClusterLabel(link)}
+                                </div>
                                 <div className="external-links__cell--url__template ellipsis-right">{link.url}</div>
                                 <div className="external-link-actions">
                                     <Edit
@@ -246,7 +249,7 @@ function ExternalLinks() {
                 <h4 className="title">External links</h4>
                 <p className="subtitle">
                     Configure links to third-party applications (e.g. Kibana, New Relic) for quick access. Configured
-                    linkouts will be available in the App details page. Learn more
+                    linkouts will be available in the App details page.
                 </p>
                 <div className="cta-search-filter-container flex content-space">
                     <AddLinkButton handleOnClick={handleAddLinkClick} />

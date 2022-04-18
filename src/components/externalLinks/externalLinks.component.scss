@@ -1,10 +1,11 @@
 .add-external-link-dialog {
     .modal__body {
-        width: 1000px;
+        width: calc(100% - 80px);
+        max-width: 1000px;
         height: calc(100% - 40px);
         border-radius: 0 0 8px 8px;
         margin-top: 0;
-        padding: 20px 0;
+        padding: 16px 0;
 
         .modal__divider {
             border: 0;
@@ -32,7 +33,7 @@
 
         .modal__content {
             display: flex;
-            height: calc(100% - 116px);
+            height: calc(100% - 112px);
 
             .configure-link-action-container,
             .configure-link-info-container {
@@ -84,6 +85,7 @@
                             width: 200px;
 
                             input {
+                                width: 200px;
                                 height: 32px;
                                 padding: 10px 6px;
                                 background-color: var(--N50);
@@ -100,12 +102,18 @@
                         .link-clusters {
                             width: 278px;
                         }
+
+                        .link-delete {
+                            width: 20px;
+                            height: 20px;
+                        }
                     }
                 }
 
                 .link-text-area {
                     display: flex;
                     flex-direction: column;
+                    // max-width: 648px;
 
                     textarea {
                         width: 648px;
@@ -140,8 +148,8 @@
                     line-height: 1.5;
 
                     svg {
-                        width: 16px;
-                        height: 16px;
+                        width: 20px;
+                        height: 20px;
                         margin-right: 10px;
 
                         path {
@@ -207,7 +215,7 @@
         .modal__buttons {
             display: flex;
             justify-content: flex-end;
-            padding: 20px;
+            padding: 16px 20px;
         }
     }
 }

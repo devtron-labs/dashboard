@@ -14,7 +14,7 @@ export interface DeleteDialogProps {
 
 export const DeleteDialog: React.FC<DeleteDialogProps> & { Description?: React.FC<any> } = function (props) {
 
-    return <ConfirmationDialog className="confirmation-dialog__body--w-360">
+    return <ConfirmationDialog className="confirmation-dialog__body--w-400">
         <ConfirmationDialog.Icon src={warn} />
         <ConfirmationDialog.Body title={props.title}>
             <div className="fs-13 cn-7 lh-1-54 w-100">

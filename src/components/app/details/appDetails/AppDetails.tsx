@@ -67,7 +67,7 @@ import { aggregateNodes, SecurityVulnerabilitites, getSelectedNodeItems, getPodN
 import { AppMetrics } from './AppMetrics';
 import { TriggerInfoModal } from '../../list/TriggerInfo';
 import { sortObjectArrayAlphabetically, sortOptionsByValue } from '../../../common/helpers/Helpers';
-import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component';
+import { AppLevelExternalLinks, sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.component';
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service';
 import { ExternalLink, MonitoringTool, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
 
@@ -197,7 +197,7 @@ export const Details: React.FC<{
                 Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId)])
                     .then(([monitoringToolsRes, externalLinksRes]) => {
                         setExternalLinksAndTools({
-                            externalLinks: externalLinksRes.result || [],
+                            externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],
                             monitoringTools:
                                 monitoringToolsRes.result
                                     ?.map((tool) => ({

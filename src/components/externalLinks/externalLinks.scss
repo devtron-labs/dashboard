@@ -61,6 +61,7 @@
         }
 
         .cta-search-filter-container {
+            max-width: 962px;
             margin-top: 20px;
 
             .add-link.cta {
@@ -71,7 +72,6 @@
         .search-filter-wrapper {
             display: flex;
             align-items: center;
-            max-width: 962px;
 
             .search-wrapper {
                 display: flex;
@@ -107,9 +107,9 @@
         }
 
         .saved-filters__wrap {
-            padding: 16px 20px 0 0;
             display: flex;
             flex-wrap: wrap;
+            background-color: var(--window-bg);
 
             .saved-filter {
                 display: flex;
@@ -168,10 +168,14 @@
         }
 
         .external-link {
+            display: grid;
+            grid-template-columns: 24px 144px 84px minmax(100px, 58%) 56px;
+            column-gap: 16px;
             padding: 12px 20px;
 
             .external-link-actions {
                 display: none;
+                width: 56px;
             }
 
             &:hover {
@@ -192,7 +196,9 @@
 
     .external-links__header {
         height: 40px;
-        display: flex;
+        display: grid;
+        grid-template-columns: 24px 144px 84px minmax(100px, 58%) 56px;
+        column-gap: 16px;
         align-items: center;
         justify-content: stretch;
         font-size: 12px;
@@ -208,24 +214,5 @@
         border-top-left-radius: 8px;
         border-top-right-radius: 8px;
         margin-bottom: 1px;
-    }
-
-    .external-links__cell--icon {
-        width: 40px;
-    }
-
-    .external-links__cell--tool__name {
-        width: 160px;
-        text-overflow: ellipsis;
-    }
-
-    .external-links__cell--cluster {
-        width: 100px;
-        text-overflow: ellipsis;
-    }
-
-    .external-links__cell--url__template {
-        width: 518px;
-        text-overflow: ellipsis;
     }
 }

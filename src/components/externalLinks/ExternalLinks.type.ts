@@ -23,6 +23,7 @@ export interface ExternalLink {
     name: string
     url: string
     clusterIds: any[]
+    updatedOn?: string
 }
 
 export interface LinkAction {

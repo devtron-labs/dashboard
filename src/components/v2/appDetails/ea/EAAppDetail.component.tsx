@@ -12,6 +12,7 @@ import '../../lib/bootstrap-grid.min.css';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../../../util/URLUtil';
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service';
 import { ExternalLink, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
+import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.component';
 
 function ExternalAppDetail({appId, appName}) {
     const location = useLocation();
@@ -98,7 +99,7 @@ function ExternalAppDetail({appId, appName}) {
                     ])
                         .then(([monitoringToolsRes, externalLinksRes]) => {
                             setExternalLinksAndTools({
-                                externalLinks: externalLinksRes.result || [],
+                                externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],
                                 monitoringTools:
                                     monitoringToolsRes.result
                                         ?.map((tool) => ({

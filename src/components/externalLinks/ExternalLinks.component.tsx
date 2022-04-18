@@ -43,6 +43,7 @@ export const ClusterFilter = ({
     history,
 }: ClusterFilterType): JSX.Element => {
     const [selectedCluster, setSelectedCluster] = useState<MultiValue<OptionType>>([])
+    const [isMenuOpen, setMenuOpen] = useState(false)
 
     // To update the dropdown selections on query param value change or page reload
     useEffect(() => {
@@ -58,6 +59,7 @@ export const ClusterFilter = ({
     }, [clusters, queryParams.get('clusters')])
 
     const handleFilterQueryChanges = (): void => {
+        setMenuOpen(false)
         setAppliedClusters(selectedCluster)
 
         if (selectedCluster.length > 0) {
@@ -72,25 +74,33 @@ export const ClusterFilter = ({
         history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
     }
 
+    const handleMenuState = (): void => {
+        setMenuOpen(!isMenuOpen)
+    }
+
     const handleSelectedFilters = (selected): void => {
         setSelectedCluster(selected)
     }
 
     const handleCloseFilter = (): void => {
+        handleMenuState()
         setSelectedCluster(appliedClusters)
     }
 
     return (
         <div className="filters-wrapper">
             <Select
+                menuIsOpen={isMenuOpen}
                 placeholder="Cluster : All"
                 name="cluster"
                 value={selectedCluster}
                 options={clusters}
                 onChange={handleSelectedFilters}
                 isMulti={true}
+                isSearchable={isMenuOpen}
                 closeMenuOnSelect={false}
                 hideSelectedOptions={false}
+                onMenuOpen={handleMenuState}
                 onMenuClose={handleCloseFilter}
                 components={{
                     Option,
@@ -108,6 +118,7 @@ export const ClusterFilter = ({
                     }),
                     menuList: (base, state) => ({
                         ...base,
+                        borderRadius: '4px',
                         paddingTop: 0,
                         paddingBottom: 0,
                     }),
@@ -364,6 +375,8 @@ const ConfigureLinkAction = ({
                             }),
                             menuList: (base, state) => ({
                                 ...base,
+                                maxHeight: '190px',
+                                borderRadius: '4px',
                                 paddingTop: 0,
                                 paddingBottom: 0,
                             }),
@@ -445,7 +458,8 @@ const ConfigureLinkAction = ({
                             }),
                             menuList: (base, state) => ({
                                 ...base,
-                                width: '100%',
+                                maxHeight: '190px',
+                                borderRadius: '4px',
                                 paddingTop: 0,
                                 paddingBottom: 0,
                             }),
@@ -487,7 +501,11 @@ const ConfigureLinkAction = ({
                     />
                     {link.invalidClusters && getErrorLabel('clusters')}
                 </div>
-                {showDelete && <Delete className="mt-24 cursor" onClick={() => deleteLinkData(index)} />}
+                {showDelete && 
+                    <div className="link-delete mt-24 cursor">
+                        <Delete className="icon-dim-20" onClick={() => deleteLinkData(index)} />
+                    </div>
+                }
             </div>
             <div className="link-text-area">
                 <label>URL template*</label>
@@ -651,7 +669,7 @@ export const AddExternalLinkDialog = ({
             <div className="configure-link-info-container">
                 <div className="configure-link-info-heading">
                     <Help />
-                    <span>Configuring an external link</span>
+                    <span className="cn-9">Configuring an external link</span>
                 </div>
                 <ol className="configure-link-info-list">
                     <li>Monitoring tool</li>
@@ -671,12 +689,12 @@ export const AddExternalLinkDialog = ({
                     </ul>
                     <li>Sample URL template:</li>
                     <p>{'http://www.domain.com/grafana/{appName}/details/1/env/4/details/pod'}</p>
-                    <a
+                    {/* <a
                         href="https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/cd-pipeline"
                         target="_blank"
                     >
                         View detailed documentation
-                    </a>
+                    </a> */}
                 </ol>
             </div>
         )
@@ -715,7 +733,7 @@ export const AddExternalLinkDialog = ({
                 const payload: ExternalLink = {
                     id: selectedLink.id,
                     monitoringToolId: +link.tool.value,
-                    name: link.name,
+                    name: link.name.trim(),
                     clusterIds:
                         link.clusters.findIndex((_cluster) => _cluster.value === '*') === -1
                             ? link.clusters.map((_cluster) => +_cluster.value)
@@ -731,7 +749,7 @@ export const AddExternalLinkDialog = ({
             } else {
                 const payload = validatedLinksData.map((link) => ({
                     monitoringToolId: +link.tool.value,
-                    name: link.name,
+                    name: link.name.trim(),
                     clusterIds:
                         link.clusters.findIndex((_cluster) => _cluster.value === '*') === -1
                             ? link.clusters.map((_cluster) => +_cluster.value)
@@ -747,7 +765,7 @@ export const AddExternalLinkDialog = ({
             }
 
             const { result } = await getExternalLinks()
-            setExternalLinks(result || [])
+            setExternalLinks(result?.sort(sortByUpdatedOn) || [])
             setSavingLinks(false)
             handleDialogVisibility()
         } catch (e) {
@@ -761,7 +779,7 @@ export const AddExternalLinkDialog = ({
         <VisibleModal className="add-external-link-dialog" {...(!savingLinks && { onEscape: handleDialogVisibility })}>
             <div className="modal__body">
                 <div className="modal__header">
-                    <h3 className="modal__title">{selectedLink ? 'Update link' : 'Add link'}</h3>
+                    <h3 className="modal__title fs-16">{selectedLink ? 'Update link' : 'Add link'}</h3>
                     <button
                         type="button"
                         className={`transparent ${savingLinks ? 'cursor-not-allowed' : 'cursor'}`}
@@ -803,7 +821,7 @@ export const DeleteExternalLinkDialog = ({
                 toast.success('Deleted successfully!')
 
                 const { result } = await getExternalLinks()
-                setExternalLinks(result || [])
+                setExternalLinks(result?.sort(sortByUpdatedOn) || [])
             }
         } catch (e) {
             showError(e)
@@ -857,7 +875,7 @@ export const AppliedFilterChips = ({
     }
 
     return (
-        <div className="saved-filters__wrap position-rel">
+        <div className="saved-filters__wrap position-rel mt-16 pr-20">
             {appliedClusters.map((filter) => {
                 return (
                     <div key={filter.label} className="saved-filter">
@@ -881,6 +899,10 @@ export const AppliedFilterChips = ({
             </button>
         </div>
     )
+}
+
+export const sortByUpdatedOn = (uptA: ExternalLink, uptB: ExternalLink) => {
+    return new Date(uptB.updatedOn).getTime() - new Date(uptA.updatedOn).getTime()
 }
 
 export const getMonitoringToolIcon = (monitoringTools: MultiValue<OptionTypeWithIcon>, toolId: number): string => {
@@ -1010,9 +1032,15 @@ export const NodeLevelExternalLinks = ({
                     Option,
                 }}
                 styles={{
+                    ...multiSelectStyles,
                     menu: (base) => ({
                         ...base,
                         width: '150px',
+                    }),
+                    menuList: (base) => ({
+                        ...base,
+                        maxHeight: '190px',
+                        borderRadius: '4px',
                     }),
                     control: (base) => ({
                         ...base,

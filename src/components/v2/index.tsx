@@ -16,6 +16,7 @@ import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
 import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHistory.component';
 import { ExternalLink, OptionTypeWithIcon } from '../externalLinks/ExternalLinks.type';
 import { getExternalLinks, getMonitoringTools } from '../externalLinks/ExternalLinks.service';
+import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.component';
 
 let initTimer = null;
 
@@ -86,7 +87,7 @@ function RouterComponent({ envType }) {
                 Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId)])
                     .then(([monitoringToolsRes, externalLinksRes]) => {
                         setExternalLinksAndTools({
-                            externalLinks: externalLinksRes.result || [],
+                            externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],
                             monitoringTools:
                                 monitoringToolsRes.result
                                     ?.map((tool) => ({
