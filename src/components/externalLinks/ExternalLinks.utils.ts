@@ -22,6 +22,55 @@ export const MONITORING_TOOL_ICONS = {
     'ic-browser': OtherToolIcon,
 }
 
+export const customMultiSelectStyles = {
+    menu: (base, state) => ({
+        ...base,
+        top: 'auto',
+        width: '100%',
+    }),
+    menuList: (base, state) => ({
+        ...base,
+        maxHeight: '190px',
+        borderRadius: '4px',
+        paddingTop: 0,
+        paddingBottom: 0,
+    }),
+    option: (base, state) => ({
+        ...base,
+        padding: '10px 12px',
+        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+        color: 'var(--N900)',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        cursor: 'pointer',
+    }),
+    control: (base, state) => ({
+        ...base,
+        width: '160px',
+        minHeight: '32px',
+        border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
+        backgroundColor: 'var(--N50)',
+        justifyContent: 'flex-start',
+        cursor: 'pointer',
+    }),
+    valueContainer: (base) => ({
+        ...base,
+        padding: '0 8px',
+    }),
+    dropdownIndicator: (base, state) => ({
+        ...base,
+        color: 'var(--N400)',
+        transition: 'all .2s ease',
+        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+        padding: '0 8px',
+    }),
+    placeholder: (base) => ({
+        ...base,
+        color: 'var(--N900)',
+    }),
+}
+
 export const getMonitoringToolIcon = (monitoringTools: MultiValue<OptionTypeWithIcon>, toolId: number): string => {
     return MONITORING_TOOL_ICONS[monitoringTools.find((tool) => tool.value === toolId)?.icon] || OtherToolIcon
 }

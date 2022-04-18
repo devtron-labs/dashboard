@@ -31,6 +31,7 @@ import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import {
+    customMultiSelectStyles,
     getMonitoringToolIcon,
     getParsedURL,
     MONITORING_TOOL_ICONS,
@@ -115,50 +116,12 @@ export const ClusterFilter = ({
                 }}
                 styles={{
                     ...multiSelectStyles,
-                    menu: (base, state) => ({
-                        ...base,
-                        top: 'auto',
-                        width: '100%',
-                    }),
+                    ...customMultiSelectStyles,
                     menuList: (base, state) => ({
                         ...base,
                         borderRadius: '4px',
                         paddingTop: 0,
                         paddingBottom: 0,
-                    }),
-                    option: (base, state) => ({
-                        ...base,
-                        padding: '10px 12px',
-                        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                        color: 'var(--N900)',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        cursor: 'pointer',
-                    }),
-                    control: (base, state) => ({
-                        ...base,
-                        width: '160px',
-                        minHeight: '32px',
-                        border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
-                        backgroundColor: 'var(--N50)',
-                        justifyContent: 'flex-start',
-                        cursor: 'pointer',
-                    }),
-                    valueContainer: (base) => ({
-                        ...base,
-                        padding: '0 8px',
-                    }),
-                    dropdownIndicator: (base, state) => ({
-                        ...base,
-                        color: 'var(--N400)',
-                        transition: 'all .2s ease',
-                        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                        padding: '0 8px',
-                    }),
-                    placeholder: (base) => ({
-                        ...base,
-                        color: 'var(--N900)',
                     }),
                 }}
             />
@@ -257,7 +220,7 @@ export const SearchInput = ({ queryParams, history }: URLModificationType): JSX.
 export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
     return (
         <button onClick={handleOnClick} className="add-link cta flex">
-            <AddIcon className="mr-8" />
+            <AddIcon className="icon-dim-16 mr-8" />
             Add link
         </button>
     )
@@ -334,9 +297,9 @@ const getErrorLabel = (field: string): JSX.Element => {
     }
 }
 
-export const customOption = (data: OptionTypeWithIcon) => {
+export const customOption = (data: OptionTypeWithIcon, className = "") => {
     return (
-        <div className="flex left">
+        <div className={`flex left ${className}`}>
             <img
                 src={MONITORING_TOOL_ICONS[data.icon]}
                 alt={data.label}
@@ -361,7 +324,14 @@ export function ValueContainerWithIcon(props) {
     const { selectProps } = props
     return (
         <components.ValueContainer {...props}>
-            {selectProps.value ? customOption(selectProps.value) : <>{props.children}</>}
+            {selectProps.value ? (
+                <>
+                    {!props.selectProps.menuIsOpen && customOption(selectProps.value, 'absolute-option')}
+                    {React.cloneElement(props.children[1])}
+                </>
+            ) : (
+                <>{props.children}</>
+            )}
         </components.ValueContainer>
     )
 }
@@ -400,51 +370,19 @@ const ConfigureLinkAction = ({
                         }}
                         styles={{
                             ...multiSelectStyles,
+                            ...customMultiSelectStyles,
                             container: (base, state) => ({
                                 ...base,
                                 marginTop: '6px',
                             }),
-                            menu: (base, state) => ({
-                                ...base,
-                                top: 'auto',
-                                width: '100%',
-                            }),
-                            menuList: (base, state) => ({
-                                ...base,
-                                maxHeight: '190px',
-                                borderRadius: '4px',
-                                paddingTop: 0,
-                                paddingBottom: 0,
-                            }),
-                            option: (base, state) => ({
-                                ...base,
-                                padding: '10px 12px',
-                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                color: 'var(--N900)',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                                cursor: 'pointer',
-                            }),
                             control: (base, state) => ({
                                 ...base,
+                                ...customMultiSelectStyles.control(base, state),
                                 width: '150px',
-                                minHeight: '32px',
-                                border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
-                                backgroundColor: 'var(--N50)',
-                                justifyContent: 'flex-start',
-                                cursor: 'pointer',
                             }),
                             valueContainer: (base) => ({
                                 ...base,
                                 padding: '0 10px',
-                            }),
-                            dropdownIndicator: (base, state) => ({
-                                ...base,
-                                color: 'var(--N400)',
-                                transition: 'all .2s ease',
-                                transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                                padding: '0 8px',
                             }),
                             placeholder: (base) => ({
                                 ...base,
@@ -483,51 +421,15 @@ const ConfigureLinkAction = ({
                         }}
                         styles={{
                             ...multiSelectStyles,
+                            ...customMultiSelectStyles,
                             container: (base, state) => ({
                                 ...base,
                                 marginTop: '6px',
                             }),
-                            menu: (base, state) => ({
-                                ...base,
-                                top: 'auto',
-                                width: '100%',
-                            }),
-                            menuList: (base, state) => ({
-                                ...base,
-                                maxHeight: '190px',
-                                borderRadius: '4px',
-                                paddingTop: 0,
-                                paddingBottom: 0,
-                            }),
-                            option: (base, state) => ({
-                                ...base,
-                                padding: '10px 12px',
-                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                color: 'var(--N900)',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                                cursor: 'pointer',
-                            }),
                             control: (base, state) => ({
                                 ...base,
+                                ...customMultiSelectStyles.control(base, state),
                                 width: '278px',
-                                minHeight: '32px',
-                                border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
-                                backgroundColor: 'var(--N50)',
-                                justifyContent: 'flex-start',
-                                cursor: 'pointer',
-                            }),
-                            valueContainer: (base) => ({
-                                ...base,
-                                padding: '0 8px',
-                            }),
-                            dropdownIndicator: (base, state) => ({
-                                ...base,
-                                color: 'var(--N400)',
-                                transition: 'all .2s ease',
-                                transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                                padding: '0 8px',
                             }),
                             placeholder: (base) => ({
                                 ...base,
@@ -659,8 +561,8 @@ export const AddExternalLinkDialog = ({
         return (
             <div className="configure-link-action-container">
                 {!selectedLink && (
-                    <div className="link-add-another mb-16 cursor" onClick={() => handleLinksDataActions('add')}>
-                        <AddIcon /> Add another
+                    <div className="link-add-another fs-13 mb-16 cursor" onClick={() => handleLinksDataActions('add')}>
+                        <AddIcon className="icon-dim-12 mr-8"/> Add another
                     </div>
                 )}
                 {linksData &&
@@ -1049,14 +951,10 @@ export const NodeLevelExternalLinks = ({
                 }}
                 styles={{
                     ...multiSelectStyles,
+                    ...customMultiSelectStyles,
                     menu: (base) => ({
                         ...base,
                         width: '150px',
-                    }),
-                    menuList: (base) => ({
-                        ...base,
-                        maxHeight: '190px',
-                        borderRadius: '4px',
                     }),
                     control: (base) => ({
                         ...base,
@@ -1078,9 +976,7 @@ export const NodeLevelExternalLinks = ({
                     }),
                     dropdownIndicator: (base, state) => ({
                         ...base,
-                        color: 'var(--N400)',
-                        transition: 'all .2s ease',
-                        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                        ...customMultiSelectStyles.dropdownIndicator(base, state),
                         padding: '0 8px 0 4px',
                     }),
                     placeholder: (base) => ({
