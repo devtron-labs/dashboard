@@ -26,6 +26,8 @@ import { ReactComponent as InfoFilled } from '../../assets/icons/ic-info-filled.
 import DeleteComponent from '../../util/DeleteComponent';
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
 import ReactSelect, { components } from 'react-select';
+import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
+import { AuthenticationType } from '../cluster/cluster.type';
 
 enum CERTTYPE {
     SECURE = 'secure',
@@ -204,6 +206,8 @@ function DockerForm({
     });
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
+    const [isIAMAuthType, setIAMAuthType] = useState(!awsAccessKeyId && !awsSecretAccessKey)
+
     function customHandleChange(e) {
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }));
     }
@@ -216,6 +220,26 @@ function DockerForm({
             registryUrl: { value: selectedRegistry.defaultRegistryURL, error: '' },
         }));
     };
+
+
+    const onECRAuthTypeChange = (e) => {
+        if (e.target.value === AuthenticationType.IAM) {
+            setIAMAuthType(true)
+            setCustomState((_state) => ({
+                ..._state,
+                awsAccessKeyId: { value: '', error: '' },
+                awsSecretAccessKey: { value: '', error: '' },
+            }));
+        } else {
+            setIAMAuthType(false)
+            setCustomState((_state) => ({
+                ..._state,
+                awsAccessKeyId: { value: awsAccessKeyId, error: '' },
+                awsSecretAccessKey: { value: awsSecretAccessKey, error: '' },
+            }));
+        }
+    }
+    
 
     function fetchAWSRegion(): string {
         const pattern = /(ecr.)[a-z]{2}-[a-z]*-[0-9]{1}/i;
@@ -299,8 +323,7 @@ function DockerForm({
     function onValidation() {
         if (selectedDockerRegistryType.value === 'ecr') {
             if (
-                !customState.awsAccessKeyId.value ||
-                !customState.awsSecretAccessKey.value ||
+                (!isIAMAuthType && (!customState.awsAccessKeyId.value || !customState.awsSecretAccessKey.value)) ||
                 !customState.registryUrl.value
             ) {
                 setCustomState((st) => ({
@@ -311,8 +334,8 @@ function DockerForm({
                         error: st.awsSecretAccessKey.value ? '' : 'Mandatory',
                     },
                     registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
-                }));
-                return;
+                }))
+                return
             }
         } else if (selectedDockerRegistryType.value === 'docker-hub') {
             if (!customState.username.value || !customState.password.value) {
@@ -501,29 +524,45 @@ function DockerForm({
             {selectedDockerRegistryType.value === 'ecr' ? (
                 <>
                     <div className="form__row">
-                        <CustomInput
-                            name="awsAccessKeyId"
-                            tabIndex={5}
-                            value={customState.awsAccessKeyId.value}
-                            error={customState.awsAccessKeyId.error}
-                            onChange={customHandleChange}
-                            label={selectedDockerRegistryType.id.label}
-                            autoComplete={'off'}
-                            placeholder={selectedDockerRegistryType.id.placeholder}
-                        />
+                        <span className="form__label">Authentication Type*</span>
+                        <RadioGroup
+                            className="ecr-authType__radio-group"
+                            value={isIAMAuthType ? AuthenticationType.IAM : AuthenticationType.BASIC}
+                            name="ecr-authType"
+                            onChange={(e) => onECRAuthTypeChange(e)}
+                        >
+                            <RadioGroupItem value={AuthenticationType.IAM}> EC2 IAM Role </RadioGroupItem>
+                            <RadioGroupItem value={AuthenticationType.BASIC}> User auth </RadioGroupItem>
+                        </RadioGroup>
                     </div>
-                    <div className="form__row">
-                        <ProtectedInput
-                            name="awsSecretAccessKey"
-                            tabIndex={6}
-                            value={customState.awsSecretAccessKey.value}
-                            error={customState.awsSecretAccessKey.error}
-                            onChange={customHandleChange}
-                            label={selectedDockerRegistryType.password.label}
-                            type="password"
-                            placeholder={selectedDockerRegistryType.password.placeholder}
-                        />
-                    </div>
+                    {!isIAMAuthType && (
+                        <>
+                            <div className="form__row">
+                                <CustomInput
+                                    name="awsAccessKeyId"
+                                    tabIndex={5}
+                                    value={customState.awsAccessKeyId.value}
+                                    error={customState.awsAccessKeyId.error}
+                                    onChange={customHandleChange}
+                                    label={selectedDockerRegistryType.id.label}
+                                    autoComplete={'off'}
+                                    placeholder={selectedDockerRegistryType.id.placeholder}
+                                />
+                            </div>
+                            <div className="form__row">
+                                <ProtectedInput
+                                    name="awsSecretAccessKey"
+                                    tabIndex={6}
+                                    value={customState.awsSecretAccessKey.value}
+                                    error={customState.awsSecretAccessKey.error}
+                                    onChange={customHandleChange}
+                                    label={selectedDockerRegistryType.password.label}
+                                    type="password"
+                                    placeholder={selectedDockerRegistryType.password.placeholder}
+                                />
+                            </div>
+                        </>
+                    )}
                 </>
             ) : (
                 <>
@@ -658,7 +697,7 @@ function DockerForm({
                     }
                 >
                     <input type="checkbox" className="cursor" name="default" checked={Isdefault} onChange={(e) => {}} />
-                    <div className="mr-4"> Set as default </div>
+                    <div className="mr-4"> Set as default registry </div>
                     <Tippy
                         className="default-tt"
                         arrow={false}
