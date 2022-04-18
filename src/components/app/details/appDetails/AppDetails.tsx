@@ -24,9 +24,9 @@ import {
     useSearchString,
     multiSelectStyles,
     useAsync,
-    SingleSelectOption as Option,
     ScanDetailsModal,
 } from '../../../common';
+import { Option } from './../../../v2/common/ReactSelect.utils';
 import { getAppConfigStatus, getAppOtherEnvironment, stopStartApp, getLastExecutionMinByAppAndEnv } from '../../../../services/service';
 import { Link } from 'react-router-dom';
 import ResourceTreeNodes from '../../ResourceTreeNodes';
@@ -647,7 +647,7 @@ export function EnvSelector({ environments, disabled }) {
                     styles={{
                         ...multiSelectStyles,
                         control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'transparent' }),
-                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' })
+                        singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: '#06c' })
                     }}
                     isDisabled={disabled}
                     isSearchable={false}
@@ -964,6 +964,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                             ...base,
                             marginLeft: '0',
                             marginRight: '0',
+                            textAlign: 'left',
                             direction: 'rtl',
                             color: 'var(--N000)',
                         }),
@@ -1006,6 +1007,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                                 singleValue: (base, state) => ({
                                     ...base,
                                     direction: 'rtl',
+                                    textAlign: 'left',
                                     color: 'var(--N000)',
                                 }),
                                 input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
@@ -1044,6 +1046,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                         }),
                         singleValue: (base, state) => ({
                             ...base,
+                            textAlign: 'left',
                             color: 'var(--N000)',
                         }),
                         input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),

@@ -1,6 +1,7 @@
 import React from 'react';
 import Select, { components } from 'react-select';
 import { multiSelectStyles } from '../common';
+import { Option } from '../v2/common/ReactSelect.utils';
 import './EnvironmentSelect.scss'
 
 export default function HyperionEnvironmentSelect({ selectEnvironment, environments, selectedEnvironment }) {
@@ -108,6 +109,7 @@ export default function HyperionEnvironmentSelect({ selectEnvironment, environme
             }}
             components={{
                 ClearIndicator: null,
+                Option,
                 ValueContainer: clusterValueContainer,
                 IndicatorSeparator: null,
             }}

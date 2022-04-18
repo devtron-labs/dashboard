@@ -18,6 +18,7 @@ import { useEffectAfterMount, showError } from '../common/helpers/Helpers';
 import ReadmeConfig from './ReadmeConfig';
 import { useParams } from 'react-router';
 import { toast } from 'react-toastify';
+import { Option } from '../v2/common/ReactSelect.utils'
 import CodeEditor from '../CodeEditor/CodeEditor';
 import warningIcon from '../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as ArrowSquareOut } from '../../assets/icons/misc/arrowSquareOut.svg';
@@ -262,6 +263,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                                 value={selectedChart}
                                 components={{
                                     IndicatorSeparator: null,
+                                    Option,
                                 }}
                                 styles={{
                                     control: (base, state) => ({
@@ -312,6 +314,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                             value={selectedChart}
                             components={{
                                 IndicatorSeparator: null,
+                                Option,
                             }}
                             styles={{
                                 control: (base, state) => ({

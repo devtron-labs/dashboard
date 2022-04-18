@@ -5,6 +5,21 @@ import DefaultIcon from '../../../assets/icons/ic-browser.svg'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 
+export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
+    return (base, state) => ({
+        ...base,
+        backgroundColor: state.isSelected ? 'var(--B100)' : state.isFocused ? 'var(--N100)' : 'white',
+        color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
+        textOverflow: 'ellipsis',
+        fontWeight: '500',
+        overflow: 'hidden',
+        textAlign: 'left',
+        whiteSpace: 'nowrap',
+        direction: 'rtl',
+        cursor: 'pointer',
+        ...styleOverrides,
+    })
+}
 export const styles = {
     control: (base, state) => ({
         ...base,
@@ -34,18 +49,11 @@ export const styles = {
 }
 
 export function Option(props) {
-    const { selectOption, data, showTippy } = props
-    const style = { height: '16px', width: '16px', flex: '0 0 16px' }
-    const onClick = (e) => selectOption(data)
-
+    const { selectProps, data, showTippy } = props
+    selectProps.styles.option = getCustomOptionSelectionStyle()
     const getOption = () => {
         return (
-            <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
-                {props.isSelected ? (
-                    <Check onClick={onClick} className="mr-8 icon-dim-16" style={style} />
-                ) : (
-                    <span onClick={onClick} className="mr-8" style={style} />
-                )}
+            <div>
                 <components.Option {...props} />
             </div>
         )
