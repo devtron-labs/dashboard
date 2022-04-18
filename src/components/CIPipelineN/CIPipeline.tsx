@@ -400,7 +400,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                 _formDataErrorObj[activeStageName]['steps'][i][currentStepTypeVariable].outputVariables = []
             }
             const outputVariablesLength =
-                _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables.length
+                _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables?.length
             for (let j = 0; j < outputVariablesLength; j++) {
                 if (_formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name) {
                     _outputVariablesFromPrevSteps.set(
