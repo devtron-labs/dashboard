@@ -91,7 +91,7 @@ function ExternalAppDetail({appId, appName}) {
             .then((appDetailResponse: HelmAppDetailResponse) => {
                 IndexStore.publishAppDetails(_convertToGenericAppDetailModel(appDetailResponse.result));
 
-                if (appDetailResponse.result.appDetail.environmentDetails.clusterId) {
+                if (appDetailResponse.result?.appDetail.environmentDetails.clusterId) {
                     Promise.all([
                         getMonitoringTools(),
                         getExternalLinks(appDetailResponse.result.appDetail.environmentDetails.clusterId),

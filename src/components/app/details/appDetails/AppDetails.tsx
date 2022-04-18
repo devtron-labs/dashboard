@@ -193,8 +193,8 @@ export const Details: React.FC<{
         try {
             const response = await appDetailsAPI(params.appId, params.envId, 25000);
             setAppDetailsResult(response)
-            if (response.clusterId) {
-                Promise.all([getMonitoringTools(), getExternalLinks(response.clusterId)])
+            if (response.result?.clusterId) {
+                Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId)])
                     .then(([monitoringToolsRes, externalLinksRes]) => {
                         setExternalLinksAndTools({
                             externalLinks: externalLinksRes.result || [],

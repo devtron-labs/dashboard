@@ -82,7 +82,7 @@ function RouterComponent({ envType }) {
             }
             IndexStore.publishAppDetails(response.result);
 
-            if (response.result.clusterId) {
+            if (response.result?.clusterId) {
                 Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId)])
                     .then(([monitoringToolsRes, externalLinksRes]) => {
                         setExternalLinksAndTools({
