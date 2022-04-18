@@ -321,14 +321,14 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                 const currentStepTypeVariable =
                     taskData.stepType === PluginType.INLINE ? 'inlineStepDetail' : 'pluginRefStepDetail'
                 taskErrorobj[currentStepTypeVariable].inputVariables = []
-                taskData[currentStepTypeVariable].inputVariables.forEach((element, index) => {
+                taskData[currentStepTypeVariable].inputVariables?.forEach((element, index) => {
                     taskErrorobj[currentStepTypeVariable].inputVariables.push(validationRules.inputVariable(element))
                     taskErrorobj.isValid =
                         taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable].inputVariables[index].isValid
                 })
                 if (taskData.stepType === PluginType.INLINE) {
                     taskErrorobj[currentStepTypeVariable].outputVariables = []
-                    taskData[currentStepTypeVariable].inputVariables.forEach((element, index) => {
+                    taskData[currentStepTypeVariable].inputVariables?.forEach((element, index) => {
                         taskErrorobj[currentStepTypeVariable].outputVariables.push(
                             validationRules.outputVariable(element),
                         )
