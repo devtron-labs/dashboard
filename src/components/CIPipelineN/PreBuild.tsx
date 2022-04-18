@@ -55,7 +55,6 @@ export function PreBuild() {
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
     const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
     const [editorValue, setEditorValue] = useState<string>(YAML.stringify(formData[activeStageName]))
-
     useEffect(() => {
         if (configurationType === ConfigurationType.YAML) {
             setEditorValue(YAML.stringify(formData[activeStageName]))
@@ -208,6 +207,6 @@ export function PreBuild() {
     return configurationType === ConfigurationType.GUI ? (
         renderGUI()
     ) : (
-        <YAMLScriptComponent editorValue={editorValue} handleEditorValueChange={handleEditorValueChange} />
+        <YAMLScriptComponent editorValue={editorValue} handleEditorValueChange={handleEditorValueChange} showSample={true} />
     )
 }

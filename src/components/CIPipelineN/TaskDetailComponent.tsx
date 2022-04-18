@@ -249,6 +249,7 @@ export function TaskDetailComponent() {
                     editorValue={editorValue}
                     handleEditorValueChange={handleEditorValueChange}
                     height="calc(100vh - 320px)"
+                    showSample={true}
                 />
             )}
         </div>
