@@ -296,6 +296,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                         ) : (
                             <CodeEditor
                                 defaultValue={activeTab === 'Compare' && desiredManifest}
+                                cleanData={activeTab === 'Compare'}
                                 diffView={activeTab === 'Compare'}
                                 theme="vs-dark--dt"
                                 height={"100vh"}
