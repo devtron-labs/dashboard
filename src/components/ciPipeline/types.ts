@@ -59,7 +59,37 @@ export enum RefVariableType {
 
 export enum ScriptType {
     SHELL = 'SHELL',
+    DOCKERFILE = 'DOCKERFILE',
     CONTAINERIMAGE = 'CONTAINERIMAGE',
+}
+
+export enum TaskFieldLabel {
+   CONTAINERIMAGEPATH = 'Container image path',
+    COMMAND = 'command',
+    ARGS = 'args',
+    PORTMAPPING = 'Port mapping',
+    MOUNTCODETOCONTAINER = 'Mount code to container',
+    MOUNTDIRECTORYFROMHOST = 'Mount directory from host',
+    OUTPUTVARIABLES = 'Output variables',
+    OUTPUTDIRECTORYPATH = 'Output directory path',
+    SCRIPT = 'Script'
+}
+
+export enum TaskFieldDescription {
+    CONTAINERIMAGEPATH= 'Complete verified public url of the container',
+    COMMAND = 'It contains the commands to execute on this container.',
+    ARGS = 'This is used to give arguments to command.',
+    PORTMAPPING = 'Port container listens on. This can be used to expose ports of this container so they can be called from outside. ',
+    MOUNTCODETOCONTAINER = 'Mounts source code inside the container.',
+    MOUNTDIRECTORYFROMHOST = 'Mount any directory from the host into the container. This can be used to mount code or even output directories.',
+    OUTPUTVARIABLES = 'These variables should be set in the environment variables and can be used as input variables in other scripts.',
+    OUTPUTDIRECTORYPATH = 'Directory in which the script is writing/producing output files (eg. test report, zip files etc)',
+    SCRIPT = 'Shell Script to be executed, it supports base shell'
+}
+
+export enum MountPath {
+    TRUE = 'Yes',
+    FALSE = 'No',
 }
 
 export enum ConditionType {

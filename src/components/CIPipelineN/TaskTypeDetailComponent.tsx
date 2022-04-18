@@ -1,23 +1,12 @@
-import React, { useState, useContext } from 'react'
+import React, { useContext } from 'react'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { FormType, PluginVariableType } from '../ciPipeline/types'
+import { FormType, MountPath, ScriptType, TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import OutputDirectoryPath from './OutputDirectoryPath'
-import YAML from 'yaml'
 import MultiplePort from './MultiplsPort'
 import { ciPipelineContext } from './CIPipeline'
 import Tippy from '@tippyjs/react'
-
-export enum ScriptType {
-    SHELL = 'SHELL',
-    DOCKERFILE = 'DOCKERFILE',
-    CONTAINERIMAGE = 'CONTAINERIMAGE',
-}
-
-enum MountPath {
-    TRUE = 'Yes',
-    FALSE = 'No',
-}
+import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 
 export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: string }) {
     const {
@@ -67,13 +56,10 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
             return (
                 <>
                     <div className="row-container mb-10">
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            content="Shell Script to be executed, it supports base shell"
-                        >
-                            <label className="fw-6 fs-13 cn-7 label-width">Script*</label>
-                        </Tippy>
+                        <TaskFieldTippyDescription
+                            taskField={TaskFieldLabel.CONTAINERIMAGEPATH}
+                            contentDescription={TaskFieldDescription.CONTAINERIMAGEPATH}
+                        />
                         <div className="script-container">
                             <CodeEditor
                                 mode="shell"
@@ -99,13 +85,10 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
             return (
                 <>
                     <div className="row-container mb-10">
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            content="Complete verified public url of the container"
-                        >
-                            <label className="fw-6 fs-13 cn-7 label-width">Container image path *</label>
-                        </Tippy>
+                        <TaskFieldTippyDescription
+                            taskField={TaskFieldLabel.CONTAINERIMAGEPATH}
+                            contentDescription={TaskFieldDescription.CONTAINERIMAGEPATH}
+                        />
                         <input
                             style={{ width: '80% !important' }}
                             className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
@@ -140,23 +123,29 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                         </Tippy>
                     </div>
                     <div className="row-container mb-10">
-                        <label className="fw-6 fs-13 cn-7 label-width">Command</label>{' '}
+                        <TaskFieldTippyDescription
+                            taskField={TaskFieldLabel.COMMAND}
+                            contentDescription={TaskFieldDescription.COMMAND}
+                        />
                         <input
                             style={{ width: '80% !important' }}
                             className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
                             autoComplete="off"
                             placeholder="Eg. “echo”"
                             type="text"
-                            onChange={(e) => handleCommandArgs(e, 'command')}
+                            onChange={(e) => handleCommandArgs(e, TaskFieldLabel.COMMAND)}
                             value={
                                 formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap[0][
-                                    'command'
+                                    TaskFieldLabel.COMMAND
                                 ]
                             }
                         />
                     </div>
                     <div className="row-container mb-10">
-                        <label className="fw-6 fs-13 cn-7 label-width">Args</label>{' '}
+                        <TaskFieldTippyDescription
+                            taskField={TaskFieldLabel.ARGS}
+                            contentDescription={TaskFieldDescription.ARGS}
+                        />
                         <input
                             style={{ width: '80% !important' }}
                             className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
@@ -173,7 +162,10 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                     </div>
                     <MultiplePort />
                     <div className="row-container mb-10">
-                        <label className="fw-6 fs-13 cn-7 label-width">Mount code to container</label>{' '}
+                        <TaskFieldTippyDescription
+                            taskField={TaskFieldLabel.MOUNTCODETOCONTAINER}
+                            contentDescription={TaskFieldDescription.MOUNTCODETOCONTAINER}
+                        />
                         <RadioGroup
                             className="no-border"
                             value={
@@ -190,7 +182,10 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                         </RadioGroup>
                     </div>
                     <div className="row-container mb-10">
-                        <label className="fw-6 fs-13 cn-7 label-width">Mount directory from host</label>{' '}
+                        <TaskFieldTippyDescription
+                            taskField={TaskFieldLabel.MOUNTDIRECTORYFROMHOST}
+                            contentDescription={TaskFieldDescription.MOUNTDIRECTORYFROMHOST}
+                        />
                         <RadioGroup
                             className="no-border"
                             value={

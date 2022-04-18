@@ -1,8 +1,9 @@
 import React, { useContext } from 'react'
-import { FormType } from '../ciPipeline/types'
+import { FormType, TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ciPipelineContext } from './CIPipeline'
+import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 
 enum PortMap {
     PORTONLOCAL = 'portOnLocal',
@@ -50,7 +51,10 @@ function MultiplePort() {
     return (
         <div>
             <div className="row-container mb-10">
-                <label className="fw-6 fs-13 cn-7 label-width">Port mapping</label>{' '}
+                <TaskFieldTippyDescription
+                    taskField={TaskFieldLabel.PORTMAPPING}
+                    contentDescription={TaskFieldDescription.PORTMAPPING}
+                />
                 <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit" onClick={addMultiplePort}>
                     <Add className="add-icon" />
                     Add port

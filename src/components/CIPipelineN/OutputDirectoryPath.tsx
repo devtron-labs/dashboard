@@ -1,9 +1,10 @@
 import React, { useContext } from 'react'
-import { FormType } from '../ciPipeline/types'
+import { FormType, TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ciPipelineContext } from './CIPipeline'
 import Tippy from '@tippyjs/react'
+import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 
 function OutputDirectoryPath() {
     const {
@@ -42,10 +43,10 @@ function OutputDirectoryPath() {
     return (
         <div>
             <div className="row-container mb-10">
-            <Tippy className="default-tt" arrow={false} content='Shell Script to be executed, it supports base shell'>
-                <label className="fw-6 fs-13 cn-7 label-width">Output directory path</label>
-                </Tippy>
-
+                <TaskFieldTippyDescription
+                    taskField={TaskFieldLabel.MOUNTDIRECTORYFROMHOST}
+                    contentDescription={TaskFieldDescription.MOUNTDIRECTORYFROMHOST}
+                />
                 <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit" onClick={addOutputDirectoryPath}>
                     <Add className="add-icon" />
                     Add path
