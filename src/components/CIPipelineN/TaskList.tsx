@@ -30,6 +30,7 @@ export function TaskList() {
         calculateLastStepDetail: (
             isFromAddNewTask: boolean,
             _formData: FormType,
+            activeStageName: string,
             startIndex?: number,
         ) => {
             index: number
@@ -68,7 +69,12 @@ export function TaskList() {
     const handleDrop = (index: number): void => {
         setDragAllowed(false)
         const _formData = { ...formData }
-        calculateLastStepDetail(false, _formData, dragItemStartIndex < index ? dragItemStartIndex : index)
+        calculateLastStepDetail(
+            false,
+            _formData,
+            activeStageName,
+            dragItemStartIndex < index ? dragItemStartIndex : index,
+        )
         validateCurrentTask(index)
         setFormData(_formData)
         setDragItemStartIndex(index)
@@ -80,7 +86,7 @@ export function TaskList() {
         newList.splice(index, 1)
         setSelectedTaskIndex(0)
         _formData[activeStageName].steps = newList
-        calculateLastStepDetail(false, _formData, index)
+        calculateLastStepDetail(false, _formData, activeStageName, index)
         setFormData(_formData)
         const _formDataErrorObj = { ...formDataErrorObj }
         const newErrorList = [...formDataErrorObj[activeStageName].steps]

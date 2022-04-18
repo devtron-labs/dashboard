@@ -365,6 +365,8 @@ function migrateOldData(
                     script: data.script,
                     conditionDetails: [],
                     outputDirectoryPath: [],
+                    inputVariables: [],
+                    outputVariables: [],
                 },
             }
         }),

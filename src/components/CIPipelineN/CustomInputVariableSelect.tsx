@@ -2,8 +2,8 @@ import React, { useState, useEffect, useContext } from 'react'
 import { tempMultiSelectStyles } from './ciPipeline.utils'
 import { RefVariableType, PluginType, FormType, VariableType, RefVariableStageType } from '../ciPipeline/types'
 import { ciPipelineContext } from './CIPipeline'
-import CreatableSelect from 'react-select/creatable';
-import { components } from 'react-select';
+import CreatableSelect from 'react-select/creatable'
+import { components } from 'react-select'
 import { BuildStageVariable } from '../../config'
 
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
@@ -42,18 +42,23 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
 
     useEffect(() => {
         const previousStepVariables = []
-        inputVariablesListFromPrevStep[activeStageName][selectedTaskIndex].forEach((element) => {
-            previousStepVariables.push({ ...element, label: element.name, value: element.name })
-        })
+        if (inputVariablesListFromPrevStep[activeStageName].length > 0) {
+            inputVariablesListFromPrevStep[activeStageName][selectedTaskIndex].forEach((element) => {
+                previousStepVariables.push({ ...element, label: element.name, value: element.name })
+            })
+        }
         if (activeStageName === BuildStageVariable.PostBuild) {
-            const preBuildTaskLength = formData[BuildStageVariable.PreBuild].steps.length
+            const preBuildStageVariables = []
+            const preBuildTaskLength = formData[BuildStageVariable.PreBuild]?.steps?.length
             if (preBuildTaskLength >= 1) {
-                const preBuildStageVariables = []
-                inputVariablesListFromPrevStep[BuildStageVariable.PreBuild][preBuildTaskLength - 1].forEach(
-                    (element) => {
-                        preBuildStageVariables.push({ ...element, label: element.name, value: element.name })
-                    },
-                )
+                if (inputVariablesListFromPrevStep[BuildStageVariable.PreBuild].length > 0) {
+                    inputVariablesListFromPrevStep[BuildStageVariable.PreBuild][preBuildTaskLength - 1].forEach(
+                        (element) => {
+                            preBuildStageVariables.push({ ...element, label: element.name, value: element.name })
+                        },
+                    )
+                }
+
                 const stepTypeVariable =
                     formData[BuildStageVariable.PreBuild].steps[preBuildTaskLength - 1].stepType === PluginType.INLINE
                         ? 'inlineStepDetail'
@@ -78,21 +83,21 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                         })
                     }
                 }
-                setInputVariableOptions([
-                    {
-                        label: 'From Pre-build Stage',
-                        options: preBuildStageVariables,
-                    },
-                    {
-                        label: 'From Post-build Stage',
-                        options: previousStepVariables,
-                    },
-                    {
-                        label: 'Global variables',
-                        options: globalVariables,
-                    },
-                ])
             }
+            setInputVariableOptions([
+                {
+                    label: 'From Pre-build Stage',
+                    options: preBuildStageVariables,
+                },
+                {
+                    label: 'From Post-build Stage',
+                    options: previousStepVariables,
+                },
+                {
+                    label: 'Global variables',
+                    options: globalVariables,
+                },
+            ])
         } else {
             setInputVariableOptions([
                 {
@@ -178,13 +183,16 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             styles={tempMultiSelectStyles}
             components={{
                 MenuList: (props) => {
-                return  <components.MenuList {...props}>
-                <div className="cn-5 pl-12 pt-4 pb-4" style={{ fontStyle: 'italic' }}>
-                    Type to enter a custom value
-                </div>
-                {props.children}
-            </components.MenuList>
-            }}}
+                    return (
+                        <components.MenuList {...props}>
+                            <div className="cn-5 pl-12 pt-4 pb-4" style={{ fontStyle: 'italic' }}>
+                                Type to enter a custom value
+                            </div>
+                            {props.children}
+                        </components.MenuList>
+                    )
+                },
+            }}
         />
     )
 }

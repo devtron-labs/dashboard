@@ -41,6 +41,7 @@ export function TaskDetailComponent() {
         calculateLastStepDetail: (
             isFromAddNewTask: boolean,
             _formData: FormType,
+            activeStageName: string,
             startIndex?: number,
         ) => {
             index: number
@@ -80,7 +81,7 @@ export function TaskDetailComponent() {
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables =
                 pluginData.outputVariables
             if (_form[activeStageName]['steps'].length > selectedTaskIndex) {
-                calculateLastStepDetail(false, _form, selectedTaskIndex)
+                calculateLastStepDetail(false, _form, activeStageName, selectedTaskIndex)
             }
         }
         if (_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables?.length === 0) {
@@ -151,12 +152,12 @@ export function TaskDetailComponent() {
                             onChange={(e) => handleNameChange(e)}
                             value={formData[activeStageName].steps[selectedTaskIndex].name}
                         />
-                        {formDataErrorObj[activeStageName].steps[selectedTaskIndex].name &&
-                            !formDataErrorObj[activeStageName].steps[selectedTaskIndex].name.isValid && (
+                        {formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.name &&
+                            !formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.name.isValid && (
                                 <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
                                     <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
                                     <span>
-                                        {formDataErrorObj[activeStageName].steps[selectedTaskIndex].name.message}
+                                        {formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.name.message}
                                     </span>
                                 </span>
                             )}

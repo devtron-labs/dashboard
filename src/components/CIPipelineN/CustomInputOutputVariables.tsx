@@ -25,6 +25,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         calculateLastStepDetail: (
             isFromAddNewTask: boolean,
             _formData: FormType,
+            activeStageName: string,
             startIndex?: number,
         ) => {
             index: number
@@ -72,7 +73,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const handleBlur = () => {
         if (type === PluginVariableType.OUTPUT) {
             const _formData = { ...formData }
-            calculateLastStepDetail(false, _formData, selectedTaskIndex)
+            calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
             setFormData(_formData)
         }
     }
@@ -81,7 +82,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].splice(index, 1)
         if (type === PluginVariableType.OUTPUT) {
-            calculateLastStepDetail(false, _formData, selectedTaskIndex)
+            calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
         }
         setFormData(_formData)
     }
@@ -105,105 +106,108 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.map(
                 (variable, index) => (
-                    <div className="pl-200 mb-20 flexbox justify-space">
-                        <div className="custom-variable-container w-100">
-                            <Equal className="icon-dim-40 variable-equal-icon" />
+                    <>
+                        <div className="pl-200 mb-20 flexbox justify-space">
+                            <div className="custom-variable-container w-100">
+                                <Equal className="icon-dim-40 variable-equal-icon" />
 
-                            <div className="tp-4 fs-13 fw-4 text-uppercase">
-                                <div className="flexbox">
-                                    <div style={{ width: type === PluginVariableType.OUTPUT ? '80%' : '100%' }}>
-                                        <input
-                                            className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 top-radius"
-                                            type="text"
-                                            placeholder="Variables name"
-                                            value={variable.name}
-                                            name="name"
-                                            onChange={(e) => handleInputOutputValueChange(e, index)}
-                                            onBlur={(e) => handleBlur()}
-                                        />
-                                    </div>
-
-                                    {type === PluginVariableType.OUTPUT && (
-                                        <div style={{ width: '20%' }}>
-                                            <ReactSelect
-                                                defaultValue={selectedFormat}
-                                                tabIndex={1}
-                                                onChange={(selectedValue) => {
-                                                    handleFormatChange(selectedValue, index)
-                                                }}
-                                                options={formatOptions}
-                                                isSearchable={false}
-                                                components={{
-                                                    IndicatorSeparator: null,
-                                                }}
-                                                styles={tempMultiSelectStyles}
+                                <div className="tp-4 fs-13 fw-4 text-uppercase">
+                                    <div className="flexbox">
+                                        <div style={{ width: type === PluginVariableType.OUTPUT ? '80%' : '100%' }}>
+                                            <input
+                                                className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 top-radius"
+                                                type="text"
+                                                placeholder="Variables name"
+                                                value={variable.name}
+                                                name="name"
+                                                onChange={(e) => handleInputOutputValueChange(e, index)}
+                                                onBlur={(e) => handleBlur()}
                                             />
                                         </div>
-                                    )}
-                                </div>{' '}
-                            </div>
-                            {type === PluginVariableType.INPUT && (
-                                <div className="flexbox">
-                                    <div style={{ width: '80%' }}>
-                                        <CustomInputVariableSelect selectedVariableIndex={index} />
-                                    </div>
-                                    <div style={{ width: '20%' }}>
-                                        {variable.refVariableUsed ? (
-                                            <label className="fs-13 fw-4 p-5 bcn-1 w-100">{variable.format}</label>
-                                        ) : (
-                                            <ReactSelect
-                                                defaultValue={selectedFormat}
-                                                tabIndex={1}
-                                                onChange={(selectedValue) => {
-                                                    handleFormatChange(selectedValue, index)
-                                                }}
-                                                options={formatOptions}
-                                                isSearchable={false}
-                                                components={{
-                                                    IndicatorSeparator: null,
-                                                }}
-                                                styles={tempMultiSelectStyles}
-                                            />
+
+                                        {type === PluginVariableType.OUTPUT && (
+                                            <div style={{ width: '20%' }}>
+                                                <ReactSelect
+                                                    defaultValue={selectedFormat}
+                                                    tabIndex={1}
+                                                    onChange={(selectedValue) => {
+                                                        handleFormatChange(selectedValue, index)
+                                                    }}
+                                                    options={formatOptions}
+                                                    isSearchable={false}
+                                                    components={{
+                                                        IndicatorSeparator: null,
+                                                    }}
+                                                    styles={tempMultiSelectStyles}
+                                                />
+                                            </div>
                                         )}
-                                    </div>
+                                    </div>{' '}
                                 </div>
-                            )}
-                            <input
-                                style={{ width: '80% !important' }}
-                                className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 bottom-radius"
-                                autoComplete="off"
-                                placeholder="Description"
-                                type="text"
-                                value={variable.description}
-                                name="description"
-                                onChange={(e) => handleInputOutputValueChange(e, index)}
+                                {type === PluginVariableType.INPUT && (
+                                    <div className="flexbox">
+                                        <div style={{ width: '80%' }}>
+                                            <CustomInputVariableSelect selectedVariableIndex={index} />
+                                        </div>
+                                        <div style={{ width: '20%' }}>
+                                            {variable.refVariableUsed ? (
+                                                <label className="fs-13 fw-4 p-5 bcn-1 w-100">{variable.format}</label>
+                                            ) : (
+                                                <ReactSelect
+                                                    defaultValue={selectedFormat}
+                                                    tabIndex={1}
+                                                    onChange={(selectedValue) => {
+                                                        handleFormatChange(selectedValue, index)
+                                                    }}
+                                                    options={formatOptions}
+                                                    isSearchable={false}
+                                                    components={{
+                                                        IndicatorSeparator: null,
+                                                    }}
+                                                    styles={tempMultiSelectStyles}
+                                                />
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                                <input
+                                    style={{ width: '80% !important' }}
+                                    className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 bottom-radius"
+                                    autoComplete="off"
+                                    placeholder="Description"
+                                    type="text"
+                                    value={variable.description}
+                                    name="description"
+                                    onChange={(e) => handleInputOutputValueChange(e, index)}
+                                />
+                            </div>
+
+                            <Close
+                                className="icon-dim-24 pointer mt-6 ml-6"
+                                onClick={() => {
+                                    deleteInputOutputValue(index)
+                                }}
                             />
                         </div>
-
-                        <Close
-                            className="icon-dim-24 pointer mt-6 ml-6"
-                            onClick={() => {
-                                deleteInputOutputValue(index)
-                            }}
-                        />
-                        {formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail[
-                            VariableFieldType[type]
-                        ][index] &&
-                            !formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail[
+                        <div className="pl-200 mb-20">
+                            {formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.inlineStepDetail[
                                 VariableFieldType[type]
-                            ][index].isValid && (
-                                <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
-                                    <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                    <span>
-                                        {
-                                            formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail[
-                                                VariableFieldType[type]
-                                            ][index].message
-                                        }
+                            ][index] &&
+                                !formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.inlineStepDetail[
+                                    VariableFieldType[type]
+                                ][index].isValid && (
+                                    <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
+                                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                        <span>
+                                            {
+                                                formDataErrorObj[activeStageName].steps[selectedTaskIndex]
+                                                    ?.inlineStepDetail[VariableFieldType[type]][index].message
+                                            }
+                                        </span>
                                     </span>
-                                </span>
-                            )}
-                    </div>
+                                )}
+                        </div>
+                    </>
                 ),
             )}
         </>
