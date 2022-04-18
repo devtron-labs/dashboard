@@ -2,15 +2,9 @@ import React, { useState, useEffect, useContext } from 'react'
 import { tempMultiSelectStyles } from './ciPipeline.utils'
 import { RefVariableType, PluginType, FormType, VariableType, RefVariableStageType } from '../ciPipeline/types'
 import { ciPipelineContext } from './CIPipeline'
-import CreatableSelect from 'react-select/creatable'
-import { components } from 'react-select'
+import CreatableSelect from 'react-select/creatable';
+import { components } from 'react-select';
 import { BuildStageVariable } from '../../config'
-
-export const globalVariable = [
-    { value: 'docker-image-tag', label: 'docker-image-tag' },
-    { value: 'date', label: 'date' },
-    { value: 'time', label: 'time' },
-]
 
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
     const {
@@ -19,6 +13,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         selectedTaskIndex,
         activeStageName,
         inputVariablesListFromPrevStep,
+        globalVariables,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -28,6 +23,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             preBuildStage: Map<string, VariableType>[]
             postBuildStage: Map<string, VariableType>[]
         }
+        globalVariables: { label: string; value: string; format: string }[]
     } = useContext(ciPipelineContext)
     const [selectedOutputVariable, setSelectedOutputVariable] = useState<{
         label: string
@@ -95,22 +91,22 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                     },
                     {
                         label: 'Global variables',
-                        options: globalVariable,
+                        options: globalVariables,
                     },
                 ])
             }
         } else {
-            setInputVariableOptions([
-                {
-                    label: 'From Previous Steps',
-                    options: previousStepVariables,
-                },
-                {
-                    label: 'Global variables',
-                    options: globalVariable,
-                },
-            ])
-        }
+        setInputVariableOptions([
+            {
+                label: 'From Previous Steps',
+                options: previousStepVariables,
+            },
+            {
+                label: 'Global variables',
+                options: globalVariables,
+            },
+        ])
+    }
     }, [inputVariablesListFromPrevStep])
 
     const handleOutputVariableSelector = (selectedValue: {
@@ -119,26 +115,47 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         refVariableStepIndex: number
     }) => {
         setSelectedOutputVariable(selectedValue)
-        const _formData = { ...formData }
         if (selectedValue.refVariableStepIndex) {
             const currentStepTypeVariable =
                 formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
                     ? 'inlineStepDetail'
                     : 'pluginRefStepDetail'
+        const _formData = { ...formData }
+
+                    let _variableDetail
+                    if (selectedValue['refVariableStepIndex']) {
+                        _variableDetail = {
+                            refVariableUsed: true,
+                            refVariableType: RefVariableType.FROM_PREVIOUS_STEP,
+                            refVariableStepIndex: selectedValue['refVariableStepIndex'],
+                            refVariableName: selectedValue.label,
+                            refVariableStage:
+                                activeStageName === BuildStageVariable.PreBuild
+                                    ? RefVariableStageType.PRE_CI
+                                    : RefVariableStageType.POST_CI,
+                            format: selectedValue['format'],
+                        }
+                    } else if (selectedValue['refVariableStepIndex']) {
+                        _variableDetail = {
+                            refVariableUsed: true,
+                            refVariableType: RefVariableType.GLOBAL,
+                            refVariableStepIndex: 0,
+                            refVariableName: selectedValue.label,
+                            format: selectedValue['format'],
+                        }
+                    } else {
+                        _variableDetail = {
+                            value: selectedValue.label,
+                            format: '',
+                        }
+                    }
             _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
                 selectedVariableIndex
             ] = {
                 ..._formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
                     selectedVariableIndex
                 ],
-                refVariableUsed: true,
-                refVariableType: RefVariableType.FROM_PREVIOUS_STEP,
-                refVariableStepIndex: selectedValue.refVariableStepIndex,
-                refVariableName: selectedValue.label,
-                refVariableStage:
-                    activeStageName === BuildStageVariable.PreBuild
-                        ? RefVariableStageType.PRE_CI
-                        : RefVariableStageType.POST_CI,
+                ..._variableDetail,
             }
             setFormData(_formData)
         }
@@ -155,16 +172,13 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             styles={tempMultiSelectStyles}
             components={{
                 MenuList: (props) => {
-                    return (
-                        <components.MenuList {...props}>
-                            <div className="cn-5 pl-12 pt-4 pb-4" style={{ fontStyle: 'italic' }}>
-                                Type to enter a custom value
-                            </div>
-                            {props.children}
-                        </components.MenuList>
-                    )
-                },
-            }}
+                return  <components.MenuList {...props}>
+                <div className="cn-5 pl-12 pt-4 pb-4" style={{ fontStyle: 'italic' }}>
+                    Type to enter a custom value
+                </div>
+                {props.children}
+            </components.MenuList>
+            }}}
         />
     )
 }

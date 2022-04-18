@@ -44,7 +44,7 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
 
     const handleMountChange = (e, key: 'mountCodeToContainer' | 'mountDirectoryFromHost') => {
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = e.target.value
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = e.target.value 
         setFormData(_formData)
     }
 
