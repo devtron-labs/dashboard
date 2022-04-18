@@ -13,11 +13,11 @@ import { getChartValuesURL } from '../charts.helper';
 import { styles, menuList, DropdownIndicator } from '../charts.util';
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import AsyncSelect from 'react-select/async';
-import checkIcon from '../../../assets/icons/appstatus/ic-check.svg'
 import ReactGA from 'react-ga';
 import ReactSelect, { components } from 'react-select';
 import './DeployChart.scss';
 import { ServerErrors } from '../../../modals/commonTypes';
+import { Option } from '../../v2/common/ReactSelect.utils';
 import ForceDeleteDialog from '../../common/dialogs/ForceDeleteDialog';
 import { mainContext } from '../../common/navigation/NavigationRoutes';
 import HyperionEnvironmentSelect from '../../hyperion/EnvironmentSelect';
@@ -399,12 +399,21 @@ const DeployChart: React.FC<DeployChartProps> = ({
     }
 
     function repoChartOptionLabel(props) {
-        const { innerProps, innerRef } = props;
-        const isCurrentlySelected = props.data.chartId === repoChartValue.chartId;
+        const { innerProps, innerRef } = props
+        const isCurrentlySelected = props.data.chartId === repoChartValue.chartId
         return (
-            <div ref={innerRef} {...innerProps} className="repochart-dropdown-wrap">
+            <div
+                ref={innerRef}
+                {...innerProps}
+                className="repochart-dropdown-wrap"
+                style={{
+                    padding: '12px 16px',
+                    cursor: 'pointer',
+                    backgroundColor: isCurrentlySelected ? 'var(--B100)' : props.isFocused ? 'var(--N100)' : 'white',
+                    color: isCurrentlySelected ? 'var(--B500)' : 'var(--N900)',
+                }}
+            >
                 <div className="flex left">
-                    {isCurrentlySelected && <img src={checkIcon} className="select__check-icon"></img>}
                     <span>
                         {props.data.chartRepoName}/{props.data.chartName}
                     </span>
@@ -454,7 +463,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 <ReactSelect
                                     components={{
                                         IndicatorSeparator: null,
-                                        DropdownIndicator
+                                        DropdownIndicator,
+                                        Option
                                     }}
                                     isDisabled={!!isUpdate}
                                     placeholder="Select Project"
@@ -475,7 +485,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 <ReactSelect
                                     components={{
                                         IndicatorSeparator: null,
-                                        DropdownIndicator
+                                        DropdownIndicator,
+                                        Option
                                     }}
                                     isDisabled={!!isUpdate}
                                     placeholder="Select Environment"

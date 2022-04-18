@@ -21,6 +21,7 @@ import ReactSelect from 'react-select';
 import { DropdownIndicator } from '../charts/charts.util';
 import './bulkEdit.css';
 import { multiSelectStyles } from './bulkedit.utils';
+import { Option } from '../../components/v2/common/ReactSelect.utils';
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails';
 import { toast } from 'react-toastify';
 import '../charts/discoverChartDetail/DiscoverChartDetails.scss';
@@ -666,6 +667,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     components={{
                         IndicatorSeparator: null,
                         DropdownIndicator,
+                        Option,
                     }}
                     styles={{
                         ...multiSelectStyles,

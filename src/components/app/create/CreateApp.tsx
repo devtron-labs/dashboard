@@ -24,6 +24,7 @@ import ReactSelect from 'react-select';
 import AsyncSelect from 'react-select/async';
 import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup';
 import { appListOptions, noOptionsMessage } from '../../AppSelector/AppSelectorUtil';
+import { Option } from '../../v2/common/ReactSelect.utils';
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules();
@@ -361,6 +362,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                 styles={this._multiSelectStyles}
                                 components={{
                                     IndicatorSeparator: null,
+                                    Option,
                                 }}
                                 onChange={(selected) => {
                                     this.handleProject(selected.id);
