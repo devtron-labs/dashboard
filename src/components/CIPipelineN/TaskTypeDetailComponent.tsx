@@ -18,18 +18,18 @@ enum MountPath {
     FALSE = 'No',
 }
 
-export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: string }){
+export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: string }) {
     const {
-    selectedTaskIndex,
-    formData,
-    setFormData,
-    activeStageName,
-}: {
-    selectedTaskIndex: number
-    formData: FormType
-    setFormData: React.Dispatch<React.SetStateAction<FormType>>
-    activeStageName: string
-} = useContext(ciPipelineContext)
+        selectedTaskIndex,
+        formData,
+        setFormData,
+        activeStageName,
+    }: {
+        selectedTaskIndex: number
+        formData: FormType
+        setFormData: React.Dispatch<React.SetStateAction<FormType>>
+        activeStageName: string
+    } = useContext(ciPipelineContext)
     const handleContainer = (e: any, key: 'containerImagePath' | 'imagePullSecret'): void => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = e.target.value
@@ -76,18 +76,12 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                                 }
                                 inline
                                 height={300}
-                                value = {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script}
+                                value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script}
                             ></CodeEditor>
                         </div>
                     </div>
                     <hr />
-                    <OutputDirectoryPath
-                        type={PluginVariableType.INPUT}
-                        selectedTaskIndex={selectedTaskIndex}
-                        formData={formData}
-                        setFormData={setFormData}
-                        activeStageName={activeStageName}
-                    />
+                    <OutputDirectoryPath />
                 </>
             )
         }
@@ -155,13 +149,7 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                             }
                         />
                     </div>
-                    <MultiplePort
-                        type={PluginVariableType.INPUT}
-                        selectedTaskIndex={selectedTaskIndex}
-                        formData={formData}
-                        setFormData={setFormData}
-                        activeStageName={activeStageName}
-                    />
+                    <MultiplePort />
                     <div className="row-container mb-10">
                         <label className="fw-6 fs-13 cn-7 label-width">Mount code to container</label>{' '}
                         <RadioGroup
@@ -197,13 +185,7 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                             <RadioGroupItem value={MountPath.TRUE}> {MountPath.TRUE} </RadioGroupItem>
                         </RadioGroup>
                     </div>
-                    <OutputDirectoryPath
-                        type={PluginVariableType.INPUT}
-                        selectedTaskIndex={selectedTaskIndex}
-                        formData={formData}
-                        setFormData={setFormData}
-                        activeStageName={activeStageName}
-                    />
+                    <OutputDirectoryPath />
                 </>
             )
         }

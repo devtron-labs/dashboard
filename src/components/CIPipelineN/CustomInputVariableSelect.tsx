@@ -28,11 +28,9 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
     const [selectedOutputVariable, setSelectedOutputVariable] = useState<{
         label: string
         value: string
-        refVariableStepIndex: number
     }>({
         label: '',
         value: '',
-        refVariableStepIndex: 0,
     })
 
     const [inputVariableOptions, setInputVariableOptions] = useState<
@@ -96,69 +94,77 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 ])
             }
         } else {
-        setInputVariableOptions([
-            {
-                label: 'From Previous Steps',
-                options: previousStepVariables,
-            },
-            {
-                label: 'Global variables',
-                options: globalVariables,
-            },
-        ])
-    }
+            setInputVariableOptions([
+                {
+                    label: 'From Previous Steps',
+                    options: previousStepVariables,
+                },
+                {
+                    label: 'Global variables',
+                    options: globalVariables,
+                },
+            ])
+        }
+        setSelectedVariableValue()
     }, [inputVariablesListFromPrevStep])
 
-    const handleOutputVariableSelector = (selectedValue: {
-        label: string
-        value: string
-        refVariableStepIndex: number
-    }) => {
+    const handleOutputVariableSelector = (selectedValue: { label: string; value: string }) => {
         setSelectedOutputVariable(selectedValue)
-        if (selectedValue.refVariableStepIndex) {
-            const currentStepTypeVariable =
+        const currentStepTypeVariable =
+            formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
+                ? 'inlineStepDetail'
+                : 'pluginRefStepDetail'
+        const _formData = { ...formData }
+        let _variableDetail
+        if (selectedValue['refVariableStepIndex']) {
+            _variableDetail = {
+                refVariableUsed: true,
+                refVariableType: RefVariableType.FROM_PREVIOUS_STEP,
+                refVariableStepIndex: selectedValue['refVariableStepIndex'],
+                refVariableName: selectedValue.label,
+                refVariableStage:
+                    activeStageName === BuildStageVariable.PreBuild
+                        ? RefVariableStageType.PRE_CI
+                        : RefVariableStageType.POST_CI,
+                format: selectedValue['format'],
+            }
+        } else if (selectedValue['refVariableStepIndex']) {
+            _variableDetail = {
+                refVariableUsed: true,
+                refVariableType: RefVariableType.GLOBAL,
+                refVariableStepIndex: 0,
+                refVariableName: selectedValue.label,
+                format: selectedValue['format'],
+            }
+        } else {
+            _variableDetail = {
+                value: selectedValue.label,
+                format: '',
+            }
+        }
+        _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
+            selectedVariableIndex
+        ] = {
+            ..._formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
+                selectedVariableIndex
+            ],
+            ..._variableDetail,
+        }
+        setFormData(_formData)
+    }
+
+    const setSelectedVariableValue = () => {
+        const selectedVariable =
+            formData[activeStageName].steps[selectedTaskIndex][
                 formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
                     ? 'inlineStepDetail'
                     : 'pluginRefStepDetail'
-        const _formData = { ...formData }
-
-                    let _variableDetail
-                    if (selectedValue['refVariableStepIndex']) {
-                        _variableDetail = {
-                            refVariableUsed: true,
-                            refVariableType: RefVariableType.FROM_PREVIOUS_STEP,
-                            refVariableStepIndex: selectedValue['refVariableStepIndex'],
-                            refVariableName: selectedValue.label,
-                            refVariableStage:
-                                activeStageName === BuildStageVariable.PreBuild
-                                    ? RefVariableStageType.PRE_CI
-                                    : RefVariableStageType.POST_CI,
-                            format: selectedValue['format'],
-                        }
-                    } else if (selectedValue['refVariableStepIndex']) {
-                        _variableDetail = {
-                            refVariableUsed: true,
-                            refVariableType: RefVariableType.GLOBAL,
-                            refVariableStepIndex: 0,
-                            refVariableName: selectedValue.label,
-                            format: selectedValue['format'],
-                        }
-                    } else {
-                        _variableDetail = {
-                            value: selectedValue.label,
-                            format: '',
-                        }
-                    }
-            _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
-                selectedVariableIndex
-            ] = {
-                ..._formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
-                    selectedVariableIndex
-                ],
-                ..._variableDetail,
-            }
-            setFormData(_formData)
-        }
+            ].inputVariables[selectedVariableIndex]
+        const selectedValueLabel =
+            selectedVariable.refVariableType === RefVariableType.NEW
+                ? selectedVariable.value
+                : selectedVariable.refVariableName
+        setSelectedOutputVariable({ ...selectedVariable, label: selectedValueLabel, value: selectedValueLabel })
     }
 
     return (

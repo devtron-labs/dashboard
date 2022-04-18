@@ -383,14 +383,15 @@
     grid-template-columns: 200px 100px auto;
 }
 
-.custom-output-variable-container {
+.custom-variable-container {
     display: grid;
-    grid-template-columns: auto 30px;
+    position: relative;
 }
 
-.custom-input-variable-container {
-    display: grid;
-    grid-template-columns: auto 28px auto 30px;
+.variable-equal-icon {
+    position: absolute;
+    left: -37px;
+    top: 16px;
 }
 
 .condition-container {

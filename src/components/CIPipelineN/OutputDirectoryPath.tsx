@@ -1,26 +1,25 @@
-import React from 'react'
-import { FormType, PluginVariableType, VariableFieldType } from '../ciPipeline/types'
+import React, { useContext } from 'react'
+import { FormType } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { ciPipelineContext } from './CIPipeline'
 
-function OutputDirectoryPath({
-    type,
-    selectedTaskIndex,
-    formData,
-    setFormData,
-    activeStageName,
-}: {
-    type: PluginVariableType
-    selectedTaskIndex: number
-    formData: FormType
-    setFormData: React.Dispatch<React.SetStateAction<FormType>>
-    activeStageName: string
-}) {
-
+function OutputDirectoryPath() {
+    const {
+        selectedTaskIndex,
+        formData,
+        setFormData,
+        activeStageName,
+    }: {
+        selectedTaskIndex: number
+        formData: FormType
+        setFormData: React.Dispatch<React.SetStateAction<FormType>>
+        activeStageName: string
+    } = useContext(ciPipelineContext)
     const addOutputDirectoryPath = (): void => {
         const _formData = { ...formData }
 
-        if(!_formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath){
+        if (!_formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath) {
             _formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath = []
         }
         _formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath.push('')
@@ -38,7 +37,7 @@ function OutputDirectoryPath({
         _formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath.splice(index, 1)
         setFormData(_formData)
     }
-    
+
     return (
         <div>
             <div className="row-container mb-10">
@@ -50,7 +49,7 @@ function OutputDirectoryPath({
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath?.map((elm, index) => {
                 return (
-                    <div className='custom-script__output-directory pl-200 pb-20'>
+                    <div className="custom-script__output-directory pl-200 pb-20">
                         {' '}
                         <input
                             className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
@@ -58,7 +57,7 @@ function OutputDirectoryPath({
                             placeholder="Enter directory path"
                             type="text"
                             value={elm}
-                            onChange={(e) =>handleStoreArtifact(e, index)}
+                            onChange={(e) => handleStoreArtifact(e, index)}
                         />
                         <Close
                             className="icon-dim-24 pointer mt-6 ml-6"

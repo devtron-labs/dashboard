@@ -1,16 +1,13 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { ReactComponent as Equal } from '../../assets/icons/ic-variable-equal.svg'
 import { FormType, PluginVariableType, RefVariableType, VariableFieldType } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-
-export const globalVariable = [
-    { value: 'docker-image-tag', label: 'docker-image-tag' },
-    { value: 'date', label: 'date' },
-    { value: 'time', label: 'time' },
-]
+import ReactSelect from 'react-select'
+import { tempMultiSelectStyles } from './ciPipeline.utils'
 
 function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const {
@@ -34,6 +31,11 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         }
         formDataErrorObj: object
     } = useContext(ciPipelineContext)
+    const formatOptions: { label: string; value: string }[] = ['string', 'boolean', 'number', 'date'].map((format) => ({
+        label: format,
+        value: format,
+    }))
+    const [selectedFormat, setSelectedFormat] = useState<{ label: string; value: string }>(formatOptions[0])
     const addVariable = (): void => {
         const _formData = { ...formData }
         const id =
@@ -84,6 +86,14 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         setFormData(_formData)
     }
 
+    const handleFormatChange = (selectedValue: { label: string; value: string }, index: number): void => {
+        setSelectedFormat(selectedValue)
+        const _formData = { ...formData }
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]][index].format =
+            selectedValue.label
+        setFormData(_formData)
+    }
+
     return (
         <>
             <div className="row-container mb-8">
@@ -95,48 +105,86 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.map(
                 (variable, index) => (
-                    <div className="pl-200 mb-20">
-                        <div
-                            className={
-                                type === PluginVariableType.INPUT
-                                    ? 'custom-input-variable-container'
-                                    : 'custom-output-variable-container'
-                            }
-                        >
+                    <div className="pl-200 mb-20 flexbox justify-space">
+                        <div className="custom-variable-container w-100">
+                            <Equal className="icon-dim-40 variable-equal-icon" />
+
                             <div className="tp-4 fs-13 fw-4 text-uppercase">
-                                <input
-                                    className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
-                                    type="text"
-                                    placeholder="Variables name"
-                                    value={variable.name}
-                                    name="name"
-                                    onChange={(e) => handleInputOutputValueChange(e, index)}
-                                    onBlur={(e) => handleBlur()}
-                                />
+                                <div className="flexbox">
+                                    <div style={{ width: type === PluginVariableType.OUTPUT ? '80%' : '100%' }}>
+                                        <input
+                                            className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 top-radius"
+                                            type="text"
+                                            placeholder="Variables name"
+                                            value={variable.name}
+                                            name="name"
+                                            onChange={(e) => handleInputOutputValueChange(e, index)}
+                                            onBlur={(e) => handleBlur()}
+                                        />
+                                    </div>
+
+                                    {type === PluginVariableType.OUTPUT && (
+                                        <div style={{ width: '20%' }}>
+                                            <ReactSelect
+                                                defaultValue={selectedFormat}
+                                                tabIndex={1}
+                                                onChange={(selectedValue) => {
+                                                    handleFormatChange(selectedValue, index)
+                                                }}
+                                                options={formatOptions}
+                                                isSearchable={false}
+                                                components={{
+                                                    IndicatorSeparator: null,
+                                                }}
+                                                styles={tempMultiSelectStyles}
+                                            />
+                                        </div>
+                                    )}
+                                </div>{' '}
                             </div>
                             {type === PluginVariableType.INPUT && (
-                                <>
-                                    <div className="tp-4 en-2 bw-1 fs-13 fw-4 text-uppercase flex">=</div>
-                                    <CustomInputVariableSelect selectedVariableIndex={index} />
-                                </>
+                                <div className="flexbox">
+                                    <div style={{ width: '80%' }}>
+                                        <CustomInputVariableSelect selectedVariableIndex={index} />
+                                    </div>
+                                    <div style={{ width: '20%' }}>
+                                        {variable.refVariableUsed ? (
+                                            <label className="fs-13 fw-4 p-5 bcn-1 w-100">{variable.format}</label>
+                                        ) : (
+                                            <ReactSelect
+                                                defaultValue={selectedFormat}
+                                                tabIndex={1}
+                                                onChange={(selectedValue) => {
+                                                    handleFormatChange(selectedValue, index)
+                                                }}
+                                                options={formatOptions}
+                                                isSearchable={false}
+                                                components={{
+                                                    IndicatorSeparator: null,
+                                                }}
+                                                styles={tempMultiSelectStyles}
+                                            />
+                                        )}
+                                    </div>
+                                </div>
                             )}
-                            <Close
-                                className="icon-dim-24 pointer mt-6 ml-6"
-                                onClick={() => {
-                                    deleteInputOutputValue(index)
-                                }}
+                            <input
+                                style={{ width: '80% !important' }}
+                                className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 bottom-radius"
+                                autoComplete="off"
+                                placeholder="Description"
+                                type="text"
+                                value={variable.description}
+                                name="description"
+                                onChange={(e) => handleInputOutputValueChange(e, index)}
                             />
                         </div>
 
-                        <input
-                            style={{ width: '80% !important' }}
-                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
-                            autoComplete="off"
-                            placeholder="Description"
-                            type="text"
-                            value={variable.description}
-                            name="description"
-                            onChange={(e) => handleInputOutputValueChange(e, index)}
+                        <Close
+                            className="icon-dim-24 pointer mt-6 ml-6"
+                            onClick={() => {
+                                deleteInputOutputValue(index)
+                            }}
                         />
                         {formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail[
                             VariableFieldType[type]

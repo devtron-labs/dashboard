@@ -5,6 +5,7 @@ import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation, useHist
 import { BuildStageVariable, BuildTabText, TriggerType, ViewType } from '../../config'
 import {
     deleteCIPipeline,
+    getGlobalVariable,
     getInitData,
     getInitDataWithCIPipeline,
     saveCIPipeline,
@@ -62,6 +63,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0)
+    const [globalVariables, setGlobalVariables] = useState<{ label: string; value: string; format: string }[]>([])
     const [inputVariablesListFromPrevStep, setInputVariablesListFromPrevStep] = useState<{
         preBuildStage: Map<string, VariableType>[]
         postBuildStage: Map<string, VariableType>[]
@@ -138,6 +140,22 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                     showError(error)
                 })
         }
+    }, [])
+    useEffect(() => {
+        getGlobalVariable(Number(appId))
+            .then((response) => {
+                const _globalVariableOptions = response.result.map((variable) => {
+                    variable.label = variable.name
+                    variable.value = variable.name
+                    variable.format = 'string'
+                    delete variable.name
+                    return variable
+                })
+                setGlobalVariables(_globalVariableOptions || [])
+            })
+            .catch((error: ServerErrors) => {
+                showError(error)
+            })
     }, [])
 
     const deletePipeline = (): void => {
@@ -437,6 +455,25 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         setSelectedTaskIndex(_formData[activeStageName].steps.length - 1)
     }
 
+    const getNavLink = (toLink: string, stageName: string) => {
+        return (
+            <li className="tab-list__tab">
+                <NavLink
+                    replace
+                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
+                    activeClassName="active"
+                    to={toLink}
+                    onClick={() => {
+                        validateStage(activeStageName)
+                    }}
+                >
+                    {BuildTabText[stageName]}
+                    {!formDataErrorObj[stageName].isValid && <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-3" />}
+                </NavLink>
+            </li>
+        )
+    }
+
     return (
         <VisibleModal className="">
             {' '}
@@ -459,58 +496,9 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                 </div>
                 {isAdvanced && (
                     <ul className="ml-20 tab-list w-90">
-                        {isAdvanced && (
-                            <li className="tab-list__tab">
-                                <NavLink
-                                    replace
-                                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
-                                    activeClassName="active"
-                                    to={`pre-build`}
-                                    onClick={() => {
-                                        validateStage(activeStageName)
-                                    }}
-                                >
-                                    {BuildTabText[BuildStageVariable.PreBuild]}
-                                    {!formDataErrorObj.preBuildStage.isValid && (
-                                        <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-3" />
-                                    )}
-                                </NavLink>
-                            </li>
-                        )}
-                        <li className="tab-list__tab">
-                            <NavLink
-                                replace
-                                className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
-                                activeClassName="active"
-                                to={`build`}
-                                onClick={() => {
-                                    validateStage(activeStageName)
-                                }}
-                            >
-                                {BuildTabText[BuildStageVariable.Build]}
-                                {!formDataErrorObj.buildStage.isValid && (
-                                    <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-3" />
-                                )}
-                            </NavLink>
-                        </li>
-                        {isAdvanced && (
-                            <li className="tab-list__tab">
-                                <NavLink
-                                    replace
-                                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
-                                    activeClassName="active"
-                                    to={`post-build`}
-                                    onClick={() => {
-                                        validateStage(activeStageName)
-                                    }}
-                                >
-                                    {BuildTabText[BuildStageVariable.PostBuild]}
-                                    {!formDataErrorObj.postBuildStage.isValid && (
-                                        <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-3" />
-                                    )}
-                                </NavLink>
-                            </li>
-                        )}
+                        {isAdvanced && getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
+                        {getNavLink(`build`, BuildStageVariable.Build)}
+                        {isAdvanced && getNavLink(`post-build`, BuildStageVariable.PostBuild)}
                     </ul>
                 )}
                 <hr className="divider m-0" />
@@ -532,6 +520,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         setFormDataErrorObj,
                         validateTask,
                         validateStage,
+                        globalVariables,
                     }}
                 >
                     <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''}`}>

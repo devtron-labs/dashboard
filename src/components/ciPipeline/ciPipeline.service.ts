@@ -499,3 +499,7 @@ export function getPluginsData(appId: number): Promise<any> {
 export function getPluginDetail(pluginID: number, appId: number): Promise<any> {
     return get(`${Routes.PLUGIN_DETAIL}/${pluginID}?appId=${appId}`)
 }
+
+export function getGlobalVariable(appId: number): Promise<any> {
+    return get(`${Routes.GLOBAL_VARIABLES}?appId=${appId}`)
+}

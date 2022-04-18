@@ -4,6 +4,8 @@ export const tempMultiSelectStyles = {
         border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
         boxShadow: 'none',
         minHeight: 'auto',
+        borderRadius: 'none',
+        height: '30px',
     }),
     singleValue: (base, state) => ({
         ...base,

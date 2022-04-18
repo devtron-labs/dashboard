@@ -90,7 +90,7 @@ export interface VariableType {
 
 interface CommandArgsMap {
     command: string
-    args: [string]
+    args: string[]
 }
 
 export interface PortMap {
