@@ -366,7 +366,10 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         startIndex?: number,
     ): { index: number } => {
         const _formDataErrorObj = { ...formDataErrorObj }
-        const stepsLength = _formData[activeStageName].steps.length
+        if (!_formData[activeStageName].steps) {
+            _formData[activeStageName].steps = []
+        }
+        const stepsLength = _formData[activeStageName].steps?.length
         let index = 0
         let _outputVariablesFromPrevSteps: Map<string, VariableType> = new Map(),
             _inputVariablesListPerTask: Map<string, VariableType>[] = []
