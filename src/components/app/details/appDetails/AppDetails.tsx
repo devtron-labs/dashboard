@@ -193,25 +193,29 @@ export const Details: React.FC<{
         try {
             const response = await appDetailsAPI(params.appId, params.envId, 25000);
             setAppDetailsResult(response)
-            Promise.all([getMonitoringTools(), getExternalLinks(response.clusterId)])
-                .then(([monitoringToolsRes, externalLinksRes]) => {
-                    setExternalLinksAndTools({
-                        externalLinks:  externalLinksRes.result || [],
-                        monitoringTools:
-                            monitoringToolsRes.result
-                                ?.map((tool) => ({
-                                    label: tool.name,
-                                    value: tool.id,
-                                    icon: tool.icon,
-                                }))
-                                .sort(sortOptionsByValue) || [],
+            if (response.clusterId) {
+                Promise.all([getMonitoringTools(), getExternalLinks(response.clusterId)])
+                    .then(([monitoringToolsRes, externalLinksRes]) => {
+                        setExternalLinksAndTools({
+                            externalLinks: externalLinksRes.result || [],
+                            monitoringTools:
+                                monitoringToolsRes.result
+                                    ?.map((tool) => ({
+                                        label: tool.name,
+                                        value: tool.id,
+                                        icon: tool.icon,
+                                    }))
+                                    .sort(sortOptionsByValue) || [],
+                        })
+                        setAppDetailsLoading(false)
                     })
-                    setAppDetailsLoading(false)
-                })
-                .catch((e) => {
-                    setExternalLinksAndTools(externalLinksAndTools)
-                    setAppDetailsLoading(false)
-                })
+                    .catch((e) => {
+                        setExternalLinksAndTools(externalLinksAndTools)
+                        setAppDetailsLoading(false)
+                    })
+            } else {
+                setAppDetailsLoading(false)
+            }
         } catch (error) {
             if (!appDetailsResult) {
                 setAppDetailsError(error);

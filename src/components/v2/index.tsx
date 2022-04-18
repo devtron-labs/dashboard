@@ -82,25 +82,30 @@ function RouterComponent({ envType }) {
             }
             IndexStore.publishAppDetails(response.result);
 
-            Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId)])
-                .then(([monitoringToolsRes, externalLinksRes]) => {
-                    setExternalLinksAndTools({
-                        externalLinks:  externalLinksRes.result || [],
-                        monitoringTools:
-                            monitoringToolsRes.result
-                                ?.map((tool) => ({
-                                    label: tool.name,
-                                    value: tool.id,
-                                    icon: tool.icon,
-                                }))
-                                .sort(sortOptionsByValue) || [],
+            if (response.result.clusterId) {
+                Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId)])
+                    .then(([monitoringToolsRes, externalLinksRes]) => {
+                        setExternalLinksAndTools({
+                            externalLinks: externalLinksRes.result || [],
+                            monitoringTools:
+                                monitoringToolsRes.result
+                                    ?.map((tool) => ({
+                                        label: tool.name,
+                                        value: tool.id,
+                                        icon: tool.icon,
+                                    }))
+                                    .sort(sortOptionsByValue) || [],
+                        })
+                        setIsLoading(false)
                     })
-                    setIsLoading(false);
-                })
-                .catch((e) => {
-                    setExternalLinksAndTools(externalLinksAndTools)
-                    setIsLoading(false);
-                })
+                    .catch((e) => {
+                        setExternalLinksAndTools(externalLinksAndTools)
+                        setIsLoading(false)
+                    })   
+            } else {
+                setIsLoading(false)
+            }
+
             setErrorResponseCode(undefined);
         } catch (e: any) {
             showError(e);

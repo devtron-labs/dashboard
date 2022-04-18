@@ -168,6 +168,10 @@ a:focus {
     cursor: pointer;
 }
 
+.cursor-not-allowed {
+    cursor: not-allowed !important;
+}
+
 .lowercase {
     text-transform: lowercase;
 }

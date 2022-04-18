@@ -91,27 +91,35 @@ function ExternalAppDetail({appId, appName}) {
             .then((appDetailResponse: HelmAppDetailResponse) => {
                 IndexStore.publishAppDetails(_convertToGenericAppDetailModel(appDetailResponse.result));
 
-                Promise.all([getMonitoringTools(), getExternalLinks(appDetailResponse.result.appDetail.environmentDetails.clusterId)])
-                .then(([monitoringToolsRes, externalLinksRes]) => {
-                    setExternalLinksAndTools({
-                        externalLinks:  externalLinksRes.result || [],
-                        monitoringTools:
-                            monitoringToolsRes.result
-                                ?.map((tool) => ({
-                                    label: tool.name,
-                                    value: tool.id,
-                                    icon: tool.icon,
-                                }))
-                                .sort(sortOptionsByValue) || [],
-                    })
-                    setIsLoading(false);
-                    isAPICallInProgress = false;
-                })
-                .catch((e) => {
-                    setExternalLinksAndTools(externalLinksAndTools)
-                    setIsLoading(false);
-                    isAPICallInProgress = false;
-                })
+                if (appDetailResponse.result.appDetail.environmentDetails.clusterId) {
+                    Promise.all([
+                        getMonitoringTools(),
+                        getExternalLinks(appDetailResponse.result.appDetail.environmentDetails.clusterId),
+                    ])
+                        .then(([monitoringToolsRes, externalLinksRes]) => {
+                            setExternalLinksAndTools({
+                                externalLinks: externalLinksRes.result || [],
+                                monitoringTools:
+                                    monitoringToolsRes.result
+                                        ?.map((tool) => ({
+                                            label: tool.name,
+                                            value: tool.id,
+                                            icon: tool.icon,
+                                        }))
+                                        .sort(sortOptionsByValue) || [],
+                            })
+                            setIsLoading(false)
+                            isAPICallInProgress = false
+                        })
+                        .catch((e) => {
+                            setExternalLinksAndTools(externalLinksAndTools)
+                            setIsLoading(false)
+                            isAPICallInProgress = false
+                        })
+                } else {
+                    setIsLoading(false)
+                    isAPICallInProgress = false
+                }
 
                 setErrorResponseCode(undefined);
             })

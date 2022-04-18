@@ -13,7 +13,7 @@ import {
 } from './ExternalLinks.component'
 import { useHistory, useLocation } from 'react-router-dom'
 import './externalLinks.scss'
-import { deleteExternalLink, getExternalLinks, getMonitoringTools } from './ExternalLinks.service'
+import { getExternalLinks, getMonitoringTools } from './ExternalLinks.service'
 import { ExternalLink, OptionTypeWithIcon } from './ExternalLinks.type'
 import { getClusterListMin } from '../../services/service'
 import { OptionType } from '../app/types'
@@ -214,7 +214,7 @@ function ExternalLinks() {
                                 <div className="external-links__cell--tool__name ellipsis-right mr-16">{link.name}</div>
                                 <div className="external-links__cell--cluster mr-16">{getClusterLabel(link)}</div>
                                 <div className="external-links__cell--url__template ellipsis-right">{link.url}</div>
-                                <div className="external-link-actions ml-16">
+                                <div className="external-link-actions">
                                     <Edit
                                         className="icon-dim-20 cursor mr-16"
                                         onClick={() => {

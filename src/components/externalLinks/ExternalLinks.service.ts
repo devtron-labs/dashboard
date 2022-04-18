@@ -12,7 +12,7 @@ export const getMonitoringTools = (): Promise<MonitoringToolResponse> => {
 }
 
 export const getExternalLinks = (clusterId?: number): Promise<ExternalLinkResponse> => {
-    return get(`${Routes.EXTERNAL_LINKS_API}${clusterId ? '?clusterId=${clusterId}' : ''}`)
+    return get(`${Routes.EXTERNAL_LINKS_API}${clusterId ? `?clusterId=${clusterId}` : ''}`)
 }
 
 export const saveExternalLinks = (request: ExternalLink[]): Promise<ExternalLinkUpdateResponse> => {

@@ -43,7 +43,6 @@ export const ClusterFilter = ({
     history,
 }: ClusterFilterType): JSX.Element => {
     const [selectedCluster, setSelectedCluster] = useState<MultiValue<OptionType>>([])
-    const [isMenuOpen, setMenuOpen] = useState(false)
 
     // To update the dropdown selections on query param value change or page reload
     useEffect(() => {
@@ -59,7 +58,6 @@ export const ClusterFilter = ({
     }, [clusters, queryParams.get('clusters')])
 
     const handleFilterQueryChanges = (): void => {
-        setMenuOpen(false)
         setAppliedClusters(selectedCluster)
 
         if (selectedCluster.length > 0) {
@@ -74,35 +72,25 @@ export const ClusterFilter = ({
         history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
     }
 
-    const handleMenuState = (): void => {
-        setMenuOpen(!isMenuOpen)
-    }
-
     const handleSelectedFilters = (selected): void => {
         setSelectedCluster(selected)
     }
 
     const handleCloseFilter = (): void => {
-        handleMenuState()
         setSelectedCluster(appliedClusters)
     }
 
     return (
         <div className="filters-wrapper">
             <Select
-                menuIsOpen={isMenuOpen}
                 placeholder="Cluster : All"
                 name="cluster"
                 value={selectedCluster}
                 options={clusters}
                 onChange={handleSelectedFilters}
-                isClearable={false}
                 isMulti={true}
-                isSearchable={isMenuOpen}
                 closeMenuOnSelect={false}
                 hideSelectedOptions={false}
-                blurInputOnSelect={false}
-                onMenuOpen={handleMenuState}
                 onMenuClose={handleCloseFilter}
                 components={{
                     Option,
@@ -128,6 +116,10 @@ export const ClusterFilter = ({
                         padding: '10px 12px',
                         backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
                         color: 'var(--N900)',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        cursor: 'pointer',
                     }),
                     control: (base, state) => ({
                         ...base,
@@ -346,7 +338,6 @@ const ConfigureLinkAction = ({
                 <div className="monitoring-tool mr-8">
                     <span>Monitoring Tool*</span>
                     <Select
-                        key={`monitoring-tool-${index}`}
                         placeholder="Select tool"
                         name={`monitoring-tool-${index}`}
                         value={link.tool}
@@ -381,6 +372,10 @@ const ConfigureLinkAction = ({
                                 padding: '10px 12px',
                                 backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
                                 color: 'var(--N900)',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                cursor: 'pointer',
                             }),
                             control: (base, state) => ({
                                 ...base,
@@ -422,7 +417,6 @@ const ConfigureLinkAction = ({
                 <div className="link-clusters mr-12">
                     <span>Clusters*</span>
                     <Select
-                        key={`link-clusters-${index}`}
                         placeholder="Select clusters"
                         name={`link-clusters-${index}`}
                         value={selectedClusters}
@@ -451,6 +445,7 @@ const ConfigureLinkAction = ({
                             }),
                             menuList: (base, state) => ({
                                 ...base,
+                                width: '100%',
                                 paddingTop: 0,
                                 paddingBottom: 0,
                             }),
@@ -459,6 +454,10 @@ const ConfigureLinkAction = ({
                                 padding: '10px 12px',
                                 backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
                                 color: 'var(--N900)',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                cursor: 'pointer',
                             }),
                             control: (base, state) => ({
                                 ...base,
@@ -517,9 +516,9 @@ export const AddExternalLinkDialog = ({
         if (selectedLink) {
             const monitoringTool = monitoringTools.find((tool) => tool.value === selectedLink.monitoringToolId)
             const selectedClusters =
-                selectedLink.clusterIds[0] === '*'
+                selectedLink.clusterIds.length === 0
                     ? clusters
-                    : clusters.filter((cluster) => selectedLink.clusterIds.includes(cluster.value))
+                    : clusters.filter((cluster) => selectedLink.clusterIds.includes(+cluster.value))
 
             setLinksData([
                 {
@@ -565,9 +564,7 @@ export const AddExternalLinkDialog = ({
                 break
             case 'onClusterSelection':
                 const _selectedOption = value as MultiValue<OptionType>
-                const _selectedClusterIds = _selectedOption.map((option) => option.value)
-                const selectedOptionLen = _selectedOption.length
-                const areAllOptionsSelected = _selectedClusterIds.indexOf('*') !== -1
+                const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '*') !== -1
                 const areAllOptionsAlredySeleted =
                     Array.isArray(linksData[key].clusters) && linksData[key].clusters[0]?.value === '*'
 
@@ -575,10 +572,11 @@ export const AddExternalLinkDialog = ({
                     linksData[key].clusters = [{ label: 'All clusters', value: '*' }]
                 } else if (!areAllOptionsSelected && areAllOptionsAlredySeleted) {
                     linksData[key].clusters = []
-                } else if (areAllOptionsSelected && selectedOptionLen !== clusters.length) {
+                } else if (areAllOptionsSelected && _selectedOption.length !== clusters.length) {
                     linksData[key].clusters = _selectedOption.filter((option) => option.value !== '*')
+                } else if (!areAllOptionsSelected && _selectedOption.length === clusters.length - 1) {
+                    linksData[key].clusters = [{ label: 'All clusters', value: '*' }]
                 } else {
-                    // if (!isAllOptionSelected && linksData[key].clusters[0].value === '*' && selectedOptionLen !== clusters.length) {
                     linksData[key].clusters = _selectedOption
                 }
                 break
@@ -610,7 +608,7 @@ export const AddExternalLinkDialog = ({
                 {linksData &&
                     linksData.map((link, idx) => {
                         return (
-                            <Fragment key={`ConfigureLinkAction-${link.name}`}>
+                            <Fragment key={`ConfigureLinkAction-${idx}`}>
                                 <ConfigureLinkAction
                                     index={idx}
                                     link={link}
@@ -750,22 +748,23 @@ export const AddExternalLinkDialog = ({
 
             const { result } = await getExternalLinks()
             setExternalLinks(result || [])
+            setSavingLinks(false)
+            handleDialogVisibility()
         } catch (e) {
             showError(e)
-        } finally {
             setSavingLinks(false)
             handleDialogVisibility()
         }
     }
 
     return (
-        <VisibleModal className="add-external-link-dialog" onEscape={handleDialogVisibility}>
+        <VisibleModal className="add-external-link-dialog" {...(!savingLinks && { onEscape: handleDialogVisibility })}>
             <div className="modal__body">
                 <div className="modal__header">
                     <h3 className="modal__title">{selectedLink ? 'Update link' : 'Add link'}</h3>
                     <button
                         type="button"
-                        className="transparent"
+                        className={`transparent ${savingLinks ? 'cursor-not-allowed' : 'cursor'}`}
                         onClick={handleDialogVisibility}
                         disabled={savingLinks}
                     >
@@ -934,10 +933,10 @@ export const AppLevelExternalLinks = ({
         }
     }, [externalLinks, monitoringTools])
 
-    const getExternalLinkChip = (linkOption: OptionTypeWithIcon) => {
+    const getExternalLinkChip = (linkOption: OptionTypeWithIcon, idx: number) => {
         return (
             <Tippy
-                key={linkOption.label}
+                key={`${linkOption.label}-${idx}`}
                 className="default-tt"
                 arrow={false}
                 placement="top"
@@ -947,7 +946,7 @@ export const AppLevelExternalLinks = ({
                     key={linkOption.label}
                     href={getParsedURL(true, linkOption.value, details)}
                     target="_blank"
-                    className="external-link-chip flex left br-4 mr-8"
+                    className="external-link-chip flex left br-4"
                 >
                     <img src={linkOption.icon} alt={linkOption.label} onError={onImageLoadError} />
                     <span className="ellipsis-right">{linkOption.label}</span>
@@ -958,8 +957,12 @@ export const AppLevelExternalLinks = ({
 
     return appLevelExternalLinks.length > 0 ? (
         <div className="app-level__external-links flex left mb-14">
-            <Link className="external-links-icon icon-dim-20 mr-16 fc-9" />
-            {appLevelExternalLinks.map((link) => getExternalLinkChip(link))}
+            <div className="app-level__external-links-icon">
+                <Link className="external-links-icon icon-dim-20 fc-9" />
+            </div>
+            <div className="flex left flex-wrap">
+                {appLevelExternalLinks.map((link, idx) => getExternalLinkChip(link, idx))}
+            </div>
         </div>
     ) : null
 }
@@ -1018,6 +1021,10 @@ export const NodeLevelExternalLinks = ({
                         minHeight: '24px',
                         backgroundColor: 'var(--N50)',
                         border: '1px solid var(--N200)',
+                        cursor: 'pointer',
+                    }),
+                    option: (base) => ({
+                        ...base,
                         cursor: 'pointer',
                     }),
                     valueContainer: (base) => ({

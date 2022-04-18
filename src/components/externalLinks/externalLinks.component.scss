@@ -214,9 +214,15 @@
 
 .app-level__external-links {
     width: 100%;
-    height: 56px;
+    min-height: 56px;
     background-color: white;
     padding: 16px 20px;
+
+    .app-level__external-links-icon {
+        width: 20px;
+        height: 20px;
+        margin: 4px 16px 4px 0;
+    }
 
     .external-links-icon {
         path:nth-of-type(2) {
@@ -230,6 +236,7 @@
         max-width: 250px;
         height: 24px;
         padding: 4px 6px;
+        margin: 4px 8px 4px 0;
         text-decoration: none;
         color: var(--N700);
 
