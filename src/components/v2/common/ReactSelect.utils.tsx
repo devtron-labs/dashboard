@@ -60,7 +60,7 @@ export function Option(props) {
     )
 }
 
-function onImageLoadError(e) {
+export function onImageLoadError(e) {
     if (e && e.target) {
         e.target.src = DefaultIcon
     }

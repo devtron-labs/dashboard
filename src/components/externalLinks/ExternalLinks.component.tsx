@@ -30,7 +30,7 @@ import {
 import { deleteExternalLink, getExternalLinks, saveExternalLinks, updateExternalLink } from './ExternalLinks.service'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { toast } from 'react-toastify'
-import { OptionWithIcon, ValueContainerWithIcon } from '../v2/common/ReactSelect.utils'
+import { onImageLoadError, OptionWithIcon, ValueContainerWithIcon } from '../v2/common/ReactSelect.utils'
 import './externalLinks.component.scss'
 import Tippy from '@tippyjs/react'
 import OtherToolIcon from '../../assets/icons/ic-browser.svg'
@@ -691,7 +691,7 @@ export const AddExternalLinkDialog = ({
             name: link.name,
             invalidName: !link.name,
             clusters: link.clusters,
-            invalidClusters: !link.clusters || link.clusters?.length <= 0,
+            invalidClusters: !link.clusters || link.clusters.length <= 0,
             urlTemplate: link.urlTemplate,
             invalidUrlTemplate: !link.urlTemplate,
         }))
@@ -720,9 +720,9 @@ export const AddExternalLinkDialog = ({
                     name: link.name,
                     clusterIds:
                         link.clusters.findIndex((_cluster) => _cluster.value === '*') === -1
-                            ? link.clusters.map((value) => +value.value)
+                            ? link.clusters.map((_cluster) => +_cluster.value)
                             : [],
-                    url: link.urlTemplate,
+                    url: link.urlTemplate.trim(),
                 }
 
                 const { result } = await updateExternalLink(payload)
@@ -735,10 +735,10 @@ export const AddExternalLinkDialog = ({
                     monitoringToolId: +link.tool.value,
                     name: link.name,
                     clusterIds:
-                        link.clusters.findIndex((_cluster) => _cluster.value === '*') !== -1
-                            ? link.clusters.map((value) => +value.value)
+                        link.clusters.findIndex((_cluster) => _cluster.value === '*') === -1
+                            ? link.clusters.map((_cluster) => +_cluster.value)
                             : [],
-                    url: link.urlTemplate,
+                    url: link.urlTemplate.trim(),
                 }))
 
                 const { result } = await saveExternalLinks(payload)
@@ -949,7 +949,7 @@ export const AppLevelExternalLinks = ({
                     target="_blank"
                     className="external-link-chip flex left br-4 mr-8"
                 >
-                    <img src={linkOption.icon} alt={linkOption.label} />
+                    <img src={linkOption.icon} alt={linkOption.label} onError={onImageLoadError} />
                     <span className="ellipsis-right">{linkOption.label}</span>
                 </a>
             </Tippy>
@@ -985,7 +985,7 @@ export const NodeLevelExternalLinks = ({
                     target="_blank"
                     className="external-link-option flex left br-4"
                 >
-                    <img src={data.icon} alt={data.label} />
+                    <img src={data.icon} alt={data.label} onError={onImageLoadError} />
                     <span className="ellipsis-right">{data.label}</span>
                 </a>
             </Tippy>

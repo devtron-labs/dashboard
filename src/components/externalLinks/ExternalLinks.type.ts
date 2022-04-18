@@ -12,7 +12,7 @@ export interface OptionTypeWithIcon {
 }
 
 export interface MonitoringTool {
-    Id: number // id: number
+    id: number
     name: string
     icon: string
 }

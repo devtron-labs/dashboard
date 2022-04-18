@@ -201,7 +201,7 @@ export const Details: React.FC<{
                             monitoringToolsRes.result
                                 ?.map((tool) => ({
                                     label: tool.name,
-                                    value: tool.Id, // tool.id,
+                                    value: tool.id,
                                     icon: tool.icon,
                                 }))
                                 .sort(sortOptionsByValue) || [],

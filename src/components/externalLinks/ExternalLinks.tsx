@@ -20,6 +20,7 @@ import { OptionType } from '../app/types'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete-interactive.svg'
 import { MultiValue } from 'react-select'
+import { onImageLoadError } from '../v2/common/ReactSelect.utils'
 
 function ExternalLinks() {
     const history = useHistory()
@@ -46,7 +47,7 @@ function ExternalLinks() {
                     monitoringToolsRes.result
                         ?.map((tool) => ({
                             label: tool.name,
-                            value: tool.Id, // tool.id,
+                            value: tool.id,
                             icon: tool.icon,
                         }))
                         .sort(sortOptionsByValue) || [],
@@ -111,8 +112,9 @@ function ExternalLinks() {
         if (_appliedClustersIds.length === 1 && !_appliedClustersIds[0]) {
             return externalLinks
         } else if (_appliedClustersIds.length > 0) {
-            return externalLinks.filter((link) =>
-                link.clusterIds.some((id) => id === '*' || _appliedClustersIds.includes(id)),
+            return externalLinks.filter(
+                (link) =>
+                    link.clusterIds.length === 0 || link.clusterIds.some((id) => _appliedClustersIds.includes(`${id}`)),
             )
         }
 
@@ -161,7 +163,7 @@ function ExternalLinks() {
     }
 
     const getClusterLabel = (link: ExternalLink): string => {
-        if (link.clusterIds[0] === '*' || clusters.every((cluster) => link.clusterIds.includes(cluster.value))) {
+        if (link.clusterIds.length === 0) {
             return 'All clusters'
         } else if (link.clusterIds.length > 1) {
             return `${link.clusterIds.length} clusters`
@@ -206,6 +208,7 @@ function ExternalLinks() {
                                             width: '24px',
                                             height: '24px',
                                         }}
+                                        onError={onImageLoadError}
                                     />
                                 </div>
                                 <div className="external-links__cell--tool__name ellipsis-right mr-16">{link.name}</div>
@@ -262,11 +265,16 @@ function ExternalLinks() {
                         <Progressing pageLoader />
                     ) : (
                         <>
-                            {renderExternalLinksHeader()}
                             {(appliedClusters.length > 0 || queryParams.get('search')) && filteredLinksLen === 0 && (
                                 <NoMatchingResults />
                             )}
-                            {filteredLinksLen > 0 && renderExternalLinks(filteredLinksLen)}
+
+                            {filteredLinksLen > 0 && (
+                                <>
+                                    {renderExternalLinksHeader()}
+                                    {renderExternalLinks(filteredLinksLen)}
+                                </>
+                            )}
                         </>
                     )}
                 </div>
