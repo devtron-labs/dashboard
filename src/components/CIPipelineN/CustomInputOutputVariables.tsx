@@ -58,6 +58,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             refVariableStepIndex: 0,
             refVariableName: '',
         }
+        if (!_formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]) {
+            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]] = []
+        }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].push(newCondition)
         setFormData(_formData)
     }

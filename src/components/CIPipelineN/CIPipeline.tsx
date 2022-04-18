@@ -321,14 +321,14 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                 const currentStepTypeVariable =
                     taskData.stepType === PluginType.INLINE ? 'inlineStepDetail' : 'pluginRefStepDetail'
                 taskErrorobj[currentStepTypeVariable].inputVariables = []
-                taskData[currentStepTypeVariable].inputVariables.forEach((element, index) => {
+                taskData[currentStepTypeVariable].inputVariables?.forEach((element, index) => {
                     taskErrorobj[currentStepTypeVariable].inputVariables.push(validationRules.inputVariable(element))
                     taskErrorobj.isValid =
                         taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable].inputVariables[index].isValid
                 })
                 if (taskData.stepType === PluginType.INLINE) {
                     taskErrorobj[currentStepTypeVariable].outputVariables = []
-                    taskData[currentStepTypeVariable].inputVariables.forEach((element, index) => {
+                    taskData[currentStepTypeVariable].inputVariables?.forEach((element, index) => {
                         taskErrorobj[currentStepTypeVariable].outputVariables.push(
                             validationRules.outputVariable(element),
                         )
@@ -400,7 +400,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                 _formDataErrorObj[activeStageName]['steps'][i][currentStepTypeVariable].outputVariables = []
             }
             const outputVariablesLength =
-                _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables.length
+                _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables?.length
             for (let j = 0; j < outputVariablesLength; j++) {
                 if (_formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name) {
                     _outputVariablesFromPrevSteps.set(
