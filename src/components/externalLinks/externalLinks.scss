@@ -1,5 +1,5 @@
 .external-links-container {
-    min-width: 1024px;
+    min-width: 720px;
     padding: 16px 8%  20px;
 
     &.error-view {
@@ -8,6 +8,9 @@
     }
 
     .empty-state {
+        width: 100%;
+        height: calc(100vh - 120px) !important;
+
         img {
             margin-bottom: 20px;
         }
@@ -68,6 +71,7 @@
         .search-filter-wrapper {
             display: flex;
             align-items: center;
+            max-width: 962px;
 
             .search-wrapper {
                 display: flex;
@@ -151,13 +155,17 @@
     }
 
     .external-links {
-        width: 962px;
-        height: 697px;
+        max-width: 962px;
+        min-height: 465px;
         background: #ffffff;
         border: 1px solid #d0d4d9;
         box-sizing: border-box;
         border-radius: 8px;
         margin-top: 16px;
+
+        .empty-state {
+            height: 465px !important;
+        }
 
         .external-link {
             padding: 12px 20px;
