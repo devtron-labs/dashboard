@@ -263,7 +263,7 @@ export const NoMatchingResults = (): JSX.Element => {
 const formatOptionLabelClusters = (option: OptionType): JSX.Element => {
     return (
         <div className="flex left column">
-            <span>{option.label}</span>
+            <span className="w-100 ellipsis-right">{option.label}</span>
             {option.value === '*' && (
                 <>
                     <small className="cn-6">All existing and future clusters</small>
@@ -310,7 +310,7 @@ export const customOption = (data: OptionTypeWithIcon, className = "") => {
                 }}
                 onError={onImageLoadError}
             />
-            {data.label}
+            <span className="ellipsis-right">{data.label}</span>
         </div>
     )
 }
