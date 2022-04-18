@@ -8,6 +8,7 @@ import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import ReactSelect from 'react-select'
 import { tempMultiSelectStyles } from './ciPipeline.utils'
+import Tippy from '@tippyjs/react'
 
 function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const {
@@ -101,7 +102,10 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     return (
         <>
             <div className="row-container mb-8">
-                <label className="tp-4 fs-13 fw-6 text-capitalize mr-8">{type} variables</label>
+                <Tippy className="default-tt" arrow={false} content={type === PluginVariableType.INPUT ? 'These variables are available as environment variables and can be used in the script to inject values from previous tasks or other sources. ' : 'These variables should be set in the environment variables and can be used as input variables in other scripts.'}>
+                    <label className="tp-4 fs-13 fw-6 text-capitalize mr-8">{type} variables </label>
+                </Tippy>
+
                 <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit" onClick={addVariable}>
                     <Add className="add-icon" />
                     Add variables

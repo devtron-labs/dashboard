@@ -6,6 +6,7 @@ import OutputDirectoryPath from './OutputDirectoryPath'
 import YAML from 'yaml'
 import MultiplePort from './MultiplsPort'
 import { ciPipelineContext } from './CIPipeline'
+import Tippy from '@tippyjs/react'
 
 export enum ScriptType {
     SHELL = 'SHELL',
@@ -44,7 +45,7 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
 
     const handleMountChange = (e, key: 'mountCodeToContainer' | 'mountDirectoryFromHost') => {
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = e.target.value 
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = e.target.value
         setFormData(_formData)
     }
 
@@ -66,7 +67,13 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
             return (
                 <>
                     <div className="row-container mb-10">
-                        <label className="fw-6 fs-13 cn-7 label-width">Script*</label>{' '}
+                        <Tippy
+                            className="default-tt"
+                            arrow={false}
+                            content="Shell Script to be executed, it supports base shell"
+                        >
+                            <label className="fw-6 fs-13 cn-7 label-width">Script*</label>
+                        </Tippy>
                         <div className="script-container">
                             <CodeEditor
                                 mode="shell"
@@ -92,7 +99,13 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
             return (
                 <>
                     <div className="row-container mb-10">
-                        <label className="fw-6 fs-13 cn-7 label-width">Container image path *</label>{' '}
+                        <Tippy
+                            className="default-tt"
+                            arrow={false}
+                            content="Complete verified public url of the container"
+                        >
+                            <label className="fw-6 fs-13 cn-7 label-width">Container image path *</label>
+                        </Tippy>
                         <input
                             style={{ width: '80% !important' }}
                             className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
@@ -116,6 +129,15 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                             onChange={(e) => handleContainer(e, 'imagePullSecret')}
                             value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.imagePullSecret}
                         />
+                    </div>
+                    <div className="pl-200 fs-13 fw-6 pb-18 pt-9 ">
+                        <Tippy
+                            className="default-tt"
+                            arrow={false}
+                            content="Enable this if you also want to mount scripts in the container"
+                        >
+                            <label>Mount custom script</label>
+                        </Tippy>
                     </div>
                     <div className="row-container mb-10">
                         <label className="fw-6 fs-13 cn-7 label-width">Command</label>{' '}
@@ -206,7 +228,9 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                         />
                     </div>
                     <div className="row-container mb-10">
-                        <label className="fw-6 fs-13 cn-7 label-width">Mount script at *</label>{' '}
+                        <Tippy className="default-tt" arrow={false} content="Path where script should be mounted">
+                            <label className="fw-6 fs-13 cn-7 label-width">Mount script at *</label>
+                        </Tippy>
                         <input
                             style={{ width: '80% !important' }}
                             className="form__input bcn-1 w-80"
