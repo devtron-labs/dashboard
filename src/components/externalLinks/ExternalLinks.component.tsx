@@ -12,8 +12,7 @@ import { ReactComponent as Delete } from '../../assets/icons/ic-delete-interacti
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Link } from '../../assets/icons/ic-link.svg'
 import { URLS } from '../../config'
-import { AppDetails, OptionType } from '../app/types'
-import { AppDetails as HelmAppDetails } from '../v2/appDetails/appDetails.type'
+import { OptionType } from '../app/types'
 import {
     AddExternalLinkType,
     AppLevelExternalLinksType,
@@ -30,10 +29,15 @@ import {
 import { deleteExternalLink, getExternalLinks, saveExternalLinks, updateExternalLink } from './ExternalLinks.service'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { toast } from 'react-toastify'
-import { onImageLoadError, OptionWithIcon, ValueContainerWithIcon } from '../v2/common/ReactSelect.utils'
-import './externalLinks.component.scss'
 import Tippy from '@tippyjs/react'
-import OtherToolIcon from '../../assets/icons/ic-browser.svg'
+import {
+    getMonitoringToolIcon,
+    getParsedURL,
+    MONITORING_TOOL_ICONS,
+    onImageLoadError,
+    sortByUpdatedOn,
+} from './ExternalLinks.utils'
+import './externalLinks.component.scss'
 
 export const ClusterFilter = ({
     clusters,
@@ -330,6 +334,38 @@ const getErrorLabel = (field: string): JSX.Element => {
     }
 }
 
+export const customOption = (data: OptionTypeWithIcon) => {
+    return (
+        <div className="flex left">
+            <img
+                src={MONITORING_TOOL_ICONS[data.icon]}
+                alt={data.label}
+                style={{
+                    width: '20px',
+                    height: '20px',
+                    marginRight: '12px',
+                }}
+                onError={onImageLoadError}
+            />
+            {data.label}
+        </div>
+    )
+}
+
+export const OptionWithIcon = (props) => {
+    const { data } = props
+    return <components.Option {...props}>{customOption(data)}</components.Option>
+}
+
+export function ValueContainerWithIcon(props) {
+    const { selectProps } = props
+    return (
+        <components.ValueContainer {...props}>
+            {selectProps.value ? customOption(selectProps.value) : <>{props.children}</>}
+        </components.ValueContainer>
+    )
+}
+
 const ConfigureLinkAction = ({
     index,
     link,
@@ -501,11 +537,11 @@ const ConfigureLinkAction = ({
                     />
                     {link.invalidClusters && getErrorLabel('clusters')}
                 </div>
-                {showDelete && 
+                {showDelete && (
                     <div className="link-delete mt-24 cursor">
                         <Delete className="icon-dim-20" onClick={() => deleteLinkData(index)} />
                     </div>
-                }
+                )}
             </div>
             <div className="link-text-area">
                 <label>URL template*</label>
@@ -540,7 +576,11 @@ export const AddExternalLinkDialog = ({
 
             setLinksData([
                 {
-                    tool: { label: monitoringTool.label, value: monitoringTool.value, icon: monitoringTool.icon },
+                    tool: {
+                        label: monitoringTool.label,
+                        value: monitoringTool.value,
+                        icon: MONITORING_TOOL_ICONS[monitoringTool.icon],
+                    },
                     name: selectedLink.name,
                     clusters: selectedClusters,
                     urlTemplate: selectedLink.url,
@@ -640,7 +680,11 @@ export const AddExternalLinkDialog = ({
                                     onMonitoringToolSelection={(key, selected) => {
                                         handleLinksDataActions('onMonitoringToolSelection', key, selected)
 
-                                        if (!link.name && selected.label.toLowerCase() !== 'other') {
+                                        if (
+                                            selected.label.toLowerCase() !== 'others' &&
+                                            (!link.name ||
+                                                monitoringTools.findIndex((tool) => tool.label === link.name) !== -1)
+                                        ) {
                                             handleLinksDataActions('onNameChange', key, selected.label)
                                         }
                                     }}
@@ -899,34 +943,6 @@ export const AppliedFilterChips = ({
             </button>
         </div>
     )
-}
-
-export const sortByUpdatedOn = (uptA: ExternalLink, uptB: ExternalLink) => {
-    return new Date(uptB.updatedOn).getTime() - new Date(uptA.updatedOn).getTime()
-}
-
-export const getMonitoringToolIcon = (monitoringTools: MultiValue<OptionTypeWithIcon>, toolId: number): string => {
-    return monitoringTools.find((tool) => tool.value === toolId)?.icon || OtherToolIcon
-}
-
-const getParsedURL = (
-    isAppLevel: boolean,
-    url: string,
-    appDetails: AppDetails | HelmAppDetails,
-    podName?: string,
-    containerName?: string,
-): string => {
-    let parsedUrl = url
-        .replace('{appName}', appDetails.appName)
-        .replace('{appId}', `${appDetails.appId}`)
-        .replace('{envId}', `${appDetails.environmentId}`)
-        .replace('{namespace}', `${appDetails.namespace}`)
-
-    if (!isAppLevel) {
-        parsedUrl = parsedUrl.replace('{podName}', podName).replace('{containerName}', `${containerName}`)
-    }
-
-    return parsedUrl
 }
 
 export const AppLevelExternalLinks = ({

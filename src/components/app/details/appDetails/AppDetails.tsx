@@ -67,9 +67,10 @@ import { aggregateNodes, SecurityVulnerabilitites, getSelectedNodeItems, getPodN
 import { AppMetrics } from './AppMetrics';
 import { TriggerInfoModal } from '../../list/TriggerInfo';
 import { sortObjectArrayAlphabetically, sortOptionsByValue } from '../../../common/helpers/Helpers';
-import { AppLevelExternalLinks, sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.component';
+import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component';
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service';
-import { ExternalLink, MonitoringTool, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
+import { ExternalLink, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
+import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 

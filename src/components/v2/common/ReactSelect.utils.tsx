@@ -60,58 +60,6 @@ export function Option(props) {
     )
 }
 
-export function onImageLoadError(e) {
-    if (e && e.target) {
-        e.target.src = DefaultIcon
-    }
-}
-
-export function OptionWithIcon(props) {
-    const { data } = props
-    return (
-        <components.Option {...props}>
-            <div className="flex left">
-                <img
-                    src={data.icon}
-                    alt={data.label}
-                    style={{
-                        width: '20px',
-                        height: '20px',
-                        marginRight: '12px',
-                    }}
-                    onError={onImageLoadError}
-                />
-                {data.label}
-            </div>
-        </components.Option>
-    )
-}
-
-export function ValueContainerWithIcon(props) {
-    const { selectProps } = props
-    return (
-        <components.ValueContainer {...props}>
-            {selectProps.value ? (
-                <div className="flex left">
-                    <img
-                        src={selectProps.value.icon}
-                        alt={selectProps.value.label}
-                        style={{
-                            width: '20px',
-                            height: '20px',
-                            marginRight: '12px',
-                        }}
-                        onError={onImageLoadError}
-                    />
-                    {selectProps.value.label}
-                </div>
-            ) : (
-                <>{props.children}</>
-            )}
-        </components.ValueContainer>
-    )
-}
-
 export function DropdownIndicator(props) {
     return (
         <components.DropdownIndicator {...props}>

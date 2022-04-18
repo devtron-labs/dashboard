@@ -12,7 +12,7 @@ import '../../lib/bootstrap-grid.min.css';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../../../util/URLUtil';
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service';
 import { ExternalLink, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
-import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.component';
+import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
 
 function ExternalAppDetail({appId, appName}) {
     const location = useLocation();

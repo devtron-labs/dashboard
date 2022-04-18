@@ -13,8 +13,9 @@ import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as CubeIcon } from '../../assets/icons/ic-object.svg';
 import { getAggregator } from './details/appDetails/utils';
 import Tippy from '@tippyjs/react';
-import { getMonitoringToolIcon, NodeLevelExternalLinks } from '../externalLinks/ExternalLinks.component';
+import { NodeLevelExternalLinks } from '../externalLinks/ExternalLinks.component';
 import { ExternalLink, OptionTypeWithIcon } from '../externalLinks/ExternalLinks.type';
+import { getMonitoringToolIcon } from '../externalLinks/ExternalLinks.utils';
 
 interface ResourceTree {
     appName: string;

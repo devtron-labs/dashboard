@@ -16,7 +16,7 @@ import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
 import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHistory.component';
 import { ExternalLink, OptionTypeWithIcon } from '../externalLinks/ExternalLinks.type';
 import { getExternalLinks, getMonitoringTools } from '../externalLinks/ExternalLinks.service';
-import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.component';
+import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils';
 
 let initTimer = null;
 

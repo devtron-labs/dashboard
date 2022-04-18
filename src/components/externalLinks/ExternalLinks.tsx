@@ -6,11 +6,9 @@ import {
     AppliedFilterChips,
     ClusterFilter,
     DeleteExternalLinkDialog,
-    getMonitoringToolIcon,
     NoExternalLinksView,
     NoMatchingResults,
     SearchInput,
-    sortByUpdatedOn,
 } from './ExternalLinks.component'
 import { useHistory, useLocation } from 'react-router-dom'
 import './externalLinks.scss'
@@ -21,7 +19,7 @@ import { OptionType } from '../app/types'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete-interactive.svg'
 import { MultiValue } from 'react-select'
-import { onImageLoadError } from '../v2/common/ReactSelect.utils'
+import { getMonitoringToolIcon, onImageLoadError, sortByUpdatedOn } from './ExternalLinks.utils'
 
 function ExternalLinks() {
     const history = useHistory()

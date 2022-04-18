@@ -14,8 +14,9 @@ import AppDetailsStore from '../../appDetails.store';
 import { toast } from 'react-toastify';
 import { getNodeStatus } from './nodeType.util';
 import { useSharedState } from '../../../utils/useSharedState';
-import { getMonitoringToolIcon, NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component';
+import { NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component';
 import { ExternalLink, OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type';
+import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils';
 
 function NodeComponent({ 
     handleFocusTabs,
