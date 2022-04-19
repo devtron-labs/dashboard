@@ -124,7 +124,7 @@ export const ClusterFilter = ({
                     ValueContainer,
                     IndicatorSeparator: null,
                     ClearIndicator: null,
-                    MenuList: (props) => <MenuList {...props} handleFilterQueryChanges={handleFilterQueryChanges} />
+                    MenuList: (props) => <MenuList {...props} handleFilterQueryChanges={handleFilterQueryChanges} />,
                 }}
                 styles={{
                     ...multiSelectStyles,
@@ -540,14 +540,12 @@ export const AddExternalLinkDialog = ({
     ): void => {
         switch (action) {
             case 'add':
-                setLinksData(
-                    linksData.concat({
-                        tool: null,
-                        name: '',
-                        clusters: [],
-                        urlTemplate: '',
-                    }),
-                )
+                linksData.splice(0, 0, {
+                    tool: null,
+                    name: '',
+                    clusters: [],
+                    urlTemplate: '',
+                })
                 break
             case 'delete':
                 linksData.splice(key, 1)
@@ -583,9 +581,7 @@ export const AddExternalLinkDialog = ({
                 break
         }
 
-        if (action !== 'add') {
-            setLinksData([...linksData])
-        }
+        setLinksData([...linksData])
     }
 
     const linksLen = linksData.length
@@ -743,7 +739,8 @@ export const AddExternalLinkDialog = ({
                     url: link.urlTemplate,
                 }))
 
-                const { result } = await saveExternalLinks(payload)
+                // Reversing because on 'Add another', new link fields are added & displayed at the top of linksData
+                const { result } = await saveExternalLinks(payload.reverse())
 
                 if (result?.success) {
                     toast.success('Saved successfully!')
