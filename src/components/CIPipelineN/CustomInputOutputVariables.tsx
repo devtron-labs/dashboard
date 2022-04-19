@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Equal } from '../../assets/icons/ic-variable-equal.svg'
-import { FormType, PluginVariableType, RefVariableType, VariableFieldType } from '../ciPipeline/types'
+import { FormType, PluginVariableType, RefVariableType, TaskFieldDescription, VariableFieldType } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -102,7 +102,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     return (
         <>
             <div className="row-container mb-8">
-                <Tippy className="default-tt" arrow={false} content={type === PluginVariableType.INPUT ? 'These variables are available as environment variables and can be used in the script to inject values from previous tasks or other sources. ' : 'These variables should be set in the environment variables and can be used as input variables in other scripts.'}>
+                <Tippy className="default-tt" arrow={false} content={type === PluginVariableType.INPUT ? TaskFieldDescription.INPUT : TaskFieldDescription.OUTPUT}>
                     <label className="tp-4 fs-13 fw-6 text-capitalize mr-8">{type} variables </label>
                 </Tippy>
 

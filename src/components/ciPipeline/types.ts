@@ -72,10 +72,12 @@ export enum TaskFieldLabel {
     MOUNTDIRECTORYFROMHOST = 'Mount directory from host',
     OUTPUTVARIABLES = 'Output variables',
     OUTPUTDIRECTORYPATH = 'Output directory path',
-    SCRIPT = 'Script'
+    SCRIPT = 'Script',
 }
 
 export enum TaskFieldDescription {
+    INPUT= 'These variables are available as environment variables and can be used in the script to inject values from previous tasks or other sources.',
+    OUTPUT='These variables should be set in the environment variables and can be used as input variables in other scripts.',
     CONTAINERIMAGEPATH= 'Complete verified public url of the container',
     COMMAND = 'It contains the commands to execute on this container.',
     ARGS = 'This is used to give arguments to command.',
