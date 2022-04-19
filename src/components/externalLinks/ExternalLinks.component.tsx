@@ -426,6 +426,11 @@ const ConfigureLinkAction = ({
                         styles={{
                             ...multiSelectStyles,
                             ...customMultiSelectStyles,
+                            menuList: (base, state) => ({
+                                ...base,
+                                ...customMultiSelectStyles.menuList(base, state),
+                                maxHeight: '210px'
+                            }),
                             container: (base, state) => ({
                                 ...base,
                                 marginTop: '6px',
@@ -835,7 +840,7 @@ export const AppliedFilterChips = ({
     }
 
     return (
-        <div className="saved-filters__wrap position-rel mt-16 pr-20">
+        <div className="saved-filters__wrap position-rel pl-0 pr-20 mb-10">
             {appliedClusters.map((filter) => {
                 return (
                     <div key={filter.label} className="saved-filter">

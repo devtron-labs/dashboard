@@ -51,17 +51,9 @@
     }
 
     .external-links-wrapper {
-        .title {
-            font-size: 16px;
-            margin-bottom: 5px;
-        }
-
-        .subtitle {
-            font-size: 12px;
-        }
-
+        max-width: 962px;
+        margin: auto;
         .cta-search-filter-container {
-            max-width: 962px;
             margin-top: 20px;
 
             .add-link.cta {
@@ -110,7 +102,6 @@
             display: flex;
             flex-wrap: wrap;
             background-color: var(--window-bg);
-            padding: 6px 20px 6px 0;
 
             .saved-filter {
                 display: flex;
@@ -156,13 +147,11 @@
     }
 
     .external-links {
-        max-width: 962px;
         min-height: 465px;
         background: #ffffff;
         border: 1px solid #d0d4d9;
         box-sizing: border-box;
         border-radius: 8px;
-        margin-top: 16px;
 
         .empty-state {
             height: 465px !important;

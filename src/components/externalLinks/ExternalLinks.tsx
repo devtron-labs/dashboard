@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { ErrorScreenManager, Progressing, showError, sortOptionsByLabel, sortOptionsByValue } from '../common'
 import {
     AddExternalLinkDialog,
@@ -198,7 +198,7 @@ function ExternalLinks() {
             <>
                 {filteredExternalLinks.map((link, idx) => {
                     return (
-                        <>
+                        <Fragment key={`external-link-${idx}`}>
                             <div className="external-link">
                                 <div className="external-links__cell--icon">
                                     <img
@@ -232,7 +232,7 @@ function ExternalLinks() {
                                 </div>
                             </div>
                             {idx !== filteredLinksLen - 1 && <div className="external-link__divider" />}
-                        </>
+                        </Fragment>
                     )
                 })}
             </>
@@ -244,12 +244,12 @@ function ExternalLinks() {
 
         return (
             <div className="external-links-wrapper">
-                <h4 className="title">External links</h4>
-                <p className="subtitle">
+                <h4 className="title cn-9 fs-16 fw-6 mb-5">External links</h4>
+                <p className="subtitle cn-9 fs-12">
                     Configure links to third-party applications (e.g. Kibana, New Relic) for quick access. Configured
                     linkouts will be available in the App details page.
                 </p>
-                <div className="cta-search-filter-container flex content-space">
+                <div className="cta-search-filter-container flex content-space mb-16">
                     <AddLinkButton handleOnClick={handleAddLinkClick} />
                     {renderSearchFilterWrapper()}
                 </div>
