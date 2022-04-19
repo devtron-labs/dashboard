@@ -35,6 +35,7 @@ export interface LinkAction {
     invalidClusters?: boolean
     urlTemplate: string
     invalidUrlTemplate?: boolean
+    invalidProtocol?: boolean
 }
 
 export interface ConfigureLinkActionType {

@@ -168,7 +168,7 @@ function ExternalLinks() {
             return `${link.clusterIds.length} clusters`
         }
 
-        return clusters.find((cluster) => cluster.value === link.clusterIds[0])?.label || '1 cluster'
+        return clusters.find((cluster) => +cluster.value === link.clusterIds[0])?.label || '1 cluster'
     }
 
     const editLink = (link: ExternalLink): void => {

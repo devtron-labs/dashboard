@@ -67,12 +67,18 @@
                     color: var(--N700);
                     font-size: 13px;
                     font-weight: 400;
+                    margin-bottom: 6px;
                 }
 
                 .configure-link-action-wrapper {
                     .error-label {
-                        svg g path:nth-of-type(2) {
-                            fill: var(--R500);
+                        .error-label-icon {
+                            width: 20px;
+                            height: 20px;
+
+                            svg g path:nth-of-type(2) {
+                                fill: var(--R500);
+                            }
                         }
                     }
 

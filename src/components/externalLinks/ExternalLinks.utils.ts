@@ -1,7 +1,7 @@
-import { MultiValue } from "react-select"
-import { AppDetails } from "../app/types"
-import { AppDetails as HelmAppDetails } from "../v2/appDetails/appDetails.type"
-import { ExternalLink, OptionTypeWithIcon } from "./ExternalLinks.type"
+import { MultiValue } from 'react-select'
+import { AppDetails } from '../app/types'
+import { AppDetails as HelmAppDetails } from '../v2/appDetails/appDetails.type'
+import { ExternalLink, OptionTypeWithIcon } from './ExternalLinks.type'
 import CloudwatchlIcon from '../../assets/icons/ic-cloudwatch.png'
 import CoralogixlIcon from '../../assets/icons/ic-coralogix.png'
 import DatadogIcon from '../../assets/icons/ic-datadog.png'
@@ -12,14 +12,14 @@ import NewrelicIcon from '../../assets/icons/ic-newrelic.png'
 import OtherToolIcon from '../../assets/icons/ic-browser.svg'
 
 export const MONITORING_TOOL_ICONS = {
-    'ic-cloudwatch': CloudwatchlIcon,
-    'ic-coralogix': CoralogixlIcon,
-    'ic-datadog': DatadogIcon,
-    'ic-grafana': GrafanaIcon,
-    'ic-kibana': KibanaIcon,
-    'ic-loki': LokiIcon,
-    'ic-newrelic': NewrelicIcon,
-    'ic-browser': OtherToolIcon,
+    cloudwatch: CloudwatchlIcon,
+    coralogix: CoralogixlIcon,
+    datadog: DatadogIcon,
+    grafana: GrafanaIcon,
+    kibana: KibanaIcon,
+    loki: LokiIcon,
+    newrelic: NewrelicIcon,
+    other: OtherToolIcon,
 }
 
 export const customMultiSelectStyles = {
@@ -72,7 +72,10 @@ export const customMultiSelectStyles = {
 }
 
 export const getMonitoringToolIcon = (monitoringTools: MultiValue<OptionTypeWithIcon>, toolId: number): string => {
-    return MONITORING_TOOL_ICONS[monitoringTools.find((tool) => tool.value === toolId)?.icon] || OtherToolIcon
+    return (
+        MONITORING_TOOL_ICONS[monitoringTools.find((tool) => tool.value === toolId)?.label.toLowerCase()] ||
+        OtherToolIcon
+    )
 }
 
 export const sortByUpdatedOn = (uptA: ExternalLink, uptB: ExternalLink) => {
@@ -104,4 +107,3 @@ export const onImageLoadError = (e) => {
         e.target.src = OtherToolIcon
     }
 }
-

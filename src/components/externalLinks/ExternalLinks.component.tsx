@@ -278,30 +278,34 @@ const getErrorLabel = (field: string): JSX.Element => {
     const errorLabel = (label: string): JSX.Element => {
         return (
             <div className="error-label flex left align-start fs-11 mt-4">
-                <Error className="icon-dim-20" />
+                <div className="error-label-icon">
+                    <Error className="icon-dim-20" />
+                </div>
                 <div className="ml-4 cr-5">{label}</div>
             </div>
         )
     }
     switch (field) {
         case 'tool':
-            return errorLabel('Please select monitoring tool.')
+            return errorLabel('Please select monitoring tool')
         case 'name':
-            return errorLabel('Please provide name for the tool you want to link.')
+            return errorLabel('Please provide name for the tool you want to link')
         case 'clusters':
-            return errorLabel('Please select one or more clusters.')
+            return errorLabel('Please select one or more clusters')
         case 'url':
-            return errorLabel('Please enter URL template.')
+            return errorLabel('Please enter URL template')
+        case 'invalidProtocol':
+            return errorLabel('The url should start with http:// or https://')
         default:
             return <></>
     }
 }
 
-export const customOption = (data: OptionTypeWithIcon, className = "") => {
+export const customOption = (data: OptionTypeWithIcon, className = '') => {
     return (
         <div className={`flex left ${className}`}>
             <img
-                src={MONITORING_TOOL_ICONS[data.icon]}
+                src={MONITORING_TOOL_ICONS[data.label.toLowerCase()] || MONITORING_TOOL_ICONS.other}
                 alt={data.label}
                 style={{
                     width: '20px',
@@ -453,6 +457,7 @@ const ConfigureLinkAction = ({
                     onChange={(e) => onUrlTemplateChange(index, e.target.value)}
                 />
                 {link.invalidUrlTemplate && getErrorLabel('url')}
+                {link.invalidProtocol && getErrorLabel('invalidProtocol')}
             </div>
         </div>
     )
@@ -481,7 +486,7 @@ export const AddExternalLinkDialog = ({
                     tool: {
                         label: monitoringTool.label,
                         value: monitoringTool.value,
-                        icon: MONITORING_TOOL_ICONS[monitoringTool.icon],
+                        icon: monitoringTool.icon,
                     },
                     name: selectedLink.name,
                     clusters: selectedClusters,
@@ -508,12 +513,14 @@ export const AddExternalLinkDialog = ({
         switch (action) {
             case 'add':
                 setLinksData(
-                    linksData.concat({
-                        tool: null,
-                        name: '',
-                        clusters: [],
-                        urlTemplate: '',
-                    }),
+                    linksData
+                        .concat({
+                            tool: null,
+                            name: '',
+                            clusters: [],
+                            urlTemplate: '',
+                        })
+                        .reverse(),
                 )
                 break
             case 'delete':
@@ -562,7 +569,7 @@ export const AddExternalLinkDialog = ({
             <div className="configure-link-action-container">
                 {!selectedLink && (
                     <div className="link-add-another fs-13 mb-16 cursor" onClick={() => handleLinksDataActions('add')}>
-                        <AddIcon className="icon-dim-12 mr-8"/> Add another
+                        <AddIcon className="icon-dim-12 mr-8" /> Add another
                     </div>
                 )}
                 {linksData &&
@@ -583,7 +590,7 @@ export const AddExternalLinkDialog = ({
                                         handleLinksDataActions('onMonitoringToolSelection', key, selected)
 
                                         if (
-                                            selected.label.toLowerCase() !== 'others' &&
+                                            selected.label.toLowerCase() !== 'other' &&
                                             (!link.name ||
                                                 monitoringTools.findIndex((tool) => tool.label === link.name) !== -1)
                                         ) {
@@ -647,15 +654,16 @@ export const AddExternalLinkDialog = ({
     }
 
     const getValidatedLinksData = (): LinkAction[] => {
-        const validatedLinksData = linksData.map((link) => ({
+        const validatedLinksData = linksData.reverse().map((link) => ({
             tool: link.tool,
             invalidTool: !link.tool,
-            name: link.name,
-            invalidName: !link.name,
+            name: link.name.trim(),
+            invalidName: !link.name.trim(),
             clusters: link.clusters,
             invalidClusters: !link.clusters || link.clusters.length <= 0,
-            urlTemplate: link.urlTemplate,
-            invalidUrlTemplate: !link.urlTemplate,
+            urlTemplate: link.urlTemplate.replace(/\s+/g, ''),
+            invalidUrlTemplate: !link.urlTemplate.trim(),
+            invalidProtocol: link.urlTemplate.trim() && !link.urlTemplate.trim().startsWith('http'),
         }))
         setLinksData(validatedLinksData)
 
@@ -666,10 +674,16 @@ export const AddExternalLinkDialog = ({
         try {
             const validatedLinksData = getValidatedLinksData()
             const invalidData = validatedLinksData.some(
-                (link) => link.invalidTool || link.invalidName || link.invalidClusters || link.invalidUrlTemplate,
+                (link) =>
+                    link.invalidTool ||
+                    link.invalidName ||
+                    link.invalidClusters ||
+                    link.invalidUrlTemplate ||
+                    link.invalidProtocol,
             )
 
             if (invalidData) {
+                toast.error('Some required fields are missing or have invalid input.')
                 return
             }
 
@@ -679,12 +693,12 @@ export const AddExternalLinkDialog = ({
                 const payload: ExternalLink = {
                     id: selectedLink.id,
                     monitoringToolId: +link.tool.value,
-                    name: link.name.trim(),
+                    name: link.name,
                     clusterIds:
                         link.clusters.findIndex((_cluster) => _cluster.value === '*') === -1
                             ? link.clusters.map((_cluster) => +_cluster.value)
                             : [],
-                    url: link.urlTemplate.trim(),
+                    url: link.urlTemplate,
                 }
 
                 const { result } = await updateExternalLink(payload)
@@ -695,12 +709,12 @@ export const AddExternalLinkDialog = ({
             } else {
                 const payload = validatedLinksData.map((link) => ({
                     monitoringToolId: +link.tool.value,
-                    name: link.name.trim(),
+                    name: link.name,
                     clusterIds:
                         link.clusters.findIndex((_cluster) => _cluster.value === '*') === -1
                             ? link.clusters.map((_cluster) => +_cluster.value)
                             : [],
-                    url: link.urlTemplate.trim(),
+                    url: link.urlTemplate,
                 }))
 
                 const { result } = await saveExternalLinks(payload)
