@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { DeleteDialog, multiSelectStyles, Option, Progressing, showError, VisibleModal } from '../common'
-import Select, { components, MultiValue } from 'react-select'
+import Select, { components, InputActionMeta, MultiValue } from 'react-select'
 import EmptyState from '../EmptyState/EmptyState'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
@@ -49,6 +49,7 @@ export const ClusterFilter = ({
 }: ClusterFilterType): JSX.Element => {
     const [selectedCluster, setSelectedCluster] = useState<MultiValue<OptionType>>([])
     const [isMenuOpen, setMenuOpen] = useState(false)
+    const [clusterSearchInput, setClusterSearchInput] = useState('')
 
     // To update the dropdown selections on query param value change or page reload
     useEffect(() => {
@@ -64,6 +65,7 @@ export const ClusterFilter = ({
     }, [clusters, queryParams.get('clusters')])
 
     const handleFilterQueryChanges = (): void => {
+        setClusterSearchInput('')
         setMenuOpen(false)
         setAppliedClusters(selectedCluster)
 
@@ -79,16 +81,17 @@ export const ClusterFilter = ({
         history.push(`${URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}?${queryParams.toString()}`)
     }
 
-    const handleMenuState = (): void => {
-        setMenuOpen(!isMenuOpen)
+    const handleMenuState = (menuOpenState: boolean): void => {
+        setClusterSearchInput('')
+        setMenuOpen(menuOpenState)
     }
 
-    const handleSelectedFilters = (selected): void => {
+    const handleSelectedFilters = (selected: MultiValue<OptionType>): void => {
         setSelectedCluster(selected)
     }
 
     const handleCloseFilter = (): void => {
-        handleMenuState()
+        handleMenuState(false)
         setSelectedCluster(appliedClusters)
     }
 
@@ -102,17 +105,26 @@ export const ClusterFilter = ({
                 options={clusters}
                 onChange={handleSelectedFilters}
                 isMulti={true}
-                isSearchable={isMenuOpen}
+                isSearchable={true}
                 closeMenuOnSelect={false}
                 hideSelectedOptions={false}
-                onMenuOpen={handleMenuState}
+                onMenuOpen={() => handleMenuState(true)}
                 onMenuClose={handleCloseFilter}
+                inputValue={clusterSearchInput}
+                onBlur={() => {
+                    setClusterSearchInput('')
+                }}
+                onInputChange={(value: string, actionMeta: InputActionMeta) => {
+                    if (actionMeta.action === 'input-change') {
+                        setClusterSearchInput(value)
+                    }
+                }}
                 components={{
                     Option,
                     ValueContainer,
                     IndicatorSeparator: null,
                     ClearIndicator: null,
-                    MenuList: (props) => <MenuList {...props} handleFilterQueryChanges={handleFilterQueryChanges} />,
+                    MenuList: (props) => <MenuList {...props} handleFilterQueryChanges={handleFilterQueryChanges} />
                 }}
                 styles={{
                     ...multiSelectStyles,
@@ -129,7 +141,7 @@ export const ClusterFilter = ({
     )
 }
 
-export const ValueContainer = (props: any): JSX.Element => {
+const ValueContainer = (props: any): JSX.Element => {
     const length = props.getValue().length
 
     return (
@@ -150,7 +162,7 @@ export const ValueContainer = (props: any): JSX.Element => {
     )
 }
 
-export const MenuList = (props: any): JSX.Element => {
+const MenuList = (props: any): JSX.Element => {
     return (
         <components.MenuList {...props}>
             {props.children}
@@ -301,7 +313,7 @@ const getErrorLabel = (field: string): JSX.Element => {
     }
 }
 
-export const customOption = (data: OptionTypeWithIcon, className = '') => {
+const customOption = (data: OptionTypeWithIcon, className = '') => {
     return (
         <div className={`flex left ${className}`}>
             <img
@@ -319,12 +331,12 @@ export const customOption = (data: OptionTypeWithIcon, className = '') => {
     )
 }
 
-export const OptionWithIcon = (props) => {
+const OptionWithIcon = (props) => {
     const { data } = props
     return <components.Option {...props}>{customOption(data)}</components.Option>
 }
 
-export function ValueContainerWithIcon(props) {
+const ValueContainerWithIcon = (props) => {
     const { selectProps } = props
     return (
         <components.ValueContainer {...props}>
@@ -353,6 +365,8 @@ const ConfigureLinkAction = ({
     onUrlTemplateChange,
     deleteLinkData,
 }: ConfigureLinkActionType): JSX.Element => {
+    const [clusterSearchInput, setClusterSearchInput] = useState('')
+
     return (
         <div id={`link-action-${index}`} className="configure-link-action-wrapper">
             <div className="link-monitoring-tool mb-8">
@@ -417,6 +431,15 @@ const ConfigureLinkAction = ({
                         isMulti={true}
                         hideSelectedOptions={false}
                         closeMenuOnSelect={false}
+                        inputValue={clusterSearchInput}
+                        onBlur={() => {
+                            setClusterSearchInput('')
+                        }}
+                        onInputChange={(value: string, actionMeta: InputActionMeta) => {
+                            if (actionMeta.action === 'input-change') {
+                                setClusterSearchInput(value)
+                            }
+                        }}
                         components={{
                             IndicatorSeparator: null,
                             ClearIndicator: null,
@@ -429,7 +452,7 @@ const ConfigureLinkAction = ({
                             menuList: (base, state) => ({
                                 ...base,
                                 ...customMultiSelectStyles.menuList(base, state),
-                                maxHeight: '210px'
+                                maxHeight: '210px',
                             }),
                             container: (base, state) => ({
                                 ...base,
@@ -518,14 +541,12 @@ export const AddExternalLinkDialog = ({
         switch (action) {
             case 'add':
                 setLinksData(
-                    linksData
-                        .concat({
-                            tool: null,
-                            name: '',
-                            clusters: [],
-                            urlTemplate: '',
-                        })
-                        .reverse(),
+                    linksData.concat({
+                        tool: null,
+                        name: '',
+                        clusters: [],
+                        urlTemplate: '',
+                    }),
                 )
                 break
             case 'delete':
@@ -659,7 +680,7 @@ export const AddExternalLinkDialog = ({
     }
 
     const getValidatedLinksData = (): LinkAction[] => {
-        const validatedLinksData = linksData.reverse().map((link) => ({
+        const validatedLinksData = linksData.map((link) => ({
             tool: link.tool,
             invalidTool: !link.tool,
             name: link.name.trim(),
