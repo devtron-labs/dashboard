@@ -30,7 +30,7 @@ export function Sidebar() {
         <div className="">
             {activeStageName !== BuildStageVariable.Build && (
                 <div className="sidebar-action-container sidebar-action-container-border">
-                    <div className="text-uppercase fw-6 fs-12 cn-6">CONFIGURE STAGE USING</div>
+                    {/* <div className="text-uppercase fw-6 fs-12 cn-6">CONFIGURE STAGE USING</div>
                     <RadioLabel
                         className="configuration-container mb-10"
                         disabled={false}
@@ -43,10 +43,10 @@ export function Sidebar() {
                         <RadioLabel.Radio className="left-radius width-120px" value={ConfigurationType.GUI}>
                             {ConfigurationType.GUI}
                         </RadioLabel.Radio>
-                        <RadioLabel.Radio className="right-radius width-120px" value={ConfigurationType.YAML}>
+                        {/* <RadioLabel.Radio className="right-radius width-120px" value={ConfigurationType.YAML}>
                             {ConfigurationType.YAML}
                         </RadioLabel.Radio>
-                    </RadioLabel>
+                    </RadioLabel> */}
                     {configurationType === ConfigurationType.GUI && (
                         <>
                             <div className="text-uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>

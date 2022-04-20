@@ -185,9 +185,9 @@ export function TaskDetailComponent() {
                         <RadioGroup.Radio className="left-radius" value={ConfigurationType.GUI}>
                             {ConfigurationType.GUI}
                         </RadioGroup.Radio>
-                        <RadioGroup.Radio className="right-radius" value={ConfigurationType.YAML}>
+                        {/* <RadioGroup.Radio className="right-radius" value={ConfigurationType.YAML}>
                             {ConfigurationType.YAML}
-                        </RadioGroup.Radio>
+                        </RadioGroup.Radio> */}
                     </RadioGroup>
                 </div>
 
