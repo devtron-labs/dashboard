@@ -181,7 +181,7 @@ function ExternalLinks() {
             <div className="external-links__header">
                 <div className="external-links__cell--icon"></div>
                 <div className="external-links__cell--tool__name">
-                    <span className="external-links__cell-header cn-7 fs-12 fw-6">Tool Name</span>
+                    <span className="external-links__cell-header cn-7 fs-12 fw-6">Name</span>
                 </div>
                 <div className="external-links__cell--cluster">
                     <span className="external-links__cell-header cn-7 fs-12 fw-6">Cluster</span>
@@ -210,11 +210,15 @@ function ExternalLinks() {
                                         onError={onImageLoadError}
                                     />
                                 </div>
-                                <div className="external-links__cell--tool__name cn-9 fs-13 ellipsis-right">{link.name}</div>
+                                <div className="external-links__cell--tool__name cn-9 fs-13 ellipsis-right">
+                                    {link.name}
+                                </div>
                                 <div className="external-links__cell--cluster cn-9 fs-13 ellipsis-right">
                                     {getClusterLabel(link)}
                                 </div>
-                                <div className="external-links__cell--url__template cn-9 fs-13 ellipsis-right">{link.url}</div>
+                                <div className="external-links__cell--url__template cn-9 fs-13 ellipsis-right">
+                                    {link.url}
+                                </div>
                                 <div className="external-link-actions">
                                     <Edit
                                         className="icon-dim-20 cursor mr-16"
@@ -247,7 +251,7 @@ function ExternalLinks() {
                 <h4 className="title cn-9 fs-16 fw-6 mb-5">External links</h4>
                 <p className="subtitle cn-9 fs-12">
                     Configure links to third-party applications (e.g. Kibana, New Relic) for quick access. Configured
-                    linkouts will be available in the App details page.
+                    links will be available in the App details page.
                 </p>
                 <div className="cta-search-filter-container flex content-space mb-16">
                     <AddLinkButton handleOnClick={handleAddLinkClick} />

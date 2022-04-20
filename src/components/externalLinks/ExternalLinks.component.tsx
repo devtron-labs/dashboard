@@ -478,7 +478,7 @@ const ConfigureLinkAction = ({
                 )}
             </div>
             <div className="link-text-area">
-                <label>URL template*</label>
+                <label>URL Template*</label>
                 <textarea
                     placeholder="Enter URL template"
                     value={link.urlTemplate}
@@ -590,7 +590,10 @@ export const AddExternalLinkDialog = ({
         return (
             <div className="configure-link-action-container">
                 {!selectedLink && (
-                    <div className="link-add-another fs-13 fw-6 mb-16 cursor" onClick={() => handleLinksDataActions('add')}>
+                    <div
+                        className="link-add-another fs-13 fw-6 mb-16 cursor"
+                        onClick={() => handleLinksDataActions('add')}
+                    >
                         <AddIcon className="icon-dim-20 mr-8" /> Add another
                     </div>
                 )}
@@ -647,14 +650,21 @@ export const AddExternalLinkDialog = ({
                     <span className="cn-9">Configuring an external link</span>
                 </div>
                 <ol className="configure-link-info-list">
-                    <li>Monitoring tool</li>
-                    <p>Select a monitoring tool you use. Choose from the list or add your own by selecting 'Other'.</p>
+                    <li>Monitoring Tool</li>
+                    <p className="mb-16">Select a monitoring tool from the drop-down list. To add a different tool, select 'Other'.</p>
                     <li>Clusters</li>
-                    <p>Select clusters for which you want to configure the selected tool.</p>
-                    <li>URL template</li>
-                    <p>Applications deployed on the selected clusters will use the configured URL template.</p>
-                    <p>Use following variables in the URL template in place of name or ID.</p>
-                    <ul>
+                    <p className="mb-16">Choose the clusters for which you want to configure the selected tool.</p>
+                    <li>URL Template</li>
+                    <p className="mb-20">
+                        The configured URL template is used by apps deployed on the selected clusters.
+                        <br />
+                        By combining one or more of the available env variables, a URL with the structure shown below
+                        can be created:
+                    </p>
+                    <p className="mb-12">
+                        {`http://www.domain.com/{namespace}/{appName}/details/{appId}/env/{envId}/details/{podName}`}
+                    </p>
+                    <ul className="fs-12 fw-4">
                         <li>{`{appName}`}</li>
                         <li>{`{appId}`}</li>
                         <li>{`{envId}`}</li>
@@ -662,14 +672,6 @@ export const AddExternalLinkDialog = ({
                         <li>{`{podName}`}</li>
                         <li>{`{containerName}`}</li>
                     </ul>
-                    <li>Sample URL template:</li>
-                    <p>{'http://www.domain.com/grafana/{appName}/details/1/env/4/details/pod'}</p>
-                    {/* <a
-                        href="https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/cd-pipeline"
-                        target="_blank"
-                    >
-                        View detailed documentation
-                    </a> */}
                 </ol>
             </div>
         )
