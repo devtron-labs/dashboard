@@ -8,10 +8,10 @@ import { ciPipelineContext } from './CIPipeline'
 import Tippy from '@tippyjs/react'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import MountFromHost from './MountFromHost'
+import { Checkbox, CHECKBOX_VALUE } from '../common'
 
 export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: string }) {
     const [mountCodeToContainer, setMountCodeToContainer] = useState(false)
-
     const {
         selectedTaskIndex,
         formData,
@@ -23,6 +23,8 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         activeStageName: string
     } = useContext(ciPipelineContext)
+    const [isMountCustomScript, setIsMountCustomScript] = useState(false)
+
     const handleContainer = (e: any, key: 'containerImagePath' | 'imagePullSecret'): void => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = e.target.value
@@ -50,12 +52,6 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap[0][key] =
             key === 'command' ? e.target.value : e.target.value.replace(/\s+/g, '').split(',')
-        setFormData(_formData)
-    }
-
-    const handlePort = (e, key: 'portOnLocal' | 'portOnContainer') => {
-        const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[0][key] = e.target.value
         setFormData(_formData)
     }
 
@@ -121,7 +117,16 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                             value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.imagePullSecret}
                         />
                     </div>
-                    <div className="pl-200 fs-13 fw-6 pb-18 pt-9 ">
+                    <div className="flex left pl-200 fs-13 fw-6 pb-18 pt-9 ">
+                    <Checkbox
+                        isChecked={isMountCustomScript}
+                        onClick={(e) => {
+                            e.stopPropagation()
+                        }}
+                        rootClassName="top"
+                        value={CHECKBOX_VALUE.CHECKED}
+                        onChange={(e) => setIsMountCustomScript(!isMountCustomScript)}
+                    >
                         <Tippy
                             className="default-tt"
                             arrow={false}
@@ -129,6 +134,7 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                         >
                             <label>Mount custom script</label>
                         </Tippy>
+                        </Checkbox>
                     </div>
                     <div className="row-container mb-10">
                         <TaskFieldTippyDescription

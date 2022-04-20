@@ -10,7 +10,7 @@ function TaskFieldTippyDescription({ taskField, contentDescription } : TippyDesc
     return (
         <div>
             <Tippy className="default-tt" arrow={false} content={contentDescription}>
-                <label className="fw-6 fs-13 cn-7 label-width text-capitalize">{taskField}</label>
+                <label className="fw-6 fs-13 cn-7 label-width text-capitalize text-underline-dashed">{taskField}</label>
             </Tippy>
         </div>
     )
