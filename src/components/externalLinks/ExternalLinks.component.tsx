@@ -590,8 +590,8 @@ export const AddExternalLinkDialog = ({
         return (
             <div className="configure-link-action-container">
                 {!selectedLink && (
-                    <div className="link-add-another fs-13 mb-16 cursor" onClick={() => handleLinksDataActions('add')}>
-                        <AddIcon className="icon-dim-12 mr-8" /> Add another
+                    <div className="link-add-another fs-13 fw-6 mb-16 cursor" onClick={() => handleLinksDataActions('add')}>
+                        <AddIcon className="icon-dim-20 mr-8" /> Add another
                     </div>
                 )}
                 {linksData &&

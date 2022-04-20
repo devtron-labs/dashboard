@@ -51,14 +51,8 @@
                     align-items: center;
                     color: var(--B500);
 
-                    svg {
-                        width: 12px;
-                        height: 12px;
-
-                        path {
-                            fill: var(--B500);
-                            stroke: var(--B500);
-                        }
+                    svg path {
+                        fill: var(--B500);
                     }
                 }
 

@@ -699,27 +699,29 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                         return <URL key={column} url={nodeDetails.url} />;
                     } else if (column === 'name') {
                         return <Name key={column} nodeDetails={nodeDetails} describeNode={describeNode} addExtraSpace={nodeDetails.kind === Nodes.Containers && containerLevelExternalLinks.length > 0} />;
-                    } else if (column === 'external-links' && nodeDetails.kind === Nodes.Pod && podLevelExternalLinks.length > 0) {
-                        return (
-                            <td>
-                                <NodeLevelExternalLinks
-                                    appDetails={appDetails}
-                                    nodeLevelExternalLinks={podLevelExternalLinks}
-                                    podName={nodeName}
-                                />
-                            </td>
-                        )
-                    } else if (column === 'external-links' && nodeDetails.kind === Nodes.Containers && containerLevelExternalLinks.length > 0) {
-                        return (
-                            <td>
-                                <NodeLevelExternalLinks
-                                    appDetails={appDetails}
-                                    nodeLevelExternalLinks={containerLevelExternalLinks}
-                                    podName={nodeName}
-                                    containerName={nodeName}
-                                />
-                            </td>
-                        )
+                    } else if (column === 'external-links') {
+                        if (nodeDetails.kind === Nodes.Pod && podLevelExternalLinks.length > 0) {
+                            return (
+                                <td>
+                                    <NodeLevelExternalLinks
+                                        appDetails={appDetails}
+                                        nodeLevelExternalLinks={podLevelExternalLinks}
+                                        podName={nodeName}
+                                    />
+                                </td>
+                            )
+                        } else if (nodeDetails.kind === Nodes.Containers && containerLevelExternalLinks.length > 0) {
+                            return (
+                                <td>
+                                    <NodeLevelExternalLinks
+                                        appDetails={appDetails}
+                                        nodeLevelExternalLinks={containerLevelExternalLinks}
+                                        podName={nodeDetails['pName']}
+                                        containerName={nodeName}
+                                    />
+                                </td>
+                            )
+                        }
                     } else if (column === '') {
                         return (
                             <Menu nodeDetails={nodeDetails}
@@ -765,7 +767,7 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                                 describeNode={(containerName) => describeNode(nodeDetails?.name, containerName)}
                                 level={level + 1}
                                 Data={nodeDetails.containers.reduce((agg, containerName) => {
-                                    agg.set(containerName, { name: containerName, kind: Nodes.Containers })
+                                    agg.set(containerName, { name: containerName, kind: Nodes.Containers, pName: nodeDetails.name })
                                     return agg;
                                 }, new Map)}
                                 nodes={nodes}

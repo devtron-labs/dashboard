@@ -181,13 +181,13 @@ function ExternalLinks() {
             <div className="external-links__header">
                 <div className="external-links__cell--icon"></div>
                 <div className="external-links__cell--tool__name">
-                    <span className="external-links__cell-header">Tool Name</span>
+                    <span className="external-links__cell-header cn-7 fs-12 fw-6">Tool Name</span>
                 </div>
                 <div className="external-links__cell--cluster">
-                    <span className="external-links__cell-header">Cluster</span>
+                    <span className="external-links__cell-header cn-7 fs-12 fw-6">Cluster</span>
                 </div>
                 <div className="external-links__cell--url__template">
-                    <span className="external-links__cell-header">Url Template</span>
+                    <span className="external-links__cell-header cn-7 fs-12 fw-6">Url Template</span>
                 </div>
             </div>
         )
@@ -210,11 +210,11 @@ function ExternalLinks() {
                                         onError={onImageLoadError}
                                     />
                                 </div>
-                                <div className="external-links__cell--tool__name ellipsis-right">{link.name}</div>
-                                <div className="external-links__cell--cluster ellipsis-right">
+                                <div className="external-links__cell--tool__name cn-9 fs-13 ellipsis-right">{link.name}</div>
+                                <div className="external-links__cell--cluster cn-9 fs-13 ellipsis-right">
                                     {getClusterLabel(link)}
                                 </div>
-                                <div className="external-links__cell--url__template ellipsis-right">{link.url}</div>
+                                <div className="external-links__cell--url__template cn-9 fs-13 ellipsis-right">{link.url}</div>
                                 <div className="external-link-actions">
                                     <Edit
                                         className="icon-dim-20 cursor mr-16"
