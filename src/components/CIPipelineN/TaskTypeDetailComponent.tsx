@@ -11,7 +11,6 @@ import MountFromHost from './MountFromHost'
 import { Checkbox, CHECKBOX_VALUE } from '../common'
 
 export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: string }) {
-    const [mountCodeToContainer, setMountCodeToContainer] = useState(false)
     const {
         selectedTaskIndex,
         formData,
@@ -40,11 +39,8 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
     const handleMountChange = (e, key: 'mountCodeToContainer' | 'mountDirectoryFromHost') => {
         const _formData = { ...formData }
         console.log(e.target.value)
-        if (key === 'mountCodeToContainer') {
-            setMountCodeToContainer(true)
-        }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] =
-            e.target.value === 'Yes' ? true : false
+            e.target.value === MountPath.TRUE ? true : false
         setFormData(_formData)
     }
 
@@ -61,8 +57,8 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                 <>
                     <div className="row-container mb-10">
                         <TaskFieldTippyDescription
-                            taskField={TaskFieldLabel.CONTAINERIMAGEPATH}
-                            contentDescription={TaskFieldDescription.CONTAINERIMAGEPATH}
+                            taskField={TaskFieldLabel.SCRIPT}
+                            contentDescription={TaskFieldDescription.SCRIPT}
                         />
                         <div className="script-container">
                             <CodeEditor
@@ -183,7 +179,7 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                         <RadioGroup
                             className="no-border"
                             value={
-                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer
+                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer ? MountPath.TRUE : MountPath.FALSE
                             }
                             disabled={false}
                             name="mountCodeToContainer"

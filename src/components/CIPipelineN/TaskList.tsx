@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, Fragment } from 'react'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Drag } from '../../assets/icons/drag.svg'
 import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg'
@@ -113,7 +113,7 @@ export function TaskList() {
         <>
             <div className="task-container">
                 {formData[activeStageName].steps?.map((taskDetail, index) => (
-                    <>
+                    <Fragment key={`task-item-${index}`}>
                         <div
                             className={`task-item fw-4 fs-13 ${selectedTaskIndex === index ? ' bcb-1 eb-5' : ''}`}
                             draggable={dragAllowed}
@@ -121,7 +121,6 @@ export function TaskList() {
                             onDragEnter={() => handleDragEnter(index)}
                             onDrop={() => handleDrop(index)}
                             onDragOver={(e) => e.preventDefault()}
-                            key={index}
                             onClick={() => handleSelectedTaskChange(index)}
                         >
                             <Drag className="drag-icon" onMouseDown={() => setDragAllowed(true)} />
@@ -146,7 +145,7 @@ export function TaskList() {
                             </PopupMenu>
                         </div>
                         <div className="vertical-line-connector"></div>
-                    </>
+                    </Fragment>
                 ))}
             </div>
             <div className="task-item add-task-container cb-5 fw-6 fs-13 flexbox" onClick={addNewTask}>

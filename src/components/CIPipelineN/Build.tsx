@@ -219,8 +219,8 @@ export function Build({
                         </div>
                         {formData.args.map((arg, index) => {
                             return (
-                                <div className="flexbox justify-space">
-                                    <div key={index} className="mt-8 w-100">
+                                <div className="flexbox justify-space" key={`build-${index}`}>
+                                    <div className="mt-8 w-100">
                                         <input
                                             className="w-100 top-radius pl-10 pr-10 pt-6 pb-6 bcn-1 en-2 bw-1"
                                             autoComplete="off"
