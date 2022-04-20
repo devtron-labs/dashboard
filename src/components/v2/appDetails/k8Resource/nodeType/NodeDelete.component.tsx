@@ -28,9 +28,8 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
 
     function describeNodeWrapper(tab) {
         queryParams.set('kind', params.podName);
-        const updatedPath = `${path.substring(0,path.indexOf('/k8s-resources/'))}/${URLS.APP_DETAILS_K8}/${NodeType.Pod.toLowerCase()}`
-        const newUrl = generatePath(updatedPath, { ...params, tab }) + '/' + nodeDetails.name + '/' + tab.toLowerCase();
-        history.push(newUrl);
+        const updatedPath = `${path.substring(0,path.indexOf('/k8s-resources/'))}/${URLS.APP_DETAILS_K8}/${NodeType.Pod.toLowerCase()}/${nodeDetails.name}/${tab.toLowerCase()}`
+        history.push(generatePath(updatedPath, { ...params, tab }));
     }
 
     const PodPopup: React.FC<{
