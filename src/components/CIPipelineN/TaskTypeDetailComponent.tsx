@@ -9,6 +9,7 @@ import Tippy from '@tippyjs/react'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import MountFromHost from './MountFromHost'
 import { Checkbox, CHECKBOX_VALUE } from '../common'
+import CustomScript from './CustomScript'
 
 export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: string }) {
     const {
@@ -30,9 +31,9 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
         setFormData(_formData)
     }
 
-    const handleScriptChange = (event, stageId: number) => {
+    const handleCustomChange = (event, key: 'script' | 'storeScriptAt' | 'mountCodeToContainerPath') => {
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script = event.target.value
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = event.target.value
         setFormData(_formData)
     }
 
@@ -55,24 +56,12 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
         if (taskScriptType === ScriptType.SHELL) {
             return (
                 <>
-                    <div className="row-container mb-10">
-                        <TaskFieldTippyDescription
-                            taskField={TaskFieldLabel.SCRIPT}
-                            contentDescription={TaskFieldDescription.SCRIPT}
-                        />
-                        <div className="script-container">
-                            <CodeEditor
-                                mode="shell"
-                                shebang="#!/bin/sh"
-                                onChange={(value) =>
-                                    handleScriptChange({ target: { value } }, formData[activeStageName].id)
-                                }
-                                inline
-                                height={300}
-                                value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script}
-                            ></CodeEditor>
-                        </div>
-                    </div>
+                    <CustomScript
+                        formData={formData}
+                        handleScriptChange={(e) => handleCustomChange(e, 'script')}
+                        activeStageName={activeStageName}
+                        selectedTaskIndex={selectedTaskIndex}
+                    />
                     <hr />
                     <OutputDirectoryPath />
                 </>
@@ -114,24 +103,51 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                         />
                     </div>
                     <div className="flex left pl-200 fs-13 fw-6 pb-18 pt-9 ">
-                    <Checkbox
-                        isChecked={isMountCustomScript}
-                        onClick={(e) => {
-                            e.stopPropagation()
-                        }}
-                        rootClassName="top"
-                        value={CHECKBOX_VALUE.CHECKED}
-                        onChange={(e) => setIsMountCustomScript(!isMountCustomScript)}
-                    >
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            content="Enable this if you also want to mount scripts in the container"
+                        <Checkbox
+                            isChecked={isMountCustomScript}
+                            onClick={(e) => {
+                                e.stopPropagation()
+                            }}
+                            rootClassName="top"
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={(e) => setIsMountCustomScript(!isMountCustomScript)}
                         >
-                            <label>Mount custom script</label>
-                        </Tippy>
+                            <Tippy
+                                className="default-tt"
+                                arrow={false}
+                                content="Enable this if you also want to mount scripts in the container"
+                            >
+                                <label>Mount custom script</label>
+                            </Tippy>
                         </Checkbox>
                     </div>
+                    {isMountCustomScript && (
+                        <>
+                            <CustomScript
+                                formData={formData}
+                                handleScriptChange={(e) => handleCustomChange(e, 'script')}
+                                activeStageName={activeStageName}
+                                selectedTaskIndex={selectedTaskIndex}
+                            />
+                            <div className="row-container mb-10">
+                                <TaskFieldTippyDescription
+                                    taskField={TaskFieldLabel.STORESCRIPTAT}
+                                />
+                                <input
+                                    style={{ width: '80% !important' }}
+                                    className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
+                                    autoComplete="off"
+                                    placeholder="Eg. directory/filename"
+                                    type="text"
+                                    name='storeScriptAt'
+                                    onChange={(e) => handleCustomChange(e, 'storeScriptAt')}
+                                    value={
+                                        formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.storeScriptAt
+                                    }
+                                />
+                            </div>
+                        </>
+                    )}
                     <div className="row-container mb-10">
                         <TaskFieldTippyDescription
                             taskField={TaskFieldLabel.COMMAND}
@@ -179,7 +195,9 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                         <RadioGroup
                             className="no-border"
                             value={
-                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer ? MountPath.TRUE : MountPath.FALSE
+                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer
+                                    ? MountPath.TRUE
+                                    : MountPath.FALSE
                             }
                             disabled={false}
                             name="mountCodeToContainer"
@@ -191,7 +209,8 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                             <RadioGroupItem value={MountPath.TRUE}> {MountPath.TRUE} </RadioGroupItem>
                         </RadioGroup>
                     </div>
-                    {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer === true && (
+                    {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer ===
+                        true && (
                         <div className="row-container mb-10">
                             <label className="fw-6 fs-13 cn-7 label-width"></label>
                             <input
@@ -200,10 +219,8 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                                 autoComplete="off"
                                 placeholder="Eg file/folder"
                                 type="text"
-                                onChange={(e) => handleCommandArgs(e, 'args')}
-                                value={
-                                    formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-                                }
+                                onChange={(e) => handleCustomChange(e, 'mountCodeToContainerPath')}
+                                value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainerPath}
                             />
                         </div>
                     )}
@@ -215,8 +232,7 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                         <RadioGroup
                             className="no-border"
                             value={
-                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-                                    .mountCodeToContainerPath
+                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainerPath ? MountPath.TRUE : MountPath.FALSE
                             }
                             disabled={false}
                             name="mountDirectoryFromHost"
@@ -230,7 +246,12 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                     </div>
                     {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountDirectoryFromHost ===
                         true && (
-                        <MountFromHost formData={formData} activeStageName={activeStageName} selectedTaskIndex={selectedTaskIndex} setFormData={setFormData}/>
+                        <MountFromHost
+                            formData={formData}
+                            activeStageName={activeStageName}
+                            selectedTaskIndex={selectedTaskIndex}
+                            setFormData={setFormData}
+                        />
                     )}
                     <OutputDirectoryPath />
                 </>

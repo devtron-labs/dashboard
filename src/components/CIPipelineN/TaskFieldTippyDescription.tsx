@@ -3,7 +3,7 @@ import Tippy from '@tippyjs/react'
 
 interface TippyDescriptionType {
     taskField: string;
-    contentDescription: string
+    contentDescription?: string
 }
 
 function TaskFieldTippyDescription({ taskField, contentDescription } : TippyDescriptionType ) {

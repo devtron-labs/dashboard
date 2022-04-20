@@ -73,6 +73,7 @@ export enum TaskFieldLabel {
     OUTPUTVARIABLES = 'Output variables',
     OUTPUTDIRECTORYPATH = 'Output directory path',
     SCRIPT = 'Script',
+    STORESCRIPTAT= 'Store script at'
 }
 
 export enum TaskFieldDescription {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Select } from '../common';
 import { SourceTypeMap, URLS } from '../../config';
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
@@ -100,7 +100,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
 
             let errorObj = props.validationRules?.sourceValue(mat.value);
 
-            return <>
+            return <Fragment key={`source-material-${index}`}>
                 <div className="mt-20" key={mat.gitMaterialId}>
                     <div className="mb-10 fs-14 cn-9 fw-5 lh-1-43">
                         <p className="m-0"><img src={git} alt="" className="ci-artifact__icon" />
@@ -163,7 +163,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                     />
                 }
 
-            </>
+            </Fragment>
         })}
     </>
 }
