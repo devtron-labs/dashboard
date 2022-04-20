@@ -3,7 +3,6 @@ import { FormType, TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/ty
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ciPipelineContext } from './CIPipeline'
-import Tippy from '@tippyjs/react'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 
 function OutputDirectoryPath() {
@@ -18,6 +17,7 @@ function OutputDirectoryPath() {
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         activeStageName: string
     } = useContext(ciPipelineContext)
+    
     const addOutputDirectoryPath = (): void => {
         const _formData = { ...formData }
 
@@ -44,8 +44,8 @@ function OutputDirectoryPath() {
         <div>
             <div className="row-container mb-10">
                 <TaskFieldTippyDescription
-                    taskField={TaskFieldLabel.MOUNTDIRECTORYFROMHOST}
-                    contentDescription={TaskFieldDescription.MOUNTDIRECTORYFROMHOST}
+                    taskField={TaskFieldLabel.OUTPUTDIRECTORYPATH}
+                    contentDescription={TaskFieldDescription.OUTPUTDIRECTORYPATH}
                 />
                 <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit" onClick={addOutputDirectoryPath}>
                     <Add className="add-icon" />
@@ -55,7 +55,6 @@ function OutputDirectoryPath() {
             {formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath?.map((elm, index) => {
                 return (
                     <div className="custom-script__output-directory pl-200 pb-20">
-                        {' '}
                         <input
                             className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
                             autoComplete="off"

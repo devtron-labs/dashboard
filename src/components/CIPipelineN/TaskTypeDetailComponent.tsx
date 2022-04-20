@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useState, useContext } from 'react'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { FormType, MountPath, ScriptType, TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
@@ -7,8 +7,11 @@ import MultiplePort from './MultiplsPort'
 import { ciPipelineContext } from './CIPipeline'
 import Tippy from '@tippyjs/react'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
+import MountFromHost from './MountFromHost'
 
 export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: string }) {
+    const [mountCodeToContainer, setMountCodeToContainer] = useState(false)
+
     const {
         selectedTaskIndex,
         formData,
@@ -35,7 +38,11 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
     const handleMountChange = (e, key: 'mountCodeToContainer' | 'mountDirectoryFromHost') => {
         const _formData = { ...formData }
         console.log(e.target.value)
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = e.target.value === 'Yes' ? true : false
+        if (key === 'mountCodeToContainer') {
+            setMountCodeToContainer(true)
+        }
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] =
+            e.target.value === 'Yes' ? true : false
         setFormData(_formData)
     }
 
@@ -182,6 +189,22 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                             <RadioGroupItem value={MountPath.TRUE}> {MountPath.TRUE} </RadioGroupItem>
                         </RadioGroup>
                     </div>
+                    {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer === true && (
+                        <div className="row-container mb-10">
+                            <label className="fw-6 fs-13 cn-7 label-width"></label>
+                            <input
+                                style={{ width: '80% !important' }}
+                                className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
+                                autoComplete="off"
+                                placeholder="Eg file/folder"
+                                type="text"
+                                onChange={(e) => handleCommandArgs(e, 'args')}
+                                value={
+                                    formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
+                                }
+                            />
+                        </div>
+                    )}
                     <div className="row-container mb-10">
                         <TaskFieldTippyDescription
                             taskField={TaskFieldLabel.MOUNTDIRECTORYFROMHOST}
@@ -190,7 +213,8 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                         <RadioGroup
                             className="no-border"
                             value={
-                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountDirectoryFromHost
+                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
+                                    .mountCodeToContainerPath
                             }
                             disabled={false}
                             name="mountDirectoryFromHost"
@@ -202,6 +226,10 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                             <RadioGroupItem value={MountPath.TRUE}> {MountPath.TRUE} </RadioGroupItem>
                         </RadioGroup>
                     </div>
+                    {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountDirectoryFromHost ===
+                        true && (
+                        <MountFromHost formData={formData} activeStageName={activeStageName} selectedTaskIndex={selectedTaskIndex} setFormData={setFormData}/>
+                    )}
                     <OutputDirectoryPath />
                 </>
             )
@@ -243,7 +271,7 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
         <>
             {renderShellScript()}
             {renderContainerScript()}
-            {renderDockerScript()}
+            {/* {renderDockerScript()} */}
         </>
     )
 }

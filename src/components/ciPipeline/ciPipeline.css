@@ -369,6 +369,12 @@
     grid-template-columns: 200px auto;
 }
 
+.mount-row{
+    display: grid;
+    grid-template-columns: 200px auto 28px auto 30px;  
+}
+
+
 .label-width {
     width: 250px;
 }
