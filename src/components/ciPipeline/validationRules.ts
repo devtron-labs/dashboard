@@ -31,9 +31,9 @@ export class ValidationRules {
                 value['refVariableName'] &&
                 (value['variableType'] === RefVariableType.GLOBAL ||
                     (value['variableType'] === RefVariableType.FROM_PREVIOUS_STEP &&
-                        value['refVariableStepIndex'] &&
-                        value['refVariableStage'])))
-        if (!value['name'] && !variableValue && !value['description']) {
+                        // value['refVariableStepIndex'] &&
+                        value['refVariableStage']) && value['refVariableName']))
+        if ((RefVariableType.NEW && !value['name']) && !variableValue && !value['description']) {
             return { message: 'Please complete or remove this variable', isValid: false }
         } else if (!value['name'] && !variableValue) {
             return { message: 'Variable Name and Value both are required field', isValid: false }

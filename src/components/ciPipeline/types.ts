@@ -60,7 +60,7 @@ export enum RefVariableType {
 export enum ScriptType {
     SHELL = 'SHELL',
     DOCKERFILE = 'DOCKERFILE',
-    CONTAINERIMAGE = 'CONTAINERIMAGE',
+    CONTAINERIMAGE = 'CONTAINER_IMAGE',
 }
 
 export enum TaskFieldLabel {

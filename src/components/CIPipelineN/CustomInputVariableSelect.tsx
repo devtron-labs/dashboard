@@ -128,6 +128,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 value: selectedValue.label,
                 variableType: RefVariableType.FROM_PREVIOUS_STEP,
                 refVariableStepIndex: selectedValue['refVariableStepIndex'],
+                refVariableName: '',
                 refVariableStage:
                     activeStageName === BuildStageVariable.PreBuild
                         ? RefVariableStageType.PRE_CI
@@ -139,6 +140,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                     variableType: RefVariableType.NEW,
                     value: selectedValue.label,
                     format: '',
+                    refVariableName: '',
                     refVariableStage:
                     activeStageName === BuildStageVariable.PreBuild
                         ? RefVariableStageType.PRE_CI

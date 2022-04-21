@@ -173,7 +173,7 @@ export function TaskDetailComponent() {
                         placeholder="Enter task description"
                     />
                 </div>
-                <div className="row-container mb-10">
+                {/* <div className="row-container mb-10">
                     <label className="fw-6 fs-13 cn-7 label-width">Configure task using</label>
                     <RadioGroup
                         className="configuration-container justify-start"
@@ -185,11 +185,11 @@ export function TaskDetailComponent() {
                         <RadioGroup.Radio className="left-radius" value={ConfigurationType.GUI}>
                             {ConfigurationType.GUI}
                         </RadioGroup.Radio>
-                        {/* <RadioGroup.Radio className="right-radius" value={ConfigurationType.YAML}>
+                         <RadioGroup.Radio className="right-radius" value={ConfigurationType.YAML}>
                             {ConfigurationType.YAML}
-                        </RadioGroup.Radio> */}
+                        </RadioGroup.Radio> 
                     </RadioGroup>
-                </div>
+                </div> */}
 
                 {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE && (
                     <div className="row-container mb-10">
