@@ -56,6 +56,10 @@ export const URLS = {
     GLOBAL_CONFIG_PROJECT: '/global-config/projects',
     GLOBAL_CONFIG_LOGIN: '/global-config/login-service',
     SECURITY: '/security',
+    STACK_MANAGER: '/stack-manager',
+    STACK_MANAGER_DISCOVER_MODULES: '/stack-manager/discover',
+    STACK_MANAGER_INSTALLED_MODULES: '/stack-manager/installed',
+    STACK_MANAGER_ABOUT: '/stack-manager/about',
 };
 
 export enum APP_COMPOSE_STAGE {

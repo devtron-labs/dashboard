@@ -26,13 +26,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     text-align-last: left;
-
-        &:hover{
-            svg.short-nav-icon {
-                    opacity: 1;
-                }
-
-        }
 }
 
 #root>main {
@@ -44,7 +37,7 @@
         display: flex;
         overflow: hidden;
         z-index: var(--navigation-index);
-        transition: width 300ms ease-in 700ms;
+        transition: width 300ms ease-out;
         
 
         .nav-grid {
@@ -70,12 +63,35 @@
 
         .short-nav {
             width: 100%;
-            padding: 0 12px;
+            padding: 0 12px 0 0;
             
             .svg-container {
                 height: 40px;
                 width: 40px;
                 border-radius: 8px;
+
+                &.nav-short-stack {
+                    background: #0000007d;
+                    border-radius: 20px;
+
+                    &:hover {
+                        border-radius: 8px;
+                    }
+                }
+            }
+
+
+            .nav-short-help {
+                .help-option-icon path {
+                    fill: white;
+                }
+            }
+
+            .short-nav__divider {
+                width: 20px;
+                height: 1px;
+                background-color: rgba(255, 255, 255, 0.25);
+                margin: -16px 0 10px 22px;
             }
 
             a {
@@ -83,21 +99,48 @@
                     width: 20px;
                     height: 20px;
                     fill: white;
-                    opacity: 0.5;
-
+                    opacity: 1;
                 }
 
-                &.active-nav,
+                .short-nav__item-selected {
+                    display: none;
+                }
+
                 &:hover {
-                    svg.short-nav-icon {
-                        opacity: 1;
+                    .svg-container {
+                        background: #0000007d;
+                    }
+                }
+
+                &.active-nav {
+                    .short-nav__item-selected {
+                        display: inline-block;
+                        width: 6px;
+                        height: 32px;
+                        background-color: white;
+                        border-radius: 3px;
+                        margin-left: -3px;
+                    }
+
+                    .short-nav--flex {
+                        margin-left: 9px;
+                    }
+                }
+
+                &.short-nav__stack-manager {
+                    margin-top: -52px;
+
+                    &:hover {
+                        .svg-container.nav-short-stack {
+                            border-radius: 8px;
+                        }
                     }
                 }
 
                 &:not(.active-nav):focus {
                     .svg-container{
-                            border: 1px solid white;
-                            border-radius: 8px;
+                        border: 1px solid white;
+                        border-radius: 8px;
                     }
                 }
 
@@ -107,13 +150,26 @@
         .active-nav {
             .svg-container {
                 background: #0000007d;
+
+                &.nav-short-stack {
+                    border-radius: 8px;
+                }
             }
         }
 
         &:hover {
-                width: 252px;
-                height: 100vh;
-           
+            width: 252px;
+            height: 100vh;
+            transition: width 300ms ease-in 700ms;
+        }
+
+        .short-nav__bottom-options {
+            bottom: 74px;
+            position: absolute;
+            display: grid;
+            grid-auto-rows: 44px;
+            -ms-grid-rows: 44px;
+            align-items: center;
         }
     }
     
@@ -227,8 +283,17 @@
 
 .short-nav--flex{
     display: flex;
-    
+    margin-left: 12px;
+
+    &:hover {
+        .svg-container,
+        .short-nav__icon-container {
+            background: #0000007d;
+            border-radius: 8px;
+        }
+    }
 }
+
 .center{
     justify-content: center;
     align-items: center;

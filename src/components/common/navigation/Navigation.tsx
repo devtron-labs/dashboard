@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { NavLink, RouteComponentProps } from 'react-router-dom';
-import { URLS } from '../../../config';
+import { SERVER_MODE, URLS } from '../../../config';
 import { ReactComponent as MoreOption } from '../../../assets/icons/ic-more-option.svg'
+import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { getLoginInfo } from '../index';
 import { getRandomColor } from '../helpers/Helpers';
 import NavSprite from '../../../assets/icons/navigation-sprite.svg';
@@ -17,46 +18,52 @@ const NavigationList = [
 		type: 'button',
 		iconClass: 'nav-short-search',
 		href: URLS.APP,
+		isAvailableInEA: true,
 	},
 	{
 		title: 'Applications',
 		type: 'link',
 		iconClass: 'nav-short-apps',
 		href: URLS.APP,
+		isAvailableInEA: true,
 	},
 	{
 		title: 'Charts',
 		type: 'link',
 		iconClass: 'nav-short-helm',
 		href: URLS.CHARTS,
+		isAvailableInEA: true,
 	},
 	{
 		title: 'Deployment Groups',
 		type: 'link',
 		iconClass: 'nav-short-bulk-actions',
 		href: URLS.DEPLOYMENT_GROUPS,
+		isAvailableInEA: false,
 	},
 	{
 		title: 'Security',
 		type: 'link',
 		href: URLS.SECURITY,
 		iconClass: 'nav-security',
+		isAvailableInEA: false,
 	},
 	{
 		title: 'Bulk Edit',
 		type: 'link',
 		href: URLS.BULK_EDITS,
-		iconClass: 'nav-bulk-update'
+		iconClass: 'nav-bulk-update',
+		isAvailableInEA: false,
 	},
 	{
 		title: 'Global Configurations',
 		type: 'link',
 		href: URLS.GLOBAL_CONFIG,
-		iconClass: 'nav-short-global'
+		iconClass: 'nav-short-global',
+		isAvailableInEA: true,
 	},
 
 ];
-
 
 const NavigationListBottom = [
 	{
@@ -70,18 +77,30 @@ const NavigationListBottom = [
 		href: 'https://github.com/devtron-labs/devtron',
 	}
 ];
-export default class Navigation extends Component<RouteComponentProps<{}>, { loginInfo: any; showLogoutCard: boolean; showMoreOptionCard: boolean; isCommandBarActive: boolean; }> {
 
+const NavigationStack = {
+	title: 'Devtron Stack Manager',
+	type: 'link',
+	iconClass: 'nav-short-stack',
+	href: URLS.STACK_MANAGER,
+};
+
+interface NavigationType extends RouteComponentProps<{}>{
+	serverMode: SERVER_MODE
+}
+export default class Navigation extends Component<NavigationType, { loginInfo: any; showLogoutCard: boolean; showHelpCard: boolean; showMoreOptionCard: boolean; isCommandBarActive: boolean; }> {
 	constructor(props) {
 		super(props);
 		this.state = {
 			loginInfo: getLoginInfo(),
 			showLogoutCard: false,
+			showHelpCard: false,
 			showMoreOptionCard: false,
 			isCommandBarActive: false,
 		}
 		this.onLogout = this.onLogout.bind(this);
 		this.toggleLogoutCard = this.toggleLogoutCard.bind(this);
+		this.toggleHelpCard = this.toggleHelpCard.bind(this);
 		this.toggleMoreOptionCard = this.toggleMoreOptionCard.bind(this);
 		this.toggleCommandBar = this.toggleCommandBar.bind(this);
 	}
@@ -89,6 +108,11 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 	toggleLogoutCard() {
 		this.setState({ showLogoutCard: !this.state.showLogoutCard })
 	}
+
+	toggleHelpCard() {
+		this.setState({ showHelpCard: !this.state.showHelpCard })
+	}
+
 	toggleMoreOptionCard() {
 		this.setState({ showMoreOptionCard: !this.state.showMoreOptionCard })
 	}
@@ -114,6 +138,64 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 					<p className="logout-card__initial fs-16 icon-dim-32 mb-0" style={{ backgroundColor: getRandomColor(email) }}>{email[0]}</p>
 				</div>
 				<div className="logout-card__logout cursor" onClick={this.onLogout}>Logout</div>
+			</div>
+		</div>, document.getElementById('root'))
+	}
+
+	renderHelpCard() {
+		return ReactDOM.createPortal(<div className="transparent-div" onClick={this.toggleMoreOptionCard}>
+			<div className="more-option-card ">
+				<div className="more-option-card__title">
+					<a className="more-option-card__link" href="https://devtron.ai/blog/" target="_blank" rel="noreferrer noopener"
+						onClick={(event) => {
+							ReactGA.event({
+								category: 'Main Navigation',
+								action: 'Devtron Blog Clicked',
+							})
+						}}>
+						<div className="more-option-card__rect">Devtron Blog</div>
+					</a>
+				</div>
+				<div className="more-option-card__title">
+					<a className="more-option-card__link" href="https://github.com/devtron-labs/devtron/issues" target="_blank" rel="noreferrer noopener" onClick={(event) => {
+						ReactGA.event({
+							category: 'Main Navigation',
+							action: 'Create Issue Clicked',
+						})
+					}}>
+						<div className="more-option-card__rect">Create an issue</div>
+					</a>
+				</div>
+				<div className="more-option-card__title">
+					<a className="more-option-card__link" href=" https://github.com/devtron-labs/devtron" target="_blank" rel="noreferrer noopener" onClick={(event) => {
+						ReactGA.event({
+							category: 'Main Navigation',
+							action: 'Star Github Repo Clicked',
+						})
+					}}>
+						<div className="more-option-card__rect">Star GitHub Repo</div>
+					</a>
+				</div>
+				<div className="more-option-card__title">
+					<a className="more-option-card__link" href="https://discord.gg/jsRG5qx2gp" target="_blank" rel="noreferrer noopener" onClick={(event) => {
+						ReactGA.event({
+							category: 'Main Navigation',
+							action: `Join Discord community clicked`,
+						})
+					}}>
+						<div className="more-option-card__rect">Join Discord Community</div>
+					</a>
+				</div>
+				<div className="more-option-card__title">
+					<a className="more-option-card__link" href="https://github.com/devtron-labs/devtron/blob/main/CONTRIBUTING.md" target="_blank" rel="noreferrer noopener" onClick={(event) => {
+						ReactGA.event({
+							category: 'Main Navigation',
+							action: `Become Contributor Clicked`,
+						})
+					}}>
+						<div className="more-option-card__rect">Become a contributor</div>
+					</a>
+				</div>
 			</div>
 		</div>, document.getElementById('root'))
 	}
@@ -176,12 +258,85 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 		</div>, document.getElementById('root'))
 	}
 
+	renderNavButton(item) {
+		return (
+            <button
+                type="button"
+                key={`side-nav-${item.title}`}
+                className="transparent pl-0"
+                onClick={(e) => {
+                    if (!this.state.isCommandBarActive) {
+                        ReactGA.event({
+                            category: 'Command Bar',
+                            action: 'Open (Click)',
+                            label: `${this.props.location.pathname.replace(/\d+/g, '')}`,
+                        })
+                    } else {
+                        ReactGA.event({
+                            category: 'Command Bar',
+                            action: 'Close',
+                            label: '',
+                        })
+                    }
+                    this.toggleCommandBar(!this.state.isCommandBarActive)
+                }}
+            >
+                <div className="short-nav--flex">
+                    <div className="svg-container flex">
+                        <svg className="short-nav-icon icon-dim-20" viewBox="0 0 24 24">
+                            <use href={`${NavSprite}#${item.iconClass}`}></use>
+                        </svg>
+                    </div>
+                    <div className="expandable-active-nav">
+                        <div className="title-container flex left">{item.title}</div>
+                    </div>
+                </div>
+            </button>
+        )
+	}
+
+	renderNavLink(item, className = '') {
+		return (
+            <NavLink
+                to={item.href}
+                key={`side-nav-${item.title}`}
+                onClick={(event) => {
+                    ReactGA.event({
+                        category: 'Main Navigation',
+                        action: `${item.title} Clicked`,
+                    })
+                }}
+                className={`flex left ${className || ''}`}
+                activeClassName="active-nav"
+            >
+				<div className="short-nav__item-selected"/>
+                <div className="short-nav--flex">
+                    <div className={`svg-container flex ${item.iconClass}`}>
+                        <svg
+                            className={`short-nav-icon ${
+                                item.iconClass === 'nav-bulk-update' || item.iconClass === 'nav-short-stack'
+                                    ? 'ml-4 mt-4 icon-dim-24'
+                                    : 'icon-dim-20 '
+                            }`}
+                            viewBox="0 0 24 24"
+                        >
+                            <use href={`${NavSprite}#${item.iconClass}`}></use>
+                        </svg>
+                    </div>
+                    <div className="expandable-active-nav">
+                        <div className="title-container flex left">{item.title}</div>
+                    </div>
+                </div>
+            </NavLink>
+        )
+	}
+
 	render() {
 		let email: string = this.state.loginInfo ? this.state.loginInfo['email'] || this.state.loginInfo['sub'] : "";
 		return <>
 			<nav>
 				<aside className="short-nav nav-grid nav-grid--collapsed" style={{marginBottom:30}}>
-					<NavLink to={URLS.APP} onClick={(event) => {
+				<NavLink to={URLS.APP} onClick={(event) => {
 						ReactGA.event({
 							category: 'Main Navigation',
 							action: 'Devtron Logo Clicked',
@@ -197,99 +352,108 @@ export default class Navigation extends Component<RouteComponentProps<{}>, { log
 						</div>
 					</NavLink>
 					{NavigationList.map((item, index) => {
-						if (item.type === "button") return <button type="button" key={index}
-							className="transparent"
-							onClick={(e) => {
-								if (!this.state.isCommandBarActive) {
-									ReactGA.event({
-										category: 'Command Bar',
-										action: 'Open (Click)',
-										label: `${this.props.location.pathname.replace(/\d+/g, '')}`,
-									});
-								}
-								else {
-									ReactGA.event({
-										category: 'Command Bar',
-										action: 'Close',
-										label: '',
-									});
-								}
-								this.toggleCommandBar(!this.state.isCommandBarActive);
-							}}>
-							<div className="short-nav--flex">
-								<div className="svg-container flex">
-									<svg className="short-nav-icon icon-dim-20" viewBox="0 0 24 24">
-										<use href={`${NavSprite}#${item.iconClass}`}></use>
-									</svg>
-								</div>
-								<div className="expandable-active-nav">
-									<div className="title-container flex left">
-										{item.title}
-									</div>
-								</div>
-							</div>
-						</button>
-						else return <NavLink to={item.href} key={index} onClick={(event) => {
-							ReactGA.event({
-								category: 'Main Navigation',
-								action: `${item.title} Clicked`,
-							});
-						}} className="" activeClassName="active-nav">
-							<div className="short-nav--flex">
-								<div className="svg-container flex">
-									<svg className={` ${item.iconClass === "nav-bulk-update" ? 'ml-4 mt-4 icon-dim-24' : '' } short-nav-icon icon-dim-20 `}  viewBox="0 0 24 24">
-										<use href={`${NavSprite}#${item.iconClass}`}></use>
-									</svg>
-								</div>
-								<div className="expandable-active-nav">
-									<div className="title-container flex left">
-										{item.title}
-									</div>
-								</div>
-							</div>
-						</NavLink>
-					})}
+							if (
+                                this.props.serverMode === SERVER_MODE.FULL ||
+                                (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA)
+                            ) {
+                                if (item.type === 'button') {
+                                    return this.renderNavButton(item)
+                                } else {
+                                    return this.renderNavLink(item)
+                                }
+                            }
+                        })}
+					{this.props.serverMode === SERVER_MODE.EA_ONLY && (
+                            <>
+                                <div className="short-nav__divider" />
+								{this.renderNavLink(NavigationStack, 'short-nav__stack-manager')}
+                            </>
+                        )}
 					<div></div>
-					{NavigationListBottom.map(((item) => {
-						return <a href={item.href} rel="noreferrer noopener" className="" key={item.title} target="_blank"
-							onClick={(event) => {
-								ReactGA.event({
-									category: 'Main Navigation',
-									action: `${item.title} Clicked`,
-								});
-							}}>
-							<div className="short-nav--flex">
-								<div className="icon-dim-40 flex">
-									<svg className="icon-dim-20 cursor" viewBox="0 0 24 24">
-										<use href={`${NavSprite}#${item.iconClass}`}></use>
-									</svg>
-								</div>
-								<div className="expandable-active-nav">
-									<div className="title-container flex left">
-										{item.title}
+					<div className="short-nav__bottom-options">
+					{this.props.serverMode !== SERVER_MODE.EA_ONLY &&
+                            NavigationListBottom.map((item) => {
+                                return (
+                                    <a
+                                        href={item.href}
+                                        rel="noreferrer noopener"
+                                        className=""
+                                        key={item.title}
+                                        target="_blank"
+                                        onClick={(event) => {
+                                            ReactGA.event({
+                                                category: 'Main Navigation',
+                                                action: `${item.title} Clicked`,
+                                            })
+                                        }}
+                                    >
+                                        <div className="short-nav--flex">
+                                            <div className="short-nav__icon-container icon-dim-40 flex">
+                                                <svg className="icon-dim-20 cursor" viewBox="0 0 24 24">
+                                                    <use href={`${NavSprite}#${item.iconClass}`}></use>
+                                                </svg>
+                                            </div>
+                                            <div className="expandable-active-nav">
+                                                <div className="title-container flex left">{item.title}</div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                )
+                            })}
+						{this.props.serverMode === SERVER_MODE.EA_ONLY && (
+                            <>
+								<div
+									className="nav-short-help cursor"
+									onClick={(event) => {
+										ReactGA.event({
+											category: 'Main Navigation',
+											action: `Help Clicked`,
+										})
+									}}
+								>
+									<div className="short-nav--flex" onClick={this.toggleHelpCard}>
+										<div className="short-nav__icon-container icon-dim-40 flex">
+											<Help className="help-option-icon icon-dim-24" />
+										</div>
+										<div className="expandable-active-nav">
+											<div className="title-container flex left">Help</div>
+										</div>
 									</div>
 								</div>
-							</div>
-						</a>
-					}))}
+								{this.state.showHelpCard && this.renderHelpCard()}
+							</>
+                        )}
 					<div className="short-nav--flex">
-						<div className="icon-dim-40 flex">
+						<div className="short-nav__icon-container icon-dim-40 flex">
 							<div className="logout-card__initial icon-dim-24 fs-12 logout-card__initial--nav" onClick={this.toggleLogoutCard} style={{ backgroundColor: getRandomColor(email) }}>
 								{email[0]}
 							</div>
 						</div>
 						<div><button type="button" className="transparent ellipsis-right expandable-active-nav title-container" onClick={this.toggleLogoutCard}>{email}</button></div>
 					</div>
-					{this.state.showLogoutCard ? this.renderLogout() : null}
-					<div className="short-nav--flex">
-						<div className="icon-dim-40 flex ">
-							<div className="icon-dim-32 ml-5 mt-5" onClick={this.toggleMoreOptionCard} >
-								<MoreOption className="icon-dim-24 fcn-0 cursor" />
-							</div>
-						</div>
-						<div><button type="button" className="flex left transparent expandable-active-nav title-container" onClick={this.toggleMoreOptionCard}>More Option</button></div>
+					{this.state.showLogoutCard && this.renderLogout()}
+					{this.props.serverMode !== SERVER_MODE.EA_ONLY && (
+                            <>
+                                <div className="short-nav--flex">
+                                    <div className="short-nav__icon-container icon-dim-40 flex ">
+                                        <div className="icon-dim-40" onClick={this.toggleMoreOptionCard}>
+                                            <MoreOption className="icon-dim-24 ml-8 mt-8 fcn-0 cursor" />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button
+                                            type="button"
+                                            className="flex left transparent expandable-active-nav title-container"
+                                            onClick={this.toggleMoreOptionCard}
+                                        >
+                                            More Option
+                                        </button>
+                                    </div>
+                                </div>
+                                {this.state.showMoreOptionCard ? this.renderMoreOption() : null}
+                            </>
+                        )}
 					</div>
-					{this.state.showMoreOptionCard ? this.renderMoreOption() : null}
 				</aside>
 
 			</nav>

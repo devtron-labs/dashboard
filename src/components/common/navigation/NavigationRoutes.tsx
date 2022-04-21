@@ -11,6 +11,7 @@ import { dashboardLoggedIn, getVersionConfig } from '../../../services/service'
 import { showError } from '../helpers/Helpers'
 import Reload from '../../Reload/Reload'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
+import DevtronStackManager from '../../v2/devtronStackManager/DevtronStackManager'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -84,7 +85,7 @@ export default function NavigationRoutes() {
                 const response = getVersionConfig()
                 const json = await response
                 if (json.code == 200) {
-                    setServerMode(json.result.serverMode)
+                    setServerMode(SERVER_MODE.FULL) // json.result.serverMode)
                     setPageState(ViewType.FORM)
                 }
             } catch (err) {
@@ -102,7 +103,7 @@ export default function NavigationRoutes() {
         return (
             <mainContext.Provider value={{ serverMode, setServerMode, setPageOverflowEnabled }}>
                 <main>
-                    <Navigation history={history} match={match} location={location} />
+                    <Navigation history={history} match={match} location={location} serverMode={serverMode} />
                     {serverMode && (
                         <div className={`main ${pageOverflowEnabled ? '' : 'main__overflow-disabled'}`}>
                             <Suspense fallback={<Progressing pageLoader />}>
@@ -126,6 +127,11 @@ export default function NavigationRoutes() {
                                             path={URLS.SECURITY}
                                             render={(props) => <Security {...props} serverMode={serverMode} />}
                                         />
+                                        {serverMode === SERVER_MODE.EA_ONLY && (
+                                            <Route path={URLS.STACK_MANAGER}>
+                                                <DevtronStackManager />
+                                            </Route>
+                                        )}
                                         <Route>
                                             <RedirectWithSentry />
                                         </Route>

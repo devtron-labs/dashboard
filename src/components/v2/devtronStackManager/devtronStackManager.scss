@@ -1,0 +1,160 @@
+.stack-manager {
+    display: grid;
+    grid-template-rows: 48px 1fr;
+    grid-template-columns: 250px 1fr;
+    height: 100vh;
+
+    &.loading {
+        grid-template-columns: 100%;
+    }
+
+    .page-header {
+        grid-column: 1 / -1;
+    }
+
+    .stack-manager__navigation {
+        padding: 24px 12px;
+        border-right: solid 1px #d6dbdf;
+        background: white;
+
+        a {
+            font-size: 13px;
+            line-height: 40px;
+            color: var(--N900);
+            width: 100%;
+            border-radius: 4px;
+            padding: 0 8px 0 10px;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: none;
+            }
+
+            &.stack-manager__navlink {
+
+                &.installed-modules__nav-link {
+                    .stack-manager__navlink-icon {
+                        path {
+                            stroke: var(--N700);
+                        }
+                    }
+                }
+
+                &.about-devtron__nav-link {
+                    .about-devtron {
+                        line-height: 20px;
+                        padding-top: 8px;
+                        padding-bottom: 8px;
+                    }
+                }
+
+                .badge {
+                    font-size: 13px;
+                    background-color: var(--N100);
+                    color: var(--N700);
+                    padding: 2px 7px;
+                }
+            }
+
+            &.active-route {
+                color: var(--B500);
+                font-weight: 600;
+                background: var(--B100);
+
+                &.stack-manager__navlink {
+                    &:not(.installed-modules__nav-link) {
+                        .stack-manager__navlink-icon {
+                            path {
+                                fill: var(--B500);
+                            }
+                        }
+                    }
+                    
+                    &.installed-modules__nav-link {
+                        .stack-manager__navlink-icon {
+                            path {
+                                stroke: var(--B500);
+                            }
+                        }
+                    }
+
+                    .badge {
+                        background-color: var(--B500);
+                        color: white;
+                    }
+                }
+            }
+        }
+    }
+
+    .stack-manager__error-icon {
+        margin: auto 0;
+    }
+
+    .stack-manager__component-wrapper {
+        padding: 0;
+        overflow-y: auto;
+        position: relative;
+        max-height: 100%;
+
+        .module-details__card {
+            width: 300px;
+            height: 180px;
+            background-color: white;
+            border: 1px solid var(--N200);
+
+            .module-details__card-icon {
+                width: 56px;
+                height: 56px;
+            }
+
+            &.more-extensions__card {
+                background-color: var(--window-bg);
+                border: 1px dashed var(--N200);
+                padding-top: 4px;
+
+                .module-details__card-icon {
+                    width: 76px;
+                    height: 76px;
+                    margin-bottom: 14px;
+                }
+
+                .module-details__card-name {
+                    font-weight: 400;
+                }
+            }
+        }
+
+        .empty-state {
+            h2 {
+                font-weight: 600;
+            }
+
+            p.subtitle {
+                font-size: 13px;
+            }
+
+            .empty-state__discover-btn {
+                margin-left: 10px;
+                color: var(--B500);
+                border: 1px solid var(--N200);
+                padding: 8px 16px;
+                margin: 2px;
+                background-color: var(--white);
+
+                .discover-icon {
+                    width: 16px;
+                    height: 16px;
+
+                    path {
+                        fill: var(--B500);
+                    }
+                }
+
+                &:hover {
+                    border: 1px solid var(--B500);
+                }
+            }
+        }
+    }
+}
