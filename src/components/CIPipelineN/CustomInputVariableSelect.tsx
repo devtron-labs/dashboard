@@ -125,27 +125,37 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         if (selectedValue['refVariableStepIndex']) {
             _variableDetail = {
                 refVariableUsed: true,
+                value: selectedValue.label,
                 variableType: RefVariableType.FROM_PREVIOUS_STEP,
                 refVariableStepIndex: selectedValue['refVariableStepIndex'],
-                refVariableName: selectedValue.label,
                 refVariableStage:
                     activeStageName === BuildStageVariable.PreBuild
                         ? RefVariableStageType.PRE_CI
                         : RefVariableStageType.POST_CI,
                 format: selectedValue['format'],
             }
-        } else if (selectedValue['refVariableStepIndex']) {
+        } else if ( selectedValue['__isNew__']) {
+            _variableDetail = {
+                    variableType: RefVariableType.NEW,
+                    value: selectedValue.label,
+                    format: '',
+                    refVariableStage:
+                    activeStageName === BuildStageVariable.PreBuild
+                        ? RefVariableStageType.PRE_CI
+                        : RefVariableStageType.POST_CI,
+                }
+        }else{
             _variableDetail = {
                 refVariableUsed: true,
                 variableType: RefVariableType.GLOBAL,
                 refVariableStepIndex: 0,
                 refVariableName: selectedValue.label,
                 format: selectedValue['format'],
-            }
-        } else {
-            _variableDetail = {
-                value: selectedValue.label,
-                format: '',
+                value: '',
+                refVariableStage:
+                activeStageName === BuildStageVariable.PreBuild
+                    ? RefVariableStageType.PRE_CI
+                    : RefVariableStageType.POST_CI,
             }
         }
         _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[

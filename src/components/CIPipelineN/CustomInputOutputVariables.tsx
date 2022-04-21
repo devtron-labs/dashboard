@@ -9,6 +9,7 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import ReactSelect from 'react-select'
 import { tempMultiSelectStyles } from './ciPipeline.utils'
 import Tippy from '@tippyjs/react'
+import { valueTernary } from 'react-select/dist/declarations/src/utils'
 
 function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const {
@@ -37,7 +38,6 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         label: format,
         value: format,
     }))
-    const [selectedFormat, setSelectedFormat] = useState<{ label: string; value: string }>(formatOptions[0])
     const addVariable = (): void => {
         const _formData = { ...formData }
         const id =
@@ -92,10 +92,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     }
 
     const handleFormatChange = (selectedValue: { label: string; value: string }, index: number): void => {
-        setSelectedFormat(selectedValue)
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]][index].format =
-            selectedValue.label
+            selectedValue.label 
         setFormData(_formData)
     }
 
@@ -136,7 +135,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                         {type === PluginVariableType.OUTPUT && (
                                             <div style={{ width: '20%' }}>
                                                 <ReactSelect
-                                                    defaultValue={selectedFormat}
+                                                    // defaultValue={selectedFormat}
                                                     tabIndex={1}
                                                     onChange={(selectedValue) => {
                                                         handleFormatChange(selectedValue, index)
@@ -157,12 +156,12 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                         <div style={{ width: '80%' }}>
                                             <CustomInputVariableSelect selectedVariableIndex={index} />
                                         </div>
-                                        <div style={{ width: '20%' }}>
-                                            {variable.refVariableUsed ? (
-                                                <label className="fs-13 fw-4 p-5 bcn-1 w-100">{variable.format}</label>
+                                        <div className='bcn-1 ' style={{ width: '20%' }}>
+                                            {variable.format && variable.variableType === RefVariableType.GLOBAL? (
+                                                <span className="fs-13 fw-4 p-5">{variable.format}</span>
                                             ) : (
                                                 <ReactSelect
-                                                    defaultValue={selectedFormat}
+                                                    value={variable.format ? {label: variable.format , value: variable.format} : formatOptions[0] }
                                                     tabIndex={1}
                                                     onChange={(selectedValue) => {
                                                         handleFormatChange(selectedValue, index)
@@ -172,6 +171,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                     components={{
                                                         IndicatorSeparator: null,
                                                     }}
+                                                    name="format"
                                                     styles={tempMultiSelectStyles}
                                                 />
                                             )}
