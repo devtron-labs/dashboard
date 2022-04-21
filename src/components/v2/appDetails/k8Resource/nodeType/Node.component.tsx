@@ -6,7 +6,7 @@ import { copyToClipboard } from '../../../../common';
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg';
 import PodHeaderComponent from './PodHeader.component';
-import { NodeType, Node, iNode, AppType } from '../../appDetails.type';
+import { NodeType, Node, iNode, AppType, EnvType } from '../../appDetails.type';
 import './nodeType.scss';
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util';
 import NodeDeleteComponent from './NodeDelete.component';
@@ -14,6 +14,11 @@ import AppDetailsStore from '../../appDetails.store';
 import { toast } from 'react-toastify';
 import { getNodeStatus } from './nodeType.util';
 import { useSharedState } from '../../../utils/useSharedState';
+import { podMetadata } from '../../../../app/details/appDetails/__test__/appDetails.data';
+import { node } from 'prop-types';
+import { MODES } from '../../../../../config';
+import HyperionEnvironmentSelect from '../../../../hyperion/EnvironmentSelect';
+import { appSelectorStyle } from '../../../../AppSelector/AppSelectorUtil';
 
 function NodeComponent({handleFocusTabs}: {handleFocusTabs: () => void}) {
     const { path, url } = useRouteMatch();
@@ -26,6 +31,7 @@ function NodeComponent({handleFocusTabs}: {handleFocusTabs: () => void}) {
     const [podType, setPodType] = useState(false);
     const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
     const appDetails = IndexStore.getAppDetails();
+    const podMetaData = IndexStore.getPodMetaData();
     const params = useParams<{ nodeType: NodeType, resourceName: string }>();
     const [filteredNodes] = useSharedState(
         IndexStore.getAppDetailsFilteredNodes(),
@@ -80,11 +86,17 @@ function NodeComponent({handleFocusTabs}: {handleFocusTabs: () => void}) {
                 }
             });
 
-            setSelectedNodes([..._selectedNodes]);
+            let podsType = []
+            if(params.nodeType === NodeType.Pod.toLowerCase()){
+                podsType = ( _selectedNodes.filter(el => podMetaData.some((f) =>  f.name === el.name && f.isNew === podType)))
+            }
+
+            setSelectedNodes( params.nodeType === NodeType.Pod.toLowerCase() ? [...podsType]: [..._selectedNodes]);
 
             setSelectedHealthyNodeCount(_healthyNodeCount);
+            
         }
-    }, [params.nodeType, podType, url, filteredNodes]);
+    }, [params.nodeType,podType, url, filteredNodes]);
 
     const markNodeSelected = (nodes: Array<iNode>, nodeName: string) => {
         const updatedNodes = nodes.map((node) => {
@@ -251,23 +263,25 @@ function NodeComponent({handleFocusTabs}: {handleFocusTabs: () => void}) {
 
     return (
         <>
-            {selectedNodes && selectedNodes.length > 0 && (
+            {selectedNodes && (
                 <div
                     className="container-fluid"
                     style={{ paddingRight: 0, paddingLeft: 0, height: '600px', overflow: 'scroll' }}
                 >
-                    {false ? (
+                    {params.nodeType === NodeType.Pod.toLowerCase() ? (
                         <PodHeaderComponent callBack={setPodType} />
                     ) : (
-                        <div className="node-detail__sticky-header border-bottom pt-10 pb-10">
-                            <div className="pl-16 fw-6 fs-14 text-capitalize">
-                                <span className="pr-4">{selectedNodes && selectedNodes[0]?.kind}</span>
-                                <span>({selectedNodes?.length})</span>
+                        selectedNodes.length > 0 && (
+                            <div className="node-detail__sticky-header border-bottom pt-10 pb-10">
+                                <div className="pl-16 fw-6 fs-14 text-capitalize">
+                                    <span className="pr-4">{selectedNodes && selectedNodes[0]?.kind}</span>
+                                    <span>({selectedNodes?.length})</span>
+                                </div>
+                                {selectedHealthyNodeCount > 0 && (
+                                    <div className="pl-16"> {selectedHealthyNodeCount} healthy</div>
+                                )}
                             </div>
-                            {selectedHealthyNodeCount > 0 && (
-                                <div className="pl-16"> {selectedHealthyNodeCount} healthy</div>
-                            )}
-                        </div>
+                        )
                     )}
 
                     <div className="row border-bottom fw-6 m-0">
@@ -281,15 +295,14 @@ function NodeComponent({handleFocusTabs}: {handleFocusTabs: () => void}) {
                                 >
                                     {cell}
                                 </div>
-                            );
+                            )
                         })}
                     </div>
-
-                    {selectedNodes && makeNodeTree(selectedNodes)}
+                    {selectedNodes.length > 0 &&  makeNodeTree(selectedNodes)}
                 </div>
             )}
         </>
-    );
+    )
 }
 
 export default NodeComponent;

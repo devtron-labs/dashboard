@@ -61,12 +61,14 @@ import {
     AggregatedNodes,
     NodeDetailTabs,
     NodeDetailTabsType,
-    AppDetails,
 } from '../../types';
 import { aggregateNodes, SecurityVulnerabilitites, getSelectedNodeItems, getPodNameSuffix } from './utils';
 import { AppMetrics } from './AppMetrics';
 import { TriggerInfoModal } from '../../list/TriggerInfo';
 import { sortObjectArrayAlphabetically } from '../../../common/helpers/Helpers';
+import { NodeTreeDetailTab } from '../../../v2/appDetails/AppDetails.component';
+import { AppDetails } from '../../../v2/appDetails/appDetails.type';
+import IndexStore from '../../../v2/appDetails/index.store';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -104,7 +106,7 @@ export default function AppDetail() {
     }, [params.envId]);
     return (
         <div style={{ overflowY: 'auto', height: '100%' }}>
-            <div className="flex left column w-100" style={{ minHeight: '100%', justifyContent: 'flex-start' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                 {/* <div className="flex left w-100 p-16">
                     <EnvSelector environments={otherEnvsResult?.result} />
                 </div> */}
@@ -184,6 +186,7 @@ export const Details: React.FC<{
         try {
             let response = await appDetailsAPI(params.appId, params.envId, 25000);
             setAppDetailsResult(response);
+            IndexStore.publishAppDetails(response.result)
             setAppDetailsLoading(false);
         } catch (error) {
             if (!appDetailsResult) {
@@ -309,7 +312,11 @@ export const Details: React.FC<{
                 environment={environment}
                 podMap={aggregatedNodes.nodes.Pod}
                 k8sVersion={appDetails.k8sVersion} />}
-            <Route path={`${path}/:kind?/:tab?`}>
+
+            <NodeTreeDetailTab appDetails={appDetails} />
+            
+            {/* <Route path={`${path}/:kind?/:tab?`}>
+            
                 <NodeDetails
                     nodes={aggregatedNodes}
                     describeNode={describeNode}
@@ -318,7 +325,7 @@ export const Details: React.FC<{
                     containerName={detailedNode?.containerName}
                     isAppDeployment={isAppDeployment}
                 />
-            </Route>
+            </Route> */}
 
             {detailedStatus && (
                 <ProgressStatus
@@ -488,15 +495,16 @@ const NodeDetails: React.FC<{
 
     return (
         <>
-            <ResourceTreeNodes
+            {/* <ResourceTreeNodes
                 nodes={nodes}
                 describeNode={describeNode}
                 isAppDeployment={isAppDeployment}
                 appName={appDetails?.appName}
                 environmentName={appDetails?.environmentName}
                 appId={appDetails?.appId}
-            />
-            <ResponsiveDrawer
+            /> */}
+            {/* <NodeTreeDetailTab appDetails={appDetails}/> */}
+            {/* <ResponsiveDrawer
                 className="events-logs"
                 isDetailedView={!!params.tab}
                 onHeightChange={(height) => (document.getElementById('dummy-div').style.height = `${height}px`)}
@@ -546,7 +554,7 @@ const NodeDetails: React.FC<{
                         handleLogPause={handleLogsPause}
                     />
                 </Route>
-            </ResponsiveDrawer>
+            </ResponsiveDrawer> */}
             <div id="dummy-div" style={{ width: '100%', height: '32px' }}></div>
         </>
     );

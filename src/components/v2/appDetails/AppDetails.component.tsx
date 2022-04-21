@@ -18,24 +18,25 @@ import EnvironmentStatusComponent from './sourceInfo/environmentStatus/Environme
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component';
 import SyncErrorComponent from './SyncError.component';
 import { useEventSource } from '../../common';
+import '../lib/bootstrap-grid.min.css'
 
 const AppDetailsComponent = () => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
-    const { path, url } = useRouteMatch();
-    const history = useHistory();
+    // const { path, url } = useRouteMatch();
+    // const history = useHistory();
 
     const [streamData, setStreamData] = useState<AppStreamData>(null);
-    const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>());
-    const [applicationObjectTabs] = useSharedState(
-        AppDetailsStore.getAppDetailsTabs(),
-        AppDetailsStore.getAppDetailsTabsObservable(),
-    );
-    const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>();
+    // const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>());
+    // const [applicationObjectTabs] = useSharedState(
+    //     AppDetailsStore.getAppDetailsTabs(),
+    //     AppDetailsStore.getAppDetailsTabsObservable(),
+    // );
+    // const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>();
 
     const appDetails = IndexStore.getAppDetails();
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
 
-    const tabRef = useRef<HTMLDivElement>(null);
+    //const tabRef = useRef<HTMLDivElement>(null);
 
     // if app type not of EA, then call stream API
     const syncSSE = useEventSource(
@@ -47,12 +48,42 @@ const AppDetailsComponent = () => {
         (event) => setStreamData(JSON.parse(event.data)),
     );
 
-    useEffect(() => {
-        const _pods = IndexStore.getNodesByKind(NodeType.Pod);
-        const isLogAnalyserURL = window.location.href.indexOf(URLS.APP_DETAILS_LOG) > 0;
-        AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0, isLogAnalyserURL);
-    }, [params.appId, params.envId]);
+    // useEffect(() => {
+    //     const _pods = IndexStore.getNodesByKind(NodeType.Pod);
+    //     const isLogAnalyserURL = window.location.href.indexOf(URLS.APP_DETAILS_LOG) > 0;
+    //     AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0, isLogAnalyserURL);
+    // }, [params.appId, params.envId]);
 
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+            <div>
+                <EnvironmentSelectorComponent />
+                <EnvironmentStatusComponent appStreamData={streamData} />
+            </div>
+
+            <SyncErrorComponent appStreamData={streamData} />
+            <NodeTreeDetailTab appDetails={appDetails} />
+        </div>
+    )
+};
+
+export function NodeTreeDetailTab({appDetails}) {
+    // const appDetails = IndexStore.getAppDetails();
+    const tabRef = useRef<HTMLDivElement>(null);
+    const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>());
+    const [applicationObjectTabs] = useSharedState(
+        AppDetailsStore.getAppDetailsTabs(),
+        AppDetailsStore.getAppDetailsTabsObservable(),
+    );
+    const params = useParams<{ appId: string; envId: string; nodeType: string }>();
+    const { path, url } = useRouteMatch();
+    const handleFocusTabs = () => {
+        if (tabRef?.current) {
+            tabRef.current.focus()
+        }
+    }
+    const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>();
+    const history = useHistory();
     const handleCloseTab = (e: any, tabIdentifier: string) => {
         e.stopPropagation();
 
@@ -67,6 +98,12 @@ const AppDetailsComponent = () => {
         }, 1);
     };
 
+    useEffect(() => {
+        const _pods = IndexStore.getNodesByKind(NodeType.Pod);
+        const isLogAnalyserURL = window.location.href.indexOf(URLS.APP_DETAILS_LOG) > 0;
+        AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0, isLogAnalyserURL);
+    }, [params.appId, params.envId]);
+
     const clearLogSearchTerm = (tabIdentifier: string): void => {
         if (logSearchTerms) {
             const identifier = tabIdentifier.toLowerCase();
@@ -79,22 +116,9 @@ const AppDetailsComponent = () => {
             }
         }
     };
-
-    const handleFocusTabs = () => {
-        if (tabRef?.current) {
-            tabRef.current.focus();
-        }
-    };
-
+    
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-            <div>
-                <EnvironmentSelectorComponent />
-                <EnvironmentStatusComponent appStreamData={streamData}/>
-            </div>
-
-            <SyncErrorComponent appStreamData={streamData} />
-
+        <>
             {appDetails.resourceTree?.nodes?.length > 0 && (
                 <>
                     <div
@@ -260,8 +284,8 @@ const AppDetailsComponent = () => {
                     </Switch>
                 </>
             )}
-        </div>
-    );
-};
+        </>
+    )
+}
 
 export default AppDetailsComponent;

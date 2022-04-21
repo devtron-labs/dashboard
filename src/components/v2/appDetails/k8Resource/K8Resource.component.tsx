@@ -21,7 +21,6 @@ export default function K8ResourceComponent({
     useEffect(() => {
         AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.k8s_Resources);
     }, []);
-
     return (
         <div className="bcn-0" style={{ justifyContent: 'space-between' }}>
             <div className="pt-16 pl-20 pb-16">

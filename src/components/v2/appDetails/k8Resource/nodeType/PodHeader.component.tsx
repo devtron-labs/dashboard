@@ -4,13 +4,12 @@ import './nodeType.scss';
 
 function PodHeaderComponent({ callBack }) {
     const [podTab, selectPodTab] = useState<'old' | 'new'>('new');
-
     const podMetaData = IndexStore.getPodMetaData();
     const [newPods, setNewPods] = useState([]);
     const [oldPods, setOldPods] = useState([]);
     const [selectedHealthyNewNodeCount, setSelectedHealthyNewNodeCount] = useState<Number>(0);
     const [selectedHealthyOldNodeCount, setSelectedHealthyOldNodeCount] = useState<Number>(0);
-
+    
     useEffect(() => {
         if (podMetaData && podMetaData.length > 0) {
             let _newPods = [];
@@ -25,7 +24,8 @@ function PodHeaderComponent({ callBack }) {
             });
             setNewPods(_newPods);
             setOldPods(_oldPods);
-
+            //setSelectedNodes( podTab === 'new'? newPods : oldPods) // This is to update selectedNodes during 30s polling
+            
             setSelectedHealthyNewNodeCount(_newPods.length);
             setSelectedHealthyOldNodeCount(_oldPods.length);
         }
@@ -33,6 +33,7 @@ function PodHeaderComponent({ callBack }) {
 
     useEffect(() => {
         callBack(podTab === 'new');
+        //setSelectedNodes( podTab === 'new'? newPods : oldPods) // This is to update selectedNodes on tab change
     }, [podTab]);
 
     return (
@@ -71,7 +72,7 @@ function PodHeaderComponent({ callBack }) {
                         {selectedHealthyOldNodeCount > 0 ? (
                             <div className="pl-16"> {selectedHealthyOldNodeCount} healthy</div>
                         ) : (
-                            ''
+                            <br/>
                         )}
                     </React.Fragment>
                 </div>
