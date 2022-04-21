@@ -428,7 +428,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[key]
                     if (
                         variableDetail.refVariableUsed &&
-                        variableDetail.refVariableType === RefVariableType.FROM_PREVIOUS_STEP &&
+                        variableDetail.variableType === RefVariableType.FROM_PREVIOUS_STEP &&
                         variableDetail.refVariableStage ===
                             (activeStageName === BuildStageVariable.PreBuild
                                 ? RefVariableStageType.PRE_CI
@@ -438,7 +438,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         variableDetail.refVariableUsed = false
                         variableDetail.refVariableStepIndex = 0
                         variableDetail.refVariableName = ''
-                        variableDetail.refVariableType = RefVariableType.NEW
+                        variableDetail.variableType = RefVariableType.NEW
                         delete variableDetail.refVariableStage
                     }
                 }

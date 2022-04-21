@@ -115,7 +115,7 @@ export interface VariableType {
     description: string
     defaultValue: string
     refVariableUsed: boolean
-    refVariableType: RefVariableType
+    variableType: RefVariableType
     refVariableStepIndex: number
     refVariableName: string
     refVariableStage?: RefVariableStageType

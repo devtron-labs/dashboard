@@ -55,7 +55,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             description: '',
             defaultValue: '',
             refVariableUsed: false,
-            refVariableType: RefVariableType.NEW,
+            variableType: RefVariableType.NEW,
             refVariableStepIndex: 0,
             refVariableName: '',
         }
@@ -126,6 +126,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                 type="text"
                                                 placeholder="Variables name"
                                                 value={variable.name}
+                                                autoComplete="off"
                                                 name="name"
                                                 onChange={(e) => handleInputOutputValueChange(e, index)}
                                                 onBlur={(e) => handleBlur()}

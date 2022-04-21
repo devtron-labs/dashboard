@@ -26,11 +26,11 @@ export class ValidationRules {
         let str = `^[a-z0-9-_]+$`
         let re = new RegExp(str)
         const variableValue =
-            (value['refVariableType'] === RefVariableType.NEW && value['value']) ||
+            (value['variableType'] === RefVariableType.NEW && value['value']) ||
             (value['refVariableUsed'] &&
                 value['refVariableName'] &&
-                (value['refVariableType'] === RefVariableType.GLOBAL ||
-                    (value['refVariableType'] === RefVariableType.FROM_PREVIOUS_STEP &&
+                (value['variableType'] === RefVariableType.GLOBAL ||
+                    (value['variableType'] === RefVariableType.FROM_PREVIOUS_STEP &&
                         value['refVariableStepIndex'] &&
                         value['refVariableStage'])))
         if (!value['name'] && !variableValue && !value['description']) {

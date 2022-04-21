@@ -232,7 +232,7 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                         <RadioGroup
                             className="no-border"
                             value={
-                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainerPath ? MountPath.TRUE : MountPath.FALSE
+                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountDirectoryFromHost ? MountPath.TRUE : MountPath.FALSE
                             }
                             disabled={false}
                             name="mountDirectoryFromHost"

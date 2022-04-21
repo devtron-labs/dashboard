@@ -114,6 +114,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
     }, [inputVariablesListFromPrevStep])
 
     const handleOutputVariableSelector = (selectedValue: { label: string; value: string }) => {
+        console.log(selectedValue)
         setSelectedOutputVariable(selectedValue)
         const currentStepTypeVariable =
             formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
@@ -124,7 +125,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         if (selectedValue['refVariableStepIndex']) {
             _variableDetail = {
                 refVariableUsed: true,
-                refVariableType: RefVariableType.FROM_PREVIOUS_STEP,
+                variableType: RefVariableType.FROM_PREVIOUS_STEP,
                 refVariableStepIndex: selectedValue['refVariableStepIndex'],
                 refVariableName: selectedValue.label,
                 refVariableStage:
@@ -136,7 +137,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         } else if (selectedValue['refVariableStepIndex']) {
             _variableDetail = {
                 refVariableUsed: true,
-                refVariableType: RefVariableType.GLOBAL,
+                variableType: RefVariableType.GLOBAL,
                 refVariableStepIndex: 0,
                 refVariableName: selectedValue.label,
                 format: selectedValue['format'],
@@ -166,7 +167,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                     : 'pluginRefStepDetail'
             ].inputVariables[selectedVariableIndex]
         const selectedValueLabel =
-            selectedVariable.refVariableType === RefVariableType.NEW
+            selectedVariable.variableType === RefVariableType.NEW
                 ? selectedVariable.value
                 : selectedVariable.refVariableName
         setSelectedOutputVariable({ ...selectedVariable, label: selectedValueLabel, value: selectedValueLabel })
