@@ -85,7 +85,7 @@ export default function NavigationRoutes() {
                 const response = getVersionConfig()
                 const json = await response
                 if (json.code == 200) {
-                    setServerMode(json.result.serverMode)
+                    setServerMode(SERVER_MODE.EA_ONLY) //json.result.serverMode)
                     setPageState(ViewType.FORM)
                 }
             } catch (err) {

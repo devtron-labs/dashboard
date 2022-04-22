@@ -96,8 +96,9 @@ export const NavItem = (): JSX.Element => {
                         <span className="fs-13 ml-12">{route.name}</span>
                     )}
                     {route.name === 'About Devtron' && (
-                        <div className="about-devtron flex left column ml-12">
+                        <div className="about-devtron ml-12">
                             <span className="fs-13">{route.name}</span>
+                            <br />
                             <span className="fs-11">v0.3.25</span>
                         </div>
                     )}

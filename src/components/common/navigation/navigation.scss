@@ -198,9 +198,10 @@
     background-color: white;
     position: fixed;
     bottom: 15px;
-    left: 66px;
-    border: solid 1px rgba(255, 255, 255, 0);
-    box-shadow: 0 2px 4px -1px rgba(0, 56, 112, 0.3);
+    left: 68px;
+    border: 1px solid var(--N200);
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
 }
 
 .logout-card__initial {
@@ -257,17 +258,48 @@
     border-color: var(--N000);
 }
 
-.more-option-card{
+.more-option-card,
+.help-card {
     width: 216px;
     border-radius: 4px;
     background-color: white;
     position: fixed;
     bottom: 15px;
-    left: 66px;
-    border: solid 1px rgba(255, 255, 255, 0);
-    box-shadow: 0 2px 4px -1px rgba(0, 56, 112, 0.3);
+    left: 68px;
+    border: 1px solid var(--N200);
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
 
 }
+
+.help-card {
+    display: grid;
+    grid-template-rows: 36px 1px 36px 36px 1px 36px 56px;
+    align-items: center;
+
+    .help-card__option {
+        padding: 6px 12px;
+        height: 36px;
+
+        &:hover {
+            background-color: var(--N100);
+        }
+        .help-card__link {
+            text-decoration: none;
+        }
+    }
+
+    .help-card__option-separator {
+        height: 1px;
+        background-color: var(--N100);
+    }
+
+    .help-card__update-option {
+        padding: 6px 10px;
+        background-color: var(--N100);
+    }
+}
+
 .more-option-card__rect{
     font-size: 14px;
     color: var(--N900);

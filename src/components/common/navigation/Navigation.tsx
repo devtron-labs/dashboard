@@ -3,6 +3,10 @@ import { NavLink, RouteComponentProps } from 'react-router-dom';
 import { SERVER_MODE, URLS } from '../../../config';
 import { ReactComponent as MoreOption } from '../../../assets/icons/ic-more-option.svg'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
+import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
+import { ReactComponent as Discord } from '../../../assets/icons/ic-discord-fill.svg'
+import { ReactComponent as Edit } from '../../../assets/icons/ic-edit.svg' // use pencil
+import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
 import { getLoginInfo } from '../index';
 import { getRandomColor } from '../helpers/Helpers';
 import NavSprite from '../../../assets/icons/navigation-sprite.svg';
@@ -85,6 +89,31 @@ const NavigationStack = {
 	href: URLS.STACK_MANAGER,
 };
 
+const HelpOptions = [
+    {
+        name: 'View documentation',
+		link: 'https://devtron.ai/blog/',
+        icon: File,
+		showSeparator: true
+    },
+    {
+        name: 'Chat with support',
+		link: 'https://discord.gg/jsRG5qx2gp',
+        icon: Chat,
+    },
+    {
+        name: 'Join discord community',
+		link: 'https://discord.gg/jsRG5qx2gp',
+        icon: Discord,
+		showSeparator: true
+    },
+    {
+        name: 'Raise an issue/request',
+		link: 'https://github.com/devtron-labs/devtron/issues',
+        icon: Edit,
+    },
+]
+
 interface NavigationType extends RouteComponentProps<{}>{
 	serverMode: SERVER_MODE
 }
@@ -143,61 +172,43 @@ export default class Navigation extends Component<NavigationType, { loginInfo: a
 	}
 
 	renderHelpCard() {
-		return ReactDOM.createPortal(<div className="transparent-div" onClick={this.toggleMoreOptionCard}>
-			<div className="more-option-card ">
-				<div className="more-option-card__title">
-					<a className="more-option-card__link" href="https://devtron.ai/blog/" target="_blank" rel="noreferrer noopener"
-						onClick={(event) => {
-							ReactGA.event({
-								category: 'Main Navigation',
-								action: 'Devtron Blog Clicked',
-							})
-						}}>
-						<div className="more-option-card__rect">Devtron Blog</div>
-					</a>
-				</div>
-				<div className="more-option-card__title">
-					<a className="more-option-card__link" href="https://github.com/devtron-labs/devtron/issues" target="_blank" rel="noreferrer noopener" onClick={(event) => {
-						ReactGA.event({
-							category: 'Main Navigation',
-							action: 'Create Issue Clicked',
-						})
-					}}>
-						<div className="more-option-card__rect">Create an issue</div>
-					</a>
-				</div>
-				<div className="more-option-card__title">
-					<a className="more-option-card__link" href=" https://github.com/devtron-labs/devtron" target="_blank" rel="noreferrer noopener" onClick={(event) => {
-						ReactGA.event({
-							category: 'Main Navigation',
-							action: 'Star Github Repo Clicked',
-						})
-					}}>
-						<div className="more-option-card__rect">Star GitHub Repo</div>
-					</a>
-				</div>
-				<div className="more-option-card__title">
-					<a className="more-option-card__link" href="https://discord.gg/jsRG5qx2gp" target="_blank" rel="noreferrer noopener" onClick={(event) => {
-						ReactGA.event({
-							category: 'Main Navigation',
-							action: `Join Discord community clicked`,
-						})
-					}}>
-						<div className="more-option-card__rect">Join Discord Community</div>
-					</a>
-				</div>
-				<div className="more-option-card__title">
-					<a className="more-option-card__link" href="https://github.com/devtron-labs/devtron/blob/main/CONTRIBUTING.md" target="_blank" rel="noreferrer noopener" onClick={(event) => {
-						ReactGA.event({
-							category: 'Main Navigation',
-							action: `Become Contributor Clicked`,
-						})
-					}}>
-						<div className="more-option-card__rect">Become a contributor</div>
-					</a>
-				</div>
-			</div>
-		</div>, document.getElementById('root'))
+		return ReactDOM.createPortal(
+            <div className="transparent-div" onClick={this.toggleHelpCard}>
+                <div className="help-card">
+                    {HelpOptions.map((option) => {
+                        return (
+                            <>
+                                <div className="help-card__option">
+                                    <a
+                                        key={option.name}
+                                        className="help-card__link flex left cn-9"
+                                        href={option.link}
+                                        target="_blank"
+                                        rel="noreferrer noopener"
+                                        onClick={(event) => {
+                                            ReactGA.event({
+                                                category: 'Main Navigation',
+                                                action: `${option.name} Clicked`,
+                                            })
+                                        }}
+                                    >
+                                        <option.icon className="help-card__icon icon-dim-20" />
+                                        <div className="help-card__option-name ml-12 cn-9 fs-14">{option.name}</div>
+                                    </a>
+                                </div>
+                                {option.showSeparator && <div className="help-card__option-separator" />}
+                            </>
+                        )
+                    })}
+                    <div className="help-card__update-option mt-4">
+                        <span>Devtron v0.3.25</span>
+                        <br />
+                        <NavLink to={URLS.STACK_MANAGER_ABOUT}>Check for Updates</NavLink>
+                    </div>
+                </div>
+            </div>,
+            document.getElementById('root'),
+        )
 	}
 
 	renderMoreOption() {
