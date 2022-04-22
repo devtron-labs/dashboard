@@ -114,7 +114,6 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
     }, [inputVariablesListFromPrevStep])
 
     const handleOutputVariableSelector = (selectedValue: { label: string; value: string }) => {
-        console.log(selectedValue)
         setSelectedOutputVariable(selectedValue)
         const currentStepTypeVariable =
             formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE

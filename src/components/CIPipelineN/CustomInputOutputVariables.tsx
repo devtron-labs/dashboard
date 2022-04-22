@@ -112,7 +112,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.map(
                 (variable, index) => (
-                    <>
+                    <div  key={`custom-input-variable${index}`}>
                         <div className="pl-200 mb-20 flexbox justify-space">
                             <div className="custom-variable-container w-100">
                                 <Equal className="icon-dim-40 variable-equal-icon" />
@@ -215,7 +215,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                     </span>
                                 )}
                         </div>
-                    </>
+                    </div>
                 ),
             )}
         </>
