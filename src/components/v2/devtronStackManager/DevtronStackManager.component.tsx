@@ -1,31 +1,69 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { ModuleDetails, ModuleDetailsCardType, ModuleInstallationStates } from './DevtronStackManager.type'
+import { ModuleDetailsCardType, ModuleStatus, ModuleDetails } from './DevtronStackManager.type'
 import EmptyState from '../../EmptyState/EmptyState'
 import CICDIcon from '../../../assets/img/ic-build-deploy.png'
 import MoreExtentionsIcon from '../../../assets/img/ic-more-extensions.png'
 import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
 import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
+import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
+import { Progressing } from '../../common'
 import VersionUpToDate from '../../../assets/img/ic-empty-tests.svg'
 import NoExtensions from '../../../assets/img/empty-noresult@2x.png'
 import { URLS } from '../../../config'
 
 const MODULE_ICON_MAP = {
-    'ci-cd': CICDIcon,
-    'more-extensions': MoreExtentionsIcon,
+    ciCd: CICDIcon,
+    moreExtensions: MoreExtentionsIcon,
 }
 
-export const MoreExtentionsDetails: ModuleDetails = {
-    name: 'More extensions coming soon',
-    info: "We're building a suite of extensions to serve your software delivery lifecycle.",
-    icon: 'more-extensions',
-    installationState: ModuleInstallationStates.NONE,
+export const MODULE_DETAILS_MAP: Record<string, ModuleDetails> = {
+    ciCd: {
+        name: 'Build and Deploy (CI/CD)',
+        info: 'Enables continous code integration and deployment.',
+        icon: 'ciCd',
+        installationStatus: ModuleStatus.NONE,
+    },
+    moreExtensions: {
+        name: 'More extensions coming soon',
+        info: "We're building a suite of extensions to serve your software delivery lifecycle.",
+        icon: 'moreExtensions',
+        installationStatus: ModuleStatus.NONE,
+    },
 }
 
-export const ModuleDeailsCard = ({ moduleDetails, className }: ModuleDetailsCardType): JSX.Element => {
+const getInstallationStatusLabel = (installationStatus: ModuleStatus): JSX.Element => {
+    if (installationStatus === ModuleStatus.INSTALLING) {
+        return (
+            <div className={`module-details__installation-status flex ${installationStatus}`}>
+                <Progressing size={20} />
+                <span className="fs-13 fw-6 ml-8">Installing</span>
+            </div>
+        )
+    } else if (installationStatus === ModuleStatus.INSTALLED) {
+        return (
+            <div className={`module-details__installation-status flex ${installationStatus}`}>
+                <InstalledIcon className="icon-dim-20" />
+                <span className="fs-13 fw-6 ml-8">Installed</span>
+            </div>
+        )
+    } else if (installationStatus === ModuleStatus.INSTALL_FAILED || installationStatus === ModuleStatus.TIMEOUT) {
+        return (
+            <div className={`module-details__installation-status flex installFailed`}>
+                <ErrorIcon className="icon-dim-20" />
+                <span className="fs-13 fw-6 ml-8">Failed</span>
+            </div>
+        )
+    }
+
+    return <></>
+}
+
+const ModuleDeailsCard = ({ moduleDetails, className }: ModuleDetailsCardType): JSX.Element => {
     return (
         <div className={`module-details__card flex left column br-8 p-20 mr-20 mb-20 ${className || ''}`}>
+            {getInstallationStatusLabel(moduleDetails.installationStatus)}
             <img
                 className="module-details__card-icon mb-16"
                 src={MODULE_ICON_MAP[moduleDetails.icon]}
@@ -52,7 +90,10 @@ export const ModulesListingView = ({
                 return <ModuleDeailsCard key={`module-details__card-${idx}`} moduleDetails={module} />
             })}
             {isDiscoverModulesView && (
-                <ModuleDeailsCard moduleDetails={MoreExtentionsDetails} className="more-extensions__card" />
+                <ModuleDeailsCard
+                    moduleDetails={MODULE_DETAILS_MAP['moreExtensions']}
+                    className="more-extensions__card"
+                />
             )}
         </div>
     ) : (
@@ -60,7 +101,7 @@ export const ModulesListingView = ({
     )
 }
 
-export const NavItem = (): JSX.Element => {
+export const NavItem = ({ installedModulesCount }: { installedModulesCount: number }): JSX.Element => {
     const ExtentionsSection = [
         {
             name: 'Discover',
@@ -105,7 +146,7 @@ export const NavItem = (): JSX.Element => {
                     {route.name === 'Installed' && (
                         <div className="installed-modules-link flex content-space ml-12" style={{ width: '175px' }}>
                             <span className="fs-13">{route.name}</span>
-                            <span className="badge">0</span>
+                            <span className="badge">{installedModulesCount || 0}</span>
                         </div>
                     )}
                 </div>

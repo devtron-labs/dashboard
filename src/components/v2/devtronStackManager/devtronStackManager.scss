@@ -102,6 +102,34 @@
             height: 180px;
             background-color: white;
             border: 1px solid var(--N200);
+            position: relative;
+
+            .module-details__installation-status {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                text-transform: uppercase;
+
+                &.installing {
+                    color: var(--B500);
+
+                    svg path {
+                        fill: var(--B500);
+                    }
+                }
+
+                &.installed {
+                    color: var(--G500);
+
+                    svg path {
+                        stroke: var(--G500);
+                    }
+                }
+
+                &.installFailed {
+                    color: var(--R500);
+                }
+            }
 
             .module-details__card-icon {
                 width: 56px;
