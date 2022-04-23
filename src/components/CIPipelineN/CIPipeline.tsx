@@ -286,6 +286,12 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             toast.error('Some Required Fields are missing')
             return
         }
+          // For removing empty mapping from portMap
+          formData[activeStageName].steps.forEach((_step, idx) => {
+            formData[activeStageName].steps[idx].inlineStepDetail.portMap = _step.inlineStepDetail.portMap.filter(
+                (_port) => _port.portOnLocal && _port.portOnContainer,
+            )
+        })
         const msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
         saveCIPipeline(
             formData,
