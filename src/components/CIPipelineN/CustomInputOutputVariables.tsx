@@ -117,11 +117,11 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                             <div className="custom-variable-container w-100">
                                 <Equal className="icon-dim-40 variable-equal-icon" />
 
-                                <div className="tp-4 fs-13 fw-4 text-uppercase">
+                                <div className="tp-4 fs-13 fw-4">
                                     <div className="flexbox">
                                         <div style={{ width: type === PluginVariableType.OUTPUT ? '80%' : '100%' }}>
                                             <input
-                                                className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 top-radius"
+                                                className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 top-radius"
                                                 type="text"
                                                 placeholder="Variables name"
                                                 value={variable.name}
@@ -135,7 +135,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                         {type === PluginVariableType.OUTPUT && (
                                             <div style={{ width: '20%' }}>
                                                 <ReactSelect
-                                                    // defaultValue={selectedFormat}
+                                                    value={variable.format ? {label: variable.format , value: variable.format} : formatOptions[0] }
                                                     tabIndex={1}
                                                     onChange={(selectedValue) => {
                                                         handleFormatChange(selectedValue, index)
@@ -158,11 +158,11 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                         </div>
                                         <div className='bcn-1 ' style={{ width: '20%' }}>
                                             {variable.format && variable.variableType === RefVariableType.GLOBAL? (
-                                                <span className="fs-13 fw-4 p-5">{variable.format}</span>
+                                                <span className="fs-13 fw-4 p-5 flex left">{variable.format}</span>
                                             ) : (
                                                 <ReactSelect
                                                     value={variable.format ? {label: variable.format , value: variable.format} : formatOptions[0] }
-                                                    tabIndex={1}
+                                                    tabIndex={2}
                                                     onChange={(selectedValue) => {
                                                         handleFormatChange(selectedValue, index)
                                                     }}
