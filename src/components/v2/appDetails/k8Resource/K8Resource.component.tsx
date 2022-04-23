@@ -11,10 +11,12 @@ export default function K8ResourceComponent({
     clickedNodes,
     registerNodeClick,
     handleFocusTabs,
+    envType,
 }: {
     clickedNodes: Map<string, string>;
     registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>;
     handleFocusTabs: () => void;
+    envType?:any;
 }) {
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable());
 
@@ -32,7 +34,7 @@ export default function K8ResourceComponent({
                         <NodeTreeComponent clickedNodes={clickedNodes} registerNodeClick={registerNodeClick} />
                     </div>
                     <div className="flex-grow-1 p-0">
-                        <NodeComponent handleFocusTabs={handleFocusTabs} />
+                        <NodeComponent handleFocusTabs={handleFocusTabs} envType={envType} />
                     </div>
                 </div>
             ) : (

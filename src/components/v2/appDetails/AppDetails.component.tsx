@@ -10,7 +10,7 @@ import { useRouteMatch, Redirect, useParams, useHistory } from 'react-router';
 import { URLS } from '../../../config';
 import AppDetailsStore, { AppDetailsTabs } from './appDetails.store';
 import { useSharedState } from '../utils/useSharedState';
-import { ApplicationObject, AppStreamData, NodeType, AppType } from './appDetails.type';
+import { ApplicationObject, AppStreamData, NodeType, AppType, AppDetails } from './appDetails.type';
 import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component';
 import Tippy from '@tippyjs/react';
 import IndexStore from './index.store';
@@ -20,7 +20,7 @@ import SyncErrorComponent from './SyncError.component';
 import { useEventSource } from '../../common';
 import '../lib/bootstrap-grid.min.css'
 
-const AppDetailsComponent = () => {
+const AppDetailsComponent = ({envType}:{envType?:any}) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
     // const { path, url } = useRouteMatch();
     // const history = useHistory();
@@ -47,13 +47,12 @@ const AppDetailsComponent = () => {
             appDetails?.appType?.toString() != AppType.EXTERNAL_HELM_CHART.toString(),
         (event) => setStreamData(JSON.parse(event.data)),
     );
-
+   
     // useEffect(() => {
     //     const _pods = IndexStore.getNodesByKind(NodeType.Pod);
     //     const isLogAnalyserURL = window.location.href.indexOf(URLS.APP_DETAILS_LOG) > 0;
     //     AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0, isLogAnalyserURL);
     // }, [params.appId, params.envId]);
-
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             <div>
@@ -62,12 +61,12 @@ const AppDetailsComponent = () => {
             </div>
 
             <SyncErrorComponent appStreamData={streamData} />
-            <NodeTreeDetailTab appDetails={appDetails} />
+            <NodeTreeDetailTab appDetails={appDetails} envType={envType} />
         </div>
     )
 };
 
-export function NodeTreeDetailTab({appDetails}) {
+export function NodeTreeDetailTab({appDetails,envType}:{appDetails?:AppDetails,envType?:any}) {
     // const appDetails = IndexStore.getAppDetails();
     const tabRef = useRef<HTMLDivElement>(null);
     const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>());
@@ -229,6 +228,7 @@ export function NodeTreeDetailTab({appDetails}) {
                                         clickedNodes={clickedNodes}
                                         registerNodeClick={registerNodeClick}
                                         handleFocusTabs={handleFocusTabs}
+                                        envType={envType}
                                     />
                                 );
                             }}
@@ -252,6 +252,7 @@ export function NodeTreeDetailTab({appDetails}) {
                                         clickedNodes={clickedNodes}
                                         registerNodeClick={registerNodeClick}
                                         handleFocusTabs={handleFocusTabs}
+                                        envType={envType}
                                     />
                                 );
                             }}
@@ -264,6 +265,7 @@ export function NodeTreeDetailTab({appDetails}) {
                                         clickedNodes={clickedNodes}
                                         registerNodeClick={registerNodeClick}
                                         handleFocusTabs={handleFocusTabs}
+                                        envType={envType}
                                     />
                                 );
                             }}

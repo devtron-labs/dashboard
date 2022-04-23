@@ -116,7 +116,7 @@ function RouterComponent({ envType }) {
                     {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
                     <Suspense fallback={<DetailsProgressing loadingText="Please wait…" size={24} />}>
                         <Switch>
-                            <Route path={`${path}/${URLS.APP_DETAILS}`} component={AppDetailsComponent} />
+                            <Route path={`${path}/${URLS.APP_DETAILS}`} render={(envType)=> <AppDetailsComponent envType={envType}/>} />
                             <Route path={`${path}/${URLS.APP_VALUES}`} component={ValuesComponent} />
                             <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}>
                                 <ChartDeploymentHistory appId={params.appId} isExternal={false} />

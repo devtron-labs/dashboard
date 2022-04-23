@@ -51,7 +51,7 @@ function PodHeaderComponent({ callBack }) {
                         {selectedHealthyNewNodeCount > 0 ? (
                             <div className="pl-16"> {selectedHealthyNewNodeCount} healthy</div>
                         ) : (
-                            ''
+                            <br/>
                         )}
 
                         {/* {<span className="bullet mr-4 ml-4"></span>} */}

@@ -19,8 +19,9 @@ import { node } from 'prop-types';
 import { MODES } from '../../../../../config';
 import HyperionEnvironmentSelect from '../../../../hyperion/EnvironmentSelect';
 import { appSelectorStyle } from '../../../../AppSelector/AppSelectorUtil';
+import { NoPod } from '../../../../app/ResourceTreeNodes';
 
-function NodeComponent({handleFocusTabs}: {handleFocusTabs: () => void}) {
+function NodeComponent({handleFocusTabs,envType}: {handleFocusTabs: () => void;envType?:any}) {
     const { path, url } = useRouteMatch();
     const history = useHistory();
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
@@ -37,8 +38,8 @@ function NodeComponent({handleFocusTabs}: {handleFocusTabs: () => void}) {
         IndexStore.getAppDetailsFilteredNodes(),
         IndexStore.getAppDetailsNodesFilteredObservable(),
     );
-
-
+    const appPodStatus: boolean = params.nodeType === NodeType.Pod.toLowerCase() && !envType
+    
     useEffect(() => {
         if (!copied) return;
         setTimeout(() => setCopied(false), 2000);
@@ -85,13 +86,13 @@ function NodeComponent({handleFocusTabs}: {handleFocusTabs: () => void}) {
                     _healthyNodeCount++;
                 }
             });
-
+  
             let podsType = []
-            if(params.nodeType === NodeType.Pod.toLowerCase()){
+            if(appPodStatus){
                 podsType = ( _selectedNodes.filter(el => podMetaData.some((f) =>  f.name === el.name && f.isNew === podType)))
             }
 
-            setSelectedNodes( params.nodeType === NodeType.Pod.toLowerCase() ? [...podsType]: [..._selectedNodes]);
+            setSelectedNodes( appPodStatus ? [...podsType]: [..._selectedNodes]);
 
             setSelectedHealthyNodeCount(_healthyNodeCount);
             
@@ -268,7 +269,7 @@ function NodeComponent({handleFocusTabs}: {handleFocusTabs: () => void}) {
                     className="container-fluid"
                     style={{ paddingRight: 0, paddingLeft: 0, height: '600px', overflow: 'scroll' }}
                 >
-                    {params.nodeType === NodeType.Pod.toLowerCase() ? (
+                    {appPodStatus ? (
                         <PodHeaderComponent callBack={setPodType} />
                     ) : (
                         selectedNodes.length > 0 && (
@@ -298,7 +299,13 @@ function NodeComponent({handleFocusTabs}: {handleFocusTabs: () => void}) {
                             )
                         })}
                     </div>
-                    {selectedNodes.length > 0 &&  makeNodeTree(selectedNodes)}
+                    {selectedNodes.length > 0 ? (
+                        makeNodeTree(selectedNodes)
+                    ) : (
+                        <div className="w-100 flex" style={{ height: '400px' }}>
+                            <NoPod selectMessage="No Available Pods" />
+                        </div>
+                    )}
                 </div>
             )}
         </>
