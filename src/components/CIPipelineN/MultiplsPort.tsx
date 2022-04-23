@@ -29,22 +29,29 @@ function MultiplePort() {
             _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap = []
         }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap.push({
-            portOnLocal: null,
-            portOnContainer: null,
+            portOnLocal: undefined,
+            portOnContainer: undefined,
         })
         setFormData(_formData)
     }
 
     const handlePort = (e, index) => {
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[index][e.target.name] =
-            e.target.value
+        console.log(e.target.value)
+        if (e.target.value === undefined) {
+            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap = []
+        } else {
+            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[index][e.target.name] =
+            e.target.value ? parseInt(e.target.value) : undefined
+        }
         setFormData(_formData)
     }
 
     const deleteMultiplePort = (index) => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap.splice(index, 1)
+        console.log(_formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap)
+
         setFormData(_formData)
     }
 
@@ -60,37 +67,40 @@ function MultiplePort() {
                     Add port
                 </div>
             </div>
-            {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap.map((elm, index) => {
+            {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap?.map((elm, index) => {
                 return (
-                    <div className="custom-input__port-map pl-200 pb-20"  key={`multiple-port-${index}`}>
-                        <input
-                            style={{ width: '80% !important' }}
-                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
-                            autoComplete="off"
-                            placeholder="Port"
-                            type="text"
-                            onChange={(e) => handlePort(e, index)}
-                            name={PortMap.PORTONLOCAL}
-                            value={elm[PortMap.PORTONLOCAL]}
-                        />
-                        <div className="flex">:</div>
-                        <input
-                            style={{ width: '80% !important' }}
-                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
-                            autoComplete="off"
-                            placeholder="Port"
-                            type="text"
-                            onChange={(e) => handlePort(e, index)}
-                            name={PortMap.PORTONCONTAINER}
-                            value={elm[PortMap.PORTONCONTAINER]}
-                        />
-                        <Close
-                            className="icon-dim-24 pointer mt-6 ml-6"
-                            onClick={() => {
-                                deleteMultiplePort(index)
-                            }}
-                        />
-                    </div>
+                    elm[PortMap.PORTONLOCAL] !==0 &&
+                    elm[PortMap.PORTONCONTAINER] !== 0 && (
+                        <div className="custom-input__port-map pl-200 pb-20" key={`multiple-port-${index}`}>
+                            <input
+                                style={{ width: '80% !important' }}
+                                className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
+                                autoComplete="off"
+                                placeholder="Port"
+                                type="text"
+                                onChange={(e) => handlePort(e, index)}
+                                name={PortMap.PORTONLOCAL}
+                                value={elm[PortMap.PORTONLOCAL]}
+                            />
+                            <div className="flex">:</div>
+                            <input
+                                style={{ width: '80% !important' }}
+                                className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
+                                autoComplete="off"
+                                placeholder="Port"
+                                type="text"
+                                onChange={(e) => handlePort(e, index)}
+                                name={PortMap.PORTONCONTAINER}
+                                value={elm[PortMap.PORTONCONTAINER]}
+                            />
+                            <Close
+                                className="icon-dim-24 pointer mt-6 ml-6"
+                                onClick={() => {
+                                    deleteMultiplePort(index)
+                                }}
+                            />
+                        </div>
+                    )
                 )
             })}
         </div>

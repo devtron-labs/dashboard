@@ -110,12 +110,7 @@ export function PreBuild() {
                         args: [],
                     },
                 ],
-                portMap: [
-                    {
-                        portOnLocal: null,
-                        portOnContainer: null,
-                    },
-                ],
+                portMap: [],
                 mountCodeToContainer: false,
                 mountDirectoryFromHost: false,
                 script: '',
