@@ -50,7 +50,7 @@ function DeleteComponent({
 
     const renderCannotDeleteDialogModal = () => {
         return (
-            <ConfirmationDialog className="confirmation-dialog__body--w-360">
+            <ConfirmationDialog className="confirmation-dialog__body--w-400">
                 <ConfirmationDialog.Icon src={info} />
                 <ConfirmationDialog.Body title={`Cannot delete ${component} '${title}'`} />
                 <p className="fs-13 cn-7 ">{confirmationDialogDescription}</p>

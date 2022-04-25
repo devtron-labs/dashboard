@@ -138,6 +138,7 @@ export const Routes = {
     DASHBOARD_LOGGEDIN: '/dashboard-event/dashboardLoggedIn',
     HELM_APP_HIBERNATE_API: 'application/hibernate',
     HELM_APP_UNHIBERNATE_API: 'application/unhibernate',
+    EXTERNAL_LINKS_API: 'external-links',
 }
 
 export const ViewType = {
