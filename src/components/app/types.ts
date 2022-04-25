@@ -52,6 +52,7 @@ export interface AppDetails {
     otherEnvironment: OtherEnvironment[];
     resourceTree: ResourceTree;
     projectName?: string;
+    clusterId?: number;
 }
 
 export interface LabelTag {

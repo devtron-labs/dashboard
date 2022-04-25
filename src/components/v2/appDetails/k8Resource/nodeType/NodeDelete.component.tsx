@@ -15,6 +15,7 @@ import { deleteResource } from '../../appDetails.api';
 import { NodeType } from '../../appDetails.type';
 import AppDetailsStore from '../../appDetails.store';
 import { appendRefetchDataToUrl } from '../../../../util/URLUtil';
+import { URLS } from '../../../../../config';
 
 function NodeDeleteComponent({ nodeDetails, appDetails }) {
     const { path } = useRouteMatch();
@@ -27,8 +28,8 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
 
     function describeNodeWrapper(tab) {
         queryParams.set('kind', params.podName);
-        const newUrl = generatePath(path, { ...params, tab }) + '/' + nodeDetails.name + '/' + tab.toLowerCase();
-        history.push(newUrl);
+        const updatedPath = `${path.substring(0,path.indexOf('/k8s-resources/'))}/${URLS.APP_DETAILS_K8}/${NodeType.Pod.toLowerCase()}/${nodeDetails.name}/${tab.toLowerCase()}`
+        history.push(generatePath(updatedPath, { ...params, tab }));
     }
 
     const PodPopup: React.FC<{

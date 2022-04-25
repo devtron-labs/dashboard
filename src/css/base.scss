@@ -168,6 +168,10 @@ a:focus {
     cursor: pointer;
 }
 
+.cursor-not-allowed {
+    cursor: not-allowed !important;
+}
+
 .lowercase {
     text-transform: lowercase;
 }
@@ -1596,6 +1600,10 @@ button.anchor {
 
 .content-space {
     justify-content: space-between !important;
+}
+
+.content-start {
+    justify-content: flex-start !important;
 }
 
 .align-baseline {

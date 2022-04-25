@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-export class VisibleModal extends React.Component<{ className: string, noBackground?: boolean, close?: (e) => void; }> {
+export class VisibleModal extends React.Component<{ className: string, noBackground?: boolean, close?: (e) => void; onEscape?: (e) => void; }> {
 
     modalRef = document.getElementById('visible-modal');
 
@@ -11,8 +11,12 @@ export class VisibleModal extends React.Component<{ className: string, noBackgro
     }
 
     escFunction(event) {
-        if (event.keyCode === 27 && this.props.close) {
-            this.props.close(event);
+        if (event.keyCode === 27 || event.key === "Escape") {
+            if (this.props.onEscape) {
+                this.props.onEscape(event);
+            } else if (this.props.close) {
+                this.props.close(event);
+            }
         }
     }
 
