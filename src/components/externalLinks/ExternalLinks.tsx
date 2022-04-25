@@ -251,7 +251,15 @@ function ExternalLinks() {
                 <h4 className="title cn-9 fs-16 fw-6 mb-5">External links</h4>
                 <p className="subtitle cn-9 fs-12">
                     Configure links to third-party applications (e.g. Kibana, New Relic) for quick access. Configured
-                    links will be available in the App details page.
+                    links will be available in the App details page.&nbsp;
+                    <a
+                        href="https://docs.devtron.ai/devtron/setup/global-configurations/external-links"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="cb-5"
+                    >
+                        Learn more
+                    </a>
                 </p>
                 <div className="cta-search-filter-container flex content-space mb-16">
                     <AddLinkButton handleOnClick={handleAddLinkClick} />

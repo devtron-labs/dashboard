@@ -672,6 +672,13 @@ export const AddExternalLinkDialog = ({
                         <li>{`{podName}`}</li>
                         <li>{`{containerName}`}</li>
                     </ul>
+                    <a
+                        href="https://docs.devtron.ai/devtron/setup/global-configurations/external-links"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                    >
+                        Learn more
+                    </a>
                 </ol>
             </div>
         )
