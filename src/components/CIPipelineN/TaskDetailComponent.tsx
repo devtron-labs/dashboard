@@ -144,7 +144,7 @@ export function TaskDetailComponent() {
         <div>
             <div>
                 <div className="row-container mb-10">
-                    <label className="fw-6 fs-13 cn-7 label-width">Task name*</label>{' '}
+                    <label className="fw-6 fs-13 cn-7 label-width">Task name <span className='cr-5'>*</span></label>{' '}
                     <div>
                         <input
                             className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
@@ -173,23 +173,6 @@ export function TaskDetailComponent() {
                         placeholder="Enter task description"
                     />
                 </div>
-                {/* <div className="row-container mb-10">
-                    <label className="fw-6 fs-13 cn-7 label-width">Configure task using</label>
-                    <RadioGroup
-                        className="configuration-container justify-start"
-                        disabled={false}
-                        initialTab={configurationType}
-                        name="configuration-type"
-                        onChange={handleConfigurationChange}
-                    >
-                        <RadioGroup.Radio className="left-radius" value={ConfigurationType.GUI}>
-                            {ConfigurationType.GUI}
-                        </RadioGroup.Radio>
-                         <RadioGroup.Radio className="right-radius" value={ConfigurationType.YAML}>
-                            {ConfigurationType.YAML}
-                        </RadioGroup.Radio> 
-                    </RadioGroup>
-                </div> */}
 
                 {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE && (
                     <div className="row-container mb-10">
@@ -204,8 +187,8 @@ export function TaskDetailComponent() {
                             <RadioGroup.Radio className="left-radius" value={ScriptType.SHELL}>
                                 {ScriptType.SHELL}
                             </RadioGroup.Radio>
-                            <RadioGroup.Radio value={ScriptType.CONTAINERIMAGE}>
-                                {ScriptType.CONTAINERIMAGE}
+                            <RadioGroup.Radio className="right-radius no-left-border" value={ScriptType.CONTAINERIMAGE}>
+                                CONTAINER IMAGE
                             </RadioGroup.Radio>
                         </RadioGroup>
                     </div>

@@ -340,6 +340,7 @@
 
 .configuration-container .right-radius input + .radio__item-label {
     border-radius: 0 4px 4px 0 !important;
+    border-left: 0px
 }
 
 .radio-group input[type='checkbox']:checked + .radio__item-label {
