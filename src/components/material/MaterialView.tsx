@@ -5,6 +5,7 @@ import { MaterialViewProps, MaterialViewState } from './material.types';
 import { NavLink } from 'react-router-dom';
 import { URLS } from '../../config';
 import error from '../../assets/icons/misc/errorInfo.svg';
+import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import { ReactComponent as Down } from '../../assets/icons/ic-chevron-down.svg';
@@ -118,9 +119,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         components={{
                             IndicatorSeparator: null,
                             Option: (props) => {
+                                props.selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none' })
                                 return <components.Option {...props}>
-                                    {props.isSelected ? <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8" /> : <span className="inline-block icon-dim-16 mr-8"></span>}
-
                                     {props.data.url.includes("gitlab") ? <GitLab className="mr-8 vertical-align-middle icon-dim-20" /> : null}
                                     {props.data.url.includes("github") ? <GitHub className="mr-8 vertical-align-middle icon-dim-20" /> : null}
                                     {props.data.url.includes("bitbucket") ? <BitBucket className="mr-8 vertical-align-middle icon-dim-20" /> : null}

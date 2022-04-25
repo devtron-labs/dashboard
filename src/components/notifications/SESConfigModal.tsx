@@ -7,6 +7,7 @@ import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import { toast } from 'react-toastify';
 import { ViewType } from '../../config/constants';
 import { multiSelectStyles, DropdownIndicator } from './notifications.util';
+import { Option } from '../v2/common/ReactSelect.utils';
 import awsRegionList from '../common/awsRegionList.json'
 import ReactSelect from 'react-select';
 
@@ -278,7 +279,8 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                         <ReactSelect
                             defaultValue={this.state.form.region}
                             components={{
-                                DropdownIndicator
+                                DropdownIndicator,
+                                Option,
                             }}
                             tabIndex={4}
                             placeholder="Select AWS Region"

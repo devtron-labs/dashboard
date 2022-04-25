@@ -11,11 +11,11 @@ import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.s
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import './CIConfig.scss';
 import ReactSelect, { components } from 'react-select';
+import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils';
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg';
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg';
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg';
-import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 
 export default function CIConfig({ respondOnSuccess, ...rest }) {
     const [dockerRegistries, setDockerRegistries] = useState(null);
@@ -229,14 +229,10 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
     };
 
     const containerRegistryOption = (props) => {
+        props.selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none' });
         return (
             <components.Option {...props}>
                 <div style={{ display: 'flex' }}>
-                    {props.isSelected ? (
-                        <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8 mt-4" />
-                    ) : (
-                        <span className="inline-block icon-dim-16 mr-8"></span>
-                    )}
                     <div className={'registry-icon mr-5 ' + props.data.registryType}></div>
                     {props.label}
                 </div>
@@ -274,13 +270,9 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
     };
 
     const repositoryOption = (props) => {
+        props.selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none' })
         return (
             <components.Option {...props}>
-                {props.isSelected ? (
-                    <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8" />
-                ) : (
-                    <span className="inline-block icon-dim-16 mr-8"></span>
-                )}
                 {props.data.url.includes('gitlab') && <GitLab className="mr-8 vertical-align-middle icon-dim-20" />}
                 {props.data.url.includes('github') && <GitHub className="mr-8 vertical-align-middle icon-dim-20" />}
                 {props.data.url.includes('bitbucket') && (

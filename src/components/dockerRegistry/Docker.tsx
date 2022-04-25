@@ -10,6 +10,7 @@ import {
     not,
     multiSelectStyles,
 } from '../common';
+import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils';
 import { getDockerRegistryList } from '../../services/service';
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service';
 import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration';
@@ -22,7 +23,6 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg';
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg';
 import { ReactComponent as InfoFilled } from '../../assets/icons/ic-info-filled.svg';
-import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import DeleteComponent from '../../util/DeleteComponent';
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
 import ReactSelect, { components } from 'react-select';
@@ -413,14 +413,10 @@ function DockerForm({
     ];
 
     const registryOptions = (props) => {
+        props.selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none'})
         return (
             <components.Option {...props}>
                 <div style={{ display: 'flex' }}>
-                    {props.isSelected ? (
-                        <Check className="icon-dim-16 vertical-align-middle scb-5 mr-8 mt-4" />
-                    ) : (
-                        <span className="inline-block icon-dim-16 mr-8"></span>
-                    )}
                     <div className={'registry-icon git-logo mr-5 ' + props.data.value}></div>
                     {props.label}
                 </div>
