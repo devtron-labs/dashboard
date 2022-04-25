@@ -155,7 +155,13 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             ClearIndicator: null,
                                             MenuList,
                                         }}
-                                        styles={{ ...reactSelectStyles }}
+                                        styles={{
+                                            ...reactSelectStyles,
+                                            menu: (base, state) => ({
+                                                ...base,
+                                                top: 'auto',
+                                            }),
+                                        }}
                                         menuPortalTarget={document.getElementById('visible-modal')}
                                     />
                                 </div>
