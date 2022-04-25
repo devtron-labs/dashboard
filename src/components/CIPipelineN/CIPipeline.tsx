@@ -19,6 +19,7 @@ import {
     PluginType,
     RefVariableStageType,
     RefVariableType,
+    ScriptType,
     StepType,
     TaskErrorObj,
     VariableType,
@@ -317,7 +318,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
 
     const validateTask = (taskData: StepType, taskErrorobj: TaskErrorObj): void => {
         if (taskData && taskErrorobj) {
-            taskErrorobj.name = validationRules.taskName(taskData.name)
+            taskErrorobj.name = validationRules.requiredField(taskData.name)
             taskErrorobj.isValid = taskErrorobj.name.isValid
 
             if (taskData.stepType) {
@@ -344,6 +345,28 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         taskData[currentStepTypeVariable]['portMap']?.filter(
                             (_port) => _port.portOnLocal && _port.portOnContainer,
                         ) || []
+                    if (taskData[currentStepTypeVariable]['scriptType'] === ScriptType.SHELL) {
+                        taskErrorobj[currentStepTypeVariable]['script'] = validationRules.requiredField(
+                            taskData[currentStepTypeVariable]['script'],
+                        )
+                        taskErrorobj.isValid =
+                            taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable]['script'].isValid
+                    } else if (taskData[currentStepTypeVariable]['scriptType'] === ScriptType.CONTAINERIMAGE) {
+                        // if(taskData[currentStepTypeVariable]['scriptType']){
+
+                        // }
+                        // taskErrorobj[currentStepTypeVariable]['script'] = validationRules.requiredField(
+                        //     taskData[currentStepTypeVariable]['script'],
+                        // )
+                        // taskErrorobj.isValid =
+                        //     taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable]['script'].isValid
+
+                        taskErrorobj[currentStepTypeVariable]['containerImagePath'] = validationRules.requiredField(
+                            taskData[currentStepTypeVariable]['containerImagePath'],
+                        )
+                        taskErrorobj.isValid =
+                            taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable]['containerImagePath'].isValid
+                    }
                 }
             }
         }

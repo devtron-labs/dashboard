@@ -1,6 +1,13 @@
 import React, { useState, useContext } from 'react'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { FormType, MountPath, ScriptType, TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
+import {
+    FormErrorObjectType,
+    FormType,
+    MountPath,
+    ScriptType,
+    TaskFieldDescription,
+    TaskFieldLabel,
+} from '../ciPipeline/types'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import OutputDirectoryPath from './OutputDirectoryPath'
 import MultiplePort from './MultiplsPort'
@@ -10,6 +17,7 @@ import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import MountFromHost from './MountFromHost'
 import { Checkbox, CHECKBOX_VALUE } from '../common'
 import CustomScript from './CustomScript'
+import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 
 export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: string }) {
     const {
@@ -17,11 +25,13 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
         formData,
         setFormData,
         activeStageName,
+        formDataErrorObj,
     }: {
         selectedTaskIndex: number
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         activeStageName: string
+        formDataErrorObj: FormErrorObjectType
     } = useContext(ciPipelineContext)
     const [isMountCustomScript, setIsMountCustomScript] = useState(false)
 
@@ -56,12 +66,7 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
         if (taskScriptType === ScriptType.SHELL) {
             return (
                 <>
-                    <CustomScript
-                        formData={formData}
-                        handleScriptChange={(e) => handleCustomChange(e, 'script')}
-                        activeStageName={activeStageName}
-                        selectedTaskIndex={selectedTaskIndex}
-                    />
+                    <CustomScript handleScriptChange={(e) => handleCustomChange(e, 'script')} />
                     <hr />
                     <OutputDirectoryPath />
                 </>
@@ -78,17 +83,34 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                             taskField={TaskFieldLabel.CONTAINERIMAGEPATH}
                             contentDescription={TaskFieldDescription.CONTAINERIMAGEPATH}
                         />
-                        <input
-                            style={{ width: '80% !important' }}
-                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
-                            autoComplete="off"
-                            placeholder="Enter image path *"
-                            type="text"
-                            onChange={(e) => handleContainer(e, 'containerImagePath')}
-                            value={
-                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.containerImagePath
-                            }
-                        />
+                        <div style={{ width: '80% !important' }}>
+                            <input
+                                className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
+                                autoComplete="off"
+                                placeholder="Enter image path *"
+                                type="text"
+                                onChange={(e) => handleContainer(e, 'containerImagePath')}
+                                value={
+                                    formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
+                                        .containerImagePath
+                                }
+                            />
+
+                            {formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
+                                ?.containerImagePath &&
+                                !formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
+                                    ?.containerImagePath.isValid && (
+                                    <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
+                                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                        <span>
+                                            {
+                                                formDataErrorObj[activeStageName].steps[selectedTaskIndex]
+                                                    .inlineStepDetail?.containerImagePath.message
+                                            }
+                                        </span>
+                                    </span>
+                                )}
+                        </div>
                     </div>
                     <div className="flex left pl-200 fs-13 fw-6 pb-18 pt-9 ">
                         <Checkbox
@@ -111,26 +133,20 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                     </div>
                     {isMountCustomScript && (
                         <>
-                            <CustomScript
-                                formData={formData}
-                                handleScriptChange={(e) => handleCustomChange(e, 'script')}
-                                activeStageName={activeStageName}
-                                selectedTaskIndex={selectedTaskIndex}
-                            />
+                            <CustomScript handleScriptChange={(e) => handleCustomChange(e, 'script')} />
                             <div className="row-container mb-10">
-                                <TaskFieldTippyDescription
-                                    taskField={TaskFieldLabel.STORESCRIPTAT}
-                                />
+                                <TaskFieldTippyDescription taskField={TaskFieldLabel.STORESCRIPTAT} />
                                 <input
                                     style={{ width: '80% !important' }}
                                     className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
                                     autoComplete="off"
                                     placeholder="Eg. directory/filename"
                                     type="text"
-                                    name='storeScriptAt'
+                                    name="storeScriptAt"
                                     onChange={(e) => handleCustomChange(e, 'storeScriptAt')}
                                     value={
-                                        formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.storeScriptAt
+                                        formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
+                                            .storeScriptAt
                                     }
                                 />
                             </div>
@@ -208,7 +224,10 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                                 placeholder="Eg file/folder"
                                 type="text"
                                 onChange={(e) => handleCustomChange(e, 'mountCodeToContainerPath')}
-                                value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainerPath}
+                                value={
+                                    formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
+                                        .mountCodeToContainerPath
+                                }
                             />
                         </div>
                     )}
@@ -220,7 +239,10 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                         <RadioGroup
                             className="no-border"
                             value={
-                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountDirectoryFromHost ? MountPath.TRUE : MountPath.FALSE
+                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
+                                    .mountDirectoryFromHost
+                                    ? MountPath.TRUE
+                                    : MountPath.FALSE
                             }
                             disabled={false}
                             name="mountDirectoryFromHost"
