@@ -389,12 +389,20 @@ const ConfigureLinkAction = ({
                         styles={{
                             ...multiSelectStyles,
                             ...customMultiSelectStyles,
+                            option: (base, state) => ({
+                                ...customMultiSelectStyles.option(base, state),
+                                backgroundColor: state.isSelected
+                                    ? 'var(--B100)'
+                                    : state.isFocused
+                                    ? 'var(--N100)'
+                                    : 'white',
+                                color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
+                            }),
                             container: (base, state) => ({
                                 ...base,
                                 marginTop: '6px',
                             }),
                             control: (base, state) => ({
-                                ...base,
                                 ...customMultiSelectStyles.control(base, state),
                                 width: '150px',
                             }),
@@ -450,7 +458,6 @@ const ConfigureLinkAction = ({
                             ...multiSelectStyles,
                             ...customMultiSelectStyles,
                             menuList: (base, state) => ({
-                                ...base,
                                 ...customMultiSelectStyles.menuList(base, state),
                                 maxHeight: '210px',
                             }),
@@ -459,7 +466,6 @@ const ConfigureLinkAction = ({
                                 marginTop: '6px',
                             }),
                             control: (base, state) => ({
-                                ...base,
                                 ...customMultiSelectStyles.control(base, state),
                                 width: '278px',
                             }),
@@ -651,7 +657,9 @@ export const AddExternalLinkDialog = ({
                 </div>
                 <ol className="configure-link-info-list">
                     <li>Monitoring Tool</li>
-                    <p className="mb-16">Select a monitoring tool from the drop-down list. To add a different tool, select 'Other'.</p>
+                    <p className="mb-16">
+                        Select a monitoring tool from the drop-down list. To add a different tool, select 'Other'.
+                    </p>
                     <li>Clusters</li>
                     <p className="mb-16">Choose the clusters for which you want to configure the selected tool.</p>
                     <li>URL Template</li>
@@ -1021,7 +1029,6 @@ export const NodeLevelExternalLinks = ({
                         paddingLeft: '8px',
                     }),
                     dropdownIndicator: (base, state) => ({
-                        ...base,
                         ...customMultiSelectStyles.dropdownIndicator(base, state),
                         padding: '0 8px 0 4px',
                     }),
