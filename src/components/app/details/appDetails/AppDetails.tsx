@@ -66,7 +66,11 @@ import {
 import { aggregateNodes, SecurityVulnerabilitites, getSelectedNodeItems, getPodNameSuffix } from './utils';
 import { AppMetrics } from './AppMetrics';
 import { TriggerInfoModal } from '../../list/TriggerInfo';
-import { sortObjectArrayAlphabetically } from '../../../common/helpers/Helpers';
+import { sortObjectArrayAlphabetically, sortOptionsByValue } from '../../../common/helpers/Helpers';
+import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component';
+import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service';
+import { ExternalLink, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
+import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -161,6 +165,12 @@ export const Details: React.FC<{
     const [appDetailsError, setAppDetailsError] = useState(undefined);
     const [appDetailsResult, setAppDetailsResult] = useState(undefined);
     const [pollingIntervalID, setPollingIntervalID] = useState(null);
+    const [externalLinksAndTools, setExternalLinksAndTools] = useState<
+        Record<string, ExternalLink[] | OptionTypeWithIcon[]>
+    >({
+        externalLinks: [],
+        monitoringTools: [],
+    })
     //let prefix = '';
     //if (process.env.NODE_ENV === 'production') {
         //     //@ts-ignore
@@ -182,9 +192,31 @@ export const Details: React.FC<{
 
     async function callAppDetailsAPI() {
         try {
-            let response = await appDetailsAPI(params.appId, params.envId, 25000);
-            setAppDetailsResult(response);
-            setAppDetailsLoading(false);
+            const response = await appDetailsAPI(params.appId, params.envId, 25000);
+            setAppDetailsResult(response)
+            if (response.result?.clusterId) {
+                Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId)])
+                    .then(([monitoringToolsRes, externalLinksRes]) => {
+                        setExternalLinksAndTools({
+                            externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],
+                            monitoringTools:
+                                monitoringToolsRes.result
+                                    ?.map((tool) => ({
+                                        label: tool.name,
+                                        value: tool.id,
+                                        icon: tool.icon,
+                                    }))
+                                    .sort(sortOptionsByValue) || [],
+                        })
+                        setAppDetailsLoading(false)
+                    })
+                    .catch((e) => {
+                        setExternalLinksAndTools(externalLinksAndTools)
+                        setAppDetailsLoading(false)
+                    })
+            } else {
+                setAppDetailsLoading(false)
+            }
         } catch (error) {
             if (!appDetailsResult) {
                 setAppDetailsError(error);
@@ -309,6 +341,13 @@ export const Details: React.FC<{
                 environment={environment}
                 podMap={aggregatedNodes.nodes.Pod}
                 k8sVersion={appDetails.k8sVersion} />}
+            {externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0 && (
+                <AppLevelExternalLinks
+                    appDetails={appDetails}
+                    externalLinks={externalLinksAndTools.externalLinks as ExternalLink[]}
+                    monitoringTools={externalLinksAndTools.monitoringTools  as OptionTypeWithIcon[]}
+                />
+            )}
             <Route path={`${path}/:kind?/:tab?`}>
                 <NodeDetails
                     nodes={aggregatedNodes}
@@ -317,6 +356,8 @@ export const Details: React.FC<{
                     nodeName={detailedNode?.name}
                     containerName={detailedNode?.containerName}
                     isAppDeployment={isAppDeployment}
+                    externalLinks={externalLinksAndTools.externalLinks as ExternalLink[]}
+                    monitoringTools={externalLinksAndTools.monitoringTools  as OptionTypeWithIcon[]}
                 />
             </Route>
 
@@ -395,7 +436,9 @@ const NodeDetails: React.FC<{
     appDetails: AppDetails;
     isAppDeployment: boolean;
     describeNode: (name: string, containerName?: string) => void;
-}> = ({ nodes, describeNode, appDetails, nodeName, containerName, isAppDeployment }) => {
+    externalLinks: ExternalLink[]
+    monitoringTools: OptionTypeWithIcon[]
+}> = ({ nodes, describeNode, appDetails, nodeName, containerName, isAppDeployment, externalLinks, monitoringTools }) => {
     const [selectedNode, selectNode] = useState<string>(null);
     const [selectedNodes, setSelectNode] = useState<string>(null);
     const [nodeItems, setNodeItems] = useState([]);
@@ -495,6 +538,9 @@ const NodeDetails: React.FC<{
                 appName={appDetails?.appName}
                 environmentName={appDetails?.environmentName}
                 appId={appDetails?.appId}
+                externalLinks={externalLinks}
+                monitoringTools={monitoringTools}
+                appDetails={appDetails}
             />
             <ResponsiveDrawer
                 className="events-logs"

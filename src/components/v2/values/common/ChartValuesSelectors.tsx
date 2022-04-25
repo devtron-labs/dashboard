@@ -184,10 +184,7 @@ export const ChartRepoSelector = ({
             <components.MenuList {...props}>
                 {props.children}
                 <div
-                    className="flex react-select__bottom bcn-0 pt-10 pb-2"
-                    style={{
-                        bottom: '-4px',
-                    }}
+                    className="flex react-select__bottom bcn-0"
                 >
                     <div className="flex sticky-information__bottom">
                         <Info className="code-editor__information-info-icon" />
@@ -223,6 +220,11 @@ export const ChartRepoSelector = ({
                             MenuList: customMenuListItem,
                         }}
                         styles={{
+                            menuList: (base) => ({
+                                ...base,
+                                paddingTop: 0,
+                                paddingBottom: 0,
+                            }),
                             control: (base, state) => ({
                                 ...base,
                                 boxShadow: 'none',

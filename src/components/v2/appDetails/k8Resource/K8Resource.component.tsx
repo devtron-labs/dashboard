@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import NodeTreeComponent from './nodeType/NodeTree.component';
 import FilterResource from './FilterResource';
 import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store';
@@ -6,15 +6,20 @@ import NodeComponent from './nodeType/Node.component';
 import { useSharedState } from '../../utils/useSharedState';
 import IndexStore from '../index.store';
 import './k8resources.css';
+import { ExternalLink, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
 
 export default function K8ResourceComponent({
     clickedNodes,
     registerNodeClick,
     handleFocusTabs,
+    externalLinks,
+    monitoringTools
 }: {
     clickedNodes: Map<string, string>;
     registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>;
     handleFocusTabs: () => void;
+    externalLinks: ExternalLink[]
+    monitoringTools: OptionTypeWithIcon[]
 }) {
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable());
 
@@ -33,7 +38,7 @@ export default function K8ResourceComponent({
                         <NodeTreeComponent clickedNodes={clickedNodes} registerNodeClick={registerNodeClick} />
                     </div>
                     <div className="flex-grow-1 p-0">
-                        <NodeComponent handleFocusTabs={handleFocusTabs} />
+                        <NodeComponent handleFocusTabs={handleFocusTabs} externalLinks={externalLinks} monitoringTools={monitoringTools} />
                     </div>
                 </div>
             ) : (

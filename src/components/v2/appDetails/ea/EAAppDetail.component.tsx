@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {useLocation, useHistory} from 'react-router';
-import { showError, Progressing, ErrorScreenManager,  } from '../../../common';
+import { showError, Progressing, ErrorScreenManager, sortOptionsByValue,  } from '../../../common';
 import { getAppDetail, HelmAppDetailResponse, HelmAppDetail, HelmAppDetailAndInstalledAppInfo } from '../../../external-apps/ExternalAppService';
 import { ServerErrors } from '../../../../modals/commonTypes';
 import IndexStore from '../index.store';
@@ -10,12 +10,21 @@ import moment from 'moment'
 import * as queryString from 'query-string';
 import '../../lib/bootstrap-grid.min.css';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../../../util/URLUtil';
+import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service';
+import { ExternalLink, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
+import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
 
 function ExternalAppDetail({appId, appName}) {
     const location = useLocation();
     const history = useHistory();
     const [isLoading, setIsLoading] = useState(true);
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
+    const [externalLinksAndTools, setExternalLinksAndTools] = useState<
+        Record<string, ExternalLink[] | OptionTypeWithIcon[]>
+    >({
+        externalLinks: [],
+        monitoringTools: [],
+    })
 
     let initTimer = null;
     let isAPICallInProgress = false;
@@ -77,13 +86,42 @@ function ExternalAppDetail({appId, appName}) {
         return genericAppDetail
     }
 
-    const _getAndSetAppDetail = () => {
+    const _getAndSetAppDetail = async () => {
         isAPICallInProgress = true;
         getAppDetail(appId)
             .then((appDetailResponse: HelmAppDetailResponse) => {
                 IndexStore.publishAppDetails(_convertToGenericAppDetailModel(appDetailResponse.result));
-                setIsLoading(false);
-                isAPICallInProgress = false;
+
+                if (appDetailResponse.result?.appDetail.environmentDetails.clusterId) {
+                    Promise.all([
+                        getMonitoringTools(),
+                        getExternalLinks(appDetailResponse.result.appDetail.environmentDetails.clusterId),
+                    ])
+                        .then(([monitoringToolsRes, externalLinksRes]) => {
+                            setExternalLinksAndTools({
+                                externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],
+                                monitoringTools:
+                                    monitoringToolsRes.result
+                                        ?.map((tool) => ({
+                                            label: tool.name,
+                                            value: tool.id,
+                                            icon: tool.icon,
+                                        }))
+                                        .sort(sortOptionsByValue) || [],
+                            })
+                            setIsLoading(false)
+                            isAPICallInProgress = false
+                        })
+                        .catch((e) => {
+                            setExternalLinksAndTools(externalLinksAndTools)
+                            setIsLoading(false)
+                            isAPICallInProgress = false
+                        })
+                } else {
+                    setIsLoading(false)
+                    isAPICallInProgress = false
+                }
+
                 setErrorResponseCode(undefined);
             })
             .catch((errors: ServerErrors) => {
@@ -109,7 +147,10 @@ function ExternalAppDetail({appId, appName}) {
             }
 
             { !isLoading && !errorResponseCode &&
-                <AppDetailsComponent />
+                 <AppDetailsComponent
+                    externalLinks={externalLinksAndTools.externalLinks as ExternalLink[]}
+                    monitoringTools={externalLinksAndTools.monitoringTools as OptionTypeWithIcon[]}
+                />
             }
 
         </>
