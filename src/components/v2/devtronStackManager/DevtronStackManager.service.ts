@@ -20,10 +20,20 @@ const Status = [
 export const getModuleInfo = (moduleName: string): Promise<ModuleInfoResponse> => {
     // return get(`${Routes.MODULE_INFO_API}/${moduleName}`)
 
+    if (moduleName) {
+        return Promise.resolve({
+            result: {
+                id: 0,
+                name: moduleName,
+                status: ModuleStatus.INSTALLED
+            },
+        } as ModuleInfoResponse)
+    }
+
     return Promise.resolve({
         result: {
             id: 0,
-            name: moduleName,
+            name: 'ciCd',
             status: Status[Math.floor(Math.random() * 5)],
         },
     } as ModuleInfoResponse)

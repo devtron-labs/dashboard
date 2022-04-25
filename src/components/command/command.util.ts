@@ -39,6 +39,15 @@ export const AllSuggestedArguments = [
             group: undefined,
             isEOC: false
         }
+    },
+    {
+        value: COMMAND.STACK_MANAGER,
+        ref: undefined,
+        data: {
+            url: '/stack-manager/discover',
+            group: undefined,
+            isEOC: false
+        }
     }];
 
 export function getArgumentSuggestions(args, options: APIOptions): Promise<CommandSuggestionType> {
@@ -58,6 +67,7 @@ export function getArgumentSuggestions(args, options: APIOptions): Promise<Comma
         chart: getChartArguments,
         security: getSecurityArguments,
         'global-config': getGlobalConfigArguments,
+        'stack-manager': getStackManagerArguments,
     };
 
 
@@ -559,4 +569,50 @@ function getGlobalConfigArguments(args, options): Promise<CommandSuggestionType>
             groups: [],
         })
     });
+}
+
+function getStackManagerArguments(args, options): Promise<CommandSuggestionType> {
+    if (args.length === 1) {
+        return new Promise((resolve, reject) => {
+            resolve({
+                allSuggestionArguments: [
+                    {
+                        value: 'discover modules',
+                        ref: null,
+                        data: {
+                            group: undefined,
+                            url: `/stack-manager/discover`,
+                            isEOC: false,
+                        },
+                    },
+                    {
+                        value: 'installed modules',
+                        ref: null,
+                        data: {
+                            group: undefined,
+                            url: `/stack-manager/installed`,
+                            isEOC: false,
+                        },
+                    },
+                    {
+                        value: 'about devtron',
+                        ref: null,
+                        data: {
+                            group: undefined,
+                            url: `/stack-manager/about`,
+                            isEOC: false,
+                        },
+                    },
+                ],
+                groups: [],
+            })
+        })
+    }
+
+    return new Promise((resolve, reject) => {
+        resolve({
+            allSuggestionArguments: [],
+            groups: [],
+        })
+    })
 }

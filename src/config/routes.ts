@@ -58,7 +58,9 @@ export const URLS = {
     SECURITY: '/security',
     STACK_MANAGER: '/stack-manager',
     STACK_MANAGER_DISCOVER_MODULES: '/stack-manager/discover',
+    STACK_MANAGER_DISCOVER_MODULES_DETAILS: '/stack-manager/discover/details',
     STACK_MANAGER_INSTALLED_MODULES: '/stack-manager/installed',
+    STACK_MANAGER_INSTALLED_MODULES_DETAILS: '/stack-manager/installed/details',
     STACK_MANAGER_ABOUT: '/stack-manager/about',
 };
 

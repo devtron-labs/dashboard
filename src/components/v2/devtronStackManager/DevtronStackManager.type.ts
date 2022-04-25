@@ -17,15 +17,23 @@ export enum ModuleActions {
 }
 
 export interface ModuleDetails {
+    id: string
     name: string
     info: string
     icon: string
     installationStatus: ModuleStatus
 }
+export interface ModuleDetailsInfo {
+    name: string
+    infoList: string[]
+    featuresList: string[]
+}
 
 export interface ModuleDetailsCardType {
     moduleDetails: ModuleDetails
     className?: string
+    handleModuleCardClick?: (moduleDetails: ModuleDetails, fromDiscoverModules: boolean) => void
+    fromDiscoverModules?: boolean
 }
 
 export interface ModuleInfo {

@@ -159,7 +159,7 @@
 
         &:hover {
             width: 252px;
-            height: 100vh;
+            // height: 100vh;
             transition: width 300ms ease-in 700ms;
         }
 
@@ -295,7 +295,7 @@
     }
 
     .help-card__update-option {
-        padding: 6px 10px;
+        padding: 8px 10px;
         background-color: var(--N100);
     }
 }

@@ -2,7 +2,14 @@ import React, { Suspense, useEffect, useState } from 'react'
 import { Redirect, Route, Router, Switch, useHistory, useLocation } from 'react-router-dom'
 import { URLS } from '../../../config'
 import { ErrorBoundary, Progressing, showError } from '../../common'
-import { ModulesListingView, MODULE_DETAILS_MAP, NavItem, VersionUpToDateView } from './DevtronStackManager.component'
+import {
+    ModuleDetailsView,
+    ModulesListingView,
+    MODULE_DETAILS_MAP,
+    NavItem,
+    PageHeader,
+    VersionUpToDateView,
+} from './DevtronStackManager.component'
 import './devtronStackManager.scss'
 import { getModuleInfo, getServerInfo } from './DevtronStackManager.service'
 import { ModuleDetails, ModuleStatus } from './DevtronStackManager.type'
@@ -13,6 +20,8 @@ export default function DevtronStackManager() {
     const [isLoading, setLoading] = useState(false)
     const [discoverModulesList, setDiscoverModulesList] = useState<ModuleDetails[]>([])
     const [installedModulesList, setInstalledModulesList] = useState<ModuleDetails[]>([])
+    const [selectedModule, setSelectedModule] = useState<ModuleDetails>()
+    const [detailsMode, setDetailsMode] = useState('')
     const history = useHistory()
     const location = useLocation()
 
@@ -29,9 +38,16 @@ export default function DevtronStackManager() {
         }
     }, [])
 
+    // To reset detailsMode when switching to "About devtron" using "Help option" (side nav)
+    // or "Check for updates" after successful installtion from module details page
+    useEffect(() => {
+        if (!new URLSearchParams(location.search).has('id')) {
+            setDetailsMode('')
+        }
+    }, [location.pathname])
+
     function getModuleAndServerInfo() {
-        console.log('xyz')
-        Promise.all([getModuleInfo('ciCd'), getServerInfo()])
+        Promise.all([getModuleInfo(''), getServerInfo()])
             .then(([moduleInfoRes, serverInfoRes]) => {
                 setDiscoverModulesList([
                     {
@@ -39,14 +55,8 @@ export default function DevtronStackManager() {
                         installationStatus: moduleInfoRes.result?.status,
                     },
                 ])
-                setInstalledModulesList([
-                    {
-                        ...MODULE_DETAILS_MAP[moduleInfoRes.result?.name],
-                        installationStatus: ModuleStatus.INSTALLED,
-                    },
-                ])
                 setInstalledModulesList(
-                    moduleInfoRes.result?.name === 'ciCd' && moduleInfoRes.result?.status === ModuleStatus.INSTALLED
+                    moduleInfoRes.result?.status === ModuleStatus.INSTALLED
                         ? [
                               {
                                   ...MODULE_DETAILS_MAP[moduleInfoRes.result?.name],
@@ -63,18 +73,70 @@ export default function DevtronStackManager() {
             })
     }
 
+    function handleModuleSelection(moduleDetails: ModuleDetails, fromDiscoverModules?: boolean, moduleId?: string) {
+        if (!moduleDetails && moduleId) {
+            const _moduleDetails = fromDiscoverModules
+                ? discoverModulesList.find((module) => module.id === moduleId)
+                : installedModulesList.find((module) => module.id === moduleId)
+            setSelectedModule(_moduleDetails)
+            setDetailsMode(fromDiscoverModules ? 'discover' : 'installed')
+        } else {
+            const queryParams = new URLSearchParams(location.search)
+            queryParams.set('id', moduleDetails.id)
+            setSelectedModule(moduleDetails)
+            setDetailsMode(fromDiscoverModules ? 'discover' : 'installed')
+
+            history.push(
+                `${
+                    fromDiscoverModules
+                        ? URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS
+                        : URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS
+                }?${queryParams.toString()}`,
+            )
+        }
+    }
+
+    function handleBreadcrumbClick() {
+        setDetailsMode('')
+        setSelectedModule(undefined)
+    }
+
     function Body() {
         return (
             <Switch location={location}>
+                <Route path={URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}>
+                    <ModuleDetailsView
+                        moduleDetails={selectedModule}
+                        handleModuleSelection={handleModuleSelection}
+                        setDetailsMode={setDetailsMode}
+                        fromDiscoverModules={true}
+                        history={history}
+                        location={location}
+                    />
+                </Route>
+                <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS}>
+                    <ModuleDetailsView
+                        moduleDetails={selectedModule}
+                        handleModuleSelection={handleModuleSelection}
+                        setDetailsMode={setDetailsMode}
+                        history={history}
+                        location={location}
+                    />
+                </Route>
                 <Route path={URLS.STACK_MANAGER_DISCOVER_MODULES}>
                     <ModulesListingView
                         modulesList={discoverModulesList}
                         isDiscoverModulesView={true}
+                        handleModuleCardClick={handleModuleSelection}
                         history={history}
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES}>
-                    <ModulesListingView modulesList={installedModulesList} history={history} />
+                    <ModulesListingView
+                        modulesList={installedModulesList}
+                        handleModuleCardClick={handleModuleSelection}
+                        history={history}
+                    />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_ABOUT}>
                     <VersionUpToDateView history={history} />
@@ -85,18 +147,22 @@ export default function DevtronStackManager() {
     }
 
     return (
-        <main className={`stack-manager ${isLoading ? 'loading' : ''}`}>
-            <section className="page-header flex left">
-                <div className="flex left page-header__title cn-9 fs-14 fw-6">Devtron Stack Manager</div>
-            </section>
+        <main className={`stack-manager ${isLoading || detailsMode ? 'full-view-mode' : ''}`}>
+            <PageHeader
+                detailsMode={detailsMode}
+                selectedModule={selectedModule}
+                handleBreadcrumbClick={handleBreadcrumbClick}
+            />
             {isLoading ? (
                 <Progressing pageLoader />
             ) : (
                 <Router history={history}>
-                    <section className="stack-manager__navigation">
-                        <NavItem installedModulesCount={installedModulesList.length} />
-                    </section>
-                    <section className="stack-manager__component-wrapper">
+                    {!detailsMode && (
+                        <section className="stack-manager__navigation">
+                            <NavItem installedModulesCount={installedModulesList.length} />
+                        </section>
+                    )}
+                    <section className={`stack-manager__component-wrapper ${detailsMode ? 'flex column top' : ''}`}>
                         <Suspense fallback={<Progressing pageLoader />}>
                             <ErrorBoundary>
                                 <Body />
