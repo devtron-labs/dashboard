@@ -47,6 +47,9 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         } else {
             conditionTypeToRemove = conditionType === ConditionType.TRIGGER ? ConditionType.SKIP : ConditionType.TRIGGER
         }
+        if (!_formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails) {
+            _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails = []
+        }
         for (
             var i = 0;
             i < _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails.length;
