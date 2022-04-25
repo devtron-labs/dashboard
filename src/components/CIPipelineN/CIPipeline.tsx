@@ -275,10 +275,13 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             return isValid
         }, true)
         valid = valid && errObj.isValid
+        validateStage(BuildStageVariable.PreBuild)
+        validateStage(BuildStageVariable.PostBuild)
+        valid = valid && formDataErrorObj.preBuildStage.isValid && formDataErrorObj.postBuildStage.isValid
         const scanValidation = formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
         if (!scanValidation) {
             setLoadingData(false)
-            toast.error('Scanning is mandotory, please enable scanning')
+            toast.error('Scanning is mandatory, please enable scanning')
             return
         }
         if (!valid) {
@@ -286,12 +289,6 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             toast.error('Some Required Fields are missing')
             return
         }
-          // For removing empty mapping from portMap
-          formData[activeStageName].steps.forEach((_step, idx) => {
-            formData[activeStageName].steps[idx].inlineStepDetail.portMap = _step.inlineStepDetail.portMap.filter(
-                (_port) => _port.portOnLocal && _port.portOnContainer,
-            )
-        })
         const msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
         saveCIPipeline(
             formData,
@@ -341,6 +338,12 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         taskErrorobj.isValid =
                             taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable].outputVariables[index].isValid
                     })
+
+                    // For removing empty mapping from portMap
+                    taskData[currentStepTypeVariable]['portMap'] =
+                        taskData[currentStepTypeVariable]['portMap']?.filter(
+                            (_port) => _port.portOnLocal && _port.portOnContainer,
+                        ) || []
                 }
             }
         }
@@ -352,15 +355,15 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             _formDataErrorObj.name = validationRules.name(formData.name)
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
         } else {
-            const stepsLength = formData[activeStageName].steps.length
+            const stepsLength = formData[stageName].steps.length
             let isStageValid = true
             for (let i = 0; i < stepsLength; i++) {
-                if (!_formDataErrorObj[activeStageName]['steps'][i])
-                    _formDataErrorObj[activeStageName]['steps'].push({ isValid: true })
-                validateTask(formData[activeStageName]['steps'][i], _formDataErrorObj[activeStageName]['steps'][i])
-                isStageValid = isStageValid && _formDataErrorObj[activeStageName]['steps'][i].isValid
+                if (!_formDataErrorObj[stageName]['steps'][i])
+                    _formDataErrorObj[stageName]['steps'].push({ isValid: true })
+                validateTask(formData[stageName]['steps'][i], _formDataErrorObj[stageName]['steps'][i])
+                isStageValid = isStageValid && _formDataErrorObj[stageName]['steps'][i].isValid
             }
-            _formDataErrorObj[activeStageName].isValid = isStageValid
+            _formDataErrorObj[stageName].isValid = isStageValid
         }
         setFormDataErrorObj(_formDataErrorObj)
     }
