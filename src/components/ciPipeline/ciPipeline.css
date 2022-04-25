@@ -259,6 +259,10 @@
     display: flex;
 }
 
+.task-item__hover{
+    background: var(--B100) !important; 
+}
+
 .task-name-container {
     overflow: hidden;
     white-space: nowrap;

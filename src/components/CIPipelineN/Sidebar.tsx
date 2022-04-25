@@ -62,7 +62,7 @@ export function Sidebar() {
             )}
             {activeStageName === BuildStageVariable.Build && (
                 <div className="sidebar-action-container sidebar-action-container-border">
-                    <div className="text-uppercase fw-6 fs-12 cn-6">Trigger BUILD PIPELINE</div>
+                    <div className="text-uppercase fw-6 fs-12 cn-6 mb-12">Trigger BUILD PIPELINE</div>
                     <div>
                         <RadioGroup
                             className="no-border"
@@ -96,10 +96,10 @@ export function Sidebar() {
             </div>
             )}
             <div className="sidebar-action-container ">
-                <div className="text-uppercase fw-6 fs-13 cn-9">📙 Need help?</div>
+                <div className="text-uppercase fw-6 fs-13 cn-9 mb-8">📙 Need help?</div>
                 <div>
                     <a
-                        className="learn-more__href fs-12"
+                        className="learn-more__href fw-6"
                         href={DOCUMENTATION.PRE_BUILD_TASK}
                         target="_blank"
                         rel="noreferrer noopener"

@@ -115,7 +115,7 @@ export function TaskList() {
                 {formData[activeStageName].steps?.map((taskDetail, index) => (
                     <Fragment key={`task-item-${index}`}>
                         <div
-                            className={`task-item fw-4 fs-13 ${selectedTaskIndex === index ? ' bcb-1 eb-5' : ''}`}
+                            className={`task-item fw-4 fs-13 ${selectedTaskIndex === index ? 'task-item__hover eb-5 bw-1' : 'en-2 bw-1'}`}
                             draggable={dragAllowed}
                             onDragStart={() => handleDragStart(index)}
                             onDragEnter={() => handleDragEnter(index)}

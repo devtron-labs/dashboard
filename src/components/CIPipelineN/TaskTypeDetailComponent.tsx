@@ -90,18 +90,6 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                             }
                         />
                     </div>
-                    <div className="row-container mb-10">
-                        <label className="fw-6 fs-13 cn-7 label-width">Image pull secret</label>{' '}
-                        <input
-                            style={{ width: '80% !important' }}
-                            className="w-100 w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
-                            autoComplete="off"
-                            placeholder="Select container registry or enter secret path"
-                            type="text"
-                            onChange={(e) => handleContainer(e, 'imagePullSecret')}
-                            value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.imagePullSecret}
-                        />
-                    </div>
                     <div className="flex left pl-200 fs-13 fw-6 pb-18 pt-9 ">
                         <Checkbox
                             isChecked={isMountCustomScript}
