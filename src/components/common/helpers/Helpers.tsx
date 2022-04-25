@@ -880,3 +880,21 @@ export function useSearchString(): UseSearchString {
 
     return { queryParams, searchParams }
 }
+
+export const sortOptionsByLabel = (optionA, optionB) => {
+    if (optionA.label < optionB.label) {
+        return -1
+    } else if (optionA.label > optionB.label) {
+        return 1
+    }
+    return 0
+}
+
+export const sortOptionsByValue = (optionA, optionB) => {
+    if (optionA.value < optionB.value) {
+        return -1
+    } else if (optionA.value > optionB.value) {
+        return 1
+    }
+    return 0
+}

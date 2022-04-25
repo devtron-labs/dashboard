@@ -1,8 +1,9 @@
-import React from 'react';
-import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg';
-import { ReactComponent as Check } from '../assets/icons/ic-check.svg';
-import { components } from 'react-select';
-import Tippy from '@tippyjs/react';
+import React from 'react'
+import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as Check } from '../assets/icons/ic-check.svg'
+import DefaultIcon from '../../../assets/icons/ic-browser.svg'
+import { components } from 'react-select'
+import Tippy from '@tippyjs/react'
 
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     return (base, state) => ({
@@ -26,25 +27,25 @@ export const styles = {
         border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
     }),
     menu: (base, state) => {
-        return ({
+        return {
             ...base,
             top: `0px`,
-            backgroundColor: state.Selected ? "white" : "white"
-        })
+            backgroundColor: state.Selected ? 'white' : 'white',
+        }
     },
     singleValue: (base, state) => {
-        return ({
+        return {
             ...base,
-            color: 'var(--N900)'
-        })
+            color: 'var(--N900)',
+        }
     },
     option: (base, state) => {
-        return ({
+        return {
             ...base,
             color: 'var(--N900)',
             backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-        })
-    }
+        }
+    },
 }
 
 export function Option(props) {
@@ -62,11 +63,15 @@ export function Option(props) {
         <Tippy className="default-white" arrow={false} placement="right" content={data.label}>
             {getOption()}
         </Tippy>
-    ) : getOption()
-};
+    ) : (
+        getOption()
+    )
+}
 
 export function DropdownIndicator(props) {
-    return <components.DropdownIndicator {...props}>
-        <ArrowDown className="icon-dim-20 icon-n5" />
-    </components.DropdownIndicator>
+    return (
+        <components.DropdownIndicator {...props}>
+            <ArrowDown className="icon-dim-20 icon-n5" />
+        </components.DropdownIndicator>
+    )
 }

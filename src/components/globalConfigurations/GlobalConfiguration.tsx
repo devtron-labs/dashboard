@@ -14,6 +14,7 @@ import { showError } from '../common';
 import './globalConfigurations.scss';
 import { SERVER_MODE } from '../../config/constants';
 import { mainContext } from '../common/navigation/NavigationRoutes';
+import ExternalLinks from '../externalLinks/ExternalLinks';
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'));
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'));
@@ -193,6 +194,12 @@ function NavItem({ hostURLConfig, serverMode }) {
                         </NavLink>
                     ),
             )}
+            <hr className="mt-8 mb-8 w-100 checklist__divider" />
+            <NavLink to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} activeClassName="active-route">
+                <div className="flexbox flex-justify">
+                    External links
+                </div>
+            </NavLink>
         </div>
     );
 }
@@ -303,6 +310,9 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                     return <Notifier {...props} />;
                 }}
             />
+            <Route path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
+                <ExternalLinks />
+            </Route>
             <Redirect
                 to={
                     serverMode &&

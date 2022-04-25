@@ -145,8 +145,8 @@
     position: relative;
 }
 
-.confirmation-dialog__body--w-360 {
-    width: 360px;
+.confirmation-dialog__body--w-400 {
+    width: 400px;
 }
 
 .confirmation-dialog__icon {
