@@ -934,7 +934,7 @@ export const AppLevelExternalLinks = ({
                 className="default-tt"
                 arrow={false}
                 placement="top"
-                content={`${linkOption.label} (open in new tab)`}
+                content={`${linkOption.label} (opens in new tab)`}
             >
                 <a
                     key={linkOption.label}
@@ -975,7 +975,7 @@ export const NodeLevelExternalLinks = ({
         const { data } = props
 
         return (
-            <Tippy className="default-tt" arrow={false} placement="left" content={`${data.label} (open in new tab)`}>
+            <Tippy className="default-tt" arrow={false} placement="left" content={`${data.label} (opens in new tab)`}>
                 <a
                     key={data.label}
                     href={getParsedURL(false, data.value, details, podName, containerName)}
