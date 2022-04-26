@@ -16,6 +16,7 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import ReactSelect from 'react-select'
 import { tempMultiSelectStyles } from './ciPipeline.utils'
 import Tippy from '@tippyjs/react'
+import { Option } from '../v2/common/ReactSelect.utils'
 
 function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const {
@@ -171,6 +172,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                     isSearchable={false}
                                                     components={{
                                                         IndicatorSeparator: null,
+                                                        Option,
                                                     }}
                                                     styles={tempMultiSelectStyles}
                                                 />
@@ -201,6 +203,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                     isSearchable={false}
                                                     components={{
                                                         IndicatorSeparator: null,
+                                                        Option,
                                                     }}
                                                     name="format"
                                                     styles={tempMultiSelectStyles}
