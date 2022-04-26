@@ -84,5 +84,15 @@ export class ValidationRules {
         }
     }
 
-    containerImagePath
+    mountPathMap = (value: object): { message: string | null; isValid: boolean } => {
+        if (!value['filePathOnDisk'] && !value['filePathOnContainer']) {
+            return { message: 'File path on disk and File path on container, both are required field', isValid: false }
+        } else if (!value['filePathOnDisk']) {
+            return { message: 'File path on disk is required field', isValid: false }
+        } else if (!value['filePathOnContainer']) {
+            return { message: `File path on container is required field`, isValid: false }
+        } else {
+            return { message: null, isValid: true }
+        }
+    }
 }

@@ -332,7 +332,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                 })
                 if (taskData.stepType === PluginType.INLINE) {
                     taskErrorobj[currentStepTypeVariable].outputVariables = []
-                    taskData[currentStepTypeVariable].inputVariables?.forEach((element, index) => {
+                    taskData[currentStepTypeVariable].outputVariables?.forEach((element, index) => {
                         taskErrorobj[currentStepTypeVariable].outputVariables.push(
                             validationRules.outputVariable(element),
                         )
@@ -352,20 +352,46 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         taskErrorobj.isValid =
                             taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable]['script'].isValid
                     } else if (taskData[currentStepTypeVariable]['scriptType'] === ScriptType.CONTAINERIMAGE) {
-                        // if(taskData[currentStepTypeVariable]['scriptType']){
-
-                        // }
-                        // taskErrorobj[currentStepTypeVariable]['script'] = validationRules.requiredField(
-                        //     taskData[currentStepTypeVariable]['script'],
-                        // )
-                        // taskErrorobj.isValid =
-                        //     taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable]['script'].isValid
+                        if (taskData[currentStepTypeVariable]['isMountCustomScript']) {
+                            taskErrorobj[currentStepTypeVariable]['script'] = validationRules.requiredField(
+                                taskData[currentStepTypeVariable]['script'],
+                            )
+                            taskErrorobj[currentStepTypeVariable]['storeScriptAt'] = validationRules.requiredField(
+                                taskData[currentStepTypeVariable]['storeScriptAt'],
+                            )
+                            taskErrorobj.isValid =
+                                taskErrorobj.isValid &&
+                                taskErrorobj[currentStepTypeVariable]['script'].isValid &&
+                                taskErrorobj[currentStepTypeVariable]['storeScriptAt'].isValid
+                        }
 
                         taskErrorobj[currentStepTypeVariable]['containerImagePath'] = validationRules.requiredField(
                             taskData[currentStepTypeVariable]['containerImagePath'],
                         )
                         taskErrorobj.isValid =
                             taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable]['containerImagePath'].isValid
+
+                        if (taskData[currentStepTypeVariable]['mountCodeToContainer']) {
+                            taskErrorobj[currentStepTypeVariable]['mountCodeToContainerPath'] =
+                                validationRules.requiredField(
+                                    taskData[currentStepTypeVariable]['mountCodeToContainerPath'],
+                                )
+                            taskErrorobj.isValid =
+                                taskErrorobj.isValid &&
+                                taskErrorobj[currentStepTypeVariable]['mountCodeToContainerPath'].isValid
+                        }
+
+                        if (taskData[currentStepTypeVariable]['mountDirectoryFromHost']) {
+                            taskErrorobj[currentStepTypeVariable]['mountPathMap'] = []
+                            taskData[currentStepTypeVariable]['mountPathMap']?.forEach((element, index) => {
+                                taskErrorobj[currentStepTypeVariable]['mountPathMap'].push(
+                                    validationRules.mountPathMap(element),
+                                )
+                                taskErrorobj.isValid =
+                                    taskErrorobj.isValid &&
+                                    taskErrorobj[currentStepTypeVariable]['mountPathMap'][index].isValid
+                            })
+                        }
                     }
                 }
             }
