@@ -4,8 +4,9 @@ import { ConditionContainerType, ConditionType, FormType, PluginType } from '../
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import ReactSelect from 'react-select'
+import ReactSelect, { components } from 'react-select'
 import { ciPipelineContext } from './CIPipeline'
+import { Option } from '../v2/common/ReactSelect.utils'
 
 export function ConditionContainer({ type }: { type: ConditionContainerType }) {
     const {
@@ -148,6 +149,10 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
             }
         },
         dropdownIndicator: (styles) => ({ ...styles, padding: 0 }),
+        valueContainer: (base, state) => ({
+            ...base,
+            display: 'flex',
+        }),
     }
 
     function formatOptionLabel(option) {
@@ -156,6 +161,18 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                 <span className="cn-9">{option.label}</span>
                 <span className="cn-5">{option.description}</span>
             </div>
+        )
+    }
+
+    const ValueContainer = (props) => {
+        let value = props.getValue()[0]?.label
+        return (
+            <components.ValueContainer {...props}>
+                <>
+                    {!props.selectProps.menuIsOpen && `${value}`}
+                    {React.cloneElement(props.children[1])}
+                </>
+            </components.ValueContainer>
         )
     }
 
@@ -239,6 +256,8 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                             styles={tempMultiSelectStyles}
                                             components={{
                                                 IndicatorSeparator: null,
+                                                Option,
+                                                ValueContainer,
                                             }}
                                         />
                                     </label>
@@ -258,7 +277,6 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                             }}
                                             options={operatorOptions}
                                             isSearchable={false}
-                                            menuIsOpen={true}
                                             styles={{
                                                 ...tempMultiSelectStyles,
                                                 menu: (base, state) => ({
@@ -269,6 +287,8 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                             formatOptionLabel={formatOptionLabel}
                                             components={{
                                                 IndicatorSeparator: null,
+                                                Option,
+                                                ValueContainer,
                                             }}
                                         />
                                     </label>

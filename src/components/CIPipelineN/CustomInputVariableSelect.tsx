@@ -5,6 +5,7 @@ import { ciPipelineContext } from './CIPipeline'
 import CreatableSelect from 'react-select/creatable'
 import { components } from 'react-select'
 import { BuildStageVariable } from '../../config'
+import { Option } from '../v2/common/ReactSelect.utils'
 
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
     const {
@@ -213,6 +214,18 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         }
     }
 
+    const ValueContainer = (props) => {
+        let value = props.getValue()[0]?.label
+        return (
+            <components.ValueContainer {...props}>
+                <>
+                    {!props.selectProps.menuIsOpen && `${value}`}
+                    {React.cloneElement(props.children[1])}
+                </>
+            </components.ValueContainer>
+        )
+    }
+
     return (
         <CreatableSelect
             autoFocus
@@ -234,6 +247,8 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                         </components.MenuList>
                     )
                 },
+                Option,
+                ValueContainer,
             }}
         />
     )

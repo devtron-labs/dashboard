@@ -6,7 +6,7 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { PopupMenu } from '../common'
 import { ciPipelineContext } from './CIPipeline'
-import { FormErrorObjectType, FormType, StepType, TaskErrorObj } from '../ciPipeline/types'
+import { FormErrorObjectType, FormType, StepType, TaskErrorObj, VariableType } from '../ciPipeline/types'
 
 export function TaskList() {
     const {
@@ -34,6 +34,7 @@ export function TaskList() {
             startIndex?: number,
         ) => {
             index: number
+            calculatedStageVariables: Map<string, VariableType>[]
         }
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
@@ -115,7 +116,9 @@ export function TaskList() {
                 {formData[activeStageName].steps?.map((taskDetail, index) => (
                     <Fragment key={`task-item-${index}`}>
                         <div
-                            className={`task-item fw-4 fs-13 pointer flex-justify ${selectedTaskIndex === index ? 'task-item__selected-list' : ''}`}
+                            className={`task-item fw-4 fs-13 pointer flex-justify ${
+                                selectedTaskIndex === index ? 'task-item__selected-list' : ''
+                            }`}
                             draggable={dragAllowed}
                             onDragStart={() => handleDragStart(index)}
                             onDragEnter={() => handleDragEnter(index)}

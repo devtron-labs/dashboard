@@ -121,8 +121,20 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         if (ciPipelineId) {
             getInitDataWithCIPipeline(appId, ciPipelineId, true)
                 .then((response) => {
-                    calculateLastStepDetail(false, response.form, BuildStageVariable.PreBuild)
-                    calculateLastStepDetail(false, response.form, BuildStageVariable.PostBuild)
+                    const preBuildVariable = calculateLastStepDetail(
+                        false,
+                        response.form,
+                        BuildStageVariable.PreBuild,
+                    ).calculatedStageVariables
+                    const postBuildVariable = calculateLastStepDetail(
+                        false,
+                        response.form,
+                        BuildStageVariable.PostBuild,
+                    ).calculatedStageVariables
+                    setInputVariablesListFromPrevStep({
+                        preBuildStage: preBuildVariable,
+                        postBuildStage: postBuildVariable,
+                    })
                     setFormData(response.form)
                     setCIPipeline(response.ciPipeline)
                     setIsAdvanced(true)
@@ -422,7 +434,10 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         _formData: FormType,
         activeStageName: string,
         startIndex?: number,
-    ): { index: number } => {
+    ): {
+        index: number
+        calculatedStageVariables: Map<string, VariableType>[]
+    } => {
         const _formDataErrorObj = { ...formDataErrorObj }
         if (!_formData[activeStageName].steps) {
             _formData[activeStageName].steps = []
@@ -510,7 +525,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         _inputVariablesListFromPrevStep[activeStageName] = _inputVariablesListPerTask
         setInputVariablesListFromPrevStep(_inputVariablesListFromPrevStep)
         setFormDataErrorObj(_formDataErrorObj)
-        return { index: index }
+        return { index: index, calculatedStageVariables: _inputVariablesListPerTask }
     }
 
     const addNewTask = () => {

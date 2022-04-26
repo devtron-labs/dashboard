@@ -8,6 +8,7 @@ import {
     RefVariableType,
     TaskFieldDescription,
     VariableFieldType,
+    VariableType,
 } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ciPipelineContext } from './CIPipeline'
@@ -36,6 +37,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             startIndex?: number,
         ) => {
             index: number
+            calculatedStageVariables: Map<string, VariableType>[]
         }
         formDataErrorObj: object
     } = useContext(ciPipelineContext)
@@ -110,7 +112,11 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                     className="default-tt"
                     arrow={false}
                     content={
-                       <span style={{display: 'block', width: '220px'}}>{type === PluginVariableType.INPUT ? TaskFieldDescription.INPUT : TaskFieldDescription.OUTPUT}</span> 
+                        <span style={{ display: 'block', width: '220px' }}>
+                            {type === PluginVariableType.INPUT
+                                ? TaskFieldDescription.INPUT
+                                : TaskFieldDescription.OUTPUT}
+                        </span>
                     }
                 >
                     <label

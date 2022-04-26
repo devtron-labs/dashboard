@@ -8,6 +8,7 @@ import {
     PluginType,
     PluginVariableType,
     ScriptType,
+    VariableType,
 } from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
@@ -45,6 +46,7 @@ export function TaskDetailComponent() {
             startIndex?: number,
         ) => {
             index: number
+            calculatedStageVariables: Map<string, VariableType>[]
         }
     } = useContext(ciPipelineContext)
     const [configurationType, setConfigurationType] = useState<string>('GUI')
