@@ -160,6 +160,12 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                         : RefVariableStageType.POST_CI,
             }
         }
+        if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.PLUGIN_REF) {
+            _variableDetail.format =
+                _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
+                    selectedVariableIndex
+                ].format
+        }
         _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
             selectedVariableIndex
         ] = {
