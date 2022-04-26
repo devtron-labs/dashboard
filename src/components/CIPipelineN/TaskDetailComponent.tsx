@@ -48,11 +48,6 @@ export function TaskDetailComponent() {
         }
     } = useContext(ciPipelineContext)
     const [configurationType, setConfigurationType] = useState<string>('GUI')
-    const [taskScriptType, setTaskScriptType] = useState<string>(
-        formData.preBuildStage.steps[selectedTaskIndex]?.inlineStepDetail
-            ? formData.preBuildStage.steps[selectedTaskIndex].inlineStepDetail.scriptType
-            : '',
-    )
     const [editorValue, setEditorValue] = useState<string>('')
 
     const currentStepTypeVariable =
@@ -74,6 +69,17 @@ export function TaskDetailComponent() {
                 })
         }
     }, [])
+
+    useEffect(() => {
+        if (
+            formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE &&
+            formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE
+        ) {
+            if (formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script) {
+                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.isMountCustomScript = true
+            }
+        }
+    }, [formData])
 
     const processPluginData = (pluginData) => {
         const _form = { ...formData }
@@ -134,7 +140,6 @@ export function TaskDetailComponent() {
     }
 
     const handleTaskScriptTypeChange = (ev: any): void => {
-        setTaskScriptType(ev.target.value)
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType = ev.target.value
         setFormData(_formData)

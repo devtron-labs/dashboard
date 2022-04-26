@@ -1,8 +1,9 @@
 import React, { useState, useContext } from 'react'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
-import { FormType, PluginVariableType } from '../ciPipeline/types'
+import { FormErrorObjectType, FormType, PluginVariableType } from '../ciPipeline/types'
 import { ciPipelineContext } from './CIPipeline'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
+import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 
 export function VariableContainer({ type }: { type: PluginVariableType }) {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
@@ -10,10 +11,12 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
         formData,
         selectedTaskIndex,
         activeStageName,
+        formDataErrorObj,
     }: {
         formData: FormType
         selectedTaskIndex: number
         activeStageName: string
+        formDataErrorObj: FormErrorObjectType
     } = useContext(ciPipelineContext)
     return (
         <div>
@@ -47,6 +50,22 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                             {type === PluginVariableType.INPUT ? (
                                 <div className="p-4 fs-14">
                                     <CustomInputVariableSelect selectedVariableIndex={index} />
+                                    <div className="mb-20">
+                                        {formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.pluginRefStepDetail
+                                            .inputVariables[index] &&
+                                            !formDataErrorObj[activeStageName].steps[selectedTaskIndex]
+                                                ?.pluginRefStepDetail.inputVariables[index].isValid && (
+                                                <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
+                                                    <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                                    <span>
+                                                        {
+                                                            formDataErrorObj[activeStageName].steps[selectedTaskIndex]
+                                                                ?.pluginRefStepDetail.inputVariables[index].message
+                                                        }
+                                                    </span>
+                                                </span>
+                                            )}
+                                    </div>
                                 </div>
                             ) : (
                                 <label className="p-4 fs-13 fw-4">{variable.description}</label>

@@ -1,5 +1,4 @@
-import React, { useState, useContext } from 'react'
-import CodeEditor from '../CodeEditor/CodeEditor'
+import React, { useContext } from 'react'
 import {
     FormErrorObjectType,
     FormType,
@@ -33,7 +32,6 @@ export function TaskTypeDetailComponent() {
         activeStageName: string
         formDataErrorObj: FormErrorObjectType
     } = useContext(ciPipelineContext)
-    const [isMountCustomScript, setIsMountCustomScript] = useState(false)
 
     const handleContainer = (e: any, key: 'containerImagePath' | 'imagePullSecret'): void => {
         const _formData = { ...formData }
@@ -179,15 +177,15 @@ export function TaskTypeDetailComponent() {
                                     />
 
                                     {formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-                                        ?.containerImagePath &&
+                                        ?.storeScriptAt &&
                                         !formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-                                            ?.containerImagePath.isValid && (
+                                            ?.storeScriptAt.isValid && (
                                             <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
                                                 <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
                                                 <span>
                                                     {
                                                         formDataErrorObj[activeStageName].steps[selectedTaskIndex]
-                                                            .inlineStepDetail?.containerImagePath.message
+                                                            .inlineStepDetail?.storeScriptAt.message
                                                     }
                                                 </span>
                                             </span>

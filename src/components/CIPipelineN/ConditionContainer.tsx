@@ -19,9 +19,14 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         selectedTaskIndex: number
         activeStageName: string
     } = useContext(ciPipelineContext)
-    const operatorOptions: { label: string; value: string }[] = ['=', '<=', '>=', '!=', '<', '>', '!'].map(
-        (operator) => ({ label: operator, value: operator }),
-    )
+    const operatorOptions: { label: string; value: string }[] = [
+        { value: '==', description: 'equal to' },
+        { value: '!=', description: 'not equal to' },
+        { value: '<', description: 'less than' },
+        { value: '>', description: 'greater than' },
+        { value: '<=', description: 'less than or equal to' },
+        { value: '>=', description: 'greater than or equal to' },
+    ].map((operator) => ({ label: operator.value, value: operator.value, description: operator.description }))
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
     const [selectedOperator, setSelectedOperator] = useState<{ label: string; value: string }>(operatorOptions[0])
     const [selectedVariable, setSelectedVariable] = useState<{ label: string; value: number }>()
@@ -145,6 +150,15 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         dropdownIndicator: (styles) => ({ ...styles, padding: 0 }),
     }
 
+    function formatOptionLabel(option) {
+        return (
+            <div className="flexbox justify-space">
+                <span className="cn-9">{option.label}</span>
+                <span className="cn-5">{option.description}</span>
+            </div>
+        )
+    }
+
     return (
         <div>
             <div
@@ -228,7 +242,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                             }}
                                         />
                                     </label>
-                                    <label className="tp-4 fs-13 fw-4 text-uppercase mr-10">
+                                    <label className="tp-4 fs-13 fw-4 mr-10">
                                         <ReactSelect
                                             defaultValue={
                                                 conditionDetail.conditionOperator
@@ -244,7 +258,15 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                             }}
                                             options={operatorOptions}
                                             isSearchable={false}
-                                            styles={tempMultiSelectStyles}
+                                            menuIsOpen={true}
+                                            styles={{
+                                                ...tempMultiSelectStyles,
+                                                menu: (base, state) => ({
+                                                    ...base,
+                                                    width: '250px',
+                                                }),
+                                            }}
+                                            formatOptionLabel={formatOptionLabel}
                                             components={{
                                                 IndicatorSeparator: null,
                                             }}
