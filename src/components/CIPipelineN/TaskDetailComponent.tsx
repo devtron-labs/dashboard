@@ -185,10 +185,10 @@ export function TaskDetailComponent() {
                             onChange={handleTaskScriptTypeChange}
                         >
                             <RadioGroup.Radio className="left-radius" value={ScriptType.SHELL}>
-                                {ScriptType.SHELL}
+                                Shell
                             </RadioGroup.Radio>
                             <RadioGroup.Radio className="right-radius no-left-border" value={ScriptType.CONTAINERIMAGE}>
-                                CONTAINER IMAGE
+                                Container Image
                             </RadioGroup.Radio>
                         </RadioGroup>
                     </div>

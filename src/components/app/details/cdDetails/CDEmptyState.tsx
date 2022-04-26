@@ -18,6 +18,7 @@ export default function CDEmptyState({
     actionHandler?: () => void
 }) {
     return (
+        <div style={{backgroundColor: 'var(--window-bg)'}}>
         <EmptyState>
             <EmptyState.Image>
                 <img src={imgSource || AppNotDeployed} alt="" />
@@ -40,5 +41,6 @@ export default function CDEmptyState({
                 </EmptyState.Button>
             )}
         </EmptyState>
+        </div>
     )
 }

@@ -135,7 +135,7 @@ export function TaskTypeDetailComponent({ taskScriptType }: { taskScriptType: st
                         <>
                             <CustomScript handleScriptChange={(e) => handleCustomChange(e, 'script')} />
                             <div className="row-container mb-10">
-                                <TaskFieldTippyDescription taskField={TaskFieldLabel.STORESCRIPTAT} />
+                                <TaskFieldTippyDescription taskField={TaskFieldLabel.STORESCRIPTAT} contentDescription={TaskFieldDescription.STORESCRIPTAT} />
                                 <input
                                     style={{ width: '80% !important' }}
                                     className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"

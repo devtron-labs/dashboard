@@ -102,12 +102,12 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         <>
             <div className="row-container mb-8">
                 <Tippy className="default-tt" arrow={false} content={type === PluginVariableType.INPUT ? TaskFieldDescription.INPUT : TaskFieldDescription.OUTPUT}>
-                    <label className="tp-4 fs-13 fw-6 text-capitalize mr-8">{type} variables </label>
+                    <label className={`tp-4 fs-13 fw-6 text-capitalize mr-8 ${type === PluginVariableType.INPUT ? 'text-underline-dashed' : ''}`}>{type} variables </label>
                 </Tippy>
 
                 <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit" onClick={addVariable}>
                     <Add className="add-icon" />
-                    Add variables
+                    Add variable
                 </div>
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.map(

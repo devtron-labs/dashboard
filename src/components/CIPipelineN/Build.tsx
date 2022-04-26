@@ -215,7 +215,7 @@ export function Build({
                     <div>
                         <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit mt-20" onClick={addDockerArg}>
                             <Add className="add-icon" />
-                            Add variables
+                            Add parameter
                         </div>
                         {formData.args.map((arg, index) => {
                             return (

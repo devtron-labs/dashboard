@@ -87,7 +87,8 @@ export enum TaskFieldDescription {
     MOUNTDIRECTORYFROMHOST = 'Mount any directory from the host into the container. This can be used to mount code or even output directories.',
     OUTPUTVARIABLES = 'These variables should be set in the environment variables and can be used as input variables in other scripts.',
     OUTPUTDIRECTORYPATH = 'Directory in which the script is writing/producing output files (eg. test report, zip files etc)',
-    SCRIPT = 'Shell Script to be executed, it supports base shell'
+    SCRIPT = 'Shell Script to be executed, it supports base shell',
+    STORESCRIPTAT= 'Path where script should be mounted'
 }
 
 export enum MountPath {

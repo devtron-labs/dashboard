@@ -115,7 +115,7 @@ export function TaskList() {
                 {formData[activeStageName].steps?.map((taskDetail, index) => (
                     <Fragment key={`task-item-${index}`}>
                         <div
-                            className={`task-item fw-4 fs-13 pointer ${selectedTaskIndex === index ? 'task-item__selected-list' : ''}`}
+                            className={`task-item fw-4 fs-13 pointer flex-justify ${selectedTaskIndex === index ? 'task-item__selected-list' : ''}`}
                             draggable={dragAllowed}
                             onDragStart={() => handleDragStart(index)}
                             onDragEnter={() => handleDragEnter(index)}
@@ -124,7 +124,7 @@ export function TaskList() {
                             onClick={() => handleSelectedTaskChange(index)}
                         >
                             <Drag className="drag-icon" onMouseDown={() => setDragAllowed(true)} />
-                            <span className="w-80 pl-5 task-name-container">{taskDetail.name}</span>
+                            <span className="w-80 task-name-container">{taskDetail.name}</span>
                             {formDataErrorObj[activeStageName].steps[index] &&
                                 !formDataErrorObj[activeStageName].steps[index].isValid && (
                                     <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-2" />
