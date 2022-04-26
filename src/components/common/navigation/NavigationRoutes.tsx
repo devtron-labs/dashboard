@@ -8,12 +8,9 @@ import * as Sentry from '@sentry/browser'
 import ReactGA from 'react-ga'
 import { Security } from '../../security/Security'
 import { dashboardLoggedIn, getVersionConfig } from '../../../services/service'
-import { showError } from '../helpers/Helpers'
 import Reload from '../../Reload/Reload'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import DevtronStackManager from '../../v2/devtronStackManager/DevtronStackManager'
-import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -84,17 +81,10 @@ export default function NavigationRoutes() {
     useEffect(() => {
         async function getServerMode() {
             try {
-                // const response = getVersionConfig()
-                // const json = await response
-                // if (json.code == 200) {
-                //     setServerMode(SERVER_MODE.EA_ONLY) //json.result.serverMode)
-                //     setPageState(ViewType.FORM)
-                // }
-
-                const { result } = await getModuleInfo('ciCd')
-                if (result) {
-                    // setServerMode(result.status === ModuleStatus.INSTALLED ? SERVER_MODE.FULL : SERVER_MODE.EA_ONLY)
-                    setServerMode(SERVER_MODE.EA_ONLY)
+                const response = getVersionConfig()
+                const json = await response
+                if (json.code == 200) {
+                    setServerMode(json.result.serverMode)
                     setPageState(ViewType.FORM)
                 }
             } catch (err) {

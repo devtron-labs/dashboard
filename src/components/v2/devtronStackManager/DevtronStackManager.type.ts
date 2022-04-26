@@ -2,13 +2,16 @@ import { ResponseType } from '../../../services/service.types'
 import { ActionResponse } from '../../external-apps/ExternalAppService'
 
 export enum ModuleStatus {
+    HEALTHY = 'healthy',
+    INSTALLED = 'installed',
+    INSTALLING = 'installing',
+    INSTALL_FAILED = 'installFailed',
     NONE = 'none',
     NOT_INSTALLED = 'notInstalled',
-    INSTALLING = 'installing',
-    INSTALLED = 'installed',
-    INSTALL_FAILED = 'installFailed',
-    AVAILABLE = 'available',
     TIMEOUT = 'timeout',
+    UNKNOWN = 'unknown',
+    UPGRADING = 'upgrading',
+    UPGRADE_FAILED = 'upgradeFailed'
 }
 
 export enum ModuleActions {
@@ -68,4 +71,24 @@ export interface ServerInfoResponse extends ResponseType {
 export interface ServerActionRequest {
     action: ModuleActions
     version: string
+}
+
+export interface ReleaseNotes {
+    tagName: string
+    releaseName: string
+    createdAt: string
+    publishedAt: string
+    body: string
+}
+
+export interface ReleaseNotesResponse extends ResponseType {
+    result?: ReleaseNotes[]
+}
+
+export interface LogPodName {
+    podName: string
+}
+
+export interface LogPodNameResponse extends ResponseType {
+    result?: LogPodName
 }

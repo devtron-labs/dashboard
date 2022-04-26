@@ -136,6 +136,7 @@ export const Routes = {
     EXTERNAL_LINKS_API: 'external-links',
     MODULE_INFO_API: 'module',
     SERVER_INFO_API: 'server',
+    LOG_PODNAME_API: 'k8s/resource/info'
 };
 
 export const ViewType = {
@@ -160,6 +161,7 @@ export const AppConfigStatus = {
 
 export const FullRoutes = {
     LOGIN: `${Routes.LOGIN}`,
+    RELEASE_NOTES_API: 'https://api.devtron.ai/release/notes'
 };
 
 export const PATTERNS = {

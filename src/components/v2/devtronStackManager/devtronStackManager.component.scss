@@ -1,0 +1,238 @@
+.module-details__card {
+    width: 300px;
+    height: 180px;
+    background-color: white;
+    border: 1px solid var(--N200);
+    position: relative;
+
+    .module-details__installation-status {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        text-transform: uppercase;
+
+        &.installing {
+            color: var(--B500);
+
+            svg path {
+                fill: var(--B500);
+            }
+        }
+
+        &.installed {
+            color: var(--G500);
+
+            svg path {
+                stroke: var(--G500);
+            }
+        }
+
+        &.installFailed {
+            color: var(--R500);
+        }
+    }
+
+    .module-details__card-icon {
+        width: 56px;
+        height: 56px;
+    }
+
+    &.more-extensions__card {
+        background-color: var(--window-bg);
+        border: 1px dashed var(--N300);
+        padding-top: 4px;
+
+        .module-details__card-icon {
+            width: 76px;
+            height: 76px;
+            margin-bottom: 14px;
+        }
+
+        .module-details__card-name {
+            font-weight: 400;
+        }
+    }
+}
+
+.module-details__view-container {
+    max-width: 960px;
+    margin: 0 auto;
+
+    .module-details__view-wrapper {
+        display: grid;
+        grid-template-columns: minmax(445px, 640px) 260px;
+        column-gap: 60px;
+
+        .module-details__feature-wrapper {
+            .module-details__feature-heading {
+                margin: 0;
+                line-height: 36px;
+            }
+
+            .module-details__divider {
+                width: 100%;
+                height: 1px;
+                background-color: var(--N200);
+            }
+
+            .module-details__feature-info {
+                p {
+                    margin: 0 0 24px;
+                }
+
+                .module-details__features-list-heading {
+                    margin: 0 0 16px;
+                }
+            }
+        }
+    }
+}
+
+.module-details__install-wrapper {
+    .module-details__install-button {
+        width: 100%;
+        height: 36px;
+
+        .module-details__install-icon {
+            transform: rotate(90deg);
+        }
+
+        .module-details__retry-install-icon {
+            path {
+                fill: none;
+            }
+        }
+    }
+    .module-details__installtion-status {
+        width: 100%;
+        border: 1px solid var(--N200);
+        padding: 16px;
+
+        &.upgrade.status-healthy {
+            position: relative;
+            background-color: white;
+            border: 1px solid var(--N200);
+            overflow: hidden;
+            padding: 16px;
+
+            .module-details__upgrade-success {
+                text-align: center;
+
+                img {
+                    position: absolute;
+                    width: 100%;
+                    bottom: -28px;
+                }
+
+                svg,
+                span {
+                    z-index: 1;
+                }
+            }
+        }
+
+        &.status-installed {
+            background-color: var(--G100);
+            border: 1px solid var(--G200);
+        }
+
+        &.status-installFailed,
+        &.status-timeout,
+        &.status-upgradeFailed,
+        &.status-unknown {
+            background-color: var(--R100);
+            border: 1px solid var(--R200);
+        }
+
+        &.status-installed,
+        &.status-installFailed,
+        &.status-timeout,
+        &.status-upgradeFailed,
+        &.status-unknown,
+        .module-details__installtion-note {
+            padding: 10px 16px;
+        }
+
+        .loader.default-background {
+            justify-content: flex-start;
+        }
+
+        .module-details__installtion-note {
+            margin: 12px 0 0;
+        }
+    }
+
+    .module-details__get-help {
+        width: 100%;
+        height: 124px;
+        border: 1px solid var(--N200);
+        padding: 12px;
+        text-decoration: none;
+
+        a {
+            height: 36px;
+
+            &.module-details__help-guide {
+                svg path {
+                    stroke: var(--B500);
+                }
+            }
+
+            &.module-details__help-chat {
+                svg {
+                    path:first-of-type {
+                        stroke: var(--B500);
+                    }
+
+                    path:not(:first-of-type) {
+                        fill: var(--B500);
+                    }
+                }
+            }
+        }
+    }
+
+    .module-details__update-note {
+        width: 100%;
+        background-color: var(--B100);
+        border: 1px solid var(--B200);
+        padding: 10px 16px;
+    }
+}
+
+.no-modules__installed-view {
+    width: 100%;
+    height: 100%;
+
+    .empty-state {
+        h2 {
+            font-weight: 600;
+        }
+
+        p.subtitle {
+            font-size: 13px;
+        }
+
+        .empty-state__discover-btn {
+            margin-left: 10px;
+            color: var(--B500);
+            border: 1px solid var(--N200);
+            padding: 8px 16px;
+            margin: 2px;
+            background-color: var(--white);
+
+            .discover-icon {
+                width: 16px;
+                height: 16px;
+
+                path {
+                    fill: var(--B500);
+                }
+            }
+
+            &:hover {
+                border: 1px solid var(--B500);
+            }
+        }
+    }
+}

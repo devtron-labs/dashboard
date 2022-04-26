@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
-import { ModuleDetailsCardType, ModuleStatus, ModuleDetails, ModuleDetailsInfo } from './DevtronStackManager.type'
+import { ModuleDetailsCardType, ModuleStatus, ModuleDetails, ServerInfo } from './DevtronStackManager.type'
 import EmptyState from '../../EmptyState/EmptyState'
-import CICDIcon from '../../../assets/img/ic-build-deploy.png'
-import MoreExtentionsIcon from '../../../assets/img/ic-more-extensions.png'
 import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
 import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
@@ -11,12 +9,17 @@ import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-excl
 import { ReactComponent as InstallIcon } from '../../../assets/icons/ic-arrow-forward.svg'
 import { ReactComponent as RetyrInstallIcon } from '../../../assets/icons/ic-arrow-clockwise.svg'
 import { ReactComponent as SuccessIcon } from '../../../assets/icons/appstatus/healthy.svg'
-import { ReactComponent as DiscordOnlineIcon } from '../../../assets/icons/ic-discord-online.svg'
-import { Progressing } from '../../common'
-import VersionUpToDate from '../../../assets/img/ic-empty-tests.svg'
+import { ReactComponent as UpToDateIcon } from '../../../assets/icons/ic-celebration.svg'
+import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
+import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
+import { Progressing, showError, ToastBody } from '../../common'
 import NoExtensions from '../../../assets/img/empty-noresult@2x.png'
+import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
 import { URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
+import { toast } from 'react-toastify'
+import { handleAction, MODULE_DETAILS_INFO, MODULE_DETAILS_MAP, MODULE_ICON_MAP } from './DevtronStackManager.utils'
+import './devtronStackManager.component.scss'
 
 // Start: Carousel images
 import CarouselImage1 from '../../../assets/img/ic-empty-ea-app-detail.png'
@@ -24,44 +27,6 @@ import CarouselImage2 from '../../../assets/img/ic-empty-ea-charts.png'
 import CarouselImage3 from '../../../assets/img/ic-empty-ea-app-detail.png'
 import CarouselImage4 from '../../../assets/img/ic-empty-ea--security.png'
 // End: Carousel images
-
-const MODULE_ICON_MAP = {
-    ciCd: CICDIcon,
-    moreExtensions: MoreExtentionsIcon,
-}
-
-export const MODULE_DETAILS_MAP: Record<string, ModuleDetails> = {
-    ciCd: {
-        id: 'ciCd',
-        name: 'Build and Deploy (CI/CD)',
-        info: 'Enables continous code integration and deployment.',
-        icon: 'ciCd',
-        installationStatus: ModuleStatus.NONE,
-    },
-    moreExtensions: {
-        id: 'moreExtensions',
-        name: 'More extensions coming soon',
-        info: "We're building a suite of extensions to serve your software delivery lifecycle.",
-        icon: 'moreExtensions',
-        installationStatus: ModuleStatus.NONE,
-    },
-}
-
-const MODULE_DETAILS_INFO: Record<string, ModuleDetailsInfo> = {
-    ciCd: {
-        name: 'Build and Deploy (CI/CD)',
-        infoList: [
-            'Continuous integration (CI) and continuous delivery (CD) embody a culture, set of operating principles, and collection of practices that enable application development teams to deliver code changes more frequently and reliably. The implementation is also known as the CI/CD pipeline.',
-            'CI/CD is one of the best practices for devops teams to implement. It is also an agile methodology best practice, as it enables software development teams to focus on meeting business requirements, code quality, and security because deployment steps are automated.',
-        ],
-        featuresList: [
-            "Discovery: What would the users be searching for when they're looking for a CI/CD offering?",
-            'Detail: The CI/CD offering should be given sufficient importance (on Website, Readme). (Eg. Expand capability with CI/CD module [Discover more modules])',
-            'Installation: Ability to install CI/CD module with the basic installation.',
-            'In-Product discovery: How easy it is to discover the CI/CD offering primarily once the user is in the product. (Should we talk about modules on the login page?)',
-        ],
-    },
-}
 
 const getInstallationStatusLabel = (installationStatus: ModuleStatus): JSX.Element => {
     if (installationStatus === ModuleStatus.INSTALLING) {
@@ -146,11 +111,17 @@ export const ModulesListingView = ({
             )}
         </div>
     ) : (
-        <NoExtensionsInstalledView history={history} />
+        <NoModulesInstalledView history={history} />
     )
 }
 
-export const NavItem = ({ installedModulesCount }: { installedModulesCount: number }): JSX.Element => {
+export const NavItem = ({
+    installedModulesCount,
+    currentVersion,
+}: {
+    installedModulesCount: number
+    currentVersion: string
+}): JSX.Element => {
     const ExtentionsSection = [
         {
             name: 'Discover',
@@ -189,7 +160,7 @@ export const NavItem = ({ installedModulesCount }: { installedModulesCount: numb
                         <div className="about-devtron ml-12">
                             <span className="fs-13">{route.name}</span>
                             <br />
-                            <span className="fs-11">v0.3.25</span>
+                            <span className="fs-11">{currentVersion}</span>
                         </div>
                     )}
                     {route.name === 'Installed' && (
@@ -249,40 +220,85 @@ export const PageHeader = ({
 
 const InstallationStatus = ({
     installationStatus,
+    appName,
     logPodName,
+    isUpgradeView,
+    upgradeVersion,
 }: {
     installationStatus: ModuleStatus
+    appName?: string
     logPodName?: string
+    isUpgradeView?: boolean
+    upgradeVersion?: string
 }) => {
-    // if ()
     return (
-        <div className={`module-details__installtion-status cn-9 br-4 fs-13 fw-6 mb-16 ${installationStatus}`}>
-            {installationStatus === ModuleStatus.INSTALLING && (
+        <div
+            className={`module-details__installtion-status cn-9 br-4 fs-13 fw-6 mb-16 status-${installationStatus} ${
+                isUpgradeView ? 'upgrade' : ''
+            }`}
+        >
+            {(installationStatus === ModuleStatus.INSTALLING || installationStatus === ModuleStatus.UPGRADING) && (
                 <>
                     <Progressing size={24} />
-                    <div className="mt-12">{logPodName ? 'Installing' : 'Initializing'} ...</div>
+                    <div className="mt-12">
+                        {logPodName
+                            ? isUpgradeView
+                                ? `Upgrading to ${upgradeVersion}`
+                                : 'Installing'
+                            : 'Initializing'}
+                        &nbsp;...
+                    </div>
                 </>
             )}
-            {installationStatus === ModuleStatus.INSTALLED && (
-                <div className="module-details__installtion-success flex left">
-                    <SuccessIcon className="icon-dim-20 mr-12" /> Installed
-                </div>
+            {(installationStatus === ModuleStatus.INSTALLED || installationStatus === ModuleStatus.HEALTHY) && (
+                <>
+                    {isUpgradeView ? (
+                        <div className="module-details__upgrade-success flex column">
+                            <img src={LatestVersionCelebration} />
+                            <UpToDateIcon className="icon-dim-40" />
+                            <span className="mt-12">You're using the latest version of Devtron.</span>
+                        </div>
+                    ) : (
+                        <div className="module-details__installtion-success flex left">
+                            <SuccessIcon className="icon-dim-20 mr-12" /> Installed
+                        </div>
+                    )}
+                </>
             )}
-            {(installationStatus === ModuleStatus.INSTALL_FAILED || installationStatus === ModuleStatus.TIMEOUT) && (
+            {(installationStatus === ModuleStatus.INSTALL_FAILED ||
+                installationStatus === ModuleStatus.UPGRADE_FAILED ||
+                installationStatus === ModuleStatus.TIMEOUT ||
+                installationStatus === ModuleStatus.UNKNOWN) && (
                 <div className="module-details__installtion-failed flex left">
-                    <ErrorIcon className="icon-dim-20 mr-12" /> Installation failed
+                    <ErrorIcon className="icon-dim-20 mr-12" />
+                    {installationStatus === ModuleStatus.UNKNOWN
+                        ? 'Last update status: Unknown'
+                        : `${isUpgradeView ? 'Upgrade' : 'Installation'} ${
+                              installationStatus === ModuleStatus.TIMEOUT ? 'request timed out' : 'failed'
+                          }`}
                 </div>
             )}
-            {logPodName && (
-                <div className="mt-4">
-                    <NavLink
-                        to={`/app/ea/1%7Cdevtroncd%7Cdevtron/devtron/details/k8s-resources/pod/${logPodName}/logs`}
+            {logPodName &&
+                appName &&
+                installationStatus !== ModuleStatus.NOT_INSTALLED &&
+                installationStatus !== ModuleStatus.INSTALLED &&
+                installationStatus !== ModuleStatus.HEALTHY && (
+                    <div
+                        className={`mt-4 ${
+                            installationStatus !== ModuleStatus.INSTALLING &&
+                            installationStatus !== ModuleStatus.UPGRADING
+                                ? 'ml-33'
+                                : ''
+                        }`}
                     >
-                        View logs
-                    </NavLink>
-                </div>
-            )}
-            {installationStatus === ModuleStatus.INSTALLING && (
+                        <NavLink
+                            to={`${URLS.APP}/${URLS.EXTERNAL_APPS}/1%7Cdevtroncd%7C${appName}/${appName}/${URLS.APP_DETAILS}/${URLS.APP_DETAILS_K8}/pod/${logPodName}/logs`}
+                        >
+                            View logs
+                        </NavLink>
+                    </div>
+                )}
+            {(installationStatus === ModuleStatus.INSTALLING || installationStatus === ModuleStatus.UPGRADING) && (
                 <p className="module-details__installtion-note fs-12 fw-4 bcn-1 br-4">
                     NOTE: You can continue using Devtron. The installation will continue in the background.
                 </p>
@@ -293,21 +309,25 @@ const InstallationStatus = ({
 
 const GetHelpCard = () => {
     return (
-        <a
-            className="module-details__get-help flex br-4 cn-9 fs-13"
-            href="https://discord.devtron.ai/"
-            target="_blank"
-            rel="noreferrer noopener"
-        >
-            <div className="mr-16">
-                <span className="fw-6">Facing issues?</span>
-                <br />
-                <span className="fw-4">Ping us! We're here to help.</span>
-            </div>
-            <div className="icon-dim-40">
-                <DiscordOnlineIcon />
-            </div>
-        </a>
+        <div className="module-details__get-help flex column top left br-4 cn-9 fs-13">
+            <span className="fw-6 mb-10">Facing issues?</span>
+            <a
+                className="module-details__help-guide cb-5 flex left"
+                href="https://discord.devtron.ai/"
+                target="_blank"
+                rel="noreferrer noopener"
+            >
+                <File className="icon-dim-20 mr-12" /> Troubleshooting guide
+            </a>
+            <a
+                className="module-details__help-chat cb-5 flex left"
+                href="https://discord.devtron.ai/"
+                target="_blank"
+                rel="noreferrer noopener"
+            >
+                <Chat className="icon-dim-20 mr-12" /> Chat with support
+            </a>
+        </div>
     )
 }
 
@@ -324,10 +344,84 @@ const ModuleUpdateNote = () => {
     )
 }
 
+export const handleError = (err) => {
+    if (err.code === 403) {
+        toast.info(<ToastBody title="Access denied" subtitle="You don't have access to perform this action." />, {
+            className: 'devtron-toast unauthorized',
+        })
+    } else {
+        showError(err)
+    }
+}
+
+export const InstallationWrapper = ({
+    moduleName,
+    installationStatus,
+    appName,
+    logPodName,
+    isUpgradeView,
+    upgradeVersion,
+}: {
+    moduleName?: string
+    installationStatus: ModuleStatus
+    appName?: string
+    logPodName?: string
+    isUpgradeView?: boolean
+    upgradeVersion?: string
+}) => {
+    return (
+        <div className="module-details__install-wrapper">
+            {!(
+                installationStatus === ModuleStatus.INSTALLING ||
+                installationStatus === ModuleStatus.UPGRADING ||
+                installationStatus === ModuleStatus.INSTALLED ||
+                installationStatus === ModuleStatus.HEALTHY
+            ) && (
+                <button
+                    className="module-details__install-button cta flex mb-16"
+                    onClick={() => handleAction(moduleName, isUpgradeView, upgradeVersion)}
+                >
+                    {installationStatus === ModuleStatus.NOT_INSTALLED && (
+                        <>
+                            <InstallIcon className="module-details__install-icon icon-dim-16 mr-8" />
+                            {isUpgradeView ? `Upgrade to ${upgradeVersion}` : 'Install'}
+                        </>
+                    )}
+                    {(installationStatus === ModuleStatus.INSTALL_FAILED ||
+                        installationStatus === ModuleStatus.UPGRADE_FAILED ||
+                        installationStatus === ModuleStatus.TIMEOUT ||
+                        installationStatus === ModuleStatus.UNKNOWN) && (
+                        <>
+                            <RetyrInstallIcon className="module-details__retry-install-icon icon-dim-16 mr-8" />
+                            {isUpgradeView ? `Retry upgrade to ${upgradeVersion}` : ' Retry install'}
+                        </>
+                    )}
+                </button>
+            )}
+            {installationStatus !== ModuleStatus.NOT_INSTALLED && (
+                <InstallationStatus
+                    installationStatus={installationStatus}
+                    appName={appName}
+                    logPodName={logPodName}
+                    isUpgradeView={isUpgradeView}
+                    upgradeVersion={upgradeVersion}
+                />
+            )}
+            {!isUpgradeView && installationStatus === ModuleStatus.INSTALLED && <ModuleUpdateNote />}
+            {(installationStatus === ModuleStatus.INSTALL_FAILED ||
+                installationStatus === ModuleStatus.UPGRADE_FAILED ||
+                installationStatus === ModuleStatus.TIMEOUT ||
+                installationStatus === ModuleStatus.UNKNOWN) && <GetHelpCard />}
+        </div>
+    )
+}
+
 export const ModuleDetailsView = ({
     moduleDetails,
     handleModuleSelection,
     setDetailsMode,
+    serverInfo,
+    logPodName,
     fromDiscoverModules,
     history,
     location,
@@ -335,6 +429,8 @@ export const ModuleDetailsView = ({
     moduleDetails: ModuleDetails
     handleModuleSelection: (moduleDetails: ModuleDetails, fromDiscoverModules: boolean, moduleId: string) => void
     setDetailsMode: React.Dispatch<React.SetStateAction<string>>
+    serverInfo: ServerInfo
+    logPodName?: string
     fromDiscoverModules?: boolean
     history: any
     location: any
@@ -376,74 +472,28 @@ export const ModuleDetailsView = ({
                         </ul>
                     </div>
                 </div>
-                <div className="module-details__install-wrapper">
-                    {!(
-                        moduleDetails.installationStatus === ModuleStatus.INSTALLING ||
-                        moduleDetails.installationStatus === ModuleStatus.INSTALLED
-                    ) && (
-                        <button className="module-details__install-button cta flex mb-16">
-                            {(moduleDetails.installationStatus === ModuleStatus.NOT_INSTALLED ||
-                                moduleDetails.installationStatus === ModuleStatus.AVAILABLE) && (
-                                <>
-                                    <InstallIcon className="module-details__install-icon icon-dim-16 mr-8" />
-                                    Install
-                                </>
-                            )}
-                            {(moduleDetails.installationStatus === ModuleStatus.INSTALL_FAILED ||
-                                moduleDetails.installationStatus === ModuleStatus.TIMEOUT) && (
-                                <>
-                                    <RetyrInstallIcon className="module-details__retry-install-icon icon-dim-16 mr-8" />
-                                    Retry install
-                                </>
-                            )}
-                        </button>
-                    )}
-                    {moduleDetails.installationStatus !== ModuleStatus.NOT_INSTALLED && (
-                        <InstallationStatus installationStatus={moduleDetails.installationStatus} logPodName={''} />
-                    )}
-                    {moduleDetails.installationStatus === ModuleStatus.INSTALLED && <ModuleUpdateNote />}
-                    {(moduleDetails.installationStatus === ModuleStatus.INSTALL_FAILED ||
-                        moduleDetails.installationStatus === ModuleStatus.TIMEOUT) && <GetHelpCard />}
-                </div>
+                <InstallationWrapper
+                    moduleName={_moduleDetails.name}
+                    installationStatus={moduleDetails.installationStatus}
+                    appName={serverInfo?.releaseName}
+                    logPodName={logPodName}
+                />
             </div>
         </div>
     ) : null
 }
 
-export const NoExtensionsInstalledView = ({ history }): JSX.Element => {
+export const NoModulesInstalledView = ({ history }): JSX.Element => {
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={NoExtensions} width="250" height="200" alt="no results" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h2 className="fs-16 fw-4 c-9">No extensions installed</h2>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>Installed extensions will be available here</EmptyState.Subtitle>
-            <EmptyState.Button>
-                <button
-                    type="button"
-                    className="empty-state__discover-btn flex fs-13 fw-6 br-4"
-                    onClick={() => history.push(URLS.STACK_MANAGER_DISCOVER_MODULES)}
-                >
-                    <DiscoverIcon className="discover-icon" /> <span className="ml-8">Discover extensions</span>
-                </button>
-            </EmptyState.Button>
-        </EmptyState>
-    )
-}
-
-export const VersionUpToDateView = ({ history }): JSX.Element => {
-    return (
-        <div className="flexbox h-100">
+        <div className="no-modules__installed-view">
             <EmptyState>
                 <EmptyState.Image>
-                    <img src={VersionUpToDate} width="250" height="200" alt="no results" />
+                    <img src={NoExtensions} width="250" height="200" alt="no results" />
                 </EmptyState.Image>
                 <EmptyState.Title>
-                    <h2 className="fs-16 fw-4 c-9">You're using the latest version</h2>
+                    <h2 className="fs-16 fw-4 c-9">No extensions installed</h2>
                 </EmptyState.Title>
-                <EmptyState.Subtitle>v0.3.25</EmptyState.Subtitle>
+                <EmptyState.Subtitle>Installed extensions will be available here</EmptyState.Subtitle>
                 <EmptyState.Button>
                     <button
                         type="button"

@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
-import { SERVER_MODE, URLS } from '../../../config'
-import { ReactComponent as MoreOption } from '../../../assets/icons/ic-more-option.svg'
+import { DOCUMENTATION, SERVER_MODE, URLS } from '../../../config'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Discord } from '../../../assets/icons/ic-discord-fill.svg'
-import { ReactComponent as Edit } from '../../../assets/icons/ic-edit.svg' // use pencil
+import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
 import { getLoginInfo } from '../index'
 import { getRandomColor } from '../helpers/Helpers'
@@ -78,7 +77,7 @@ const NavigationStack = {
 const HelpOptions = [
     {
         name: 'View documentation',
-        link: 'https://devtron.ai/blog/',
+        link: DOCUMENTATION.HOME_PAGE,
         icon: File,
         showSeparator: true,
     },

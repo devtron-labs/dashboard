@@ -46,7 +46,7 @@ export default function Carousel({ imageUrls, className }: { imageUrls: string[]
         <div className={`carousel-container ${className || ''}`}>
             {imageUrls.map((url, idx) => {
                 return (
-                    <div className="carousel-slide">
+                    <div key={`carousel-slide-${idx}`} className="carousel-slide">
                         <img src={url} alt={`carousel-img-${idx}`} />
                     </div>
                 )
@@ -55,7 +55,6 @@ export default function Carousel({ imageUrls, className }: { imageUrls: string[]
                 <div className="carousel-slide__action flex cursor" onClick={prevSlide}>
                     <ArrowIcon className="icon-dim-20 action-prev__icon" />
                 </div>
-                {/* <div className="carousel-slide__active-slide">{`${currentSlideNum}/${imageUrls.length}`}</div> */}
                 <div className="carousel-slide__slide-count ml-12 mr-12" />
                 <div className="carousel-slide__action flex cursor" onClick={nextSlide}>
                     <ArrowIcon className="icon-dim-20 action-next__icon" />

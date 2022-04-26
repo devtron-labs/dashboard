@@ -1,18 +1,19 @@
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useRef, useState } from 'react'
 import { Redirect, Route, Router, Switch, useHistory, useLocation } from 'react-router-dom'
 import { URLS } from '../../../config'
-import { ErrorBoundary, Progressing, showError } from '../../common'
+import { ErrorBoundary, Progressing } from '../../common'
+import AboutDevtronView from './AboutDevtronView'
 import {
+    handleError,
     ModuleDetailsView,
     ModulesListingView,
-    MODULE_DETAILS_MAP,
     NavItem,
     PageHeader,
-    VersionUpToDateView,
 } from './DevtronStackManager.component'
 import './devtronStackManager.scss'
-import { getModuleInfo, getServerInfo } from './DevtronStackManager.service'
-import { ModuleDetails, ModuleStatus } from './DevtronStackManager.type'
+import { getLogPodName, getModuleInfo, getServerInfo } from './DevtronStackManager.service'
+import { ModuleDetails, ModuleStatus, ServerInfo } from './DevtronStackManager.type'
+import { MODULE_DETAILS_MAP } from './DevtronStackManager.utils'
 
 let modulesPollingInterval = null
 
@@ -21,9 +22,12 @@ export default function DevtronStackManager() {
     const [discoverModulesList, setDiscoverModulesList] = useState<ModuleDetails[]>([])
     const [installedModulesList, setInstalledModulesList] = useState<ModuleDetails[]>([])
     const [selectedModule, setSelectedModule] = useState<ModuleDetails>()
+    const [serverInfo, setServerInfo] = useState<ServerInfo>()
     const [detailsMode, setDetailsMode] = useState('')
+    const [logPodName, setLogPodName] = useState('')
     const history = useHistory()
     const location = useLocation()
+    const stackManagerRef = useRef<HTMLElement>()
 
     useEffect(() => {
         setLoading(true)
@@ -47,8 +51,10 @@ export default function DevtronStackManager() {
     }, [location.pathname])
 
     function getModuleAndServerInfo() {
-        Promise.all([getModuleInfo(''), getServerInfo()])
-            .then(([moduleInfoRes, serverInfoRes]) => {
+        Promise.all([getModuleInfo('ciCd'), getServerInfo(), getLogPodName()])
+            .then(([moduleInfoRes, serverInfoRes, logPodNameRes]) => {
+                setServerInfo(serverInfoRes.result)
+                setLogPodName(logPodNameRes.result?.podName)
                 setDiscoverModulesList([
                     {
                         ...MODULE_DETAILS_MAP[moduleInfoRes.result?.name],
@@ -67,8 +73,8 @@ export default function DevtronStackManager() {
                 )
                 setLoading(false)
             })
-            .catch((errors) => {
-                showError(errors)
+            .catch((err) => {
+                handleError(err)
                 setLoading(false)
             })
     }
@@ -109,6 +115,8 @@ export default function DevtronStackManager() {
                         moduleDetails={selectedModule}
                         handleModuleSelection={handleModuleSelection}
                         setDetailsMode={setDetailsMode}
+                        serverInfo={serverInfo}
+                        logPodName={logPodName}
                         fromDiscoverModules={true}
                         history={history}
                         location={location}
@@ -119,6 +127,8 @@ export default function DevtronStackManager() {
                         moduleDetails={selectedModule}
                         handleModuleSelection={handleModuleSelection}
                         setDetailsMode={setDetailsMode}
+                        serverInfo={serverInfo} 
+                        logPodName={logPodName}
                         history={history}
                         location={location}
                     />
@@ -139,7 +149,7 @@ export default function DevtronStackManager() {
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_ABOUT}>
-                    <VersionUpToDateView history={history} />
+                    <AboutDevtronView parentRef={stackManagerRef} serverInfo={serverInfo} logPodName={logPodName} />
                 </Route>
                 <Redirect to={URLS.STACK_MANAGER_DISCOVER_MODULES} />
             </Switch>
@@ -147,7 +157,7 @@ export default function DevtronStackManager() {
     }
 
     return (
-        <main className={`stack-manager ${isLoading || detailsMode ? 'full-view-mode' : ''}`}>
+        <main ref={stackManagerRef} className={`stack-manager ${isLoading || detailsMode ? 'full-view-mode' : ''}`}>
             <PageHeader
                 detailsMode={detailsMode}
                 selectedModule={selectedModule}
@@ -159,10 +169,17 @@ export default function DevtronStackManager() {
                 <Router history={history}>
                     {!detailsMode && (
                         <section className="stack-manager__navigation">
-                            <NavItem installedModulesCount={installedModulesList.length} />
+                            <NavItem
+                                installedModulesCount={installedModulesList.length}
+                                currentVersion={serverInfo?.currentVersion}
+                            />
                         </section>
                     )}
-                    <section className={`stack-manager__component-wrapper ${detailsMode ? 'flex column top' : ''}`}>
+                    <section
+                        className={`stack-manager__component-wrapper ${
+                            detailsMode ? `flex column top ${detailsMode}` : ''
+                        }`}
+                    >
                         <Suspense fallback={<Progressing pageLoader />}>
                             <ErrorBoundary>
                                 <Body />

@@ -1,10 +1,12 @@
-import { Routes } from '../../../config'
+import { FullRoutes, Routes } from '../../../config'
 import { get, post } from '../../../services/api'
 import {
+    LogPodNameResponse,
     ModuleActionRequest,
     ModuleActionResponse,
     ModuleInfoResponse,
     ModuleStatus,
+    ReleaseNotesResponse,
     ServerActionRequest,
     ServerInfoResponse,
 } from './DevtronStackManager.type'
@@ -17,23 +19,21 @@ const Status = [
     ModuleStatus.TIMEOUT,
 ]
 
+const ServerStatus = [
+    ModuleStatus.UNKNOWN,
+    ModuleStatus.UPGRADING,
+    ModuleStatus.HEALTHY,
+    ModuleStatus.UPGRADE_FAILED,
+    ModuleStatus.TIMEOUT,
+]
+
 export const getModuleInfo = (moduleName: string): Promise<ModuleInfoResponse> => {
     // return get(`${Routes.MODULE_INFO_API}/${moduleName}`)
-
-    if (moduleName) {
-        return Promise.resolve({
-            result: {
-                id: 0,
-                name: moduleName,
-                status: ModuleStatus.INSTALLED
-            },
-        } as ModuleInfoResponse)
-    }
 
     return Promise.resolve({
         result: {
             id: 0,
-            name: 'ciCd',
+            name: moduleName,
             status: Status[Math.floor(Math.random() * 5)],
         },
     } as ModuleInfoResponse)
@@ -64,9 +64,8 @@ export const getServerInfo = (): Promise<ServerInfoResponse> => {
     return Promise.resolve({
         result: {
             currentVersion: 'v0.3.25',
-            status: ModuleStatus.NONE,
+            status: ServerStatus[Math.floor(Math.random() * 5)],
             releaseName: 'devtron',
-            logPodName: 'inception',
         },
     } as ServerInfoResponse)
 }
@@ -86,4 +85,12 @@ export const executeServerAction = (serverActionRequest: ServerActionRequest): P
             },
         } as ModuleActionResponse)
     }
+}
+
+export const getReleasesNotes = (): Promise<ReleaseNotesResponse> => {
+    return fetch(FullRoutes.RELEASE_NOTES_API).then((res) => res.json())
+}
+
+export const getLogPodName = (): Promise<LogPodNameResponse> => {
+    return get(Routes.LOG_PODNAME_API)
 }
