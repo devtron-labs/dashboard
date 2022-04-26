@@ -14,6 +14,14 @@ export class ValidationRules {
         }
     }
 
+    requiredField = (value: string): { message: string | null; isValid: boolean } => {
+        if (!value || value.length < 1) {
+            return { message: 'This is a required field', isValid: false }
+        } else {
+            return { message: null, isValid: true }
+        }
+    }
+
     taskName = (value: string): { message: string | null; isValid: boolean } => {
         if (!value || value.length < 1) {
             return { message: 'This is a required field', isValid: false }
@@ -32,7 +40,7 @@ export class ValidationRules {
                     (value['variableType'] === RefVariableType.FROM_PREVIOUS_STEP &&
                         value['refVariableStepIndex'] &&
                         value['refVariableStage'])))
-        if ( !value['name'] && !variableValue && !value['description']) {
+        if (!value['name'] && !variableValue && !value['description']) {
             return { message: 'Please complete or remove this variable', isValid: false }
         } else if (!value['name'] && !variableValue) {
             return { message: 'Variable Name and Value both are required field', isValid: false }
@@ -67,4 +75,14 @@ export class ValidationRules {
             return { message: null, isValid: true }
         }
     }
+
+    shellScript = (value: string): { message: string | null; isValid: boolean } => {
+        if (!value || value.length < 1) {
+            return { message: 'This is a required field', isValid: false }
+        } else {
+            return { message: null, isValid: true }
+        }
+    }
+
+    containerImagePath
 }
