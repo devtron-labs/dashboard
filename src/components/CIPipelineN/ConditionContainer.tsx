@@ -6,7 +6,7 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import ReactSelect, { components } from 'react-select'
 import { ciPipelineContext } from './CIPipeline'
-import { Option } from '../v2/common/ReactSelect.utils'
+import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 
 export function ConditionContainer({ type }: { type: ConditionContainerType }) {
     const {
@@ -173,6 +173,16 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                     {React.cloneElement(props.children[1])}
                 </>
             </components.ValueContainer>
+        )
+    }
+
+    function Option(_props) {
+        const { selectProps, selectOption, data } = _props
+        selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none' })
+        return (
+            <div className="flex left">
+                <components.Option {..._props}>{_props.children}</components.Option>
+            </div>
         )
     }
 

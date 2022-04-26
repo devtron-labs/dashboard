@@ -5,7 +5,8 @@ import { ciPipelineContext } from './CIPipeline'
 import CreatableSelect from 'react-select/creatable'
 import { components } from 'react-select'
 import { BuildStageVariable } from '../../config'
-import { Option } from '../v2/common/ReactSelect.utils'
+import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
+import Tippy from '@tippyjs/react'
 
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
     const {
@@ -193,7 +194,6 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
     }
 
     function formatOptionLabel(option) {
-        console.log(option)
         if (option.refVariableStepIndex) {
             return (
                 <div className="flexbox justify-space">
@@ -224,6 +224,26 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 </>
             </components.ValueContainer>
         )
+    }
+
+    function Option(_props) {
+        const { selectProps, data } = _props
+        selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none' })
+        if (data.description) {
+            return (
+                <Tippy className="variable-description" arrow={false} placement="left" content={data.description}>
+                    <div className="flex left">
+                        <components.Option {..._props}>{_props.children}</components.Option>
+                    </div>
+                </Tippy>
+            )
+        } else {
+            return (
+                <div className="flex left">
+                    <components.Option {..._props}>{_props.children}</components.Option>
+                </div>
+            )
+        }
     }
 
     return (
