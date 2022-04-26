@@ -19,7 +19,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         selectedTaskIndex: number
         activeStageName: string
     } = useContext(ciPipelineContext)
-    const operatorOptions: { label: string; value: string }[] = ['=', '<=', '>=', '!=', '<', '>', '!'].map(
+    const operatorOptions: { label: string; value: string }[] = ['==', '<=', '>=', '!=', '<', '>', '!'].map(
         (operator) => ({ label: operator, value: operator }),
     )
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)

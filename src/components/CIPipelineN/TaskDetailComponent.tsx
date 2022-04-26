@@ -72,6 +72,7 @@ export function TaskDetailComponent() {
 
     useEffect(() => {
         if (
+            formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE &&
             formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE
         ) {
             if (formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script) {
