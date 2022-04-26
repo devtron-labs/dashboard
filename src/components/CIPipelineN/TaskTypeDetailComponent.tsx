@@ -133,7 +133,8 @@ export function TaskTypeDetailComponent() {
                                 )}
                         </div>
                     </div>
-                    <div className="pl-200 fs-13 fw-6 pb-18 pt-9 ">
+                    <div className="row-container mb-10 fs-13 fw-6 pb-18 pt-9">
+                        <div></div>
                         <Checkbox
                             isChecked={
                                 formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.isMountCustomScript
