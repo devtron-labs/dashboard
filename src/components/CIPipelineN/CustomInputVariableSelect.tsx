@@ -124,10 +124,10 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         if (selectedValue['refVariableStepIndex']) {
             _variableDetail = {
                 refVariableUsed: true,
-                value: selectedValue.label,
+                value: '',
                 variableType: RefVariableType.FROM_PREVIOUS_STEP,
                 refVariableStepIndex: selectedValue['refVariableStepIndex'],
-                refVariableName: '',
+                refVariableName: selectedValue.label,
                 refVariableStage:
                     activeStageName === BuildStageVariable.PreBuild
                         ? RefVariableStageType.PRE_CI
@@ -136,6 +136,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             }
         } else if (selectedValue['__isNew__']) {
             _variableDetail = {
+                refVariableUsed: false,
                 variableType: RefVariableType.NEW,
                 value: selectedValue.label,
                 format: '',
@@ -184,6 +185,28 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         setSelectedOutputVariable({ ...selectedVariable, label: selectedValueLabel, value: selectedValueLabel })
     }
 
+    function formatOptionLabel(option) {
+        console.log(option)
+        if (option.refVariableStepIndex) {
+            return (
+                <div className="flexbox justify-space">
+                    <span className="cn-9">{option.label}</span>
+                    <span className="cn-5">
+                        {option.refVariableStage === 'PRE_CI'
+                            ? formData[BuildStageVariable.PreBuild].steps[option.refVariableStepIndex - 1]?.name
+                            : formData[activeStageName].steps[option.refVariableStepIndex - 1]?.name}
+                    </span>
+                </div>
+            )
+        } else {
+            return (
+                <div className="">
+                    <span className="cn-9">{option.label}</span>
+                </div>
+            )
+        }
+    }
+
     return (
         <CreatableSelect
             autoFocus
@@ -193,6 +216,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             placeholder="Select source or input value"
             onChange={handleOutputVariableSelector}
             styles={tempMultiSelectStyles}
+            formatOptionLabel={formatOptionLabel}
             components={{
                 MenuList: (props) => {
                     return (

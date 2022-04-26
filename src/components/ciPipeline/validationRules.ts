@@ -31,7 +31,7 @@ export class ValidationRules {
     }
 
     inputVariable = (value: object): { message: string | null; isValid: boolean } => {
-        let str = `^[a-z0-9-_]+$`
+        let str = `^[A-z0-9-_]+$`
         let re = new RegExp(str)
         const variableValue =
             (value['variableType'] === RefVariableType.NEW && value['value']) ||
