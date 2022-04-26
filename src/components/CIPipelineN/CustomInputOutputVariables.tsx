@@ -103,6 +103,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]][index].format =
             selectedValue.label
+        if (type === PluginVariableType.OUTPUT) {
+            calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
+        }
         setFormData(_formData)
     }
 
@@ -221,6 +224,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                     value={variable.description}
                                     name="description"
                                     onChange={(e) => handleInputOutputValueChange(e, index)}
+                                    onBlur={(e) => handleBlur()}
                                 />
                             </div>
 
