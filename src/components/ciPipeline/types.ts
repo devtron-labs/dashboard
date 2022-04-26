@@ -64,7 +64,7 @@ export enum ScriptType {
 }
 
 export enum TaskFieldLabel {
-   CONTAINERIMAGEPATH = 'Container image path',
+    CONTAINERIMAGEPATH = 'Container image path',
     COMMAND = 'command',
     ARGS = 'args',
     PORTMAPPING = 'Port mapping',
@@ -73,13 +73,13 @@ export enum TaskFieldLabel {
     OUTPUTVARIABLES = 'Output variables',
     OUTPUTDIRECTORYPATH = 'Output directory path',
     SCRIPT = 'Script',
-    STORESCRIPTAT= 'Store script at'
+    STORESCRIPTAT = 'Store script at',
 }
 
 export enum TaskFieldDescription {
-    INPUT= 'These variables are available as environment variables and can be used in the script to inject values from previous tasks or other sources.',
-    OUTPUT='These variables should be set in the environment variables and can be used as input variables in other scripts.',
-    CONTAINERIMAGEPATH= 'Complete verified public url of the container',
+    INPUT = 'These variables are available as environment variables and can be used in the script to inject values from previous tasks or other sources.',
+    OUTPUT = 'These variables should be set in the environment variables and can be used as input variables in other scripts.',
+    CONTAINERIMAGEPATH = 'Complete verified public url of the container',
     COMMAND = 'It contains the commands to execute on this container.',
     ARGS = 'This is used to give arguments to command.',
     PORTMAPPING = 'Port container listens on. This can be used to expose ports of this container so they can be called from outside. ',
@@ -88,7 +88,7 @@ export enum TaskFieldDescription {
     OUTPUTVARIABLES = 'These variables should be set in the environment variables and can be used as input variables in other scripts.',
     OUTPUTDIRECTORYPATH = 'Directory in which the script is writing/producing output files (eg. test report, zip files etc)',
     SCRIPT = 'Shell Script to be executed, it supports base shell',
-    STORESCRIPTAT= 'Path where script should be mounted'
+    STORESCRIPTAT = 'Path where script should be mounted',
 }
 
 export enum MountPath {
@@ -141,6 +141,7 @@ interface ConditionDetails {
 
 interface InlineStepDetailType {
     scriptType: ScriptType
+    isMountCustomScript?: boolean
     script?: string
     dockerFileExists?: boolean
     mountPath?: string

@@ -352,14 +352,18 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         taskErrorobj.isValid =
                             taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable]['script'].isValid
                     } else if (taskData[currentStepTypeVariable]['scriptType'] === ScriptType.CONTAINERIMAGE) {
-                        // if(taskData[currentStepTypeVariable]['scriptType']){
-
-                        // }
-                        // taskErrorobj[currentStepTypeVariable]['script'] = validationRules.requiredField(
-                        //     taskData[currentStepTypeVariable]['script'],
-                        // )
-                        // taskErrorobj.isValid =
-                        //     taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable]['script'].isValid
+                        if (taskData[currentStepTypeVariable]['isMountCustomScript']) {
+                            taskErrorobj[currentStepTypeVariable]['script'] = validationRules.requiredField(
+                                taskData[currentStepTypeVariable]['script'],
+                            )
+                            taskErrorobj[currentStepTypeVariable]['storeScriptAt'] = validationRules.requiredField(
+                                taskData[currentStepTypeVariable]['storeScriptAt'],
+                            )
+                            taskErrorobj.isValid =
+                                taskErrorobj.isValid &&
+                                taskErrorobj[currentStepTypeVariable]['script'].isValid &&
+                                taskErrorobj[currentStepTypeVariable]['storeScriptAt'].isValid
+                        }
 
                         taskErrorobj[currentStepTypeVariable]['containerImagePath'] = validationRules.requiredField(
                             taskData[currentStepTypeVariable]['containerImagePath'],

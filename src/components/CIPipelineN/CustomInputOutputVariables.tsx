@@ -2,14 +2,19 @@ import React, { useContext, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Equal } from '../../assets/icons/ic-variable-equal.svg'
-import { FormType, PluginVariableType, RefVariableType, TaskFieldDescription, VariableFieldType } from '../ciPipeline/types'
+import {
+    FormType,
+    PluginVariableType,
+    RefVariableType,
+    TaskFieldDescription,
+    VariableFieldType,
+} from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import ReactSelect from 'react-select'
 import { tempMultiSelectStyles } from './ciPipeline.utils'
 import Tippy from '@tippyjs/react'
-import { valueTernary } from 'react-select/dist/declarations/src/utils'
 
 function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const {
@@ -51,7 +56,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             id: id,
             name: '',
             value: '',
-            format: '',
+            format: formatOptions[0],
             description: '',
             defaultValue: '',
             refVariableUsed: false,
@@ -94,15 +99,27 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const handleFormatChange = (selectedValue: { label: string; value: string }, index: number): void => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]][index].format =
-            selectedValue.label 
+            selectedValue.label
         setFormData(_formData)
     }
 
     return (
         <>
             <div className="row-container mb-8">
-                <Tippy className="default-tt" arrow={false} content={type === PluginVariableType.INPUT ? TaskFieldDescription.INPUT : TaskFieldDescription.OUTPUT}>
-                    <label className={`tp-4 fs-13 fw-6 text-capitalize mr-8 ${type === PluginVariableType.INPUT ? 'text-underline-dashed' : ''}`}>{type} variables </label>
+                <Tippy
+                    className="default-tt"
+                    arrow={false}
+                    content={
+                        type === PluginVariableType.INPUT ? TaskFieldDescription.INPUT : TaskFieldDescription.OUTPUT
+                    }
+                >
+                    <label
+                        className={`tp-4 fs-13 fw-6 text-capitalize mr-8 ${
+                            type === PluginVariableType.INPUT ? 'text-underline-dashed' : ''
+                        }`}
+                    >
+                        {type} variables{' '}
+                    </label>
                 </Tippy>
 
                 <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit" onClick={addVariable}>
@@ -112,7 +129,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.map(
                 (variable, index) => (
-                    <div  key={`custom-input-variable${index}`}>
+                    <div key={`custom-input-variable${index}`}>
                         <div className="pl-200 mb-20 flexbox justify-space">
                             <div className="custom-variable-container w-100">
                                 <Equal className="icon-dim-40 variable-equal-icon" />
@@ -135,7 +152,11 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                         {type === PluginVariableType.OUTPUT && (
                                             <div style={{ width: '20%' }}>
                                                 <ReactSelect
-                                                    value={variable.format ? {label: variable.format , value: variable.format} : formatOptions[0] }
+                                                    value={
+                                                        variable.format
+                                                            ? { label: variable.format, value: variable.format }
+                                                            : formatOptions[0]
+                                                    }
                                                     tabIndex={1}
                                                     onChange={(selectedValue) => {
                                                         handleFormatChange(selectedValue, index)
@@ -156,12 +177,16 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                         <div style={{ width: '80%' }}>
                                             <CustomInputVariableSelect selectedVariableIndex={index} />
                                         </div>
-                                        <div className='bcn-1 ' style={{ width: '20%' }}>
-                                            {variable.format && variable.variableType === RefVariableType.GLOBAL? (
+                                        <div className="bcn-1 " style={{ width: '20%' }}>
+                                            {variable.format && variable.variableType === RefVariableType.GLOBAL ? (
                                                 <span className="fs-13 fw-4 p-5 flex left">{variable.format}</span>
                                             ) : (
                                                 <ReactSelect
-                                                    value={variable.format ? {label: variable.format , value: variable.format} : formatOptions[0] }
+                                                    value={
+                                                        variable.format
+                                                            ? { label: variable.format, value: variable.format }
+                                                            : formatOptions[0]
+                                                    }
                                                     tabIndex={2}
                                                     onChange={(selectedValue) => {
                                                         handleFormatChange(selectedValue, index)
