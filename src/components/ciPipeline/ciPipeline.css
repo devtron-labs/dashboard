@@ -260,13 +260,13 @@
     border: 1px solid var(--window-bg);
 }
 
-.task-item__selected-list{
-    background: var(--B100) !important; 
+.task-item__selected-list {
+    background: var(--B100) !important;
     border: 1px solid var(--B500) !important;
 }
 
-.task-item:hover{
-    border: 1px solid var(--N200)
+.task-item:hover {
+    border: 1px solid var(--N200);
 }
 
 .task-name-container {
@@ -346,7 +346,7 @@
 
 .configuration-container .right-radius input + .radio__item-label {
     border-radius: 0 4px 4px 0 !important;
-    border-left: 0px
+    border-left: 0px;
 }
 
 .radio-group input[type='checkbox']:checked + .radio__item-label {
@@ -380,11 +380,10 @@
     grid-template-columns: 220px auto;
 }
 
-.mount-row{
+.mount-row {
     display: grid;
-    grid-template-columns: 200px auto 28px auto 30px;  
+    grid-template-columns: 200px auto 28px auto 30px;
 }
-
 
 .label-width {
     width: 250px;
@@ -479,4 +478,12 @@
     position: relative;
     left: 50%;
     width: 5px;
+}
+
+.variable-description {
+    padding: 6px 10px;
+    width: 180px;
+    background: var(--N900);
+    border: 1px solid var(--N200);
+    border-radius: 4px;
 }

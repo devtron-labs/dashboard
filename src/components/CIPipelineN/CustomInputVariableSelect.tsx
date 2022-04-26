@@ -5,6 +5,8 @@ import { ciPipelineContext } from './CIPipeline'
 import CreatableSelect from 'react-select/creatable'
 import { components } from 'react-select'
 import { BuildStageVariable } from '../../config'
+import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
+import Tippy from '@tippyjs/react'
 
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
     const {
@@ -160,6 +162,12 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                         : RefVariableStageType.POST_CI,
             }
         }
+        if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.PLUGIN_REF) {
+            _variableDetail.format =
+                _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
+                    selectedVariableIndex
+                ].format
+        }
         _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
             selectedVariableIndex
         ] = {
@@ -186,7 +194,6 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
     }
 
     function formatOptionLabel(option) {
-        console.log(option)
         if (option.refVariableStepIndex) {
             return (
                 <div className="flexbox justify-space">
@@ -202,6 +209,38 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             return (
                 <div className="">
                     <span className="cn-9">{option.label}</span>
+                </div>
+            )
+        }
+    }
+
+    const ValueContainer = (props) => {
+        let value = props.getValue()[0]?.label
+        return (
+            <components.ValueContainer {...props}>
+                <>
+                    {!props.selectProps.menuIsOpen && `${value}`}
+                    {React.cloneElement(props.children[1])}
+                </>
+            </components.ValueContainer>
+        )
+    }
+
+    function Option(_props) {
+        const { selectProps, data } = _props
+        selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none' })
+        if (data.description) {
+            return (
+                <Tippy className="variable-description" arrow={false} placement="left" content={data.description}>
+                    <div className="flex left">
+                        <components.Option {..._props}>{_props.children}</components.Option>
+                    </div>
+                </Tippy>
+            )
+        } else {
+            return (
+                <div className="flex left">
+                    <components.Option {..._props}>{_props.children}</components.Option>
                 </div>
             )
         }
@@ -228,6 +267,8 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                         </components.MenuList>
                     )
                 },
+                Option,
+                ValueContainer,
             }}
         />
     )

@@ -31,6 +31,7 @@ export const tempMultiSelectStyles = {
         background: 'var(--N100) !important',
         border: '1ps solid var(--N200) !important',
         padding: '3px 10px 3px 10px',
+        display: 'flex',
     }),
     indicatorsContainer: (base, state) => ({
         ...base,

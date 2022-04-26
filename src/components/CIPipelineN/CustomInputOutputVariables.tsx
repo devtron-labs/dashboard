@@ -8,6 +8,7 @@ import {
     RefVariableType,
     TaskFieldDescription,
     VariableFieldType,
+    VariableType,
 } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ciPipelineContext } from './CIPipeline'
@@ -15,6 +16,7 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import ReactSelect from 'react-select'
 import { tempMultiSelectStyles } from './ciPipeline.utils'
 import Tippy from '@tippyjs/react'
+import { Option } from '../v2/common/ReactSelect.utils'
 
 function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const {
@@ -36,6 +38,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             startIndex?: number,
         ) => {
             index: number
+            calculatedStageVariables: Map<string, VariableType>[]
         }
         formDataErrorObj: object
     } = useContext(ciPipelineContext)
@@ -100,6 +103,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]][index].format =
             selectedValue.label
+        if (type === PluginVariableType.OUTPUT) {
+            calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
+        }
         setFormData(_formData)
     }
 
@@ -110,7 +116,11 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                     className="default-tt"
                     arrow={false}
                     content={
-                       <span style={{display: 'block', width: '220px'}}>{type === PluginVariableType.INPUT ? TaskFieldDescription.INPUT : TaskFieldDescription.OUTPUT}</span> 
+                        <span style={{ display: 'block', width: '220px' }}>
+                            {type === PluginVariableType.INPUT
+                                ? TaskFieldDescription.INPUT
+                                : TaskFieldDescription.OUTPUT}
+                        </span>
                     }
                 >
                     <label
@@ -165,6 +175,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                     isSearchable={false}
                                                     components={{
                                                         IndicatorSeparator: null,
+                                                        Option,
                                                     }}
                                                     styles={tempMultiSelectStyles}
                                                 />
@@ -195,6 +206,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                     isSearchable={false}
                                                     components={{
                                                         IndicatorSeparator: null,
+                                                        Option,
                                                     }}
                                                     name="format"
                                                     styles={tempMultiSelectStyles}
@@ -212,6 +224,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                     value={variable.description}
                                     name="description"
                                     onChange={(e) => handleInputOutputValueChange(e, index)}
+                                    onBlur={(e) => handleBlur()}
                                 />
                             </div>
 
