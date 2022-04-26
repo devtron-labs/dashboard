@@ -148,7 +148,7 @@ export function PreBuild() {
     function renderPluginList(): JSX.Element {
         return (
             <>
-                <div className="cn-9 fw-6 fs-14">What do you want this task to do?</div>
+                <div className="cn-9 fw-6 fs-14 pb-10">What do you want this task to do?</div>
                 <div onClick={() => setPluginType(PluginType.INLINE, 0)}>
                     <PluginCard
                         imgSource={PreBuildIcon}

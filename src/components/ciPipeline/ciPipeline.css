@@ -355,8 +355,7 @@
 }
 
 .plugin-card:hover {
-    box-shadow: 1px 1px 1px 1px var(--N200);
-    border-radius: 4px;
+    box-shadow: 0px 0px 4px 1px var(--N200);
 }
 
 .tag-container {
@@ -377,7 +376,7 @@
 
 .row-container {
     display: grid;
-    grid-template-columns: 200px auto;
+    grid-template-columns: 220px auto;
 }
 
 .mount-row{
@@ -444,6 +443,10 @@
 
 .row-container .radio-group {
     justify-content: flex-start;
+}
+
+.row-container .form__radio-item {
+    min-width: 0px !important;
 }
 
 .pl-200 {

@@ -31,6 +31,16 @@ export function Sidebar() {
         setFormData(_formData)
     }
 
+    const activeStageNameForDescription = () => {
+       if(activeStageName !== BuildStageVariable.Build){
+           return 'build'
+       }else if(activeStageName !== BuildStageVariable.PostBuild){
+           return 'post build'
+       }else if(activeStageName !== BuildStageVariable.PreBuild){
+           return 'pre build'
+       }
+    }
+
     return (
         <div className="">
             {activeStageName !== BuildStageVariable.Build && (
@@ -87,7 +97,7 @@ export function Sidebar() {
                         target="_blank"
                         rel="noreferrer noopener"
                     >
-                        Docs: Configure pre-build tasks
+                        Docs: Configure {activeStageNameForDescription() } stage tasks
                     </a>
                 </div>
             </div>

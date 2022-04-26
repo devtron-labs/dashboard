@@ -110,7 +110,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                     className="default-tt"
                     arrow={false}
                     content={
-                        type === PluginVariableType.INPUT ? TaskFieldDescription.INPUT : TaskFieldDescription.OUTPUT
+                       <span style={{display: 'block', width: '220px'}}>{type === PluginVariableType.INPUT ? TaskFieldDescription.INPUT : TaskFieldDescription.OUTPUT}</span> 
                     }
                 >
                     <label

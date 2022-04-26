@@ -110,7 +110,7 @@ export function TaskTypeDetailComponent() {
                             <input
                                 className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
                                 autoComplete="off"
-                                placeholder="Enter image path *"
+                                placeholder="Enter image path"
                                 type="text"
                                 onChange={(e) => handleContainer(e, 'containerImagePath')}
                                 value={
@@ -135,7 +135,7 @@ export function TaskTypeDetailComponent() {
                                 )}
                         </div>
                     </div>
-                    <div className="flex left pl-200 fs-13 fw-6 pb-18 pt-9 ">
+                    <div className="pl-200 fs-13 fw-6 pb-18 pt-9 ">
                         <Checkbox
                             isChecked={
                                 formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.isMountCustomScript
