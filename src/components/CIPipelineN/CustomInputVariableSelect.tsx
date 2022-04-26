@@ -111,7 +111,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             ])
         }
         setSelectedVariableValue()
-    }, [inputVariablesListFromPrevStep])
+    }, [inputVariablesListFromPrevStep, selectedTaskIndex, activeStageName])
 
     const handleOutputVariableSelector = (selectedValue: { label: string; value: string }) => {
         setSelectedOutputVariable(selectedValue)
@@ -134,18 +134,18 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                         : RefVariableStageType.POST_CI,
                 format: selectedValue['format'],
             }
-        } else if ( selectedValue['__isNew__']) {
+        } else if (selectedValue['__isNew__']) {
             _variableDetail = {
-                    variableType: RefVariableType.NEW,
-                    value: selectedValue.label,
-                    format: '',
-                    refVariableName: '',
-                    refVariableStage:
+                variableType: RefVariableType.NEW,
+                value: selectedValue.label,
+                format: '',
+                refVariableName: '',
+                refVariableStage:
                     activeStageName === BuildStageVariable.PreBuild
                         ? RefVariableStageType.PRE_CI
                         : RefVariableStageType.POST_CI,
-                }
-        }else{
+            }
+        } else {
             _variableDetail = {
                 refVariableUsed: true,
                 variableType: RefVariableType.GLOBAL,
@@ -154,9 +154,9 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 format: selectedValue['format'],
                 value: '',
                 refVariableStage:
-                activeStageName === BuildStageVariable.PreBuild
-                    ? RefVariableStageType.PRE_CI
-                    : RefVariableStageType.POST_CI,
+                    activeStageName === BuildStageVariable.PreBuild
+                        ? RefVariableStageType.PRE_CI
+                        : RefVariableStageType.POST_CI,
             }
         }
         _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
