@@ -85,9 +85,13 @@ export function TaskList() {
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
         newList.splice(index, 1)
-        setSelectedTaskIndex(0)
         _formData[activeStageName].steps = newList
-        calculateLastStepDetail(false, _formData, activeStageName, index)
+        const newListLength = newList.length
+        const newTaskIndex = index >= newListLength ? (newListLength > 1 ? newListLength - 1 : 0) : index
+        calculateLastStepDetail(false, _formData, activeStageName, newTaskIndex)
+        setTimeout(() => {
+            setSelectedTaskIndex(newTaskIndex)
+        }, 0)
         setFormData(_formData)
         const _formDataErrorObj = { ...formDataErrorObj }
         const newErrorList = [...formDataErrorObj[activeStageName].steps]

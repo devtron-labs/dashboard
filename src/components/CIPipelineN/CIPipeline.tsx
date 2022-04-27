@@ -470,13 +470,12 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             }
 
             if (
-                _formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE &&
-                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType ===
-                    ScriptType.CONTAINERIMAGE &&
-                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script &&
-                !_formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.isMountCustomScript
+                _formData[activeStageName].steps[i].stepType === PluginType.INLINE &&
+                _formData[activeStageName].steps[i].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE &&
+                _formData[activeStageName].steps[i].inlineStepDetail.script &&
+                !_formData[activeStageName].steps[i].inlineStepDetail.isMountCustomScript
             ) {
-                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.isMountCustomScript = true
+                _formData[activeStageName].steps[i].inlineStepDetail.isMountCustomScript = true
             }
             const currentStepTypeVariable =
                 _formData[activeStageName].steps[i].stepType === PluginType.INLINE
