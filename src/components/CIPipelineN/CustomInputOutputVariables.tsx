@@ -173,7 +173,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                     width: '20%',
                                                     borderTopRightRadius: '4px',
                                                 }}
-                                                className='border-right border-top'
+                                                className="border-right border-top"
                                             >
                                                 <ReactSelect
                                                     value={
@@ -209,7 +209,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                             background: 'var(--N100) !important',
                                                             padding: '0px 10px',
                                                             display: 'flex',
-                                                            height: '32px',
+                                                            height: '31px',
                                                             fontSize: '12px',
                                                         }),
                                                         indicatorsContainer: (base, state) => ({
@@ -225,7 +225,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                 </div>
                                 {type === PluginVariableType.INPUT && (
                                     <div className="flexbox">
-                                        <div className='border-left' style={{ width: '80%' }}>
+                                        <div className="border-left" style={{ width: '80%' }}>
                                             <CustomInputVariableSelect selectedVariableIndex={index} />
                                         </div>
                                         <div
