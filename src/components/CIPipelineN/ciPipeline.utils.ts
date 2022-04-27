@@ -62,7 +62,15 @@ export const pluginSelectStyle = {
         background: 'var(--N100) !important',
         padding: '0px 10px',
         display: 'flex',
-        height: '28px',
+        height: '26px',
         fontSize: '12px',
+        borderTopLeftRadius: '4px',
+        borderBottomLeftRadius: '4px',
+    }),
+    indicatorsContainer: (base, state) => ({
+        ...base,
+        background: 'var(--N100) !important',
+        borderTopRightRadius: '4px',
+        borderBottomRightRadius: '4px',
     }),
 }
