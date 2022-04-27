@@ -46,7 +46,7 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                         type === PluginVariableType.OUTPUT ? 'outputVariables' : 'inputVariables'
                     ]?.map((variable, index) => (
                         <>
-                            {variable.description ? (
+                            {type === PluginVariableType.INPUT && variable.description ? (
                                 <Tippy className="default-tt" arrow={false} content={variable.description}>
                                     <div className="fs-13 fw-4 lh-28">
                                         <span className="text-underline-dashed">{variable.name}</span>
