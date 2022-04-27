@@ -317,9 +317,7 @@ $color-suffix: 00;
 }
 
 .text-underline-dashed{
-    text-decoration-style: dashed;
-    text-decoration-line: underline;
-    text-decoration-color: var(--N300)
+    border-bottom: 1px dashed var(--N200);
 }
 
 .header {

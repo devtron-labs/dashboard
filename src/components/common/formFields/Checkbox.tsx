@@ -28,7 +28,7 @@ export class Checkbox extends Component<CheckboxProps> {
     render() {
         let rootClassName = `${this.props.rootClassName ? this.props.rootClassName : ''}`;
         return <>
-            <div className={`position-rel flex left cursor lh-32 ${rootClassName}`} onClick={this.props?.onClick}>
+            <div className={`mount-checkbox position-rel cursor lh-32 ${rootClassName}`} onClick={this.props?.onClick}>
                 <input type="checkbox" className={'form__checkbox'} disabled={this.props.disabled}
                     value={this.props.value}
                     onChange={this.props.onChange}

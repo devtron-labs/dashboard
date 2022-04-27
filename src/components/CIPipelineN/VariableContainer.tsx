@@ -48,7 +48,7 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                         <>
                             {variable.description ? (
                                 <Tippy className="default-tt" arrow={false} content={variable.description}>
-                                    <label className="p-4 fs-13 fw-4 text-underline-dashed">{variable.name}</label>
+                                    <label className="p-4 fs-13 fw-4"><span className='text-underline-dashed'>{variable.name}</span></label>
                                 </Tippy>
                             ) : (
                                 <label className="p-4 fs-13 fw-4">{variable.name}</label>
