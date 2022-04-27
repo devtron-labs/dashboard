@@ -200,7 +200,7 @@ export default class Navigation extends Component<
                         )
                     })}
                     <div className="help-card__update-option fs-11 fw-6 mt-4">
-                        <span>Devtron v0.3.25</span>
+                        <span>Devtron</span>
                         <br />
                         <NavLink to={URLS.STACK_MANAGER_ABOUT}>Check for Updates</NavLink>
                     </div>

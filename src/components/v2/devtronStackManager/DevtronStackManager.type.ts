@@ -25,6 +25,7 @@ export interface ModuleDetails {
     info: string
     icon: string
     installationStatus: ModuleStatus
+    baseMinVersionSupported?: string
 }
 export interface ModuleDetailsInfo {
     name: string
@@ -34,6 +35,7 @@ export interface ModuleDetailsInfo {
 
 export interface ModuleDetailsCardType {
     moduleDetails: ModuleDetails
+    showBlur?: boolean
     className?: string
     handleModuleCardClick?: (moduleDetails: ModuleDetails, fromDiscoverModules: boolean) => void
     fromDiscoverModules?: boolean
@@ -42,15 +44,16 @@ export interface ModuleDetailsCardType {
 export interface ModuleInfo {
     id: number
     name: string
-    status: ModuleStatus
+    status?: ModuleStatus
+    baseMinVersionSupported?: string
 }
 
 export interface ModuleInfoResponse extends ResponseType {
     result?: ModuleInfo
 }
 
-export interface ModuleActionRequest {
-    action: ModuleActions
+export interface AllModuleInfoResponse extends ResponseType {
+    result?: ModuleInfo[]
 }
 
 export interface ModuleActionResponse extends ResponseType {
@@ -61,14 +64,14 @@ export interface ServerInfo {
     currentVersion: string
     status: ModuleStatus
     releaseName: string
-    logPodName?: string
+    canUpdateServer: boolean
 }
 
 export interface ServerInfoResponse extends ResponseType {
     result?: ServerInfo
 }
 
-export interface ServerActionRequest {
+export interface ModuleActionRequest {
     action: ModuleActions
     version: string
 }

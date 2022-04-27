@@ -1,41 +1,34 @@
 import React, { useEffect, useState } from 'react'
 import AboutDevtron from '../../../assets/img/about-devtron@2x.png'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
-import { Progressing, showError } from '../../common'
 import './AboutDevtronView.scss'
 import { InstallationWrapper } from './DevtronStackManager.component'
-import { getReleasesNotes } from './DevtronStackManager.service'
 import { ReleaseNotes, ServerInfo } from './DevtronStackManager.type'
 
 export default function AboutDevtronView({
     parentRef,
+    releaseNotes,
     serverInfo,
-    logPodName
+    setShowManagedByDialog,
+    logPodName,
+    history,
+    location
 }: {
     parentRef?: React.MutableRefObject<HTMLElement>
+    releaseNotes: ReleaseNotes[]
     serverInfo: ServerInfo
+    setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>
     logPodName: string
+    history: any
+    location: any
 }) {
-    const [isLoading, setLoading] = useState(false)
-    const [releaseNotes, setReleaseNotes] = useState<ReleaseNotes[]>([])
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const aboutDevtronTabs: string[] = ['About', 'Releases']
 
     useEffect(() => {
-        setLoading(true)
         if (parentRef?.current) {
             parentRef.current.style.backgroundColor = 'white'
         }
-
-        getReleasesNotes()
-            .then(({ result }) => {
-                setReleaseNotes(result)
-                setLoading(false)
-            })
-            .catch((e) => {
-                showError(e)
-                setLoading(false)
-            })
 
         return (): void => {
             if (parentRef?.current) {
@@ -93,9 +86,7 @@ export default function AboutDevtronView({
         )
     }
 
-    return isLoading ? (
-        <Progressing pageLoader />
-    ) : (
+    return (
         <div className="about-devtron__view-container flex column left top">
             <img className="about-devtron__view-image" src={AboutDevtron} alt="About Devtron" />
             <h2 className="about-devtron__view-heading cn-9 fs-20 fw-6">Devtron {serverInfo?.currentVersion}</h2>
@@ -106,10 +97,13 @@ export default function AboutDevtronView({
                 </div>
                 <InstallationWrapper
                     installationStatus={serverInfo?.status}
-                    appName={serverInfo?.releaseName}
                     logPodName={logPodName}
                     isUpgradeView={true}
+                    serverInfo={serverInfo}
                     upgradeVersion={releaseNotes[0]?.releaseName}
+                    setShowManagedByDialog={setShowManagedByDialog}
+                    history={history}
+                    location={location}
                 />
             </div>
         </div>

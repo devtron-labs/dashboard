@@ -103,8 +103,8 @@
     }
 }
 
-.toast.unauthorized {
+.devtron-toast.unauthorized {
     &:before {
-        background-image: url('../../../assets/icons/ic-locked.svg');
+        background-image: url('../../../assets/icons/ic-locked-filled.svg');
     }
 }

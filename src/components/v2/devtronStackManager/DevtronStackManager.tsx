@@ -5,29 +5,50 @@ import { ErrorBoundary, Progressing } from '../../common'
 import AboutDevtronView from './AboutDevtronView'
 import {
     handleError,
+    ManagedByDialog,
     ModuleDetailsView,
     ModulesListingView,
     NavItem,
     PageHeader,
 } from './DevtronStackManager.component'
 import './devtronStackManager.scss'
-import { getLogPodName, getModuleInfo, getServerInfo } from './DevtronStackManager.service'
-import { ModuleDetails, ModuleStatus, ServerInfo } from './DevtronStackManager.type'
-import { MODULE_DETAILS_MAP } from './DevtronStackManager.utils'
+import {
+    getAllModules,
+    getLogPodName,
+    getModuleInfo,
+    getReleasesNotes,
+    getServerInfo,
+} from './DevtronStackManager.service'
+import {
+    AllModuleInfoResponse,
+    LogPodNameResponse,
+    ModuleDetails,
+    ModuleInfo,
+    ModuleInfoResponse,
+    ModuleStatus,
+    ReleaseNotes,
+    ReleaseNotesResponse,
+    ServerInfo,
+    ServerInfoResponse,
+} from './DevtronStackManager.type'
+import { isLatestVersionAvailable, MODULE_DETAILS_MAP } from './DevtronStackManager.utils'
 
 let modulesPollingInterval = null
 
 export default function DevtronStackManager() {
     const [isLoading, setLoading] = useState(false)
+    const [showManagedByDialog, setShowManagedByDialog] = useState(false)
     const [discoverModulesList, setDiscoverModulesList] = useState<ModuleDetails[]>([])
     const [installedModulesList, setInstalledModulesList] = useState<ModuleDetails[]>([])
     const [selectedModule, setSelectedModule] = useState<ModuleDetails>()
     const [serverInfo, setServerInfo] = useState<ServerInfo>()
+    const [releaseNotes, setReleaseNotes] = useState<ReleaseNotes[]>([])
     const [detailsMode, setDetailsMode] = useState('')
     const [logPodName, setLogPodName] = useState('')
     const history = useHistory()
     const location = useLocation()
     const stackManagerRef = useRef<HTMLElement>()
+    const queryParams = new URLSearchParams(location.search)
 
     useEffect(() => {
         setLoading(true)
@@ -35,7 +56,7 @@ export default function DevtronStackManager() {
 
         modulesPollingInterval = setInterval(() => {
             getModuleAndServerInfo()
-        }, 20000)
+        }, 30000)
 
         return (): void => {
             clearInterval(modulesPollingInterval)
@@ -45,33 +66,64 @@ export default function DevtronStackManager() {
     // To reset detailsMode when switching to "About devtron" using "Help option" (side nav)
     // or "Check for updates" after successful installtion from module details page
     useEffect(() => {
-        if (!new URLSearchParams(location.search).has('id')) {
+        if (!queryParams.has('id')) {
             setDetailsMode('')
         }
     }, [location.pathname])
 
+    useEffect(() => {
+        if (queryParams.get('actionTriggered') === 'true') {
+            getModuleAndServerInfo()
+            queryParams.delete('actionTriggered')
+            history.push(`${location.pathname}?${queryParams.toString()}`)
+        }
+    }, [location.search])
+
     function getModuleAndServerInfo() {
-        Promise.all([getModuleInfo('ciCd'), getServerInfo(), getLogPodName()])
-            .then(([moduleInfoRes, serverInfoRes, logPodNameRes]) => {
-                setServerInfo(serverInfoRes.result)
-                setLogPodName(logPodNameRes.result?.podName)
-                setDiscoverModulesList([
-                    {
-                        ...MODULE_DETAILS_MAP[moduleInfoRes.result?.name],
-                        installationStatus: moduleInfoRes.result?.status,
-                    },
-                ])
-                setInstalledModulesList(
-                    moduleInfoRes.result?.status === ModuleStatus.INSTALLED
-                        ? [
-                              {
-                                  ...MODULE_DETAILS_MAP[moduleInfoRes.result?.name],
-                                  installationStatus: ModuleStatus.INSTALLED,
-                              },
-                          ]
-                        : [],
+        Promise.allSettled([getAllModules(), getServerInfo(), getLogPodName(), getReleasesNotes()])
+            .then((responses: { status: string; value?: any; reason?: any }[]) => {
+                const allModulesRes: AllModuleInfoResponse = responses[0].value
+                const serverInfoRes: ServerInfoResponse = responses[1].value
+                const logPodNameRes: LogPodNameResponse = responses[2].value
+                const releaseNotesRes: ReleaseNotesResponse = responses[3].value
+                setServerInfo(serverInfoRes?.result)
+                setReleaseNotes(releaseNotesRes?.result)
+                setLogPodName(logPodNameRes?.result?.podName)
+
+                const _discoverModulesList = []
+                const _installedModulesList = []
+                const _getModuleInfoList = allModulesRes?.result?.map((module: ModuleInfo) =>
+                    getModuleInfo(module.name),
                 )
-                setLoading(false)
+
+                Promise.allSettled(_getModuleInfoList).then(
+                    (responses: { status: string; value?: any; reason?: any }[]) => {
+                        responses.forEach((res) => {
+                            const _moduleDetails = {
+                                ...(MODULE_DETAILS_MAP[res.value?.result?.name] || MODULE_DETAILS_MAP['unknown']),
+                                installationStatus: res.value?.result?.status,
+                                baseMinVersionSupported: res.value?.result?.baseMinVersionSupported,
+                            }
+
+                            _discoverModulesList.push(_moduleDetails)
+
+                            if (
+                                _moduleDetails.installationStatus === ModuleStatus.INSTALLED &&
+                                !isLatestVersionAvailable(
+                                    _moduleDetails.baseMinVersionSupported,
+                                    serverInfoRes?.result?.currentVersion,
+                                ) &&
+                                _moduleDetails.id !== 'unknown'
+                            ) {
+                                _installedModulesList.push(_moduleDetails)
+                            }
+                        })
+
+                        setDiscoverModulesList(_discoverModulesList)
+                        setInstalledModulesList(_installedModulesList)
+                        setLoading(false)
+                    },
+                )
             })
             .catch((err) => {
                 handleError(err)
@@ -85,7 +137,14 @@ export default function DevtronStackManager() {
                 ? discoverModulesList.find((module) => module.id === moduleId)
                 : installedModulesList.find((module) => module.id === moduleId)
             setSelectedModule(_moduleDetails)
-            setDetailsMode(fromDiscoverModules ? 'discover' : 'installed')
+            if (_moduleDetails) {
+                setDetailsMode(fromDiscoverModules ? 'discover' : 'installed')
+            } else {
+                setDetailsMode('')
+                history.push(
+                    fromDiscoverModules ? URLS.STACK_MANAGER_DISCOVER_MODULES : URLS.STACK_MANAGER_INSTALLED_MODULES,
+                )
+            }
         } else {
             const queryParams = new URLSearchParams(location.search)
             queryParams.set('id', moduleDetails.id)
@@ -115,7 +174,9 @@ export default function DevtronStackManager() {
                         moduleDetails={selectedModule}
                         handleModuleSelection={handleModuleSelection}
                         setDetailsMode={setDetailsMode}
+                        setShowManagedByDialog={setShowManagedByDialog}
                         serverInfo={serverInfo}
+                        upgradeVersion={releaseNotes[0]?.releaseName}
                         logPodName={logPodName}
                         fromDiscoverModules={true}
                         history={history}
@@ -127,7 +188,9 @@ export default function DevtronStackManager() {
                         moduleDetails={selectedModule}
                         handleModuleSelection={handleModuleSelection}
                         setDetailsMode={setDetailsMode}
-                        serverInfo={serverInfo} 
+                        setShowManagedByDialog={setShowManagedByDialog}
+                        serverInfo={serverInfo}
+                        upgradeVersion={releaseNotes[0]?.releaseName}
                         logPodName={logPodName}
                         history={history}
                         location={location}
@@ -136,6 +199,7 @@ export default function DevtronStackManager() {
                 <Route path={URLS.STACK_MANAGER_DISCOVER_MODULES}>
                     <ModulesListingView
                         modulesList={discoverModulesList}
+                        currentVersion={serverInfo?.currentVersion}
                         isDiscoverModulesView={true}
                         handleModuleCardClick={handleModuleSelection}
                         history={history}
@@ -144,12 +208,21 @@ export default function DevtronStackManager() {
                 <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES}>
                     <ModulesListingView
                         modulesList={installedModulesList}
+                        currentVersion={serverInfo?.currentVersion}
                         handleModuleCardClick={handleModuleSelection}
                         history={history}
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_ABOUT}>
-                    <AboutDevtronView parentRef={stackManagerRef} serverInfo={serverInfo} logPodName={logPodName} />
+                    <AboutDevtronView
+                        parentRef={stackManagerRef}
+                        releaseNotes={releaseNotes}
+                        serverInfo={serverInfo}
+                        setShowManagedByDialog={setShowManagedByDialog}
+                        logPodName={logPodName}
+                        history={history}
+                        location={location}
+                    />
                 </Route>
                 <Redirect to={URLS.STACK_MANAGER_DISCOVER_MODULES} />
             </Switch>
@@ -186,6 +259,7 @@ export default function DevtronStackManager() {
                             </ErrorBoundary>
                         </Suspense>
                     </section>
+                    {showManagedByDialog && <ManagedByDialog setShowManagedByDialog={setShowManagedByDialog} />}
                 </Router>
             )}
         </main>

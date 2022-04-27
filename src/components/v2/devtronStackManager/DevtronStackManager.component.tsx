@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ModuleDetailsCardType, ModuleStatus, ModuleDetails, ServerInfo } from './DevtronStackManager.type'
 import EmptyState from '../../EmptyState/EmptyState'
@@ -12,13 +12,21 @@ import { ReactComponent as SuccessIcon } from '../../../assets/icons/appstatus/h
 import { ReactComponent as UpToDateIcon } from '../../../assets/icons/ic-celebration.svg'
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
-import { Progressing, showError, ToastBody } from '../../common'
+
+import { ConfirmationDialog, Progressing, showError, ToastBody } from '../../common'
 import NoExtensions from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
+import Info from '../../../assets/icons/info-filled.svg'
 import { URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
 import { toast } from 'react-toastify'
-import { handleAction, MODULE_DETAILS_INFO, MODULE_DETAILS_MAP, MODULE_ICON_MAP } from './DevtronStackManager.utils'
+import {
+    handleAction,
+    isLatestVersionAvailable,
+    MODULE_DETAILS_INFO,
+    MODULE_DETAILS_MAP,
+    MODULE_ICON_MAP,
+} from './DevtronStackManager.utils'
 import './devtronStackManager.component.scss'
 
 // Start: Carousel images
@@ -57,14 +65,18 @@ const getInstallationStatusLabel = (installationStatus: ModuleStatus): JSX.Eleme
 
 const ModuleDeailsCard = ({
     moduleDetails,
+    showBlur,
     className,
     handleModuleCardClick,
     fromDiscoverModules,
 }: ModuleDetailsCardType): JSX.Element => {
     return (
         <div
-            className={`module-details__card flex left column br-8 p-20 mr-20 mb-20 ${className || ''}`}
-            {...(handleModuleCardClick && { onClick: () => handleModuleCardClick(moduleDetails, fromDiscoverModules) })}
+            className={`module-details__card flex left column br-8 p-20 mr-20 mb-20 ${className || ''} ${
+                showBlur ? 'module-details__blur' : ''
+            }`}
+            {...(!showBlur &&
+                handleModuleCardClick && { onClick: () => handleModuleCardClick(moduleDetails, fromDiscoverModules) })}
         >
             {getInstallationStatusLabel(moduleDetails.installationStatus)}
             <img
@@ -73,18 +85,37 @@ const ModuleDeailsCard = ({
                 alt={moduleDetails.name}
             />
             <div className="module-details__card-name fs-16 fw-6 cn-9 mb-4">{moduleDetails.name}</div>
-            <div className="module-details__card-info fs-13 fw-4 cn-7">{moduleDetails.info}</div>
+            <div className="module-details__card-info fs-13 fw-4 cn-7">
+                {moduleDetails.id === 'moreModules' ? (
+                    <>
+                        You can also&nbsp;
+                        <a
+                            href="https://github.com/devtron-labs/devtron/issues/new/choose"
+                            className="cb-5 fw-6"
+                            target="_blank"
+                            rel="noreferrer noopener"
+                        >
+                            raise a request
+                        </a>
+                        &nbsp;for a module that will improve your workflow.
+                    </>
+                ) : (
+                    moduleDetails.info
+                )}
+            </div>
         </div>
     )
 }
 
 export const ModulesListingView = ({
     modulesList,
+    currentVersion,
     isDiscoverModulesView,
     handleModuleCardClick,
     history,
 }: {
     modulesList: ModuleDetails[]
+    currentVersion: string
     isDiscoverModulesView?: boolean
     handleModuleCardClick: (moduleDetails: ModuleDetails, fromDiscoverModules: boolean) => void
     history: any
@@ -99,12 +130,16 @@ export const ModulesListingView = ({
                         className="cursor"
                         handleModuleCardClick={handleModuleCardClick}
                         fromDiscoverModules={isDiscoverModulesView}
+                        showBlur={
+                            isLatestVersionAvailable(module.baseMinVersionSupported, currentVersion) ||
+                            module.id === 'unknown'
+                        }
                     />
                 )
             })}
             {isDiscoverModulesView && (
                 <ModuleDeailsCard
-                    moduleDetails={MODULE_DETAILS_MAP['moreExtensions']}
+                    moduleDetails={MODULE_DETAILS_MAP['moreModules']}
                     className="more-extensions__card"
                     fromDiscoverModules={isDiscoverModulesView}
                 />
@@ -176,7 +211,7 @@ export const NavItem = ({
 
     return (
         <div className="flex column left">
-            <div className="section-heading cn-6 fs-12 fw-6 pl-8 mb-8">EXTENSIONS</div>
+            <div className="section-heading cn-6 fs-12 fw-6 pl-8 mb-8">MODULES</div>
             {ExtentionsSection.map((route) => getNavLink(route))}
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
             {getNavLink(AboutSection)}
@@ -224,12 +259,14 @@ const InstallationStatus = ({
     logPodName,
     isUpgradeView,
     upgradeVersion,
+    latestVersionAvailable,
 }: {
     installationStatus: ModuleStatus
     appName?: string
     logPodName?: string
     isUpgradeView?: boolean
     upgradeVersion?: string
+    latestVersionAvailable: boolean
 }) => {
     return (
         <div
@@ -250,7 +287,8 @@ const InstallationStatus = ({
                     </div>
                 </>
             )}
-            {(installationStatus === ModuleStatus.INSTALLED || installationStatus === ModuleStatus.HEALTHY) && (
+            {(installationStatus === ModuleStatus.INSTALLED ||
+                (installationStatus === ModuleStatus.HEALTHY && !latestVersionAvailable)) && (
                 <>
                     {isUpgradeView ? (
                         <div className="module-details__upgrade-success flex column">
@@ -344,11 +382,26 @@ const ModuleUpdateNote = () => {
     )
 }
 
-export const handleError = (err) => {
+export const handleError = (
+    err: any,
+    isUpgradeView?: boolean,
+    canUpdateServer?: boolean,
+    setShowManagedByDialog?: React.Dispatch<React.SetStateAction<boolean>>,
+) => {
     if (err.code === 403) {
-        toast.info(<ToastBody title="Access denied" subtitle="You don't have access to perform this action." />, {
-            className: 'devtron-toast unauthorized',
-        })
+        if (canUpdateServer) {
+            setShowManagedByDialog(true)
+        } else {
+            toast.info(
+                <ToastBody
+                    title="Access denied"
+                    subtitle={`Only super-admin users can ${isUpgradeView ? 'update Devtron' : 'install modules'}.`}
+                />,
+                {
+                    className: 'devtron-toast unauthorized',
+                },
+            )
+        }
     } else {
         showError(err)
     }
@@ -357,54 +410,74 @@ export const handleError = (err) => {
 export const InstallationWrapper = ({
     moduleName,
     installationStatus,
-    appName,
     logPodName,
-    isUpgradeView,
+    serverInfo,
     upgradeVersion,
+    isUpgradeView,
+    setShowManagedByDialog,
+    history,
+    location,
 }: {
     moduleName?: string
     installationStatus: ModuleStatus
-    appName?: string
     logPodName?: string
+    serverInfo: ServerInfo
+    upgradeVersion: string
     isUpgradeView?: boolean
-    upgradeVersion?: string
+    setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>
+    history: any
+    location: any
 }) => {
+    const latestVersionAvailable = isLatestVersionAvailable(serverInfo?.currentVersion, upgradeVersion)
+
     return (
         <div className="module-details__install-wrapper">
-            {!(
-                installationStatus === ModuleStatus.INSTALLING ||
-                installationStatus === ModuleStatus.UPGRADING ||
-                installationStatus === ModuleStatus.INSTALLED ||
-                installationStatus === ModuleStatus.HEALTHY
-            ) && (
-                <button
-                    className="module-details__install-button cta flex mb-16"
-                    onClick={() => handleAction(moduleName, isUpgradeView, upgradeVersion)}
-                >
-                    {installationStatus === ModuleStatus.NOT_INSTALLED && (
-                        <>
-                            <InstallIcon className="module-details__install-icon icon-dim-16 mr-8" />
-                            {isUpgradeView ? `Upgrade to ${upgradeVersion}` : 'Install'}
-                        </>
-                    )}
-                    {(installationStatus === ModuleStatus.INSTALL_FAILED ||
-                        installationStatus === ModuleStatus.UPGRADE_FAILED ||
-                        installationStatus === ModuleStatus.TIMEOUT ||
-                        installationStatus === ModuleStatus.UNKNOWN) && (
-                        <>
-                            <RetyrInstallIcon className="module-details__retry-install-icon icon-dim-16 mr-8" />
-                            {isUpgradeView ? `Retry upgrade to ${upgradeVersion}` : ' Retry install'}
-                        </>
-                    )}
-                </button>
-            )}
-            {installationStatus !== ModuleStatus.NOT_INSTALLED && (
+            {installationStatus !== ModuleStatus.INSTALLING &&
+                installationStatus !== ModuleStatus.UPGRADING &&
+                installationStatus !== ModuleStatus.INSTALLED &&
+                (installationStatus !== ModuleStatus.HEALTHY ||
+                    (installationStatus === ModuleStatus.HEALTHY && latestVersionAvailable)) && (
+                    <button
+                        className="module-details__install-button cta flex mb-16"
+                        onClick={() =>
+                            handleAction(
+                                moduleName,
+                                isUpgradeView,
+                                upgradeVersion,
+                                serverInfo?.canUpdateServer,
+                                setShowManagedByDialog,
+                                history,
+                                location,
+                            )
+                        }
+                    >
+                        {(installationStatus === ModuleStatus.NOT_INSTALLED ||
+                            (installationStatus === ModuleStatus.HEALTHY && latestVersionAvailable)) && (
+                            <>
+                                <InstallIcon className="module-details__install-icon icon-dim-16 mr-8" />
+                                {isUpgradeView ? `Upgrade to ${upgradeVersion.toLowerCase()}` : 'Install'}
+                            </>
+                        )}
+                        {(installationStatus === ModuleStatus.INSTALL_FAILED ||
+                            installationStatus === ModuleStatus.UPGRADE_FAILED ||
+                            installationStatus === ModuleStatus.TIMEOUT ||
+                            installationStatus === ModuleStatus.UNKNOWN) && (
+                            <>
+                                <RetyrInstallIcon className="module-details__retry-install-icon icon-dim-16 mr-8" />
+                                {isUpgradeView ? `Retry upgrade to ${upgradeVersion}` : ' Retry install'}
+                            </>
+                        )}
+                    </button>
+                )}
+            {((installationStatus !== ModuleStatus.NOT_INSTALLED && installationStatus !== ModuleStatus.HEALTHY) ||
+                (installationStatus === ModuleStatus.HEALTHY && !latestVersionAvailable)) && (
                 <InstallationStatus
                     installationStatus={installationStatus}
-                    appName={appName}
+                    appName={serverInfo?.releaseName}
                     logPodName={logPodName}
                     isUpgradeView={isUpgradeView}
                     upgradeVersion={upgradeVersion}
+                    latestVersionAvailable={latestVersionAvailable}
                 />
             )}
             {!isUpgradeView && installationStatus === ModuleStatus.INSTALLED && <ModuleUpdateNote />}
@@ -420,7 +493,9 @@ export const ModuleDetailsView = ({
     moduleDetails,
     handleModuleSelection,
     setDetailsMode,
+    setShowManagedByDialog,
     serverInfo,
+    upgradeVersion,
     logPodName,
     fromDiscoverModules,
     history,
@@ -429,7 +504,9 @@ export const ModuleDetailsView = ({
     moduleDetails: ModuleDetails
     handleModuleSelection: (moduleDetails: ModuleDetails, fromDiscoverModules: boolean, moduleId: string) => void
     setDetailsMode: React.Dispatch<React.SetStateAction<string>>
+    setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>
     serverInfo: ServerInfo
+    upgradeVersion: string
     logPodName?: string
     fromDiscoverModules?: boolean
     history: any
@@ -473,10 +550,14 @@ export const ModuleDetailsView = ({
                     </div>
                 </div>
                 <InstallationWrapper
-                    moduleName={_moduleDetails.name}
+                    moduleName={moduleDetails?.id}
                     installationStatus={moduleDetails.installationStatus}
-                    appName={serverInfo?.releaseName}
+                    serverInfo={serverInfo}
+                    upgradeVersion={upgradeVersion}
                     logPodName={logPodName}
+                    setShowManagedByDialog={setShowManagedByDialog}
+                    history={history}
+                    location={location}
                 />
             </div>
         </div>
@@ -505,5 +586,23 @@ export const NoModulesInstalledView = ({ history }): JSX.Element => {
                 </EmptyState.Button>
             </EmptyState>
         </div>
+    )
+}
+
+export const ManagedByDialog = ({ setShowManagedByDialog }) => {
+    return (
+        <ConfirmationDialog className="confirmation-dialog__body--w-400">
+            <ConfirmationDialog.Icon src={Info} />
+            <ConfirmationDialog.Body title="Managed by Devtron Labs" />
+            <p className="fs-14 fw-4 cn-7 ">
+                Devtron stack for your company is managed by Devtron Labs. Please contact representative from Devtron
+                Labs to manage your Devtron stack.
+            </p>
+            <ConfirmationDialog.ButtonGroup>
+                <button type="button" className="cta fs-13 fw-6" onClick={() => setShowManagedByDialog(false)}>
+                    Okay
+                </button>
+            </ConfirmationDialog.ButtonGroup>
+        </ConfirmationDialog>
     )
 }

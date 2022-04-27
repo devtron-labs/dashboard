@@ -5,6 +5,19 @@
     border: 1px solid var(--N200);
     position: relative;
 
+    &.module-details__blur {
+        user-select: none;
+        cursor: not-allowed;
+
+        > * {
+            -webkit-filter: blur(3px);
+            -moz-filter: blur(3px);
+            -o-filter: blur(3px);
+            -ms-filter: blur(3px);
+            filter: blur(3px);
+        }
+    }
+
     .module-details__installation-status {
         position: absolute;
         top: 20px;
@@ -92,6 +105,10 @@
     .module-details__install-button {
         width: 100%;
         height: 36px;
+        
+        &.cta {
+            text-transform: none;
+        }
 
         .module-details__install-icon {
             transform: rotate(90deg);

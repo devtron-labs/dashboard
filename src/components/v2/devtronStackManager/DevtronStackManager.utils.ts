@@ -1,35 +1,49 @@
-import React from 'react';
+import React from 'react'
 import { toast } from 'react-toastify'
 import CICDIcon from '../../../assets/img/ic-build-deploy.png'
 import MoreExtentionsIcon from '../../../assets/img/ic-more-extensions.png'
-import { handleError } from './DevtronStackManager.component';
-import { executeModuleAction, executeServerAction } from './DevtronStackManager.service';
-import { ModuleActionRequest, ModuleActions, ModuleDetails, ModuleDetailsInfo, ModuleStatus, ServerActionRequest } from './DevtronStackManager.type'
+import { handleError } from './DevtronStackManager.component'
+import { executeModuleAction, executeServerAction } from './DevtronStackManager.service'
+import {
+    ModuleActionRequest,
+    ModuleActions,
+    ModuleDetails,
+    ModuleDetailsInfo,
+    ModuleStatus,
+} from './DevtronStackManager.type'
 
 export const MODULE_ICON_MAP = {
-    ciCd: CICDIcon,
-    moreExtensions: MoreExtentionsIcon,
+    cicd: CICDIcon,
+    moreModules: MoreExtentionsIcon,
+    unknown: CICDIcon
 }
 
 export const MODULE_DETAILS_MAP: Record<string, ModuleDetails> = {
-    ciCd: {
-        id: 'ciCd',
+    cicd: {
+        id: 'cicd',
         name: 'Build and Deploy (CI/CD)',
         info: 'Enables continous code integration and deployment.',
-        icon: 'ciCd',
+        icon: 'cicd',
+        installationStatus: ModuleStatus.NOT_INSTALLED,
+    },
+    moreModules: {
+        id: 'moreModules',
+        name: 'More modules coming soon',
+        info: "You can also raise a request for a module that will improve your workflow.",
+        icon: 'moreModules',
         installationStatus: ModuleStatus.NONE,
     },
-    moreExtensions: {
-        id: 'moreExtensions',
-        name: 'More extensions coming soon',
-        info: "We're building a suite of extensions to serve your software delivery lifecycle.",
-        icon: 'moreExtensions',
+    unknown: {
+        id: 'unknown',
+        name: 'New module coming soon',
+        info: "We're building a suite of modules to serve your software delivery lifecycle.",
+        icon: 'unknown',
         installationStatus: ModuleStatus.NONE,
-    },
+    }
 }
 
 export const MODULE_DETAILS_INFO: Record<string, ModuleDetailsInfo> = {
-    ciCd: {
+    cicd: {
         name: 'Build and Deploy (CI/CD)',
         infoList: [
             'Continuous integration (CI) and continuous delivery (CD) embody a culture, set of operating principles, and collection of practices that enable application development teams to deliver code changes more frequently and reliably. The implementation is also known as the CI/CD pipeline.',
@@ -44,35 +58,66 @@ export const MODULE_DETAILS_INFO: Record<string, ModuleDetailsInfo> = {
     },
 }
 
+const actionTriggered = (location: any, history: any) => {
+    const queryParams = new URLSearchParams(location.search)
+    queryParams.set('actionTriggered', 'true')
+    history.push(`${location.pathname}?${queryParams.toString()}`)
+}
 
-export const handleAction = async (moduleName: string, isUpgradeView: boolean, upgradeVersion: string) => {
+export const handleAction = async (
+    moduleName: string,
+    isUpgradeView: boolean,
+    upgradeVersion: string,
+    canUpdateServer: boolean,
+    setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>,
+    location: any,
+    history: any,
+) => {
     try {
-        if (isUpgradeView) {
-            const serverActionRequest: ServerActionRequest = {
-                action: ModuleActions.UPGRADE,
-                version: upgradeVersion,
-            }
-            const { result } = await executeServerAction(serverActionRequest)
+        const actionRequest: ModuleActionRequest = {
+            action: isUpgradeView ? ModuleActions.UPGRADE : ModuleActions.INSTALL,
+            version: upgradeVersion,
+        }
 
-            if (result?.success) {
-                toast.success(isUpgradeView ? 'Upgraded successfully!' : 'Installed successfully!')
-            } else {
-                toast.error(isUpgradeView ? 'Unable to upgrade!' : 'Unable to install!')
-            }
-        } else {
-            const moduleActionRequest: ModuleActionRequest = {
-                action: ModuleActions.INSTALL,
-                // version: upgradeVersion,
-            }
-            const { result } = await executeModuleAction(moduleName, moduleActionRequest)
+        const { result } = isUpgradeView
+            ? await executeServerAction(actionRequest)
+            : await executeModuleAction(moduleName, actionRequest)
 
-            if (result?.success) {
-                toast.success(isUpgradeView ? 'Upgraded successfully!' : 'Installed successfully!')
-            } else {
-                toast.error(isUpgradeView ? 'Unable to upgrade!' : 'Unable to install!')
-            }
+        if (result?.success) {
+            actionTriggered(history, location)
         }
     } catch (e) {
-        handleError(e)
+        handleError(e, isUpgradeView, canUpdateServer, setShowManagedByDialog)
     }
+}
+
+const getVersionLevels = (version: string): number[] => {
+    return version
+        .replace(/[vV]/, '')
+        .split('.')
+        .map((level) => parseInt(level, 10))
+}
+
+export const isLatestVersionAvailable = (currentVersion: string, newVersion: string): boolean => {
+    if (!currentVersion || !newVersion) return false
+
+    const currentVersionLevels = getVersionLevels(currentVersion)
+    const newVersionLevels = getVersionLevels(newVersion)
+    const minLevels = currentVersionLevels.length > newVersionLevels.length ? newVersionLevels : currentVersionLevels
+
+    for (let [idx, level] of minLevels.entries()) {
+        if (level === newVersionLevels[idx]) {
+            continue
+        } else if (level > newVersionLevels[idx]) {
+            return false
+        } else if (level < newVersionLevels[idx]) {
+            return true
+        }
+    }
+
+    if (currentVersionLevels.length === newVersionLevels.length) {
+        return false
+    }
+
+    return currentVersionLevels.length > newVersionLevels.length ? false : true
 }
