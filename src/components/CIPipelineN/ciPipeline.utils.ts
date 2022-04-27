@@ -1,12 +1,11 @@
 export const tempMultiSelectStyles = {
     control: (base, state) => ({
         ...base,
-        border: '1px solid var(--N200) !important',
-        borderBottom: 'none !important',
+        border: 'none !important',
         boxShadow: 'none',
         minHeight: 'auto',
         borderRadius: 'none',
-        height: '32px',
+        height: '30px',
     }),
     singleValue: (base, state) => ({
         ...base,

@@ -152,10 +152,10 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                             }}
                                         >
                                             <input
-                                                className={`w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 no-bottom-border h-32 ${
+                                                className={`w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 h-32 ${
                                                     type === PluginVariableType.INPUT
                                                         ? ' top-radius'
-                                                        : ' top-left-radius'
+                                                        : '  no-bottom-border top-left-radius'
                                                 }`}
                                                 type="text"
                                                 placeholder="Variable name"
@@ -168,7 +168,14 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                         </div>
 
                                         {type === PluginVariableType.OUTPUT && (
-                                            <div style={{ width: '20%' }}>
+                                            <div
+                                                style={{
+                                                    width: '20%',
+                                                    borderRight: '1px solid var(--N200)',
+                                                    borderTop: '1px solid var(--N200)',
+                                                    borderTopRightRadius: '4px',
+                                                }}
+                                            >
                                                 <ReactSelect
                                                     value={
                                                         variable.format
@@ -189,12 +196,11 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                         ...tempMultiSelectStyles,
                                                         control: (base, state) => ({
                                                             ...base,
-                                                            border: '1px solid var(--N200) !important',
-                                                            borderBottom: 'none !important',
+                                                            border: 'none !important',
                                                             boxShadow: 'none',
                                                             minHeight: 'auto',
                                                             borderRadius: 'none',
-                                                            height: '32px',
+                                                            height: '30px',
                                                             borderTopRightRadius: '4px',
                                                         }),
                                                         valueContainer: (base, state) => ({
@@ -218,12 +224,19 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                 </div>
                                 {type === PluginVariableType.INPUT && (
                                     <div className="flexbox">
-                                        <div style={{ width: '80%' }}>
+                                        <div style={{ width: '80%', borderLeft: '1px solid var(--N200)' }}>
                                             <CustomInputVariableSelect selectedVariableIndex={index} />
                                         </div>
-                                        <div style={{ width: '20%' }} className="bcn-1">
+                                        <div
+                                            style={{
+                                                width: '20%',
+                                                borderRight: '1px solid var(--N200)',
+                                                borderLeft: '1px solid var(--N200)',
+                                            }}
+                                            className="bcn-1"
+                                        >
                                             {variable.format ? (
-                                                <span className="fs-13 fw-4 p-4 flex left en-2 bw-1 no-left-border no-bottom-border">
+                                                <span className="fs-12 fw-4 pl-12 pr-12 pt-5 pb-4 flex left">
                                                     {variable.format}
                                                 </span>
                                             ) : (
