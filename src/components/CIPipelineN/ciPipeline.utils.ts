@@ -1,11 +1,12 @@
 export const tempMultiSelectStyles = {
     control: (base, state) => ({
         ...base,
-        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+        border: '1px solid var(--N200) !important',
+        borderBottom: 'none !important',
         boxShadow: 'none',
         minHeight: 'auto',
         borderRadius: 'none',
-        height: '30px',
+        height: '32px',
     }),
     singleValue: (base, state) => ({
         ...base,
@@ -31,10 +32,10 @@ export const tempMultiSelectStyles = {
         background: 'var(--N100) !important',
         padding: '0px 10px',
         display: 'flex',
+        height: '30px',
     }),
     indicatorsContainer: (base, state) => ({
         ...base,
         background: 'var(--N100) !important',
-        border: '1ps solid var(--N200) !important',
     }),
 }

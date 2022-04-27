@@ -489,6 +489,14 @@
     border-left: 0px;
 }
 
+.top-left-radius {
+    border-top-left-radius: 4px;
+}
+
 .pl-220 {
     padding-left: 220px;
+}
+
+.h-32 {
+    height: 32px;
 }
