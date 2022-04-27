@@ -199,11 +199,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                             <CustomInputVariableSelect selectedVariableIndex={index} />
                                         </div>
                                         <div style={{ width: '20%' }}>
-<<<<<<< HEAD
-                                            {variable.format && variable.variableType === RefVariableType.GLOBAL ? (
-=======
                                             {variable.format ? (
->>>>>>> 191cbe28f51f25ff5a23afd8e543d177355a5248
                                                 <span className="fs-13 fw-4 p-4 flex left en-2 bw-1 no-left-border">
                                                     {variable.format}
                                                 </span>

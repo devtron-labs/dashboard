@@ -126,7 +126,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                 let errorObj = props.validationRules?.sourceValue(mat.value)
 
                 return (
-                    <>
+                    <div key={`source-material-${index}`}>
                         <div className="mt-20" key={mat.gitMaterialId}>
                             <div className="mb-10 fs-14 cn-9 fw-5 lh-1-43">
                                 <p className="m-0">
@@ -209,7 +209,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                 canEditPipeline={props.canEditPipeline}
                             />
                         )}
-                    </>
+                    </div>
                 )
             })}
         </>
