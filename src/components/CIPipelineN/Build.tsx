@@ -141,7 +141,7 @@ export function Build({
 
     const addDockerArg = (): void => {
         const _form = { ...formData }
-        _form.args.push({ key: '', value: '' })
+        _form.args.unshift({ key: '', value: '' })
         setFormData(_form)
     }
 

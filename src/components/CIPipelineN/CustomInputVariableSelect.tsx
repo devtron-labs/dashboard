@@ -187,9 +187,9 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                     : 'pluginRefStepDetail'
             ].inputVariables[selectedVariableIndex]
         const selectedValueLabel =
-            selectedVariable.variableType === RefVariableType.NEW
+            (selectedVariable.variableType === RefVariableType.NEW
                 ? selectedVariable.value
-                : selectedVariable.refVariableName
+                : selectedVariable.refVariableName) || ''
         setSelectedOutputVariable({ ...selectedVariable, label: selectedValueLabel, value: selectedValueLabel })
     }
 
@@ -269,7 +269,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 },
                 Option,
                 ValueContainer,
-                IndicatorSeparator: null
+                IndicatorSeparator: null,
             }}
         />
     )

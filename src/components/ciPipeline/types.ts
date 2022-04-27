@@ -154,7 +154,7 @@ interface InlineStepDetailType {
     mountPathMap?: {
         filePathOnDisk: string
         filePathOnContainer: string
-    }
+    }[]
     inputVariables?: VariableType[]
     outputVariables?: VariableType[]
     conditionDetails: ConditionDetails[]
