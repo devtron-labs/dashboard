@@ -654,8 +654,8 @@ button.anchor {
             word-wrap: anywhere;
             white-space: pre-line;
             padding: 0;
-            .Toastify__toast-icon{
-              display: none;
+            .Toastify__toast-icon {
+                display: none;
             }
         }
 
@@ -1634,8 +1634,8 @@ button.anchor {
     height: 0px;
 }
 
-.border{
-    border: 1px solid var(--N200)
+.border {
+    border: 1px solid var(--N200);
 }
 
 .border-top {
@@ -1677,8 +1677,12 @@ button.anchor {
     line-height: 20px;
 }
 
-.lh-32{
+.lh-32 {
     line-height: 32px;
+}
+
+.lh-28 {
+    line-height: 28px;
 }
 
 .pl-16 {
@@ -1785,5 +1789,5 @@ button.anchor {
 }
 
 .xterm .xterm-viewport {
-  width: initial !important;
+    width: initial !important;
 }

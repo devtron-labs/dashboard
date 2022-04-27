@@ -37,28 +37,28 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
             </div>
             {!collapsedSection && (
                 <div className="variable-container">
-                    <label className="p-4 fs-12 fw-6 text-uppercase">Variable</label>
-                    <label className="p-4 fs-12 fw-6 text-uppercase">Format</label>
-                    <label className="p-4 fs-12 fw-6 text-uppercase">
+                    <div className="fs-12 fw-6 text-uppercase">Variable</div>
+                    <div className="fs-12 fw-6 text-uppercase">Format</div>
+                    <div className="fs-12 fw-6 text-uppercase">
                         {type === PluginVariableType.INPUT ? 'Value' : 'Description'}
-                    </label>
+                    </div>
                     {formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail[
                         type === PluginVariableType.OUTPUT ? 'outputVariables' : 'inputVariables'
                     ]?.map((variable, index) => (
                         <>
                             {variable.description ? (
                                 <Tippy className="default-tt" arrow={false} content={variable.description}>
-                                    <label className="p-4 fs-13 fw-4 lh-32">
+                                    <div className="fs-13 fw-4 lh-28">
                                         <span className="text-underline-dashed">{variable.name}</span>
-                                    </label>
+                                    </div>
                                 </Tippy>
                             ) : (
-                                <label className="p-4 fs-13 fw-4 lh-32">{variable.name}</label>
+                                <div className="fs-13 fw-4 lh-28">{variable.name}</div>
                             )}
 
-                            <label className="p-4 fs-13 fw-4 lh-32">{variable.format}</label>
+                            <div className="fs-13 fw-4 lh-28">{variable.format}</div>
                             {type === PluginVariableType.INPUT ? (
-                                <div className="p-4 fs-14">
+                                <div className="fs-14">
                                     <CustomInputVariableSelect selectedVariableIndex={index} />
                                     {formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.pluginRefStepDetail
                                         .inputVariables[index] &&
@@ -76,7 +76,7 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                                         )}
                                 </div>
                             ) : (
-                                <label className="p-4 fs-13 fw-4 lh-32">{variable.description}</label>
+                                <div className="fs-13 fw-4 lh-28">{variable.description}</div>
                             )}
                         </>
                     ))}

@@ -311,7 +311,7 @@
 }
 
 .no-border .form__radio-item .form__radio-item-content {
-    padding: 8px 0;
+    padding: 8px 0 0 0;
 }
 
 .no-border .form__radio-item .form__radio-item-content .radio__title {
@@ -390,6 +390,7 @@
 
 .variable-container {
     display: grid;
+    grid-row-gap: 8px;
     grid-template-columns: 200px 100px auto;
 }
 

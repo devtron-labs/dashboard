@@ -196,18 +196,18 @@ export function TaskDetailComponent() {
             </div>
             {configurationType === ConfigurationType.GUI ? (
                 <>
-                    <hr />
+                    <hr className="mb-12" />
                     {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
                         <CustomInputOutputVariables type={PluginVariableType.INPUT} />
                     ) : (
                         <VariableContainer type={PluginVariableType.INPUT} />
                     )}{' '}
-                    <hr />
+                    <hr className="mb-12" />
                     {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.inputVariables
                         ?.length > 0 && (
                         <>
                             <ConditionContainer type={ConditionContainerType.TRIGGER_SKIP} />
-                            <hr />
+                            <hr className="mb-12" />
                         </>
                     )}
                     {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE && (
@@ -218,7 +218,7 @@ export function TaskDetailComponent() {
                     ) : (
                         <VariableContainer type={PluginVariableType.OUTPUT} />
                     )}
-                    <hr />
+                    <hr className="mb-12" />
                     {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.outputVariables
                         ?.length > 0 && (
                         <>

@@ -53,7 +53,16 @@ export const pluginSelectStyle = {
         boxShadow: 'none',
         minHeight: 'auto',
         borderRadius: '4px',
-        height: '32px',
+        height: '28px',
+        fontSize: '12px',
+    }),
+    valueContainer: (base, state) => ({
+        ...base,
+        color: 'var(--N900)',
+        background: 'var(--N100) !important',
+        padding: '0px 10px',
+        display: 'flex',
+        height: '28px',
         fontSize: '12px',
     }),
 }
