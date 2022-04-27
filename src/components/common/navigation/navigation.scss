@@ -42,7 +42,7 @@
 
         .nav-grid {
             display: grid;
-            grid-template-rows: 84px 44px repeat(6, 44px) auto repeat(5, 44px);
+            grid-template-rows: 84px 44px repeat(12, 44px);
             align-items: center;
             
             a,
