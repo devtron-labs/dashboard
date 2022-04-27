@@ -40,3 +40,16 @@ export const tempMultiSelectStyles = {
         background: 'var(--N100) !important',
     }),
 }
+
+export const pluginSelectStyle = {
+    ...tempMultiSelectStyles,
+    control: (base, state) => ({
+        ...base,
+        border: '1px solid var(--N200) !important',
+        boxShadow: 'none',
+        minHeight: 'auto',
+        borderRadius: '4px',
+        height: '30px',
+        fontSize: '12px',
+    }),
+}
