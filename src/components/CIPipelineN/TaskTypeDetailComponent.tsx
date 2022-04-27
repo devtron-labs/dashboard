@@ -151,7 +151,7 @@ export function TaskTypeDetailComponent() {
                                 arrow={false}
                                 content="Enable this if you also want to mount scripts in the container"
                             >
-                                <label>Mount custom script</label>
+                                <label className="pt-4">Mount custom script</label>
                             </Tippy>
                         </Checkbox>
                     </div>

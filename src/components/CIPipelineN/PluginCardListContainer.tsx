@@ -9,7 +9,7 @@ export function PluginCardListContainer({
 }: {
     pluginListTitle: string
     pluginList: PluginDetailType[]
-    setPluginType: (PluginType: PluginType, pluginId: number, pluginName: string) => void
+    setPluginType: (PluginType: PluginType, pluginId: number, pluginName: string, pluginDescription: string) => void
 }) {
     return (
         pluginList.length > 0 && (
@@ -18,7 +18,14 @@ export function PluginCardListContainer({
                 {pluginList?.map((pluginDetails) => (
                     <div
                         key={pluginDetails.id}
-                        onClick={() => setPluginType(PluginType.PLUGIN_REF, pluginDetails.id, pluginDetails.name)}
+                        onClick={() =>
+                            setPluginType(
+                                PluginType.PLUGIN_REF,
+                                pluginDetails.id,
+                                pluginDetails.name,
+                                pluginDetails.description,
+                            )
+                        }
                     >
                         <PluginCard
                             imgSource={pluginDetails.icon}
