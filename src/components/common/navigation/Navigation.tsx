@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
 import { DOCUMENTATION, SERVER_MODE, URLS } from '../../../config'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
@@ -10,8 +11,8 @@ import { getLoginInfo } from '../index'
 import { getRandomColor } from '../helpers/Helpers'
 import NavSprite from '../../../assets/icons/navigation-sprite.svg'
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg'
-import ReactDOM from 'react-dom'
 import { Command, CommandErrorBoundary } from '../../command'
+import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import ReactGA from 'react-ga'
 import './navigation.scss'
 
@@ -101,6 +102,7 @@ const HelpOptions = [
 
 interface NavigationType extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE
+    serverInfo: ServerInfo
 }
 export default class Navigation extends Component<
     NavigationType,
@@ -200,7 +202,7 @@ export default class Navigation extends Component<
                         )
                     })}
                     <div className="help-card__update-option fs-11 fw-6 mt-4">
-                        <span>Devtron</span>
+                        <span>Devtron {this.props.serverInfo?.currentVersion || ''}</span>
                         <br />
                         <NavLink to={URLS.STACK_MANAGER_ABOUT}>Check for Updates</NavLink>
                     </div>

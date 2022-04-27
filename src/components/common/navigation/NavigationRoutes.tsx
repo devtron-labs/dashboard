@@ -11,6 +11,8 @@ import { dashboardLoggedIn, getVersionConfig } from '../../../services/service'
 import Reload from '../../Reload/Reload'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import DevtronStackManager from '../../v2/devtronStackManager/DevtronStackManager'
+import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -22,6 +24,8 @@ const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 export const mainContext = createContext(null)
 
+let serverInfoTimer = null
+
 export default function NavigationRoutes() {
     const history = useHistory()
     const location = useLocation()
@@ -29,6 +33,7 @@ export default function NavigationRoutes() {
     const [serverMode, setServerMode] = useState(undefined)
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [pageOverflowEnabled, setPageOverflowEnabled] = useState<boolean>(true)
+    const [serverInfo, setServerInfo] = useState<ServerInfo>()
 
     useEffect(() => {
         const loginInfo = getLoginInfo()
@@ -94,6 +99,23 @@ export default function NavigationRoutes() {
         getServerMode()
     }, [])
 
+    useEffect(() => {
+        _getServerInfo()
+        serverInfoTimer = setInterval(_getServerInfo, 30000)
+
+        return (): void => {
+            clearInterval(serverInfoTimer)
+        }
+    }, [])
+
+    const _getServerInfo = () => {
+        getServerInfo().then((res) => {
+            setServerInfo(res.result)
+        }).catch((err) => {
+            // handle error
+        })
+    }
+
     if (pageState === ViewType.LOADING) {
         return <Progressing pageLoader />
     } else if (pageState === ViewType.ERROR) {
@@ -102,7 +124,7 @@ export default function NavigationRoutes() {
         return (
             <mainContext.Provider value={{ serverMode, setServerMode, setPageOverflowEnabled }}>
                 <main>
-                    <Navigation history={history} match={match} location={location} serverMode={serverMode} />
+                    <Navigation history={history} match={match} location={location} serverMode={serverMode} serverInfo={serverInfo} />
                     {serverMode && (
                         <div className={`main ${pageOverflowEnabled ? '' : 'main__overflow-disabled'}`}>
                             <Suspense fallback={<Progressing pageLoader />}>
@@ -127,7 +149,7 @@ export default function NavigationRoutes() {
                                             render={(props) => <Security {...props} serverMode={serverMode} />}
                                         />
                                         <Route path={URLS.STACK_MANAGER}>
-                                            <DevtronStackManager />
+                                            <DevtronStackManager serverInfo={serverInfo} />
                                         </Route>
                                         <Route>
                                             <RedirectWithSentry />

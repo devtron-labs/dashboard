@@ -35,13 +35,12 @@ import { isLatestVersionAvailable, MODULE_DETAILS_MAP } from './DevtronStackMana
 
 let modulesPollingInterval = null
 
-export default function DevtronStackManager() {
+export default function DevtronStackManager({ serverInfo }: { serverInfo: ServerInfo }) {
     const [isLoading, setLoading] = useState(false)
     const [showManagedByDialog, setShowManagedByDialog] = useState(false)
     const [discoverModulesList, setDiscoverModulesList] = useState<ModuleDetails[]>([])
     const [installedModulesList, setInstalledModulesList] = useState<ModuleDetails[]>([])
     const [selectedModule, setSelectedModule] = useState<ModuleDetails>()
-    const [serverInfo, setServerInfo] = useState<ServerInfo>()
     const [releaseNotes, setReleaseNotes] = useState<ReleaseNotes[]>([])
     const [detailsMode, setDetailsMode] = useState('')
     const [logPodName, setLogPodName] = useState('')
@@ -80,13 +79,11 @@ export default function DevtronStackManager() {
     }, [location.search])
 
     function getModuleAndServerInfo() {
-        Promise.allSettled([getAllModules(), getServerInfo(), getLogPodName(), getReleasesNotes()])
+        Promise.allSettled([getAllModules(), getLogPodName(), getReleasesNotes()])
             .then((responses: { status: string; value?: any; reason?: any }[]) => {
                 const allModulesRes: AllModuleInfoResponse = responses[0].value
-                const serverInfoRes: ServerInfoResponse = responses[1].value
-                const logPodNameRes: LogPodNameResponse = responses[2].value
-                const releaseNotesRes: ReleaseNotesResponse = responses[3].value
-                setServerInfo(serverInfoRes?.result)
+                const logPodNameRes: LogPodNameResponse = responses[1].value
+                const releaseNotesRes: ReleaseNotesResponse = responses[2].value
                 setReleaseNotes(releaseNotesRes?.result)
                 setLogPodName(logPodNameRes?.result?.podName)
 
@@ -111,7 +108,7 @@ export default function DevtronStackManager() {
                                 _moduleDetails.installationStatus === ModuleStatus.INSTALLED &&
                                 !isLatestVersionAvailable(
                                     _moduleDetails.baseMinVersionSupported,
-                                    serverInfoRes?.result?.currentVersion,
+                                    serverInfo?.currentVersion,
                                 ) &&
                                 _moduleDetails.id !== 'unknown'
                             ) {
