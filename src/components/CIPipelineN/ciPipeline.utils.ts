@@ -5,7 +5,7 @@ export const tempMultiSelectStyles = {
         boxShadow: 'none',
         minHeight: 'auto',
         borderRadius: 'none',
-        height: '30px',
+        height: '32px',
         fontSize: '12px',
     }),
     singleValue: (base, state) => ({
@@ -32,7 +32,7 @@ export const tempMultiSelectStyles = {
         background: 'var(--N100) !important',
         padding: '0px 10px',
         display: 'flex',
-        height: '30px',
+        height: '32px',
         fontSize: '12px',
     }),
     indicatorsContainer: (base, state) => ({
@@ -49,7 +49,7 @@ export const pluginSelectStyle = {
         boxShadow: 'none',
         minHeight: 'auto',
         borderRadius: '4px',
-        height: '30px',
+        height: '32px',
         fontSize: '12px',
     }),
 }

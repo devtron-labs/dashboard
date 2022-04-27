@@ -106,7 +106,7 @@ export function TaskTypeDetailComponent() {
                         />
                         <div style={{ width: '80% !important' }}>
                             <input
-                                className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
+                                className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                 autoComplete="off"
                                 placeholder="Enter image path"
                                 type="text"
@@ -165,7 +165,7 @@ export function TaskTypeDetailComponent() {
                                 />
                                 <div style={{ width: '80% !important' }}>
                                     <input
-                                        className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
+                                        className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                         autoComplete="off"
                                         placeholder="Eg. directory/filename"
                                         type="text"
@@ -202,7 +202,7 @@ export function TaskTypeDetailComponent() {
                         />
                         <input
                             style={{ width: '80% !important' }}
-                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
+                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                             autoComplete="off"
                             placeholder="Eg. “echo”"
                             type="text"
@@ -221,7 +221,7 @@ export function TaskTypeDetailComponent() {
                         />
                         <input
                             style={{ width: '80% !important' }}
-                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
+                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                             autoComplete="off"
                             placeholder='Eg. "HOSTNAME", "KUBERNETES_PORT"'
                             type="text"
@@ -259,10 +259,10 @@ export function TaskTypeDetailComponent() {
                     {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer && (
                         <>
                             <div className="row-container mb-12">
-                                <label className="fw-6 fs-13 cn-7 label-width"></label>
+                                <div className="fw-6 fs-13 lh-32 cn-7 "></div>
                                 <input
                                     style={{ width: '80% !important' }}
-                                    className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
+                                    className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                     autoComplete="off"
                                     placeholder="Eg file/folder"
                                     type="text"
@@ -273,7 +273,7 @@ export function TaskTypeDetailComponent() {
                                     }
                                 />
                             </div>
-                            <div className="pl-200 mb-20">
+                            <div className="pl-220 mb-20">
                                 {formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.inlineStepDetail[
                                     'mountCodeToContainerPath'
                                 ] &&
@@ -330,7 +330,7 @@ export function TaskTypeDetailComponent() {
             return (
                 <>
                     <div className="row-container mb-12">
-                        <label className="fw-6 fs-13 cn-7 label-width">Docker path *</label>{' '}
+                        <div className="fw-6 fs-13 lh-32 cn-7 ">Docker path *</div>{' '}
                         <input
                             style={{ width: '80% !important' }}
                             className="form__input bcn-1 w-80"
@@ -341,7 +341,7 @@ export function TaskTypeDetailComponent() {
                     </div>
                     <div className="row-container mb-12">
                         <Tippy className="default-tt" arrow={false} content="Path where script should be mounted">
-                            <label className="fw-6 fs-13 cn-7 label-width">Mount script at *</label>
+                            <div className="fw-6 fs-13 lh-32 cn-7 ">Mount script at *</div>
                         </Tippy>
                         <input
                             style={{ width: '80% !important' }}

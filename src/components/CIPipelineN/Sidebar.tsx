@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { BuildStageVariable, ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
+import { BuildStageVariable, BuildTabText, ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { TaskList } from './TaskList'
 import { ciPipelineContext } from './CIPipeline'
@@ -32,12 +32,12 @@ export function Sidebar() {
     }
 
     const activeStageNameForDescription = () => {
-       if(activeStageName !== BuildStageVariable.Build){
-           return 'build'
-       }else if(activeStageName !== BuildStageVariable.PostBuild){
-           return 'post-build'
-       }else if(activeStageName !== BuildStageVariable.PreBuild){
-           return 'pre-build'
+       if(activeStageName === BuildStageVariable.Build){
+           return BuildTabText.buildStage
+       }else if(activeStageName === BuildStageVariable.PostBuild){
+           return BuildTabText.postBuildStage
+       }else if(activeStageName === BuildStageVariable.PreBuild){
+           return BuildTabText.preBuildStage
        }
     }
 
@@ -97,7 +97,7 @@ export function Sidebar() {
                         target="_blank"
                         rel="noreferrer noopener"
                     >
-                        Docs: Configure {activeStageNameForDescription() } stage tasks
+                        Docs: Configure <span className='lowercase'>{activeStageNameForDescription() } </span>tasks
                     </a>
                 </div>
             </div>

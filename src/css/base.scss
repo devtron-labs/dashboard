@@ -1634,12 +1634,16 @@ button.anchor {
     height: 0px;
 }
 
+.border{
+    border: 1px solid var(--N200)
+}
+
 .border-top {
     border-top: solid 1px var(--N200);
 }
 
 .border-bottom {
-    border-bottom: solid 2px var(--N200);
+    border-bottom: solid 1px var(--N200);
 }
 
 .border-right {
@@ -1671,6 +1675,10 @@ button.anchor {
 
 .lh-20 {
     line-height: 20px;
+}
+
+.lh-32{
+    line-height: 32px;
 }
 
 .pl-16 {

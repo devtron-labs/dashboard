@@ -128,6 +128,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
             minHeight: 'auto',
             border: 'none',
             width: 'max-content',
+            height: '32px'
         }),
         singleValue: (base, state) => ({
             ...base,
@@ -192,7 +193,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                     setCollapsedSection(!collapsedSection)
                 }}
             >
-                <span className="fw-6 fs-13 cn-9">{type} Condition</span>
+                <span className="fw-6 fs-13 cn-9 lh-32">{type} Condition</span>
                 <img
                     className="icon-dim-32 ml-auto"
                     src={dropdown}
@@ -234,10 +235,10 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                         ).map((conditionDetail, index) =>
                             conditionDetail.conditionType === conditionType ? (
                                 <>
-                                    <label className="tp-4 fs-13 fw-4 text-uppercase mr-10">
+                                    <div className="tp-4 fs-13 lh-32 fw-4 text-uppercase mr-10">
                                         {conditionDetail.conditionType} If
-                                    </label>
-                                    <label className="tp-4 fs-13 fw-4 text-uppercase mr-10">
+                                    </div>
+                                    <div className="tp-4 fs-13 lh-32 fw-4 text-uppercase mr-10">
                                         <ReactSelect
                                             autoFocus
                                             value={
@@ -268,8 +269,8 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                                 ValueContainer,
                                             }}
                                         />
-                                    </label>
-                                    <label className="tp-4 fs-13 fw-4 mr-10">
+                                    </div>
+                                    <div className=" lh-32 fw-4 mr-10">
                                         <ReactSelect
                                             defaultValue={
                                                 conditionDetail.conditionOperator
@@ -299,7 +300,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                                 ValueContainer,
                                             }}
                                         />
-                                    </label>
+                                    </div>
                                     <div className="fs-13 mr-10">
                                         <input
                                             className="w-100"
@@ -320,8 +321,8 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                             ) : null,
                         )}
                     </div>
-                    <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit" onClick={addCondition}>
-                        <Add className="add-icon" />
+                    <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32" onClick={addCondition}>
+                        <Add className="add-icon mt-6" />
                         Add condition
                     </div>
                 </>

@@ -62,8 +62,8 @@ function MultiplePort() {
                     taskField={TaskFieldLabel.PORTMAPPING}
                     contentDescription={TaskFieldDescription.PORTMAPPING}
                 />
-                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit" onClick={addMultiplePort}>
-                    <Add className="add-icon" />
+                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32" onClick={addMultiplePort}>
+                    <Add className="add-icon mt-6" />
                     Add port
                 </div>
             </div>
@@ -74,7 +74,7 @@ function MultiplePort() {
                         <div className="custom-input__port-map pl-220 pb-8" key={`multiple-port-${index}`}>
                             <input
                                 style={{ width: '80% !important' }}
-                                className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
+                                className="w-100 bcn-1 border left-radius-4 pl-10 pr-10 pt-5 pb-5"
                                 autoComplete="off"
                                 placeholder="Port"
                                 type="text"
@@ -82,10 +82,10 @@ function MultiplePort() {
                                 name={PortMap.PORTONLOCAL}
                                 value={elm[PortMap.PORTONLOCAL]}
                             />
-                            <div className="flex">:</div>
+                            <div className="flex border-top border-bottom">:</div>
                             <input
                                 style={{ width: '80% !important' }}
-                                className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
+                                className="w-100 bcn-1 border right-radius-4 pl-10 pr-10 pt-5 pb-5"
                                 autoComplete="off"
                                 placeholder="Port"
                                 type="text"

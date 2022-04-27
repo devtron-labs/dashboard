@@ -213,8 +213,8 @@ export function Build({
                 </div>
                 {collapsedSection ? (
                     <div>
-                        <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit mt-20" onClick={addDockerArg}>
-                            <Add className="add-icon" />
+                        <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32 mt-20" onClick={addDockerArg}>
+                            <Add className="add-icon mt-6" />
                             Add parameter
                         </div>
                         {formData.args.map((arg, index) => {
@@ -222,7 +222,7 @@ export function Build({
                                 <div className="flexbox justify-space" key={`build-${index}`}>
                                     <div className="mt-8 w-100">
                                         <input
-                                            className="w-100 top-radius pl-10 pr-10 pt-6 pb-6 bcn-1 en-2 bw-1"
+                                            className="w-100 top-radius-4 pl-10 pr-10 pt-6 pb-6 bcn-1 en-2 bw-1"
                                             autoComplete="off"
                                             placeholder="Key"
                                             type="text"
@@ -232,7 +232,7 @@ export function Build({
                                             }}
                                         />
                                         <textarea
-                                            className="w-100 bottom-radius no-top-border pl-10 pr-10 pt-6 pb-6 bcn-1 en-2 bw-1"
+                                            className="w-100 bottom-radius-4 no-top-border pl-10 pr-10 pt-6 pb-6 bcn-1 en-2 bw-1"
                                             value={arg.value}
                                             onChange={(event) => {
                                                 handleDockerArgChange(event, index, 'value')

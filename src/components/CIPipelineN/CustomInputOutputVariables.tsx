@@ -123,17 +123,17 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                         </span>
                     }
                 >
-                    <label
-                        className={`tp-4 fs-13 fw-6 text-capitalize mr-8 ${
+                    <div
+                        className={`tp-4 fs-13 fw-6 text-capitalize mr-8 lh-32 ${
                             type === PluginVariableType.INPUT ? 'text-underline-dashed' : ''
                         }`}
                     >
                         {type} variables{' '}
-                    </label>
+                    </div>
                 </Tippy>
 
-                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit" onClick={addVariable}>
-                    <Add className="add-icon" />
+                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32" onClick={addVariable}>
+                    <Add className="add-icon mt-6" />
                     Add variable
                 </div>
             </div>
@@ -154,8 +154,8 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                             <input
                                                 className={`w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 h-32 ${
                                                     type === PluginVariableType.INPUT
-                                                        ? ' top-radius'
-                                                        : '  no-bottom-border top-left-radius'
+                                                        ? 'top-radius-4 border-bottom'
+                                                        : 'no-bottom-border top-left-radius'
                                                 }`}
                                                 type="text"
                                                 placeholder="Variable name"
@@ -171,10 +171,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                             <div
                                                 style={{
                                                     width: '20%',
-                                                    borderRight: '1px solid var(--N200)',
-                                                    borderTop: '1px solid var(--N200)',
                                                     borderTopRightRadius: '4px',
                                                 }}
+                                                className='border-right border-top'
                                             >
                                                 <ReactSelect
                                                     value={
@@ -200,7 +199,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                             boxShadow: 'none',
                                                             minHeight: 'auto',
                                                             borderRadius: 'none',
-                                                            height: '30px',
+                                                            height: '3px',
                                                             borderTopRightRadius: '4px',
                                                             fontSize: '12px',
                                                         }),
@@ -210,7 +209,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                             background: 'var(--N100) !important',
                                                             padding: '0px 10px',
                                                             display: 'flex',
-                                                            height: '30px',
+                                                            height: '32px',
                                                             fontSize: '12px',
                                                         }),
                                                         indicatorsContainer: (base, state) => ({
@@ -226,7 +225,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                 </div>
                                 {type === PluginVariableType.INPUT && (
                                     <div className="flexbox">
-                                        <div style={{ width: '80%', borderLeft: '1px solid var(--N200)' }}>
+                                        <div className='border-left' style={{ width: '80%' }}>
                                             <CustomInputVariableSelect selectedVariableIndex={index} />
                                         </div>
                                         <div
@@ -267,7 +266,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                             background: 'var(--N100) !important',
                                                             padding: '0px 10px',
                                                             display: 'flex',
-                                                            height: '30px',
+                                                            height: '32px',
                                                             fontSize: '12px',
                                                         }),
                                                     }}
@@ -278,7 +277,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                 )}
                                 <input
                                     style={{ width: '80% !important' }}
-                                    className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 bottom-radius"
+                                    className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 bottom-radius-4 h-32"
                                     autoComplete="off"
                                     placeholder="Description"
                                     type="text"
@@ -302,7 +301,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                             !formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.inlineStepDetail[
                                 VariableFieldType[type]
                             ][index].isValid && (
-                                <div className="pl-200 mb-20">
+                                <div className="pl-220 mb-20">
                                     <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
                                         <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
                                         <span>

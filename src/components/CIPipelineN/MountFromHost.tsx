@@ -52,9 +52,9 @@ function MountFromHost() {
     return (
         <>
             <div className="row-container mb-12">
-                <label className="fw-6 fs-13 cn-7 label-width"></label>
-                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit" onClick={addMountDirectoryfromHost}>
-                    <Add className="add-icon" />
+                <div className="fw-6 fs-13 lh-32 cn-7 "></div>
+                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32" onClick={addMountDirectoryfromHost}>
+                    <Add className="add-icon mt-6" />
                     Add mapping
                 </div>
             </div>
@@ -63,7 +63,7 @@ function MountFromHost() {
                     return (
                         <>
                             <div className="mount-row mb-10">
-                                <label className="fw-6 fs-13 cn-7 label-width"></label>
+                                <div className="fw-6 fs-13 lh-32 cn-7 "></div>
                                 <input
                                     className="bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
                                     autoComplete="off"

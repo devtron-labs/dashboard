@@ -140,12 +140,12 @@ export function TaskDetailComponent() {
         <div>
             <div>
                 <div className="row-container mb-12">
-                    <label className="fw-6 fs-13 cn-7 label-width">
+                    <div className="fw-6 fs-13 lh-32 cn-7 ">
                         Task name <span className="cr-5">*</span>
-                    </label>{' '}
+                    </div>{' '}
                     <div>
                         <input
-                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
+                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                             type="text"
                             onChange={(e) => handleNameChange(e)}
                             value={formData[activeStageName].steps[selectedTaskIndex].name}
@@ -162,9 +162,9 @@ export function TaskDetailComponent() {
                     </div>
                 </div>
                 <div className="row-container mb-12">
-                    <label className="fw-6 fs-13 cn-7 label-width">Description</label>{' '}
+                    <div className="fw-6 fs-13 lh-32 cn-7 ">Description</div>{' '}
                     <input
-                        className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
+                        className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                         type="text"
                         onChange={(e) => handleDescriptionChange(e)}
                         value={formData[activeStageName].steps[selectedTaskIndex].description}
@@ -174,7 +174,7 @@ export function TaskDetailComponent() {
 
                 {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE && (
                     <div className="row-container mb-12">
-                        <label className="fw-6 fs-13 cn-7 label-width">Task type</label>
+                        <div className="fw-6 fs-13 lh-32 cn-7 ">Task type</div>
                         <RadioGroup
                             className="configuration-container justify-start"
                             disabled={false}

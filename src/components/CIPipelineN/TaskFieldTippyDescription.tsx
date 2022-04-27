@@ -11,7 +11,7 @@ function TaskFieldTippyDescription({ taskField, contentDescription } : TippyDesc
     return (
         <div>
             <Tippy className="default-tt" arrow={false} content={<span style={{ display: "block", width: "220px" }}>{contentDescription}</span>}>
-                <label className="fw-6 fs-13 cn-7 label-width text-capitalize text-underline-dashed">{taskField}{taskField === TaskFieldLabel.SCRIPT || taskField === TaskFieldLabel.STORESCRIPTAT || taskField === TaskFieldLabel.CONTAINERIMAGEPATH ? <span className='cr-5'>*</span> : '' }</label>
+                <div className="fw-6 fs-13 lh-32 cn-7 text-underline-dashed text-capitalize">{taskField}{taskField === TaskFieldLabel.SCRIPT || taskField === TaskFieldLabel.STORESCRIPTAT || taskField === TaskFieldLabel.CONTAINERIMAGEPATH ? <span className='cr-5'> *</span> : '' }</div>
             </Tippy>
         </div>
     )
