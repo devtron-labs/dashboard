@@ -140,7 +140,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.map(
                 (variable, index) => (
                     <div key={`custom-input-variable${index}`}>
-                        <div className="pl-200 mb-20 flexbox justify-space">
+                        <div className="pl-220 mb-20 flexbox justify-space">
                             <div className="custom-variable-container w-100">
                                 <Equal className="icon-dim-40 variable-equal-icon" />
 
@@ -148,9 +148,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                     <div className="flexbox">
                                         <div style={{ width: type === PluginVariableType.OUTPUT ? '80%' : '100%' }}>
                                             <input
-                                                className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 top-radius"
+                                                className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 top-radius no-bottom-border"
                                                 type="text"
-                                                placeholder="Variables name"
+                                                placeholder="Variable name"
                                                 value={variable.name}
                                                 autoComplete="off"
                                                 name="name"
@@ -177,7 +177,17 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                         IndicatorSeparator: null,
                                                         Option,
                                                     }}
-                                                    styles={tempMultiSelectStyles}
+                                                    styles={{
+                                                        ...tempMultiSelectStyles,
+                                                        valueContainer: (base, state) => ({
+                                                            ...base,
+                                                            background: 'var(--N000) !important',
+                                                        }),
+                                                        indicatorsContainer: (base, state) => ({
+                                                            ...base,
+                                                            background: 'var(--N000) !important',
+                                                        }),
+                                                    }}
                                                 />
                                             </div>
                                         )}
@@ -188,9 +198,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                         <div style={{ width: '80%' }}>
                                             <CustomInputVariableSelect selectedVariableIndex={index} />
                                         </div>
-                                        <div className="bcn-1 " style={{ width: '20%' }}>
+                                        <div style={{ width: '20%' }}>
                                             {variable.format && variable.variableType === RefVariableType.GLOBAL ? (
-                                                <span className="fs-13 fw-4 p-5 flex left">{variable.format}</span>
+                                                <span className="fs-13 fw-4 p-4 flex left en-2 bw-1 no-left-border">{variable.format}</span>
                                             ) : (
                                                 <ReactSelect
                                                     value={
@@ -209,7 +219,18 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                         Option,
                                                     }}
                                                     name="format"
-                                                    styles={tempMultiSelectStyles}
+                                                    styles={{
+                                                        ...tempMultiSelectStyles,
+                                                        valueContainer: (base, state) => ({
+                                                            ...base,
+                                                            background: 'var(--N000) !important',
+                                                        }),
+                                                        indicatorsContainer: (base, state) => ({
+                                                            ...base,
+                                                            background: 'var(--N000) !important',
+                                                        }),
+                                                    }}
+
                                                 />
                                             )}
                                         </div>
@@ -217,7 +238,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                 )}
                                 <input
                                     style={{ width: '80% !important' }}
-                                    className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 bottom-radius"
+                                    className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 bottom-radius no-top-border"
                                     autoComplete="off"
                                     placeholder="Description"
                                     type="text"

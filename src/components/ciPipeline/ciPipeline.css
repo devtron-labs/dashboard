@@ -487,3 +487,19 @@
     border: 1px solid var(--N200);
     border-radius: 4px;
 }
+
+.no-top-border{
+    border-top: 0px;
+}
+
+.no-bottom-border{
+    border-bottom: 0px;
+}
+
+.no-left-border{
+    border-left: 0px;
+}
+
+.pl-220{
+    padding-left: 220px;
+}

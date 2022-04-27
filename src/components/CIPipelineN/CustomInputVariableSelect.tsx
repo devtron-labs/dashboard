@@ -269,6 +269,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 },
                 Option,
                 ValueContainer,
+                IndicatorSeparator: null
             }}
         />
     )

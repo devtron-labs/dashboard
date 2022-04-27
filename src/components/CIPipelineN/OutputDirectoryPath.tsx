@@ -54,7 +54,7 @@ function OutputDirectoryPath() {
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath?.map((elm, index) => {
                 return (
-                    <div className="custom-script__output-directory pl-200 pb-20">
+                    <div className="custom-script__output-directory pl-220 pb-20">
                         <input
                             className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
                             autoComplete="off"
