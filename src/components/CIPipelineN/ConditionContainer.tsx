@@ -30,7 +30,6 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
     ].map((operator) => ({ label: operator.value, value: operator.value, description: operator.description }))
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
     const [selectedOperator, setSelectedOperator] = useState<{ label: string; value: string }>(operatorOptions[0])
-    const [selectedVariable, setSelectedVariable] = useState<{ label: string; value: number }>()
     const [conditionType, setConditionType] = useState<ConditionType>(
         type === ConditionContainerType.PASS_FAILURE ? ConditionType.SUCCESS : ConditionType.TRIGGER,
     )
@@ -106,7 +105,6 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
     }
 
     const handleConditionOnVariableChange = (selectedValue: { label: string; value: number }, index: number): void => {
-        setSelectedVariable(selectedValue)
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index][
             'conditionOnVariable'

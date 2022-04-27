@@ -72,17 +72,6 @@ export function TaskDetailComponent() {
         }
     }, [])
 
-    useEffect(() => {
-        if (
-            formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE &&
-            formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE
-        ) {
-            if (formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script) {
-                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.isMountCustomScript = true
-            }
-        }
-    }, [formData])
-
     const processPluginData = (pluginData) => {
         const _form = { ...formData }
         if (_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables?.length === 0) {

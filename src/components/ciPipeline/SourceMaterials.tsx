@@ -180,6 +180,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             onChange={(event) => {
                                                 props?.handleSourceChange(event, mat.gitMaterialId)
                                             }}
+                                            autoFocus={true}
                                         />
                                     </div>
                                 ) : (

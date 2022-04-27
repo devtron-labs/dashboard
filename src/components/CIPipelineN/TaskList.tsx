@@ -85,9 +85,13 @@ export function TaskList() {
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
         newList.splice(index, 1)
-        setSelectedTaskIndex(0)
         _formData[activeStageName].steps = newList
-        calculateLastStepDetail(false, _formData, activeStageName, index)
+        const newListLength = newList.length
+        const newTaskIndex = index >= newListLength ? (newListLength > 1 ? newListLength - 1 : 0) : index
+        calculateLastStepDetail(false, _formData, activeStageName, newTaskIndex)
+        setTimeout(() => {
+            setSelectedTaskIndex(newTaskIndex)
+        }, 0)
         setFormData(_formData)
         const _formDataErrorObj = { ...formDataErrorObj }
         const newErrorList = [...formDataErrorObj[activeStageName].steps]
@@ -127,7 +131,7 @@ export function TaskList() {
                             onClick={() => handleSelectedTaskChange(index)}
                         >
                             <Drag className="drag-icon" onMouseDown={() => setDragAllowed(true)} />
-                            <span className="w-80 task-name-container">{taskDetail.name}</span>
+                            <span className="w-80 ellipsis-right">{taskDetail.name}</span>
                             {formDataErrorObj[activeStageName].steps[index] &&
                                 !formDataErrorObj[activeStageName].steps[index].isValid && (
                                     <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-2" />
@@ -141,7 +145,7 @@ export function TaskList() {
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>
                                     <div className="flex left p-10 pointer" onClick={(e) => deleteTask(index)}>
-                                        <Trash className="delete-icon mr-10" />
+                                        <Trash className="icon-dim-16 mr-10" />
                                         Delete
                                     </div>
                                 </PopupMenu.Body>

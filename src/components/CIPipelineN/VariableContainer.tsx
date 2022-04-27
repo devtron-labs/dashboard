@@ -4,6 +4,7 @@ import { FormErrorObjectType, FormType, PluginVariableType } from '../ciPipeline
 import { ciPipelineContext } from './CIPipeline'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import Tippy from '@tippyjs/react'
 
 export function VariableContainer({ type }: { type: PluginVariableType }) {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
@@ -45,7 +46,14 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                         type === PluginVariableType.OUTPUT ? 'outputVariables' : 'inputVariables'
                     ]?.map((variable, index) => (
                         <>
-                            <label className="p-4 fs-13 fw-4">{variable.name}</label>
+                            {variable.description ? (
+                                <Tippy className="default-tt" arrow={false} content={variable.description}>
+                                    <label className="p-4 fs-13 fw-4 text-underline-dashed">{variable.name}</label>
+                                </Tippy>
+                            ) : (
+                                <label className="p-4 fs-13 fw-4">{variable.name}</label>
+                            )}
+
                             <label className="p-4 fs-13 fw-4">{variable.format}</label>
                             {type === PluginVariableType.INPUT ? (
                                 <div className="p-4 fs-14">

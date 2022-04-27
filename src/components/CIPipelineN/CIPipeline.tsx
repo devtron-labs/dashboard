@@ -162,7 +162,8 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                 const _globalVariableOptions = response.result.map((variable) => {
                     variable.label = variable.name
                     variable.value = variable.name
-                    variable.format = 'string'
+                    variable.format = variable.format
+                    variable.description = variable.description || ''
                     delete variable.name
                     return variable
                 })
@@ -260,8 +261,24 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
 
     const checkUniqueness = (): boolean => {
         const list = formData.preBuildStage.steps.concat(formData.postBuildStage.steps)
-        const stageNameList = list.map((l) => {
-            return l.name
+        const stageNameList = list.map((taskData) => {
+            if (taskData.stepType === PluginType.INLINE) {
+                if (taskData.inlineStepDetail['scriptType'] === ScriptType.CONTAINERIMAGE) {
+                    if (!taskData.inlineStepDetail['isMountCustomScript']) {
+                        taskData.inlineStepDetail['script'] = null
+                        taskData.inlineStepDetail['storeScriptAt'] = null
+                    }
+
+                    if (!taskData.inlineStepDetail['mountCodeToContainer']) {
+                        taskData.inlineStepDetail['mountCodeToContainerPath'] = null
+                    }
+
+                    if (!taskData.inlineStepDetail['mountDirectoryFromHost']) {
+                        taskData.inlineStepDetail['mountPathMap'] = null
+                    }
+                }
+            }
+            return taskData.name
         })
         const set = new Set()
         for (let i = 0; i < stageNameList.length; i++) {
@@ -343,65 +360,60 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable].inputVariables[index].isValid
                 })
                 if (taskData.stepType === PluginType.INLINE) {
-                    taskErrorobj[currentStepTypeVariable].outputVariables = []
-                    taskData[currentStepTypeVariable].outputVariables?.forEach((element, index) => {
-                        taskErrorobj[currentStepTypeVariable].outputVariables.push(
-                            validationRules.outputVariable(element),
-                        )
+                    taskErrorobj.inlineStepDetail.outputVariables = []
+                    taskData.inlineStepDetail.outputVariables?.forEach((element, index) => {
+                        taskErrorobj.inlineStepDetail.outputVariables.push(validationRules.outputVariable(element))
                         taskErrorobj.isValid =
-                            taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable].outputVariables[index].isValid
+                            taskErrorobj.isValid && taskErrorobj.inlineStepDetail.outputVariables[index].isValid
                     })
 
                     // For removing empty mapping from portMap
-                    taskData[currentStepTypeVariable]['portMap'] =
-                        taskData[currentStepTypeVariable]['portMap']?.filter(
+                    taskData.inlineStepDetail['portMap'] =
+                        taskData.inlineStepDetail['portMap']?.filter(
                             (_port) => _port.portOnLocal && _port.portOnContainer,
                         ) || []
-                    if (taskData[currentStepTypeVariable]['scriptType'] === ScriptType.SHELL) {
-                        taskErrorobj[currentStepTypeVariable]['script'] = validationRules.requiredField(
-                            taskData[currentStepTypeVariable]['script'],
+                    if (taskData.inlineStepDetail['scriptType'] === ScriptType.SHELL) {
+                        taskErrorobj.inlineStepDetail['script'] = validationRules.requiredField(
+                            taskData.inlineStepDetail['script'],
                         )
-                        taskErrorobj.isValid =
-                            taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable]['script'].isValid
-                    } else if (taskData[currentStepTypeVariable]['scriptType'] === ScriptType.CONTAINERIMAGE) {
-                        if (taskData[currentStepTypeVariable]['isMountCustomScript']) {
-                            taskErrorobj[currentStepTypeVariable]['script'] = validationRules.requiredField(
-                                taskData[currentStepTypeVariable]['script'],
+                        taskErrorobj.isValid = taskErrorobj.isValid && taskErrorobj.inlineStepDetail['script'].isValid
+                    } else if (taskData.inlineStepDetail['scriptType'] === ScriptType.CONTAINERIMAGE) {
+                        if (taskData.inlineStepDetail['isMountCustomScript']) {
+                            taskErrorobj.inlineStepDetail['script'] = validationRules.requiredField(
+                                taskData.inlineStepDetail['script'],
                             )
-                            taskErrorobj[currentStepTypeVariable]['storeScriptAt'] = validationRules.requiredField(
-                                taskData[currentStepTypeVariable]['storeScriptAt'],
+                            taskErrorobj.inlineStepDetail['storeScriptAt'] = validationRules.requiredField(
+                                taskData.inlineStepDetail['storeScriptAt'],
                             )
                             taskErrorobj.isValid =
                                 taskErrorobj.isValid &&
-                                taskErrorobj[currentStepTypeVariable]['script'].isValid &&
-                                taskErrorobj[currentStepTypeVariable]['storeScriptAt'].isValid
+                                taskErrorobj.inlineStepDetail['script'].isValid &&
+                                taskErrorobj.inlineStepDetail['storeScriptAt'].isValid
                         }
 
-                        taskErrorobj[currentStepTypeVariable]['containerImagePath'] = validationRules.requiredField(
-                            taskData[currentStepTypeVariable]['containerImagePath'],
+                        taskErrorobj.inlineStepDetail['containerImagePath'] = validationRules.requiredField(
+                            taskData.inlineStepDetail['containerImagePath'],
                         )
                         taskErrorobj.isValid =
-                            taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable]['containerImagePath'].isValid
+                            taskErrorobj.isValid && taskErrorobj.inlineStepDetail['containerImagePath'].isValid
 
-                        if (taskData[currentStepTypeVariable]['mountCodeToContainer']) {
-                            taskErrorobj[currentStepTypeVariable]['mountCodeToContainerPath'] =
-                                validationRules.requiredField(
-                                    taskData[currentStepTypeVariable]['mountCodeToContainerPath'],
-                                )
+                        if (taskData.inlineStepDetail['mountCodeToContainer']) {
+                            taskErrorobj.inlineStepDetail['mountCodeToContainerPath'] = validationRules.requiredField(
+                                taskData.inlineStepDetail['mountCodeToContainerPath'],
+                            )
                             taskErrorobj.isValid =
                                 taskErrorobj.isValid &&
-                                taskErrorobj[currentStepTypeVariable]['mountCodeToContainerPath'].isValid
+                                taskErrorobj.inlineStepDetail['mountCodeToContainerPath'].isValid
                         }
 
-                        if (taskData[currentStepTypeVariable]['mountDirectoryFromHost']) {
-                            taskErrorobj[currentStepTypeVariable]['mountPathMap'] = []
-                            taskData[currentStepTypeVariable]['mountPathMap']?.forEach((element, index) => {
-                                taskErrorobj[currentStepTypeVariable]['mountPathMap'].push(
+                        if (taskData.inlineStepDetail['mountDirectoryFromHost']) {
+                            taskErrorobj.inlineStepDetail['mountPathMap'] = []
+                            taskData.inlineStepDetail['mountPathMap']?.forEach((element, index) => {
+                                taskErrorobj.inlineStepDetail['mountPathMap'].push(
                                     validationRules.mountPathMap(element),
                                 )
                                 taskErrorobj.isValid =
-                                    taskErrorobj.isValid &&
-                                    taskErrorobj[currentStepTypeVariable]['mountPathMap'][index].isValid
+                                    taskErrorobj.isValid && taskErrorobj.inlineStepDetail['mountPathMap'][index].isValid
                             })
                         }
                     }
@@ -456,6 +468,15 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             if (!_formData[activeStageName].steps[i].stepType) {
                 continue
             }
+
+            if (
+                _formData[activeStageName].steps[i].stepType === PluginType.INLINE &&
+                _formData[activeStageName].steps[i].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE &&
+                _formData[activeStageName].steps[i].inlineStepDetail.script &&
+                !_formData[activeStageName].steps[i].inlineStepDetail.isMountCustomScript
+            ) {
+                _formData[activeStageName].steps[i].inlineStepDetail.isMountCustomScript = true
+            }
             const currentStepTypeVariable =
                 _formData[activeStageName].steps[i].stepType === PluginType.INLINE
                     ? 'inlineStepDetail'
@@ -482,7 +503,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                             _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name,
                         {
                             ..._formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j],
-                            refVariableStepIndex: index,
+                            refVariableStepIndex: i + 1,
                             refVariableStage:
                                 activeStageName === BuildStageVariable.PreBuild
                                     ? RefVariableStageType.PRE_CI

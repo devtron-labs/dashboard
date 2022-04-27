@@ -202,6 +202,10 @@ export function PreBuild() {
     return configurationType === ConfigurationType.GUI ? (
         renderGUI()
     ) : (
-        <YAMLScriptComponent editorValue={editorValue} handleEditorValueChange={handleEditorValueChange} showSample={true} />
+        <YAMLScriptComponent
+            editorValue={editorValue}
+            handleEditorValueChange={handleEditorValueChange}
+            showSample={true}
+        />
     )
 }
