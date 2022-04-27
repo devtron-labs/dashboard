@@ -6,6 +6,7 @@ export const tempMultiSelectStyles = {
         minHeight: 'auto',
         borderRadius: 'none',
         height: '30px',
+        fontSize: '12px',
     }),
     singleValue: (base, state) => ({
         ...base,
@@ -32,6 +33,7 @@ export const tempMultiSelectStyles = {
         padding: '0px 10px',
         display: 'flex',
         height: '30px',
+        fontSize: '12px',
     }),
     indicatorsContainer: (base, state) => ({
         ...base,

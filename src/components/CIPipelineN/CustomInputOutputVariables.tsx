@@ -144,7 +144,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                             <div className="custom-variable-container w-100">
                                 <Equal className="icon-dim-40 variable-equal-icon" />
 
-                                <div className="tp-4 fs-13 fw-4">
+                                <div className="tp-4 fs-12 fw-4">
                                     <div className="flexbox">
                                         <div
                                             style={{
@@ -202,6 +202,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                             borderRadius: 'none',
                                                             height: '30px',
                                                             borderTopRightRadius: '4px',
+                                                            fontSize: '12px',
                                                         }),
                                                         valueContainer: (base, state) => ({
                                                             ...base,
@@ -210,6 +211,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                             padding: '0px 10px',
                                                             display: 'flex',
                                                             height: '30px',
+                                                            fontSize: '12px',
                                                         }),
                                                         indicatorsContainer: (base, state) => ({
                                                             ...base,
@@ -266,6 +268,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                             padding: '0px 10px',
                                                             display: 'flex',
                                                             height: '30px',
+                                                            fontSize: '12px',
                                                         }),
                                                     }}
                                                 />
