@@ -15,15 +15,7 @@ export class ValidationRules {
     }
 
     requiredField = (value: string): { message: string | null; isValid: boolean } => {
-        if (!value || value.length < 1) {
-            return { message: 'This is a required field', isValid: false }
-        } else {
-            return { message: null, isValid: true }
-        }
-    }
-
-    taskName = (value: string): { message: string | null; isValid: boolean } => {
-        if (!value || value.length < 1) {
+        if (!value) {
             return { message: 'This is a required field', isValid: false }
         } else {
             return { message: null, isValid: true }
@@ -69,16 +61,8 @@ export class ValidationRules {
 
     sourceValue = (value: string): { message: string | null; isValid: boolean } => {
         if (!value) return { message: `This is a required field`, isValid: false }
-        else if (value && value.length < 1) {
+        else if (value) {
             return { message: `This is a required field`, isValid: false }
-        } else {
-            return { message: null, isValid: true }
-        }
-    }
-
-    shellScript = (value: string): { message: string | null; isValid: boolean } => {
-        if (!value || value.length < 1) {
-            return { message: 'This is a required field', isValid: false }
         } else {
             return { message: null, isValid: true }
         }
