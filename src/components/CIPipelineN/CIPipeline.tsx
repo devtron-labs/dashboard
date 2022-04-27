@@ -162,7 +162,8 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                 const _globalVariableOptions = response.result.map((variable) => {
                     variable.label = variable.name
                     variable.value = variable.name
-                    variable.format = 'string'
+                    variable.format = variable.format
+                    variable.description = variable.description || ''
                     delete variable.name
                     return variable
                 })
