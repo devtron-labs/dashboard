@@ -197,8 +197,8 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         if (option.refVariableStepIndex) {
             return (
                 <div className="flexbox justify-space">
-                    <span className="cn-9">{option.label}</span>
-                    <span className="cn-5">
+                    <span className="cn-9 fw-4">{option.label}</span>
+                    <span className="cn-5 fw-4">
                         {option.refVariableStage === 'PRE_CI'
                             ? formData[BuildStageVariable.PreBuild].steps[option.refVariableStepIndex - 1]?.name
                             : formData[activeStageName].steps[option.refVariableStepIndex - 1]?.name}
@@ -208,7 +208,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         } else {
             return (
                 <div className="">
-                    <span className="cn-9">{option.label}</span>
+                    <span className="cn-9 fw-4">{option.label}</span>
                 </div>
             )
         }
@@ -228,7 +228,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
 
     function Option(_props) {
         const { selectProps, data } = _props
-        selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none' })
+        selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none', padding: '4px 10px' })
         if (data.description) {
             return (
                 <Tippy className="variable-description" arrow={false} placement="left" content={data.description}>
@@ -260,6 +260,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                     : pluginSelectStyle
             }
             formatOptionLabel={formatOptionLabel}
+            classNamePrefix="select"
             components={{
                 MenuList: (props) => {
                     return (

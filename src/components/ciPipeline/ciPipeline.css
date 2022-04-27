@@ -506,3 +506,20 @@
 .pl-220 {
     padding-left: 220px;
 }
+
+.h-32 {
+    height: 32px;
+}
+
+.select__group {
+    padding: 0;
+}
+
+.select__group-heading {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--N900);
+    background: var(--window-bg);
+    padding: 4px 10px;
+    text-transform: none;
+}

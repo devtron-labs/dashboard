@@ -94,7 +94,7 @@ export function PreBuild() {
         setSharedPlugins(_sharedPlugin)
     }
 
-    function setPluginType(pluginType: PluginType, pluginId: number): void {
+    function setPluginType(pluginType: PluginType, pluginId: number, pluginName?: string): void {
         const _form = { ...formData }
         const _formDataErrorObj = { ...formDataErrorObj }
         _form[activeStageName].steps[selectedTaskIndex].stepType = pluginType
@@ -120,6 +120,7 @@ export function PreBuild() {
                 inlineStepDetail: { inputVariables: [], outputVariables: [] },
             }
         } else {
+            _form[activeStageName].steps[selectedTaskIndex].name = pluginName
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {
                 id: 0,
                 pluginId: pluginId,
