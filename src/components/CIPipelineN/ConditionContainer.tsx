@@ -7,6 +7,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import ReactSelect, { components } from 'react-select'
 import { ciPipelineContext } from './CIPipeline'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
+import { tempMultiSelectStyles } from './ciPipeline.utils'
 
 export function ConditionContainer({ type }: { type: ConditionContainerType }) {
     const {
@@ -120,40 +121,26 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         ] = selectedValue.label
         setFormData(_formData)
     }
-
-    const tempMultiSelectStyles = {
+    const selectWithDefaultBG = {
+        ...tempMultiSelectStyles,
         control: (base, state) => ({
             ...base,
+            border: 'none !important',
             boxShadow: 'none',
             minHeight: 'auto',
-            border: 'none',
+            borderRadius: 'none',
+            height: '32px',
+            fontSize: '12px',
             width: 'max-content',
-            height: '32px'
         }),
-        singleValue: (base, state) => ({
-            ...base,
-            fontWeight: '500',
-        }),
-        placeholder: (base, state) => ({
-            ...base,
-            fontWeight: '500',
-        }),
-        option: (base, state) => {
-            return {
-                ...base,
-                fontWeight: '500',
-                color: 'var(--N900)',
-                fontSize: '12px',
-                padding: '5px 10px',
-            }
-        },
-        dropdownIndicator: (styles) => ({ ...styles, padding: 0 }),
         valueContainer: (base, state) => ({
             ...base,
             display: 'flex',
         }),
+        indicatorsContainer: (base, state) => ({
+            ...base,
+        }),
     }
-
     function formatOptionLabel(option) {
         return (
             <div className="flexbox justify-space">
@@ -168,7 +155,8 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         return (
             <components.ValueContainer {...props}>
                 <>
-                    {!props.selectProps.menuIsOpen && `${value}`}
+                    {!props.selectProps.menuIsOpen &&
+                        (value ? `${value}` : <span className="cn-5">Select variable</span>)}
                     {React.cloneElement(props.children[1])}
                 </>
             </components.ValueContainer>
@@ -177,7 +165,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
 
     function Option(_props) {
         const { selectProps, selectOption, data } = _props
-        selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none' })
+        selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none', padding: '4px 10px' })
         return (
             <div className="flex left">
                 <components.Option {..._props}>{_props.children}</components.Option>
@@ -238,7 +226,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                     <div className="tp-4 fs-13 lh-32 fw-4 text-uppercase mr-10">
                                         {conditionDetail.conditionType} If
                                     </div>
-                                    <div className="tp-4 fs-13 lh-32 fw-4 text-uppercase mr-10">
+                                    <div className="tp-4 fs-13 fw-4 text-uppercase mr-10">
                                         <ReactSelect
                                             autoFocus
                                             value={
@@ -262,7 +250,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                                     : 'inputVariables'
                                             ]?.map((variable) => ({ label: variable.name, value: variable.id }))}
                                             isSearchable={false}
-                                            styles={tempMultiSelectStyles}
+                                            styles={selectWithDefaultBG}
                                             components={{
                                                 IndicatorSeparator: null,
                                                 Option,
@@ -270,7 +258,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                             }}
                                         />
                                     </div>
-                                    <div className=" lh-32 fw-4 mr-10">
+                                    <div className="fw-4 mr-10">
                                         <ReactSelect
                                             defaultValue={
                                                 conditionDetail.conditionOperator
@@ -287,10 +275,11 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                             options={operatorOptions}
                                             isSearchable={false}
                                             styles={{
-                                                ...tempMultiSelectStyles,
+                                                ...selectWithDefaultBG,
                                                 menu: (base, state) => ({
                                                     ...base,
-                                                    width: '250px',
+                                                    width: '200px',
+                                                    marginTop: '0',
                                                 }),
                                             }}
                                             formatOptionLabel={formatOptionLabel}

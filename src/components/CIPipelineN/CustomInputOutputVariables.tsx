@@ -123,12 +123,10 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                         </span>
                     }
                 >
-                    <div
-                        className={`tp-4 fs-13 fw-6 text-capitalize mr-8 lh-32`}
-                    >
-                       <span className={` ${
-                            type === PluginVariableType.INPUT ? 'text-underline-dashed' : ''
-                        }`}>{type} variables{' '}</span> 
+                    <div className={`tp-4 fs-13 fw-6 text-capitalize mr-8 lh-32`}>
+                        <span className={` ${type === PluginVariableType.INPUT ? 'text-underline-dashed' : ''}`}>
+                            {type} variables{' '}
+                        </span>
                     </div>
                 </Tippy>
 

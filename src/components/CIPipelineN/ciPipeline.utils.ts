@@ -39,6 +39,10 @@ export const tempMultiSelectStyles = {
         ...base,
         background: 'var(--N100) !important',
     }),
+    menu: (base, state) => ({
+        ...base,
+        marginTop: '0',
+    }),
 }
 
 export const pluginSelectStyle = {
