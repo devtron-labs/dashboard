@@ -35,9 +35,9 @@ export function Sidebar() {
        if(activeStageName !== BuildStageVariable.Build){
            return 'build'
        }else if(activeStageName !== BuildStageVariable.PostBuild){
-           return 'post build'
+           return 'post-build'
        }else if(activeStageName !== BuildStageVariable.PreBuild){
-           return 'pre build'
+           return 'pre-build'
        }
     }
 

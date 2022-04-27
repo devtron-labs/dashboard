@@ -140,7 +140,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.map(
                 (variable, index) => (
                     <div key={`custom-input-variable${index}`}>
-                        <div className="pl-220 mb-20 flexbox justify-space">
+                        <div className="pl-220 mb-8 flexbox justify-space">
                             <div className="custom-variable-container w-100">
                                 <Equal className="icon-dim-40 variable-equal-icon" />
 
@@ -200,7 +200,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                         </div>
                                         <div style={{ width: '20%' }}>
                                             {variable.format && variable.variableType === RefVariableType.GLOBAL ? (
-                                                <span className="fs-13 fw-4 p-4 flex left en-2 bw-1 no-left-border">{variable.format}</span>
+                                                <span className="fs-13 fw-4 p-4 flex left en-2 bw-1 no-left-border">
+                                                    {variable.format}
+                                                </span>
                                             ) : (
                                                 <ReactSelect
                                                     value={
@@ -230,7 +232,6 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                             background: 'var(--N000) !important',
                                                         }),
                                                     }}
-
                                                 />
                                             )}
                                         </div>
@@ -256,13 +257,13 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                 }}
                             />
                         </div>
-                        <div className="pl-200 mb-20">
-                            {formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.inlineStepDetail[
+                        {formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.inlineStepDetail[
+                            VariableFieldType[type]
+                        ][index] &&
+                            !formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.inlineStepDetail[
                                 VariableFieldType[type]
-                            ][index] &&
-                                !formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.inlineStepDetail[
-                                    VariableFieldType[type]
-                                ][index].isValid && (
+                            ][index].isValid && (
+                                <div className="pl-200 mb-20">
                                     <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
                                         <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
                                         <span>
@@ -272,8 +273,8 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                             }
                                         </span>
                                     </span>
-                                )}
-                        </div>
+                                </div>
+                            )}
                     </div>
                 ),
             )}

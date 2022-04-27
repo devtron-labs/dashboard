@@ -22,7 +22,7 @@ function CustomScript({ handleScriptChange }: CustomScriptType) {
         formDataErrorObj: FormErrorObjectType
     } = useContext(ciPipelineContext)
     return (
-        <div className="row-container mb-10">
+        <div className="row-container mb-12">
             <TaskFieldTippyDescription
                 taskField={TaskFieldLabel.SCRIPT}
                 contentDescription={TaskFieldDescription.SCRIPT}

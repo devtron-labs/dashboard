@@ -57,7 +57,7 @@ function MultiplePort() {
 
     return (
         <div>
-            <div className="row-container mb-10">
+            <div className="row-container mb-4">
                 <TaskFieldTippyDescription
                     taskField={TaskFieldLabel.PORTMAPPING}
                     contentDescription={TaskFieldDescription.PORTMAPPING}
@@ -71,7 +71,7 @@ function MultiplePort() {
                 return (
                     elm[PortMap.PORTONLOCAL] !==0 &&
                     elm[PortMap.PORTONCONTAINER] !== 0 && (
-                        <div className="custom-input__port-map pl-200 pb-20" key={`multiple-port-${index}`}>
+                        <div className="custom-input__port-map pl-220 pb-8" key={`multiple-port-${index}`}>
                             <input
                                 style={{ width: '80% !important' }}
                                 className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"

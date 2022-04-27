@@ -99,7 +99,7 @@ export function TaskTypeDetailComponent() {
         ) {
             return (
                 <>
-                    <div className="row-container mb-10">
+                    <div className="row-container mb-12">
                         <TaskFieldTippyDescription
                             taskField={TaskFieldLabel.CONTAINERIMAGEPATH}
                             contentDescription={TaskFieldDescription.CONTAINERIMAGEPATH}
@@ -133,7 +133,7 @@ export function TaskTypeDetailComponent() {
                                 )}
                         </div>
                     </div>
-                    <div className="row-container mb-10 fs-13 fw-6 pb-18 pt-9">
+                    <div className="row-container mb-12 fs-13 fw-6 pt-8">
                         <div></div>
                         <Checkbox
                             isChecked={
@@ -158,7 +158,7 @@ export function TaskTypeDetailComponent() {
                     {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.isMountCustomScript && (
                         <>
                             <CustomScript handleScriptChange={(e) => handleCustomChange(e, 'script')} />
-                            <div className="row-container mb-10">
+                            <div className="row-container mb-12">
                                 <TaskFieldTippyDescription
                                     taskField={TaskFieldLabel.STORESCRIPTAT}
                                     contentDescription={TaskFieldDescription.STORESCRIPTAT}
@@ -195,7 +195,7 @@ export function TaskTypeDetailComponent() {
                             </div>
                         </>
                     )}
-                    <div className="row-container mb-10">
+                    <div className="row-container mb-12">
                         <TaskFieldTippyDescription
                             taskField={TaskFieldLabel.COMMAND}
                             contentDescription={TaskFieldDescription.COMMAND}
@@ -214,7 +214,7 @@ export function TaskTypeDetailComponent() {
                             }
                         />
                     </div>
-                    <div className="row-container mb-10">
+                    <div className="row-container mb-12">
                         <TaskFieldTippyDescription
                             taskField={TaskFieldLabel.ARGS}
                             contentDescription={TaskFieldDescription.ARGS}
@@ -234,7 +234,7 @@ export function TaskTypeDetailComponent() {
                         />
                     </div>
                     <MultiplePort />
-                    <div className="row-container mb-10">
+                    <div className="row-container mb-12">
                         <TaskFieldTippyDescription
                             taskField={TaskFieldLabel.MOUNTCODETOCONTAINER}
                             contentDescription={TaskFieldDescription.MOUNTCODETOCONTAINER}
@@ -258,7 +258,7 @@ export function TaskTypeDetailComponent() {
                     </div>
                     {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer && (
                         <>
-                            <div className="row-container mb-10">
+                            <div className="row-container mb-12">
                                 <label className="fw-6 fs-13 cn-7 label-width"></label>
                                 <input
                                     style={{ width: '80% !important' }}
@@ -293,7 +293,7 @@ export function TaskTypeDetailComponent() {
                             </div>
                         </>
                     )}
-                    <div className="row-container mb-10">
+                    <div className="row-container mb-12">
                         <TaskFieldTippyDescription
                             taskField={TaskFieldLabel.MOUNTDIRECTORYFROMHOST}
                             contentDescription={TaskFieldDescription.MOUNTDIRECTORYFROMHOST}
@@ -329,7 +329,7 @@ export function TaskTypeDetailComponent() {
         if (formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.DOCKERFILE) {
             return (
                 <>
-                    <div className="row-container mb-10">
+                    <div className="row-container mb-12">
                         <label className="fw-6 fs-13 cn-7 label-width">Docker path *</label>{' '}
                         <input
                             style={{ width: '80% !important' }}
@@ -339,7 +339,7 @@ export function TaskTypeDetailComponent() {
                             type="text"
                         />
                     </div>
-                    <div className="row-container mb-10">
+                    <div className="row-container mb-12">
                         <Tippy className="default-tt" arrow={false} content="Path where script should be mounted">
                             <label className="fw-6 fs-13 cn-7 label-width">Mount script at *</label>
                         </Tippy>

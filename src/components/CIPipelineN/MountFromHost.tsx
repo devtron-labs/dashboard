@@ -51,7 +51,7 @@ function MountFromHost() {
 
     return (
         <>
-            <div className="row-container mb-10">
+            <div className="row-container mb-12">
                 <label className="fw-6 fs-13 cn-7 label-width"></label>
                 <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit" onClick={addMountDirectoryfromHost}>
                     <Add className="add-icon" />

@@ -150,7 +150,7 @@ export function TaskDetailComponent() {
     return (
         <div>
             <div>
-                <div className="row-container mb-10">
+                <div className="row-container mb-12">
                     <label className="fw-6 fs-13 cn-7 label-width">
                         Task name <span className="cr-5">*</span>
                     </label>{' '}
@@ -172,7 +172,7 @@ export function TaskDetailComponent() {
                             )}
                     </div>
                 </div>
-                <div className="row-container mb-10">
+                <div className="row-container mb-12">
                     <label className="fw-6 fs-13 cn-7 label-width">Description</label>{' '}
                     <input
                         className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-6 pb-6"
@@ -184,7 +184,7 @@ export function TaskDetailComponent() {
                 </div>
 
                 {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE && (
-                    <div className="row-container mb-10">
+                    <div className="row-container mb-12">
                         <label className="fw-6 fs-13 cn-7 label-width">Task type</label>
                         <RadioGroup
                             className="configuration-container justify-start"
