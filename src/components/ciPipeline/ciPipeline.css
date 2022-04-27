@@ -406,6 +406,7 @@
 
 .condition-container {
     display: grid;
+    grid-row-gap: 8px;
     grid-template-columns: 80px auto 70px auto 30px;
 }
 

@@ -48,13 +48,15 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                         <>
                             {variable.description ? (
                                 <Tippy className="default-tt" arrow={false} content={variable.description}>
-                                    <label className="p-4 fs-13 fw-4"><span className='text-underline-dashed'>{variable.name}</span></label>
+                                    <label className="p-4 fs-13 fw-4 lh-32">
+                                        <span className="text-underline-dashed">{variable.name}</span>
+                                    </label>
                                 </Tippy>
                             ) : (
-                                <label className="p-4 fs-13 fw-4">{variable.name}</label>
+                                <label className="p-4 fs-13 fw-4 lh-32">{variable.name}</label>
                             )}
 
-                            <label className="p-4 fs-13 fw-4">{variable.format}</label>
+                            <label className="p-4 fs-13 fw-4 lh-32">{variable.format}</label>
                             {type === PluginVariableType.INPUT ? (
                                 <div className="p-4 fs-14">
                                     <CustomInputVariableSelect selectedVariableIndex={index} />
@@ -74,7 +76,7 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                                         )}
                                 </div>
                             ) : (
-                                <label className="p-4 fs-13 fw-4">{variable.description}</label>
+                                <label className="p-4 fs-13 fw-4 lh-32">{variable.description}</label>
                             )}
                         </>
                     ))}
