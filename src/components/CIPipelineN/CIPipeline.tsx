@@ -482,7 +482,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                             _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name,
                         {
                             ..._formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j],
-                            refVariableStepIndex: index,
+                            refVariableStepIndex: i + 1,
                             refVariableStage:
                                 activeStageName === BuildStageVariable.PreBuild
                                     ? RefVariableStageType.PRE_CI

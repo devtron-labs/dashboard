@@ -80,7 +80,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                             ...currentVariableDetails,
                             label: currentVariableDetails.name,
                             value: currentVariableDetails.name,
-                            refVariableStepIndex: preBuildTaskLength - 1,
+                            refVariableStepIndex: preBuildTaskLength,
                             refVariableStage: RefVariableStageType.PRE_CI,
                         })
                     }

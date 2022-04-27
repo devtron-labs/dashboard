@@ -37,6 +37,7 @@ export function PreBuild() {
         appId,
         formDataErrorObj,
         setFormDataErrorObj,
+        calculateLastStepDetail,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -51,6 +52,15 @@ export function PreBuild() {
         appId: number
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
+        calculateLastStepDetail: (
+            isFromAddNewTask: boolean,
+            _formData: FormType,
+            activeStageName: string,
+            startIndex?: number,
+        ) => {
+            index: number
+            calculatedStageVariables: Map<string, VariableType>[]
+        }
     } = useContext(ciPipelineContext)
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
     const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
@@ -64,6 +74,10 @@ export function PreBuild() {
     useEffect(() => {
         setConfigurationType(ConfigurationType.GUI)
         setSelectedTaskIndex(0)
+
+        // if (activeStageName === BuildStageVariable.PostBuild && formData[activeStageName]) {
+        //     calculateLastStepDetail(false, formData, BuildStageVariable.PostBuild)
+        // }
     }, [activeStageName])
 
     useEffect(() => {
@@ -202,6 +216,10 @@ export function PreBuild() {
     return configurationType === ConfigurationType.GUI ? (
         renderGUI()
     ) : (
-        <YAMLScriptComponent editorValue={editorValue} handleEditorValueChange={handleEditorValueChange} showSample={true} />
+        <YAMLScriptComponent
+            editorValue={editorValue}
+            handleEditorValueChange={handleEditorValueChange}
+            showSample={true}
+        />
     )
 }
