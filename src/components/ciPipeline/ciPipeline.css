@@ -449,14 +449,6 @@
     width: 5px;
 }
 
-.variable-description {
-    padding: 6px 10px;
-    width: 180px;
-    background: var(--N900);
-    border: 1px solid var(--N200);
-    border-radius: 4px;
-}
-
 .select__group {
     padding: 0;
 }

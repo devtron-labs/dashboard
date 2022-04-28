@@ -226,7 +226,12 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none', padding: '4px 10px' })
         if (data.description) {
             return (
-                <Tippy className="variable-description" arrow={false} placement="left" content={data.description}>
+                <Tippy
+                    className="default-tt"
+                    arrow={false}
+                    placement="left"
+                    content={<span style={{ display: 'block', width: '180px' }}>{data.description}</span>}
+                >
                     <div className="flex left">
                         <components.Option {..._props}>{_props.children}</components.Option>
                     </div>
