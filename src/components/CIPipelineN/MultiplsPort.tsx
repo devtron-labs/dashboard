@@ -71,7 +71,7 @@ function MultiplePort() {
                 return (
                     elm[PortMap.PORTONLOCAL] !==0 &&
                     elm[PortMap.PORTONCONTAINER] !== 0 && (
-                        <div className="custom-input__port-map pl-220 pb-8" key={`multiple-port-${index}`}>
+                        <div className="custom-input__port-map pl-220 mb-4 mt-4" key={`multiple-port-${index}`}>
                             <input
                                 style={{ width: '80% !important' }}
                                 className="w-100 bcn-1 border left-radius-4 pl-10 pr-10 pt-5 pb-5"

@@ -184,7 +184,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
             >
                 <span className="fw-6 fs-13 cn-9 lh-32">{type} Condition</span>
 
-                <Dropdown className="mt-10" style={{ transform: collapsedSection ? 'rotate(180deg)' : 'rotate(0)' }} />
+                <Dropdown className="mt-4" style={{ transform: collapsedSection ? 'rotate(180deg)' : 'rotate(0)' }} />
             </div>
             {!collapsedSection && (
                 <>

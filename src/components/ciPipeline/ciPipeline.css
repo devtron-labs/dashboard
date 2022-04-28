@@ -372,7 +372,7 @@
 
 .mount-row {
     display: grid;
-    grid-template-columns: 200px auto 28px auto 30px;
+    grid-template-columns: 220px auto 28px auto 30px;
 }
 
 .label-width {
