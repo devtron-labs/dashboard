@@ -24,6 +24,8 @@ export class ValidationRules {
     inputVariable = (value: object): { message: string | null; isValid: boolean } => {
         const re = new RegExp(PATTERNS.VARIABLE)
         const variableValue =
+            value['allowEmptyValue'] ||
+            (!value['allowEmptyValue'] && value['defaultValue'] !== '') ||
             (value['variableType'] === RefVariableType.NEW && value['value']) ||
             (value['refVariableName'] &&
                 (value['variableType'] === RefVariableType.GLOBAL ||

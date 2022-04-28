@@ -368,18 +368,17 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         taskErrorobj.isValid =
                             taskErrorobj.isValid && taskErrorobj.inlineStepDetail.outputVariables[index].isValid
                     })
-
-                    // For removing empty mapping from portMap
-                    taskData.inlineStepDetail['portMap'] =
-                        taskData.inlineStepDetail['portMap']?.filter(
-                            (_port) => _port.portOnLocal && _port.portOnContainer,
-                        ) || []
                     if (taskData.inlineStepDetail['scriptType'] === ScriptType.SHELL) {
                         taskErrorobj.inlineStepDetail['script'] = validationRules.requiredField(
                             taskData.inlineStepDetail['script'],
                         )
                         taskErrorobj.isValid = taskErrorobj.isValid && taskErrorobj.inlineStepDetail['script'].isValid
                     } else if (taskData.inlineStepDetail['scriptType'] === ScriptType.CONTAINERIMAGE) {
+                        // For removing empty mapping from portMap
+                        taskData.inlineStepDetail['portMap'] =
+                            taskData.inlineStepDetail['portMap']?.filter(
+                                (_port) => _port.portOnLocal && _port.portOnContainer,
+                            ) || []
                         if (taskData.inlineStepDetail['isMountCustomScript']) {
                             taskErrorobj.inlineStepDetail['script'] = validationRules.requiredField(
                                 taskData.inlineStepDetail['script'],

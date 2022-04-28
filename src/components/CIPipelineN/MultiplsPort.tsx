@@ -32,23 +32,24 @@ function MultiplePort() {
 
     const handlePort = (e, index) => {
         const _formData = { ...formData }
-        console.log(e.target.value)
-        if (e.target.value === undefined) {
-            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap = []
-        } else {
-            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[index][e.target.name] = e
-                .target.value
-                ? parseInt(e.target.value)
-                : undefined
-        }
+        // console.log(e.target.value)
+        // if (e.target.value === undefined) {
+        //     _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap = []
+        // } else {
+        //     _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[index][e.target.name] = e
+        //         .target.value
+        //         ? parseInt(e.target.value)
+        //         : undefined
+        // }
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[index][e.target.name] = parseInt(
+            e.target.value.replace(/\D/g, ''),
+        )
         setFormData(_formData)
     }
 
     const deleteMultiplePort = (index) => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap.splice(index, 1)
-        console.log(_formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap)
-
         setFormData(_formData)
     }
 
@@ -78,6 +79,7 @@ function MultiplePort() {
                                 onChange={(e) => handlePort(e, index)}
                                 name={PortMap.PORTONLOCAL}
                                 value={elm[PortMap.PORTONLOCAL]}
+                                maxLength={5}
                             />
                             <div className="flex border-top border-bottom">:</div>
                             <input
@@ -89,6 +91,7 @@ function MultiplePort() {
                                 onChange={(e) => handlePort(e, index)}
                                 name={PortMap.PORTONCONTAINER}
                                 value={elm[PortMap.PORTONCONTAINER]}
+                                maxLength={5}
                             />
                             <Close
                                 className="icon-dim-24 pointer mt-6 ml-6"
