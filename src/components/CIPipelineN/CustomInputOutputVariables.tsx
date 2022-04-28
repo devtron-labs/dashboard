@@ -17,6 +17,7 @@ import ReactSelect from 'react-select'
 import { tempMultiSelectStyles } from './ciPipeline.utils'
 import Tippy from '@tippyjs/react'
 import { Option } from '../v2/common/ReactSelect.utils'
+import { OptionType } from '../app/types'
 
 function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const {
@@ -42,7 +43,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         }
         formDataErrorObj: object
     } = useContext(ciPipelineContext)
-    const formatOptions: { label: string; value: string }[] = ['STRING', 'BOOL', 'NUMBER', 'DATE'].map((format) => ({
+    const formatOptions: OptionType[] = ['STRING', 'BOOL', 'NUMBER', 'DATE'].map((format) => ({
         label: format,
         value: format,
     }))
@@ -99,7 +100,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         setFormData(_formData)
     }
 
-    const handleFormatChange = (selectedValue: { label: string; value: string }, index: number): void => {
+    const handleFormatChange = (selectedValue: OptionType, index: number): void => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]][index].format =
             selectedValue.label

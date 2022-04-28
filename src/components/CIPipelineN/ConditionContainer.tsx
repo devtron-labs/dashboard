@@ -8,6 +8,7 @@ import ReactSelect, { components } from 'react-select'
 import { ciPipelineContext } from './CIPipeline'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { tempMultiSelectStyles } from './ciPipeline.utils'
+import { OptionType } from '../app/types'
 
 export function ConditionContainer({ type }: { type: ConditionContainerType }) {
     const {
@@ -21,7 +22,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         selectedTaskIndex: number
         activeStageName: string
     } = useContext(ciPipelineContext)
-    const operatorOptions: { label: string; value: string }[] = [
+    const operatorOptions: OptionType[] = [
         { value: '==', description: 'equal to' },
         { value: '!=', description: 'not equal to' },
         { value: '<', description: 'less than' },
@@ -30,7 +31,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         { value: '>=', description: 'greater than or equal to' },
     ].map((operator) => ({ label: operator.value, value: operator.value, description: operator.description }))
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
-    const [selectedOperator, setSelectedOperator] = useState<{ label: string; value: string }>(operatorOptions[0])
+    const [selectedOperator, setSelectedOperator] = useState<OptionType>(operatorOptions[0])
     const [conditionType, setConditionType] = useState<ConditionType>(
         type === ConditionContainerType.PASS_FAILURE ? ConditionType.SUCCESS : ConditionType.TRIGGER,
     )
@@ -41,7 +42,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
             : 'pluginRefStepDetail'
 
     useEffect(() => {
-        setCollapsedSection(true)
+        setCollapsedSection(true) // collapse all the conditions when user go from prebuild to post build
     }, [activeStageName])
 
     const addCondition = (): void => {
@@ -113,7 +114,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         setFormData(_formData)
     }
 
-    const handleConditionOperatorChange = (selectedValue: { label: string; value: string }, index: number): void => {
+    const handleConditionOperatorChange = (selectedValue: OptionType, index: number): void => {
         setSelectedOperator(selectedValue)
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index][

@@ -7,6 +7,7 @@ import { components } from 'react-select'
 import { BuildStageVariable } from '../../config'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import Tippy from '@tippyjs/react'
+import { OptionType } from '../app/types'
 
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
     const {
@@ -115,7 +116,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         setSelectedVariableValue()
     }, [inputVariablesListFromPrevStep, selectedTaskIndex, activeStageName])
 
-    const handleOutputVariableSelector = (selectedValue: { label: string; value: string }) => {
+    const handleOutputVariableSelector = (selectedValue: OptionType) => {
         setSelectedOutputVariable(selectedValue)
         const currentStepTypeVariable =
             formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE

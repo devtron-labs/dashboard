@@ -288,7 +288,7 @@ export function Build({
             <Progressing pageLoader />
         </div>
     ) : (
-        <div className="pl-20 pr-20 pt-20 pb-20 ci-scrollable-content">
+        <div className="p-20 ci-scrollable-content">
             {renderBasicCI()}
             {isAdvanced && renderDockerArgs()}
         </div>

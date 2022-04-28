@@ -211,7 +211,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     getLen = (): number => {
         const ciNode = this.state.allCINodeMap.get(this.props.match.params.ciPipelineId)
-        return ciNode && ciNode.downstreams ? ciNode.downstreams.length : 0
+        return ciNode?.downstreams?.length || 0
     }
 
     //TODO: dynamic routes for ci-pipeline
