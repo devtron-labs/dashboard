@@ -204,15 +204,23 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
 
     return (
         <div>
-            <div
-                className="mb-10 flexbox pointer"
-                onClick={(event) => {
-                    handleConditionCollapse()
-                }}
-            >
-                <span className="fw-6 fs-13 cn-9 lh-32">{type} Condition</span>
+            <div className="mb-10 flexbox pointer justify-space">
+                <span
+                    className="fw-6 fs-13 cn-9"
+                    onClick={(event) => {
+                        handleConditionCollapse()
+                    }}
+                >
+                    {type} Condition
+                </span>
 
-                <Dropdown className="mt-4" style={{ transform: collapsedSection ? 'rotate(180deg)' : 'rotate(0)' }} />
+                <Dropdown
+                    className="pointer"
+                    style={{ transform: collapsedSection ? 'rotate(180deg)' : 'rotate(0)' }}
+                    onClick={(event) => {
+                        handleConditionCollapse()
+                    }}
+                />
             </div>
             {!collapsedSection && (
                 <>

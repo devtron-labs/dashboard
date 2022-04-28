@@ -21,15 +21,23 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
     } = useContext(ciPipelineContext)
     return (
         <div>
-            <div
-                className="mb-10 flexbox pointer"
-                onClick={(event) => {
-                    setCollapsedSection(!collapsedSection)
-                }}
-            >
-                <span className="fw-6 fs-13 cn-9">{type} variables</span>
+            <div className="mb-10 flexbox justify-space">
+                <span
+                    className="fw-6 fs-13 cn-9 pointer"
+                    onClick={(event) => {
+                        setCollapsedSection(!collapsedSection)
+                    }}
+                >
+                    {type} variables
+                </span>
 
-                <Dropdown className="mt-10" style={{ transform: collapsedSection ? 'rotate(180deg)' : 'rotate(0)' }} />
+                <Dropdown
+                    className="pointer"
+                    style={{ transform: collapsedSection ? 'rotate(180deg)' : 'rotate(0)' }}
+                    onClick={(event) => {
+                        setCollapsedSection(!collapsedSection)
+                    }}
+                />
             </div>
             {!collapsedSection && (
                 <div className="variable-container">
