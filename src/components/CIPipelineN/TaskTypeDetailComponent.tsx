@@ -206,10 +206,10 @@ export function TaskTypeDetailComponent() {
                             autoComplete="off"
                             placeholder='Eg. "HOSTNAME", "KUBERNETES_PORT"'
                             type="text"
-                            onChange={(e) => handleCommandArgs(e, 'args')}
+                            onChange={(e) => handleCommandArgs(e, TaskFieldLabel.ARGS)}
                             value={
                                 formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap[0][
-                                    'args'
+                                    TaskFieldLabel.ARGS
                                 ]
                             }
                         />
