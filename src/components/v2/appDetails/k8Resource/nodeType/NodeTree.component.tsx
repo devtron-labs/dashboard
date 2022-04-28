@@ -12,9 +12,11 @@ import { ReactComponent as ErrorImage } from '../../../../../assets/icons/misc/e
 function NodeTreeComponent({
     clickedNodes,
     registerNodeClick,
+    isDevtronApp,
 }: {
     clickedNodes: Map<string, string>;
     registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>;
+    isDevtronApp?:boolean
 }) {
     const { url } = useRouteMatch();
     const history = useHistory();
@@ -79,7 +81,8 @@ function NodeTreeComponent({
                                 />
                                 <div className={`fs-14 fw-6 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 `}>
                                     {treeNode.name}
-                                    {!treeNode.isSelected && treeNode.status === 'degraded' && (
+                                    {/* !treeNode.isSelected && treeNode.childNodes.filter((node)=> node.status?.toLowerCase() === 'degraded').length > 0  */}
+                                    {!treeNode.isSelected && treeNode.status?.toLowerCase() === 'degraded' && (
                                         <ErrorImage
                                             className="icon-dim-16 rotate"
                                             style={{ ['--rotateBy' as any]: '180deg', marginLeft: 'auto' }}
@@ -98,7 +101,7 @@ function NodeTreeComponent({
                                     }`}
                                 >
                                     {treeNode.name}
-                                    {treeNode.status === 'degraded' && (
+                                    {treeNode.status?.toLowerCase() === 'degraded' && (
                                         <ErrorImage
                                             className="icon-dim-16 rotate"
                                             style={{ ['--rotateBy' as any]: '180deg', marginLeft: 'auto' }}

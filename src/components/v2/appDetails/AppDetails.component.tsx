@@ -10,7 +10,7 @@ import { useRouteMatch, Redirect, useParams, useHistory } from 'react-router';
 import { URLS } from '../../../config';
 import AppDetailsStore, { AppDetailsTabs } from './appDetails.store';
 import { useSharedState } from '../utils/useSharedState';
-import { ApplicationObject, AppStreamData, NodeType, AppType } from './appDetails.type';
+import { ApplicationObject, AppStreamData, NodeType, AppType, AppDetails } from './appDetails.type';
 import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component';
 import Tippy from '@tippyjs/react';
 import IndexStore from './index.store';
@@ -20,6 +20,7 @@ import SyncErrorComponent from './SyncError.component';
 import { useEventSource } from '../../common';
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component';
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type';
+import '../lib/bootstrap-grid.min.css'
 
 const AppDetailsComponent = ({
     externalLinks,
@@ -29,21 +30,9 @@ const AppDetailsComponent = ({
     monitoringTools: OptionTypeWithIcon[]
 }) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
-    const { path, url } = useRouteMatch();
-    const history = useHistory();
-
     const [streamData, setStreamData] = useState<AppStreamData>(null);
-    const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>());
-    const [applicationObjectTabs] = useSharedState(
-        AppDetailsStore.getAppDetailsTabs(),
-        AppDetailsStore.getAppDetailsTabsObservable(),
-    );
-    const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>();
-
     const appDetails = IndexStore.getAppDetails();
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
-
-    const tabRef = useRef<HTMLDivElement>(null);
 
     // if app type not of EA, then call stream API
     const syncSSE = useEventSource(
@@ -55,45 +44,6 @@ const AppDetailsComponent = ({
         (event) => setStreamData(JSON.parse(event.data)),
     );
 
-    useEffect(() => {
-        const _pods = IndexStore.getNodesByKind(NodeType.Pod);
-        const isLogAnalyserURL = window.location.href.indexOf(URLS.APP_DETAILS_LOG) > 0;
-        AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0, isLogAnalyserURL);
-    }, [params.appId, params.envId]);
-
-    const handleCloseTab = (e: any, tabIdentifier: string) => {
-        e.stopPropagation();
-
-        // Clear pod related log search term on close tab action
-        clearLogSearchTerm(tabIdentifier);
-
-        const pushURL = AppDetailsStore.removeAppDetailsTabByIdentifier(tabIdentifier);
-        setTimeout(() => {
-            if (pushURL) {
-                history.push(pushURL);
-            }
-        }, 1);
-    };
-
-    const clearLogSearchTerm = (tabIdentifier: string): void => {
-        if (logSearchTerms) {
-            const identifier = tabIdentifier.toLowerCase();
-
-            if (identifier.startsWith(NodeType.Pod.toLowerCase()) && logSearchTerms[identifier]) {
-                setLogSearchTerms({
-                    ...logSearchTerms,
-                    [identifier]: '',
-                });
-            }
-        }
-    };
-
-    const handleFocusTabs = () => {
-        if (tabRef?.current) {
-            tabRef.current.focus();
-        }
-    };
-
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             <div>
@@ -103,7 +53,75 @@ const AppDetailsComponent = ({
 
             <SyncErrorComponent appStreamData={streamData} />
             <AppLevelExternalLinks helmAppDetails={appDetails} externalLinks={externalLinks} monitoringTools={monitoringTools} />
+            <NodeTreeDetailTab appDetails={appDetails} externalLinks={externalLinks} monitoringTools={monitoringTools} />
+            
+        </div>
+    );
+};
 
+export function NodeTreeDetailTab({
+    appDetails,
+    externalLinks,
+    monitoringTools,
+    isDevtronApp = false,
+}: {
+    appDetails: AppDetails
+    externalLinks: ExternalLink[]
+    monitoringTools: OptionTypeWithIcon[]
+    isDevtronApp?: boolean
+}) {
+    const params = useParams<{ appId: string; envId: string; nodeType: string }>()
+    const { path, url } = useRouteMatch()
+    const history = useHistory()
+    const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>())
+    const [applicationObjectTabs] = useSharedState(
+        AppDetailsStore.getAppDetailsTabs(),
+        AppDetailsStore.getAppDetailsTabsObservable(),
+    )
+    const tabRef = useRef<HTMLDivElement>(null)
+    const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
+
+    useEffect(() => {
+        const _pods = IndexStore.getNodesByKind(NodeType.Pod)
+        const isLogAnalyserURL = window.location.href.indexOf(URLS.APP_DETAILS_LOG) > 0
+        AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0, isLogAnalyserURL)
+    }, [params.appId, params.envId])
+
+    const handleCloseTab = (e: any, tabIdentifier: string) => {
+        e.stopPropagation()
+
+        // Clear pod related log search term on close tab action
+        clearLogSearchTerm(tabIdentifier)
+
+        const pushURL = AppDetailsStore.removeAppDetailsTabByIdentifier(tabIdentifier)
+        setTimeout(() => {
+            if (pushURL) {
+                history.push(pushURL)
+            }
+        }, 1)
+    }
+
+    const clearLogSearchTerm = (tabIdentifier: string): void => {
+        if (logSearchTerms) {
+            const identifier = tabIdentifier.toLowerCase()
+
+            if (identifier.startsWith(NodeType.Pod.toLowerCase()) && logSearchTerms[identifier]) {
+                setLogSearchTerms({
+                    ...logSearchTerms,
+                    [identifier]: '',
+                })
+            }
+        }
+    }
+
+    const handleFocusTabs = () => {
+        if (tabRef?.current) {
+            tabRef.current.focus()
+        }
+    }
+
+    return (
+        <>
             {appDetails.resourceTree?.nodes?.length > 0 && (
                 <>
                     <div
@@ -201,7 +219,7 @@ const AppDetailsComponent = ({
                                             </Tippy>
                                         </li>
                                     </>
-                                );
+                                )
                             })}
                         </ul>
                     </div>
@@ -216,8 +234,9 @@ const AppDetailsComponent = ({
                                         handleFocusTabs={handleFocusTabs}
                                         externalLinks={externalLinks}
                                         monitoringTools={monitoringTools}
+                                        isDevtronApp={isDevtronApp}
                                     />
-                                );
+                                )
                             }}
                         />
                         <Route
@@ -228,7 +247,7 @@ const AppDetailsComponent = ({
                                         logSearchTerms={logSearchTerms}
                                         setLogSearchTerms={setLogSearchTerms}
                                     />
-                                );
+                                )
                             }}
                         />
                         <Route
@@ -241,8 +260,9 @@ const AppDetailsComponent = ({
                                         handleFocusTabs={handleFocusTabs}
                                         externalLinks={externalLinks}
                                         monitoringTools={monitoringTools}
+                                        isDevtronApp={isDevtronApp}
                                     />
-                                );
+                                )
                             }}
                         />
                         <Route
@@ -255,8 +275,9 @@ const AppDetailsComponent = ({
                                         handleFocusTabs={handleFocusTabs}
                                         externalLinks={externalLinks}
                                         monitoringTools={monitoringTools}
+                                        isDevtronApp={isDevtronApp}
                                     />
-                                );
+                                )
                             }}
                         />
                         <Route
@@ -268,15 +289,15 @@ const AppDetailsComponent = ({
                                         logSearchTerms={logSearchTerms}
                                         setLogSearchTerms={setLogSearchTerms}
                                     />
-                                );
+                                )
                             }}
                         />
                         <Redirect to={`${path}/${URLS.APP_DETAILS_K8}`} />
                     </Switch>
                 </>
             )}
-        </div>
-    );
-};
+        </>
+    )
+}
 
 export default AppDetailsComponent;

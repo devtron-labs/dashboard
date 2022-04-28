@@ -1,38 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import IndexStore from '../../index.store';
+import { getNodeStatus } from './nodeType.util';
 import './nodeType.scss';
+import { iNode } from '../../appDetails.type';
 
 function PodHeaderComponent({ callBack }) {
     const [podTab, selectPodTab] = useState<'old' | 'new'>('new');
-
-    const podMetaData = IndexStore.getPodMetaData();
-    const [newPods, setNewPods] = useState([]);
-    const [oldPods, setOldPods] = useState([]);
-    const [selectedHealthyNewNodeCount, setSelectedHealthyNewNodeCount] = useState<Number>(0);
-    const [selectedHealthyOldNodeCount, setSelectedHealthyOldNodeCount] = useState<Number>(0);
+    const podMetaData = IndexStore.getPodMetaData()
+    const newPodStats = { running: 0, all: 0 }
+    const oldPodStats = { running: 0, all: 0 }
+    const [newPods, setNewPods] = useState(newPodStats)
+    const [oldPods, setOldPods] = useState(oldPodStats)
+    const pods: Array<iNode> = IndexStore.getiNodesByKind('pod')
 
     useEffect(() => {
         if (podMetaData && podMetaData.length > 0) {
-            let _newPods = [];
-            let _oldPods = [];
-
-            podMetaData.forEach((pod) => {
-                if (pod.isNew) {
-                    _newPods.push(pod);
+            pods.forEach((pod) => {
+                let podStatusLower = getNodeStatus(pod)?.toLowerCase()
+                if (podMetaData.find((f) => f.name === pod.name)?.isNew) {
+                    newPodStats[podStatusLower] = (newPodStats[podStatusLower] || 0) + 1
+                    newPodStats['all'] += 1
                 } else {
-                    _oldPods.push(pod);
+                    oldPodStats[podStatusLower] = (oldPodStats[podStatusLower] || 0) + 1
+                    oldPodStats['all'] += 1
                 }
-            });
-            setNewPods(_newPods);
-            setOldPods(_oldPods);
-
-            setSelectedHealthyNewNodeCount(_newPods.length);
-            setSelectedHealthyOldNodeCount(_oldPods.length);
+            })
         }
-    }, [podMetaData?.length]);
+    }, [podMetaData,pods]);
 
     useEffect(() => {
         callBack(podTab === 'new');
+        setNewPods(newPodStats);
+        setOldPods(oldPodStats);
     }, [podTab]);
 
     return (
@@ -44,18 +43,18 @@ function PodHeaderComponent({ callBack }) {
                 onClick={(e) => selectPodTab('new')}
                 data-testid="all-pods-new"
             >
-                <div className="fs-14 fw-6 pt-12 ">New Pods ({newPods.length})</div>
+                <div className="fs-14 fw-6 pt-12 ">New Pods ({newPods.all}) </div>
                 <div className="flex left fs-12 cn-9 pb-12">
-                    <React.Fragment>
-                        {selectedHealthyNewNodeCount > 0 ? (
-                            <div className="pl-16"> {selectedHealthyNewNodeCount} healthy</div>
-                        ) : (
-                            ''
-                        )}
-
-                        {/* {<span className="bullet mr-4 ml-4"></span>} */}
-                        {/* <span data-testid={`new-pod-status`}> 8 running • 3 failed • 5 pending • 4 succeeded </span> */}
-                    </React.Fragment>
+                    {Object.keys(newPods)
+                        .filter((n) => n !== 'all')
+                        .map((status, idx) => (
+                            <React.Fragment key={idx}>
+                                {!!idx && <span className="bullet mr-4 ml-4"></span>}
+                                <span key={idx} data-testid={`new-pod-status-${status}`}>
+                                    {newPods[status]} {status}
+                                </span>
+                            </React.Fragment>
+                        ))}
                 </div>
             </div>
             <div
@@ -65,19 +64,22 @@ function PodHeaderComponent({ callBack }) {
                 onClick={(e) => selectPodTab('old')}
                 data-testid="all-pods-old"
             >
-                <div className="fs-14 fw-6 pt-12">Old Pods ({oldPods.length})</div>
+                <div className="fs-14 fw-6 pt-12">Old Pods ({oldPods.all})</div>
                 <div className="flex left fs-12 cn-9 pb-12 ">
-                    <React.Fragment>
-                        {selectedHealthyOldNodeCount > 0 ? (
-                            <div className="pl-16"> {selectedHealthyOldNodeCount} healthy</div>
-                        ) : (
-                            ''
-                        )}
-                    </React.Fragment>
+                    {Object.keys(oldPods)
+                        .filter((n) => n !== 'all')
+                        .map((status, idx) => (
+                            <React.Fragment key={idx}>
+                                {!!idx && <span className="bullet mr-4 ml-4"></span>}
+                                <span key={idx}>
+                                    {oldPods[status]} {status}
+                                </span>
+                            </React.Fragment>
+                        ))}
                 </div>
             </div>
         </div>
-    );
+    )
 }
 
 export default PodHeaderComponent;

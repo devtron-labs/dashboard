@@ -57,7 +57,7 @@ const IndexStore = {
 
     publishAppDetails: (data: AppDetails) => {
 
-        const _nodes = data.resourceTree.nodes || [];
+        const _nodes = data.resourceTree?.nodes || [];
 
         getiNodesByRootNodeWithChildNodes(_nodes, _nodes.filter(_n => (_n.parentRefs ?? []).length == 0).map(_n => _n as iNode))
 
