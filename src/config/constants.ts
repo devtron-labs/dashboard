@@ -174,6 +174,7 @@ export const PATTERNS = {
     ALL_DIGITS_BETWEEN_0_AND_7: /^[0-7]*$/,
     APP_LABEL_CHIP: /^.+:.+$/,
     CONFIG_MAP_AND_SECRET_MULTPLS_KEYS: /^[-._a-zA-Z0-9\,\?\s]*[-._a-zA-Z0-9\s]$/,
+    VARIABLE: /^[A-z0-9-_]+$/,
 }
 
 export const TriggerType = {
