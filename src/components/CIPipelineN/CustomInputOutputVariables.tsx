@@ -112,7 +112,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
 
     return (
         <>
-            <div className="row-container mb-8">
+            <div className="row-container mb-4 mt-4">
                 <Tippy
                     className="default-tt"
                     arrow={false}
@@ -135,6 +135,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                     <Add className="add-icon mt-6" />
                     Add variable
                 </div>
+                <div style={{lineHeight: '4px'}}></div>
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.map(
                 (variable, index) => (
