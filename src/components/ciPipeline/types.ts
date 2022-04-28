@@ -76,19 +76,23 @@ export enum TaskFieldLabel {
     STORESCRIPTAT = 'Store script at',
 }
 
-export enum TaskFieldDescription {
-    INPUT = 'These variables are available as environment variables and can be used in the script to inject values from previous tasks or other sources.',
-    OUTPUT = 'These variables should be set in the environment variables and can be used as input variables in other scripts.',
-    CONTAINERIMAGEPATH = 'Complete verified public url of the container',
-    COMMAND = 'It contains the commands to execute on this container.',
-    ARGS = 'This is used to give arguments to command.',
-    PORTMAPPING = 'Port container listens on. This can be used to expose ports of this container so they can be called from outside. ',
-    MOUNTCODETOCONTAINER = 'Mounts source code inside the container.',
-    MOUNTDIRECTORYFROMHOST = 'Mount any directory from the host into the container. This can be used to mount code or even output directories.',
-    OUTPUTVARIABLES = 'These variables should be set in the environment variables and can be used as input variables in other scripts.',
-    OUTPUTDIRECTORYPATH = 'Directory in which the script is writing/producing output files (eg. test report, zip files etc)',
-    SCRIPT = 'Shell Script to be executed, it supports base shell',
-    STORESCRIPTAT = 'Path where script should be mounted',
+export const TaskFieldDescription = {
+    INPUT: 'These variables are available as environment variables and can be used in the script to inject values from previous tasks or other sources.',
+    OUTPUT: 'These variables should be set in the environment variables and can be used as input variables in other scripts.',
+    CONTAINERIMAGEPATH: 'Complete verified public url of the container',
+    COMMAND: 'It contains the commands to execute on this container.',
+    ARGS: 'This is used to give arguments to command.',
+    PORTMAPPING:
+        'Port container listens on. This can be used to expose ports of this container so they can be called from outside. ',
+    MOUNTCODETOCONTAINER: 'Mounts source code inside the container.',
+    MOUNTDIRECTORYFROMHOST:
+        'Mount any directory from the host into the container. This can be used to mount code or even output directories.',
+    OUTPUTVARIABLES:
+        'These variables should be set in the environment variables and can be used as input variables in other scripts.',
+    OUTPUTDIRECTORYPATH:
+        'Directory in which the script is writing/producing output files (eg. test report, zip files etc)',
+    SCRIPT: 'Shell Script to be executed, it supports base shell',
+    STORESCRIPTAT: 'Path where script should be mounted',
 }
 
 export enum MountPath {

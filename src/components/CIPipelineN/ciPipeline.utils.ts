@@ -16,15 +16,13 @@ export const tempMultiSelectStyles = {
         ...base,
         fontWeight: '500',
     }),
-    option: (base, state) => {
-        return {
-            ...base,
-            fontWeight: '500',
-            color: 'var(--N900)',
-            fontSize: '12px',
-            padding: '5px 10px',
-        }
-    },
+    option: (base, state) => ({
+        ...base,
+        fontWeight: '500',
+        color: 'var(--N900)',
+        fontSize: '12px',
+        padding: '5px 10px',
+    }),
     dropdownIndicator: (styles) => ({ ...styles, padding: 0 }),
     valueContainer: (base, state) => ({
         ...base,
@@ -72,5 +70,28 @@ export const pluginSelectStyle = {
         background: 'var(--N100) !important',
         borderTopRightRadius: '4px',
         borderBottomRightRadius: '4px',
+    }),
+}
+
+export const yamlEditorSelectStyle = {
+    control: (base, state) => ({
+        ...base,
+        boxShadow: 'none',
+        minHeight: 'auto',
+        border: 'none',
+        width: 'max-content',
+    }),
+    option: (base, state) => ({
+        ...base,
+        fontWeight: '500',
+        color: 'var(--N900)',
+        fontSize: '12px',
+        padding: '5px 10px',
+        minWidth: '200px',
+    }),
+    dropdownIndicator: (styles) => ({ ...styles, padding: 0 }),
+    menu: (base, state) => ({
+        ...base,
+        width: '150px',
     }),
 }

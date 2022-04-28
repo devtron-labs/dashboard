@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { ScriptType } from '../ciPipeline/types'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import ReactSelect from 'react-select'
+import { yamlEditorSelectStyle } from './ciPipeline.utils'
+import { OptionType } from '../app/types'
 
 export function YAMLScriptComponent({
     editorValue,
@@ -14,38 +16,13 @@ export function YAMLScriptComponent({
     showSample?: boolean
     height?: string
 }) {
-    const scriptTypeOptions: { label: string; value: string }[] = [ScriptType.SHELL, ScriptType.CONTAINERIMAGE].map(
-        (scriptType) => ({ label: scriptType, value: scriptType }),
-    )
-    const [selectedScriptType, setSelectedScriptType] = useState<{ label: string; value: string }>(scriptTypeOptions[0])
+    const scriptTypeOptions: OptionType[] = [ScriptType.SHELL, ScriptType.CONTAINERIMAGE].map((scriptType) => ({
+        label: scriptType,
+        value: scriptType,
+    }))
+    const [selectedScriptType, setSelectedScriptType] = useState<OptionType>(scriptTypeOptions[0])
     const [selectedTab, setSelectedTab] = useState<string>('editor')
 
-    const tempMultiSelectStyles = {
-        control: (base, state) => ({
-            ...base,
-            boxShadow: 'none',
-            minHeight: 'auto',
-            border: 'none',
-            width: 'max-content',
-        }),
-        option: (base, state) => {
-            return {
-                ...base,
-                fontWeight: '500',
-                color: 'var(--N900)',
-                fontSize: '12px',
-                padding: '5px 10px',
-                minWidth: '200px',
-            }
-        },
-        dropdownIndicator: (styles) => ({ ...styles, padding: 0 }),
-        menu: (base, state) => {
-            return {
-                ...base,
-                width: '150px',
-            }
-        },
-    }
     return (
         <div>
             <div className="flexbox justify-space border-bottom-1-n2">
@@ -75,7 +52,7 @@ export function YAMLScriptComponent({
                         }}
                         options={scriptTypeOptions}
                         isSearchable={false}
-                        styles={tempMultiSelectStyles}
+                        styles={yamlEditorSelectStyle}
                         components={{
                             IndicatorSeparator: null,
                         }}

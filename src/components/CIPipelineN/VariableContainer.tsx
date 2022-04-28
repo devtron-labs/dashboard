@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import dropdown from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { FormErrorObjectType, FormType, PluginVariableType } from '../ciPipeline/types'
 import { ciPipelineContext } from './CIPipeline'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
@@ -28,12 +28,8 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                 }}
             >
                 <span className="fw-6 fs-13 cn-9">{type} variables</span>
-                <img
-                    className="icon-dim-32 ml-auto"
-                    src={dropdown}
-                    alt="dropDown"
-                    style={{ transform: collapsedSection ? 'rotate(0)' : 'rotate(180deg)' }}
-                />
+
+                <Dropdown className="mt-10" style={{ transform: collapsedSection ? 'rotate(180deg)' : 'rotate(0)' }} />
             </div>
             {!collapsedSection && (
                 <div className="variable-container">

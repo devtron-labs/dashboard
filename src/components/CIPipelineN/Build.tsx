@@ -6,8 +6,8 @@ import { ValidationRules } from '../ciPipeline/validationRules'
 import { Progressing } from '../common'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ciPipelineContext } from './CIPipeline'
-import { FormErrorObjectType, FormType } from '../ciPipeline/types'
-import dropdown from '../../assets/icons/ic-chevron-down.svg'
+import { CiPipelineSourceTypeOption, FormErrorObjectType, FormType } from '../ciPipeline/types'
+import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -38,7 +38,7 @@ export function Build({
     const handleSourceChange = (event, gitMaterialId: number): void => {
         const _formData = { ...formData }
         const allMaterials = _formData.materials.map((mat) => {
-            if (mat.gitMaterialId == gitMaterialId) {
+            if (mat.gitMaterialId === gitMaterialId) {
                 return {
                     ...mat,
                     value: event.target.value,
@@ -51,7 +51,7 @@ export function Build({
         setFormData(_formData)
     }
 
-    const selectSourceType = (selectedSource, gitMaterialId: number): void => {
+    const selectSourceType = (selectedSource: CiPipelineSourceTypeOption, gitMaterialId: number): void => {
         // update source type in material
         const _formData = { ...formData }
         const allMaterials = _formData.materials.map((mat) => {
@@ -205,9 +205,8 @@ export function Build({
                         <div className="fs-14 fw-6 cn-9">Docker/container/build arguments</div>
                         <div className="fs-12 fw-4 cn-7">Override docker build configurations for this pipeline.</div>
                     </div>
-                    <img
-                        src={dropdown}
-                        alt="dropDown"
+                    <Dropdown
+                        className="mt-10"
                         style={{ transform: collapsedSection ? 'rotate(180deg)' : 'rotate(0)' }}
                     />
                 </div>

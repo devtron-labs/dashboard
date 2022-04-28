@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import dropdown from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ConditionContainerType, ConditionType, FormType, PluginType } from '../ciPipeline/types'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -182,12 +182,8 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                 }}
             >
                 <span className="fw-6 fs-13 cn-9 lh-32">{type} Condition</span>
-                <img
-                    className="icon-dim-32 ml-auto"
-                    src={dropdown}
-                    alt="dropDown"
-                    style={{ transform: collapsedSection ? 'rotate(0)' : 'rotate(180deg)' }}
-                />
+
+                <Dropdown className="mt-10" style={{ transform: collapsedSection ? 'rotate(180deg)' : 'rotate(0)' }} />
             </div>
             {!collapsedSection && (
                 <>
