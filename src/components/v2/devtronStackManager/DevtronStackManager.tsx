@@ -86,6 +86,7 @@ export default function DevtronStackManager({ serverInfo }: { serverInfo: Server
                 const allModulesErrorRes = responses[0].reason
 
                 if (allModulesErrorRes?.code >= 0) {
+                    setLoading(false)
                     setErrorStatusCode(allModulesErrorRes.code)
                     return
                 }
