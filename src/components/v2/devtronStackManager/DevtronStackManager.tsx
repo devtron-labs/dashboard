@@ -241,7 +241,9 @@ export default function DevtronStackManager({ serverInfo }: { serverInfo: Server
                         <section className="stack-manager__navigation">
                             <NavItem
                                 installedModulesCount={installedModulesList.length}
+                                installationStatus={serverInfo?.status}
                                 currentVersion={serverInfo?.currentVersion}
+                                newVersion={releaseNotes[0]?.releaseName}
                             />
                         </section>
                     )}

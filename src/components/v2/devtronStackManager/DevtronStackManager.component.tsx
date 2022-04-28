@@ -150,12 +150,32 @@ export const ModulesListingView = ({
     )
 }
 
+const getUpdateStatusLabel = (installationStatus: ModuleStatus, currentVersion: string, newVersion: string) => {
+    if (installationStatus === ModuleStatus.UPGRADING) {
+        return '(Updating...)'
+    } else if (
+        installationStatus === ModuleStatus.UPGRADE_FAILED ||
+        installationStatus === ModuleStatus.TIMEOUT ||
+        installationStatus === ModuleStatus.UNKNOWN
+    ) {
+        return '(Update failed)'
+    } else if (isLatestVersionAvailable(currentVersion, newVersion)) {
+        return '(Update available)'
+    }
+
+    return ''
+}
+
 export const NavItem = ({
     installedModulesCount,
+    installationStatus,
     currentVersion,
+    newVersion,
 }: {
     installedModulesCount: number
+    installationStatus: ModuleStatus
     currentVersion: string
+    newVersion: string
 }): JSX.Element => {
     const ExtentionsSection = [
         {
@@ -191,17 +211,19 @@ export const NavItem = ({
                     {route.name !== 'Installed' && route.name !== 'About Devtron' && (
                         <span className="fs-13 ml-12">{route.name}</span>
                     )}
-                    {route.name === 'About Devtron' && (
-                        <div className="about-devtron ml-12">
-                            <span className="fs-13">{route.name}</span>
-                            <br />
-                            <span className="fs-11">{currentVersion}</span>
-                        </div>
-                    )}
                     {route.name === 'Installed' && (
                         <div className="installed-modules-link flex content-space ml-12" style={{ width: '175px' }}>
                             <span className="fs-13">{route.name}</span>
                             <span className="badge">{installedModulesCount || 0}</span>
+                        </div>
+                    )}
+                    {route.name === 'About Devtron' && (
+                        <div className="about-devtron ml-12">
+                            <span className="fs-13">{route.name}</span>
+                            <br />
+                            <span className="fs-11">
+                                {currentVersion} {getUpdateStatusLabel(installationStatus, currentVersion, newVersion)}
+                            </span>
                         </div>
                     )}
                 </div>
@@ -278,11 +300,7 @@ const InstallationStatus = ({
                 <>
                     <Progressing size={24} />
                     <div className="mt-12">
-                        {logPodName
-                            ? isUpgradeView
-                                ? `Updating to ${upgradeVersion}`
-                                : 'Installing'
-                            : 'Initializing'}
+                        {logPodName ? (isUpgradeView ? `Updating to ${upgradeVersion}` : 'Installing') : 'Initializing'}
                         &nbsp;...
                     </div>
                 </>
