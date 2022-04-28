@@ -7,16 +7,16 @@ import { iNode } from '../../appDetails.type';
 function PodHeaderComponent({ callBack }) {
     const [podTab, selectPodTab] = useState<'old' | 'new'>('new');
     const podMetaData = IndexStore.getPodMetaData()
+    const pods: Array<iNode> = IndexStore.getiNodesByKind('pod')
     const newPodStats = { running: 0, all: 0 }
     const oldPodStats = { running: 0, all: 0 }
     const [newPods, setNewPods] = useState(newPodStats)
     const [oldPods, setOldPods] = useState(oldPodStats)
-    const pods: Array<iNode> = IndexStore.getiNodesByKind('pod')
 
     useEffect(() => {
-        if (podMetaData && podMetaData.length > 0) {
+        if (pods && podMetaData && podMetaData.length > 0) {
             pods.forEach((pod) => {
-                let podStatusLower = getNodeStatus(pod)?.toLowerCase()
+                const podStatusLower = getNodeStatus(pod)?.toLowerCase()
                 if (podMetaData.find((f) => f.name === pod.name)?.isNew) {
                     newPodStats[podStatusLower] = (newPodStats[podStatusLower] || 0) + 1
                     newPodStats['all'] += 1
