@@ -30,7 +30,7 @@
     font-weight: 600;
     line-height: 1.5;
     letter-spacing: normal;
-    color: var(--N900)
+    color: var(--N900);
 }
 
 .form__input-header {
@@ -61,7 +61,7 @@
     letter-spacing: -0.1px;
     display: block;
     margin-bottom: 4px;
-    margin-top: 4px
+    margin-top: 4px;
 }
 
 .form__label {
@@ -136,12 +136,11 @@ p.sentence-case:first-letter {
     position: relative;
 }
 
-.form__icon--error path[fill="#FFCB5D"] {
+.form__icon--error path[fill='#FFCB5D'] {
     fill: var(--R500);
-    
 }
 
-.form__icon--info path[fill="#06C"] {
+.form__icon--info path[fill='#06C'] {
     fill: gray;
 }
 
@@ -269,16 +268,16 @@ p.sentence-case:first-letter {
     background-image: url('../assets/icons/ic-checkbox-unselected.svg');
 }
 
-.form__checkbox:checked[value=INTERMEDIATE]~.form__checkbox-container {
+.form__checkbox:checked[value='INTERMEDIATE'] ~ .form__checkbox-container {
     background-image: url('../assets/icons/ic-checkbox-intermediate.svg');
 }
 
-.form__checkbox:checked[value=CHECKED]~.form__checkbox-container {
+.form__checkbox:checked[value='CHECKED'] ~ .form__checkbox-container {
     background-image: url('../assets/icons/ic-checkbox-selected.svg');
 }
 
-.form__checkbox:disabled~.form__checkbox-label,
-.form__checkbox:disabled~.form__checkbox-container {
+.form__checkbox:disabled ~ .form__checkbox-label,
+.form__checkbox:disabled ~ .form__checkbox-container {
     color: var(--N500);
     cursor: not-allowed;
 }
@@ -337,7 +336,7 @@ p.sentence-case:first-letter {
     display: inline-flex;
 }
 
-.copy-button--icon path[fill=black] {
+.copy-button--icon path[fill='black'] {
     fill: var(--white);
     display: inline-flex;
 }
@@ -347,7 +346,7 @@ p.sentence-case:first-letter {
 }
 
 .typeahead input:disabled,
-.typeahead :disabled~.typehead__selection {
+.typeahead :disabled ~ .typehead__selection {
     background-color: var(--N100);
     cursor: not-allowed;
 }
@@ -529,12 +528,13 @@ p.sentence-case:first-letter {
     margin: 0px 5px;
 }
 
-.form__radio-item input:checked~.form__radio-item-content .radio__title {
+.form__radio-item input:checked ~ .form__radio-item-content .radio__title {
     color: var(--B500);
 }
 
-.form__radio-item input:checked~.form__radio-item-content .radio__button {
-    background: radial-gradient(var(--B500) 0, var(--B500) 25%, var(--white) 26%, var(--white) 100%)
+.form__radio-item input:checked ~ .form__radio-item-content .radio__button {
+    background: radial-gradient(var(--B500) 0, var(--B500) 40%, var(--white) 45%, var(--white) 50%, var(--white) 100%);
+    border: 1px solid var(--B500);
 }
 
 .typeahead__control:focus {
@@ -553,11 +553,11 @@ p.sentence-case:first-letter {
     outline: none;
 }
 
-.form__input:focus~.form__text-field-info {
+.form__input:focus ~ .form__text-field-info {
     color: var(--B500);
 }
 
-.form__input:focus~.form__text-field-info path[fill="#06C"] {
+.form__input:focus ~ .form__text-field-info path[fill='#06C'] {
     fill: var(--B500);
 }
 
@@ -579,16 +579,15 @@ p.sentence-case:first-letter {
     text-transform: capitalize;
 }
 
-.form__label-color{
-    color: #404040
+.form__label-color {
+    color: #404040;
 }
 
-.modal__form-title{
+.modal__form-title {
     font-size: 16px;
     font-weight: 600;
     line-height: 1.4;
     color: var(--N900);
     margin: 0px;
     margin-bottom: 4px;
-
 }
