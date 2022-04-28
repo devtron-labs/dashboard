@@ -167,6 +167,9 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             ..._inputVariables,
             ..._variableDetail,
         }
+        _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
+            selectedVariableIndex
+        ] = _inputVariables
         setFormData(_formData)
     }
 

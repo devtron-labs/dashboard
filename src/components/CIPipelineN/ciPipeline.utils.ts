@@ -1,7 +1,7 @@
 export const tempMultiSelectStyles = {
     control: (base, state) => ({
         ...base,
-        border: 'none !important',
+        border: 'none',
         boxShadow: 'none',
         minHeight: 'auto',
         borderRadius: 'none',
@@ -47,7 +47,7 @@ export const pluginSelectStyle = {
     ...tempMultiSelectStyles,
     control: (base, state) => ({
         ...base,
-        border: '1px solid var(--N200) !important',
+        border: '1px solid var(--N200)',
         boxShadow: 'none',
         minHeight: 'auto',
         borderRadius: '4px',
@@ -100,7 +100,7 @@ export const selectWithDefaultBG = {
     ...tempMultiSelectStyles,
     control: (base, state) => ({
         ...base,
-        border: 'none !important',
+        border: 'none',
         boxShadow: 'none',
         minHeight: 'auto',
         borderRadius: 'none',
@@ -121,7 +121,7 @@ export const outputFormatSelectStyle = {
     ...tempMultiSelectStyles,
     control: (base, state) => ({
         ...base,
-        border: 'none !important',
+        border: 'none',
         boxShadow: 'none',
         minHeight: 'auto',
         borderRadius: 'none',
