@@ -17,14 +17,14 @@ function OutputDirectoryPath() {
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         activeStageName: string
     } = useContext(ciPipelineContext)
-    
+
     const addOutputDirectoryPath = (): void => {
         const _formData = { ...formData }
 
         if (!_formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath) {
             _formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath = []
         }
-        _formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath.push('')
+        _formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath.unshift('')
         setFormData(_formData)
     }
 

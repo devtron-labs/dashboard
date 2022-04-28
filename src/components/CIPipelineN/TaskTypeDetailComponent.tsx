@@ -141,13 +141,16 @@ export function TaskTypeDetailComponent() {
                             rootClassName="top"
                             value={CHECKBOX_VALUE.CHECKED}
                             onChange={(e) => handleCustomScript()}
+                            id="mountCustomScriptCheck"
                         >
                             <Tippy
                                 className="default-tt"
                                 arrow={false}
                                 content="Enable this if you also want to mount scripts in the container"
                             >
-                                <label className="pt-4">Mount custom script</label>
+                                <label className="pt-4" htmlFor="mountCustomScriptCheck">
+                                    Mount custom script
+                                </label>
                             </Tippy>
                         </Checkbox>
                     </div>

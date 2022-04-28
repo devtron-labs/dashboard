@@ -25,9 +25,9 @@ function MountFromHost() {
         if (!_formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountPathMap) {
             _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountPathMap = []
         }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountPathMap.push({
-            filePathOnDisk: null,
-            filePathOnContainer: null,
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountPathMap.unshift({
+            filePathOnDisk: '',
+            filePathOnContainer: '',
         })
         setFormData(_formData)
     }

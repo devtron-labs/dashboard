@@ -23,27 +23,22 @@ function MultiplePort() {
         if (!_formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap) {
             _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap = []
         }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap.push({
-            portOnLocal: undefined,
-            portOnContainer: undefined,
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap.unshift({
+            portOnLocal: '',
+            portOnContainer: '',
         })
         setFormData(_formData)
     }
 
     const handlePort = (e, index) => {
         const _formData = { ...formData }
-        // console.log(e.target.value)
-        // if (e.target.value === undefined) {
-        //     _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap = []
-        // } else {
-        //     _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[index][e.target.name] = e
-        //         .target.value
-        //         ? parseInt(e.target.value)
-        //         : undefined
-        // }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[index][e.target.name] = parseInt(
-            e.target.value.replace(/\D/g, ''),
-        )
+        if (typeof e.target.value === 'string') {
+            e.target.value = e.target.value.replace(/\D/g, '')
+        } else {
+            e.target.value = parseInt(e.target.value)
+        }
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[index][e.target.name] =
+            e.target.value
         setFormData(_formData)
     }
 

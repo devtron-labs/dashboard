@@ -56,7 +56,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                     id: 0,
                 },
             ).id + 1
-        const newCondition = {
+        const newVariable = {
             id: id,
             name: '',
             value: '',
@@ -71,7 +71,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         if (!_formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]) {
             _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]] = []
         }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].push(newCondition)
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].unshift(
+            newVariable,
+        )
         setFormData(_formData)
     }
 
@@ -133,7 +135,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                     <Add className="add-icon mt-6" />
                     Add variable
                 </div>
-                <div style={{lineHeight: '4px'}}></div>
+                <div style={{ lineHeight: '4px' }}></div>
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.map(
                 (variable, index) => {
