@@ -108,12 +108,13 @@ export default function NavigationRoutes() {
         }
     }, [])
 
-    const _getServerInfo = () => {
-        getServerInfo().then((res) => {
-            setServerInfo(res.result)
-        }).catch((err) => {
+    const _getServerInfo = async () => {
+        try {
+            const { result } = await getServerInfo()
+            setServerInfo(result)
+        } catch (err) {
             // handle error
-        })
+        }
     }
 
     if (pageState === ViewType.LOADING) {

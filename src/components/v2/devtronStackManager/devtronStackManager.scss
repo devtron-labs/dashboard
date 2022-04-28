@@ -6,7 +6,10 @@
 
     &.full-view-mode {
         grid-template-columns: 100%;
-        background-color: white !important;
+
+        &.white-background {
+            background-color: white !important;
+        }
     }
 
     .page-header {

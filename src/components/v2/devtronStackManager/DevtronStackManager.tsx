@@ -1,7 +1,7 @@
 import React, { Suspense, useEffect, useRef, useState } from 'react'
 import { Redirect, Route, Router, Switch, useHistory, useLocation } from 'react-router-dom'
 import { URLS } from '../../../config'
-import { ErrorBoundary, Progressing } from '../../common'
+import { ErrorBoundary, ErrorScreenManager, Progressing } from '../../common'
 import AboutDevtronView from './AboutDevtronView'
 import {
     handleError,
@@ -44,6 +44,7 @@ export default function DevtronStackManager({ serverInfo }: { serverInfo: Server
     const [releaseNotes, setReleaseNotes] = useState<ReleaseNotes[]>([])
     const [detailsMode, setDetailsMode] = useState('')
     const [logPodName, setLogPodName] = useState('')
+    const [errorStatusCode, setErrorStatusCode] = useState(0)
     const history = useHistory()
     const location = useLocation()
     const stackManagerRef = useRef<HTMLElement>()
@@ -82,6 +83,13 @@ export default function DevtronStackManager({ serverInfo }: { serverInfo: Server
         Promise.allSettled([getAllModules(), getLogPodName(), getReleasesNotes()])
             .then((responses: { status: string; value?: any; reason?: any }[]) => {
                 const allModulesRes: AllModuleInfoResponse = responses[0].value
+                const allModulesErrorRes = responses[0].reason
+
+                if (allModulesErrorRes?.code >= 0) {
+                    setErrorStatusCode(allModulesErrorRes.code)
+                    return
+                }
+
                 const logPodNameRes: LogPodNameResponse = responses[1].value
                 const releaseNotesRes: ReleaseNotesResponse = responses[2].value
                 setReleaseNotes(releaseNotesRes?.result)
@@ -96,10 +104,11 @@ export default function DevtronStackManager({ serverInfo }: { serverInfo: Server
                 Promise.allSettled(_getModuleInfoList).then(
                     (responses: { status: string; value?: any; reason?: any }[]) => {
                         responses.forEach((res) => {
+                            const result = res.value?.result
                             const _moduleDetails = {
-                                ...(MODULE_DETAILS_MAP[res.value?.result?.name] || MODULE_DETAILS_MAP['unknown']),
-                                installationStatus: res.value?.result?.status,
-                                baseMinVersionSupported: res.value?.result?.baseMinVersionSupported,
+                                ...(MODULE_DETAILS_MAP[result?.name] || MODULE_DETAILS_MAP['unknown']),
+                                installationStatus: result?.status,
+                                baseMinVersionSupported: result?.baseMinVersionSupported,
                             }
 
                             _discoverModulesList.push(_moduleDetails)
@@ -227,7 +236,14 @@ export default function DevtronStackManager({ serverInfo }: { serverInfo: Server
     }
 
     return (
-        <main ref={stackManagerRef} className={`stack-manager ${isLoading || detailsMode ? 'full-view-mode' : ''}`}>
+        <main
+            ref={stackManagerRef}
+            className={`stack-manager ${
+                isLoading || detailsMode || errorStatusCode > 0
+                    ? `full-view-mode ${errorStatusCode > 0 ? '' : 'white-background'}`
+                    : ''
+            }`}
+        >
             <PageHeader
                 detailsMode={detailsMode}
                 selectedModule={selectedModule}
@@ -235,6 +251,10 @@ export default function DevtronStackManager({ serverInfo }: { serverInfo: Server
             />
             {isLoading ? (
                 <Progressing pageLoader />
+            ) : errorStatusCode > 0 ? (
+                <div className="flex">
+                    <ErrorScreenManager code={errorStatusCode} />
+                </div>
             ) : (
                 <Router history={history}>
                     {!detailsMode && (
