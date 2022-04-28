@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { ConditionContainerType, ConditionType, FormType, PluginType } from '../ciPipeline/types'
+import { ConditionContainerType, ConditionType, FormErrorObjectType, FormType, PluginType } from '../ciPipeline/types'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import ReactSelect, { components } from 'react-select'
 import { ciPipelineContext } from './CIPipeline'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
-import { selectWithDefaultBG, tempMultiSelectStyles } from './ciPipeline.utils'
+import { selectWithDefaultBG } from './ciPipeline.utils'
 import { OptionType } from '../app/types'
+import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 
 export function ConditionContainer({ type }: { type: ConditionContainerType }) {
     const {
@@ -16,11 +17,13 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         setFormData,
         selectedTaskIndex,
         activeStageName,
+        formDataErrorObj,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         selectedTaskIndex: number
         activeStageName: string
+        formDataErrorObj: FormErrorObjectType
     } = useContext(ciPipelineContext)
     const operatorOptions: OptionType[] = [
         { value: '==', description: 'equal to' },
@@ -140,12 +143,71 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         )
     }
 
+    const handleConditionCollapse = (): void => {
+        setCollapsedSection(!collapsedSection)
+        if (collapsedSection) {
+            const _formData = { ...formData }
+            let conditionType
+            let conditionDetails =
+                _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails
+            let addNewRow = false
+            if (!conditionDetails) {
+                conditionDetails = []
+                addNewRow = true
+            }
+            if (type === ConditionContainerType.PASS_FAILURE) {
+                const passCondition = conditionDetails.some(
+                    (conditionDetail) => conditionDetail.conditionType === ConditionType.PASS,
+                )
+                conditionType = ConditionType.PASS
+                if (!passCondition) {
+                    const failCondition = conditionDetails.some(
+                        (conditionDetail) => conditionDetail.conditionType === ConditionType.FAIL,
+                    )
+                    if (failCondition) {
+                        conditionType = ConditionType.FAIL
+                    } else {
+                        addNewRow = true
+                    }
+                }
+                setConditionType(conditionType)
+            } else {
+                const triggerCondition = conditionDetails.some(
+                    (conditionDetail) => conditionDetail.conditionType === ConditionType.TRIGGER,
+                )
+                conditionType = ConditionType.TRIGGER
+                if (!triggerCondition) {
+                    const skipCondition = conditionDetails.some(
+                        (conditionDetail) => conditionDetail.conditionType === ConditionType.SKIP,
+                    )
+                    if (skipCondition) {
+                        conditionType = ConditionType.SKIP
+                    } else {
+                        addNewRow = true
+                    }
+                }
+                setConditionType(conditionType)
+            }
+            if (addNewRow) {
+                const newCondition = {
+                    id: conditionDetails.length,
+                    conditionOnVariable: '',
+                    conditionOperator: operatorOptions[0].label,
+                    conditionType: conditionType,
+                    conditionalValue: '',
+                }
+                conditionDetails.push(newCondition)
+                setFormData(_formData)
+            }
+        }
+    }
+
     return (
         <div>
             <div
                 className="mb-10 flexbox pointer"
                 onClick={(event) => {
-                    setCollapsedSection(!collapsedSection)
+                    handleConditionCollapse()
                 }}
             >
                 <span className="fw-6 fs-13 cn-9 lh-32">{type} Condition</span>
@@ -179,13 +241,16 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                             Set {type === ConditionContainerType.PASS_FAILURE ? 'failure' : 'skip'} conditions
                         </RadioGroupItem>
                     </RadioGroup>
-                    <div className="condition-container">
-                        {(
-                            formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
-                                ?.conditionDetails || []
-                        ).map((conditionDetail, index) =>
-                            conditionDetail.conditionType === conditionType ? (
-                                <>
+                    {(
+                        formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.conditionDetails ||
+                        []
+                    ).map((conditionDetail, index) => {
+                        const errorObj =
+                            formDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
+                                ?.conditionDetails?.[index]
+                        return conditionDetail.conditionType === conditionType ? (
+                            <>
+                                <div className="condition-container">
                                     <div className="tp-4 fs-13 lh-32 fw-4 text-uppercase mr-10">
                                         {conditionDetail.conditionType} If
                                     </div>
@@ -269,10 +334,19 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                             deleteCondition(index)
                                         }}
                                     />
-                                </>
-                            ) : null,
-                        )}
-                    </div>
+                                </div>
+                                <div className="flexbox cr-5 mb-8 fw-5 fs-11 flexbox">
+                                    {errorObj && !errorObj.isValid && (
+                                        <>
+                                            {' '}
+                                            <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                            <span>{errorObj.message}</span>
+                                        </>
+                                    )}
+                                </div>
+                            </>
+                        ) : null
+                    })}
                     <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32" onClick={addCondition}>
                         <Add className="add-icon mt-6" />
                         Add condition

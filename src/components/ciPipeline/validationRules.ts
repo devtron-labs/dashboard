@@ -56,6 +56,20 @@ export class ValidationRules {
         }
     }
 
+    conditionDetail = (value: object): { message: string | null; isValid: boolean } => {
+        if (!value['conditionOnVariable'] && !value['conditionalValue']) {
+            return { message: 'Please complete or remove this condition', isValid: false }
+        } else if (!value['conditionOnVariable']) {
+            return { message: 'ConditionOnVariable is required field', isValid: false }
+        } else if (!value['conditionOperator']) {
+            return { message: 'ConditionOperator is required field', isValid: false }
+        } else if (!value['conditionalValue']) {
+            return { message: 'ConditionalValue is required field', isValid: false }
+        } else {
+            return { message: null, isValid: true }
+        }
+    }
+
     sourceValue = (value: string): { message: string | null; isValid: boolean } => {
         if (!value) {
             return { message: `This is a required field`, isValid: false }
