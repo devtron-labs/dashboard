@@ -700,28 +700,25 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                     } else if (column === 'name') {
                         return <Name key={column} nodeDetails={nodeDetails} describeNode={describeNode} addExtraSpace={nodeDetails.kind === Nodes.Containers && containerLevelExternalLinks.length > 0} />;
                     } else if (column === 'external-links') {
-                        if (nodeDetails.kind === Nodes.Pod && podLevelExternalLinks.length > 0) {
-                            return (
-                                <td>
+                        return (
+                            <td>
+                                {nodeDetails.kind === Nodes.Pod && podLevelExternalLinks.length > 0 && (
                                     <NodeLevelExternalLinks
                                         appDetails={appDetails}
                                         nodeLevelExternalLinks={podLevelExternalLinks}
                                         podName={nodeName}
                                     />
-                                </td>
-                            )
-                        } else if (nodeDetails.kind === Nodes.Containers && containerLevelExternalLinks.length > 0) {
-                            return (
-                                <td>
+                                )}
+                                {nodeDetails.kind === Nodes.Containers && containerLevelExternalLinks.length > 0 && (
                                     <NodeLevelExternalLinks
                                         appDetails={appDetails}
                                         nodeLevelExternalLinks={containerLevelExternalLinks}
                                         podName={nodeDetails['pName']}
                                         containerName={nodeName}
                                     />
-                                </td>
-                            )
-                        }
+                                )}
+                            </td>
+                        )
                     } else if (column === '') {
                         return (
                             <Menu nodeDetails={nodeDetails}
