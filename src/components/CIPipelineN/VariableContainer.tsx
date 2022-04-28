@@ -47,7 +47,15 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                         return (
                             <>
                                 {type === PluginVariableType.INPUT && variable.description ? (
-                                    <Tippy className="default-tt" arrow={false} content={variable.description}>
+                                    <Tippy
+                                        className="default-tt"
+                                        arrow={false}
+                                        content={
+                                            <span style={{ display: 'block', width: '185px' }}>
+                                                {variable.description}
+                                            </span>
+                                        }
+                                    >
                                         <div className="fs-13 fw-4 lh-28">
                                             <span className="text-underline-dashed">{variable.name}</span>
                                         </div>
