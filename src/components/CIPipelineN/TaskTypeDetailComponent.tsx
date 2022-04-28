@@ -57,6 +57,13 @@ export function TaskTypeDetailComponent() {
                     filePathOnContainer: null,
                 })
             }
+            if (
+                e.target.name === 'mountCodeToContainer' &&
+                !formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainerPath
+            ) {
+                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainerPath =
+                    'sourcecode'
+            }
         } else {
             _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[e.target.name] = false
         }
