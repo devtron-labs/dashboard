@@ -280,7 +280,7 @@ const InstallationStatus = ({
                     <div className="mt-12">
                         {logPodName
                             ? isUpgradeView
-                                ? `Upgrading to ${upgradeVersion}`
+                                ? `Updating to ${upgradeVersion}`
                                 : 'Installing'
                             : 'Initializing'}
                         &nbsp;...
@@ -311,7 +311,7 @@ const InstallationStatus = ({
                     <ErrorIcon className="icon-dim-20 mr-12" />
                     {installationStatus === ModuleStatus.UNKNOWN
                         ? 'Last update status: Unknown'
-                        : `${isUpgradeView ? 'Upgrade' : 'Installation'} ${
+                        : `${isUpgradeView ? 'Update' : 'Installation'} ${
                               installationStatus === ModuleStatus.TIMEOUT ? 'request timed out' : 'failed'
                           }`}
                 </div>
@@ -455,7 +455,7 @@ export const InstallationWrapper = ({
                             (installationStatus === ModuleStatus.HEALTHY && latestVersionAvailable)) && (
                             <>
                                 <InstallIcon className="module-details__install-icon icon-dim-16 mr-8" />
-                                {isUpgradeView ? `Upgrade to ${upgradeVersion.toLowerCase()}` : 'Install'}
+                                {isUpgradeView ? `Update to ${upgradeVersion.toLowerCase()}` : 'Install'}
                             </>
                         )}
                         {(installationStatus === ModuleStatus.INSTALL_FAILED ||
@@ -464,7 +464,7 @@ export const InstallationWrapper = ({
                             installationStatus === ModuleStatus.UNKNOWN) && (
                             <>
                                 <RetyrInstallIcon className="module-details__retry-install-icon icon-dim-16 mr-8" />
-                                {isUpgradeView ? `Retry upgrade to ${upgradeVersion}` : ' Retry install'}
+                                {isUpgradeView ? `Retry update to ${upgradeVersion}` : ' Retry install'}
                             </>
                         )}
                     </button>

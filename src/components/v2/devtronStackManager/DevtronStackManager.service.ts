@@ -11,14 +11,14 @@ import {
 } from './DevtronStackManager.type'
 
 export const getModuleInfo = (moduleName: string): Promise<ModuleInfoResponse> => {
-    return get(`${Routes.MODULE_INFO_API}/${moduleName}`)
+    return get(`${Routes.MODULE_INFO_API}?name=${moduleName}`)
 }
 
 export const executeModuleAction = (
     moduleName: string,
     moduleActionRequest: ModuleActionRequest,
 ): Promise<ModuleActionResponse> => {
-    return post(`${Routes.MODULE_INFO_API}/${moduleName}`, moduleActionRequest)
+    return post(`${Routes.MODULE_INFO_API}?name=${moduleName}`, moduleActionRequest)
 }
 
 export const getServerInfo = (): Promise<ServerInfoResponse> => {
