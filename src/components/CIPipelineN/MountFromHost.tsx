@@ -1,14 +1,9 @@
 import React, { useContext } from 'react'
-import { FormErrorObjectType, FormType } from '../ciPipeline/types'
+import { FormErrorObjectType, FormType, MountPathMap } from '../ciPipeline/types'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-
-enum MountPathMap {
-    FILEPATHONDISK = 'filePathOnDisk',
-    FILEPATHONCONTAINER = 'filePathOnContainer',
-}
 
 function MountFromHost() {
     const {
@@ -60,6 +55,10 @@ function MountFromHost() {
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountPathMap?.map(
                 (mountPathMap, index) => {
+                    const errorObj =
+                        formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.inlineStepDetail?.mountPathMap?.[
+                            index
+                        ]
                     return (
                         <>
                             <div className="mount-row mb-4 mt-4">
@@ -91,22 +90,12 @@ function MountFromHost() {
                                 />
                             </div>
                             <div className="pl-200 mb-20">
-                                {formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.inlineStepDetail
-                                    ?.mountPathMap &&
-                                    formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-                                        .mountPathMap[index] &&
-                                    !formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-                                        .mountPathMap[index].isValid && (
-                                        <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
-                                            <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                            <span>
-                                                {
-                                                    formDataErrorObj[activeStageName].steps[selectedTaskIndex]
-                                                        .inlineStepDetail.mountPathMap[index].message
-                                                }
-                                            </span>
-                                        </span>
-                                    )}
+                                {errorObj && !errorObj.isValid && (
+                                    <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
+                                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                        <span>{errorObj.message}</span>
+                                    </span>
+                                )}
                             </div>
                         </>
                     )

@@ -3,7 +3,7 @@ import { RefVariableType } from './types'
 
 export class ValidationRules {
     name = (value: string): { message: string | null; isValid: boolean } => {
-        let re = new RegExp('^[a-z][a-z0-9-.]+[a-z0-9]$')
+        const re = new RegExp('^[a-z][a-z0-9-.]+[a-z0-9]$')
         if (value && value.length < 1) {
             return { message: 'This is a required field', isValid: false }
         } else if (!re.test(value)) {
@@ -22,7 +22,7 @@ export class ValidationRules {
     }
 
     inputVariable = (value: object): { message: string | null; isValid: boolean } => {
-        let re = new RegExp(PATTERNS.VARIABLE)
+        const re = new RegExp(PATTERNS.VARIABLE)
         const variableValue =
             (value['variableType'] === RefVariableType.NEW && value['value']) ||
             (value['refVariableName'] &&
@@ -46,7 +46,7 @@ export class ValidationRules {
     }
 
     outputVariable = (value: object): { message: string | null; isValid: boolean } => {
-        let re = new RegExp(PATTERNS.VARIABLE)
+        const re = new RegExp(PATTERNS.VARIABLE)
         if (!value['name']) {
             return { message: 'Variable Name is required field', isValid: false }
         } else if (!re.test(value['name'])) {

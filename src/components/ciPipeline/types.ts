@@ -95,6 +95,16 @@ export const TaskFieldDescription = {
     STORESCRIPTAT: 'Path where script should be mounted',
 }
 
+export const MountPathMap = {
+    FILEPATHONDISK: 'filePathOnDisk',
+    FILEPATHONCONTAINER: 'filePathOnContainer',
+}
+
+export const PortMap = {
+    PORTONLOCAL: 'portOnLocal',
+    PORTONCONTAINER: 'portOnContainer',
+}
+
 export enum MountPath {
     TRUE = 'Yes',
     FALSE = 'No',
@@ -103,7 +113,7 @@ export enum MountPath {
 export enum ConditionType {
     SKIP = 'SKIP',
     TRIGGER = 'TRIGGER',
-    SUCCESS = 'SUCCESS',
+    PASS = 'PASS',
     FAIL = 'FAIL',
 }
 
@@ -131,7 +141,7 @@ interface CommandArgsMap {
     args: string[]
 }
 
-export interface PortMap {
+export interface PortMapType {
     portOnLocal: number
     portOnContainer: number
 }
@@ -154,7 +164,7 @@ interface InlineStepDetailType {
     containerImagePath?: string
     imagePullSecret?: string
     commandArgsMap?: CommandArgsMap[]
-    portMap?: PortMap[]
+    portMap?: PortMapType[]
     mountPathMap?: {
         filePathOnDisk: string
         filePathOnContainer: string
@@ -243,6 +253,13 @@ export interface FormErrorObjectType {
         isValid: boolean
         steps: TaskErrorObj[]
     }
+}
+
+export interface CIPipelineType {
+    appName: string
+    connectCDPipelines: number
+    getWorkflows: () => void
+    close: () => void
 }
 
 export interface CIPipelineDataType {

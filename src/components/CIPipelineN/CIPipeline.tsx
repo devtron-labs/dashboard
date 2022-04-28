@@ -15,6 +15,7 @@ import { ServerErrors } from '../../modals/commonTypes'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import {
     CIPipelineDataType,
+    CIPipelineType,
     FormType,
     PluginType,
     RefVariableStageType,
@@ -30,13 +31,6 @@ import { PreBuild } from './PreBuild'
 import { Sidebar } from './Sidebar'
 import { Build } from './Build'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-
-interface CIPipelineType {
-    appName: string
-    connectCDPipelines: number
-    getWorkflows: () => void
-    close: () => void
-}
 
 export const ciPipelineContext = createContext(null)
 

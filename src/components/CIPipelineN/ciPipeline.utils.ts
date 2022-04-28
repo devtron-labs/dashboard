@@ -95,3 +95,65 @@ export const yamlEditorSelectStyle = {
         width: '150px',
     }),
 }
+
+export const selectWithDefaultBG = {
+    ...tempMultiSelectStyles,
+    control: (base, state) => ({
+        ...base,
+        border: 'none !important',
+        boxShadow: 'none',
+        minHeight: 'auto',
+        borderRadius: 'none',
+        height: '32px',
+        fontSize: '12px',
+        width: 'max-content',
+    }),
+    valueContainer: (base, state) => ({
+        ...base,
+        display: 'flex',
+    }),
+    indicatorsContainer: (base, state) => ({
+        ...base,
+    }),
+}
+
+export const outputFormatSelectStyle = {
+    ...tempMultiSelectStyles,
+    control: (base, state) => ({
+        ...base,
+        border: 'none !important',
+        boxShadow: 'none',
+        minHeight: 'auto',
+        borderRadius: 'none',
+        height: '3px',
+        borderTopRightRadius: '4px',
+        fontSize: '12px',
+    }),
+    valueContainer: (base, state) => ({
+        ...base,
+        color: 'var(--N900)',
+        background: 'var(--N100) !important',
+        padding: '0px 10px',
+        display: 'flex',
+        height: '31px',
+        fontSize: '12px',
+    }),
+    indicatorsContainer: (base, state) => ({
+        ...base,
+        background: 'var(--N100) !important',
+        borderTopRightRadius: '4px',
+    }),
+}
+
+export const inputFormatSelectStyle = {
+    ...tempMultiSelectStyles,
+    valueContainer: (base, state) => ({
+        ...base,
+        color: 'var(--N900)',
+        background: 'var(--N100) !important',
+        padding: '0px 10px',
+        display: 'flex',
+        height: '32px',
+        fontSize: '12px',
+    }),
+}

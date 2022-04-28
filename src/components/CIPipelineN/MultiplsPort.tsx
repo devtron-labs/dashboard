@@ -1,14 +1,9 @@
 import React, { useContext } from 'react'
-import { FormType, TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
+import { FormType, PortMap, TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ciPipelineContext } from './CIPipeline'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
-
-enum PortMap {
-    PORTONLOCAL = 'portOnLocal',
-    PORTONCONTAINER = 'portOnContainer',
-}
 
 function MultiplePort() {
     const {
@@ -41,8 +36,10 @@ function MultiplePort() {
         if (e.target.value === undefined) {
             _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap = []
         } else {
-            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[index][e.target.name] =
-            e.target.value ? parseInt(e.target.value) : undefined
+            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[index][e.target.name] = e
+                .target.value
+                ? parseInt(e.target.value)
+                : undefined
         }
         setFormData(_formData)
     }
@@ -69,7 +66,7 @@ function MultiplePort() {
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap?.map((elm, index) => {
                 return (
-                    elm[PortMap.PORTONLOCAL] !==0 &&
+                    elm[PortMap.PORTONLOCAL] !== 0 &&
                     elm[PortMap.PORTONCONTAINER] !== 0 && (
                         <div className="custom-input__port-map pl-220 mb-4 mt-4" key={`multiple-port-${index}`}>
                             <input

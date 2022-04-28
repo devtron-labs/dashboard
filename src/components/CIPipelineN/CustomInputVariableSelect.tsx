@@ -28,10 +28,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         }
         globalVariables: { label: string; value: string; format: string }[]
     } = useContext(ciPipelineContext)
-    const [selectedOutputVariable, setSelectedOutputVariable] = useState<{
-        label: string
-        value: string
-    }>({
+    const [selectedOutputVariable, setSelectedOutputVariable] = useState<OptionType>({
         label: '',
         value: '',
     })
@@ -66,17 +63,13 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                     formData[BuildStageVariable.PreBuild].steps[preBuildTaskLength - 1].stepType === PluginType.INLINE
                         ? 'inlineStepDetail'
                         : 'pluginRefStepDetail'
-                const outputVariablesLength =
+                const preBuildStageLastTaskOutputVariables =
                     formData[BuildStageVariable.PreBuild].steps[preBuildTaskLength - 1][stepTypeVariable]
-                        ?.outputVariables?.length || 0
+                        ?.outputVariables
+                const outputVariablesLength = preBuildStageLastTaskOutputVariables?.length || 0
                 for (let j = 0; j < outputVariablesLength; j++) {
-                    if (
-                        formData[BuildStageVariable.PreBuild].steps[preBuildTaskLength - 1][stepTypeVariable]
-                            .outputVariables[j].name
-                    ) {
-                        const currentVariableDetails =
-                            formData[BuildStageVariable.PreBuild].steps[preBuildTaskLength - 1][stepTypeVariable]
-                                .outputVariables[j]
+                    if (preBuildStageLastTaskOutputVariables[j].name) {
+                        const currentVariableDetails = preBuildStageLastTaskOutputVariables[j]
                         preBuildStageVariables.push({
                             ...currentVariableDetails,
                             label: currentVariableDetails.name,
@@ -163,18 +156,15 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                         : RefVariableStageType.POST_CI,
             }
         }
-        if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.PLUGIN_REF) {
-            _variableDetail.format =
-                _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
-                    selectedVariableIndex
-                ].format
-        }
-        _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
-            selectedVariableIndex
-        ] = {
-            ..._formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
+        let _inputVariables =
+            _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
                 selectedVariableIndex
-            ],
+            ]
+        if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.PLUGIN_REF) {
+            _variableDetail.format = _inputVariables.format
+        }
+        _inputVariables = {
+            ..._inputVariables,
             ..._variableDetail,
         }
         setFormData(_formData)

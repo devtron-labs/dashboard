@@ -40,42 +40,39 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                     </div>
                     {formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail[
                         type === PluginVariableType.OUTPUT ? 'outputVariables' : 'inputVariables'
-                    ]?.map((variable, index) => (
-                        <>
-                            {type === PluginVariableType.INPUT && variable.description ? (
-                                <Tippy className="default-tt" arrow={false} content={variable.description}>
-                                    <div className="fs-13 fw-4 lh-28">
-                                        <span className="text-underline-dashed">{variable.name}</span>
-                                    </div>
-                                </Tippy>
-                            ) : (
-                                <div className="fs-13 fw-4 lh-28">{variable.name}</div>
-                            )}
+                    ]?.map((variable, index) => {
+                        const errorObj =
+                            formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.pluginRefStepDetail
+                                .inputVariables[index]
+                        return (
+                            <>
+                                {type === PluginVariableType.INPUT && variable.description ? (
+                                    <Tippy className="default-tt" arrow={false} content={variable.description}>
+                                        <div className="fs-13 fw-4 lh-28">
+                                            <span className="text-underline-dashed">{variable.name}</span>
+                                        </div>
+                                    </Tippy>
+                                ) : (
+                                    <div className="fs-13 fw-4 lh-28">{variable.name}</div>
+                                )}
 
-                            <div className="fs-13 fw-4 lh-28">{variable.format}</div>
-                            {type === PluginVariableType.INPUT ? (
-                                <div className="fs-14">
-                                    <CustomInputVariableSelect selectedVariableIndex={index} />
-                                    {formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.pluginRefStepDetail
-                                        .inputVariables[index] &&
-                                        !formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.pluginRefStepDetail
-                                            .inputVariables[index].isValid && (
+                                <div className="fs-13 fw-4 lh-28">{variable.format}</div>
+                                {type === PluginVariableType.INPUT ? (
+                                    <div className="fs-14">
+                                        <CustomInputVariableSelect selectedVariableIndex={index} />
+                                        {errorObj && !errorObj.isValid && (
                                             <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
                                                 <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                                <span>
-                                                    {
-                                                        formDataErrorObj[activeStageName].steps[selectedTaskIndex]
-                                                            ?.pluginRefStepDetail.inputVariables[index].message
-                                                    }
-                                                </span>
+                                                <span>{errorObj.message}</span>
                                             </span>
                                         )}
-                                </div>
-                            ) : (
-                                <div className="fs-13 fw-4 lh-28">{variable.description}</div>
-                            )}
-                        </>
-                    ))}
+                                    </div>
+                                ) : (
+                                    <div className="fs-13 fw-4 lh-28">{variable.description}</div>
+                                )}
+                            </>
+                        )
+                    })}
                 </div>
             )}
         </div>

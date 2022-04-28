@@ -7,7 +7,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import ReactSelect, { components } from 'react-select'
 import { ciPipelineContext } from './CIPipeline'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
-import { tempMultiSelectStyles } from './ciPipeline.utils'
+import { selectWithDefaultBG, tempMultiSelectStyles } from './ciPipeline.utils'
 import { OptionType } from '../app/types'
 
 export function ConditionContainer({ type }: { type: ConditionContainerType }) {
@@ -33,7 +33,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
     const [selectedOperator, setSelectedOperator] = useState<OptionType>(operatorOptions[0])
     const [conditionType, setConditionType] = useState<ConditionType>(
-        type === ConditionContainerType.PASS_FAILURE ? ConditionType.SUCCESS : ConditionType.TRIGGER,
+        type === ConditionContainerType.PASS_FAILURE ? ConditionType.PASS : ConditionType.TRIGGER,
     )
 
     const currentStepTypeVariable =
@@ -50,35 +50,21 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         let id = 0
         let conditionTypeToRemove
         if (type === ConditionContainerType.PASS_FAILURE) {
-            conditionTypeToRemove = conditionType === ConditionType.SUCCESS ? ConditionType.FAIL : ConditionType.SUCCESS
+            conditionTypeToRemove = conditionType === ConditionType.PASS ? ConditionType.FAIL : ConditionType.PASS
         } else {
             conditionTypeToRemove = conditionType === ConditionType.TRIGGER ? ConditionType.SKIP : ConditionType.TRIGGER
         }
-        if (!_formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails) {
-            _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails = []
+        let conditionDetails =
+            _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails
+        if (!conditionDetails) {
+            conditionDetails = []
         }
-        for (
-            var i = 0;
-            i < _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails.length;
-            i++
-        ) {
-            if (
-                _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[i]
-                    .conditionType === conditionTypeToRemove
-            ) {
-                _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails.splice(
-                    i,
-                    1,
-                )
+        for (let i = 0; i < conditionDetails.length; i++) {
+            if (conditionDetails[i].conditionType === conditionTypeToRemove) {
+                conditionDetails.splice(i, 1)
                 i--
             } else {
-                id =
-                    id <
-                    _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[i].id
-                        ? _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[
-                              i
-                          ].id
-                        : id
+                id = id < conditionDetails[i].id ? conditionDetails[i].id : id
             }
         }
         const newCondition = {
@@ -88,7 +74,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
             conditionType: conditionType,
             conditionalValue: '',
         }
-        _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails.push(newCondition)
+        conditionDetails.push(newCondition)
         setFormData(_formData)
     }
 
@@ -122,26 +108,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         ] = selectedValue.label
         setFormData(_formData)
     }
-    const selectWithDefaultBG = {
-        ...tempMultiSelectStyles,
-        control: (base, state) => ({
-            ...base,
-            border: 'none !important',
-            boxShadow: 'none',
-            minHeight: 'auto',
-            borderRadius: 'none',
-            height: '32px',
-            fontSize: '12px',
-            width: 'max-content',
-        }),
-        valueContainer: (base, state) => ({
-            ...base,
-            display: 'flex',
-        }),
-        indicatorsContainer: (base, state) => ({
-            ...base,
-        }),
-    }
+
     function formatOptionLabel(option) {
         return (
             <div className="flexbox justify-space">
@@ -152,12 +119,11 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
     }
 
     const ValueContainer = (props) => {
-        let value = props.getValue()[0]?.label
+        const value = props.getValue()[0]?.label
         return (
             <components.ValueContainer {...props}>
                 <>
-                    {!props.selectProps.menuIsOpen &&
-                        (value ? `${value}` : <span className="cn-5">Select variable</span>)}
+                    {!props.selectProps.menuIsOpen && (value ? value : <span className="cn-5">Select variable</span>)}
                     {React.cloneElement(props.children[1])}
                 </>
             </components.ValueContainer>
@@ -199,7 +165,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                         <RadioGroupItem
                             value={
                                 type === ConditionContainerType.PASS_FAILURE
-                                    ? ConditionType.SUCCESS
+                                    ? ConditionType.PASS
                                     : ConditionType.TRIGGER
                             }
                         >

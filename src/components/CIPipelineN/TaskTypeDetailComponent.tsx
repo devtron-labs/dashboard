@@ -45,32 +45,28 @@ export function TaskTypeDetailComponent() {
         setFormData(_formData)
     }
 
-    const handleMountChange = (e, key: 'mountCodeToContainer' | 'mountDirectoryFromHost') => {
+    const handleMountChange = (e) => {
         const _formData = { ...formData }
-        console.log(e.target.value)
         if (e.target.value === MountPath.TRUE) {
-            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = true
-            if (
-                key === 'mountDirectoryFromHost' &&
-                (!formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountPathMap ||
-                    formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountPathMap.length === 0)
-            ) {
-                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountPathMap = []
-                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountPathMap.push({
+            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[e.target.name] = true
+            let _mountPathMap = _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountPathMap
+            if (e.target.name === 'mountDirectoryFromHost' && (!_mountPathMap || _mountPathMap.length === 0)) {
+                _mountPathMap = []
+                _mountPathMap.push({
                     filePathOnDisk: null,
                     filePathOnContainer: null,
                 })
             }
         } else {
-            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = false
+            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[e.target.name] = false
         }
         setFormData(_formData)
     }
 
-    const handleCommandArgs = (e, key: 'command' | 'args') => {
+    const handleCommandArgs = (e, key: TaskFieldLabel.COMMAND | TaskFieldLabel.ARGS) => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap[0][key] =
-            key === 'command' ? e.target.value : e.target.value.replace(/\s+/g, '').split(',')
+            key === TaskFieldLabel.COMMAND ? e.target.value : e.target.value.replace(/\s+/g, '').split(',')
         setFormData(_formData)
     }
 
@@ -97,6 +93,7 @@ export function TaskTypeDetailComponent() {
         if (
             formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE
         ) {
+            const errorObj = formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
             return (
                 <>
                     <div className="row-container mb-12">
@@ -117,20 +114,12 @@ export function TaskTypeDetailComponent() {
                                 }
                             />
 
-                            {formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-                                ?.containerImagePath &&
-                                !formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-                                    ?.containerImagePath.isValid && (
-                                    <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
-                                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                        <span>
-                                            {
-                                                formDataErrorObj[activeStageName].steps[selectedTaskIndex]
-                                                    .inlineStepDetail?.containerImagePath.message
-                                            }
-                                        </span>
-                                    </span>
-                                )}
+                            {errorObj?.containerImagePath && !errorObj.containerImagePath.isValid && (
+                                <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
+                                    <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                    <span>{errorObj?.containerImagePath.message}</span>
+                                </span>
+                            )}
                         </div>
                     </div>
                     <div className="row-container mb-12 fs-13 fw-6 pt-8">
@@ -177,20 +166,12 @@ export function TaskTypeDetailComponent() {
                                         }
                                     />
 
-                                    {formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-                                        ?.storeScriptAt &&
-                                        !formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-                                            ?.storeScriptAt.isValid && (
-                                            <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
-                                                <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                                <span>
-                                                    {
-                                                        formDataErrorObj[activeStageName].steps[selectedTaskIndex]
-                                                            .inlineStepDetail?.storeScriptAt.message
-                                                    }
-                                                </span>
-                                            </span>
-                                        )}
+                                    {errorObj?.storeScriptAt && !errorObj.storeScriptAt.isValid && (
+                                        <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
+                                            <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                            <span>{errorObj?.storeScriptAt.message}</span>
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </>
@@ -249,7 +230,7 @@ export function TaskTypeDetailComponent() {
                             disabled={false}
                             name="mountCodeToContainer"
                             onChange={(event) => {
-                                handleMountChange(event, 'mountCodeToContainer')
+                                handleMountChange(event)
                             }}
                         >
                             <RadioGroupItem value={MountPath.FALSE}> {MountPath.FALSE} </RadioGroupItem>
@@ -274,22 +255,12 @@ export function TaskTypeDetailComponent() {
                                 />
                             </div>
                             <div className="pl-220 mb-20">
-                                {formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.inlineStepDetail[
-                                    'mountCodeToContainerPath'
-                                ] &&
-                                    !formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.inlineStepDetail[
-                                        'mountCodeToContainerPath'
-                                    ].isValid && (
-                                        <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
-                                            <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                            <span>
-                                                {
-                                                    formDataErrorObj[activeStageName].steps[selectedTaskIndex]
-                                                        ?.inlineStepDetail['mountCodeToContainerPath'].message
-                                                }
-                                            </span>
-                                        </span>
-                                    )}
+                                {errorObj['mountCodeToContainerPath'] && !errorObj['mountCodeToContainerPath'].isValid && (
+                                    <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
+                                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                        <span>{errorObj['mountCodeToContainerPath'].message}</span>
+                                    </span>
+                                )}
                             </div>
                         </>
                     )}
@@ -309,7 +280,7 @@ export function TaskTypeDetailComponent() {
                             disabled={false}
                             name="mountDirectoryFromHost"
                             onChange={(event) => {
-                                handleMountChange(event, 'mountDirectoryFromHost')
+                                handleMountChange(event)
                             }}
                         >
                             <RadioGroupItem value={MountPath.FALSE}> {MountPath.FALSE} </RadioGroupItem>
@@ -360,7 +331,6 @@ export function TaskTypeDetailComponent() {
         <>
             {renderShellScript()}
             {renderContainerScript()}
-            {/* {renderDockerScript()} */}
         </>
     )
 }

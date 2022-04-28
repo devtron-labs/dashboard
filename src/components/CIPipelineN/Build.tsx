@@ -126,9 +126,7 @@ export function Build({
         setFormData(_form)
     }
 
-    const noop = () => {}
-
-    const copyToClipboard = (text: string, callback = noop): void => {
+    const copyToClipboard = (text: string, callback = () => {}): void => {
         const textarea = document.createElement('textarea')
         const main = document.getElementsByClassName('main')[0]
         main.appendChild(textarea)
