@@ -189,7 +189,7 @@ export function TaskTypeDetailComponent() {
                             type="text"
                             onChange={(e) => handleCommandArgs(e, TaskFieldLabel.COMMAND)}
                             value={
-                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap[0][
+                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap?.[0][
                                     TaskFieldLabel.COMMAND
                                 ]
                             }
@@ -208,7 +208,7 @@ export function TaskTypeDetailComponent() {
                             type="text"
                             onChange={(e) => handleCommandArgs(e, TaskFieldLabel.ARGS)}
                             value={
-                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap[0][
+                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap?.[0][
                                     TaskFieldLabel.ARGS
                                 ]
                             }
