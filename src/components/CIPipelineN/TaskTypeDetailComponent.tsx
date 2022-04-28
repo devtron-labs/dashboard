@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import {
     FormErrorObjectType,
     FormType,
@@ -17,6 +17,11 @@ import MountFromHost from './MountFromHost'
 import { Checkbox, CHECKBOX_VALUE } from '../common'
 import CustomScript from './CustomScript'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import CreatableSelect from 'react-select/creatable'
+import { components } from 'react-select'
+import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
+import { pluginSelectStyle } from './ciPipeline.utils'
+import { OptionType } from '../app/types'
 
 export function TaskTypeDetailComponent() {
     const {
@@ -32,6 +37,16 @@ export function TaskTypeDetailComponent() {
         activeStageName: string
         formDataErrorObj: FormErrorObjectType
     } = useContext(ciPipelineContext)
+
+    const containerImageOptions = ['alpine:latest', 'python:latest', 'node:lts-slim'].map((containerImage) => ({
+        label: containerImage,
+        value: containerImage,
+    }))
+
+    const [selectedContainerImage, setSelectedContainerImage] = useState<OptionType>({
+        label: formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.containerImagePath || '',
+        value: formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.containerImagePath || '',
+    })
 
     const handleContainer = (e: any, key: 'containerImagePath' | 'imagePullSecret'): void => {
         const _formData = { ...formData }
@@ -96,6 +111,33 @@ export function TaskTypeDetailComponent() {
         }
     }
 
+    function Option(_props) {
+        const { selectProps, data } = _props
+        selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none', padding: '4px 10px' })
+        if (data.description) {
+            return (
+                <Tippy className="variable-description" arrow={false} placement="left" content={data.description}>
+                    <div className="flex left">
+                        <components.Option {..._props}>{_props.children}</components.Option>
+                    </div>
+                </Tippy>
+            )
+        } else {
+            return (
+                <div className="flex left">
+                    <components.Option {..._props}>{_props.children}</components.Option>
+                </div>
+            )
+        }
+    }
+
+    const handleContainerImageSelector = (selectedValue: OptionType) => {
+        setSelectedContainerImage(selectedValue)
+        const _formData = { ...formData }
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail['containerImagePath'] = selectedValue.label
+        setFormData(_formData)
+    }
+
     const renderContainerScript = () => {
         if (
             formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE
@@ -109,16 +151,28 @@ export function TaskTypeDetailComponent() {
                             contentDescription={TaskFieldDescription.CONTAINERIMAGEPATH}
                         />
                         <div style={{ width: '80% !important' }}>
-                            <input
-                                className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                                autoComplete="off"
-                                placeholder="Enter image path"
-                                type="text"
-                                onChange={(e) => handleContainer(e, 'containerImagePath')}
-                                value={
-                                    formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-                                        .containerImagePath
-                                }
+                            <CreatableSelect
+                                tabIndex={1}
+                                value={selectedContainerImage}
+                                options={containerImageOptions}
+                                placeholder="Select container image or input value"
+                                onChange={handleContainerImageSelector}
+                                styles={pluginSelectStyle}
+                                classNamePrefix="select"
+                                components={{
+                                    MenuList: (props) => {
+                                        return (
+                                            <components.MenuList {...props}>
+                                                <div className="cn-5 pl-12 pt-4 pb-4" style={{ fontStyle: 'italic' }}>
+                                                    Type to enter a custom value
+                                                </div>
+                                                {props.children}
+                                            </components.MenuList>
+                                        )
+                                    },
+                                    Option,
+                                    IndicatorSeparator: null,
+                                }}
                             />
 
                             {errorObj?.containerImagePath && !errorObj.containerImagePath.isValid && (
