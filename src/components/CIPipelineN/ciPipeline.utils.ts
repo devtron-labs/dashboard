@@ -106,7 +106,6 @@ export const selectWithDefaultBG = {
         borderRadius: 'none',
         height: '32px',
         fontSize: '12px',
-        width: 'max-content',
     }),
     valueContainer: (base, state) => ({
         ...base,
