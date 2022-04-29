@@ -37,7 +37,7 @@ function NodeTreeComponent({
         if (e) {
             e.stopPropagation();
         }
-        let _clickedNodes = generateSelectedNodes(clickedNodes, _treeNodes, _node, parents);
+        let _clickedNodes = generateSelectedNodes(clickedNodes, _treeNodes, _node, parents, isDevtronApp);
         registerNodeClick(_clickedNodes);
         setReRender(!reRender);
     };
@@ -65,7 +65,7 @@ function NodeTreeComponent({
         });
     }
 
-    const makeNodeTree = (treeNodes: iNodes, parents: string[]) => {
+    const makeNodeTree = (treeNodes: iNodes, parents: string[], isDevtronApp) => {
         return treeNodes.map((treeNode: iNode, index: number) => {
             return (
                 <div key={index + treeNode.name}>
@@ -73,7 +73,7 @@ function NodeTreeComponent({
                         className={`flex left cursor fw-6 cn-9 fs-14 `}
                         onClick={(e) => handleClickOnNodes(treeNode.name.toLowerCase(), parents, e)}
                     >
-                        {treeNode.childNodes?.length > 0 ? (
+                        {treeNode.childNodes?.length > 0 && !(isDevtronApp && treeNode.name === 'Pod') ? (
                             <React.Fragment>
                                 <DropDown
                                     className={`${treeNode.isSelected ? 'fcn-9' : 'fcn-5'}  rotate icon-dim-24 pointer`}
@@ -112,9 +112,9 @@ function NodeTreeComponent({
                         )}
                     </div>
 
-                    {treeNode.childNodes?.length > 0 && treeNode.isSelected && (
+                    {treeNode.childNodes?.length > 0 && treeNode.isSelected && !(isDevtronApp && treeNode.name === 'Pod') && (
                         <div className={`pl-24`}>
-                            {makeNodeTree(treeNode.childNodes, [...parents, treeNode.name.toLowerCase()])}{' '}
+                            {makeNodeTree(treeNode.childNodes, [...parents, treeNode.name.toLowerCase()], isDevtronApp)}{' '}
                         </div>
                     )}
                 </div>
@@ -122,7 +122,7 @@ function NodeTreeComponent({
         });
     };
 
-    return <div>{_treeNodes && _treeNodes.length > 0 && makeNodeTree(_treeNodes, [])}</div>;
+    return <div>{_treeNodes && _treeNodes.length > 0 && makeNodeTree(_treeNodes, [], isDevtronApp)}</div>;
 }
 
 export function generateSelectedNodes(
@@ -130,6 +130,7 @@ export function generateSelectedNodes(
     _treeNodes: iNode[],
     _node: string,
     parents?: string[],
+    isDevtronApp?: boolean
 ): Map<string, string> {
     let _nodeLowerCase = _node.toLowerCase();
 
@@ -162,10 +163,13 @@ export function generateSelectedNodes(
         if (parents.length === 2 || (parents.length === 1 && _nodeLowerCase !== NodeType.Pod.toLowerCase())) {
             // remove if leaf node selected previously if any
             let _childNodes = _treeNodes.flatMap((_tn) => _tn.childNodes ?? []);
-            let leafNode = _childNodes.find(
-                (_cn) =>
-                    clickedNodes.has(_cn.name.toLowerCase()) && _cn.name.toLowerCase() !== NodeType.Pod.toLowerCase(),
-            );
+            let leafNode = !isDevtronApp
+                ? _childNodes.find(
+                      (_cn) =>
+                          clickedNodes.has(_cn.name.toLowerCase()) &&
+                          _cn.name.toLowerCase() !== NodeType.Pod.toLowerCase(),
+                  )
+                : _childNodes.find((_cn) => clickedNodes.has(_cn.name.toLowerCase()))
             if (leafNode) {
                 clickedNodes.delete(leafNode.name.toLowerCase());
             } else {
@@ -189,7 +193,7 @@ export function generateSelectedNodes(
             }
         }
         parents.forEach((_p) => clickedNodes.set(_p.toLowerCase(), ''));
-        if (parents.length === 1 && _nodeLowerCase === NodeType.Pod.toLowerCase() && clickedNodes.has(_nodeLowerCase)) {
+        if (!isDevtronApp && parents.length === 1 && _nodeLowerCase === NodeType.Pod.toLowerCase() && clickedNodes.has(_nodeLowerCase)) {
             clickedNodes.delete(_nodeLowerCase);
         } else {
             /**
@@ -204,14 +208,14 @@ export function generateSelectedNodes(
                 (_node) =>
                     !(
                         _parentAggKeys.some((_p) => _p.toLowerCase() === _node.toLowerCase()) ||
-                        _node.toLowerCase() === NodeType.Pod.toLowerCase()
+                        (isDevtronApp && _node.toLowerCase() === NodeType.Pod.toLowerCase())
                     ),
             );
 
             if (
-                _clickedNodes.length > 0 &&
-                _nodeLowerCase !== NodeType.Pod.toLowerCase() &&
-                _nodeTypes.some((_type) => _clickedNodes.includes(_type.toLowerCase()))
+                _clickedNodes.length > 0 && ( isDevtronApp &&
+                !(_nodeLowerCase !== NodeType.Pod.toLowerCase() &&
+                _nodeTypes.some((_type) => _clickedNodes.includes(_type.toLowerCase()))))
             ) {
                 _clickedNodes.forEach((_node) => clickedNodes.delete(_node));
             }
