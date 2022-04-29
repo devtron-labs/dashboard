@@ -2,7 +2,7 @@ import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { get, post } from '../../services/api'
 import { CiPipelineSourceTypeBaseOptions } from './ciPipeline.util'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
-import { MaterialType, Githost, PatchAction, ScriptType, PluginType, BuildStageType } from './types'
+import { MaterialType, Githost, PatchAction, ScriptType, PluginType, BuildStageType, RefVariableType } from './types'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -349,7 +349,57 @@ function migrateOldData(
                     script: data.script,
                     conditionDetails: [],
                     outputDirectoryPath: [],
-                    inputVariables: [],
+                    //Default variable introduced as these could be present in some old script
+                    inputVariables: [
+                        {
+                            id: 4,
+                            name: 'DOCKER_IMAGE',
+                            value: '',
+                            format: 'STRING',
+                            description: '',
+                            defaultValue: '',
+                            refVariableUsed: true,
+                            variableType: RefVariableType.GLOBAL,
+                            refVariableStepIndex: 0,
+                            refVariableName: 'DOCKER_IMAGE',
+                        },
+                        {
+                            id: 3,
+                            name: 'DOCKER_REGISTRY_URL',
+                            value: '',
+                            format: 'STRING',
+                            description: '',
+                            defaultValue: '',
+                            refVariableUsed: true,
+                            variableType: RefVariableType.GLOBAL,
+                            refVariableStepIndex: 0,
+                            refVariableName: 'DOCKER_REGISTRY_URL',
+                        },
+                        {
+                            id: 2,
+                            name: 'DOCKER_REPOSITORY',
+                            value: '',
+                            format: 'STRING',
+                            description: '',
+                            defaultValue: '',
+                            refVariableUsed: true,
+                            variableType: RefVariableType.GLOBAL,
+                            refVariableStepIndex: 0,
+                            refVariableName: 'DOCKER_REPOSITORY',
+                        },
+                        {
+                            id: 1,
+                            name: 'DOCKER_IMAGE_TAG',
+                            value: '',
+                            format: 'STRING',
+                            description: '',
+                            defaultValue: '',
+                            refVariableUsed: true,
+                            variableType: RefVariableType.GLOBAL,
+                            refVariableStepIndex: 0,
+                            refVariableName: 'DOCKER_IMAGE_TAG',
+                        },
+                    ],
                     outputVariables: [],
                 },
             }
