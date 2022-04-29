@@ -157,3 +157,32 @@ export const inputFormatSelectStyle = {
         fontSize: '12px',
     }),
 }
+export const containerImageSelectStyles = {
+    ...tempMultiSelectStyles,
+    control: (base, state) => ({
+        ...base,
+        border: '1px solid var(--N200)',
+        boxShadow: 'none',
+        minHeight: 'auto',
+        borderRadius: '4px',
+        height: '32px',
+        fontSize: '12px',
+    }),
+    valueContainer: (base, state) => ({
+        ...base,
+        color: 'var(--N900)',
+        background: 'var(--N100) !important',
+        padding: '0px 10px',
+        display: 'flex',
+        height: '30px',
+        borderTopLeftRadius: '4px',
+        borderBottomLeftRadius: '4px',
+        fontSize: '12px',
+    }),
+    indicatorsContainer: (base, state) => ({
+        ...base,
+        background: 'var(--N100) !important',
+        borderTopRightRadius: '4px',
+        borderBottomRightRadius: '4px',
+    }),
+}

@@ -1821,19 +1821,19 @@ button.anchor {
 }
 
 .no-top-border {
-    border-top: none;
-}
-
-.no-top-border {
-    border-top: 0px;
+    border-top: 0px !important;
 }
 
 .no-bottom-border {
-    border-bottom: 0px;
+    border-bottom: 0px !important;
 }
 
 .no-left-border {
-    border-left: 0px;
+    border-left: 0px !important;
+}
+
+.no-right-border {
+    border-right: 0px !important;
 }
 
 .top-left-radius {

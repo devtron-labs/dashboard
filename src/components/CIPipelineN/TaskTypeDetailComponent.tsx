@@ -20,8 +20,8 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import CreatableSelect from 'react-select/creatable'
 import { components } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
-import { pluginSelectStyle } from './ciPipeline.utils'
 import { OptionType } from '../app/types'
+import { containerImageSelectStyles } from './ciPipeline.utils'
 
 export function TaskTypeDetailComponent() {
     const {
@@ -157,7 +157,7 @@ export function TaskTypeDetailComponent() {
                                 options={containerImageOptions}
                                 placeholder="Select container image or input value"
                                 onChange={handleContainerImageSelector}
-                                styles={pluginSelectStyle}
+                                styles={containerImageSelectStyles}
                                 classNamePrefix="select"
                                 components={{
                                     MenuList: (props) => {
