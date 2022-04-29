@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState, createContext, useContext } from 'react'
+import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useCallback } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { URLS, AppListConstants, ViewType, SERVER_MODE } from '../../../config'
 import { ErrorBoundary, Progressing, getLoginInfo, AppContext } from '../../common'
@@ -13,6 +13,7 @@ import { EnvType } from '../../v2/appDetails/appDetails.type'
 import DevtronStackManager from '../../v2/devtronStackManager/DevtronStackManager'
 import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { showError } from '../helpers/Helpers'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -101,8 +102,11 @@ export default function NavigationRoutes() {
 
     useEffect(() => {
         _getServerInfo()
+
+        // Fetching server info every 30s
         serverInfoTimer = setInterval(_getServerInfo, 30000)
 
+        // Clearing out 30s interval/polling on component unmount
         return (): void => {
             clearInterval(serverInfoTimer)
         }
@@ -113,9 +117,17 @@ export default function NavigationRoutes() {
             const { result } = await getServerInfo()
             setServerInfo(result)
         } catch (err) {
-            // handle error
+            // showError(err)
+            console.error(err)
         }
     }
+
+    const handleServerInfoUpdate = useCallback(
+        (serverInfo) => {
+            setServerInfo(serverInfo)
+        },
+        [serverInfo],
+    )
 
     if (pageState === ViewType.LOADING) {
         return <Progressing pageLoader />
@@ -150,7 +162,10 @@ export default function NavigationRoutes() {
                                             render={(props) => <Security {...props} serverMode={serverMode} />}
                                         />
                                         <Route path={URLS.STACK_MANAGER}>
-                                            <DevtronStackManager serverInfo={serverInfo} />
+                                            <DevtronStackManager
+                                                serverInfo={serverInfo}
+                                                handleServerInfoUpdate={handleServerInfoUpdate}
+                                            />
                                         </Route>
                                         <Route>
                                             <RedirectWithSentry />

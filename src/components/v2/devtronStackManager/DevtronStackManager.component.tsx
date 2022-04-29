@@ -1,6 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
-import { ModuleDetailsCardType, ModuleStatus, ModuleDetails, ServerInfo } from './DevtronStackManager.type'
+import {
+    ModuleDetailsCardType,
+    ModuleStatus,
+    ModuleDetailsViewType,
+    ModuleListingViewType,
+    StackManagerNavItemType,
+    StackManagerNavLinkType,
+    StackManagerPageHeaderType,
+    ModuleInstallationStatusType,
+    InstallationWrapperType,
+} from './DevtronStackManager.type'
 import EmptyState from '../../EmptyState/EmptyState'
 import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
 import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.svg'
@@ -21,8 +31,10 @@ import { URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
 import { toast } from 'react-toastify'
 import {
+    AboutSection,
     handleAction,
     isLatestVersionAvailable,
+    ModulesSection,
     MODULE_DETAILS_INFO,
     MODULE_DETAILS_MAP,
     MODULE_ICON_MAP,
@@ -113,13 +125,7 @@ export const ModulesListingView = ({
     isDiscoverModulesView,
     handleModuleCardClick,
     history,
-}: {
-    modulesList: ModuleDetails[]
-    currentVersion: string
-    isDiscoverModulesView?: boolean
-    handleModuleCardClick: (moduleDetails: ModuleDetails, fromDiscoverModules: boolean) => void
-    history: any
-}): JSX.Element => {
+}: ModuleListingViewType): JSX.Element => {
     return modulesList.length > 0 ? (
         <div className="flexbox flex-wrap left p-20">
             {modulesList.map((module, idx) => {
@@ -131,7 +137,7 @@ export const ModulesListingView = ({
                         handleModuleCardClick={handleModuleCardClick}
                         fromDiscoverModules={isDiscoverModulesView}
                         showBlur={
-                            isLatestVersionAvailable(module.baseMinVersionSupported, currentVersion) ||
+                            isLatestVersionAvailable(currentVersion, module.baseMinVersionSupported) ||
                             module.id === 'unknown'
                         }
                     />
@@ -150,7 +156,7 @@ export const ModulesListingView = ({
     )
 }
 
-const getUpdateStatusLabel = (installationStatus: ModuleStatus, currentVersion: string, newVersion: string) => {
+const getUpdateStatusLabel = (installationStatus: ModuleStatus, currentVersion: string, newVersion: string): string => {
     if (installationStatus === ModuleStatus.UPGRADING) {
         return '(Updating...)'
     } else if (
@@ -171,34 +177,8 @@ export const NavItem = ({
     installationStatus,
     currentVersion,
     newVersion,
-}: {
-    installedModulesCount: number
-    installationStatus: ModuleStatus
-    currentVersion: string
-    newVersion: string
-}): JSX.Element => {
-    const ExtentionsSection = [
-        {
-            name: 'Discover',
-            href: URLS.STACK_MANAGER_DISCOVER_MODULES,
-            icon: DiscoverIcon,
-            className: 'discover-modules__nav-link',
-        },
-        {
-            name: 'Installed',
-            href: URLS.STACK_MANAGER_INSTALLED_MODULES,
-            icon: InstalledIcon,
-            className: 'installed-modules__nav-link',
-        },
-    ]
-    const AboutSection = {
-        name: 'About Devtron',
-        href: URLS.STACK_MANAGER_ABOUT,
-        icon: DevtronIcon,
-        className: 'about-devtron__nav-link',
-    }
-
-    const getNavLink = (route) => {
+}: StackManagerNavItemType): JSX.Element => {
+    const getNavLink = (route: StackManagerNavLinkType): JSX.Element => {
         return (
             <NavLink
                 to={`${route.href}`}
@@ -234,7 +214,7 @@ export const NavItem = ({
     return (
         <div className="flex column left">
             <div className="section-heading cn-6 fs-12 fw-6 pl-8 mb-8">MODULES</div>
-            {ExtentionsSection.map((route) => getNavLink(route))}
+            {ModulesSection.map((route) => getNavLink(route))}
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
             {getNavLink(AboutSection)}
         </div>
@@ -245,11 +225,7 @@ export const PageHeader = ({
     detailsMode,
     selectedModule,
     handleBreadcrumbClick,
-}: {
-    detailsMode: string
-    selectedModule: ModuleDetails
-    handleBreadcrumbClick: () => void
-}) => {
+}: StackManagerPageHeaderType): JSX.Element => {
     return (
         <section className="page-header flex left">
             {!detailsMode && <div className="flex left page-header__title cn-9 fs-14 fw-6">Devtron Stack Manager</div>}
@@ -282,14 +258,7 @@ const InstallationStatus = ({
     isUpgradeView,
     upgradeVersion,
     latestVersionAvailable,
-}: {
-    installationStatus: ModuleStatus
-    appName?: string
-    logPodName?: string
-    isUpgradeView?: boolean
-    upgradeVersion?: string
-    latestVersionAvailable: boolean
-}) => {
+}: ModuleInstallationStatusType): JSX.Element => {
     return (
         <div
             className={`module-details__installtion-status cn-9 br-4 fs-13 fw-6 mb-16 status-${installationStatus} ${
@@ -363,7 +332,7 @@ const InstallationStatus = ({
     )
 }
 
-const GetHelpCard = () => {
+const GetHelpCard = (): JSX.Element => {
     return (
         <div className="module-details__get-help flex column top left br-4 cn-9 fs-13">
             <span className="fw-6 mb-10">Facing issues?</span>
@@ -387,7 +356,7 @@ const GetHelpCard = () => {
     )
 }
 
-const ModuleUpdateNote = () => {
+const ModuleUpdateNote = (): JSX.Element => {
     return (
         <div className="module-details__update-note br-4 cn-9 fs-13">
             <div className="fs-4 mb-8">Modules are updated along with Devtron updates.</div>
@@ -405,7 +374,7 @@ export const handleError = (
     isUpgradeView?: boolean,
     canUpdateServer?: boolean,
     setShowManagedByDialog?: React.Dispatch<React.SetStateAction<boolean>>,
-) => {
+): void => {
     if (err.code === 403) {
         if (canUpdateServer) {
             setShowManagedByDialog(true)
@@ -435,18 +404,20 @@ export const InstallationWrapper = ({
     setShowManagedByDialog,
     history,
     location,
-}: {
-    moduleName?: string
-    installationStatus: ModuleStatus
-    logPodName?: string
-    serverInfo: ServerInfo
-    upgradeVersion: string
-    isUpgradeView?: boolean
-    setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>
-    history: any
-    location: any
-}) => {
+}: InstallationWrapperType): JSX.Element => {
     const latestVersionAvailable = isLatestVersionAvailable(serverInfo?.currentVersion, upgradeVersion)
+
+    const handleActionButtonClick = () => {
+        handleAction(
+            moduleName,
+            isUpgradeView,
+            upgradeVersion,
+            serverInfo?.canUpdateServer,
+            setShowManagedByDialog,
+            history,
+            location,
+        )
+    }
 
     return (
         <div className="module-details__install-wrapper">
@@ -455,20 +426,7 @@ export const InstallationWrapper = ({
                 installationStatus !== ModuleStatus.INSTALLED &&
                 (installationStatus !== ModuleStatus.HEALTHY ||
                     (installationStatus === ModuleStatus.HEALTHY && latestVersionAvailable)) && (
-                    <button
-                        className="module-details__install-button cta flex mb-16"
-                        onClick={() =>
-                            handleAction(
-                                moduleName,
-                                isUpgradeView,
-                                upgradeVersion,
-                                serverInfo?.canUpdateServer,
-                                setShowManagedByDialog,
-                                history,
-                                location,
-                            )
-                        }
-                    >
+                    <button className="module-details__install-button cta flex mb-16" onClick={handleActionButtonClick}>
                         {(installationStatus === ModuleStatus.NOT_INSTALLED ||
                             (installationStatus === ModuleStatus.HEALTHY && latestVersionAvailable)) && (
                             <>
@@ -509,7 +467,6 @@ export const InstallationWrapper = ({
 
 export const ModuleDetailsView = ({
     moduleDetails,
-    handleModuleSelection,
     setDetailsMode,
     setShowManagedByDialog,
     serverInfo,
@@ -518,33 +475,18 @@ export const ModuleDetailsView = ({
     fromDiscoverModules,
     history,
     location,
-}: {
-    moduleDetails: ModuleDetails
-    handleModuleSelection: (moduleDetails: ModuleDetails, fromDiscoverModules: boolean, moduleId: string) => void
-    setDetailsMode: React.Dispatch<React.SetStateAction<string>>
-    setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>
-    serverInfo: ServerInfo
-    upgradeVersion: string
-    logPodName?: string
-    fromDiscoverModules?: boolean
-    history: any
-    location: any
-}): JSX.Element | null => {
+}: ModuleDetailsViewType): JSX.Element | null => {
     const _moduleDetails = MODULE_DETAILS_INFO[moduleDetails?.id]
 
     useEffect(() => {
-        const moduleId = new URLSearchParams(location.search).get('id')
-        if (!moduleDetails) {
-            if (!moduleId) {
-                setDetailsMode('')
-                history.push(
-                    fromDiscoverModules ? URLS.STACK_MANAGER_DISCOVER_MODULES : URLS.STACK_MANAGER_INSTALLED_MODULES,
-                )
-            } else {
-                handleModuleSelection(null, fromDiscoverModules, moduleId)
-            }
+        if (!moduleDetails && !new URLSearchParams(location.search).get('id')) {
+            setDetailsMode('')
+            history.push(
+                fromDiscoverModules ? URLS.STACK_MANAGER_DISCOVER_MODULES : URLS.STACK_MANAGER_INSTALLED_MODULES,
+            )
         }
     }, [])
+
     return _moduleDetails ? (
         <div className="module-details__view-container">
             <Carousel
@@ -569,7 +511,7 @@ export const ModuleDetailsView = ({
                 </div>
                 <InstallationWrapper
                     moduleName={moduleDetails?.id}
-                    installationStatus={moduleDetails.installationStatus}
+                    installationStatus={moduleDetails?.installationStatus}
                     serverInfo={serverInfo}
                     upgradeVersion={upgradeVersion}
                     logPodName={logPodName}
@@ -582,7 +524,7 @@ export const ModuleDetailsView = ({
     ) : null
 }
 
-export const NoModulesInstalledView = ({ history }): JSX.Element => {
+export const NoModulesInstalledView = ({ history }: { history: any }): JSX.Element => {
     return (
         <div className="no-modules__installed-view">
             <EmptyState>
@@ -607,7 +549,11 @@ export const NoModulesInstalledView = ({ history }): JSX.Element => {
     )
 }
 
-export const ManagedByDialog = ({ setShowManagedByDialog }) => {
+export const ManagedByDialog = ({
+    setShowManagedByDialog,
+}: {
+    setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>
+}): JSX.Element => {
     return (
         <ConfirmationDialog className="confirmation-dialog__body--w-400">
             <ConfirmationDialog.Icon src={Info} />

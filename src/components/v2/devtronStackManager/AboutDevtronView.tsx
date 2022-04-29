@@ -1,28 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import AboutDevtron from '../../../assets/img/about-devtron@2x.png'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
-import './AboutDevtronView.scss'
 import { InstallationWrapper } from './DevtronStackManager.component'
-import { ReleaseNotes, ServerInfo } from './DevtronStackManager.type'
+import { AboutDevtronViewType } from './DevtronStackManager.type'
+import './AboutDevtronView.scss'
 
-export default function AboutDevtronView({
+function AboutDevtronView({
     parentRef,
     releaseNotes,
     serverInfo,
     setShowManagedByDialog,
     logPodName,
+    handleTabChange,
+    selectedTabIndex,
     history,
     location,
-}: {
-    parentRef?: React.MutableRefObject<HTMLElement>
-    releaseNotes: ReleaseNotes[]
-    serverInfo: ServerInfo
-    setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>
-    logPodName: string
-    history: any
-    location: any
-}) {
-    const [selectedTabIndex, setSelectedTabIndex] = useState(0)
+}: AboutDevtronViewType) {
     const aboutDevtronTabs: string[] = ['About', 'Releases']
 
     useEffect(() => {
@@ -42,7 +35,7 @@ export default function AboutDevtronView({
             <ul className="tab-list tab-list--borderd mr-20 mb-24">
                 {aboutDevtronTabs.map((tab, index) => {
                     return (
-                        <li onClick={() => setSelectedTabIndex(index)} key={index} className="tab-list__tab">
+                        <li onClick={() => handleTabChange(index)} key={index} className="tab-list__tab">
                             <div className={`tab-list__tab-link ${selectedTabIndex == index ? 'active' : ''}`}>
                                 {tab}
                             </div>
@@ -111,3 +104,5 @@ export default function AboutDevtronView({
         </div>
     )
 }
+
+export default React.memo(AboutDevtronView)

@@ -11,12 +11,41 @@ export enum ModuleStatus {
     TIMEOUT = 'timeout',
     UNKNOWN = 'unknown',
     UPGRADING = 'upgrading',
-    UPGRADE_FAILED = 'upgradeFailed'
+    UPGRADE_FAILED = 'upgradeFailed',
 }
 
 export enum ModuleActions {
     INSTALL = 'install',
     UPGRADE = 'upgrade',
+}
+
+export interface StackDetailsType {
+    isLoading: boolean
+    discoverModulesList: ModuleDetails[]
+    installedModulesList: ModuleDetails[]
+    releaseNotes: ReleaseNotes[]
+    logPodName: string
+    errorStatusCode: number
+}
+
+export interface StackManagerNavItemType {
+    installedModulesCount: number
+    installationStatus: ModuleStatus
+    currentVersion: string
+    newVersion: string
+}
+
+export interface StackManagerNavLinkType {
+    name: string
+    href: string
+    icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
+    className: string
+}
+
+export interface StackManagerPageHeaderType {
+    detailsMode: string
+    selectedModule: ModuleDetails
+    handleBreadcrumbClick: () => void
 }
 
 export interface ModuleDetails {
@@ -27,6 +56,48 @@ export interface ModuleDetails {
     installationStatus: ModuleStatus
     baseMinVersionSupported?: string
 }
+
+export interface ModuleListingViewType {
+    modulesList: ModuleDetails[]
+    currentVersion: string
+    isDiscoverModulesView?: boolean
+    handleModuleCardClick: (moduleDetails: ModuleDetails, fromDiscoverModules: boolean) => void
+    history: any
+}
+
+export interface ModuleDetailsViewType {
+    moduleDetails: ModuleDetails
+    setDetailsMode: React.Dispatch<React.SetStateAction<string>>
+    setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>
+    serverInfo: ServerInfo
+    upgradeVersion: string
+    logPodName?: string
+    fromDiscoverModules?: boolean
+    history: any
+    location: any
+}
+
+export interface ModuleInstallationStatusType {
+    installationStatus: ModuleStatus
+    appName?: string
+    logPodName?: string
+    isUpgradeView?: boolean
+    upgradeVersion?: string
+    latestVersionAvailable: boolean
+}
+
+export interface InstallationWrapperType {
+    moduleName?: string
+    installationStatus: ModuleStatus
+    logPodName?: string
+    serverInfo: ServerInfo
+    upgradeVersion: string
+    isUpgradeView?: boolean
+    setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>
+    history: any
+    location: any
+}
+
 export interface ModuleDetailsInfo {
     name: string
     infoList: string[]
@@ -39,6 +110,18 @@ export interface ModuleDetailsCardType {
     className?: string
     handleModuleCardClick?: (moduleDetails: ModuleDetails, fromDiscoverModules: boolean) => void
     fromDiscoverModules?: boolean
+}
+
+export interface AboutDevtronViewType {
+    parentRef: React.MutableRefObject<HTMLElement>
+    releaseNotes: ReleaseNotes[]
+    serverInfo: ServerInfo
+    setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>
+    logPodName: string
+    handleTabChange: (tabIndex: number) => void
+    selectedTabIndex: number
+    history: any
+    location: any
 }
 
 export interface ModuleInfo {

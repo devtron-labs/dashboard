@@ -1,7 +1,10 @@
 import React from 'react'
-import { toast } from 'react-toastify'
+import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
+import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.svg'
+import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
 import CICDIcon from '../../../assets/img/ic-build-deploy.png'
 import MoreExtentionsIcon from '../../../assets/img/ic-more-extensions.png'
+import { URLS } from '../../../config'
 import { handleError } from './DevtronStackManager.component'
 import { executeModuleAction, executeServerAction } from './DevtronStackManager.service'
 import {
@@ -10,6 +13,7 @@ import {
     ModuleDetails,
     ModuleDetailsInfo,
     ModuleStatus,
+    StackManagerNavLinkType,
 } from './DevtronStackManager.type'
 
 export const MODULE_ICON_MAP = {
@@ -56,6 +60,27 @@ export const MODULE_DETAILS_INFO: Record<string, ModuleDetailsInfo> = {
             'In-Product discovery: How easy it is to discover the CI/CD offering primarily once the user is in the product. (Should we talk about modules on the login page?)',
         ],
     },
+}
+
+export const ModulesSection: StackManagerNavLinkType[] = [
+    {
+        name: 'Discover',
+        href: URLS.STACK_MANAGER_DISCOVER_MODULES,
+        icon: DiscoverIcon,
+        className: 'discover-modules__nav-link',
+    },
+    {
+        name: 'Installed',
+        href: URLS.STACK_MANAGER_INSTALLED_MODULES,
+        icon: InstalledIcon,
+        className: 'installed-modules__nav-link',
+    },
+]
+export const AboutSection: StackManagerNavLinkType = {
+    name: 'About Devtron',
+    href: URLS.STACK_MANAGER_ABOUT,
+    icon: DevtronIcon,
+    className: 'about-devtron__nav-link',
 }
 
 const actionTriggered = (location: any, history: any) => {
