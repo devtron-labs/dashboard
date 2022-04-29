@@ -144,7 +144,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                             VariableFieldType[type]
                         ][index]
                     return (
-                        <div key={`custom-input-variable${index}`} className="pl-220 mb-8">
+                        <div key={`custom-input-variable${index}-${variable.id}`} className="pl-220 mb-8">
                             <div className="flexbox justify-space">
                                 <div className="custom-variable-container w-100">
                                     <Equal className="icon-dim-40 variable-equal-icon" />
@@ -210,13 +210,11 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                             <div
                                                 style={{
                                                     width: '20%',
-                                                    borderRight: '1px solid var(--N200)',
-                                                    borderLeft: '1px solid var(--N200)',
                                                 }}
                                                 className="bcn-1"
                                             >
                                                 {variable.format && variable.refVariableUsed ? (
-                                                    <span className="fs-12 fw-4 pl-12 pr-12 pt-5 pb-4 flex left">
+                                                    <span className="fs-12 fw-4 pl-12 pr-12 pt-5 pb-5 flex left en-2 bw-1 no-left-border">
                                                         {variable.format}
                                                     </span>
                                                 ) : (

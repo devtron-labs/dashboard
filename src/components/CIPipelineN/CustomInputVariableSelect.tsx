@@ -128,14 +128,12 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                     activeStageName === BuildStageVariable.PreBuild
                         ? RefVariableStageType.PRE_CI
                         : RefVariableStageType.POST_CI,
-                format: selectedValue['format'],
             }
         } else if (selectedValue['__isNew__']) {
             _variableDetail = {
                 refVariableUsed: false,
                 variableType: RefVariableType.NEW,
                 value: selectedValue.label,
-                format: '',
                 refVariableName: '',
                 refVariableStage:
                     activeStageName === BuildStageVariable.PreBuild
@@ -148,7 +146,6 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 variableType: RefVariableType.GLOBAL,
                 refVariableStepIndex: 0,
                 refVariableName: selectedValue.label,
-                format: selectedValue['format'],
                 value: '',
                 refVariableStage:
                     activeStageName === BuildStageVariable.PreBuild
