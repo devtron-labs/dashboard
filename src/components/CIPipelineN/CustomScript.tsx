@@ -30,6 +30,7 @@ function CustomScript({ handleScriptChange }: CustomScriptType) {
                 />
                 <div className="script-container">
                     <CodeEditor
+                        theme="vs-alice-blue"
                         mode="shell"
                         shebang="#!/bin/sh"
                         onChange={(value) => handleScriptChange({ target: { value } })}

@@ -163,6 +163,7 @@
     border: 1px solid #d6dbdf;
     padding: 8px 0;
     border-radius: 4px;
+    background: var(--N50);
 }
 
 .script-container .react-monaco-editor-container {
