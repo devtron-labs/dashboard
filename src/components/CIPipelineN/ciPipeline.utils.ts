@@ -135,7 +135,7 @@ export const outputFormatSelectStyle = {
         background: 'var(--N100) !important',
         padding: '0px 10px',
         display: 'flex',
-        height: '31px',
+        height: '30px',
         fontSize: '12px',
     }),
     indicatorsContainer: (base, state) => ({

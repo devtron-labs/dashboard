@@ -292,24 +292,20 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             return
         }
         setLoadingData(true)
-        setShowFormError(true)
-        const errObj = validationRules.name(formData.name)
-        let valid = formData.materials.reduce((isValid, mat) => {
-            isValid = isValid && validationRules.sourceValue(mat.value).isValid
-            return isValid
-        }, true)
-        valid = valid && errObj.isValid
         validateStage(BuildStageVariable.PreBuild)
         validateStage(BuildStageVariable.Build)
         validateStage(BuildStageVariable.PostBuild)
-        valid = valid && formDataErrorObj.preBuildStage.isValid && formDataErrorObj.postBuildStage.isValid
         const scanValidation = formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
         if (!scanValidation) {
             setLoadingData(false)
             toast.error('Scanning is mandatory, please enable scanning')
             return
         }
-        if (!valid) {
+        if (
+            !formDataErrorObj.buildStage.isValid ||
+            !formDataErrorObj.preBuildStage.isValid ||
+            !formDataErrorObj.postBuildStage.isValid
+        ) {
             setLoadingData(false)
             toast.error('Some Required Fields are missing')
             return
@@ -429,6 +425,14 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         if (stageName === BuildStageVariable.Build) {
             _formDataErrorObj.name = validationRules.name(formData.name)
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
+            let valid = formData.materials.reduce((isValid, mat) => {
+                isValid = isValid && validationRules.sourceValue(mat.value).isValid
+                return isValid
+            }, true)
+            _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid && valid
+            if (!_formDataErrorObj[BuildStageVariable.Build].isValid) {
+                setShowFormError(true)
+            }
         } else {
             const stepsLength = formData[stageName].steps.length
             let isStageValid = true
