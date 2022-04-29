@@ -300,6 +300,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         }, true)
         valid = valid && errObj.isValid
         validateStage(BuildStageVariable.PreBuild)
+        validateStage(BuildStageVariable.Build)
         validateStage(BuildStageVariable.PostBuild)
         valid = valid && formDataErrorObj.preBuildStage.isValid && formDataErrorObj.postBuildStage.isValid
         const scanValidation = formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING

@@ -71,6 +71,7 @@ export function TaskTypeDetailComponent() {
                     filePathOnDisk: null,
                     filePathOnContainer: null,
                 })
+                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountPathMap = _mountPathMap
             }
             if (
                 e.target.name === 'mountCodeToContainer' &&
@@ -176,14 +177,14 @@ export function TaskTypeDetailComponent() {
                             />
 
                             {errorObj?.containerImagePath && !errorObj.containerImagePath.isValid && (
-                                <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
+                                <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
                                     <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
                                     <span>{errorObj?.containerImagePath.message}</span>
                                 </span>
                             )}
                         </div>
                     </div>
-                    <div className="row-container mb-12 fs-13 fw-6 pt-8">
+                    <div className="row-container mb-12 fs-13 fw-6">
                         <div></div>
                         <Checkbox
                             isChecked={
@@ -231,7 +232,7 @@ export function TaskTypeDetailComponent() {
                                     />
 
                                     {errorObj?.storeScriptAt && !errorObj.storeScriptAt.isValid && (
-                                        <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
+                                        <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
                                             <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
                                             <span>{errorObj?.storeScriptAt.message}</span>
                                         </span>
@@ -302,8 +303,8 @@ export function TaskTypeDetailComponent() {
                         </RadioGroup>
                     </div>
                     {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer && (
-                        <>
-                            <div className="row-container mb-12">
+                        <div className="mb-12">
+                            <div className="row-container">
                                 <div className="fw-6 fs-13 lh-32 cn-7 "></div>
                                 <input
                                     style={{ width: '80% !important' }}
@@ -318,15 +319,15 @@ export function TaskTypeDetailComponent() {
                                     }
                                 />
                             </div>
-                            <div className="pl-220 mb-20">
+                            <div className="pl-220">
                                 {errorObj['mountCodeToContainerPath'] && !errorObj['mountCodeToContainerPath'].isValid && (
-                                    <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
+                                    <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
                                         <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
                                         <span>{errorObj['mountCodeToContainerPath'].message}</span>
                                     </span>
                                 )}
                             </div>
-                        </>
+                        </div>
                     )}
                     <div className="row-container mb-12">
                         <TaskFieldTippyDescription

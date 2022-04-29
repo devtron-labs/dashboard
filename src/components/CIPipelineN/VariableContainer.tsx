@@ -77,7 +77,7 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                                     <div className="fs-14">
                                         <CustomInputVariableSelect selectedVariableIndex={index} />
                                         {errorObj && !errorObj.isValid && (
-                                            <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
+                                            <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
                                                 <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
                                                 <span>{errorObj.message}</span>
                                             </span>

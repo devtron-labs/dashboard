@@ -22,24 +22,28 @@ function CustomScript({ handleScriptChange }: CustomScriptType) {
         formDataErrorObj: FormErrorObjectType
     } = useContext(ciPipelineContext)
     return (
-        <div className="row-container mb-12">
-            <TaskFieldTippyDescription
-                taskField={TaskFieldLabel.SCRIPT}
-                contentDescription={TaskFieldDescription.SCRIPT}
-            />
-            <div className="script-container">
-                <CodeEditor
-                    mode="shell"
-                    shebang="#!/bin/sh"
-                    onChange={(value) => handleScriptChange({ target: { value } })}
-                    inline
-                    height={300}
-                    value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script}
-                ></CodeEditor>
+        <div className="mb-12">
+            <div className="row-container">
+                <TaskFieldTippyDescription
+                    taskField={TaskFieldLabel.SCRIPT}
+                    contentDescription={TaskFieldDescription.SCRIPT}
+                />
+                <div className="script-container">
+                    <CodeEditor
+                        mode="shell"
+                        shebang="#!/bin/sh"
+                        onChange={(value) => handleScriptChange({ target: { value } })}
+                        inline
+                        height={300}
+                        value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script}
+                    ></CodeEditor>
+                </div>
+            </div>
 
+            <div className="pl-220">
                 {formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail?.script &&
                     !formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail?.script.isValid && (
-                        <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
+                        <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
                             <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
                             <span>
                                 {

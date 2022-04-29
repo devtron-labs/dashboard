@@ -144,8 +144,8 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                             VariableFieldType[type]
                         ][index]
                     return (
-                        <div key={`custom-input-variable${index}`}>
-                            <div className="pl-220 mb-8 flexbox justify-space">
+                        <div key={`custom-input-variable${index}`} className="pl-220 mb-8">
+                            <div className="flexbox justify-space">
                                 <div className="custom-variable-container w-100">
                                     <Equal className="icon-dim-40 variable-equal-icon" />
 
@@ -264,12 +264,10 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                 />
                             </div>
                             {errorObj && !errorObj.isValid && (
-                                <div className="pl-220 mb-20">
-                                    <span className="flexbox cr-5 mb-4 mt-4 fw-5 fs-11 flexbox">
-                                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                        <span>{errorObj.message}</span>
-                                    </span>
-                                </div>
+                                <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
+                                    <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                    <span>{errorObj.message}</span>
+                                </span>
                             )}
                         </div>
                     )
