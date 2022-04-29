@@ -245,7 +245,6 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
 
     return (
         <CreatableSelect
-            autoFocus
             tabIndex={1}
             value={selectedOutputVariable}
             options={inputVariableOptions}

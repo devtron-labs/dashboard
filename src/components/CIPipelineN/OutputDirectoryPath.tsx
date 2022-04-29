@@ -41,8 +41,8 @@ function OutputDirectoryPath() {
     }
 
     return (
-        <div>
-            <div className="row-container mb-4 mt-4">
+        <div className="mb-12">
+            <div className="row-container">
                 <TaskFieldTippyDescription
                     taskField={TaskFieldLabel.OUTPUTDIRECTORYPATH}
                     contentDescription={TaskFieldDescription.OUTPUTDIRECTORYPATH}
@@ -54,7 +54,7 @@ function OutputDirectoryPath() {
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath?.map((elm, index) => {
                 return (
-                    <div className="custom-script__output-directory pl-220 mb-4 mt-4" key={`output-directory-${index}`}>
+                    <div className="custom-script__output-directory pl-220 mt-8" key={`output-directory-${index}`}>
                         <input
                             className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                             autoComplete="off"

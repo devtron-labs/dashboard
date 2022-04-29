@@ -147,6 +147,15 @@ export const outputFormatSelectStyle = {
 
 export const containerImageSelectStyles = {
     ...baseSelectStyles,
+    control: (base, state) => ({
+        ...base,
+        border: '1px solid var(--N200)',
+        boxShadow: 'none',
+        minHeight: 'auto',
+        borderRadius: '4px',
+        height: '32px',
+        fontSize: '12px',
+    }),
     valueContainer: (base, state) => ({
         ...base,
         color: 'var(--N900)',
