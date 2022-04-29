@@ -360,7 +360,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         validationRules.conditionDetail(element),
                     )
                     taskErrorobj.isValid =
-                        taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable]['conditionDetail'][index].isValid
+                        taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable]['conditionDetails'][index].isValid
                 })
                 if (taskData.stepType === PluginType.INLINE) {
                     taskErrorobj.inlineStepDetail.outputVariables = []
