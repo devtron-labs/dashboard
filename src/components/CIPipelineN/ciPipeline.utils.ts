@@ -1,7 +1,7 @@
-export const tempMultiSelectStyles = {
+export const baseSelectStyles = {
     control: (base, state) => ({
         ...base,
-        border: 'none',
+        border: '1px solid var(--N200)',
         boxShadow: 'none',
         minHeight: 'auto',
         borderRadius: 'none',
@@ -30,7 +30,7 @@ export const tempMultiSelectStyles = {
         background: 'var(--N100) !important',
         padding: '0px 10px',
         display: 'flex',
-        height: '32px',
+        height: '30px',
         fontSize: '12px',
     }),
     indicatorsContainer: (base, state) => ({
@@ -44,7 +44,7 @@ export const tempMultiSelectStyles = {
 }
 
 export const pluginSelectStyle = {
-    ...tempMultiSelectStyles,
+    ...baseSelectStyles,
     control: (base, state) => ({
         ...base,
         border: '1px solid var(--N200)',
@@ -97,7 +97,7 @@ export const yamlEditorSelectStyle = {
 }
 
 export const selectWithDefaultBG = {
-    ...tempMultiSelectStyles,
+    ...baseSelectStyles,
     control: (base, state) => ({
         ...base,
         border: 'none',
@@ -106,6 +106,7 @@ export const selectWithDefaultBG = {
         borderRadius: 'none',
         height: '32px',
         fontSize: '12px',
+        width: 'max-content',
     }),
     valueContainer: (base, state) => ({
         ...base,
@@ -117,10 +118,10 @@ export const selectWithDefaultBG = {
 }
 
 export const outputFormatSelectStyle = {
-    ...tempMultiSelectStyles,
+    ...baseSelectStyles,
     control: (base, state) => ({
         ...base,
-        border: 'none',
+        border: '1px solid var(--N200)',
         boxShadow: 'none',
         minHeight: 'auto',
         borderRadius: 'none',
@@ -144,29 +145,8 @@ export const outputFormatSelectStyle = {
     }),
 }
 
-export const inputFormatSelectStyle = {
-    ...tempMultiSelectStyles,
-    valueContainer: (base, state) => ({
-        ...base,
-        color: 'var(--N900)',
-        background: 'var(--N100) !important',
-        padding: '0px 10px',
-        display: 'flex',
-        height: '32px',
-        fontSize: '12px',
-    }),
-}
 export const containerImageSelectStyles = {
-    ...tempMultiSelectStyles,
-    control: (base, state) => ({
-        ...base,
-        border: '1px solid var(--N200)',
-        boxShadow: 'none',
-        minHeight: 'auto',
-        borderRadius: '4px',
-        height: '32px',
-        fontSize: '12px',
-    }),
+    ...baseSelectStyles,
     valueContainer: (base, state) => ({
         ...base,
         color: 'var(--N900)',

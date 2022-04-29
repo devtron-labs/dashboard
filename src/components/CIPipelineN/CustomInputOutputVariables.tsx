@@ -14,7 +14,7 @@ import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import ReactSelect from 'react-select'
-import { inputFormatSelectStyle, outputFormatSelectStyle } from './ciPipeline.utils'
+import { baseSelectStyles, outputFormatSelectStyle } from './ciPipeline.utils'
 import Tippy from '@tippyjs/react'
 import { Option } from '../v2/common/ReactSelect.utils'
 import { OptionType } from '../app/types'
@@ -157,10 +157,10 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                 }}
                                             >
                                                 <input
-                                                    className={`w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 h-32 ${
+                                                    className={`w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 h-32 no-bottom-border ${
                                                         type === PluginVariableType.INPUT
-                                                            ? 'top-radius-4 border-bottom'
-                                                            : 'no-bottom-border top-left-radius'
+                                                            ? 'top-radius-4'
+                                                            : 'top-left-radius'
                                                     }`}
                                                     type="text"
                                                     placeholder="Variable name"
@@ -237,7 +237,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                             Option,
                                                         }}
                                                         name="format"
-                                                        styles={inputFormatSelectStyle}
+                                                        styles={baseSelectStyles}
                                                     />
                                                 )}
                                             </div>
@@ -245,7 +245,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                     )}
                                     <input
                                         style={{ width: '80% !important' }}
-                                        className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 bottom-radius-4 h-32"
+                                        className={`w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 bottom-radius-4 h-32 ${
+                                            type === PluginVariableType.INPUT ? 'no-top-border' : ''
+                                        }`}
                                         autoComplete="off"
                                         placeholder="Description"
                                         type="text"

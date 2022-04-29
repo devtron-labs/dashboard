@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { pluginSelectStyle, tempMultiSelectStyles } from './ciPipeline.utils'
+import { pluginSelectStyle, baseSelectStyles } from './ciPipeline.utils'
 import { RefVariableType, PluginType, FormType, VariableType, RefVariableStageType } from '../ciPipeline/types'
 import { ciPipelineContext } from './CIPipeline'
 import CreatableSelect from 'react-select/creatable'
@@ -256,7 +256,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             onChange={handleOutputVariableSelector}
             styles={
                 formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
-                    ? tempMultiSelectStyles
+                    ? baseSelectStyles
                     : pluginSelectStyle
             }
             formatOptionLabel={formatOptionLabel}
