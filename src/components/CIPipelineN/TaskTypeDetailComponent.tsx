@@ -151,17 +151,25 @@ export function TaskTypeDetailComponent() {
         }
     }
 
-    const createOption = (label: string) => ({
-        label,
-        value: label,
-    })
-
     const handleKeyDown = (event) => {
         switch (event.key) {
             case 'Enter':
             case 'Tab':
                 event.target.blur()
         }
+    }
+
+    const ValueContainer = (props) => {
+        let value = props.getValue()[0]?.label
+        return (
+            <components.ValueContainer {...props}>
+                <>
+                    {!props.selectProps.menuIsOpen &&
+                        (value ? `${value}` : <span className="cn-5">Select or enter image</span>)}
+                    {React.cloneElement(props.children[1])}
+                </>
+            </components.ValueContainer>
+        )
     }
 
     const renderContainerScript = () => {
@@ -198,6 +206,7 @@ export function TaskTypeDetailComponent() {
                                     },
                                     Option,
                                     IndicatorSeparator: null,
+                                    ValueContainer,
                                 }}
                                 noOptionsMessage={(): string => {
                                     return 'No matching options'

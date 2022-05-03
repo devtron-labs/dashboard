@@ -130,19 +130,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                         ? RefVariableStageType.PRE_CI
                         : RefVariableStageType.POST_CI,
             }
-        } else if (selectedValue['__isNew__']) {
-            _variableDetail = {
-                refVariableUsed: false,
-                variableType: RefVariableType.NEW,
-                value: selectedValue.label,
-                refVariableName: '',
-                format: selectedValue['format'],
-                refVariableStage:
-                    activeStageName === BuildStageVariable.PreBuild
-                        ? RefVariableStageType.PRE_CI
-                        : RefVariableStageType.POST_CI,
-            }
-        } else {
+        } else if (selectedValue['variableType'] === RefVariableType.GLOBAL) {
             _variableDetail = {
                 refVariableUsed: true,
                 variableType: RefVariableType.GLOBAL,
@@ -150,6 +138,17 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 refVariableName: selectedValue.label,
                 format: selectedValue['format'],
                 value: '',
+                refVariableStage:
+                    activeStageName === BuildStageVariable.PreBuild
+                        ? RefVariableStageType.PRE_CI
+                        : RefVariableStageType.POST_CI,
+            }
+        } else {
+            _variableDetail = {
+                refVariableUsed: false,
+                variableType: RefVariableType.NEW,
+                value: selectedValue.label,
+                refVariableName: '',
                 refVariableStage:
                     activeStageName === BuildStageVariable.PreBuild
                         ? RefVariableStageType.PRE_CI
@@ -246,6 +245,23 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         }
     }
 
+    function handleCreatableBlur(e) {
+        if (e.target.value) {
+            handleOutputVariableSelector({
+                label: e.target.value,
+                value: e.target.value,
+            })
+        }
+    }
+
+    const handleKeyDown = (event) => {
+        switch (event.key) {
+            case 'Enter':
+            case 'Tab':
+                event.target.blur()
+        }
+    }
+
     return (
         <CreatableSelect
             tabIndex={1}
@@ -275,6 +291,12 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 ValueContainer,
                 IndicatorSeparator: null,
             }}
+            noOptionsMessage={(): string => {
+                return 'No matching options'
+            }}
+            onBlur={handleCreatableBlur}
+            isValidNewOption={() => false}
+            onKeyDown={handleKeyDown}
         />
     )
 }

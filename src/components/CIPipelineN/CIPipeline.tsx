@@ -158,6 +158,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                     variable.value = variable.name
                     variable.format = variable.format
                     variable.description = variable.description || ''
+                    variable.variableType = RefVariableType.GLOBAL
                     delete variable.name
                     return variable
                 })

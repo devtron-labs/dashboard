@@ -215,7 +215,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                         width: '20%',
                                                         borderTopRightRadius: '4px',
                                                     }}
-                                                    className='border-right'
+                                                    className="border-right"
                                                 >
                                                     <ReactSelect
                                                         value={
@@ -249,31 +249,31 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                     width: '20%',
                                                 }}
                                             >
-                                                {variable.format && variable.refVariableUsed ? (
-                                                    <span className="fs-12 fw-4 pl-12 pr-12 pt-5 pb-5 flex left en-2 bw-1 no-left-border">
-                                                        {variable.format}
-                                                    </span>
-                                                ) : (
-                                                    <ReactSelect
-                                                        value={
-                                                            variable.format
-                                                                ? { label: variable.format, value: variable.format }
-                                                                : formatOptions[0]
-                                                        }
-                                                        tabIndex={2}
-                                                        onChange={(selectedValue) => {
-                                                            handleFormatChange(selectedValue, index)
-                                                        }}
-                                                        options={formatOptions}
-                                                        isSearchable={false}
-                                                        components={{
-                                                            IndicatorSeparator: null,
-                                                            Option,
-                                                        }}
-                                                        name="format"
-                                                        styles={baseSelectStyles}
-                                                    />
-                                                )}
+                                                <ReactSelect
+                                                    value={
+                                                        variable.format
+                                                            ? { label: variable.format, value: variable.format }
+                                                            : formatOptions[0]
+                                                    }
+                                                    tabIndex={2}
+                                                    onChange={(selectedValue) => {
+                                                        handleFormatChange(selectedValue, index)
+                                                    }}
+                                                    options={formatOptions}
+                                                    isSearchable={false}
+                                                    components={{
+                                                        IndicatorSeparator: null,
+                                                        Option,
+                                                    }}
+                                                    name="format"
+                                                    styles={baseSelectStyles}
+                                                    isDisabled={
+                                                        variable.format &&
+                                                        (variable.variableType === RefVariableType.GLOBAL ||
+                                                            variable.variableType ===
+                                                                RefVariableType.FROM_PREVIOUS_STEP)
+                                                    }
+                                                />
                                             </div>
                                         </div>
                                     )}

@@ -7,6 +7,8 @@ export const baseSelectStyles = {
         borderRadius: 'none',
         height: '32px',
         fontSize: '12px',
+        borderLeft: '0',
+        cursor: state.isDisabled ? 'not-allowed' : 'normal',
     }),
     singleValue: (base, state) => ({
         ...base,
@@ -27,15 +29,17 @@ export const baseSelectStyles = {
     valueContainer: (base, state) => ({
         ...base,
         color: 'var(--N900)',
-        background: 'var(--N50) !important',
+        background: state.isDisabled ? 'var(--N100) !important' : 'var(--N50) !important',
         padding: '0px 10px',
         display: 'flex',
         height: '30px',
         fontSize: '12px',
+        cursor: state.isDisabled ? 'not-allowed' : 'normal',
+        pointerEvents: 'all',
     }),
     indicatorsContainer: (base, state) => ({
         ...base,
-        background: 'var(--N50) !important',
+        background: state.isDisabled ? 'var(--N100) !important' : 'var(--N50) !important',
     }),
     menu: (base, state) => ({
         ...base,
