@@ -58,12 +58,14 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const addVariable = (): void => {
         const _formData = { ...formData }
         const id =
-            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.reduce(
-                (prev, current) => (prev.id > current.id ? prev : current),
-                {
-                    id: 0,
-                },
-            ).id + 1
+            (_formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]] &&
+                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].reduce(
+                    (prev, current) => (prev.id > current.id ? prev : current),
+                    {
+                        id: 0,
+                    },
+                ).id + 1) ||
+            0
         const newVariable = {
             id: id,
             name: '',
@@ -181,7 +183,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                             VariableFieldType[type]
                         ][index]
                     return (
-                        <div key={`custom-input-variable${index}-${variable.id}`} className="pl-220 mb-8">
+                        <div key={`custom-input-variable${variable.id}`} className="pl-220 mb-8">
                             <div className="flexbox justify-space">
                                 <div className="custom-variable-container w-100">
                                     <Equal className="icon-dim-40 variable-equal-icon" />
