@@ -56,7 +56,7 @@ function OutputDirectoryPath() {
                 return (
                     <div className="custom-script__output-directory pl-220 mt-8" key={`output-directory-${index}`}>
                         <input
-                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                             autoComplete="off"
                             placeholder="Enter directory path"
                             type="text"

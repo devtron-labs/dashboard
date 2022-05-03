@@ -58,14 +58,12 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const addVariable = (): void => {
         const _formData = { ...formData }
         const id =
-            (_formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]] &&
-                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].reduce(
-                    (prev, current) => (prev.id > current.id ? prev : current),
-                    {
-                        id: 0,
-                    },
-                ).id + 1) ||
-            0
+            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.reduce(
+                (prev, current) => (prev.id > current.id ? prev : current),
+                {
+                    id: 0,
+                },
+            ).id + 1
         const newVariable = {
             id: id,
             name: '',
@@ -183,7 +181,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                             VariableFieldType[type]
                         ][index]
                     return (
-                        <div key={`custom-input-variable${variable.id}`} className="pl-220 mb-8">
+                        <div key={`custom-input-variable${index}-${variable.id}`} className="pl-220 mb-8">
                             <div className="flexbox justify-space">
                                 <div className="custom-variable-container w-100">
                                     <Equal className="icon-dim-40 variable-equal-icon" />
@@ -196,7 +194,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                 }}
                                             >
                                                 <input
-                                                    className={`w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 h-32 no-bottom-border ${
+                                                    className={`w-100 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 h-32 no-bottom-border ${
                                                         type === PluginVariableType.INPUT
                                                             ? 'top-radius-4'
                                                             : 'top-left-radius'
@@ -217,7 +215,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                         width: '20%',
                                                         borderTopRightRadius: '4px',
                                                     }}
-                                                    className="border-right border-top"
+                                                    className='border-right'
                                                 >
                                                     <ReactSelect
                                                         value={
@@ -250,7 +248,6 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                 style={{
                                                     width: '20%',
                                                 }}
-                                                className="bcn-1"
                                             >
                                                 {variable.format && variable.refVariableUsed ? (
                                                     <span className="fs-12 fw-4 pl-12 pr-12 pt-5 pb-5 flex left en-2 bw-1 no-left-border">
@@ -282,7 +279,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                     )}
                                     <input
                                         style={{ width: '80% !important' }}
-                                        className={`w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 bottom-radius-4 h-32 ${
+                                        className={`w-100 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 bottom-radius-4 h-32 ${
                                             type === PluginVariableType.INPUT ? 'no-top-border' : ''
                                         }`}
                                         autoComplete="off"

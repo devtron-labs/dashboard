@@ -27,7 +27,7 @@ export const baseSelectStyles = {
     valueContainer: (base, state) => ({
         ...base,
         color: 'var(--N900)',
-        background: 'var(--N100) !important',
+        background: 'var(--N50) !important',
         padding: '0px 10px',
         display: 'flex',
         height: '30px',
@@ -35,7 +35,7 @@ export const baseSelectStyles = {
     }),
     indicatorsContainer: (base, state) => ({
         ...base,
-        background: 'var(--N100) !important',
+        background: 'var(--N50) !important',
     }),
     menu: (base, state) => ({
         ...base,
@@ -57,7 +57,7 @@ export const pluginSelectStyle = {
     valueContainer: (base, state) => ({
         ...base,
         color: 'var(--N900)',
-        background: 'var(--N100) !important',
+        background: 'var(--N50) !important',
         padding: '0px 10px',
         display: 'flex',
         height: '26px',
@@ -67,7 +67,7 @@ export const pluginSelectStyle = {
     }),
     indicatorsContainer: (base, state) => ({
         ...base,
-        background: 'var(--N100) !important',
+        background: 'var(--N50) !important',
         borderTopRightRadius: '4px',
         borderBottomRightRadius: '4px',
     }),
@@ -132,7 +132,7 @@ export const outputFormatSelectStyle = {
     valueContainer: (base, state) => ({
         ...base,
         color: 'var(--N900)',
-        background: 'var(--N100) !important',
+        background: 'var(--N50) !important',
         padding: '0px 10px',
         display: 'flex',
         height: '30px',
@@ -140,7 +140,7 @@ export const outputFormatSelectStyle = {
     }),
     indicatorsContainer: (base, state) => ({
         ...base,
-        background: 'var(--N100) !important',
+        background: 'var(--N50) !important',
         borderTopRightRadius: '4px',
     }),
 }
@@ -159,7 +159,7 @@ export const containerImageSelectStyles = {
     valueContainer: (base, state) => ({
         ...base,
         color: 'var(--N900)',
-        background: 'var(--N100) !important',
+        background: 'var(--N50) !important',
         padding: '0px 10px',
         display: 'flex',
         height: '30px',
@@ -169,7 +169,7 @@ export const containerImageSelectStyles = {
     }),
     indicatorsContainer: (base, state) => ({
         ...base,
-        background: 'var(--N100) !important',
+        background: 'var(--N50) !important',
         borderTopRightRadius: '4px',
         borderBottomRightRadius: '4px',
     }),

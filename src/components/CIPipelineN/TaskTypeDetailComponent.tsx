@@ -219,7 +219,7 @@ export function TaskTypeDetailComponent() {
                                 />
                                 <div style={{ width: '80% !important' }}>
                                     <input
-                                        className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                         autoComplete="off"
                                         placeholder="Eg. directory/filename"
                                         type="text"
@@ -248,7 +248,7 @@ export function TaskTypeDetailComponent() {
                         />
                         <input
                             style={{ width: '80% !important' }}
-                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                             autoComplete="off"
                             placeholder="Eg. “echo”"
                             type="text"
@@ -267,7 +267,7 @@ export function TaskTypeDetailComponent() {
                         />
                         <input
                             style={{ width: '80% !important' }}
-                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                             autoComplete="off"
                             placeholder='Eg. "HOSTNAME", "KUBERNETES_PORT"'
                             type="text"
@@ -308,7 +308,7 @@ export function TaskTypeDetailComponent() {
                                 <div className="fw-6 fs-13 lh-32 cn-7 "></div>
                                 <input
                                     style={{ width: '80% !important' }}
-                                    className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                    className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                     autoComplete="off"
                                     placeholder="Eg file/folder"
                                     type="text"

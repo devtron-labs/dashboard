@@ -349,7 +349,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                     </div>
                                     <div className="fs-13 mr-10">
                                         <input
-                                            className="w-100 bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 br-4 h-32"
+                                            className="w-100 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 br-4 h-32"
                                             type="text"
                                             value={conditionDetail.conditionalValue}
                                             onChange={(e) => {

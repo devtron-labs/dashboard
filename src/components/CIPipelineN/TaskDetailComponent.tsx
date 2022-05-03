@@ -145,7 +145,7 @@ export function TaskDetailComponent() {
                     </div>{' '}
                     <div>
                         <input
-                            className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                             type="text"
                             onChange={(e) => handleNameChange(e)}
                             value={formData[activeStageName].steps[selectedTaskIndex].name}
@@ -164,7 +164,7 @@ export function TaskDetailComponent() {
                 <div className="row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 ">Description</div>{' '}
                     <input
-                        className="w-100 bcn-1 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                         type="text"
                         onChange={(e) => handleDescriptionChange(e)}
                         value={formData[activeStageName].steps[selectedTaskIndex].description}
