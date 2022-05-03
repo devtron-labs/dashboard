@@ -200,7 +200,7 @@ export function Build({
                     }}
                 >
                     <div>
-                        <div className="fs-14 fw-6 cn-9">Docker/container/build arguments</div>
+                        <div className="fs-14 fw-6 cn-9">Docker build arguments</div>
                         <div className="fs-12 fw-4 cn-7">Override docker build configurations for this pipeline.</div>
                     </div>
                     <Dropdown
