@@ -225,7 +225,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
 
     return (
         <div>
-            <div className="mb-10 flexbox pointer justify-space">
+            <div className="mb-10 flexbox justify-space">
                 <span
                     className="fw-6 fs-13 cn-9"
                     onClick={(event) => {

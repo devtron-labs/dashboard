@@ -230,7 +230,7 @@
 
 .pipeline-container .sidebar-container {
     border-right: 1px solid var(--N200);
-    padding: 0 20px;
+    padding-left: 20px;
 }
 
 .bottom-border-radius {

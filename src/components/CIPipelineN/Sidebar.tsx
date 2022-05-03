@@ -55,7 +55,7 @@ export function Sidebar() {
                 </div>
             )}
             {activeStageName === BuildStageVariable.Build && (
-                <div className="sidebar-action-container sidebar-action-container-border">
+                <div className="sidebar-action-container sidebar-action-container-border pr-20">
                     <div className="text-uppercase fw-6 fs-12 cn-6 mb-12">Trigger BUILD PIPELINE</div>
                     <div>
                         <RadioGroup
@@ -73,7 +73,7 @@ export function Sidebar() {
                 </div>
             )}
             {activeStageName === BuildStageVariable.PostBuild && (
-                <div className="sidebar-action-container sidebar-action-container-border ">
+                <div className="sidebar-action-container sidebar-action-container-border mr-20">
                     <div
                         className="en-2 bw-1 br-4 pt-10 pb-10 pl-12 pr-12"
                         style={{ display: 'grid', gridTemplateColumns: 'auto 32px' }}
@@ -94,7 +94,7 @@ export function Sidebar() {
                     </div>
                 </div>
             )}
-            <div className="sidebar-action-container ">
+            <div className="sidebar-action-container pr-20">
                 <div className="fw-6 fs-13 cn-9 mb-8">📙 Need help?</div>
                 <div>
                     <a

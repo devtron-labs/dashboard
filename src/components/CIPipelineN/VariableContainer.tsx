@@ -30,14 +30,17 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                 >
                     {type} variables
                 </span>
-
-                <Dropdown
-                    className="pointer"
-                    style={{ transform: collapsedSection ? 'rotate(180deg)' : 'rotate(0)' }}
-                    onClick={(event) => {
-                        setCollapsedSection(!collapsedSection)
-                    }}
-                />
+                {formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail[
+                    type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'
+                ] ? (
+                    <Dropdown
+                        className="pointer"
+                        style={{ transform: collapsedSection ? 'rotate(180deg)' : 'rotate(0)' }}
+                        onClick={(event) => {
+                            setCollapsedSection(!collapsedSection)
+                        }}
+                    />
+                ) : <div className='fs-13 cn-7'>No output variables</div>}
             </div>
             {!collapsedSection && (
                 <div className="variable-container">
@@ -47,8 +50,16 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                         {type === PluginVariableType.INPUT ? 'Value' : 'Description'}
                     </div>
                     {formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail[
-                        type === PluginVariableType.OUTPUT ? 'outputVariables' : 'inputVariables'
+                        type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'
                     ]?.map((variable, index) => {
+                        {
+                            console.log('hi', variable, variable.length)
+                        }
+                        {
+                            console.log(
+                                formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables,
+                            )
+                        }
                         const errorObj =
                             formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.pluginRefStepDetail
                                 .inputVariables[index]

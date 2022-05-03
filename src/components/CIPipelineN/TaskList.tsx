@@ -116,7 +116,7 @@ export function TaskList() {
 
     return (
         <>
-            <div className="task-container">
+            <div className="task-container pr-20">
                 {formData[activeStageName].steps?.map((taskDetail, index) => (
                     <Fragment key={`task-item-${index}`}>
                         <div
@@ -155,7 +155,7 @@ export function TaskList() {
                     </Fragment>
                 ))}
             </div>
-            <div className="task-item add-task-container cb-5 fw-6 fs-13 flexbox" onClick={addNewTask}>
+            <div className="task-item add-task-container cb-5 fw-6 fs-13 flexbox mr-20" onClick={addNewTask}>
                 <Add className="add-icon" /> Add task
             </div>
         </>
