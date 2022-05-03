@@ -134,6 +134,7 @@ export interface VariableType {
     refVariableStepIndex: number
     refVariableName: string
     refVariableStage?: RefVariableStageType
+    variableStepIndexInPlugin?: number
 }
 
 interface CommandArgsMap {
