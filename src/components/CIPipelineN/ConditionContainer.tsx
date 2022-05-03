@@ -237,7 +237,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
 
                 <Dropdown
                     className="pointer"
-                    style={{ transform: collapsedSection ? 'rotate(180deg)' : 'rotate(0)' }}
+                    style={{ transform: collapsedSection ? 'rotate(0)' : 'rotate(180deg)' }}
                     onClick={(event) => {
                         handleConditionCollapse()
                     }}

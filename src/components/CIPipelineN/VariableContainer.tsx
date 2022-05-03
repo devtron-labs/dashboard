@@ -35,12 +35,14 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                 ] ? (
                     <Dropdown
                         className="pointer"
-                        style={{ transform: collapsedSection ? 'rotate(180deg)' : 'rotate(0)' }}
+                        style={{ transform: collapsedSection ? 'rotate(0)' : 'rotate(180deg)' }}
                         onClick={(event) => {
                             setCollapsedSection(!collapsedSection)
                         }}
                     />
-                ) : <div className='fs-13 cn-7'>No output variables</div>}
+                ) : (
+                    <div className="fs-13 cn-7">No output variables</div>
+                )}
             </div>
             {!collapsedSection && (
                 <div className="variable-container">
