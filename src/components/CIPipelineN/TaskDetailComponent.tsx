@@ -20,6 +20,7 @@ import CustomInputOutputVariables from './CustomInputOutputVariables'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
 import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { ValidationRules } from '../ciPipeline/validationRules'
 
 export function TaskDetailComponent() {
     const {
@@ -31,6 +32,7 @@ export function TaskDetailComponent() {
         appId,
         formDataErrorObj,
         calculateLastStepDetail,
+        setFormDataErrorObj,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -48,7 +50,9 @@ export function TaskDetailComponent() {
             index: number
             calculatedStageVariables: Map<string, VariableType>[]
         }
+        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
     } = useContext(ciPipelineContext)
+    const validationRules = new ValidationRules()
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [editorValue, setEditorValue] = useState<string>('')
 
@@ -90,6 +94,11 @@ export function TaskDetailComponent() {
     const handleNameChange = (e: any): void => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].name = e.target.value
+        const _formErrorObject = { ...formDataErrorObj }
+        _formErrorObject[activeStageName].steps[selectedTaskIndex].name = validationRules.requiredField(e.target.value)
+        _formErrorObject[activeStageName].steps[selectedTaskIndex].isValid =
+            _formErrorObject[activeStageName].steps[selectedTaskIndex].name.isValid
+        setFormDataErrorObj(_formErrorObject)
         setFormData(_formData)
     }
     const handleDescriptionChange = (e: any): void => {
