@@ -69,6 +69,7 @@ export enum NodeType {
     PersistentVolume = 'PersistentVolume',
     Containers = 'Containers', // containers are being treated same way as nodes for nested table generation
     InitContainers = 'InitContainers',
+    EndpointSlice = 'EndpointSlice',
 }
 
 // export type NodeType = keyof typeof NodeType;

@@ -208,14 +208,13 @@ export function generateSelectedNodes(
                 (_node) =>
                     !(
                         _parentAggKeys.some((_p) => _p.toLowerCase() === _node.toLowerCase()) ||
-                        (isDevtronApp && _node.toLowerCase() === NodeType.Pod.toLowerCase())
+                        _node.toLowerCase() === NodeType.Pod.toLowerCase()
                     ),
             );
+        
+            if ( _clickedNodes.length > 0 && (isDevtronApp || _nodeLowerCase !== NodeType.Pod.toLowerCase()) &&
+            _nodeTypes.some((_type) => _clickedNodes.includes(_type.toLowerCase()))
 
-            if (
-                _clickedNodes.length > 0 && ( isDevtronApp &&
-                !(_nodeLowerCase !== NodeType.Pod.toLowerCase() &&
-                _nodeTypes.some((_type) => _clickedNodes.includes(_type.toLowerCase()))))
             ) {
                 _clickedNodes.forEach((_node) => clickedNodes.delete(_node));
             }
