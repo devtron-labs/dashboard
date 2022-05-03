@@ -229,7 +229,7 @@ export function Build({
                                             }}
                                         />
                                         <textarea
-                                            className="w-100 bottom-radius-4 no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
+                                            className="build__value w-100 bottom-radius-4 no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
                                             value={arg.value}
                                             onChange={(event) => {
                                                 handleDockerArgChange(event, index, 'value')

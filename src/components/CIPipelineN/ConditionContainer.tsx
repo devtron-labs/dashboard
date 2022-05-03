@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, Fragment } from 'react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import {
     ConditionContainerType,
@@ -278,7 +278,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                             formDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
                                 ?.conditionDetails?.[index]
                         return conditionDetail.conditionType === conditionType ? (
-                            <>
+                            <Fragment key={`condtion__${index}`}>
                                 <div className="condition-container">
                                     <div className="tp-4 fs-13 lh-32 fw-4 text-uppercase mr-10">
                                         {conditionDetail.conditionType} If
@@ -373,7 +373,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                         </>
                                     )}
                                 </div>
-                            </>
+                            </Fragment>
                         ) : null
                     })}
                     <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32" onClick={addCondition}>

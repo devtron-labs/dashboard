@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, Fragment } from 'react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { FormErrorObjectType, FormType, PluginVariableType } from '../ciPipeline/types'
 import { ciPipelineContext } from './CIPipeline'
@@ -53,7 +53,7 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                             formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.pluginRefStepDetail
                                 .inputVariables[index]
                         return (
-                            <>
+                            <Fragment key={`variable-container-${index}`}>
                                 {type === PluginVariableType.INPUT && variable.description ? (
                                     <Tippy
                                         className="default-tt"
@@ -86,7 +86,7 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                                 ) : (
                                     <div className="fs-13 fw-4 lh-28">{variable.description}</div>
                                 )}
-                            </>
+                            </Fragment>
                         )
                     })}
                 </div>

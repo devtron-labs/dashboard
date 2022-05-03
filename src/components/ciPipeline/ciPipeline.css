@@ -462,3 +462,7 @@
     padding: 4px 10px;
     text-transform: none;
 }
+
+.build__value{
+    background-color: var(--N50);
+}
