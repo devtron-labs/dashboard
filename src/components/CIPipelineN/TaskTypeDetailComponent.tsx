@@ -139,6 +139,31 @@ export function TaskTypeDetailComponent() {
         setFormData(_formData)
     }
 
+    function handleCreatableBlur(e) {
+        if (e.target.value) {
+            setSelectedContainerImage({
+                label: e.target.value,
+                value: e.target.value,
+            })
+            const _formData = { ...formData }
+            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail['containerImagePath'] = e.target.value
+            setFormData(_formData)
+        }
+    }
+
+    const createOption = (label: string) => ({
+        label,
+        value: label,
+    })
+
+    const handleKeyDown = (event) => {
+        switch (event.key) {
+            case 'Enter':
+            case 'Tab':
+                event.target.blur()
+        }
+    }
+
     const renderContainerScript = () => {
         if (
             formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE
@@ -174,6 +199,12 @@ export function TaskTypeDetailComponent() {
                                     Option,
                                     IndicatorSeparator: null,
                                 }}
+                                noOptionsMessage={(): string => {
+                                    return 'No matching options'
+                                }}
+                                onBlur={handleCreatableBlur}
+                                isValidNewOption={() => false}
+                                onKeyDown={handleKeyDown}
                             />
 
                             {errorObj?.containerImagePath && !errorObj.containerImagePath.isValid && (

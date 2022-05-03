@@ -64,7 +64,7 @@ export enum ScriptType {
 }
 
 export enum TaskFieldLabel {
-    CONTAINERIMAGEPATH = 'Container image path',
+    CONTAINERIMAGEPATH = 'Container image',
     COMMAND = 'command',
     ARGS = 'args',
     PORTMAPPING = 'Port mapping',
