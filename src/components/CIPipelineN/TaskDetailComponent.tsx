@@ -80,14 +80,22 @@ export function TaskDetailComponent() {
         const _form = { ...formData }
         if (_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables?.length === 0) {
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables =
-                pluginData.outputVariables
+                pluginData.outputVariables?.map((variable) => {
+                    variable.variableStepIndexInPlugin = variable.variableStepIndex
+                    delete variable.variableStepIndex
+                    return variable
+                })
             if (_form[activeStageName]['steps'].length > selectedTaskIndex) {
                 calculateLastStepDetail(false, _form, activeStageName, selectedTaskIndex)
             }
         }
         if (_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables?.length === 0) {
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables =
-                pluginData.inputVariables
+                pluginData.inputVariables?.map((variable) => {
+                    variable.variableStepIndexInPlugin = variable.variableStepIndex
+                    delete variable.variableStepIndex
+                    return variable
+                })
         }
         setFormData(_form)
     }
