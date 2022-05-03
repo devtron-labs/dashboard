@@ -5,7 +5,7 @@ import { useHistory, useRouteMatch } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import IndexStore from '../../index.store';
 import { useSharedState } from '../../../utils/useSharedState';
-import { AggregationKeys, getAggregator, iNode, iNodes, NodeType } from '../../appDetails.type';
+import { AggregationKeys, getAggregator, iNode, iNodes, NodeStatus, NodeType } from '../../appDetails.type';
 import { URLS } from '../../../../../config';
 import { ReactComponent as ErrorImage } from '../../../../../assets/icons/misc/errorInfo.svg';
 
@@ -73,7 +73,7 @@ function NodeTreeComponent({
                         className={`flex left cursor fw-6 cn-9 fs-14 `}
                         onClick={(e) => handleClickOnNodes(treeNode.name.toLowerCase(), parents, e)}
                     >
-                        {treeNode.childNodes?.length > 0 && !(isDevtronApp && treeNode.name === 'Pod') ? (
+                        {treeNode.childNodes?.length > 0 && !(isDevtronApp && treeNode.name === NodeType.Pod) ? (
                             <React.Fragment>
                                 <DropDown
                                     className={`${treeNode.isSelected ? 'fcn-9' : 'fcn-5'}  rotate icon-dim-24 pointer`}
@@ -81,7 +81,7 @@ function NodeTreeComponent({
                                 />
                                 <div className={`fs-14 fw-6 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 `}>
                                     {treeNode.name}
-                                    {!treeNode.isSelected && treeNode.status?.toLowerCase() === 'degraded' && (
+                                    {!treeNode.isSelected && treeNode.status?.toLowerCase() === NodeStatus.Degraded &&  (
                                         <ErrorImage
                                             className="icon-dim-16 rotate"
                                             style={{ ['--rotateBy' as any]: '180deg', marginLeft: 'auto' }}
@@ -111,7 +111,7 @@ function NodeTreeComponent({
                         )}
                     </div>
 
-                    {treeNode.childNodes?.length > 0 && treeNode.isSelected && !(isDevtronApp && treeNode.name === 'Pod') && (
+                    {treeNode.childNodes?.length > 0 && treeNode.isSelected && !(isDevtronApp && treeNode.name === NodeType.Pod) && (
                         <div className={`pl-24`}>
                             {makeNodeTree(treeNode.childNodes, [...parents, treeNode.name.toLowerCase()], isDevtronApp)}{' '}
                         </div>

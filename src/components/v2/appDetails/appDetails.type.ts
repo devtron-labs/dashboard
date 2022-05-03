@@ -37,6 +37,10 @@ export enum AggregationKeys {
     Other = 'Other',
 }
 
+export enum NodeStatus {
+    Degraded = 'degraded',
+}
+
 export enum NodeType {
     Service = 'Service',
     Alertmanager = 'Alertmanager',
@@ -70,6 +74,7 @@ export enum NodeType {
     Containers = 'Containers', // containers are being treated same way as nodes for nested table generation
     InitContainers = 'InitContainers',
     EndpointSlice = 'EndpointSlice',
+    Workflow = 'Workflow',
 }
 
 // export type NodeType = keyof typeof NodeType;
