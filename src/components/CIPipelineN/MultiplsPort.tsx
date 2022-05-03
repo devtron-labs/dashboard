@@ -69,7 +69,7 @@ function MultiplePort() {
                                 style={{ width: '80% !important' }}
                                 className="w-100 bcn-1 border left-radius-4 pl-10 pr-10 pt-5 pb-5"
                                 autoComplete="off"
-                                placeholder="Port"
+                                placeholder="Host port"
                                 type="text"
                                 onChange={(e) => handlePort(e, index)}
                                 name={PortMap.PORTONLOCAL}
@@ -81,7 +81,7 @@ function MultiplePort() {
                                 style={{ width: '80% !important' }}
                                 className="w-100 bcn-1 border right-radius-4 pl-10 pr-10 pt-5 pb-5"
                                 autoComplete="off"
-                                placeholder="Port"
+                                placeholder="Container port"
                                 type="text"
                                 onChange={(e) => handlePort(e, index)}
                                 name={PortMap.PORTONCONTAINER}

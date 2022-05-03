@@ -410,7 +410,7 @@
 
 .custom-input__port-map {
     display: grid;
-    grid-template-columns: 80px 28px 80px 30px;
+    grid-template-columns: 105px 28px 105px 30px;
 }
 
 .custom-script__output-directory {
@@ -463,6 +463,6 @@
     text-transform: none;
 }
 
-.build__value{
+.build__value {
     background-color: var(--N50);
 }
