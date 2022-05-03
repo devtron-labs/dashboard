@@ -58,7 +58,6 @@ import {
 } from '../../types';
 import { aggregateNodes, SecurityVulnerabilitites, getSelectedNodeItems, getPodNameSuffix } from './utils';
 import { AppMetrics } from './AppMetrics';
-import { NodeTreeDetailTab } from '../../../v2/appDetails/AppDetails.component';
 import IndexStore from '../../../v2/appDetails/index.store';
 import { TriggerInfoModal } from '../../list/TriggerInfo';
 import { sortObjectArrayAlphabetically, sortOptionsByValue } from '../../../common/helpers/Helpers';
@@ -66,6 +65,7 @@ import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.comp
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service';
 import { ExternalLink, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
+import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
