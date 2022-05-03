@@ -305,7 +305,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                                 type === ConditionContainerType.PASS_FAILURE
                                                     ? 'outputVariables'
                                                     : 'inputVariables'
-                                            ]?.map((variable) => ({ label: variable.name, value: variable.id }))}
+                                            ]?.filter(variable=> variable.name).map((variable) => ({ label: variable.name, value: variable.id }))}
                                             isSearchable={false}
                                             styles={selectWithDefaultBG}
                                             components={{

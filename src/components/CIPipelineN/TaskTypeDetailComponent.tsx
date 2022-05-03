@@ -22,6 +22,7 @@ import { components } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { OptionType } from '../app/types'
 import { containerImageSelectStyles } from './ciPipeline.utils'
+import { ValidationRules } from '../ciPipeline/validationRules'
 
 export function TaskTypeDetailComponent() {
     const {
@@ -30,13 +31,16 @@ export function TaskTypeDetailComponent() {
         setFormData,
         activeStageName,
         formDataErrorObj,
+        setFormDataErrorObj
     }: {
         selectedTaskIndex: number
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         activeStageName: string
         formDataErrorObj: FormErrorObjectType
+        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
     } = useContext(ciPipelineContext)
+    const validationRules = new ValidationRules()
 
     const containerImageOptions = ['alpine:latest', 'python:latest', 'node:lts-slim'].map((containerImage) => ({
         label: containerImage,
@@ -54,9 +58,14 @@ export function TaskTypeDetailComponent() {
         setFormData(_formData)
     }
 
-    const handleCustomChange = (event, key: 'script' | 'storeScriptAt' | 'mountCodeToContainerPath') => {
+    const handleCustomChange = (e, key: 'script' | 'storeScriptAt' | 'mountCodeToContainerPath') => {
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = event.target.value
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = e.target.value
+        const _formErrorObject = { ...formDataErrorObj }
+        _formErrorObject[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = validationRules.requiredField(e.target.value)
+        _formErrorObject[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key].isValid =
+            _formErrorObject[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key].isValid
+        setFormDataErrorObj(_formErrorObject)
         setFormData(_formData)
     }
 
