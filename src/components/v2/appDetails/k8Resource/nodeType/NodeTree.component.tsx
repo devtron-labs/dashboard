@@ -81,7 +81,6 @@ function NodeTreeComponent({
                                 />
                                 <div className={`fs-14 fw-6 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 `}>
                                     {treeNode.name}
-                                    {/* !treeNode.isSelected && treeNode.childNodes.filter((node)=> node.status?.toLowerCase() === 'degraded').length > 0  */}
                                     {!treeNode.isSelected && treeNode.status?.toLowerCase() === 'degraded' && (
                                         <ErrorImage
                                             className="icon-dim-16 rotate"
