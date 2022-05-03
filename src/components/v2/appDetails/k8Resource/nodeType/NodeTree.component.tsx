@@ -162,13 +162,11 @@ export function generateSelectedNodes(
         if (parents.length === 2 || (parents.length === 1 && _nodeLowerCase !== NodeType.Pod.toLowerCase())) {
             // remove if leaf node selected previously if any
             let _childNodes = _treeNodes.flatMap((_tn) => _tn.childNodes ?? []);
-            let leafNode = !isDevtronApp
-                ? _childNodes.find(
-                      (_cn) =>
-                          clickedNodes.has(_cn.name.toLowerCase()) &&
-                          _cn.name.toLowerCase() !== NodeType.Pod.toLowerCase(),
-                  )
-                : _childNodes.find((_cn) => clickedNodes.has(_cn.name.toLowerCase()))
+            let leafNode = _childNodes.find(
+                (_cn) =>
+                    clickedNodes.has(_cn.name.toLowerCase()) &&
+                    (isDevtronApp || _cn.name.toLowerCase() !== NodeType.Pod.toLowerCase()),
+            )
             if (leafNode) {
                 clickedNodes.delete(leafNode.name.toLowerCase());
             } else {
