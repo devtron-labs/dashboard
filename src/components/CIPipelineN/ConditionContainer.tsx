@@ -216,7 +216,8 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                     conditionalValue: '',
                 }
                 conditionDetails.push(newCondition)
-                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.conditionDetails = conditionDetails
+                _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails =
+                    conditionDetails
                 setFormData(_formData)
             }
         }
