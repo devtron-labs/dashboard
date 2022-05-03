@@ -1,6 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { ConditionContainerType, ConditionType, FormErrorObjectType, FormType, PluginType } from '../ciPipeline/types'
+import {
+    ConditionContainerType,
+    ConditionType,
+    FormErrorObjectType,
+    FormType,
+    PluginType,
+    StepType,
+    TaskErrorObj,
+} from '../ciPipeline/types'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -18,12 +26,16 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         selectedTaskIndex,
         activeStageName,
         formDataErrorObj,
+        setFormDataErrorObj,
+        validateTask,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         selectedTaskIndex: number
         activeStageName: string
         formDataErrorObj: FormErrorObjectType
+        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
+        validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
     } = useContext(ciPipelineContext)
     const operatorOptions: OptionType[] = [
         { value: '==', description: 'equal to' },
@@ -84,7 +96,13 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
 
     const deleteCondition = (index: number): void => {
         const _formData = { ...formData }
+        const _formDataErrorObj = { ...formDataErrorObj }
         _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails.splice(index, 1)
+        validateTask(
+            _formData[activeStageName].steps[index || selectedTaskIndex],
+            _formDataErrorObj[activeStageName].steps[index || selectedTaskIndex],
+        )
+        setFormDataErrorObj(_formDataErrorObj)
         setFormData(_formData)
     }
 
@@ -198,6 +216,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                     conditionalValue: '',
                 }
                 conditionDetails.push(newCondition)
+                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.conditionDetails = conditionDetails
                 setFormData(_formData)
             }
         }

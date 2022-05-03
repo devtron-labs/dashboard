@@ -3,9 +3,13 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Equal } from '../../assets/icons/ic-variable-equal.svg'
 import {
+    ConditionType,
+    FormErrorObjectType,
     FormType,
     PluginVariableType,
     RefVariableType,
+    StepType,
+    TaskErrorObj,
     TaskFieldDescription,
     VariableFieldType,
     VariableType,
@@ -27,6 +31,8 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         activeStageName,
         calculateLastStepDetail,
         formDataErrorObj,
+        setFormDataErrorObj,
+        validateTask,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -41,7 +47,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             index: number
             calculatedStageVariables: Map<string, VariableType>[]
         }
-        formDataErrorObj: object
+        formDataErrorObj: FormErrorObjectType
+        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
+        validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
     } = useContext(ciPipelineContext)
     const formatOptions: OptionType[] = ['STRING', 'BOOL', 'NUMBER', 'DATE'].map((format) => ({
         label: format,
@@ -98,6 +106,35 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].splice(index, 1)
         if (type === PluginVariableType.OUTPUT) {
             calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
+        }
+        if (
+            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].length === 0
+        ) {
+            let conditionDetails = _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.conditionDetails
+            let isDeletedSomeCondition = false
+            for (let i = 0; i < conditionDetails.length; i++) {
+                if (
+                    (type === PluginVariableType.OUTPUT &&
+                        (conditionDetails[i].conditionType === ConditionType.PASS ||
+                            conditionDetails[i].conditionType === ConditionType.FAIL)) ||
+                    (type === PluginVariableType.INPUT &&
+                        (conditionDetails[i].conditionType === ConditionType.TRIGGER ||
+                            conditionDetails[i].conditionType === ConditionType.SKIP))
+                ) {
+                    conditionDetails.splice(i, 1)
+                    i--
+                    isDeletedSomeCondition = true
+                }
+            }
+            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.conditionDetails = conditionDetails
+            if (isDeletedSomeCondition) {
+                const _formDataErrorObj = { ...formDataErrorObj }
+                validateTask(
+                    formData[activeStageName].steps[index || selectedTaskIndex],
+                    _formDataErrorObj[activeStageName].steps[index || selectedTaskIndex],
+                )
+                setFormDataErrorObj(_formDataErrorObj)
+            }
         }
         setFormData(_formData)
     }
