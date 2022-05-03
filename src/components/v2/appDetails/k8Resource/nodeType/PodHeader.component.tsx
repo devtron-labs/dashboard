@@ -15,7 +15,7 @@ function PodHeaderComponent({ callBack }) {
     const [oldPods, setOldPods] = useState(oldPodStats)
 
     useEffect(() => {
-        if (pods && podMetaData && podMetaData.length > 0) {
+        if (pods && podMetaData?.length > 0) {
             pods.forEach((pod) => {
                 const podStatusLower = getNodeStatus(pod)?.toLowerCase()
                 if (podMetaData.find((f) => f.name === pod.name)?.isNew) {
