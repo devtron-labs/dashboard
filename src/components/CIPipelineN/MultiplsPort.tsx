@@ -32,13 +32,9 @@ function MultiplePort() {
 
     const handlePort = (e, index) => {
         const _formData = { ...formData }
-        if (typeof e.target.value === 'string') {
-            e.target.value = e.target.value.replace(/\D/g, '')
-        } else {
-            e.target.value = parseInt(e.target.value)
-        }
+        e.target.value = e.target.value.replace(/\D/g, '')
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.portMap[index][e.target.name] =
-            e.target.value
+            e.target.value && Number(e.target.value)
         setFormData(_formData)
     }
 
