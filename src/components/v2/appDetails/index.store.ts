@@ -59,9 +59,11 @@ const IndexStore = {
 
         const _nodes = data.resourceTree.nodes || [];
 
-        _appDetailsSubject.next({ ...data });
+        const podMetadata = data.resourceTree.podMetadata;
 
-        getiNodesByRootNodeWithChildNodes(_nodes, _nodes.filter(_n => (_n.parentRefs ?? []).length == 0).map(_n => _n as iNode))
+        getiNodesByRootNodeWithChildNodes(_nodes, _nodes.filter(_n => (_n.parentRefs ?? []).length == 0).map(_n => _n as iNode), podMetadata)
+
+        _appDetailsSubject.next({ ...data });
 
         _nodesSubject.next([..._nodes]);
 
@@ -235,7 +237,7 @@ export function getiNodesByKindWithChildNodes(_nodes: Array<Node>, _kind: string
     return getiNodesByRootNodeWithChildNodes(_nodes, rootNodes)
 }
 
-export function getiNodesByRootNodeWithChildNodes(_nodes: Array<Node>, rootNodes: Array<iNode>): Array<iNode> {
+export function getiNodesByRootNodeWithChildNodes(_nodes: Array<Node>, rootNodes: Array<iNode>, podMetadata = undefined): Array<iNode> {
     //if any node has childNode we have already processed this node during previous call to this node and there have been no api calls since then
     //hence reusing it. After api call this is unset and we will process again.
 
@@ -290,9 +292,9 @@ export function getiNodesByRootNodeWithChildNodes(_nodes: Array<Node>, rootNodes
         children
         .filter( _child => _child.kind.toLowerCase() == NodeType.Pod.toLowerCase())
         .map( _pn => {
-            _pn.childNodes = _appDetailsSubject
+            _pn.childNodes = (_appDetailsSubject
             .getValue()
-            .resourceTree?.podMetadata?.filter((_pmd) => {
+            .resourceTree?.podMetadata || podMetadata).filter((_pmd) => {
                 return _pmd.uid === _pn.uid;
             })[0]
             ?.containers?.map((_c) => {
