@@ -3,6 +3,9 @@
     grid-template-rows: 48px 1fr;
     grid-template-columns: 250px 1fr;
     height: 100vh;
+    a {
+        color: var(--B500);
+    }
 
     &.full-view-mode {
         grid-template-columns: 100%;
@@ -86,6 +89,10 @@
                         color: white;
                     }
                 }
+            }
+
+            &:hover:not(.active-route) {
+                background-color: var(--N100);
             }
         }
     }

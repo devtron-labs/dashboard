@@ -1,4 +1,4 @@
-#root>main {
+#root > main {
     width: 100%;
     min-height: 100vh;
     display: grid;
@@ -16,7 +16,6 @@
     overflow-y: hidden !important;
 }
 
-
 .title-container {
     color: white;
     opacity: 1;
@@ -28,8 +27,8 @@
     text-align-last: left;
 }
 
-#root>main {
-    &>nav {
+#root > main {
+    & > nav {
         width: 100%;
         background: var(--B500);
         position: sticky;
@@ -38,13 +37,12 @@
         overflow: hidden;
         z-index: var(--navigation-index);
         transition: width 300ms ease-out;
-        
 
         .nav-grid {
             display: grid;
             grid-template-rows: 84px 44px repeat(12, 44px);
             align-items: center;
-            
+
             a,
             button {
                 &:hover {
@@ -59,19 +57,17 @@
             }
         }
 
-        
-
         .short-nav {
             width: 100%;
             padding: 0 12px 0 0;
-            
+
             .svg-container {
                 height: 40px;
                 width: 40px;
                 border-radius: 8px;
 
                 &.nav-short-stack {
-                    background: #0000007d;
+                    //background: #0000007d;
                     border-radius: 20px;
 
                     &:hover {
@@ -79,7 +75,6 @@
                     }
                 }
             }
-
 
             .nav-short-help {
                 .help-option-icon path {
@@ -138,12 +133,11 @@
                 }
 
                 &:not(.active-nav):focus {
-                    .svg-container{
+                    .svg-container {
                         border: 1px solid white;
                         border-radius: 8px;
                     }
                 }
-
             }
         }
 
@@ -172,7 +166,7 @@
             align-items: center;
         }
     }
-    
+
     .devtron-logo {
         width: 40px;
         height: 40px;
@@ -191,13 +185,12 @@
     }
 }
 
-
 .logout-card {
     width: 260px;
     border-radius: 4px;
     background-color: white;
     position: fixed;
-    bottom: 15px;
+    bottom: 88px;
     left: 68px;
     border: 1px solid var(--N200);
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
@@ -227,7 +220,7 @@
     line-height: 1.43;
     width: 180px;
     letter-spacing: normal;
-    color: var(--N900)
+    color: var(--N900);
 }
 
 .logout-card__email {
@@ -253,7 +246,6 @@
     background-color: var(--N100);
 }
 
-
 .logout-card__initial--nav {
     border-color: var(--N000);
 }
@@ -264,12 +256,11 @@
     border-radius: 4px;
     background-color: white;
     position: fixed;
-    bottom: 15px;
+    bottom: 132px;
     left: 68px;
     border: 1px solid var(--N200);
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
     overflow: hidden;
-
 }
 
 .help-card {
@@ -300,20 +291,20 @@
     }
 }
 
-.more-option-card__rect{
+.more-option-card__rect {
     font-size: 14px;
     color: var(--N900);
     padding: 10px 16px;
 }
-.more-option-card__link{
+.more-option-card__link {
     text-decoration: none !important;
 }
 
-.more-option-card__title:hover{
-    background-color: var(--N100)
+.more-option-card__title:hover {
+    background-color: var(--N100);
 }
 
-.short-nav--flex{
+.short-nav--flex {
     display: flex;
     margin-left: 12px;
 
@@ -326,12 +317,11 @@
     }
 }
 
-.center{
+.center {
     justify-content: center;
     align-items: center;
 }
 
-.expandable-active-nav{
+.expandable-active-nav {
     padding: 0px 0 0 12px;
-  
 }

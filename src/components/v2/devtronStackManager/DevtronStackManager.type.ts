@@ -55,6 +55,10 @@ export interface ModuleDetails {
     icon: string
     installationStatus: ModuleStatus
     baseMinVersionSupported?: string
+    description?: string
+    title?: string
+    isIncludedInLegacyFullPackage?: boolean
+    assets?: string[]
 }
 
 export interface ModuleListingViewType {
@@ -136,7 +140,7 @@ export interface ModuleInfoResponse extends ResponseType {
 }
 
 export interface AllModuleInfoResponse extends ResponseType {
-    result?: ModuleInfo[]
+    result?: ModuleDetails[]
 }
 
 export interface ModuleActionResponse extends ResponseType {

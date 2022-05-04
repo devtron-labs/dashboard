@@ -19,22 +19,16 @@ import {
 export const MODULE_ICON_MAP = {
     cicd: CICDIcon,
     moreModules: MoreExtentionsIcon,
-    unknown: CICDIcon
+    unknown: CICDIcon,
 }
 
 export const MODULE_DETAILS_MAP: Record<string, ModuleDetails> = {
-    cicd: {
-        id: 'cicd',
-        name: 'Build and Deploy (CI/CD)',
-        info: 'Enables continous code integration and deployment.',
-        icon: 'cicd',
-        installationStatus: ModuleStatus.NOT_INSTALLED,
-    },
     moreModules: {
         id: 'moreModules',
         name: 'More modules coming soon',
-        info: "You can also raise a request for a module that will improve your workflow.",
-        icon: 'moreModules',
+        title: 'More modules coming soon',
+        info: 'You can also raise a request for a module that will improve your workflow.',
+        icon: MoreExtentionsIcon,
         installationStatus: ModuleStatus.NONE,
     },
     unknown: {
@@ -43,22 +37,6 @@ export const MODULE_DETAILS_MAP: Record<string, ModuleDetails> = {
         info: "We're building a suite of modules to serve your software delivery lifecycle.",
         icon: 'unknown',
         installationStatus: ModuleStatus.NONE,
-    }
-}
-
-export const MODULE_DETAILS_INFO: Record<string, ModuleDetailsInfo> = {
-    cicd: {
-        name: 'Build and Deploy (CI/CD)',
-        infoList: [
-            'Continuous integration (CI) and continuous delivery (CD) embody a culture, set of operating principles, and collection of practices that enable application development teams to deliver code changes more frequently and reliably. The implementation is also known as the CI/CD pipeline.',
-            'CI/CD is one of the best practices for devops teams to implement. It is also an agile methodology best practice, as it enables software development teams to focus on meeting business requirements, code quality, and security because deployment steps are automated.',
-        ],
-        featuresList: [
-            "Discovery: What would the users be searching for when they're looking for a CI/CD offering?",
-            'Detail: The CI/CD offering should be given sufficient importance (on Website, Readme). (Eg. Expand capability with CI/CD module [Discover more modules])',
-            'Installation: Ability to install CI/CD module with the basic installation.',
-            'In-Product discovery: How easy it is to discover the CI/CD offering primarily once the user is in the product. (Should we talk about modules on the login page?)',
-        ],
     },
 }
 

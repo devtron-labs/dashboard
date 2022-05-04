@@ -1,6 +1,6 @@
-import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import React, { Suspense, useCallback, useEffect, useRef, useState, useContext } from 'react'
 import { Redirect, Route, Router, Switch, useHistory, useLocation } from 'react-router-dom'
-import { URLS } from '../../../config'
+import { SERVER_MODE, URLS } from '../../../config'
 import { ErrorBoundary, ErrorScreenManager, Progressing, showError } from '../../common'
 import AboutDevtronView from './AboutDevtronView'
 import {
@@ -30,6 +30,7 @@ import {
 } from './DevtronStackManager.type'
 import { isLatestVersionAvailable, MODULE_DETAILS_MAP } from './DevtronStackManager.utils'
 import './devtronStackManager.scss'
+import { mainContext } from '../../common/navigation/NavigationRoutes'
 
 let modulesPollingInterval = null
 
@@ -40,6 +41,7 @@ export default function DevtronStackManager({
     serverInfo: ServerInfo
     handleServerInfoUpdate: (serverInfo: ServerInfo) => void
 }) {
+    const { serverMode } = useContext(mainContext)
     const [showManagedByDialog, setShowManagedByDialog] = useState(false)
     const [stackDetails, setStackDetails] = useState<StackDetailsType>({
         isLoading: false,
@@ -102,7 +104,7 @@ export default function DevtronStackManager({
         if (location.pathname.includes('/details') && queryParams.get('id')) {
             setSelectedModule(
                 stackDetails.discoverModulesList.find(
-                    (module) => module.id.toLowerCase() === queryParams.get('id').toLowerCase(),
+                    (module) => module.name.toLowerCase() === queryParams.get('id').toLowerCase(),
                 ),
             )
 
@@ -123,12 +125,10 @@ export default function DevtronStackManager({
                 const { result } = await getModuleInfo(queryParams.get('id'))
 
                 if (result) {
+                    const currentModule = stackDetails.discoverModulesList.find((_module) => _module.id === result.name)
                     setSelectedModule({
-                        ...MODULE_DETAILS_MAP[result.name],
+                        ...currentModule,
                         installationStatus: result.status,
-                        baseMinVersionSupported: stackDetails.discoverModulesList.find(
-                            (_module) => _module.id === result.name,
-                        )?.baseMinVersionSupported,
                     })
                 }
             } else {
@@ -177,22 +177,23 @@ export default function DevtronStackManager({
                  * 3. Create array of get moduleDetails promises to trigger API calls
                  * to fetch all module details at once
                  */
-                const _getModuleInfoList = allModulesRes?.result?.map((module: ModuleInfo) =>
-                    getModuleInfo(module.name),
+                const _getModuleInfoList = allModulesRes?.result?.map((module: ModuleDetails) =>
+                    serverMode === SERVER_MODE.FULL && module.isIncludedInLegacyFullPackage
+                        ? { result: { name: module.name, status: ModuleStatus.INSTALLED } }
+                        : getModuleInfo(module.name),
                 )
 
                 Promise.allSettled(_getModuleInfoList).then(
                     (responses: { status: string; value?: any; reason?: any }[]) => {
                         responses.forEach((res, idx) => {
                             const result: ModuleInfo = res.value?.result
-
+                            const currentModule = allModulesRes?.result?.find(
+                                (_module) => _module.name === result?.name,
+                            )
                             // 4. Get the module details from MODULE_DETAILS_MAP if available else fetch the default/unknown
                             const _moduleDetails = {
-                                ...(MODULE_DETAILS_MAP[result?.name] || MODULE_DETAILS_MAP['unknown']),
+                                ...currentModule,
                                 installationStatus: result?.status,
-                                baseMinVersionSupported: allModulesRes?.result?.find(
-                                    (_module) => _module.name === result?.name,
-                                )?.baseMinVersionSupported,
                             }
 
                             /**
@@ -235,7 +236,7 @@ export default function DevtronStackManager({
      * This is to handle the module selection
      */
     const handleModuleSelection = (moduleDetails: ModuleDetails, fromDiscoverModules?: boolean) => {
-        queryParams.set('id', moduleDetails.id)
+        queryParams.set('id', moduleDetails.name)
         setDetailsMode(fromDiscoverModules ? 'discover' : 'installed')
         setSelectedModule(moduleDetails)
 
@@ -306,6 +307,19 @@ export default function DevtronStackManager({
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_ABOUT}>
+                    <AboutDevtronView
+                        parentRef={stackManagerRef}
+                        releaseNotes={stackDetails.releaseNotes}
+                        serverInfo={serverInfo}
+                        setShowManagedByDialog={setShowManagedByDialog}
+                        logPodName={stackDetails.logPodName}
+                        selectedTabIndex={selectedTabIndex}
+                        handleTabChange={handleTabChange}
+                        history={history}
+                        location={location}
+                    />
+                </Route>
+                <Route path={URLS.STACK_MANAGER_ABOUT_RELEASES}>
                     <AboutDevtronView
                         parentRef={stackManagerRef}
                         releaseNotes={stackDetails.releaseNotes}

@@ -35,7 +35,6 @@ import {
     handleAction,
     isLatestVersionAvailable,
     ModulesSection,
-    MODULE_DETAILS_INFO,
     MODULE_DETAILS_MAP,
     MODULE_ICON_MAP,
 } from './DevtronStackManager.utils'
@@ -46,6 +45,7 @@ import CarouselImage1 from '../../../assets/img/ic-empty-ea-app-detail.png'
 import CarouselImage2 from '../../../assets/img/ic-empty-ea-charts.png'
 import CarouselImage3 from '../../../assets/img/ic-empty-ea-app-detail.png'
 import CarouselImage4 from '../../../assets/img/ic-empty-ea--security.png'
+import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 // End: Carousel images
 
 const getInstallationStatusLabel = (installationStatus: ModuleStatus): JSX.Element => {
@@ -91,12 +91,8 @@ const ModuleDeailsCard = ({
                 handleModuleCardClick && { onClick: () => handleModuleCardClick(moduleDetails, fromDiscoverModules) })}
         >
             {getInstallationStatusLabel(moduleDetails.installationStatus)}
-            <img
-                className="module-details__card-icon mb-16"
-                src={MODULE_ICON_MAP[moduleDetails.icon]}
-                alt={moduleDetails.name}
-            />
-            <div className="module-details__card-name fs-16 fw-6 cn-9 mb-4">{moduleDetails.name}</div>
+            <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
+            <div className="module-details__card-name fs-16 fw-6 cn-9 mb-4">{moduleDetails.title}</div>
             <div className="module-details__card-info fs-13 fw-4 cn-7">
                 {moduleDetails.id === 'moreModules' ? (
                     <>
@@ -244,7 +240,7 @@ export const PageHeader = ({
                         Installed modules
                     </NavLink>
                     <span className="mr-4 ml-4">/</span>
-                    <span>{selectedModule?.name}</span>
+                    <span>{selectedModule?.title}</span>
                 </div>
             )}
         </section>
@@ -318,6 +314,7 @@ const InstallationStatus = ({
                     >
                         <NavLink
                             to={`${URLS.APP}/${URLS.EXTERNAL_APPS}/1%7Cdevtroncd%7C${appName}/${appName}/${URLS.APP_DETAILS}/${URLS.APP_DETAILS_K8}/pod/${logPodName}/logs`}
+                            target="_blank"
                         >
                             View logs
                         </NavLink>
@@ -476,8 +473,6 @@ export const ModuleDetailsView = ({
     history,
     location,
 }: ModuleDetailsViewType): JSX.Element | null => {
-    const _moduleDetails = MODULE_DETAILS_INFO[moduleDetails?.id]
-
     useEffect(() => {
         if (!moduleDetails && !new URLSearchParams(location.search).get('id')) {
             setDetailsMode('')
@@ -487,27 +482,14 @@ export const ModuleDetailsView = ({
         }
     }, [])
 
-    return _moduleDetails ? (
+    return moduleDetails ? (
         <div className="module-details__view-container">
-            <Carousel
-                className="module-details__carousel mb-24"
-                imageUrls={[CarouselImage1, CarouselImage2, CarouselImage3, CarouselImage4]}
-            />
+            <Carousel className="module-details__carousel mb-24" imageUrls={moduleDetails.assets} />
             <div className="module-details__view-wrapper">
                 <div className="module-details__feature-wrapper">
-                    <h2 className="module-details__feature-heading cn-9 fs-20 fw-6">{_moduleDetails.name}</h2>
+                    <h2 className="module-details__feature-heading cn-9 fs-20 fw-6">{moduleDetails?.title}</h2>
                     <div className="module-details__divider mt-24 mb-24" />
-                    <div className="module-details__feature-info fs-13 fw-4">
-                        {_moduleDetails.infoList.map((info, idx) => {
-                            return <p key={`info-${idx}`}>{info}</p>
-                        })}
-                        <h3 className="module-details__features-list-heading fs-13 fw-6">Features</h3>
-                        <ul className="module-details__features-list pl-22 mb-24">
-                            {_moduleDetails.featuresList.map((feature, idx) => {
-                                return <li key={`feature-${idx}`}>{feature}</li>
-                            })}
-                        </ul>
-                    </div>
+                    <MarkDown breaks={true} markdown={moduleDetails?.description} />
                 </div>
                 <InstallationWrapper
                     moduleName={moduleDetails?.id}
@@ -532,16 +514,16 @@ export const NoModulesInstalledView = ({ history }: { history: any }): JSX.Eleme
                     <img src={NoExtensions} width="250" height="200" alt="no results" />
                 </EmptyState.Image>
                 <EmptyState.Title>
-                    <h2 className="fs-16 fw-4 c-9">No extensions installed</h2>
+                    <h2 className="fs-16 fw-4 c-9">No modules installed</h2>
                 </EmptyState.Title>
-                <EmptyState.Subtitle>Installed extensions will be available here</EmptyState.Subtitle>
+                <EmptyState.Subtitle>Installed modules will be available here</EmptyState.Subtitle>
                 <EmptyState.Button>
                     <button
                         type="button"
                         className="empty-state__discover-btn flex fs-13 fw-6 br-4"
                         onClick={() => history.push(URLS.STACK_MANAGER_DISCOVER_MODULES)}
                     >
-                        <DiscoverIcon className="discover-icon" /> <span className="ml-8">Discover extensions</span>
+                        <DiscoverIcon className="discover-icon" /> <span className="ml-8">Discover modules</span>
                     </button>
                 </EmptyState.Button>
             </EmptyState>

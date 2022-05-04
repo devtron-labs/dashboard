@@ -4,6 +4,8 @@ import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import { InstallationWrapper } from './DevtronStackManager.component'
 import { AboutDevtronViewType } from './DevtronStackManager.type'
 import './AboutDevtronView.scss'
+import { NavLink } from 'react-router-dom'
+import { URLS } from '../../../config'
 
 function AboutDevtronView({
     parentRef,
@@ -16,7 +18,10 @@ function AboutDevtronView({
     history,
     location,
 }: AboutDevtronViewType) {
-    const aboutDevtronTabs: string[] = ['About', 'Releases']
+    const aboutDevtronTabs: { name: string; link: string }[] = [
+        { name: 'About', link: URLS.STACK_MANAGER_ABOUT },
+        { name: 'Releases', link: URLS.STACK_MANAGER_ABOUT_RELEASES },
+    ]
 
     useEffect(() => {
         if (parentRef?.current) {
@@ -32,14 +37,13 @@ function AboutDevtronView({
 
     const renderTabs = (): JSX.Element => {
         return (
-            <ul className="tab-list tab-list--borderd mr-20 mb-24">
+            <ul className="tab-list tab-list--borderd mr-20 mb-24 pb-10">
                 {aboutDevtronTabs.map((tab, index) => {
                     return (
                         <li onClick={() => handleTabChange(index)} key={index} className="tab-list__tab">
-                            <div className={`tab-list__tab-link ${selectedTabIndex == index ? 'active' : ''}`}>
-                                {tab}
-                            </div>
-                            {selectedTabIndex == index && <div className="about-devtron__active-tab" />}
+                            <NavLink exact to={tab.link} activeClassName="active" className="pb-10 no-decor">
+                                {tab.name}
+                            </NavLink>
                         </li>
                     )
                 })}
@@ -69,7 +73,11 @@ function AboutDevtronView({
                                 <MarkDown
                                     className="about-devtron__release-notes fs-14 fw-4"
                                     breaks={true}
-                                    markdown={releaseNote.body}
+                                    markdown={
+                                        releaseNote.body.startsWith('##')
+                                            ? releaseNote.body.replace('##', '')
+                                            : releaseNote.body
+                                    }
                                 />
                             </div>
                         )
