@@ -125,7 +125,9 @@ export default function DevtronStackManager({
                 const { result } = await getModuleInfo(queryParams.get('id'))
 
                 if (result) {
-                    const currentModule = stackDetails.discoverModulesList.find((_module) => _module.id === result.name)
+                    const currentModule = stackDetails.discoverModulesList.find(
+                        (_module) => _module.name === result.name,
+                    )
                     setSelectedModule({
                         ...currentModule,
                         installationStatus: result.status,
@@ -209,7 +211,7 @@ export default function DevtronStackManager({
                                     serverInfo?.currentVersion,
                                     _moduleDetails.baseMinVersionSupported,
                                 ) &&
-                                _moduleDetails.id !== 'unknown'
+                                _moduleDetails.name !== 'unknown'
                             ) {
                                 _installedModulesList.push(_moduleDetails)
                             }

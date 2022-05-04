@@ -16,16 +16,10 @@ import {
     StackManagerNavLinkType,
 } from './DevtronStackManager.type'
 
-export const MODULE_ICON_MAP = {
-    cicd: CICDIcon,
-    moreModules: MoreExtentionsIcon,
-    unknown: CICDIcon,
-}
-
 export const MODULE_DETAILS_MAP: Record<string, ModuleDetails> = {
     moreModules: {
         id: 'moreModules',
-        name: 'More modules coming soon',
+        name: 'moreModules',
         title: 'More modules coming soon',
         info: 'You can also raise a request for a module that will improve your workflow.',
         icon: MoreExtentionsIcon,
@@ -33,9 +27,10 @@ export const MODULE_DETAILS_MAP: Record<string, ModuleDetails> = {
     },
     unknown: {
         id: 'unknown',
-        name: 'New module coming soon',
+        name: 'unknown',
+        title: 'New module coming soon',
         info: "We're building a suite of modules to serve your software delivery lifecycle.",
-        icon: 'unknown',
+        icon: CICDIcon,
         installationStatus: ModuleStatus.NONE,
     },
 }

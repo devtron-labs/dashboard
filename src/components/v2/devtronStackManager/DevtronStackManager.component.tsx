@@ -36,7 +36,6 @@ import {
     isLatestVersionAvailable,
     ModulesSection,
     MODULE_DETAILS_MAP,
-    MODULE_ICON_MAP,
 } from './DevtronStackManager.utils'
 import './devtronStackManager.component.scss'
 
@@ -94,7 +93,7 @@ const ModuleDeailsCard = ({
             <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
             <div className="module-details__card-name fs-16 fw-6 cn-9 mb-4">{moduleDetails.title}</div>
             <div className="module-details__card-info fs-13 fw-4 cn-7">
-                {moduleDetails.id === 'moreModules' ? (
+                {moduleDetails.name === 'moreModules' ? (
                     <>
                         You can also&nbsp;
                         <a
@@ -134,7 +133,7 @@ export const ModulesListingView = ({
                         fromDiscoverModules={isDiscoverModulesView}
                         showBlur={
                             isLatestVersionAvailable(currentVersion, module.baseMinVersionSupported) ||
-                            module.id === 'unknown'
+                            module.name === 'unknown'
                         }
                     />
                 )
@@ -492,7 +491,7 @@ export const ModuleDetailsView = ({
                     <MarkDown breaks={true} markdown={moduleDetails?.description} />
                 </div>
                 <InstallationWrapper
-                    moduleName={moduleDetails?.id}
+                    moduleName={moduleDetails?.name}
                     installationStatus={moduleDetails?.installationStatus}
                     serverInfo={serverInfo}
                     upgradeVersion={upgradeVersion}
