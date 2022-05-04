@@ -466,3 +466,9 @@
 .build__value {
     background-color: var(--N50);
 }
+
+.format-grid{
+    display: grid;
+    grid-template-columns: 16px auto;
+    grid-gap: 8px;
+}

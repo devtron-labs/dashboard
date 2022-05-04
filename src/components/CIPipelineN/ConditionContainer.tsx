@@ -18,6 +18,7 @@ import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { selectWithDefaultBG } from './ciPipeline.utils'
 import { OptionType } from '../app/types'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { ValidationRules } from '../ciPipeline/validationRules'
 
 export function ConditionContainer({ type }: { type: ConditionContainerType }) {
     const {
@@ -37,6 +38,8 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
         validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
     } = useContext(ciPipelineContext)
+    const validationRules = new ValidationRules()
+
     const operatorOptions: OptionType[] = [
         { value: '==', description: 'equal to' },
         { value: '!=', description: 'not equal to' },
@@ -111,6 +114,13 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index][
             'conditionalValue'
         ] = e.target.value
+
+        const _formErrorObject = { ...formDataErrorObj }
+       _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index]['conditionalValue'] = validationRules.conditionDetail(e.target.value)
+       _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index]['conditionalValue'].isValid =
+           _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index]['conditionalValue'].isValid
+        setFormDataErrorObj(_formErrorObject)
+
         setFormData(_formData)
     }
 

@@ -72,8 +72,9 @@ export enum TaskFieldLabel {
     MOUNTDIRECTORYFROMHOST = 'Mount directory from host',
     OUTPUTVARIABLES = 'Output variables',
     OUTPUTDIRECTORYPATH = 'Output directory path',
-    SCRIPT = 'Script',
-    STORESCRIPTAT = 'Store script at',
+    SCRIPT = 'Code snippet',
+    STORESCRIPTAT = 'Store Code Snippet At',
+    MOUNTCODESNIPPET= 'Mount code snippet'
 }
 
 export const TaskFieldDescription = {
@@ -91,8 +92,10 @@ export const TaskFieldDescription = {
         'These variables should be set in the environment variables and can be used as input variables in other scripts.',
     OUTPUTDIRECTORYPATH:
         'Directory in which the script is writing/producing output files (eg. test report, zip files etc)',
-    SCRIPT: 'Shell Script to be executed, it supports base shell',
+    SCRIPT: 'You can invoke this code snippet form the container',
     STORESCRIPTAT: 'Path where script should be mounted',
+    MOUNTCODESNIPPET: 'Enable this if you want to mount custom code snippet in the container'
+
 }
 
 export const MountPathMap = {

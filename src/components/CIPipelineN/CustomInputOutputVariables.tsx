@@ -22,6 +22,8 @@ import { baseSelectStyles, outputFormatSelectStyle } from './ciPipeline.utils'
 import Tippy from '@tippyjs/react'
 import { Option } from '../v2/common/ReactSelect.utils'
 import { OptionType } from '../app/types'
+import { ValidationRules } from '../ciPipeline/validationRules'
+import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 
 function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const {
@@ -51,6 +53,8 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
         validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
     } = useContext(ciPipelineContext)
+    const validationRules = new ValidationRules()
+
     const formatOptions: OptionType[] = ['STRING', 'BOOL', 'NUMBER', 'DATE'].map((format) => ({
         label: format,
         value: format,
@@ -90,6 +94,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]][index][
             e.target.name
         ] = e.target.value
+        const _formErrorObject = { ...formDataErrorObj }
+        validateTask(_formData[activeStageName].steps[selectedTaskIndex], _formErrorObject[activeStageName].steps[selectedTaskIndex])
+       setFormDataErrorObj(_formErrorObject)
         setFormData(_formData)
     }
 
@@ -112,7 +119,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         ) {
             let conditionDetails = _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.conditionDetails
             let isDeletedSomeCondition = false
-            for (let i = 0; i < conditionDetails.length; i++) {
+            for (let i = 0; i < conditionDetails?.length; i++) {
                 if (
                     (type === PluginVariableType.OUTPUT &&
                         (conditionDetails[i].conditionType === ConditionType.PASS ||
@@ -149,6 +156,8 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         setFormData(_formData)
     }
 
+    const isDateFormat = formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.some(elm=>elm.format  === 'DATE')
+
     return (
         <>
             <div className="row-container mb-4 mt-4">
@@ -163,8 +172,17 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                         </span>
                     }
                 >
-                    <div className={`tp-4 fs-13 fw-6 text-capitalize mr-8 lh-32`}>
-                        <span className="text-underline-dashed">{type} variables </span>
+                    <div className={`tp-4 fs-13 fw-6 text-capitalize mr-8 `} style={{position: 'relative'}}>
+                        <span className="text-underline-dashed lh-32">{type} variables </span>
+                        {
+                                 isDateFormat &&
+                                 <div className="bcb-1 br-4 fw-4 pl-12 pr-12 pt-8 pb-8" style={{width: '180px', marginRight: '60px', position: 'absolute'}}>
+                                <div className="format-grid">
+                                    <Info className="mr-4 icon-dim-16" />
+                                    <span className="cb-5 mb-2 lh-1-33">Standardized date formats <span className='cn-9'>identified by Devtron</span> </span>
+                                </div>
+                            </div>
+                            }
                     </div>
                 </Tippy>
 

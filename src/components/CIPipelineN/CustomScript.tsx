@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { FormErrorObjectType, FormType, TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
+import { FormErrorObjectType, FormType, ScriptType, TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -29,15 +29,29 @@ function CustomScript({ handleScriptChange }: CustomScriptType) {
                     contentDescription={TaskFieldDescription.SCRIPT}
                 />
                 <div className="script-container">
+                    {
+                        formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.SHELL ? 
+                        <CodeEditor
+                        theme="vs-alice-blue"
+                        mode="shell"
+                        onChange={(value) => handleScriptChange({ target: { value } })}
+                        inline
+                        height={300}
+                        value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script}
+                    ></CodeEditor> : 
                     <CodeEditor
                         theme="vs-alice-blue"
                         mode="shell"
-                        shebang="#!/bin/sh"
+                        shebang='#!/bin/sh
+                            set -eo pipefail
+                            #set -v  ## uncomment this to debug the script'
                         onChange={(value) => handleScriptChange({ target: { value } })}
                         inline
                         height={300}
                         value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script}
                     ></CodeEditor>
+                    }
+                  
                 </div>
             </div>
 

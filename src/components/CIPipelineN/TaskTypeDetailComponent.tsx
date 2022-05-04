@@ -248,12 +248,12 @@ export function TaskTypeDetailComponent() {
                             id="mountCustomScriptCheck"
                         >
                             <Tippy
-                                className="default-tt"
+                                className="default-tt w-220"
                                 arrow={false}
-                                content="Enable this if you also want to mount scripts in the container"
+                                content={TaskFieldDescription.MOUNTCODESNIPPET}
                             >
                                 <label className="pt-4" htmlFor="mountCustomScriptCheck">
-                                    Mount custom script
+                                    {TaskFieldLabel.MOUNTCODESNIPPET}
                                 </label>
                             </Tippy>
                         </Checkbox>
