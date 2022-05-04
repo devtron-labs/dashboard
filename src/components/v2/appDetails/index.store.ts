@@ -59,7 +59,7 @@ const IndexStore = {
 
         const _nodes = data.resourceTree.nodes || [];
 
-        const podMetadata = data.resourceTree.podMetadata;
+        const podMetadata = data.resourceTree.podMetadata || [];
 
         getiNodesByRootNodeWithChildNodes(_nodes, _nodes.filter(_n => (_n.parentRefs ?? []).length == 0).map(_n => _n as iNode), podMetadata)
 
@@ -294,7 +294,7 @@ export function getiNodesByRootNodeWithChildNodes(_nodes: Array<Node>, rootNodes
         .map( _pn => {
             _pn.childNodes = (_appDetailsSubject
             .getValue()
-            .resourceTree?.podMetadata || podMetadata).filter((_pmd) => {
+            .resourceTree?.podMetadata || podMetadata)?.filter((_pmd) => {
                 return _pmd.uid === _pn.uid;
             })[0]
             ?.containers?.map((_c) => {
