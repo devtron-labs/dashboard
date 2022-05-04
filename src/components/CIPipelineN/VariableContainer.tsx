@@ -54,14 +54,6 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                     {formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail[
                         type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'
                     ]?.map((variable, index) => {
-                        {
-                            console.log('hi', variable, variable.length)
-                        }
-                        {
-                            console.log(
-                                formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables,
-                            )
-                        }
                         const errorObj =
                             formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.pluginRefStepDetail
                                 .inputVariables[index]
@@ -73,11 +65,15 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                                         arrow={false}
                                         content={
                                             <span style={{ display: 'block', width: '185px' }}>
-                                                {variable.description}
+                                                <span style={{ fontWeight: 'bold', wordBreak: 'break-all' }}>
+                                                    {variable.name}
+                                                </span>
+                                                <br />
+                                                <span>{variable.description}</span>
                                             </span>
                                         }
                                     >
-                                        <div className="fs-13 fw-4 lh-28">
+                                        <div className="fs-13 fw-4 lh-28 ellipsis-right">
                                             <span className="text-underline-dashed">{variable.name}</span>
                                         </div>
                                     </Tippy>

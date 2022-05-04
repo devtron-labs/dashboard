@@ -388,7 +388,7 @@
 .variable-container {
     display: grid;
     grid-row-gap: 8px;
-    grid-template-columns: 200px 100px auto;
+    grid-template-columns: 250px 70px auto;
 }
 
 .custom-variable-container {
@@ -467,7 +467,7 @@
     background-color: var(--N50);
 }
 
-.format-grid{
+.format-grid {
     display: grid;
     grid-template-columns: 16px auto;
     grid-gap: 8px;
