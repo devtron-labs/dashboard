@@ -267,7 +267,7 @@ export default function DevtronStackManager({
                 _stackDetails || { ...stackDetails },
             )
             _getLogPodName()
-        }, 300000)
+        }, 30000)
     }
 
     /**
