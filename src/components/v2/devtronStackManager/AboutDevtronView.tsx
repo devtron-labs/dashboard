@@ -39,13 +39,19 @@ function AboutDevtronView({
 
     const renderTabs = (): JSX.Element => {
         return (
-            <ul className="tab-list tab-list--borderd mr-20 mb-24 pb-10">
+            <ul className="tab-list tab-list--borderd mr-20 mb-24">
                 {aboutDevtronTabs.map((tab, index) => {
                     return (
                         <li onClick={() => handleTabChange(index)} key={index} className="tab-list__tab">
-                            <NavLink exact to={tab.link} activeClassName="active" className="pb-10 no-decor">
+                            <NavLink
+                                exact
+                                to={tab.link}
+                                activeClassName="active"
+                                className="tab-list__tab-link no-decor"
+                            >
                                 {tab.name}
                             </NavLink>
+                            {selectedTabIndex == index && <div className="about-devtron__active-tab" />}
                         </li>
                     )
                 })}

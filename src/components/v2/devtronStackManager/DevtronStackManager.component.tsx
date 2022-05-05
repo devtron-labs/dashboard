@@ -108,7 +108,11 @@ export const ModulesListingView = ({
     handleModuleCardClick,
     history,
 }: ModuleListingViewType): JSX.Element => {
-    return modulesList.length > 0 ? (
+    if (modulesList.length === 0 && !isDiscoverModulesView) {
+        return <NoModulesInstalledView history={history} />
+    }
+
+    return (
         <div className="flexbox flex-wrap left p-20">
             {modulesList.map((module, idx) => {
                 return (
@@ -129,8 +133,6 @@ export const ModulesListingView = ({
                 />
             )}
         </div>
-    ) : (
-        <NoModulesInstalledView history={history} />
     )
 }
 
@@ -413,7 +415,7 @@ export const InstallationWrapper = ({
                                 installationStatus === ModuleStatus.UNKNOWN) && (
                                 <>
                                     <RetyrInstallIcon className="module-details__retry-install-icon icon-dim-16 mr-8" />
-                                    {isUpgradeView ? `Retry update to ${upgradeVersion}` : ' Retry install'}
+                                    {`Retry ${isUpgradeView ? 'update' : 'install'}`}
                                 </>
                             )}
                     </button>
@@ -466,7 +468,11 @@ export const ModuleDetailsView = ({
                 <div className="module-details__feature-wrapper">
                     <h2 className="module-details__feature-heading cn-9 fs-20 fw-6">{moduleDetails?.title}</h2>
                     <div className="module-details__divider mt-24 mb-24" />
-                    <MarkDown breaks={true} markdown={moduleDetails?.description} />
+                    <MarkDown
+                        className="module-details__feature-info fs-13 fw-4 cn-9"
+                        breaks={true}
+                        markdown={moduleDetails?.description}
+                    />
                 </div>
                 <InstallationWrapper
                     moduleName={moduleDetails?.name}
