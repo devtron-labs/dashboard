@@ -144,6 +144,10 @@
             grid-auto-rows: 44px;
             -ms-grid-rows: 44px;
             align-items: center;
+
+            &.sticky__bottom-options {
+                bottom: 44px;
+            }
         }
     }
 
@@ -236,7 +240,7 @@
     border-radius: 4px;
     background-color: white;
     position: fixed;
-    bottom: 132px;
+    bottom: 88px;
     left: 68px;
     border: 1px solid var(--N200);
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
@@ -268,6 +272,13 @@
     .help-card__update-option {
         padding: 8px 10px;
         background-color: var(--N100);
+    }
+}
+
+.logout-card,
+.help-card {
+    &.sticky__bottom-option {
+        bottom: 15px;
     }
 }
 

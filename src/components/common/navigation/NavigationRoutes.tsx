@@ -13,7 +13,6 @@ import { EnvType } from '../../v2/appDetails/appDetails.type'
 import DevtronStackManager from '../../v2/devtronStackManager/DevtronStackManager'
 import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { showError } from '../helpers/Helpers'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -25,8 +24,6 @@ const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 export const mainContext = createContext(null)
 
-let serverInfoTimer = null
-
 export default function NavigationRoutes() {
     const history = useHistory()
     const location = useLocation()
@@ -34,7 +31,12 @@ export default function NavigationRoutes() {
     const [serverMode, setServerMode] = useState(undefined)
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [pageOverflowEnabled, setPageOverflowEnabled] = useState<boolean>(true)
-    const [serverInfo, setServerInfo] = useState<ServerInfo>()
+    const [currentServerInfo, setCurrentServerInfo] = useState<{ serverInfo: ServerInfo; fetchingServerInfo: boolean }>(
+        {
+            serverInfo: undefined,
+            fetchingServerInfo: false,
+        },
+    )
 
     useEffect(() => {
         const loginInfo = getLoginInfo()
@@ -98,36 +100,37 @@ export default function NavigationRoutes() {
             }
         }
         getServerMode()
+        getCurrentServerInfo()
     }, [])
 
-    useEffect(() => {
-        _getServerInfo()
-
-        // Fetching server info every 30s
-        serverInfoTimer = setInterval(_getServerInfo, 30000)
-
-        // Clearing out 30s interval/polling on component unmount
-        return (): void => {
-            clearInterval(serverInfoTimer)
+    const getCurrentServerInfo = async (section?: string) => {
+        if (
+            currentServerInfo.fetchingServerInfo ||
+            (currentServerInfo.serverInfo && location.pathname.includes('/stack-manager') && section === 'navigation')
+        ) {
+            return
         }
-    }, [])
 
-    const _getServerInfo = async () => {
+        setCurrentServerInfo({
+            ...currentServerInfo,
+            fetchingServerInfo: true,
+        })
+
         try {
             const { result } = await getServerInfo()
-            setServerInfo(result)
+            setCurrentServerInfo({
+                ...currentServerInfo,
+                serverInfo: result,
+                fetchingServerInfo: false,
+            })
         } catch (err) {
-            // showError(err)
+            setCurrentServerInfo({
+                ...currentServerInfo,
+                fetchingServerInfo: false,
+            })
             console.error(err)
         }
     }
-
-    const handleServerInfoUpdate = useCallback(
-        (serverInfo) => {
-            setServerInfo(serverInfo)
-        },
-        [serverInfo],
-    )
 
     if (pageState === ViewType.LOADING) {
         return <Progressing pageLoader />
@@ -137,7 +140,15 @@ export default function NavigationRoutes() {
         return (
             <mainContext.Provider value={{ serverMode, setServerMode, setPageOverflowEnabled }}>
                 <main>
-                    <Navigation history={history} match={match} location={location} serverMode={serverMode} serverInfo={serverInfo} />
+                    <Navigation
+                        history={history}
+                        match={match}
+                        location={location}
+                        serverMode={serverMode}
+                        fetchingServerInfo={currentServerInfo.fetchingServerInfo}
+                        serverInfo={currentServerInfo.serverInfo}
+                        getCurrentServerInfo={getCurrentServerInfo}
+                    />
                     {serverMode && (
                         <div className={`main ${pageOverflowEnabled ? '' : 'main__overflow-disabled'}`}>
                             <Suspense fallback={<Progressing pageLoader />}>
@@ -163,8 +174,8 @@ export default function NavigationRoutes() {
                                         />
                                         <Route path={URLS.STACK_MANAGER}>
                                             <DevtronStackManager
-                                                serverInfo={serverInfo}
-                                                handleServerInfoUpdate={handleServerInfoUpdate}
+                                                serverInfo={currentServerInfo.serverInfo}
+                                                getCurrentServerInfo={getCurrentServerInfo}
                                             />
                                         </Route>
                                         <Route>

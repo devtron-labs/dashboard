@@ -247,9 +247,8 @@ const InstallationStatus = ({
             {(installationStatus === ModuleStatus.INSTALLING || installationStatus === ModuleStatus.UPGRADING) && (
                 <>
                     <Progressing size={24} />
-                    <div className="mt-12">
+                    <div className="mt-12 loading-dots">
                         {logPodName ? (isUpgradeView ? `Updating` : 'Installing') : 'Initializing'}
-                        <span className="loading-dots" />
                     </div>
                 </>
             )}

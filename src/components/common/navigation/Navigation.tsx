@@ -7,6 +7,14 @@ import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Discord } from '../../../assets/icons/ic-discord-fill.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
+import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-nav-search.svg'
+import { ReactComponent as ApplicationsIcon } from '../../../assets/icons/ic-nav-applications.svg'
+import { ReactComponent as ChartStoreIcon } from '../../../assets/icons/ic-nav-helm.svg'
+import { ReactComponent as DeploymentGroupIcon } from '../../../assets/icons/ic-nav-rocket.svg'
+import { ReactComponent as SecurityIcon } from '../../../assets/icons/ic-nav-bug.svg'
+import { ReactComponent as BulkEditIcon } from '../../../assets/icons/ic-nav-code.svg'
+import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
+import { ReactComponent as StackManagerIcon } from '../../../assets/icons/ic-nav-stack.svg'
 import { getLoginInfo } from '../index'
 import { getRandomColor } from '../helpers/Helpers'
 import NavSprite from '../../../assets/icons/navigation-sprite.svg'
@@ -21,6 +29,7 @@ const NavigationList = [
         title: 'Search (⌘+/)',
         type: 'button',
         iconClass: 'nav-short-search',
+        icon: SearchIcon,
         href: URLS.APP,
         isAvailableInEA: true,
     },
@@ -28,6 +37,7 @@ const NavigationList = [
         title: 'Applications',
         type: 'link',
         iconClass: 'nav-short-apps',
+        icon: ApplicationsIcon,
         href: URLS.APP,
         isAvailableInEA: true,
     },
@@ -35,6 +45,7 @@ const NavigationList = [
         title: 'Chart Store',
         type: 'link',
         iconClass: 'nav-short-helm',
+        icon: ChartStoreIcon,
         href: URLS.CHARTS,
         isAvailableInEA: true,
     },
@@ -42,6 +53,7 @@ const NavigationList = [
         title: 'Deployment Groups',
         type: 'link',
         iconClass: 'nav-short-bulk-actions',
+        icon: DeploymentGroupIcon,
         href: URLS.DEPLOYMENT_GROUPS,
         isAvailableInEA: false,
     },
@@ -50,6 +62,7 @@ const NavigationList = [
         type: 'link',
         href: URLS.SECURITY,
         iconClass: 'nav-security',
+        icon: SecurityIcon,
         isAvailableInEA: false,
     },
     {
@@ -57,6 +70,7 @@ const NavigationList = [
         type: 'link',
         href: URLS.BULK_EDITS,
         iconClass: 'nav-bulk-update',
+        icon: BulkEditIcon,
         isAvailableInEA: false,
     },
     {
@@ -64,6 +78,7 @@ const NavigationList = [
         type: 'link',
         href: URLS.GLOBAL_CONFIG,
         iconClass: 'nav-short-global',
+        icon: GlobalConfigIcon,
         isAvailableInEA: true,
     },
 ]
@@ -72,6 +87,7 @@ const NavigationStack = {
     title: 'Devtron Stack Manager',
     type: 'link',
     iconClass: 'nav-short-stack',
+    icon: StackManagerIcon,
     href: URLS.STACK_MANAGER,
 }
 
@@ -102,7 +118,9 @@ const HelpOptions = [
 
 interface NavigationType extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE
+    fetchingServerInfo: boolean
     serverInfo: ServerInfo
+    getCurrentServerInfo: (section: string) => Promise<void>
 }
 export default class Navigation extends Component<
     NavigationType,
@@ -150,7 +168,7 @@ export default class Navigation extends Component<
         let email: string = this.state.loginInfo ? this.state.loginInfo['email'] || this.state.loginInfo['sub'] : ''
         return ReactDOM.createPortal(
             <div className="transparent-div" onClick={this.toggleLogoutCard}>
-                <div className="logout-card">
+                <div className={`logout-card ${window._env_?.HIDE_DISCORD ? 'sticky__bottom-option' : ''}`}>
                     <div className="flexbox flex-justify p-16">
                         <div className="logout-card-user ">
                             <p className="logout-card__name ellipsis-right">{email}</p>
@@ -175,7 +193,7 @@ export default class Navigation extends Component<
     renderHelpCard() {
         return ReactDOM.createPortal(
             <div className="transparent-div" onClick={this.toggleHelpCard}>
-                <div className="help-card">
+                <div className={`help-card ${window._env_?.HIDE_DISCORD ? 'sticky__bottom-option' : ''}`}>
                     {HelpOptions.map((option) => {
                         return (
                             <>
@@ -202,7 +220,11 @@ export default class Navigation extends Component<
                         )
                     })}
                     <div className="help-card__update-option fs-11 fw-6 mt-4">
-                        <span>Devtron {this.props.serverInfo?.currentVersion || ''}</span>
+                        {this.props.fetchingServerInfo ? (
+                            <span className="loading-dots">Checking current version</span>
+                        ) : (
+                            <span>Devtron {this.props.serverInfo?.currentVersion || ''}</span>
+                        )}
                         <br />
                         <NavLink to={URLS.STACK_MANAGER_ABOUT}>Check for Updates</NavLink>
                     </div>
@@ -237,9 +259,7 @@ export default class Navigation extends Component<
             >
                 <div className="short-nav--flex">
                     <div className="svg-container flex">
-                        <svg className="short-nav-icon icon-dim-20" viewBox="0 0 24 24">
-                            <use href={`${NavSprite}#${item.iconClass}`}></use>
-                        </svg>
+                        <item.icon className="icon-dim-20" />
                     </div>
                     <div className="expandable-active-nav">
                         <div className="title-container flex left">{item.title}</div>
@@ -266,16 +286,7 @@ export default class Navigation extends Component<
                 <div className="short-nav__item-selected" />
                 <div className="short-nav--flex">
                     <div className={`svg-container flex ${item.iconClass}`}>
-                        <svg
-                            className={`short-nav-icon ${
-                                item.iconClass === 'nav-bulk-update' || item.iconClass === 'nav-short-stack'
-                                    ? 'ml-4 mt-4 icon-dim-24'
-                                    : 'icon-dim-20 '
-                            }`}
-                            viewBox="0 0 24 24"
-                        >
-                            <use href={`${NavSprite}#${item.iconClass}`}></use>
-                        </svg>
+                        <item.icon className="icon-dim-20" />
                     </div>
                     <div className="expandable-active-nav">
                         <div className="title-container flex left">{item.title}</div>
@@ -323,7 +334,7 @@ export default class Navigation extends Component<
                         })}
                         <div className="short-nav__divider" />
                         {this.renderNavLink(NavigationStack, 'short-nav__stack-manager')}
-                        <div className="short-nav__bottom-options">
+                        <div className={`short-nav__bottom-options ${window._env_?.HIDE_DISCORD ? 'sticky__bottom-options' : ''}`}>
                             <div
                                 className="nav-short-help cursor"
                                 onClick={(event) => {
@@ -333,7 +344,10 @@ export default class Navigation extends Component<
                                     })
                                 }}
                             >
-                                <div className="short-nav--flex" onClick={this.toggleHelpCard}>
+                                <div className="short-nav--flex" onClick={() => {
+                                    this.props.getCurrentServerInfo('navigation')
+                                    this.toggleHelpCard()
+                                }}>
                                     <div className="short-nav__icon-container icon-dim-40 flex">
                                         <Help className="help-option-icon icon-dim-24" />
                                     </div>
