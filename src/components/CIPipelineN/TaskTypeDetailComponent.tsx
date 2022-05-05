@@ -112,10 +112,10 @@ export function TaskTypeDetailComponent() {
 
     const renderShellScript = () => {
         if (formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.SHELL) {
-            if(!formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script){
+            if (!formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script) {
                 const _formData = { ...formData }
                 _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script =
-                '#!/bin/sh \nset -eo pipefail \n#set -v  ## uncomment this to debug the script \n'  //default value for shell
+                    '#!/bin/sh \nset -eo pipefail \n#set -v  ## uncomment this to debug the script \n' //default value for shell
                 setFormData(_formData)
             }
             return (
@@ -193,9 +193,12 @@ export function TaskTypeDetailComponent() {
             formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE
         ) {
             const errorObj = formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-            if(formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script === '#!/bin/sh \n set -eo pipefail \n #set -v  ## uncomment this to debug the script \n'){
+            if (
+                JSON.stringify(formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script) ===
+                '"#!/bin/sh \\nset -eo pipefail \\n#set -v  ## uncomment this to debug the script \\n"'
+            ) {
                 const _formData = { ...formData }
-                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script =''  //default value for container image
+                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script = '' //default value for container image
                 setFormData(_formData)
             }
             return (
