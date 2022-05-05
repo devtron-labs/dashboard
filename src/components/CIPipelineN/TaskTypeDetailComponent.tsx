@@ -31,7 +31,7 @@ export function TaskTypeDetailComponent() {
         setFormData,
         activeStageName,
         formDataErrorObj,
-        setFormDataErrorObj
+        setFormDataErrorObj,
     }: {
         selectedTaskIndex: number
         formData: FormType
@@ -62,7 +62,8 @@ export function TaskTypeDetailComponent() {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = e.target.value
         const _formErrorObject = { ...formDataErrorObj }
-        _formErrorObject[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] = validationRules.requiredField(e.target.value)
+        _formErrorObject[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key] =
+            validationRules.requiredField(e.target.value)
         _formErrorObject[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key].isValid =
             _formErrorObject[activeStageName].steps[selectedTaskIndex].inlineStepDetail[key].isValid
         setFormDataErrorObj(_formErrorObject)
@@ -207,7 +208,7 @@ export function TaskTypeDetailComponent() {
                                         return (
                                             <components.MenuList {...props}>
                                                 <div className="cn-5 pl-12 pt-4 pb-4" style={{ fontStyle: 'italic' }}>
-                                                    Type to enter a custom value
+                                                    Type to enter a custom value. Press Enter to accept.
                                                 </div>
                                                 {props.children}
                                             </components.MenuList>
