@@ -178,8 +178,8 @@ export default function DevtronStackManager({
         const _discoverModulesList: ModuleDetails[] = []
         const _installedModulesList: ModuleDetails[] = []
 
-        Promise.allSettled(_moduleDetailsPromiseList).then(
-            (responses: { status: string; value?: any; reason?: any }[]) => {
+        Promise.allSettled(_moduleDetailsPromiseList)
+            .then((responses: { status: string; value?: any; reason?: any }[]) => {
                 responses.forEach((res, idx) => {
                     if (!res.reason) {
                         const result: ModuleInfo = res.value?.result
@@ -206,8 +206,10 @@ export default function DevtronStackManager({
 
                 // 6. Update the stackDetails
                 setStackDetails(_stackDetails)
-            },
-        )
+            })
+            .catch((e) => {
+                console.error(e)
+            })
     }
 
     const getModuleDetails = () => {

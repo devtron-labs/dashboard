@@ -137,7 +137,7 @@ export interface AboutDevtronViewType {
 export interface ModuleInfo {
     id: number
     name: string
-    status?: ModuleStatus
+    status: ModuleStatus
 }
 
 export interface ModuleInfoResponse extends ResponseType {
