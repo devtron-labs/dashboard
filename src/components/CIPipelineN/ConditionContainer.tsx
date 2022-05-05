@@ -63,6 +63,15 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         setCollapsedSection(true) // collapse all the conditions when user go from prebuild to post build
     }, [activeStageName])
 
+    const validateCurrentTask = (_formData: FormType): void => {
+        const _formDataErrorObj = { ...formDataErrorObj }
+        validateTask(
+            _formData[activeStageName].steps[selectedTaskIndex],
+            _formDataErrorObj[activeStageName].steps[selectedTaskIndex],
+        )
+        setFormDataErrorObj(_formDataErrorObj)
+    }
+
     const addCondition = (): void => {
         const _formData = { ...formData }
         let id = 0
@@ -99,13 +108,8 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
 
     const deleteCondition = (index: number): void => {
         const _formData = { ...formData }
-        const _formDataErrorObj = { ...formDataErrorObj }
         _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails.splice(index, 1)
-        validateTask(
-            _formData[activeStageName].steps[index || selectedTaskIndex],
-            _formDataErrorObj[activeStageName].steps[index || selectedTaskIndex],
-        )
-        setFormDataErrorObj(_formDataErrorObj)
+        validateCurrentTask(_formData)
         setFormData(_formData)
     }
 
@@ -114,13 +118,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index][
             'conditionalValue'
         ] = e.target.value
-
-        const _formErrorObject = { ...formDataErrorObj }
-       _formErrorObject[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index]['conditionalValue'] = validationRules.conditionDetail( _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index]['conditionalValue'])
-       _formErrorObject[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index]['conditionalValue'].isValid =
-           _formErrorObject[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index]['conditionalValue'].isValid
-        setFormDataErrorObj(_formErrorObject)
-
+        validateCurrentTask(_formData)
         setFormData(_formData)
     }
 
@@ -129,6 +127,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index][
             'conditionOnVariable'
         ] = selectedValue.label
+        validateCurrentTask(_formData)
         setFormData(_formData)
     }
 
@@ -315,7 +314,9 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                                 type === ConditionContainerType.PASS_FAILURE
                                                     ? 'outputVariables'
                                                     : 'inputVariables'
-                                            ]?.filter(variable=> variable.name).map((variable) => ({ label: variable.name, value: variable.id }))}
+                                            ]
+                                                ?.filter((variable) => variable.name)
+                                                .map((variable) => ({ label: variable.name, value: variable.id }))}
                                             isSearchable={false}
                                             styles={selectWithDefaultBG}
                                             components={{
