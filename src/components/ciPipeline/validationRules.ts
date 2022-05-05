@@ -5,7 +5,7 @@ export class ValidationRules {
     name = (value: string): { message: string | null; isValid: boolean } => {
         const re = new RegExp('^[a-z][a-z0-9-.]+[a-z0-9]$')
         if (value && value.length < 1) {
-            return { message: 'This is a required field', isValid: false }
+            return { message: 'This is a required', isValid: false }
         } else if (!re.test(value)) {
             return { message: `Min of 3 characters; Start with lowercase; Use (a-z), (0-9), (-), (.)`, isValid: false }
         } else {
@@ -15,7 +15,7 @@ export class ValidationRules {
 
     requiredField = (value: string): { message: string | null; isValid: boolean } => {
         if (!value) {
-            return { message: 'This is a required field', isValid: false }
+            return { message: 'This is a required', isValid: false }
         } else {
             return { message: null, isValid: true }
         }
@@ -35,13 +35,13 @@ export class ValidationRules {
         if (!value['name'] && !variableValue && !value['description']) {
             return { message: 'Please complete or remove this variable', isValid: false }
         } else if (!value['name'] && !variableValue) {
-            return { message: 'Variable Name and Value both are required field', isValid: false }
+            return { message: 'Variable Name and Value both are required', isValid: false }
         } else if (!value['name']) {
-            return { message: 'Variable Name is required field', isValid: false }
+            return { message: 'Variable Name is required', isValid: false }
         } else if (!re.test(value['name'])) {
             return { message: `Invalid name. Only alphanumeric chars and (_) is allowed`, isValid: false }
         } else if (!variableValue) {
-            return { message: 'Variable Value is required field', isValid: false }
+            return { message: 'Variable Value is required', isValid: false }
         } else {
             return { message: null, isValid: true }
         }
@@ -50,7 +50,7 @@ export class ValidationRules {
     outputVariable = (value: object): { message: string | null; isValid: boolean } => {
         const re = new RegExp(PATTERNS.VARIABLE)
         if (!value['name']) {
-            return { message: 'Variable Name is required field', isValid: false }
+            return { message: 'Variable Name is required', isValid: false }
         } else if (!re.test(value['name'])) {
             return { message: `Invalid name. Only alphanumeric chars and (_) is allowed`, isValid: false }
         } else {
@@ -62,11 +62,11 @@ export class ValidationRules {
         if (!value['conditionOnVariable'] && !value['conditionalValue']) {
             return { message: 'Please complete or remove this condition', isValid: false }
         } else if (!value['conditionOnVariable']) {
-            return { message: 'ConditionOnVariable is required field', isValid: false }
+            return { message: 'ConditionOnVariable is required', isValid: false }
         } else if (!value['conditionOperator']) {
-            return { message: 'ConditionOperator is required field', isValid: false }
+            return { message: 'ConditionOperator is required', isValid: false }
         } else if (!value['conditionalValue']) {
-            return { message: 'ConditionalValue is required field', isValid: false }
+            return { message: 'ConditionalValue is required', isValid: false }
         } else {
             return { message: null, isValid: true }
         }
@@ -82,9 +82,9 @@ export class ValidationRules {
 
     mountPathMap = (value: object): { message: string | null; isValid: boolean } => {
         if (!value['filePathOnDisk'] && !value['filePathOnContainer']) {
-            return { message: 'File path on disk and File path on container, both are required field', isValid: false }
+            return { message: 'File path on disk and File path on container, both are required', isValid: false }
         } else if (!value['filePathOnDisk']) {
-            return { message: 'File path on disk is required field', isValid: false }
+            return { message: 'File path on disk is required', isValid: false }
         } else if (!value['filePathOnContainer']) {
             return { message: `File path on container is required field`, isValid: false }
         } else {
