@@ -62,11 +62,11 @@ export class ValidationRules {
         if (!value['conditionOnVariable'] && !value['conditionalValue']) {
             return { message: 'Please complete or remove this condition', isValid: false }
         } else if (!value['conditionOnVariable']) {
-            return { message: 'ConditionOnVariable is required', isValid: false }
+            return { message: 'Condition on variable is required', isValid: false }
         } else if (!value['conditionOperator']) {
-            return { message: 'ConditionOperator is required', isValid: false }
+            return { message: 'Condition operator is required', isValid: false }
         } else if (!value['conditionalValue']) {
-            return { message: 'ConditionalValue is required', isValid: false }
+            return { message: 'Conditional value is required', isValid: false }
         } else {
             return { message: null, isValid: true }
         }
