@@ -129,6 +129,9 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         preBuildStage: preBuildVariable,
                         postBuildStage: postBuildVariable,
                     })
+                    validateStage(BuildStageVariable.PreBuild, response.form)
+                    validateStage(BuildStageVariable.Build, response.form)
+                    validateStage(BuildStageVariable.PostBuild, response.form)
                     setFormData(response.form)
                     setCIPipeline(response.ciPipeline)
                     setIsAdvanced(true)
@@ -293,9 +296,9 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             return
         }
         setLoadingData(true)
-        validateStage(BuildStageVariable.PreBuild)
-        validateStage(BuildStageVariable.Build)
-        validateStage(BuildStageVariable.PostBuild)
+        validateStage(BuildStageVariable.PreBuild, formData)
+        validateStage(BuildStageVariable.Build, formData)
+        validateStage(BuildStageVariable.PostBuild, formData)
         const scanValidation = formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
         if (!scanValidation) {
             setLoadingData(false)
@@ -421,12 +424,12 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         }
     }
 
-    const validateStage = (stageName: string): void => {
+    const validateStage = (stageName: string, _formData: FormType): void => {
         const _formDataErrorObj = { ...formDataErrorObj }
         if (stageName === BuildStageVariable.Build) {
-            _formDataErrorObj.name = validationRules.name(formData.name)
+            _formDataErrorObj.name = validationRules.name(_formData.name)
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
-            let valid = formData.materials.reduce((isValid, mat) => {
+            let valid = _formData.materials.reduce((isValid, mat) => {
                 isValid = isValid && validationRules.sourceValue(mat.value).isValid
                 return isValid
             }, true)
@@ -435,12 +438,12 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                 setShowFormError(true)
             }
         } else {
-            const stepsLength = formData[stageName].steps.length
+            const stepsLength = _formData[stageName].steps.length
             let isStageValid = true
             for (let i = 0; i < stepsLength; i++) {
                 if (!_formDataErrorObj[stageName]['steps'][i])
                     _formDataErrorObj[stageName]['steps'].push({ isValid: true })
-                validateTask(formData[stageName]['steps'][i], _formDataErrorObj[stageName]['steps'][i])
+                validateTask(_formData[stageName]['steps'][i], _formDataErrorObj[stageName]['steps'][i])
                 isStageValid = isStageValid && _formDataErrorObj[stageName]['steps'][i].isValid
             }
             _formDataErrorObj[stageName].isValid = isStageValid
@@ -587,7 +590,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                     activeClassName="active"
                     to={toLink}
                     onClick={() => {
-                        validateStage(activeStageName)
+                        validateStage(activeStageName, formData)
                     }}
                 >
                     {BuildTabText[stageName]}
