@@ -21,7 +21,10 @@ export class ValidationRules {
         }
     }
 
-    inputVariable = (value: object): { message: string | null; isValid: boolean } => {
+    inputVariable = (
+        value: object,
+        availableInputVariables: Map<string, boolean>,
+    ): { message: string | null; isValid: boolean } => {
         const re = new RegExp(PATTERNS.VARIABLE)
         const variableValue =
             value['allowEmptyValue'] ||
@@ -35,22 +38,29 @@ export class ValidationRules {
         if (!value['name'] && !variableValue && !value['description']) {
             return { message: 'Please complete or remove this variable', isValid: false }
         } else if (!value['name'] && !variableValue) {
-            return { message: 'Variable Name and Value both are required', isValid: false }
+            return { message: 'Variable name and Value both are required', isValid: false }
         } else if (!value['name']) {
-            return { message: 'Variable Name is required', isValid: false }
+            return { message: 'Variable name is required', isValid: false }
+        } else if (availableInputVariables.get(value['name'])) {
+            return { message: 'Variable name should be unique', isValid: false }
         } else if (!re.test(value['name'])) {
             return { message: `Invalid name. Only alphanumeric chars and (_) is allowed`, isValid: false }
         } else if (!variableValue) {
-            return { message: 'Variable Value is required', isValid: false }
+            return { message: 'Variable value is required', isValid: false }
         } else {
             return { message: null, isValid: true }
         }
     }
 
-    outputVariable = (value: object): { message: string | null; isValid: boolean } => {
+    outputVariable = (
+        value: object,
+        availableInputVariables: Map<string, boolean>,
+    ): { message: string | null; isValid: boolean } => {
         const re = new RegExp(PATTERNS.VARIABLE)
         if (!value['name']) {
             return { message: 'Variable Name is required', isValid: false }
+        } else if (availableInputVariables.get(value['name'])) {
+            return { message: 'Variable name should be unique', isValid: false }
         } else if (!re.test(value['name'])) {
             return { message: `Invalid name. Only alphanumeric chars and (_) is allowed`, isValid: false }
         } else {

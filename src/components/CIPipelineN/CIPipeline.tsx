@@ -16,6 +16,7 @@ import { ValidationRules } from '../ciPipeline/validationRules'
 import {
     CIPipelineDataType,
     CIPipelineType,
+    ConditionType,
     FormType,
     PluginType,
     RefVariableStageType,
@@ -346,28 +347,28 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             taskErrorobj.isValid = taskErrorobj.name.isValid
 
             if (taskData.stepType) {
+                const inputVarMap: Map<string, boolean> = new Map()
+                const outputVarMap: Map<string, boolean> = new Map()
                 const currentStepTypeVariable =
                     taskData.stepType === PluginType.INLINE ? 'inlineStepDetail' : 'pluginRefStepDetail'
                 taskErrorobj[currentStepTypeVariable].inputVariables = []
                 taskData[currentStepTypeVariable].inputVariables?.forEach((element, index) => {
-                    taskErrorobj[currentStepTypeVariable].inputVariables.push(validationRules.inputVariable(element))
-                    taskErrorobj.isValid =
-                        taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable].inputVariables[index].isValid
-                })
-                taskErrorobj[currentStepTypeVariable]['conditionDetails'] = []
-                taskData[currentStepTypeVariable].conditionDetails?.forEach((element, index) => {
-                    taskErrorobj[currentStepTypeVariable]['conditionDetails'].push(
-                        validationRules.conditionDetail(element),
+                    taskErrorobj[currentStepTypeVariable].inputVariables.push(
+                        validationRules.inputVariable(element, inputVarMap),
                     )
                     taskErrorobj.isValid =
-                        taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable]['conditionDetails'][index].isValid
+                        taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable].inputVariables[index].isValid
+                    inputVarMap.set(element.name, true)
                 })
                 if (taskData.stepType === PluginType.INLINE) {
                     taskErrorobj.inlineStepDetail.outputVariables = []
                     taskData.inlineStepDetail.outputVariables?.forEach((element, index) => {
-                        taskErrorobj.inlineStepDetail.outputVariables.push(validationRules.outputVariable(element))
+                        taskErrorobj.inlineStepDetail.outputVariables.push(
+                            validationRules.outputVariable(element, outputVarMap),
+                        )
                         taskErrorobj.isValid =
                             taskErrorobj.isValid && taskErrorobj.inlineStepDetail.outputVariables[index].isValid
+                        outputVarMap.set(element.name, true)
                     })
                     if (taskData.inlineStepDetail['scriptType'] === ScriptType.SHELL) {
                         taskErrorobj.inlineStepDetail['script'] = validationRules.requiredField(
@@ -420,6 +421,27 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         }
                     }
                 }
+
+                taskErrorobj[currentStepTypeVariable]['conditionDetails'] = []
+                taskData[currentStepTypeVariable].conditionDetails?.forEach((element, index) => {
+                    if (element.conditionOnVariable) {
+                        if (
+                            ((element.conditionType === ConditionType.FAIL ||
+                                element.conditionType === ConditionType.PASS) &&
+                                !outputVarMap.get(element.conditionOnVariable)) ||
+                            ((element.conditionType === ConditionType.TRIGGER ||
+                                element.conditionType === ConditionType.SKIP) &&
+                                !inputVarMap.get(element.conditionOnVariable))
+                        ) {
+                            element.conditionOnVariable = ''
+                        }
+                    }
+                    taskErrorobj[currentStepTypeVariable]['conditionDetails'].push(
+                        validationRules.conditionDetail(element),
+                    )
+                    taskErrorobj.isValid =
+                        taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable]['conditionDetails'][index].isValid
+                })
             }
         }
     }
