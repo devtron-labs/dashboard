@@ -75,7 +75,7 @@ export enum TaskFieldLabel {
     SCRIPT = 'Script',
     CODE = 'Code',
     MOUNTCODEAT = 'Mount Code At',
-    MOUNTCODESNIPPET= 'Mount code'
+    MOUNTCODESNIPPET = 'Mount code',
 }
 
 export const TaskFieldDescription = {
@@ -93,11 +93,10 @@ export const TaskFieldDescription = {
         'These variables should be set in the environment variables and can be used as input variables in other scripts.',
     OUTPUTDIRECTORYPATH:
         'Directory in which the script is writing/producing output files (eg. test report, zip files etc)',
-    SCRIPT: 'You can invoke this script form the container',
-    CODE: 'You can invoke this code form the container',
+    SCRIPT: 'You can invoke this script from the container',
+    CODE: 'You can invoke this code from the container',
     MOUNTCODEAT: 'Path where code should be mounted',
-    MOUNTCODESNIPPET: 'Enable this if you want to mount custom code in the container'
-
+    MOUNTCODESNIPPET: 'Enable this if you want to mount custom code in the container',
 }
 
 export const MountPathMap = {
