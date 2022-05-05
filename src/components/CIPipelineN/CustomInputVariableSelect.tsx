@@ -281,7 +281,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                     return (
                         <components.MenuList {...props}>
                             <div className="cn-5 pl-12 pt-4 pb-4" style={{ fontStyle: 'italic' }}>
-                                Type to enter a custom value
+                                Type to enter a custom value. Press Enter to accept.
                             </div>
                             {props.children}
                         </components.MenuList>
@@ -297,6 +297,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             onBlur={handleCreatableBlur}
             isValidNewOption={() => false}
             onKeyDown={handleKeyDown}
+            menuPlacement="auto"
         />
     )
 }
