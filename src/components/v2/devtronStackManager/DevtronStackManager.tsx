@@ -1,5 +1,5 @@
 import React, { Suspense, useCallback, useEffect, useRef, useState, useContext } from 'react'
-import { Redirect, Route, Router, Switch, useHistory, useLocation } from 'react-router-dom'
+import { Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLocation } from 'react-router-dom'
 import { SERVER_MODE, URLS } from '../../../config'
 import { ErrorBoundary, ErrorScreenManager, Progressing, showError } from '../../common'
 import AboutDevtronView from './AboutDevtronView'
@@ -28,9 +28,8 @@ import {
     ServerInfo,
     StackDetailsType,
 } from './DevtronStackManager.type'
-import { isLatestVersionAvailable, MODULE_DETAILS_MAP } from './DevtronStackManager.utils'
-import './devtronStackManager.scss'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
+import './devtronStackManager.scss'
 
 let modulesPollingInterval = null
 
@@ -52,10 +51,13 @@ export default function DevtronStackManager({
         errorStatusCode: 0,
     })
     const [selectedModule, setSelectedModule] = useState<ModuleDetails>()
+    const [actionTriggered, setActionTriggered] = useState<Record<string, boolean>>({
+        serverAction: false,
+    })
     const [detailsMode, setDetailsMode] = useState('')
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
-    const history = useHistory()
-    const location = useLocation()
+    const history: RouteComponentProps['history'] = useHistory()
+    const location: RouteComponentProps['location'] = useLocation()
     const stackManagerRef = useRef<HTMLElement>()
     const queryParams = new URLSearchParams(location.search)
 
@@ -139,6 +141,13 @@ export default function DevtronStackManager({
             }
         } catch (e) {
             showError(e)
+        } finally {
+            setActionTriggered({
+                ...actionTriggered,
+                [location.pathname.includes('/discover')
+                    ? `moduleAction-${queryParams.get('id')?.toLowerCase()}`
+                    : 'serverAction']: false,
+            })
         }
     }
 
@@ -176,8 +185,9 @@ export default function DevtronStackManager({
                 const _installedModulesList: ModuleDetails[] = []
 
                 /**
-                 * 3. Create array of get moduleDetails promises to trigger API calls
-                 * to fetch all module details at once
+                 * 3. Create array of get moduleDetails promises
+                 * - If full mode & include legacy full package then resolved promises
+                 * - Else to trigger API calls to fetch all module details at once
                  */
                 const _getModuleInfoList = allModulesRes?.result?.map((module: ModuleDetails) =>
                     serverMode === SERVER_MODE.FULL && module.isIncludedInLegacyFullPackage
@@ -192,27 +202,18 @@ export default function DevtronStackManager({
                             const currentModule = allModulesRes?.result?.find(
                                 (_module) => _module.name === result?.name,
                             )
-                            // 4. Get the module details from MODULE_DETAILS_MAP if available else fetch the default/unknown
+                            // 4. Populate the module details using current module details & new installation status
                             const _moduleDetails = {
                                 ...currentModule,
                                 installationStatus: result?.status,
                             }
 
                             /**
-                             * 5. Push all modules details to discoverModulesList &
-                             * only modules which status is "installed", is not greater than current server version
-                             * & is not unknown to installedModulesList
+                             * 5. Push all modules details to discoverModulesList & only modules whose status is "installed"
                              */
                             _discoverModulesList.push(_moduleDetails)
 
-                            if (
-                                _moduleDetails.installationStatus === ModuleStatus.INSTALLED &&
-                                !isLatestVersionAvailable(
-                                    serverInfo?.currentVersion,
-                                    _moduleDetails.baseMinVersionSupported,
-                                ) &&
-                                _moduleDetails.name !== 'unknown'
-                            ) {
+                            if (_moduleDetails.installationStatus === ModuleStatus.INSTALLED) {
                                 _installedModulesList.push(_moduleDetails)
                             }
                         })
@@ -263,6 +264,16 @@ export default function DevtronStackManager({
         [selectedTabIndex],
     )
 
+    const handleActionTrigger = useCallback(
+        (actionName: string, actionState: boolean) => {
+            setActionTriggered({
+                ...actionTriggered,
+                [actionName]: actionState,
+            })
+        },
+        [actionTriggered],
+    )
+
     const Body = () => {
         return (
             <Switch location={location}>
@@ -275,6 +286,8 @@ export default function DevtronStackManager({
                         upgradeVersion={stackDetails.releaseNotes[0]?.releaseName}
                         logPodName={stackDetails.logPodName}
                         fromDiscoverModules={true}
+                        isActionTriggered={actionTriggered[`moduleAction-${selectedModule?.name?.toLowerCase()}`]}
+                        handleActionTrigger={handleActionTrigger}
                         history={history}
                         location={location}
                     />
@@ -287,6 +300,8 @@ export default function DevtronStackManager({
                         serverInfo={serverInfo}
                         upgradeVersion={stackDetails.releaseNotes[0]?.releaseName}
                         logPodName={stackDetails.logPodName}
+                        isActionTriggered={actionTriggered[`moduleAction-${selectedModule?.name?.toLowerCase()}`]}
+                        handleActionTrigger={handleActionTrigger}
                         history={history}
                         location={location}
                     />
@@ -294,7 +309,6 @@ export default function DevtronStackManager({
                 <Route path={URLS.STACK_MANAGER_DISCOVER_MODULES}>
                     <ModulesListingView
                         modulesList={stackDetails.discoverModulesList}
-                        currentVersion={serverInfo?.currentVersion}
                         isDiscoverModulesView={true}
                         handleModuleCardClick={handleModuleSelection}
                         history={history}
@@ -303,7 +317,6 @@ export default function DevtronStackManager({
                 <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES}>
                     <ModulesListingView
                         modulesList={stackDetails.installedModulesList}
-                        currentVersion={serverInfo?.currentVersion}
                         handleModuleCardClick={handleModuleSelection}
                         history={history}
                     />
@@ -317,6 +330,8 @@ export default function DevtronStackManager({
                         logPodName={stackDetails.logPodName}
                         selectedTabIndex={selectedTabIndex}
                         handleTabChange={handleTabChange}
+                        isActionTriggered={actionTriggered.serverAction}
+                        handleActionTrigger={handleActionTrigger}
                         history={history}
                         location={location}
                     />
@@ -330,6 +345,8 @@ export default function DevtronStackManager({
                         logPodName={stackDetails.logPodName}
                         selectedTabIndex={selectedTabIndex}
                         handleTabChange={handleTabChange}
+                        isActionTriggered={actionTriggered.serverAction}
+                        handleActionTrigger={handleActionTrigger}
                         history={history}
                         location={location}
                     />

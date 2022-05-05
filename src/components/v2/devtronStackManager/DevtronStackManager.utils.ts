@@ -1,4 +1,5 @@
 import React from 'react'
+import { RouteComponentProps } from 'react-router-dom'
 import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
 import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
@@ -11,28 +12,17 @@ import {
     ModuleActionRequest,
     ModuleActions,
     ModuleDetails,
-    ModuleDetailsInfo,
     ModuleStatus,
     StackManagerNavLinkType,
 } from './DevtronStackManager.type'
 
-export const MODULE_DETAILS_MAP: Record<string, ModuleDetails> = {
-    moreModules: {
-        id: 'moreModules',
-        name: 'moreModules',
-        title: 'More modules coming soon',
-        info: 'You can also raise a request for a module that will improve your workflow.',
-        icon: MoreExtentionsIcon,
-        installationStatus: ModuleStatus.NONE,
-    },
-    unknown: {
-        id: 'unknown',
-        name: 'unknown',
-        title: 'New module coming soon',
-        info: "We're building a suite of modules to serve your software delivery lifecycle.",
-        icon: CICDIcon,
-        installationStatus: ModuleStatus.NONE,
-    },
+export const MORE_MODULE_DETAILS: ModuleDetails = {
+    id: 'moreModules',
+    name: 'moreModules',
+    title: 'More modules coming soon',
+    info: 'You can also raise a request for a module that will improve your workflow.',
+    icon: MoreExtentionsIcon,
+    installationStatus: ModuleStatus.NONE,
 }
 
 export const ModulesSection: StackManagerNavLinkType[] = [
@@ -56,7 +46,7 @@ export const AboutSection: StackManagerNavLinkType = {
     className: 'about-devtron__nav-link',
 }
 
-const actionTriggered = (location: any, history: any) => {
+const actionTriggered = (history: RouteComponentProps['history'], location: RouteComponentProps['location']) => {
     const queryParams = new URLSearchParams(location.search)
     queryParams.set('actionTriggered', 'true')
     history.push(`${location.pathname}?${queryParams.toString()}`)
@@ -66,10 +56,9 @@ export const handleAction = async (
     moduleName: string,
     isUpgradeView: boolean,
     upgradeVersion: string,
-    canUpdateServer: boolean,
-    setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>,
-    location: any,
-    history: any,
+    updateActionTrigger: (isActionTriggered: boolean) => void,
+    history: RouteComponentProps['history'],
+    location: RouteComponentProps['location'],
 ) => {
     try {
         const actionRequest: ModuleActionRequest = {
@@ -85,7 +74,9 @@ export const handleAction = async (
             actionTriggered(history, location)
         }
     } catch (e) {
-        handleError(e, isUpgradeView, canUpdateServer, setShowManagedByDialog)
+        handleError(e, isUpgradeView)
+    } finally {
+        updateActionTrigger(false)
     }
 }
 

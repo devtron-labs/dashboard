@@ -1,3 +1,4 @@
+import { RouteComponentProps } from 'react-router-dom'
 import { ResponseType } from '../../../services/service.types'
 import { ActionResponse } from '../../external-apps/ExternalAppService'
 
@@ -54,7 +55,6 @@ export interface ModuleDetails {
     info: string
     icon: string
     installationStatus: ModuleStatus
-    baseMinVersionSupported?: string
     description?: string
     title?: string
     isIncludedInLegacyFullPackage?: boolean
@@ -63,10 +63,9 @@ export interface ModuleDetails {
 
 export interface ModuleListingViewType {
     modulesList: ModuleDetails[]
-    currentVersion: string
     isDiscoverModulesView?: boolean
     handleModuleCardClick: (moduleDetails: ModuleDetails, fromDiscoverModules: boolean) => void
-    history: any
+    history: RouteComponentProps['history']
 }
 
 export interface ModuleDetailsViewType {
@@ -77,8 +76,10 @@ export interface ModuleDetailsViewType {
     upgradeVersion: string
     logPodName?: string
     fromDiscoverModules?: boolean
-    history: any
-    location: any
+    isActionTriggered: boolean
+    handleActionTrigger: (actionName: string, actionState: boolean) => void
+    history: RouteComponentProps['history']
+    location: RouteComponentProps['location']
 }
 
 export interface ModuleInstallationStatusType {
@@ -86,7 +87,6 @@ export interface ModuleInstallationStatusType {
     appName?: string
     logPodName?: string
     isUpgradeView?: boolean
-    upgradeVersion?: string
     latestVersionAvailable: boolean
 }
 
@@ -98,8 +98,10 @@ export interface InstallationWrapperType {
     upgradeVersion: string
     isUpgradeView?: boolean
     setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>
-    history: any
-    location: any
+    isActionTriggered: boolean,
+    updateActionTrigger: (isActionTriggered: boolean) => void
+    history: RouteComponentProps['history']
+    location: RouteComponentProps['location']
 }
 
 export interface ModuleDetailsInfo {
@@ -110,7 +112,6 @@ export interface ModuleDetailsInfo {
 
 export interface ModuleDetailsCardType {
     moduleDetails: ModuleDetails
-    showBlur?: boolean
     className?: string
     handleModuleCardClick?: (moduleDetails: ModuleDetails, fromDiscoverModules: boolean) => void
     fromDiscoverModules?: boolean
@@ -124,15 +125,16 @@ export interface AboutDevtronViewType {
     logPodName: string
     handleTabChange: (tabIndex: number) => void
     selectedTabIndex: number
-    history: any
-    location: any
+    isActionTriggered: boolean
+    handleActionTrigger: (actionName: string, actionState: boolean) => void
+    history: RouteComponentProps['history']
+    location: RouteComponentProps['location']
 }
 
 export interface ModuleInfo {
     id: number
     name: string
     status?: ModuleStatus
-    baseMinVersionSupported?: string
 }
 
 export interface ModuleInfoResponse extends ResponseType {

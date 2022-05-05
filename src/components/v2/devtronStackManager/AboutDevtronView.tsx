@@ -15,6 +15,8 @@ function AboutDevtronView({
     logPodName,
     handleTabChange,
     selectedTabIndex,
+    isActionTriggered,
+    handleActionTrigger,
     history,
     location,
 }: AboutDevtronViewType) {
@@ -105,6 +107,8 @@ function AboutDevtronView({
                     serverInfo={serverInfo}
                     upgradeVersion={releaseNotes[0]?.releaseName}
                     setShowManagedByDialog={setShowManagedByDialog}
+                    isActionTriggered={isActionTriggered}
+                    updateActionTrigger={(isActionTriggered) => handleActionTrigger('serverAction', isActionTriggered)}
                     history={history}
                     location={location}
                 />
