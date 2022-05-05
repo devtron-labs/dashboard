@@ -156,6 +156,12 @@ export function TaskTypeDetailComponent() {
         setSelectedContainerImage(selectedValue)
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail['containerImagePath'] = selectedValue.label
+        const _formErrorObject = { ...formDataErrorObj }
+        validateTask(
+            _formData[activeStageName].steps[selectedTaskIndex],
+            _formErrorObject[activeStageName].steps[selectedTaskIndex],
+        )
+        setFormDataErrorObj(_formErrorObject)   
         setFormData(_formData)
     }
 
@@ -202,13 +208,7 @@ export function TaskTypeDetailComponent() {
                 '"#!/bin/sh \\nset -eo pipefail \\n#set -v  ## uncomment this to debug the script \\n"'
             ) {
                 const _formData = { ...formData }
-                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script = ''  //default value for container image
-                const _formErrorObject = { ...formDataErrorObj }
-                validateTask(
-                    _formData[activeStageName].steps[selectedTaskIndex],
-                    _formErrorObject[activeStageName].steps[selectedTaskIndex],
-                )
-                setFormDataErrorObj(_formErrorObject)               
+                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script = ''  //default value for container image            
                 setFormData(_formData)
             }
             return (
