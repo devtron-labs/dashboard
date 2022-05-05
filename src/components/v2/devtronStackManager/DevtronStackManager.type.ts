@@ -25,7 +25,6 @@ export interface StackDetailsType {
     discoverModulesList: ModuleDetails[]
     installedModulesList: ModuleDetails[]
     releaseNotes: ReleaseNotes[]
-    logPodName: string
     errorStatusCode: number
 }
 

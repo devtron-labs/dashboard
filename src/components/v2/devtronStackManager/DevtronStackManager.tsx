@@ -43,9 +43,9 @@ export default function DevtronStackManager({
         discoverModulesList: [],
         installedModulesList: [],
         releaseNotes: [],
-        logPodName: '',
         errorStatusCode: 0,
     })
+    const [logPodName, setLogPodName] = useState('')
     const [selectedModule, setSelectedModule] = useState<ModuleDetails>()
     const [actionTriggered, setActionTriggered] = useState<Record<string, boolean>>({
         serverAction: false,
@@ -158,17 +158,18 @@ export default function DevtronStackManager({
     const _getLogPodName = async (): Promise<void> => {
         try {
             const { result } = await getLogPodName()
-            setStackDetails({
-                ...stackDetails,
-                logPodName: result?.podName,
-            })
+            setLogPodName(result?.podName)
         } catch (e) {
             console.error(e)
         }
     }
 
     const _getDetailsForAllModules = (_modulesList: ModuleDetails[], _stackDetails: StackDetailsType): void => {
-        // 1. Create array of promises to fetch module details
+        /**
+         * 1. Create array of promises to fetch module details
+         * - If in full mode then resolve all modules as INSTALLED which has isIncludedInLegacyFullPackage as true
+         * - Else create a promise to fetch the details
+         */
         const _moduleDetailsPromiseList = _modulesList?.map((module: ModuleDetails) =>
             serverMode === SERVER_MODE.FULL && module.isIncludedInLegacyFullPackage
                 ? { result: { name: module.name, status: ModuleStatus.INSTALLED } }
@@ -180,10 +181,11 @@ export default function DevtronStackManager({
 
         Promise.allSettled(_moduleDetailsPromiseList)
             .then((responses: { status: string; value?: any; reason?: any }[]) => {
-                responses.forEach((res, idx) => {
+                responses.forEach((res) => {
                     if (!res.reason) {
                         const result: ModuleInfo = res.value?.result
                         const currentModule = _modulesList?.find((_module) => _module.name === result?.name)
+
                         // 2. Populate the module details using current module details & new installation status
                         const _moduleDetails: ModuleDetails = {
                             ...currentModule,
@@ -204,7 +206,7 @@ export default function DevtronStackManager({
                 _stackDetails.discoverModulesList = _discoverModulesList
                 _stackDetails.installedModulesList = _installedModulesList
 
-                // 6. Update the stackDetails
+                // 4. Update the stackDetails
                 setStackDetails(_stackDetails)
             })
             .catch((e) => {
@@ -243,11 +245,10 @@ export default function DevtronStackManager({
                 const _stackDetails: StackDetailsType = {
                     ...stackDetails,
                     isLoading: false,
-                    releaseNotes: releaseNotesRes?.result,
-                    logPodName: logPodNameRes?.result?.podName,
+                    releaseNotes: releaseNotesRes?.result
                 }
 
-                _getDetailsForAllModules(allModulesRes?.result, _stackDetails)
+                setLogPodName(logPodNameRes?.result?.podName)
                 pollForLatestDetails(allModulesRes?.result, _stackDetails)
             })
             .catch((err) => {
@@ -261,13 +262,12 @@ export default function DevtronStackManager({
 
     // Activate polling for latest server info, module details & logPodName only on stack manager page.
     const pollForLatestDetails = (modulesList: ModuleDetails[], _stackDetails: StackDetailsType) => {
+        _getDetailsForAllModules(modulesList, _stackDetails)
+
         // Fetching latest details/status every 30s
         modulesPollingInterval = setInterval(() => {
             getCurrentServerInfo()
-            _getDetailsForAllModules(
-                modulesList || stackDetails.discoverModulesList,
-                _stackDetails || { ...stackDetails },
-            )
+            _getDetailsForAllModules(modulesList, _stackDetails)
             _getLogPodName()
         }, 30000)
     }
@@ -325,7 +325,7 @@ export default function DevtronStackManager({
                         setShowManagedByDialog={setShowManagedByDialog}
                         serverInfo={serverInfo}
                         upgradeVersion={stackDetails.releaseNotes[0]?.releaseName}
-                        logPodName={stackDetails.logPodName}
+                        logPodName={logPodName}
                         fromDiscoverModules={true}
                         isActionTriggered={actionTriggered[`moduleAction-${selectedModule?.name?.toLowerCase()}`]}
                         handleActionTrigger={handleActionTrigger}
@@ -340,7 +340,7 @@ export default function DevtronStackManager({
                         setShowManagedByDialog={setShowManagedByDialog}
                         serverInfo={serverInfo}
                         upgradeVersion={stackDetails.releaseNotes[0]?.releaseName}
-                        logPodName={stackDetails.logPodName}
+                        logPodName={logPodName}
                         isActionTriggered={actionTriggered[`moduleAction-${selectedModule?.name?.toLowerCase()}`]}
                         handleActionTrigger={handleActionTrigger}
                         history={history}
@@ -369,7 +369,7 @@ export default function DevtronStackManager({
                         serverInfo={serverInfo}
                         setShowManagedByDialog={setShowManagedByDialog}
                         isCICDInstalled={checkIfCICDIsInstalled()}
-                        logPodName={stackDetails.logPodName}
+                        logPodName={logPodName}
                         selectedTabIndex={selectedTabIndex}
                         handleTabChange={handleTabChange}
                         isActionTriggered={actionTriggered.serverAction}
@@ -385,7 +385,7 @@ export default function DevtronStackManager({
                         serverInfo={serverInfo}
                         setShowManagedByDialog={setShowManagedByDialog}
                         isCICDInstalled={checkIfCICDIsInstalled()}
-                        logPodName={stackDetails.logPodName}
+                        logPodName={logPodName}
                         selectedTabIndex={selectedTabIndex}
                         handleTabChange={handleTabChange}
                         isActionTriggered={actionTriggered.serverAction}

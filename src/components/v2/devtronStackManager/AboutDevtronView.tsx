@@ -99,13 +99,15 @@ function AboutDevtronView({
     return (
         <div className="about-devtron__view-container flex column left top">
             <img className="about-devtron__view-image" src={AboutDevtron} alt="About Devtron" />
-            <h2 className="about-devtron__view-heading cn-9 fs-20 fw-6">
-                Devtron {serverInfo?.currentVersion ? `(${serverInfo.currentVersion.toLowerCase()})` : ''}
-            </h2>
-            <div className="about-devtron__details-wrapper">
-                <div className="about-devtron__view-tabs w-100">
-                    {renderTabs()}
-                    {renderTabData()}
+            <div className="about-devtron__view-wrapper">
+                <div className="about-devtron__details">
+                    <h2 className="about-devtron__view-heading cn-9 fs-20 fw-6">
+                        Devtron {serverInfo?.currentVersion ? `(${serverInfo.currentVersion.toLowerCase()})` : ''}
+                    </h2>
+                    <div className="about-devtron__view-tabs w-100">
+                        {renderTabs()}
+                        {renderTabData()}
+                    </div>
                 </div>
                 <InstallationWrapper
                     installationStatus={serverInfo?.status}
