@@ -106,6 +106,7 @@ export function PreBuild() {
         if (pluginType === PluginType.INLINE) {
             _form[activeStageName].steps[selectedTaskIndex].inlineStepDetail = {
                 scriptType: ScriptType.SHELL,
+                script: '#!/bin/sh \nset -eo pipefail \n#set -v  ## uncomment this to debug the script \n', //default value for shell
                 conditionDetails: [],
                 inputVariables: [],
                 outputVariables: [],
@@ -118,7 +119,6 @@ export function PreBuild() {
                 portMap: [],
                 mountCodeToContainer: false,
                 mountDirectoryFromHost: false,
-                script: '',
             }
             _formDataErrorObj[activeStageName]['steps'][selectedTaskIndex] = {
                 ..._formDataErrorObj[activeStageName]['steps'][selectedTaskIndex],
