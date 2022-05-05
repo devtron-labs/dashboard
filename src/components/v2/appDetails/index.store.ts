@@ -1,5 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
-import { AppDetails, Node, EnvDetails, EnvType, NodeType, iNode } from './appDetails.type';
+import { AppDetails, Node, EnvDetails, EnvType, NodeType, iNode, PodMetaData } from './appDetails.type';
 
 let _appDetailsSubject: BehaviorSubject<AppDetails> = new BehaviorSubject({} as AppDetails);
 let _nodesSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject([] as Node[]);
@@ -59,7 +59,9 @@ const IndexStore = {
 
         const _nodes = data.resourceTree?.nodes || [];
 
-        getiNodesByRootNodeWithChildNodes(_nodes, _nodes.filter(_n => (_n.parentRefs ?? []).length == 0).map(_n => _n as iNode))
+        const podMetadata = data.resourceTree?.podMetadata || [];
+
+        getiNodesByRootNodeWithChildNodes(_nodes, _nodes.filter(_n => (_n.parentRefs ?? []).length == 0).map(_n => _n as iNode), podMetadata)
 
         _appDetailsSubject.next({ ...data });
 
@@ -235,7 +237,7 @@ export function getiNodesByKindWithChildNodes(_nodes: Array<Node>, _kind: string
     return getiNodesByRootNodeWithChildNodes(_nodes, rootNodes)
 }
 
-export function getiNodesByRootNodeWithChildNodes(_nodes: Array<Node>, rootNodes: Array<iNode>): Array<iNode> {
+export function getiNodesByRootNodeWithChildNodes(_nodes: Array<Node>, rootNodes: Array<iNode>, podMetadata?: Array<PodMetaData>): Array<iNode> {
     //if any node has childNode we have already processed this node during previous call to this node and there have been no api calls since then
     //hence reusing it. After api call this is unset and we will process again.
 
@@ -290,9 +292,9 @@ export function getiNodesByRootNodeWithChildNodes(_nodes: Array<Node>, rootNodes
         children
         .filter( _child => _child.kind.toLowerCase() == NodeType.Pod.toLowerCase())
         .map( _pn => {
-            _pn.childNodes = _appDetailsSubject
+            _pn.childNodes = (podMetadata || _appDetailsSubject
             .getValue()
-            .resourceTree?.podMetadata?.filter((_pmd) => {
+            .resourceTree?.podMetadata)?.filter((_pmd) => {
                 return _pmd.uid === _pn.uid;
             })[0]
             ?.containers?.map((_c) => {
