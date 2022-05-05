@@ -36,6 +36,7 @@ export const baseSelectStyles = {
         fontSize: '12px',
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
         pointerEvents: 'all',
+        width: '100px',
     }),
     indicatorsContainer: (base, state) => ({
         ...base,
@@ -68,6 +69,7 @@ export const pluginSelectStyle = {
         fontSize: '12px',
         borderTopLeftRadius: '4px',
         borderBottomLeftRadius: '4px',
+        width: '100px',
     }),
     indicatorsContainer: (base, state) => ({
         ...base,
@@ -170,6 +172,7 @@ export const containerImageSelectStyles = {
         borderTopLeftRadius: '4px',
         borderBottomLeftRadius: '4px',
         fontSize: '12px',
+        width: '100px',
     }),
     indicatorsContainer: (base, state) => ({
         ...base,
