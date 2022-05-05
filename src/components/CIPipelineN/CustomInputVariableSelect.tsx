@@ -297,6 +297,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             onBlur={handleCreatableBlur}
             isValidNewOption={() => false}
             onKeyDown={handleKeyDown}
+            menuPlacement="auto"
         />
     )
 }

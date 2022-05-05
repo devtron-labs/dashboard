@@ -95,8 +95,11 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             e.target.name
         ] = e.target.value
         const _formErrorObject = { ...formDataErrorObj }
-        validateTask(_formData[activeStageName].steps[selectedTaskIndex], _formErrorObject[activeStageName].steps[selectedTaskIndex])
-       setFormDataErrorObj(_formErrorObject)
+        validateTask(
+            _formData[activeStageName].steps[selectedTaskIndex],
+            _formErrorObject[activeStageName].steps[selectedTaskIndex],
+        )
+        setFormDataErrorObj(_formErrorObject)
         setFormData(_formData)
     }
 
@@ -156,7 +159,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         setFormData(_formData)
     }
 
-    const isDateFormat = formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.some(elm=>elm.format  === 'DATE')
+    const isDateFormat = formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[
+        VariableFieldType[type]
+    ]?.some((elm) => elm.format === 'DATE')
 
     return (
         <>
@@ -172,17 +177,21 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                         </span>
                     }
                 >
-                    <div className={`tp-4 fs-13 fw-6 text-capitalize mr-8 `} style={{position: 'relative'}}>
+                    <div className={`tp-4 fs-13 fw-6 text-capitalize mr-8 `} style={{ position: 'relative' }}>
                         <span className="text-underline-dashed lh-32">{type} variables </span>
-                        {
-                                 isDateFormat &&
-                                 <div className="bcb-1 br-4 fw-4 pl-12 pr-12 pt-8 pb-8" style={{width: '180px', marginRight: '60px', position: 'absolute'}}>
+                        {isDateFormat && (
+                            <div
+                                className="bcb-1 br-4 fw-4 pl-12 pr-12 pt-8 pb-8"
+                                style={{ width: '180px', marginRight: '60px', position: 'absolute' }}
+                            >
                                 <div className="format-grid">
                                     <Info className="mr-4 icon-dim-16" />
-                                    <span className="cb-5 mb-2 lh-1-33">Standardized date formats <span className='cn-9'>identified by Devtron</span> </span>
+                                    <span className="cb-5 mb-2 lh-1-33">
+                                        Standardized date formats <span className="cn-9">identified by Devtron</span>{' '}
+                                    </span>
                                 </div>
                             </div>
-                            }
+                        )}
                     </div>
                 </Tippy>
 
@@ -252,6 +261,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                             Option,
                                                         }}
                                                         styles={outputFormatSelectStyle}
+                                                        menuPlacement="auto"
                                                     />
                                                 </div>
                                             )}
@@ -291,6 +301,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                             variable.variableType ===
                                                                 RefVariableType.FROM_PREVIOUS_STEP)
                                                     }
+                                                    menuPlacement="auto"
                                                 />
                                             </div>
                                         </div>
