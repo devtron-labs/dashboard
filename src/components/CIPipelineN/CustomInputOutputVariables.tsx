@@ -94,12 +94,14 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]][index][
             e.target.name
         ] = e.target.value
+        if(e.target.name === 'name'){
         const _formErrorObject = { ...formDataErrorObj }
-        validateTask(
-            _formData[activeStageName].steps[selectedTaskIndex],
-            _formErrorObject[activeStageName].steps[selectedTaskIndex],
-        )
-        setFormDataErrorObj(_formErrorObject)
+            validateTask(
+                _formData[activeStageName].steps[selectedTaskIndex],
+                _formErrorObject[activeStageName].steps[selectedTaskIndex],
+            )
+            setFormDataErrorObj(_formErrorObject)
+        }
         setFormData(_formData)
     }
 

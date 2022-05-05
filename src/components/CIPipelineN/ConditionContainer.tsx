@@ -116,9 +116,9 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         ] = e.target.value
 
         const _formErrorObject = { ...formDataErrorObj }
-       _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index]['conditionalValue'] = validationRules.conditionDetail(e.target.value)
-       _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index]['conditionalValue'].isValid =
-           _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index]['conditionalValue'].isValid
+       _formErrorObject[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index]['conditionalValue'] = validationRules.conditionDetail( _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index]['conditionalValue'])
+       _formErrorObject[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index]['conditionalValue'].isValid =
+           _formErrorObject[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index]['conditionalValue'].isValid
         setFormDataErrorObj(_formErrorObject)
 
         setFormData(_formData)

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { pluginSelectStyle, baseSelectStyles } from './ciPipeline.utils'
-import { RefVariableType, PluginType, FormType, VariableType, RefVariableStageType } from '../ciPipeline/types'
+import { RefVariableType, PluginType, FormType, VariableType, RefVariableStageType, FormErrorObjectType, StepType, TaskErrorObj } from '../ciPipeline/types'
 import { ciPipelineContext } from './CIPipeline'
 import CreatableSelect from 'react-select/creatable'
 import { components } from 'react-select'
@@ -17,6 +17,9 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         activeStageName,
         inputVariablesListFromPrevStep,
         globalVariables,
+        formDataErrorObj,
+        setFormDataErrorObj,
+        validateTask
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -27,6 +30,9 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             postBuildStage: Map<string, VariableType>[]
         }
         globalVariables: { label: string; value: string; format: string }[]
+        formDataErrorObj: FormErrorObjectType
+        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
+        validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
     } = useContext(ciPipelineContext)
     const [selectedOutputVariable, setSelectedOutputVariable] = useState<OptionType>({
         label: '',
@@ -169,6 +175,12 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
             selectedVariableIndex
         ] = _inputVariables
+        const _formErrorObject = { ...formDataErrorObj }
+        validateTask(
+            _formData[activeStageName].steps[selectedTaskIndex],
+            _formErrorObject[activeStageName].steps[selectedTaskIndex],
+        )
+        setFormDataErrorObj(_formErrorObject)
         setFormData(_formData)
     }
 
