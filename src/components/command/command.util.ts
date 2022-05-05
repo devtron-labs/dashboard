@@ -583,7 +583,7 @@ function getStackManagerArguments(args, options): Promise<CommandSuggestionType>
             resolve({
                 allSuggestionArguments: [
                     {
-                        value: 'discover modules',
+                        value: 'discover integrations',
                         ref: null,
                         data: {
                             group: undefined,
@@ -592,7 +592,7 @@ function getStackManagerArguments(args, options): Promise<CommandSuggestionType>
                         },
                     },
                     {
-                        value: 'installed modules',
+                        value: 'installed integrations',
                         ref: null,
                         data: {
                             group: undefined,
