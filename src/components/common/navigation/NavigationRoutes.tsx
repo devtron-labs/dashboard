@@ -25,6 +25,8 @@ const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 export const mainContext = createContext(null)
 
+let serverInfoTimer = null
+
 export default function NavigationRoutes() {
     const history = useHistory()
     const location = useLocation()
@@ -88,7 +90,7 @@ export default function NavigationRoutes() {
                 const response = getVersionConfig()
                 const json = await response
                 if (json.code == 200) {
-                    setServerMode(SERVER_MODE.EA_ONLY)//json.result.serverMode)
+                    setServerMode(json.result.serverMode)
                     setPageState(ViewType.FORM)
                 }
             } catch (err) {
@@ -97,6 +99,18 @@ export default function NavigationRoutes() {
         }
         getServerMode()
         _getServerInfo()
+    }, [])
+
+    useEffect(() => {
+        _getServerInfo()
+
+        // Fetching server info every 30s
+        serverInfoTimer = setInterval(_getServerInfo, 30000)
+
+        // Clearing out 30s interval/polling on component unmount
+        return (): void => {
+            clearInterval(serverInfoTimer)
+        }
     }, [])
 
     const _getServerInfo = async () => {
