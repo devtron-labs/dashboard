@@ -21,6 +21,14 @@ function CustomScript({ handleScriptChange }: CustomScriptType) {
         activeStageName: string
         formDataErrorObj: FormErrorObjectType
     } = useContext(ciPipelineContext)
+    let shebangHtml = formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.SHELL ? <div style={{ resize: 'none', lineHeight: '1.4', border: 'none', overflow: 'none', color: '#f32e2e', fontSize: '14px', fontFamily: 'Consolas, "Courier New", monospace' }} >
+            <p className="m-0" contentEditable="true"> #!/bin/sh</p>
+            <p className="m-0" contentEditable="true"> set -eo pipefail</p>
+            <p className="m-0" contentEditable="true"> #set -v</p>
+            <p className="m-0" contentEditable="true">## uncomment this to debug the script</p>
+        </div> : null;
+    let codeEditorBody = (formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.SHELL) ? formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script : formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script;
+    
     return (
         <div className="mb-12">
             <div className="row-container">
@@ -29,29 +37,15 @@ function CustomScript({ handleScriptChange }: CustomScriptType) {
                     contentDescription={TaskFieldDescription.SCRIPT}
                 />
                 <div className="script-container">
-                    {
-                        formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.SHELL ? 
                         <CodeEditor
                         theme="vs-alice-blue"
                         mode="shell"
+                        shebang={shebangHtml}
                         onChange={(value) => handleScriptChange({ target: { value } })}
                         inline
                         height={300}
-                        value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script}
-                    ></CodeEditor> : 
-                    <CodeEditor
-                        theme="vs-alice-blue"
-                        mode="shell"
-                        shebang='#!/bin/sh
-                            set -eo pipefail
-                            #set -v  ## uncomment this to debug the script'
-                        onChange={(value) => handleScriptChange({ target: { value } })}
-                        inline
-                        height={300}
-                        value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script}
-                    ></CodeEditor>
-                    }
-                  
+                        value={codeEditorBody}
+                    ></CodeEditor> 
                 </div>
             </div>
 
