@@ -85,6 +85,7 @@ export interface ModuleDetailsViewType {
 export interface ModuleInstallationStatusType {
     installationStatus: ModuleStatus
     appName?: string
+    isCICDInstalled?: boolean
     logPodName?: string
     isUpgradeView?: boolean
     latestVersionAvailable: boolean
@@ -93,6 +94,7 @@ export interface ModuleInstallationStatusType {
 export interface InstallationWrapperType {
     moduleName?: string
     installationStatus: ModuleStatus
+    isCICDInstalled?: boolean
     logPodName?: string
     serverInfo: ServerInfo
     upgradeVersion: string
@@ -122,6 +124,7 @@ export interface AboutDevtronViewType {
     releaseNotes: ReleaseNotes[]
     serverInfo: ServerInfo
     setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>
+    isCICDInstalled: boolean
     logPodName: string
     handleTabChange: (tabIndex: number) => void
     selectedTabIndex: number

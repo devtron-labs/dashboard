@@ -26,7 +26,7 @@ function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefi
                 <div className='pt-20'>
                      <NavLink to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`}>
                         <button type="button" className="cta empty__install-btn">
-                            View Module
+                            View Integration
                         </button>
                     </NavLink>
                 </div>

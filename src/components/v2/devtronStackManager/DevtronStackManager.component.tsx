@@ -92,7 +92,7 @@ const ModuleDeailsCard = ({
                         >
                             raise a request
                         </a>
-                        &nbsp;for a module that will improve your workflow.
+                        &nbsp;for an integration.
                     </>
                 ) : (
                     moduleDetails.info
@@ -139,13 +139,9 @@ export const ModulesListingView = ({
 const getUpdateStatusLabel = (installationStatus: ModuleStatus, currentVersion: string, newVersion: string): string => {
     if (installationStatus === ModuleStatus.UPGRADING) {
         return '(Updating...)'
-    } else if (
-        installationStatus === ModuleStatus.UPGRADE_FAILED ||
-        installationStatus === ModuleStatus.TIMEOUT ||
-        installationStatus === ModuleStatus.UNKNOWN
-    ) {
+    } else if (installationStatus === ModuleStatus.UPGRADE_FAILED || installationStatus === ModuleStatus.TIMEOUT) {
         return '(Update failed)'
-    } else if (isLatestVersionAvailable(currentVersion, newVersion)) {
+    } else if (installationStatus !== ModuleStatus.UNKNOWN && isLatestVersionAvailable(currentVersion, newVersion)) {
         return '(Update available)'
     }
 
@@ -193,7 +189,7 @@ export const NavItem = ({
 
     return (
         <div className="flex column left">
-            <div className="section-heading cn-6 fs-12 fw-6 pl-8 mb-8">MODULES</div>
+            <div className="section-heading cn-6 fs-12 fw-6 pl-8 mb-8 text-uppercase">Integrations</div>
             {ModulesSection.map((route) => getNavLink(route))}
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
             {getNavLink(AboutSection)}
@@ -212,7 +208,7 @@ export const PageHeader = ({
             {detailsMode === 'discover' && (
                 <div className="flex left page-header__title cn-9 fs-14 fw-6">
                     <NavLink to={URLS.STACK_MANAGER_DISCOVER_MODULES} onClick={handleBreadcrumbClick}>
-                        Discover modules
+                        Discover integrations
                     </NavLink>
                     <span className="mr-4 ml-4">/</span>
                     <span>{selectedModule?.title}</span>
@@ -221,7 +217,7 @@ export const PageHeader = ({
             {detailsMode === 'installed' && (
                 <div className="flex left page-header__title cn-9 fs-14 fw-6">
                     <NavLink to={URLS.STACK_MANAGER_INSTALLED_MODULES} onClick={handleBreadcrumbClick}>
-                        Installed modules
+                        Installed integrations
                     </NavLink>
                     <span className="mr-4 ml-4">/</span>
                     <span>{selectedModule?.title}</span>
@@ -234,6 +230,7 @@ export const PageHeader = ({
 const InstallationStatus = ({
     installationStatus,
     appName,
+    isCICDInstalled,
     logPodName,
     isUpgradeView,
     latestVersionAvailable,
@@ -294,12 +291,21 @@ const InstallationStatus = ({
                                 : ''
                         }`}
                     >
-                        <NavLink
-                            to={`${URLS.APP}/${URLS.EXTERNAL_APPS}/1%7Cdevtroncd%7C${appName}/${appName}/${URLS.APP_DETAILS}/${URLS.APP_DETAILS_K8}/pod/${logPodName}/logs`}
-                            target="_blank"
-                        >
-                            View logs
-                        </NavLink>
+                        {isUpgradeView && !isCICDInstalled ? (
+                            <NavLink
+                                to={`${URLS.APP}/${URLS.EXTERNAL_APPS}/1%7Cdevtroncd%7C${appName}/${appName}/${URLS.APP_DETAILS}`}
+                                target="_blank"
+                            >
+                                View details
+                            </NavLink>
+                        ) : (
+                            <NavLink
+                                to={`${URLS.APP}/${URLS.EXTERNAL_APPS}/1%7Cdevtroncd%7C${appName}/${appName}/${URLS.APP_DETAILS}/${URLS.APP_DETAILS_K8}/pod/${logPodName}/logs`}
+                                target="_blank"
+                            >
+                                View logs
+                            </NavLink>
+                        )}
                     </div>
                 )}
             {(installationStatus === ModuleStatus.INSTALLING || installationStatus === ModuleStatus.UPGRADING) && (
@@ -367,6 +373,7 @@ export const handleError = (err: any, isUpgradeView?: boolean): void => {
 export const InstallationWrapper = ({
     moduleName,
     installationStatus,
+    isCICDInstalled,
     logPodName,
     serverInfo,
     upgradeVersion,
@@ -424,6 +431,7 @@ export const InstallationWrapper = ({
                 <InstallationStatus
                     installationStatus={installationStatus}
                     appName={serverInfo?.releaseName}
+                    isCICDInstalled={isCICDInstalled}
                     logPodName={logPodName}
                     isUpgradeView={isUpgradeView}
                     latestVersionAvailable={latestVersionAvailable}
@@ -500,16 +508,16 @@ export const NoModulesInstalledView = ({ history }: { history: RouteComponentPro
                     <img src={NoExtensions} width="250" height="200" alt="no results" />
                 </EmptyState.Image>
                 <EmptyState.Title>
-                    <h2 className="fs-16 fw-4 c-9">No modules installed</h2>
+                    <h2 className="fs-16 fw-4 c-9">No integrations installed</h2>
                 </EmptyState.Title>
-                <EmptyState.Subtitle>Installed modules will be available here</EmptyState.Subtitle>
+                <EmptyState.Subtitle>Installed integrations will be available here</EmptyState.Subtitle>
                 <EmptyState.Button>
                     <button
                         type="button"
                         className="empty-state__discover-btn flex fs-13 fw-6 br-4"
                         onClick={() => history.push(URLS.STACK_MANAGER_DISCOVER_MODULES)}
                     >
-                        <DiscoverIcon className="discover-icon" /> <span className="ml-8">Discover modules</span>
+                        <DiscoverIcon className="discover-icon" /> <span className="ml-8">Discover integrations</span>
                     </button>
                 </EmptyState.Button>
             </EmptyState>

@@ -257,7 +257,7 @@ export default function DevtronStackManager({
             })
     }
 
-    // It'll activate polling for latest server info, module details & logPodName only on stack manager page.
+    // Activate polling for latest server info, module details & logPodName only on stack manager page.
     const pollForLatestDetails = (modulesList: ModuleDetails[], _stackDetails: StackDetailsType) => {
         // Fetching latest details/status every 30s
         modulesPollingInterval = setInterval(() => {
@@ -308,6 +308,10 @@ export default function DevtronStackManager({
         },
         [actionTriggered],
     )
+
+    const checkIfCICDIsInstalled = () => {
+        return stackDetails.installedModulesList.findIndex((module) => module.name.toLowerCase() === 'cicd') !== -1
+    }
 
     const Body = () => {
         return (
@@ -362,6 +366,7 @@ export default function DevtronStackManager({
                         releaseNotes={stackDetails.releaseNotes}
                         serverInfo={serverInfo}
                         setShowManagedByDialog={setShowManagedByDialog}
+                        isCICDInstalled={checkIfCICDIsInstalled()}
                         logPodName={stackDetails.logPodName}
                         selectedTabIndex={selectedTabIndex}
                         handleTabChange={handleTabChange}
@@ -377,6 +382,7 @@ export default function DevtronStackManager({
                         releaseNotes={stackDetails.releaseNotes}
                         serverInfo={serverInfo}
                         setShowManagedByDialog={setShowManagedByDialog}
+                        isCICDInstalled={checkIfCICDIsInstalled()}
                         logPodName={stackDetails.logPodName}
                         selectedTabIndex={selectedTabIndex}
                         handleTabChange={handleTabChange}

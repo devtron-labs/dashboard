@@ -12,6 +12,7 @@ function AboutDevtronView({
     releaseNotes,
     serverInfo,
     setShowManagedByDialog,
+    isCICDInstalled,
     logPodName,
     handleTabChange,
     selectedTabIndex,
@@ -108,6 +109,7 @@ function AboutDevtronView({
                 </div>
                 <InstallationWrapper
                     installationStatus={serverInfo?.status}
+                    isCICDInstalled={isCICDInstalled}
                     logPodName={logPodName}
                     isUpgradeView={true}
                     serverInfo={serverInfo}
