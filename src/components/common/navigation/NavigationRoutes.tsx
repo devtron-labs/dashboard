@@ -98,7 +98,6 @@ export default function NavigationRoutes() {
             }
         }
         getServerMode()
-        _getServerInfo()
     }, [])
 
     useEffect(() => {
