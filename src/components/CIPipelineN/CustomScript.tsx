@@ -26,8 +26,8 @@ function CustomScript({ handleScriptChange }: CustomScriptType) {
         <div className="mb-12">
             <div className="row-container">
                 <TaskFieldTippyDescription
-                    taskField={TaskFieldLabel.SCRIPT}
-                    contentDescription={TaskFieldDescription.SCRIPT}
+                    taskField={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.SHELL ? TaskFieldLabel.SCRIPT : TaskFieldLabel.CODE}
+                    contentDescription={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.SHELL ? TaskFieldDescription.SCRIPT : TaskFieldDescription.CODE}
                 />
                 <div className="script-container">
                         <CodeEditor
