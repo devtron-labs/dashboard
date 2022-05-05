@@ -4,6 +4,8 @@ import {
     FormType,
     MountPath,
     ScriptType,
+    StepType,
+    TaskErrorObj,
     TaskFieldDescription,
     TaskFieldLabel,
 } from '../ciPipeline/types'
@@ -32,6 +34,7 @@ export function TaskTypeDetailComponent() {
         activeStageName,
         formDataErrorObj,
         setFormDataErrorObj,
+        validateTask
     }: {
         selectedTaskIndex: number
         formData: FormType
@@ -39,6 +42,7 @@ export function TaskTypeDetailComponent() {
         activeStageName: string
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
+        validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
     } = useContext(ciPipelineContext)
     const validationRules = new ValidationRules()
 
@@ -198,7 +202,13 @@ export function TaskTypeDetailComponent() {
                 '"#!/bin/sh \\nset -eo pipefail \\n#set -v  ## uncomment this to debug the script \\n"'
             ) {
                 const _formData = { ...formData }
-                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script = '' //default value for container image
+                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script = ''  //default value for container image
+                const _formErrorObject = { ...formDataErrorObj }
+                validateTask(
+                    _formData[activeStageName].steps[selectedTaskIndex],
+                    _formErrorObject[activeStageName].steps[selectedTaskIndex],
+                )
+                setFormDataErrorObj(_formErrorObject)               
                 setFormData(_formData)
             }
             return (
