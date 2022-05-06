@@ -13,9 +13,6 @@ import PreBuildIcon from '../../assets/icons/ic-cd-stage.svg'
 import { PluginCard } from './PluginCard'
 import { PluginCardListContainer } from './PluginCardListContainer'
 import { BuildStageVariable, ConfigurationType, ViewType } from '../../config'
-import { getPluginsData } from '../ciPipeline/ciPipeline.service'
-import { ServerErrors } from '../../modals/commonTypes'
-import { showError } from '../common'
 import CDEmptyState from '../app/details/cdDetails/CDEmptyState'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { TaskDetailComponent } from './TaskDetailComponent'
@@ -23,11 +20,16 @@ import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import { ciPipelineContext } from './CIPipeline'
 
-export function PreBuild() {
+export function PreBuild({
+    presetPlugins,
+    sharedPlugins,
+}: {
+    presetPlugins: PluginDetailType[]
+    sharedPlugins: PluginDetailType[]
+}) {
     const {
         formData,
         setFormData,
-        setPageState,
         addNewTask,
         selectedTaskIndex,
         setSelectedTaskIndex,
@@ -40,8 +42,6 @@ export function PreBuild() {
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        pageState: string
-        setPageState: React.Dispatch<React.SetStateAction<string>>
         addNewTask: () => void
         selectedTaskIndex: number
         setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
@@ -52,8 +52,6 @@ export function PreBuild() {
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
     } = useContext(ciPipelineContext)
-    const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
-    const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
     const [editorValue, setEditorValue] = useState<string>(YAML.stringify(formData[activeStageName]))
     useEffect(() => {
         if (configurationType === ConfigurationType.YAML) {
@@ -65,34 +63,6 @@ export function PreBuild() {
         setConfigurationType(ConfigurationType.GUI)
         setSelectedTaskIndex(0)
     }, [activeStageName])
-
-    useEffect(() => {
-        setPageState(ViewType.LOADING)
-        getPluginsData(appId)
-            .then((response) => {
-                processPluginList(response?.result || [])
-                setPageState(ViewType.FORM)
-            })
-            .catch((error: ServerErrors) => {
-                setPageState(ViewType.ERROR)
-                showError(error)
-            })
-    }, [])
-
-    function processPluginList(pluginList: PluginDetailType[]): void {
-        const _presetPlugin = []
-        const _sharedPlugin = []
-        const pluginListLength = pluginList.length
-        for (let i = 0; i < pluginListLength; i++) {
-            if (pluginList[i].type === 'PRESET') {
-                _presetPlugin.push(pluginList[i])
-            } else {
-                _sharedPlugin.push(pluginList[i])
-            }
-        }
-        setPresetPlugins(_presetPlugin)
-        setSharedPlugins(_sharedPlugin)
-    }
 
     function setPluginType(
         pluginType: PluginType,

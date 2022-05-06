@@ -302,7 +302,7 @@ export function TaskTypeDetailComponent() {
                                     <input
                                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                         autoComplete="off"
-                                        placeholder="Eg. directory/filename"
+                                        placeholder="Eg. /directory/filename"
                                         type="text"
                                         name="storeScriptAt"
                                         onChange={(e) => handleCustomChange(e, 'storeScriptAt')}

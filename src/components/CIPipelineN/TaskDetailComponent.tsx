@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { ConfigurationType, ViewType } from '../../config'
-import { RadioGroup, showError } from '../common'
+import { Progressing, RadioGroup, showError } from '../common'
 import {
     ConditionContainerType,
     FormErrorObjectType,
@@ -26,7 +26,6 @@ export function TaskDetailComponent() {
     const {
         formData,
         setFormData,
-        setPageState,
         selectedTaskIndex,
         activeStageName,
         appId,
@@ -36,7 +35,6 @@ export function TaskDetailComponent() {
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        setPageState: React.Dispatch<React.SetStateAction<string>>
         selectedTaskIndex: number
         activeStageName: string
         appId: number
@@ -52,6 +50,7 @@ export function TaskDetailComponent() {
         }
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
     } = useContext(ciPipelineContext)
+    const [pageState, setPageState] = useState(ViewType.FORM)
     const validationRules = new ValidationRules()
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [editorValue, setEditorValue] = useState<string>('')
@@ -153,7 +152,11 @@ export function TaskDetailComponent() {
         setFormData(_formData)
     }
 
-    return (
+    return pageState === ViewType.LOADING.toString() ? (
+        <div style={{ minHeight: '200px' }} className="flex">
+            <Progressing pageLoader />
+        </div>
+    ) : (
         <div>
             <div>
                 <div className="row-container mb-12">

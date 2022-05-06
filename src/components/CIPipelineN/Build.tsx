@@ -16,20 +16,20 @@ export function Build({
     showFormError,
     isAdvanced,
     ciPipelineId,
+    pageState,
 }: {
     showFormError: boolean
     isAdvanced: boolean
     ciPipelineId: number
+    pageState: string
 }) {
     const {
         formData,
         setFormData,
-        pageState,
         formDataErrorObj,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        pageState: string
         formDataErrorObj: FormErrorObjectType
     } = useContext(ciPipelineContext)
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)

@@ -8,6 +8,7 @@ import {
     getGlobalVariable,
     getInitData,
     getInitDataWithCIPipeline,
+    getPluginsData,
     saveCIPipeline,
 } from '../ciPipeline/ciPipeline.service'
 import { toast } from 'react-toastify'
@@ -18,6 +19,7 @@ import {
     CIPipelineType,
     ConditionType,
     FormType,
+    PluginDetailType,
     PluginType,
     RefVariableStageType,
     RefVariableType,
@@ -64,6 +66,8 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         preBuildStage: Map<string, VariableType>[]
         postBuildStage: Map<string, VariableType>[]
     }>({ preBuildStage: [], postBuildStage: [] })
+    const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
+    const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
     const [formData, setFormData] = useState<FormType>({
         name: '',
         args: [{ key: '', value: '' }],
@@ -172,6 +176,31 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                 showError(error)
             })
     }, [])
+
+    useEffect(() => {
+        getPluginsData(Number(appId))
+            .then((response) => {
+                processPluginList(response?.result || [])
+            })
+            .catch((error: ServerErrors) => {
+                showError(error)
+            })
+    }, [])
+
+    function processPluginList(pluginList: PluginDetailType[]): void {
+        const _presetPlugin = []
+        const _sharedPlugin = []
+        const pluginListLength = pluginList.length
+        for (let i = 0; i < pluginListLength; i++) {
+            if (pluginList[i].type === 'PRESET') {
+                _presetPlugin.push(pluginList[i])
+            } else {
+                _sharedPlugin.push(pluginList[i])
+            }
+        }
+        setPresetPlugins(_presetPlugin)
+        setSharedPlugins(_sharedPlugin)
+    }
 
     const deletePipeline = (): void => {
         deleteCIPipeline(
@@ -661,7 +690,6 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         selectedTaskIndex,
                         setSelectedTaskIndex,
                         calculateLastStepDetail,
-                        setPageState,
                         inputVariablesListFromPrevStep,
                         appId,
                         formDataErrorObj,
@@ -680,16 +708,17 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         <Switch>
                             {isAdvanced && (
                                 <Route path={`${path}/pre-build`}>
-                                    <PreBuild />
+                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
                                 </Route>
                             )}
                             {isAdvanced && (
                                 <Route path={`${path}/post-build`}>
-                                    <PreBuild />
+                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
                                 </Route>
                             )}
                             <Route path={`${path}/build`}>
                                 <Build
+                                    pageState={pageState}
                                     showFormError={showFormError}
                                     isAdvanced={isAdvanced}
                                     ciPipelineId={ciPipeline.id}
