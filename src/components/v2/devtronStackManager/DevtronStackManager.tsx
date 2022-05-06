@@ -1,7 +1,7 @@
 import React, { Suspense, useCallback, useEffect, useRef, useState, useContext } from 'react'
 import { Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLocation } from 'react-router-dom'
 import { SERVER_MODE, URLS } from '../../../config'
-import { ErrorBoundary, ErrorScreenManager, Progressing, showError } from '../../common'
+import { ErrorBoundary, ErrorScreenManager, Progressing, showError, useInterval } from '../../common'
 import AboutDevtronView from './AboutDevtronView'
 import {
     handleError,
@@ -24,8 +24,6 @@ import {
 } from './DevtronStackManager.type'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import './devtronStackManager.scss'
-
-let modulesPollingInterval = null
 
 export default function DevtronStackManager({
     serverInfo,
@@ -59,12 +57,14 @@ export default function DevtronStackManager({
 
     useEffect(() => {
         getModuleDetails()
-
-        // Clearing out 30s interval/polling on component unmount
-        return (): void => {
-            clearInterval(modulesPollingInterval)
-        }
     }, [])
+
+    // Activate polling for latest server info, module details & logPodName only on stack manager page.
+    useInterval(() => {
+        getCurrentServerInfo()
+        _getDetailsForAllModules(stackDetails.discoverModulesList, stackDetails)
+        _getLogPodName()
+    }, 30000)
 
     /**
      * To reset detailsMode when switching to "About devtron" using "Help option" (side nav)
@@ -251,7 +251,7 @@ export default function DevtronStackManager({
                 }
 
                 setLogPodName(logPodNameRes?.result?.podName)
-                pollForLatestDetails(allModulesRes?.result, _stackDetails)
+                _getDetailsForAllModules(allModulesRes?.result, _stackDetails)
             })
             .catch((err) => {
                 handleError(err)
@@ -260,18 +260,6 @@ export default function DevtronStackManager({
                     isLoading: false,
                 })
             })
-    }
-
-    // Activate polling for latest server info, module details & logPodName only on stack manager page.
-    const pollForLatestDetails = (modulesList: ModuleDetails[], _stackDetails: StackDetailsType) => {
-        _getDetailsForAllModules(modulesList, _stackDetails)
-
-        // Fetching latest details/status every 30s
-        modulesPollingInterval = setInterval(() => {
-            getCurrentServerInfo()
-            _getDetailsForAllModules(modulesList, _stackDetails)
-            _getLogPodName()
-        }, 30000)
     }
 
     /**
@@ -421,6 +409,7 @@ export default function DevtronStackManager({
                                 currentVersion={serverInfo?.currentVersion}
                                 newVersion={stackDetails.releaseNotes[0]?.releaseName}
                                 handleTabChange={handleTabChange}
+                                showInitializing={!logPodName && serverMode === SERVER_MODE.FULL}
                             />
                         </section>
                     )}

@@ -19,7 +19,7 @@ export const MORE_MODULE_DETAILS: ModuleDetails = {
     id: 'moreModules',
     name: 'moreModules',
     title: 'More integrations coming soon',
-    info: 'You can also raise a request for an integration.',
+    info: 'You can submit a ticket to request an integration',
     icon: MoreExtentionsIcon,
     installationStatus: ModuleStatus.NONE,
 }

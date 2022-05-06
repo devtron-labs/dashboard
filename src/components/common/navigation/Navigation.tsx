@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import ReactDOM from 'react-dom'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
 import { DOCUMENTATION, SERVER_MODE, URLS } from '../../../config'
@@ -193,10 +193,10 @@ export default class Navigation extends Component<
     renderHelpCard() {
         return ReactDOM.createPortal(
             <div className="transparent-div" onClick={this.toggleHelpCard}>
-                <div className={`help-card ${window._env_?.HIDE_DISCORD ? 'sticky__bottom-option' : ''}`}>
+                <div className={`help-card pt-4 ${window._env_?.HIDE_DISCORD ? 'sticky__bottom-option' : ''}`}>
                     {HelpOptions.map((option) => {
                         return (
-                            <>
+                            <Fragment key={option.name}>
                                 <div className="help-card__option">
                                     <a
                                         key={option.name}
@@ -216,7 +216,7 @@ export default class Navigation extends Component<
                                     </a>
                                 </div>
                                 {option.showSeparator && <div className="help-card__option-separator" />}
-                            </>
+                            </Fragment>
                         )
                     })}
                     <div className="help-card__update-option fs-11 fw-6 mt-4">

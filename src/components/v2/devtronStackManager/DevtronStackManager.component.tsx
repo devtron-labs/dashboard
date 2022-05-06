@@ -83,16 +83,16 @@ const ModuleDeailsCard = ({
             <div className="module-details__card-info fs-13 fw-4 cn-7">
                 {moduleDetails.name === 'moreModules' ? (
                     <>
-                        You can also&nbsp;
+                        You can&nbsp;
                         <a
                             href="https://github.com/devtron-labs/devtron/issues/new/choose"
                             className="cb-5 fw-6"
                             target="_blank"
                             rel="noreferrer noopener"
                         >
-                            raise a request
+                            submit a ticket
                         </a>
-                        &nbsp;for an integration.
+                        &nbsp;to request an integration
                     </>
                 ) : (
                     moduleDetails.info
@@ -135,16 +135,28 @@ export const ModulesListingView = ({
     )
 }
 
-const getUpdateStatusLabel = (installationStatus: ModuleStatus, currentVersion: string, newVersion: string): string => {
+const getUpdateStatusLabel = (
+    installationStatus: ModuleStatus,
+    currentVersion: string,
+    newVersion: string,
+    showInitializing: boolean,
+): JSX.Element | null => {
+    let updateStatusLabel = null
+
     if (installationStatus === ModuleStatus.UPGRADING) {
-        return '(Updating...)'
+        updateStatusLabel = <span className="loading-dots">{showInitializing ? 'Initializing' : 'Updating'}</span>
     } else if (installationStatus === ModuleStatus.UPGRADE_FAILED || installationStatus === ModuleStatus.TIMEOUT) {
-        return '(Update failed)'
+        updateStatusLabel = 'Update failed'
     } else if (installationStatus !== ModuleStatus.UNKNOWN && isLatestVersionAvailable(currentVersion, newVersion)) {
-        return '(Update available)'
+        updateStatusLabel = 'Update available'
     }
 
-    return ''
+    return updateStatusLabel ? (
+        <>
+            <span className="bullet ml-4 mr-4" />
+            {updateStatusLabel}
+        </>
+    ) : null
 }
 
 export const NavItem = ({
@@ -153,6 +165,7 @@ export const NavItem = ({
     currentVersion,
     newVersion,
     handleTabChange,
+    showInitializing,
 }: StackManagerNavItemType): JSX.Element => {
     const getNavLink = (route: StackManagerNavLinkType): JSX.Element => {
         return (
@@ -178,9 +191,17 @@ export const NavItem = ({
                         <div className="about-devtron ml-12">
                             <span className="fs-13">{route.name}</span>
                             <br />
-                            <span className="fs-11">
-                                {currentVersion} {getUpdateStatusLabel(installationStatus, currentVersion, newVersion)}
-                            </span>
+                            {currentVersion && (
+                                <span className="fs-11 fw-4 cn-9 flex left">
+                                    {currentVersion}
+                                    {getUpdateStatusLabel(
+                                        installationStatus,
+                                        currentVersion,
+                                        newVersion,
+                                        showInitializing,
+                                    )}
+                                </span>
+                            )}
                         </div>
                     )}
                 </div>
@@ -321,7 +342,8 @@ const InstallationStatus = ({
                 )}
             {(installationStatus === ModuleStatus.INSTALLING || installationStatus === ModuleStatus.UPGRADING) && (
                 <p className="module-details__installtion-note fs-12 fw-4 bcn-1 br-4">
-                    NOTE: You can continue using Devtron. The installation will continue in the background.
+                    NOTE: You can continue using Devtron. The {isUpgradeView ? 'update' : 'installation'} will continue
+                    in the background.
                 </p>
             )}
         </div>

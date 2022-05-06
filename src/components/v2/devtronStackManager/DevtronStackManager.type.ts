@@ -34,6 +34,7 @@ export interface StackManagerNavItemType {
     currentVersion: string
     newVersion: string
     handleTabChange: (tabIndex: number) => void
+    showInitializing: boolean
 }
 
 export interface StackManagerNavLinkType {

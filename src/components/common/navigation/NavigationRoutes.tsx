@@ -105,9 +105,8 @@ export default function NavigationRoutes() {
 
     const getCurrentServerInfo = async (section?: string) => {
         if (
-            section === 'navigation' &&
-            (currentServerInfo.fetchingServerInfo ||
-                (currentServerInfo.serverInfo && location.pathname.includes('/stack-manager')))
+            currentServerInfo.fetchingServerInfo ||
+            (section === 'navigation' && currentServerInfo.serverInfo && location.pathname.includes('/stack-manager'))
         ) {
             return
         }
