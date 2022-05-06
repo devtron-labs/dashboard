@@ -128,7 +128,7 @@ export default function NavigationRoutes() {
                 ...currentServerInfo,
                 fetchingServerInfo: false,
             })
-            console.error(err)
+            console.error('Error in fetching server info')
         }
     }
 

@@ -160,7 +160,7 @@ export default function DevtronStackManager({
             const { result } = await getLogPodName()
             setLogPodName(result?.podName)
         } catch (e) {
-            console.error(e)
+            console.error('Error in fetching pod name')
         }
     }
 
@@ -182,7 +182,9 @@ export default function DevtronStackManager({
         Promise.allSettled(_moduleDetailsPromiseList)
             .then((responses: { status: string; value?: any; reason?: any }[]) => {
                 responses.forEach((res) => {
-                    if (!res.reason) {
+                    if (!res.value && res.reason) {
+                        console.error('Error in fetching module details')
+                    } else {
                         const result: ModuleInfo = res.value?.result
                         const currentModule = _modulesList?.find((_module) => _module.name === result?.name)
 
@@ -210,7 +212,7 @@ export default function DevtronStackManager({
                 setStackDetails(_stackDetails)
             })
             .catch((e) => {
-                console.error(e)
+                console.error('Error in fetching some modules details')
             })
     }
 
