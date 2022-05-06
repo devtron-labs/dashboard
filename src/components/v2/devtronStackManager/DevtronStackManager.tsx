@@ -245,7 +245,7 @@ export default function DevtronStackManager({
                 const _stackDetails: StackDetailsType = {
                     ...stackDetails,
                     isLoading: false,
-                    releaseNotes: releaseNotesRes?.result
+                    releaseNotes: releaseNotesRes?.result,
                 }
 
                 setLogPodName(logPodNameRes?.result?.podName)
@@ -311,10 +311,6 @@ export default function DevtronStackManager({
         [actionTriggered],
     )
 
-    const checkIfCICDIsInstalled = () => {
-        return stackDetails.installedModulesList.findIndex((module) => module.name.toLowerCase() === 'cicd') !== -1
-    }
-
     const Body = () => {
         return (
             <Switch location={location}>
@@ -352,14 +348,12 @@ export default function DevtronStackManager({
                         modulesList={stackDetails.discoverModulesList}
                         isDiscoverModulesView={true}
                         handleModuleCardClick={handleModuleSelection}
-                        history={history}
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES}>
                     <ModulesListingView
                         modulesList={stackDetails.installedModulesList}
                         handleModuleCardClick={handleModuleSelection}
-                        history={history}
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_ABOUT}>
@@ -368,14 +362,12 @@ export default function DevtronStackManager({
                         releaseNotes={stackDetails.releaseNotes}
                         serverInfo={serverInfo}
                         setShowManagedByDialog={setShowManagedByDialog}
-                        isCICDInstalled={checkIfCICDIsInstalled()}
+                        canViewLogs={serverMode === SERVER_MODE.FULL}
                         logPodName={logPodName}
                         selectedTabIndex={selectedTabIndex}
                         handleTabChange={handleTabChange}
                         isActionTriggered={actionTriggered.serverAction}
                         handleActionTrigger={handleActionTrigger}
-                        history={history}
-                        location={location}
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_ABOUT_RELEASES}>
@@ -384,14 +376,12 @@ export default function DevtronStackManager({
                         releaseNotes={stackDetails.releaseNotes}
                         serverInfo={serverInfo}
                         setShowManagedByDialog={setShowManagedByDialog}
-                        isCICDInstalled={checkIfCICDIsInstalled()}
+                        canViewLogs={serverMode === SERVER_MODE.FULL}
                         logPodName={logPodName}
                         selectedTabIndex={selectedTabIndex}
                         handleTabChange={handleTabChange}
                         isActionTriggered={actionTriggered.serverAction}
                         handleActionTrigger={handleActionTrigger}
-                        history={history}
-                        location={location}
                     />
                 </Route>
                 <Redirect to={URLS.STACK_MANAGER_DISCOVER_MODULES} />
@@ -428,6 +418,7 @@ export default function DevtronStackManager({
                                 installationStatus={serverInfo?.status}
                                 currentVersion={serverInfo?.currentVersion}
                                 newVersion={stackDetails.releaseNotes[0]?.releaseName}
+                                handleTabChange={handleTabChange}
                             />
                         </section>
                     )}

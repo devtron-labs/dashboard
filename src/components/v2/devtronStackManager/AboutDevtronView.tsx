@@ -4,7 +4,7 @@ import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import { InstallationWrapper } from './DevtronStackManager.component'
 import { AboutDevtronViewType } from './DevtronStackManager.type'
 import './AboutDevtronView.scss'
-import { NavLink } from 'react-router-dom'
+import { NavLink, RouteComponentProps, useLocation } from 'react-router-dom'
 import { URLS } from '../../../config'
 
 function AboutDevtronView({
@@ -12,14 +12,12 @@ function AboutDevtronView({
     releaseNotes,
     serverInfo,
     setShowManagedByDialog,
-    isCICDInstalled,
+    canViewLogs,
     logPodName,
     handleTabChange,
     selectedTabIndex,
     isActionTriggered,
     handleActionTrigger,
-    history,
-    location,
 }: AboutDevtronViewType) {
     const aboutDevtronTabs: { name: string; link: string }[] = [
         { name: 'About', link: URLS.STACK_MANAGER_ABOUT },
@@ -109,19 +107,21 @@ function AboutDevtronView({
                         {renderTabData()}
                     </div>
                 </div>
-                <InstallationWrapper
-                    installationStatus={serverInfo?.status}
-                    isCICDInstalled={isCICDInstalled}
-                    logPodName={logPodName}
-                    isUpgradeView={true}
-                    serverInfo={serverInfo}
-                    upgradeVersion={releaseNotes[0]?.releaseName}
-                    setShowManagedByDialog={setShowManagedByDialog}
-                    isActionTriggered={isActionTriggered}
-                    updateActionTrigger={(isActionTriggered) => handleActionTrigger('serverAction', isActionTriggered)}
-                    history={history}
-                    location={location}
-                />
+                {serverInfo && (
+                    <InstallationWrapper
+                        installationStatus={serverInfo.status}
+                        canViewLogs={canViewLogs}
+                        logPodName={logPodName}
+                        isUpgradeView={true}
+                        serverInfo={serverInfo}
+                        upgradeVersion={releaseNotes[0]?.releaseName}
+                        setShowManagedByDialog={setShowManagedByDialog}
+                        isActionTriggered={isActionTriggered}
+                        updateActionTrigger={(isActionTriggered) =>
+                            handleActionTrigger('serverAction', isActionTriggered)
+                        }
+                    />
+                )}
             </div>
         </div>
     )

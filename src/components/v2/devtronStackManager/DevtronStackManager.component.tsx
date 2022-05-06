@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { NavLink, RouteComponentProps } from 'react-router-dom'
+import { NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
 import {
     ModuleDetailsCardType,
     ModuleStatus,
@@ -106,10 +106,9 @@ export const ModulesListingView = ({
     modulesList,
     isDiscoverModulesView,
     handleModuleCardClick,
-    history,
 }: ModuleListingViewType): JSX.Element => {
     if (modulesList.length === 0 && !isDiscoverModulesView) {
-        return <NoModulesInstalledView history={history} />
+        return <NoModulesInstalledView />
     }
 
     return (
@@ -153,6 +152,7 @@ export const NavItem = ({
     installationStatus,
     currentVersion,
     newVersion,
+    handleTabChange,
 }: StackManagerNavItemType): JSX.Element => {
     const getNavLink = (route: StackManagerNavLinkType): JSX.Element => {
         return (
@@ -161,6 +161,7 @@ export const NavItem = ({
                 key={route.href}
                 className={`stack-manager__navlink ${route.className}`}
                 activeClassName="active-route"
+                {...(route.name === 'About Devtron' && { onClick: () => handleTabChange(0) })}
             >
                 <div className="flex left">
                     <route.icon className={`stack-manager__navlink-icon icon-dim-20`} />
@@ -230,7 +231,7 @@ export const PageHeader = ({
 const InstallationStatus = ({
     installationStatus,
     appName,
-    isCICDInstalled,
+    canViewLogs,
     logPodName,
     isUpgradeView,
     latestVersionAvailable,
@@ -291,7 +292,7 @@ const InstallationStatus = ({
                                 : ''
                         }`}
                     >
-                        {isUpgradeView && !isCICDInstalled ? (
+                        {isUpgradeView && !canViewLogs ? (
                             <NavLink
                                 to={`${URLS.APP}/${URLS.EXTERNAL_APPS}/1%7Cdevtroncd%7C${appName}/${appName}/${URLS.APP_DETAILS}`}
                                 target="_blank"
@@ -373,7 +374,7 @@ export const handleError = (err: any, isUpgradeView?: boolean): void => {
 export const InstallationWrapper = ({
     moduleName,
     installationStatus,
-    isCICDInstalled,
+    canViewLogs,
     logPodName,
     serverInfo,
     upgradeVersion,
@@ -381,9 +382,9 @@ export const InstallationWrapper = ({
     setShowManagedByDialog,
     isActionTriggered,
     updateActionTrigger,
-    history,
-    location,
 }: InstallationWrapperType): JSX.Element => {
+    const history: RouteComponentProps['history'] = useHistory()
+    const location: RouteComponentProps['location'] = useLocation()
     const latestVersionAvailable = isLatestVersionAvailable(serverInfo?.currentVersion, upgradeVersion)
 
     const handleActionButtonClick = () => {
@@ -431,7 +432,7 @@ export const InstallationWrapper = ({
                 <InstallationStatus
                     installationStatus={installationStatus}
                     appName={serverInfo?.releaseName}
-                    isCICDInstalled={isCICDInstalled}
+                    canViewLogs={canViewLogs}
                     logPodName={logPodName}
                     isUpgradeView={isUpgradeView}
                     latestVersionAvailable={latestVersionAvailable}
@@ -473,26 +474,24 @@ export const ModuleDetailsView = ({
             <Carousel className="module-details__carousel mb-24" imageUrls={moduleDetails.assets} />
             <div className="module-details__view-wrapper">
                 <div className="module-details__feature-wrapper">
-                    <h2 className="module-details__feature-heading cn-9 fs-20 fw-6">{moduleDetails?.title}</h2>
+                    <h2 className="module-details__feature-heading cn-9 fs-20 fw-6">{moduleDetails.title}</h2>
                     <div className="module-details__divider mt-24 mb-24" />
                     <MarkDown
                         className="module-details__feature-info fs-13 fw-4 cn-9"
                         breaks={true}
-                        markdown={moduleDetails?.description}
+                        markdown={moduleDetails.description}
                     />
                 </div>
                 <InstallationWrapper
-                    moduleName={moduleDetails?.name}
-                    installationStatus={moduleDetails?.installationStatus}
+                    moduleName={moduleDetails.name}
+                    installationStatus={moduleDetails.installationStatus}
                     serverInfo={serverInfo}
                     upgradeVersion={upgradeVersion}
                     logPodName={logPodName}
                     setShowManagedByDialog={setShowManagedByDialog}
-                    history={history}
-                    location={location}
                     isActionTriggered={isActionTriggered}
                     updateActionTrigger={(isActionTriggered) =>
-                        handleActionTrigger(`moduleAction-${moduleDetails?.name?.toLowerCase()}`, isActionTriggered)
+                        handleActionTrigger(`moduleAction-${moduleDetails.name?.toLowerCase()}`, isActionTriggered)
                     }
                 />
             </div>
@@ -500,7 +499,9 @@ export const ModuleDetailsView = ({
     ) : null
 }
 
-export const NoModulesInstalledView = ({ history }: { history: RouteComponentProps['history'] }): JSX.Element => {
+export const NoModulesInstalledView = (): JSX.Element => {
+    const history: RouteComponentProps['history'] = useHistory()
+
     return (
         <div className="no-modules__installed-view">
             <EmptyState>

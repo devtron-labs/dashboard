@@ -33,6 +33,7 @@ export interface StackManagerNavItemType {
     installationStatus: ModuleStatus
     currentVersion: string
     newVersion: string
+    handleTabChange: (tabIndex: number) => void
 }
 
 export interface StackManagerNavLinkType {
@@ -64,7 +65,6 @@ export interface ModuleListingViewType {
     modulesList: ModuleDetails[]
     isDiscoverModulesView?: boolean
     handleModuleCardClick: (moduleDetails: ModuleDetails, fromDiscoverModules: boolean) => void
-    history: RouteComponentProps['history']
 }
 
 export interface ModuleDetailsViewType {
@@ -84,7 +84,7 @@ export interface ModuleDetailsViewType {
 export interface ModuleInstallationStatusType {
     installationStatus: ModuleStatus
     appName?: string
-    isCICDInstalled?: boolean
+    canViewLogs?: boolean
     logPodName?: string
     isUpgradeView?: boolean
     latestVersionAvailable: boolean
@@ -93,16 +93,14 @@ export interface ModuleInstallationStatusType {
 export interface InstallationWrapperType {
     moduleName?: string
     installationStatus: ModuleStatus
-    isCICDInstalled?: boolean
+    canViewLogs?: boolean
     logPodName?: string
     serverInfo: ServerInfo
     upgradeVersion: string
     isUpgradeView?: boolean
     setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>
-    isActionTriggered: boolean,
+    isActionTriggered: boolean
     updateActionTrigger: (isActionTriggered: boolean) => void
-    history: RouteComponentProps['history']
-    location: RouteComponentProps['location']
 }
 
 export interface ModuleDetailsInfo {
@@ -123,14 +121,12 @@ export interface AboutDevtronViewType {
     releaseNotes: ReleaseNotes[]
     serverInfo: ServerInfo
     setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>
-    isCICDInstalled: boolean
+    canViewLogs: boolean
     logPodName: string
     handleTabChange: (tabIndex: number) => void
     selectedTabIndex: number
     isActionTriggered: boolean
     handleActionTrigger: (actionName: string, actionState: boolean) => void
-    history: RouteComponentProps['history']
-    location: RouteComponentProps['location']
 }
 
 export interface ModuleInfo {
