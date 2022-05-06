@@ -103,9 +103,5 @@ export const isLatestVersionAvailable = (currentVersion: string, newVersion: str
         }
     }
 
-    if (currentVersionLevels.length === newVersionLevels.length) {
-        return false
-    }
-
-    return currentVersionLevels.length > newVersionLevels.length ? false : true
+    return currentVersionLevels.length >= newVersionLevels.length ? false : true
 }
