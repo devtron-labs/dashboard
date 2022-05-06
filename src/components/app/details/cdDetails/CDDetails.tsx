@@ -26,9 +26,9 @@ import Tippy from '@tippyjs/react'
 import {DetectBottom, TriggerDetails, GitChanges, Artifacts, BuildCardPopup} from '../cIDetails/CIDetails'
 import {History} from '../cIDetails/types'
 import {Moment12HourFormat} from '../../../../config';
-import DeploymentTemplateWrapper from './DeploymentTemplateWrapper';
+import DeploymentTemplateWrapper from './DeploymentHistoryConfigList.component';
 import './cdDetail.scss'
-import DeploymentHistoryConfigTabView from './DeploymentHistoryConfigTabView';
+import DeploymentHistoryDetailedView from './DeploymentHistoryDetailedView';
 import { DeploymentTemplateConfiguration } from './cd.type';
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
@@ -254,7 +254,7 @@ export default function CDDetails(){
                     <Route
                         path={`${path}/configuration/deployment-template`}
                         render={(props) => (
-                            <DeploymentHistoryConfigTabView
+                            <DeploymentHistoryDetailedView
                                 showTemplate={showTemplate}
                                 setShowTemplate={setShowTemplate}
                                 baseTemplateId={baseTemplateId}

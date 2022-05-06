@@ -4,7 +4,9 @@ import { DeploymentTemplateHistoryType } from './cd.type';
 import YAML from 'yaml';
 import { Progressing } from '../../../common';
 
-function DeploymentTemplateHistory({
+// const configList = [ 'Chart version', 'Application metrics']
+
+function DeploymentHistoryDiffView({
     currentConfiguration,
     baseTemplateConfiguration,
     codeEditorLoading,
@@ -81,4 +83,4 @@ function DeploymentTemplateHistory({
     );
 }
 
-export default DeploymentTemplateHistory;
+export default DeploymentHistoryDiffView;

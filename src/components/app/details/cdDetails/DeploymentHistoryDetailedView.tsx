@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { showError, sortCallback } from '../../../common'
 import CompareWithBaseConfig from './CompareWithBaseConfig'
-import HistoryDiff from './HistoryDiff'
+import HistoryDiff from './HistoryDiffWrapper'
 import { getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from './service'
 import { useParams } from 'react-router'
 import {
@@ -12,7 +12,7 @@ import {
 } from './cd.type'
 import CDEmptyState from './CDEmptyState'
 
-function DeploymentHistoryConfigTabView({
+function DeploymentHistoryDetailedView({
     showTemplate,
     setShowTemplate,
     baseTimeStamp,
@@ -95,4 +95,4 @@ function DeploymentHistoryConfigTabView({
     )
 }
 
-export default DeploymentHistoryConfigTabView
+export default DeploymentHistoryDetailedView
