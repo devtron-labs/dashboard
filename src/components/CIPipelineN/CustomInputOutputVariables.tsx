@@ -75,7 +75,6 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             format: formatOptions[0].label,
             description: '',
             defaultValue: '',
-            refVariableUsed: false,
             variableType: RefVariableType.NEW,
             refVariableStepIndex: 0,
             refVariableName: '',

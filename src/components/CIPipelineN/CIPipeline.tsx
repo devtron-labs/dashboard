@@ -487,16 +487,18 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             _formData[activeStageName].steps = []
         }
         const stepsLength = _formData[activeStageName].steps?.length
-        let index = 0
+        //let index = 1
         let _outputVariablesFromPrevSteps: Map<string, VariableType> = new Map(),
             _inputVariablesListPerTask: Map<string, VariableType>[] = []
-        for (let i = 0; i < stepsLength; i++) {
+        let i = 0
+        for (; i < stepsLength; i++) {
             if (!_formDataErrorObj[activeStageName]['steps'][i])
                 _formDataErrorObj[activeStageName]['steps'].push({ isValid: true })
             _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
-            if (index <= _formData[activeStageName].steps[i].index) {
-                index = _formData[activeStageName].steps[i].index
-            }
+            _formData[activeStageName].steps[i].index = i + 1
+            // if (index <= _formData[activeStageName].steps[i].index) {
+            //     index = _formData[activeStageName].steps[i].index
+            // }
             if (!_formData[activeStageName].steps[i].stepType) {
                 continue
             }
@@ -530,7 +532,8 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             for (let j = 0; j < outputVariablesLength; j++) {
                 if (_formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name) {
                     _outputVariablesFromPrevSteps.set(
-                        index +
+                        i +
+                            1 +
                             '.' +
                             _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name,
                         {
@@ -553,7 +556,6 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                     const variableDetail =
                         _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[key]
                     if (
-                        variableDetail.refVariableUsed &&
                         variableDetail.variableType === RefVariableType.FROM_PREVIOUS_STEP &&
                         variableDetail.refVariableStage ===
                             (activeStageName === BuildStageVariable.PreBuild
@@ -561,7 +563,6 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                                 : RefVariableStageType.POST_CI) &&
                         variableDetail.refVariableStepIndex > startIndex
                     ) {
-                        variableDetail.refVariableUsed = false
                         variableDetail.refVariableStepIndex = 0
                         variableDetail.refVariableName = ''
                         variableDetail.variableType = RefVariableType.NEW
@@ -572,13 +573,12 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         }
         if (isFromAddNewTask) {
             _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
-            index++
         }
         const _inputVariablesListFromPrevStep = { ...inputVariablesListFromPrevStep }
         _inputVariablesListFromPrevStep[activeStageName] = _inputVariablesListPerTask
         setInputVariablesListFromPrevStep(_inputVariablesListFromPrevStep)
         setFormDataErrorObj(_formDataErrorObj)
-        return { index: index, calculatedStageVariables: _inputVariablesListPerTask }
+        return { index: i + 1, calculatedStageVariables: _inputVariablesListPerTask }
     }
 
     const addNewTask = () => {

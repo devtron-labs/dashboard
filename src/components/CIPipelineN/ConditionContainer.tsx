@@ -63,6 +63,17 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         setCollapsedSection(true) // collapse all the conditions when user go from prebuild to post build
     }, [activeStageName])
 
+    useEffect(() => {
+        if (collapsedSection) {
+            const invalidCondition = formDataErrorObj[activeStageName].steps[selectedTaskIndex][
+                currentStepTypeVariable
+            ].conditionDetails?.some((conditionDetail) => !conditionDetail.isValid)
+            if (invalidCondition) {
+                setCollapsedSection(false) // expand conditions in case of error
+            }
+        }
+    }, [formDataErrorObj])
+
     const validateCurrentTask = (_formData: FormType): void => {
         const _formDataErrorObj = { ...formDataErrorObj }
         validateTask(

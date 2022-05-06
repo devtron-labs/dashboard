@@ -133,7 +133,6 @@ export interface VariableType {
     format: string
     description: string
     defaultValue: string
-    refVariableUsed: boolean
     variableType: RefVariableType
     refVariableStepIndex: number
     refVariableName: string

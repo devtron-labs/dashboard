@@ -1,4 +1,4 @@
-import React, { useState, useContext, Fragment } from 'react'
+import React, { useState, useContext, Fragment, useEffect } from 'react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { FormErrorObjectType, FormType, PluginVariableType } from '../ciPipeline/types'
 import { ciPipelineContext } from './CIPipeline'
@@ -19,6 +19,18 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
         activeStageName: string
         formDataErrorObj: FormErrorObjectType
     } = useContext(ciPipelineContext)
+
+    useEffect(() => {
+        if (collapsedSection) {
+            const invalidInputVariables = formDataErrorObj[activeStageName].steps[
+                selectedTaskIndex
+            ].pluginRefStepDetail.inputVariables?.some((inputVariable) => !inputVariable.isValid)
+            if (invalidInputVariables) {
+                setCollapsedSection(false) // expand input variables in case of error
+            }
+        }
+    }, [formDataErrorObj])
+
     return (
         <div>
             <div className="mb-10 flexbox justify-space">
