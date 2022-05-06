@@ -228,6 +228,16 @@ export const PageHeader = ({
     )
 }
 
+const getProgressingLabel = (isUpgradeView: boolean, canViewLogs: boolean, logPodName: string): string => {
+    if (isUpgradeView && (!canViewLogs || (canViewLogs && logPodName))) {
+        return 'Updating'
+    } else if (!isUpgradeView && logPodName) {
+        return 'Installing'
+    }
+
+    return 'Initializing'
+}
+
 const InstallationStatus = ({
     installationStatus,
     appName,
@@ -246,7 +256,7 @@ const InstallationStatus = ({
                 <>
                     <Progressing size={24} />
                     <div className="mt-12 loading-dots">
-                        {logPodName ? (isUpgradeView ? `Updating` : 'Installing') : 'Initializing'}
+                        {getProgressingLabel(isUpgradeView, canViewLogs, logPodName)}
                     </div>
                 </>
             )}
@@ -279,8 +289,7 @@ const InstallationStatus = ({
                           }`}
                 </div>
             )}
-            {logPodName &&
-                appName &&
+            {appName &&
                 installationStatus !== ModuleStatus.NOT_INSTALLED &&
                 installationStatus !== ModuleStatus.INSTALLED &&
                 installationStatus !== ModuleStatus.HEALTHY && (
@@ -292,14 +301,15 @@ const InstallationStatus = ({
                                 : ''
                         }`}
                     >
-                        {isUpgradeView && !canViewLogs ? (
+                        {isUpgradeView && !canViewLogs && (
                             <NavLink
                                 to={`${URLS.APP}/${URLS.EXTERNAL_APPS}/1%7Cdevtroncd%7C${appName}/${appName}/${URLS.APP_DETAILS}`}
                                 target="_blank"
                             >
                                 View details
                             </NavLink>
-                        ) : (
+                        )}
+                        {((isUpgradeView && canViewLogs) || !isUpgradeView) && logPodName && (
                             <NavLink
                                 to={`${URLS.APP}/${URLS.EXTERNAL_APPS}/1%7Cdevtroncd%7C${appName}/${appName}/${URLS.APP_DETAILS}/${URLS.APP_DETAILS_K8}/pod/${logPodName}/logs`}
                                 target="_blank"
@@ -322,14 +332,14 @@ const GetHelpCard = (): JSX.Element => {
     return (
         <div className="module-details__get-help flex column top left br-4 cn-9 fs-13">
             <span className="fw-6 mb-10">Facing issues?</span>
-            <a
+            {/* <a
                 className="module-details__help-guide cb-5 flex left"
                 href="https://discord.devtron.ai/"
                 target="_blank"
                 rel="noreferrer noopener"
             >
                 <File className="icon-dim-20 mr-12" /> Troubleshooting guide
-            </a>
+            </a> */}
             <a
                 className="module-details__help-chat cb-5 flex left"
                 href="https://discord.devtron.ai/"

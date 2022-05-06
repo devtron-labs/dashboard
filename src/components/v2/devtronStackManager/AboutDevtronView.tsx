@@ -62,8 +62,9 @@ function AboutDevtronView({
         if (selectedTabIndex === 0) {
             return (
                 <p className="about-devtron__view-info fs-13 fw-4 m-0">
-                    A web based CI/CD Orchestrator leveraging Open Source tools to provide a No-Code, SaaS-like
-                    experience for Kubernetes
+                    Devtron is a tool integration platform for Kubernetes that deeply integrates with products across
+                    the lifecycle of microservices,i.e., CI, CD, security, cost, debugging, and observability via an
+                    intuitive web interface.
                 </p>
             )
         }

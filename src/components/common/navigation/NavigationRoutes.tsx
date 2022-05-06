@@ -105,27 +105,27 @@ export default function NavigationRoutes() {
 
     const getCurrentServerInfo = async (section?: string) => {
         if (
-            currentServerInfo.fetchingServerInfo ||
-            (currentServerInfo.serverInfo && location.pathname.includes('/stack-manager') && section === 'navigation')
+            section === 'navigation' &&
+            (currentServerInfo.fetchingServerInfo ||
+                (currentServerInfo.serverInfo && location.pathname.includes('/stack-manager')))
         ) {
             return
         }
 
         setCurrentServerInfo({
-            ...currentServerInfo,
+            serverInfo: currentServerInfo.serverInfo,
             fetchingServerInfo: true,
         })
 
         try {
             const { result } = await getServerInfo()
             setCurrentServerInfo({
-                ...currentServerInfo,
                 serverInfo: result,
                 fetchingServerInfo: false,
             })
         } catch (err) {
             setCurrentServerInfo({
-                ...currentServerInfo,
+                serverInfo: currentServerInfo.serverInfo,
                 fetchingServerInfo: false,
             })
             console.error('Error in fetching server info')
