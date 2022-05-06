@@ -472,3 +472,7 @@
     grid-template-columns: 16px auto;
     grid-gap: 8px;
 }
+
+.path-info path[fill='#06C'] {
+    fill: var(--N700);
+}

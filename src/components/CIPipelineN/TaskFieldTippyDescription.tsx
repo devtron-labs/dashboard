@@ -3,15 +3,30 @@ import Tippy from '@tippyjs/react'
 import { TaskFieldLabel } from '../ciPipeline/types'
 
 interface TippyDescriptionType {
-    taskField: string;
+    taskField: string
     contentDescription?: string
 }
 
-function TaskFieldTippyDescription({ taskField, contentDescription } : TippyDescriptionType ) {
+function TaskFieldTippyDescription({ taskField, contentDescription }: TippyDescriptionType) {
     return (
         <div>
-            <Tippy className="default-tt" arrow={false} content={<span style={{ display: "block", width: "220px" }}>{contentDescription}</span>}>
-                <div className="fw-6 fs-13 lh-32 cn-7 text-capitalize"><span className='text-underline-dashed'>{taskField}{taskField === TaskFieldLabel.SCRIPT || taskField === TaskFieldLabel.MOUNTCODEAT || taskField === TaskFieldLabel.CONTAINERIMAGEPATH ? <span className='cr-5'> *</span> : '' }</span></div>
+            <Tippy
+                className="default-tt"
+                arrow={false}
+                content={<span style={{ display: 'block', width: '220px' }}>{contentDescription}</span>}
+            >
+                <div className="fw-6 fs-13 lh-32 cn-7" style={{ maxWidth: '220px' }}>
+                    <span className="text-underline-dashed">
+                        {taskField}
+                        {taskField === TaskFieldLabel.SCRIPT ||
+                        taskField === TaskFieldLabel.MOUNTCODEAT ||
+                        taskField === TaskFieldLabel.CONTAINERIMAGEPATH ? (
+                            <span className="cr-5"> *</span>
+                        ) : (
+                            ''
+                        )}
+                    </span>
+                </div>
             </Tippy>
         </div>
     )

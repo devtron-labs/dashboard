@@ -74,8 +74,8 @@ export enum TaskFieldLabel {
     OUTPUTDIRECTORYPATH = 'Output directory path',
     SCRIPT = 'Script',
     CODE = 'Code',
-    MOUNTCODEAT = 'Mount Code At',
-    MOUNTCODESNIPPET = 'Mount code',
+    MOUNTCODEAT = 'Mount above code at',
+    MOUNTCODESNIPPET = 'Mount custom code',
 }
 
 export const TaskFieldDescription = {

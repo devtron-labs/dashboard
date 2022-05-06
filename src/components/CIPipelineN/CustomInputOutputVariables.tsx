@@ -180,7 +180,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                         </span>
                     }
                 >
-                    <div className={`tp-4 fs-13 fw-6 text-capitalize mr-8 `} style={{ position: 'relative' }}>
+                    <div className={`tp-4 fs-13 fw-6 mr-8 `} style={{ position: 'relative' }}>
                         <span className="text-underline-dashed lh-32">{type} variables </span>
                         {isDateFormat && (
                             <div
