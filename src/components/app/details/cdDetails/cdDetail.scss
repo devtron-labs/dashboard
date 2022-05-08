@@ -6,7 +6,8 @@
 }
 
 .historical-diff__container {
-    min-width: 280px;
+    display: grid;
+    grid-template-columns: 280px auto;
     height: calc(100vh - 160px);
 }
 

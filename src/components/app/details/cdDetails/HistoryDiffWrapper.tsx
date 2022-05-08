@@ -3,15 +3,17 @@ import { Progressing } from '../../../common';
 import { DeploymentTemplateHistoryType } from './cd.type';
 import './cdDetail.scss';
 import DeploymentHistoryDiffView from './DeploymentHistoryRightDiffView';
+import DeploymentHistorySidebar from './DeploymentHistorySidebar';
 
 function HistoryDiff({ currentConfiguration, loader, codeEditorLoading, baseTemplateConfiguration }: DeploymentTemplateHistoryType) {
 
     return (
-        <div className="historical-diff__container">
+        <div className="">
             {loader ? (
                 <Progressing pageLoader />
             ) : (
-                <div className="historical-diff__right ci-details__body bcn-1">
+                <div className="historical-diff__container bcn-1">
+                    <DeploymentHistorySidebar />
                     <DeploymentHistoryDiffView
                         currentConfiguration={currentConfiguration}
                         baseTemplateConfiguration={baseTemplateConfiguration}

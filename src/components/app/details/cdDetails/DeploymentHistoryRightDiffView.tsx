@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import CodeEditor from '../../../CodeEditor/CodeEditor';
 import { DeploymentTemplateHistoryType } from './cd.type';
 import YAML from 'yaml';
@@ -67,7 +67,7 @@ function DeploymentHistoryDiffView({
         );
     };
     return (
-        <>
+        <div>
             <div className="en-2 bw-1 br-4 deployment-diff__upper bcn-0 mt-20 mb-16 mr-20 ml-20 pt-8 pb-8">
                 {renderHistoryFieldDiff(currentConfiguration, false)}
                 {renderHistoryFieldDiff(baseTemplateConfiguration, true)}
@@ -79,7 +79,7 @@ function DeploymentHistoryDiffView({
                 </div>
                 {renderDeploymentDiffViaCodeEditor()}
             </div>
-        </>
+        </div>
     );
 }
 
