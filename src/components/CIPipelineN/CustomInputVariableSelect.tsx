@@ -139,10 +139,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 refVariableStepIndex: selectedValue['refVariableStepIndex'],
                 refVariableName: selectedValue.label,
                 format: selectedValue['format'],
-                refVariableStage:
-                    activeStageName === BuildStageVariable.PreBuild
-                        ? RefVariableStageType.PRE_CI
-                        : RefVariableStageType.POST_CI,
+                refVariableStage: selectedValue['refVariableStage'],
             }
         } else if (selectedValue['variableType'] === RefVariableType.GLOBAL) {
             _variableDetail = {
@@ -151,20 +148,14 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 refVariableName: selectedValue.label,
                 format: selectedValue['format'],
                 value: '',
-                refVariableStage:
-                    activeStageName === BuildStageVariable.PreBuild
-                        ? RefVariableStageType.PRE_CI
-                        : RefVariableStageType.POST_CI,
+                refVariableStage: '',
             }
         } else {
             _variableDetail = {
                 variableType: RefVariableType.NEW,
                 value: selectedValue.label,
                 refVariableName: '',
-                refVariableStage:
-                    activeStageName === BuildStageVariable.PreBuild
-                        ? RefVariableStageType.PRE_CI
-                        : RefVariableStageType.POST_CI,
+                refVariableStage: '',
             }
         }
         let _inputVariables =
