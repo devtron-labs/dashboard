@@ -5,7 +5,7 @@ export class ValidationRules {
     name = (value: string): { message: string | null; isValid: boolean } => {
         const re = new RegExp('^[a-z][a-z0-9-.]+[a-z0-9]$')
         if (value && value.length < 1) {
-            return { message: 'This is a required', isValid: false }
+            return { message: 'This is required', isValid: false }
         } else if (!re.test(value)) {
             return { message: `Min of 3 characters; Start with lowercase; Use (a-z), (0-9), (-), (.)`, isValid: false }
         } else {
@@ -15,7 +15,7 @@ export class ValidationRules {
 
     requiredField = (value: string): { message: string | null; isValid: boolean } => {
         if (!value) {
-            return { message: 'This is a required', isValid: false }
+            return { message: 'This is required', isValid: false }
         } else {
             return { message: null, isValid: true }
         }
@@ -84,7 +84,7 @@ export class ValidationRules {
 
     sourceValue = (value: string): { message: string | null; isValid: boolean } => {
         if (!value) {
-            return { message: `This is a required field`, isValid: false }
+            return { message: `This is required field`, isValid: false }
         } else {
             return { message: null, isValid: true }
         }

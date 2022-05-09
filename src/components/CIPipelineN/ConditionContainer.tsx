@@ -15,7 +15,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import ReactSelect, { components } from 'react-select'
 import { ciPipelineContext } from './CIPipeline'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
-import { selectWithDefaultBG } from './ciPipeline.utils'
+import { selectOperatorStyle, selectVariableStyle } from './ciPipeline.utils'
 import { OptionType } from '../app/types'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ValidationRules } from '../ciPipeline/validationRules'
@@ -329,7 +329,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                                 ?.filter((variable) => variable.name)
                                                 .map((variable) => ({ label: variable.name, value: variable.id }))}
                                             isSearchable={false}
-                                            styles={selectWithDefaultBG}
+                                            styles={selectVariableStyle}
                                             components={{
                                                 IndicatorSeparator: null,
                                                 Option,
@@ -353,14 +353,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                             }}
                                             options={operatorOptions}
                                             isSearchable={false}
-                                            styles={{
-                                                ...selectWithDefaultBG,
-                                                menu: (base, state) => ({
-                                                    ...base,
-                                                    width: '200px',
-                                                    marginTop: '0',
-                                                }),
-                                            }}
+                                            styles={selectOperatorStyle}
                                             formatOptionLabel={formatOptionLabel}
                                             components={{
                                                 IndicatorSeparator: null,

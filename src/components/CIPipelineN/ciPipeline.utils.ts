@@ -104,7 +104,7 @@ export const yamlEditorSelectStyle = {
     }),
 }
 
-export const selectWithDefaultBG = {
+export const selectVariableStyle = {
     ...baseSelectStyles,
     control: (base, state) => ({
         ...base,
@@ -114,14 +114,36 @@ export const selectWithDefaultBG = {
         borderRadius: 'none',
         height: '32px',
         fontSize: '12px',
+        maxWidth: '200px',
         width: 'max-content',
     }),
     valueContainer: (base, state) => ({
         ...base,
         display: 'flex',
+        height: '32px',
+        lineHeight: '26px',
     }),
     indicatorsContainer: (base, state) => ({
         ...base,
+    }),
+}
+
+export const selectOperatorStyle = {
+    ...selectVariableStyle,
+    control: (base, state) => ({
+        ...base,
+        border: 'none',
+        boxShadow: 'none',
+        minHeight: 'auto',
+        borderRadius: 'none',
+        height: '32px',
+        fontSize: '12px',
+        width: '50px',
+    }),
+    menu: (base, state) => ({
+        ...base,
+        width: '200px',
+        marginTop: '0',
     }),
 }
 
