@@ -1,12 +1,13 @@
-import React, { Fragment } from 'react';
-import CodeEditor from '../../../CodeEditor/CodeEditor';
-import { DeploymentTemplateHistoryType } from './cd.type';
+import CodeEditor from '../../../../CodeEditor/CodeEditor';
+import { DeploymentTemplateHistoryType } from '../cd.type';
 import YAML from 'yaml';
-import { Progressing } from '../../../common';
+import { Progressing } from '../../../../common';
+import React, { useEffect } from 'react';
+
 
 // const configList = [ 'Chart version', 'Application metrics']
 
-function DeploymentHistoryDiffView({
+function DeploymentHistoryRightDiffView({
     currentConfiguration,
     baseTemplateConfiguration,
     codeEditorLoading,
@@ -83,4 +84,4 @@ function DeploymentHistoryDiffView({
     );
 }
 
-export default DeploymentHistoryDiffView;
+export default DeploymentHistoryRightDiffView;

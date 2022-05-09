@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useEffect } from 'react';
+
 const deploymentTemplatelisting = [
     'Pipeline configuration',
     'Deployment Template',
@@ -10,8 +11,8 @@ const deploymentTemplatelisting = [
 function DeploymentHistorySidebar() {
     return (
         <div className='bcn-0'>
-            {deploymentTemplatelisting.map((elm) => {
-                return <div className={`fw-6 pt-12 pb-12 pl-16 pr-16 cursor`}>{elm}</div>
+            {deploymentTemplatelisting.map((elm, index) => {
+                return <div className={`fw-6 pt-12 pb-12 pl-16 pr-16 cursor`}  key={`deployment-history-sidebar-${index}`}>{elm}</div>
             })}
         </div>
     )

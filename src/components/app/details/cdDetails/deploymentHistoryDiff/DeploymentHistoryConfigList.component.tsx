@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { ReactComponent as RightArrow } from '../../../../assets/icons/ic-arrow-left.svg';
+import { ReactComponent as RightArrow } from '../../../../../assets/icons/ic-arrow-left.svg';
 import { NavLink } from 'react-router-dom';
 import { useRouteMatch, useParams } from 'react-router';
-import { DeploymentTemplateConfiguration } from './cd.type';
-import CDEmptyState from './CDEmptyState';
+import { DeploymentTemplateConfiguration } from '../cd.type';
+import CDEmptyState from '../CDEmptyState';
 
 interface TemplateConfiguration {
     setShowTemplate: (boolean) => void;

@@ -3,10 +3,10 @@ import ReactSelect from 'react-select';
 import { useHistory, useRouteMatch, useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import moment from 'moment';
-import { Moment12HourFormat } from '../../../../config';
-import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-forward.svg';
-import { CompareWithBaseConfiguration, DeploymentTemplateOptions } from './cd.type';
-import { Option, styles } from './cd.utils';
+import { Moment12HourFormat } from '../../../../../config';
+import { ReactComponent as LeftIcon } from '../../../../../assets/icons/ic-arrow-forward.svg';
+import { CompareWithBaseConfiguration, DeploymentTemplateOptions } from '../cd.type';
+import { Option, styles } from '../cd.utils';
 
 function CompareWithBaseConfig({
     deploymentTemplatesConfiguration,

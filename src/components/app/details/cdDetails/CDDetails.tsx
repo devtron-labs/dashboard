@@ -26,9 +26,9 @@ import Tippy from '@tippyjs/react'
 import {DetectBottom, TriggerDetails, GitChanges, Artifacts, BuildCardPopup} from '../cIDetails/CIDetails'
 import {History} from '../cIDetails/types'
 import {Moment12HourFormat} from '../../../../config';
-import DeploymentTemplateWrapper from './DeploymentHistoryConfigList.component';
+import DeploymentTemplateWrapper from './deploymentHistoryDiff/DeploymentHistoryConfigList.component';
 import './cdDetail.scss'
-import DeploymentHistoryDetailedView from './DeploymentHistoryDetailedView';
+import DeploymentHistoryDetailedView from './deploymentHistoryDiff/DeploymentHistoryDetailedView';
 import { DeploymentTemplateConfiguration } from './cd.type';
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
