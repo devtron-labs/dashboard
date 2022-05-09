@@ -58,7 +58,7 @@ export class ValidationRules {
     ): { message: string | null; isValid: boolean } => {
         const re = new RegExp(PATTERNS.VARIABLE)
         if (!value['name']) {
-            return { message: 'Variable Name is required', isValid: false }
+            return { message: 'Variable name is required', isValid: false }
         } else if (availableInputVariables.get(value['name'])) {
             return { message: 'Variable name should be unique', isValid: false }
         } else if (!re.test(value['name'])) {
@@ -84,7 +84,7 @@ export class ValidationRules {
 
     sourceValue = (value: string): { message: string | null; isValid: boolean } => {
         if (!value) {
-            return { message: `This is required field`, isValid: false }
+            return { message: `This is required`, isValid: false }
         } else {
             return { message: null, isValid: true }
         }
@@ -96,7 +96,7 @@ export class ValidationRules {
         } else if (!value['filePathOnDisk']) {
             return { message: 'File path on disk is required', isValid: false }
         } else if (!value['filePathOnContainer']) {
-            return { message: `File path on container is required field`, isValid: false }
+            return { message: `File path on container is required`, isValid: false }
         } else {
             return { message: null, isValid: true }
         }
