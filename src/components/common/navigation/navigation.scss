@@ -1,4 +1,4 @@
-#root>main {
+#root > main {
     width: 100%;
     min-height: 100vh;
     display: grid;
@@ -16,7 +16,6 @@
     overflow-y: hidden !important;
 }
 
-
 .title-container {
     color: white;
     opacity: 1;
@@ -26,17 +25,10 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     text-align-last: left;
-
-        &:hover{
-            svg.short-nav-icon {
-                    opacity: 1;
-                }
-
-        }
 }
 
-#root>main {
-    &>nav {
+#root > main {
+    & > nav {
         width: 100%;
         background: var(--B500);
         position: sticky;
@@ -44,14 +36,13 @@
         display: flex;
         overflow: hidden;
         z-index: var(--navigation-index);
-        transition: width 300ms ease-in 700ms;
-        
+        transition: width 300ms ease-out;
 
         .nav-grid {
             display: grid;
-            grid-template-rows: 84px 44px repeat(6, 44px) auto repeat(5, 44px);
+            grid-template-rows: 84px 44px repeat(12, 44px);
             align-items: center;
-            
+
             a,
             button {
                 &:hover {
@@ -66,16 +57,27 @@
             }
         }
 
-        
-
         .short-nav {
             width: 100%;
-            padding: 0 12px;
-            
+            padding: 0 12px 0 0;
+
             .svg-container {
                 height: 40px;
                 width: 40px;
                 border-radius: 8px;
+            }
+
+            .nav-short-help {
+                .help-option-icon path {
+                    fill: white;
+                }
+            }
+
+            .short-nav__divider {
+                width: 20px;
+                height: 1px;
+                background-color: rgba(255, 255, 255, 0.25);
+                margin: -16px 0 10px 22px;
             }
 
             a {
@@ -83,40 +85,72 @@
                     width: 20px;
                     height: 20px;
                     fill: white;
-                    opacity: 0.5;
-
+                    opacity: 1;
                 }
 
-                &.active-nav,
+                .short-nav__item-selected {
+                    display: none;
+                }
+
                 &:hover {
-                    svg.short-nav-icon {
-                        opacity: 1;
+                    .svg-container {
+                        background: #00000059;
                     }
+                }
+
+                &.active-nav {
+                    .short-nav__item-selected {
+                        display: inline-block;
+                        width: 6px;
+                        height: 32px;
+                        background-color: white;
+                        border-radius: 3px;
+                        margin-left: -3px;
+                    }
+
+                    .short-nav--flex {
+                        margin-left: 9px;
+                    }
+                }
+
+                &.short-nav__stack-manager {
+                    margin-top: -52px;
                 }
 
                 &:not(.active-nav):focus {
-                    .svg-container{
-                            border: 1px solid white;
-                            border-radius: 8px;
+                    .svg-container {
+                        border: 1px solid white;
+                        border-radius: 8px;
                     }
                 }
-
             }
         }
 
         .active-nav {
             .svg-container {
-                background: #0000007d;
+                background: #00000059;
             }
         }
 
         &:hover {
-                width: 252px;
-                height: 100vh;
-           
+            width: 252px;
+            transition: width 300ms ease-in 700ms;
+        }
+
+        .short-nav__bottom-options {
+            bottom: 84px;
+            position: absolute;
+            display: grid;
+            grid-auto-rows: 44px;
+            -ms-grid-rows: 44px;
+            align-items: center;
+
+            &.sticky__bottom-options {
+                bottom: 44px;
+            }
         }
     }
-    
+
     .devtron-logo {
         width: 40px;
         height: 40px;
@@ -135,16 +169,16 @@
     }
 }
 
-
 .logout-card {
     width: 260px;
     border-radius: 4px;
     background-color: white;
     position: fixed;
-    bottom: 15px;
-    left: 66px;
-    border: solid 1px rgba(255, 255, 255, 0);
-    box-shadow: 0 2px 4px -1px rgba(0, 56, 112, 0.3);
+    bottom: 88px;
+    left: 68px;
+    border: 1px solid var(--N200);
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
 }
 
 .logout-card__initial {
@@ -170,7 +204,7 @@
     line-height: 1.43;
     width: 180px;
     letter-spacing: normal;
-    color: var(--N900)
+    color: var(--N900);
 }
 
 .logout-card__email {
@@ -196,45 +230,89 @@
     background-color: var(--N100);
 }
 
-
 .logout-card__initial--nav {
     border-color: var(--N000);
 }
 
-.more-option-card{
+.more-option-card,
+.help-card {
     width: 216px;
     border-radius: 4px;
     background-color: white;
     position: fixed;
-    bottom: 15px;
-    left: 66px;
-    border: solid 1px rgba(255, 255, 255, 0);
-    box-shadow: 0 2px 4px -1px rgba(0, 56, 112, 0.3);
-
+    bottom: 88px;
+    left: 68px;
+    border: 1px solid var(--N200);
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
 }
-.more-option-card__rect{
+
+.help-card {
+    display: grid;
+    grid-template-rows: 36px 1px 36px 36px 1px 36px 56px;
+    align-items: center;
+
+    .help-card__option {
+        padding: 6px 12px;
+        height: 36px;
+
+        &:hover {
+            background-color: var(--N100);
+        }
+        .help-card__link {
+            text-decoration: none;
+        }
+    }
+
+    .help-card__option-separator {
+        height: 1px;
+        background-color: var(--N100);
+    }
+
+    .help-card__update-option {
+        padding: 8px 10px;
+        background-color: var(--N100);
+    }
+}
+
+.logout-card,
+.help-card {
+    &.sticky__bottom-option {
+        bottom: 15px;
+    }
+}
+
+.more-option-card__rect {
     font-size: 14px;
     color: var(--N900);
     padding: 10px 16px;
 }
-.more-option-card__link{
+.more-option-card__link {
     text-decoration: none !important;
 }
 
-.more-option-card__title:hover{
-    background-color: var(--N100)
+.more-option-card__title:hover {
+    background-color: var(--N100);
 }
 
-.short-nav--flex{
+.short-nav--flex {
     display: flex;
-    
+    margin-left: 12px;
+
+    &:hover {
+        .svg-container,
+        .short-nav__icon-container {
+            background: #00000059;
+            border-radius: 8px;
+        }
+    }
 }
-.center{
+
+.center {
     justify-content: center;
     align-items: center;
 }
 
-.expandable-active-nav{
+.expandable-active-nav {
     padding: 0px 0 0 12px;
-  
 }
