@@ -654,8 +654,8 @@ button.anchor {
             word-wrap: anywhere;
             white-space: pre-line;
             padding: 0;
-            .Toastify__toast-icon{
-              display: none;
+            .Toastify__toast-icon {
+                display: none;
             }
         }
 
@@ -1673,6 +1673,14 @@ button.anchor {
     line-height: 20px;
 }
 
+.lh-16 {
+    line-height: 16px;
+}
+
+.mh-28 {
+    min-height: 28px;
+}
+
 .pl-16 {
     padding-left: 16px !important;
 }
@@ -1777,5 +1785,5 @@ button.anchor {
 }
 
 .xterm .xterm-viewport {
-  width: initial !important;
+    width: initial !important;
 }
