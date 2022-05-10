@@ -27,7 +27,7 @@ export function Sidebar() {
         setFormData(_formData)
     }
     const handleScanToggle = (e): void => {
-        let _formData = { ...formData }
+        const _formData = { ...formData }
         _formData.scanEnabled = !_formData.scanEnabled
         setFormData(_formData)
     }

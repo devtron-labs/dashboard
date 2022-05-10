@@ -45,14 +45,11 @@ function CustomScript({ handleScriptChange }: CustomScriptType) {
             </div>
 
             {formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail?.script &&
-                !formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail?.script.isValid && (
+                !formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script.isValid && (
                     <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
                         <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
                         <span>
-                            {
-                                formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail?.script
-                                    .message
-                            }
+                            {formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script.message}
                         </span>
                     </span>
                 )}

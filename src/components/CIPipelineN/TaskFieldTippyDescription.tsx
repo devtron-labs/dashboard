@@ -18,12 +18,8 @@ function TaskFieldTippyDescription({ taskField, contentDescription }: TippyDescr
                 <span className="text-underline-dashed">
                     {taskField}
                     {taskField === TaskFieldLabel.SCRIPT ||
-                    taskField === TaskFieldLabel.MOUNTCODEAT ||
-                    taskField === TaskFieldLabel.CONTAINERIMAGEPATH ? (
-                        <span className="cr-5"> *</span>
-                    ) : (
-                        ''
-                    )}
+                        taskField === TaskFieldLabel.MOUNTCODEAT ||
+                        (taskField === TaskFieldLabel.CONTAINERIMAGEPATH && <span className="cr-5"> *</span>)}
                 </span>
             </Tippy>
         </div>
