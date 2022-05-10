@@ -76,3 +76,7 @@ export function getDeploymentTemplateDiff(appId: string, pipelineId: string) {
 export function getDeploymentTemplateDiffId(appId: string, pipelineId: string, id: string) {
     return get(`app/history/template/${appId}/${pipelineId}/${id}`);
 }
+
+export function getDeploymentHistoryList(){
+    
+}
