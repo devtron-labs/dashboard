@@ -90,8 +90,8 @@ export function PreBuild({
                 mountCodeToContainer: false,
                 mountDirectoryFromHost: false,
             }
-            _formDataErrorObj[activeStageName]['steps'][selectedTaskIndex] = {
-                ..._formDataErrorObj[activeStageName]['steps'][selectedTaskIndex],
+            _formDataErrorObj[activeStageName].steps[selectedTaskIndex] = {
+                ..._formDataErrorObj[activeStageName].steps[selectedTaskIndex],
                 inlineStepDetail: { inputVariables: [], outputVariables: [] },
             }
         } else {
@@ -104,8 +104,8 @@ export function PreBuild({
                 inputVariables: [],
                 outputVariables: [],
             }
-            _formDataErrorObj[activeStageName]['steps'][selectedTaskIndex] = {
-                ..._formDataErrorObj[activeStageName]['steps'][selectedTaskIndex],
+            _formDataErrorObj[activeStageName].steps[selectedTaskIndex] = {
+                ..._formDataErrorObj[activeStageName].steps[selectedTaskIndex],
                 pluginRefStepDetail: { inputVariables: [] },
             }
         }

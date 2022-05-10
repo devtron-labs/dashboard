@@ -476,3 +476,7 @@
 .path-info path[fill='#06C'] {
     fill: var(--N700);
 }
+
+.container-image-info path[fill='#06C'] {
+    fill: var(--B500);
+}

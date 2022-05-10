@@ -263,6 +263,10 @@ export function TaskTypeDetailComponent() {
                                     <span>{errorObj?.containerImagePath.message}</span>
                                 </span>
                             )}
+                            <div className="w-100 bcb-1 pt-6 br-4 flexbox h-32 cn-9 fs-12 mt-8">
+                                <Info className="container-image-info mt-2 mb-2 mr-8 ml-14 icon-dim-16" />
+                                <span>Devtron only supports container image which include /bin/sh executable</span>
+                            </div>
                         </div>
                     </div>
                     <div className="row-container mb-12 fs-13 fw-6">

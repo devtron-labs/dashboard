@@ -304,6 +304,18 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                     if (!taskData.inlineStepDetail['mountDirectoryFromHost']) {
                         taskData.inlineStepDetail['mountPathMap'] = null
                     }
+                    taskData.inlineStepDetail.outputVariables = null
+                    let conditionDetails = taskData.inlineStepDetail.conditionDetails
+                    for (let i = 0; i < conditionDetails?.length; i++) {
+                        if (
+                            conditionDetails[i].conditionType === ConditionType.PASS ||
+                            conditionDetails[i].conditionType === ConditionType.FAIL
+                        ) {
+                            conditionDetails.splice(i, 1)
+                            i--
+                        }
+                    }
+                    taskData.inlineStepDetail.conditionDetails = conditionDetails
                 }
             }
             return taskData.name
@@ -492,10 +504,9 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             const stepsLength = _formData[stageName].steps.length
             let isStageValid = true
             for (let i = 0; i < stepsLength; i++) {
-                if (!_formDataErrorObj[stageName]['steps'][i])
-                    _formDataErrorObj[stageName]['steps'].push({ isValid: true })
-                validateTask(_formData[stageName]['steps'][i], _formDataErrorObj[stageName]['steps'][i])
-                isStageValid = isStageValid && _formDataErrorObj[stageName]['steps'][i].isValid
+                if (!_formDataErrorObj[stageName].steps[i]) _formDataErrorObj[stageName].steps.push({ isValid: true })
+                validateTask(_formData[stageName].steps[i], _formDataErrorObj[stageName].steps[i])
+                isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
             _formDataErrorObj[stageName].isValid = isStageValid
         }
@@ -521,8 +532,8 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             _inputVariablesListPerTask: Map<string, VariableType>[] = []
         let i = 0
         for (; i < stepsLength; i++) {
-            if (!_formDataErrorObj[activeStageName]['steps'][i])
-                _formDataErrorObj[activeStageName]['steps'].push({ isValid: true })
+            if (!_formDataErrorObj[activeStageName].steps[i])
+                _formDataErrorObj[activeStageName].steps.push({ isValid: true })
             _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
             _formData[activeStageName].steps[i].index = i + 1
             // if (index <= _formData[activeStageName].steps[i].index) {
@@ -544,17 +555,17 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                 _formData[activeStageName].steps[i].stepType === PluginType.INLINE
                     ? 'inlineStepDetail'
                     : 'pluginRefStepDetail'
-            if (!_formDataErrorObj[activeStageName]['steps'][i][currentStepTypeVariable]) {
-                _formDataErrorObj[activeStageName]['steps'][i][currentStepTypeVariable] = {
+            if (!_formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable]) {
+                _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable] = {
                     inputVariables: [],
                     outputVariables: [],
                 }
             }
-            if (!_formDataErrorObj[activeStageName]['steps'][i][currentStepTypeVariable].inputVariables) {
-                _formDataErrorObj[activeStageName]['steps'][i][currentStepTypeVariable].inputVariables = []
+            if (!_formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].inputVariables) {
+                _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].inputVariables = []
             }
-            if (!_formDataErrorObj[activeStageName]['steps'][i][currentStepTypeVariable].outputVariables) {
-                _formDataErrorObj[activeStageName]['steps'][i][currentStepTypeVariable].outputVariables = []
+            if (!_formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].outputVariables) {
+                _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].outputVariables = []
             }
             const outputVariablesLength =
                 _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables?.length
@@ -624,7 +635,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         _formData[activeStageName].steps.push(stage)
         setFormData(_formData)
         const _formDataErrorObj = { ...formDataErrorObj }
-        _formDataErrorObj[activeStageName]['steps'].push({
+        _formDataErrorObj[activeStageName].steps.push({
             name: { isValid: true, message: null },
             isValid: true,
         })

@@ -84,7 +84,7 @@ export function TaskDetailComponent() {
                     delete variable.variableStepIndex
                     return variable
                 })
-            if (_form[activeStageName]['steps'].length > selectedTaskIndex) {
+            if (_form[activeStageName].steps.length > selectedTaskIndex) {
                 calculateLastStepDetail(false, _form, activeStageName, selectedTaskIndex)
             }
         }
@@ -230,22 +230,28 @@ export function TaskDetailComponent() {
                             <hr />
                         </>
                     )}
-                    {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE && (
-                        <TaskTypeDetailComponent />
-                    )}
                     {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
-                        <CustomInputOutputVariables type={PluginVariableType.OUTPUT} />
+                        <>
+                            <TaskTypeDetailComponent />
+                            {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType !==
+                                ScriptType.CONTAINERIMAGE && (
+                                <CustomInputOutputVariables type={PluginVariableType.OUTPUT} />
+                            )}
+                        </>
                     ) : (
                         <VariableContainer type={PluginVariableType.OUTPUT} />
                     )}
-                    <hr />
                     {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.outputVariables
-                        ?.length > 0 && (
-                        <>
-                            <ConditionContainer type={ConditionContainerType.PASS_FAILURE} />
-                            <hr />
-                        </>
-                    )}
+                        ?.length > 0 &&
+                        (formData[activeStageName].steps[selectedTaskIndex].stepType !== PluginType.INLINE ||
+                            formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType !==
+                                ScriptType.CONTAINERIMAGE) && (
+                            <>
+                                <hr />
+                                <ConditionContainer type={ConditionContainerType.PASS_FAILURE} />
+                                <hr />
+                            </>
+                        )}
                 </>
             ) : (
                 <YAMLScriptComponent
