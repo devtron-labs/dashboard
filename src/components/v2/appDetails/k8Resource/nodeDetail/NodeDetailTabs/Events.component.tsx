@@ -84,7 +84,7 @@ function EventsComponent({ selectedTab, isDeleted }) {
                                                     <td className="cell-style message">{event.message}</td>
                                                     <td className="cell-style count">{event.count}</td>
                                                     <td className="cell-style timestamp">
-                                                        {moment(event.lastTimestamp, 'YYYY-MM-DDTHH:mm:ss')
+                                                        {event.lastTimestamp && moment(event.lastTimestamp, 'YYYY-MM-DDTHH:mm:ss')
                                                             .add(5, 'hours')
                                                             .add(30, 'minutes')
                                                             .format('YYYY-MM-DD HH:mm:ss')}
