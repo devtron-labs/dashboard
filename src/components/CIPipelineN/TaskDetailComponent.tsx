@@ -75,26 +75,24 @@ export function TaskDetailComponent() {
         }
     }, [])
 
+    const setVariableStepIndexInPlugin = (variable): VariableType => {
+        variable.variableStepIndexInPlugin = variable.variableStepIndex
+        delete variable.variableStepIndex
+        return variable
+    }
+
     const processPluginData = (pluginData) => {
         const _form = { ...formData }
         if (_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables?.length === 0) {
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables =
-                pluginData.outputVariables?.map((variable) => {
-                    variable.variableStepIndexInPlugin = variable.variableStepIndex
-                    delete variable.variableStepIndex
-                    return variable
-                })
+                pluginData.outputVariables?.map(setVariableStepIndexInPlugin)
             if (_form[activeStageName].steps.length > selectedTaskIndex) {
                 calculateLastStepDetail(false, _form, activeStageName, selectedTaskIndex)
             }
         }
         if (_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables?.length === 0) {
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables =
-                pluginData.inputVariables?.map((variable) => {
-                    variable.variableStepIndexInPlugin = variable.variableStepIndex
-                    delete variable.variableStepIndex
-                    return variable
-                })
+                pluginData.inputVariables?.map(setVariableStepIndexInPlugin)
         }
         setFormData(_form)
     }

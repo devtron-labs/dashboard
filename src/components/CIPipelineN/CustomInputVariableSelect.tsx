@@ -264,10 +264,8 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
     }
 
     const handleKeyDown = (event) => {
-        switch (event.key) {
-            case 'Enter':
-            case 'Tab':
-                event.target.blur()
+        if (event.key === 'Enter' || event.key === 'Tab') {
+            event.target.blur()
         }
     }
 
