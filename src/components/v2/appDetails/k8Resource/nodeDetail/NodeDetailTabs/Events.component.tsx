@@ -53,7 +53,7 @@ function EventsComponent({ selectedTab, isDeleted }) {
                             <div className="cn-0 ">
                                 <table className="table pl-20">
                                     <thead style={{ minHeight: '600px', background: '#0B0F22' }}>
-                                        <tr className="event-no-border pl-20 event-row">
+                                        <tr className="no-border pl-20 event-row">
                                             {['reason', 'message', 'count', 'last timestamp'].map((head, idx) => {
                                                 return (
                                                     <th
@@ -75,7 +75,7 @@ function EventsComponent({ selectedTab, isDeleted }) {
                                             return (
                                                 <tr
                                                     className={
-                                                        'event-no-border pl-20 event-row ' +
+                                                        'no-border pl-20 event-row ' +
                                                         (index % 2 === 0 && 'alternate-row')
                                                     }
                                                     key={`eb_${index}`}
@@ -84,7 +84,7 @@ function EventsComponent({ selectedTab, isDeleted }) {
                                                     <td className="cell-style message">{event.message}</td>
                                                     <td className="cell-style count">{event.count}</td>
                                                     <td className="cell-style timestamp">
-                                                        {moment(event.lastTimestamp, 'YYYY-MM-DDTHH:mm:ss')
+                                                        {moment(event.lastTimestamp || event.eventTime, 'YYYY-MM-DDTHH:mm:ss')
                                                             .add(5, 'hours')
                                                             .add(30, 'minutes')
                                                             .format('YYYY-MM-DD HH:mm:ss')}

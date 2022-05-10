@@ -28,8 +28,9 @@
     }
 }
 
-.event-no-border {
+.no-border {
     border: none;
+    display: table-row !important;
 }
 
 .events-logs__events-table-row {
