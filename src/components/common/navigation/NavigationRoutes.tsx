@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState, createContext, useContext } from 'react'
+import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useCallback } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { URLS, AppListConstants, ViewType, SERVER_MODE } from '../../../config'
 import { ErrorBoundary, Progressing, getLoginInfo, AppContext } from '../../common'
@@ -8,9 +8,11 @@ import * as Sentry from '@sentry/browser'
 import ReactGA from 'react-ga'
 import { Security } from '../../security/Security'
 import { dashboardLoggedIn, getVersionConfig } from '../../../services/service'
-import { showError } from '../helpers/Helpers'
 import Reload from '../../Reload/Reload'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
+import DevtronStackManager from '../../v2/devtronStackManager/DevtronStackManager'
+import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -29,6 +31,12 @@ export default function NavigationRoutes() {
     const [serverMode, setServerMode] = useState(undefined)
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [pageOverflowEnabled, setPageOverflowEnabled] = useState<boolean>(true)
+    const [currentServerInfo, setCurrentServerInfo] = useState<{ serverInfo: ServerInfo; fetchingServerInfo: boolean }>(
+        {
+            serverInfo: undefined,
+            fetchingServerInfo: false,
+        },
+    )
 
     useEffect(() => {
         const loginInfo = getLoginInfo()
@@ -92,7 +100,36 @@ export default function NavigationRoutes() {
             }
         }
         getServerMode()
+        getCurrentServerInfo()
     }, [])
+
+    const getCurrentServerInfo = async (section?: string) => {
+        if (
+            currentServerInfo.fetchingServerInfo ||
+            (section === 'navigation' && currentServerInfo.serverInfo && location.pathname.includes('/stack-manager'))
+        ) {
+            return
+        }
+
+        setCurrentServerInfo({
+            serverInfo: currentServerInfo.serverInfo,
+            fetchingServerInfo: true,
+        })
+
+        try {
+            const { result } = await getServerInfo()
+            setCurrentServerInfo({
+                serverInfo: result,
+                fetchingServerInfo: false,
+            })
+        } catch (err) {
+            setCurrentServerInfo({
+                serverInfo: currentServerInfo.serverInfo,
+                fetchingServerInfo: false,
+            })
+            console.error('Error in fetching server info')
+        }
+    }
 
     if (pageState === ViewType.LOADING) {
         return <Progressing pageLoader />
@@ -102,7 +139,15 @@ export default function NavigationRoutes() {
         return (
             <mainContext.Provider value={{ serverMode, setServerMode, setPageOverflowEnabled }}>
                 <main>
-                    <Navigation history={history} match={match} location={location} />
+                    <Navigation
+                        history={history}
+                        match={match}
+                        location={location}
+                        serverMode={serverMode}
+                        fetchingServerInfo={currentServerInfo.fetchingServerInfo}
+                        serverInfo={currentServerInfo.serverInfo}
+                        getCurrentServerInfo={getCurrentServerInfo}
+                    />
                     {serverMode && (
                         <div className={`main ${pageOverflowEnabled ? '' : 'main__overflow-disabled'}`}>
                             <Suspense fallback={<Progressing pageLoader />}>
@@ -126,6 +171,12 @@ export default function NavigationRoutes() {
                                             path={URLS.SECURITY}
                                             render={(props) => <Security {...props} serverMode={serverMode} />}
                                         />
+                                        <Route path={URLS.STACK_MANAGER}>
+                                            <DevtronStackManager
+                                                serverInfo={currentServerInfo.serverInfo}
+                                                getCurrentServerInfo={getCurrentServerInfo}
+                                            />
+                                        </Route>
                                         <Route>
                                             <RedirectWithSentry />
                                         </Route>

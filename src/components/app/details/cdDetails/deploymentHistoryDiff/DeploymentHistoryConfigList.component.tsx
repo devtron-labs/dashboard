@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom'
 import { useRouteMatch, useParams } from 'react-router'
 import { DeploymentTemplateConfiguration } from '../cd.type'
 import CDEmptyState from '../CDEmptyState'
-import { deploymentHistorylisting } from './constants'
+import { DEPLOYMENT_HISTORY_LINK_MAP, DEPLOYMENT_HISTORY_LIST } from './constants'
 
 interface TemplateConfiguration {
     setShowTemplate: (boolean) => void
@@ -31,11 +31,11 @@ function DeploymentTemplateWrapper({
 
     return deploymentTemplateFilteredTrigger && !isLastDeploymentTemplatesConfiguration ? (
         <>
-            {deploymentHistorylisting.map((li, index) => {
+            {DEPLOYMENT_HISTORY_LIST.map((li, index) => {
                 return (
                     <div className="m-20 fs-13 cn-9" key={`history-list__${index}`}>
                         <NavLink
-                            to={`${match.url}/${li.href}`}
+                            to={`${match.url}/${DEPLOYMENT_HISTORY_LINK_MAP[li.label.toLowerCase()]}`}
                             onClick={() => {
                                 setShowTemplate(true)
                                 setBaseTimeStamp(baseTimeStamp)

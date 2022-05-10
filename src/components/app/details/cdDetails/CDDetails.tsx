@@ -252,7 +252,7 @@ export default function CDDetails(){
                 )}
                  <Switch>
                     <Route
-                        path={`${path}/configuration/deployment-template`}
+                        path={`${path}/configuration/:configurationType`}
                         render={(props) => (
                             <DeploymentHistoryDetailedView
                                 showTemplate={showTemplate}
