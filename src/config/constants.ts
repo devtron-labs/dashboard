@@ -139,6 +139,11 @@ export const Routes = {
     HELM_APP_HIBERNATE_API: 'application/hibernate',
     HELM_APP_UNHIBERNATE_API: 'application/unhibernate',
     EXTERNAL_LINKS_API: 'external-links',
+    MODULE_INFO_API: 'module',
+    SERVER_INFO_API: 'server',
+    LOG_PODNAME_API: 'k8s/resource/inception/info',
+    RELEASE_NOTES_API: 'release/notes',
+    MODULES_API: 'modules',
 }
 
 export const ViewType = {
@@ -163,6 +168,7 @@ export const AppConfigStatus = {
 
 export const FullRoutes = {
     LOGIN: `${Routes.LOGIN}`,
+    CENTRAL: 'https://api.devtron.ai',
 }
 
 export const PATTERNS = {

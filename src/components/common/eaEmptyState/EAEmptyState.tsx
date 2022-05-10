@@ -1,8 +1,9 @@
 import React from 'react';
 import appDetailEmpty from '../../../assets/img/ic-empty-ea-app-detail.png';
 import securityEmpty from '../../../assets/img/ic-empty-ea--security.png';
-import { DOCUMENTATION } from '../../../config';
+import { URLS } from '../../../config';
 import './eaEmptyState.css';
+import { NavLink } from 'react-router-dom';
 
 export enum EAEmptyStateType {
     DEVTRONAPPS = 'devtron_apps',
@@ -23,18 +24,11 @@ function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefi
                 <div className="fs-20 fw-6 mb-8">{title}</div>
                 <div className="fs-14 m-auto w-600">{msg}</div>
                 <div className='pt-20'>
-                    <a
-                        href={knowMoreLink}
-                        target="_blank"
-                        className="empty__know-more-btn cursor saved-filter__clear-btn saved-filter__clear-btn--dark mr-16"
-                    >
-                        Know more
-                    </a>
-                    <a target="_blank" href={DOCUMENTATION.HYPERION_TO_FULL_MODE}>
+                     <NavLink to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`}>
                         <button type="button" className="cta empty__install-btn">
-                            Upgrade to Devtron full experience
+                            View Integration
                         </button>
-                    </a>
+                    </NavLink>
                 </div>
                 <div className="m-tb-20">
                     {(() => {

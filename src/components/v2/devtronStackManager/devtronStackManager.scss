@@ -1,0 +1,121 @@
+.stack-manager {
+    display: grid;
+    grid-template-rows: 48px 1fr;
+    grid-template-columns: 250px 1fr;
+    height: 100vh;
+
+    a {
+        color: var(--B500);
+    }
+
+    &.full-view-mode {
+        grid-template-columns: 100%;
+
+        &.white-background {
+            background-color: white !important;
+        }
+    }
+
+    .page-header {
+        grid-column: 1 / -1;
+    }
+
+    .stack-manager__navigation {
+        padding: 24px 12px;
+        border-right: solid 1px #d6dbdf;
+        background-color: white;
+
+        a.stack-manager__navlink {
+            font-size: 13px;
+            line-height: 40px;
+            color: var(--N900);
+            width: 100%;
+            border-radius: 4px;
+            padding: 0 8px 0 10px;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: none;
+            }
+
+            &.stack-manager__navlink {
+                &.installed-modules__nav-link {
+                    .stack-manager__navlink-icon {
+                        path {
+                            stroke: var(--N700);
+                        }
+                    }
+                }
+
+                &.about-devtron__nav-link {
+                    .about-devtron {
+                        line-height: 20px;
+                        padding-top: 8px;
+                        padding-bottom: 8px;
+                    }
+                }
+
+                .badge {
+                    font-size: 13px;
+                    background-color: var(--N100);
+                    color: var(--N700);
+                    padding: 2px 7px;
+                }
+            }
+
+            &.active-route {
+                color: var(--B500);
+                font-weight: 600;
+                background-color: var(--B100);
+
+                &.stack-manager__navlink {
+                    &:not(.installed-modules__nav-link) {
+                        .stack-manager__navlink-icon {
+                            path {
+                                fill: var(--B500);
+                            }
+                        }
+                    }
+
+                    &.installed-modules__nav-link {
+                        .stack-manager__navlink-icon {
+                            path {
+                                stroke: var(--B500);
+                            }
+                        }
+                    }
+
+                    .badge {
+                        background-color: var(--B500);
+                        color: white;
+                    }
+                }
+            }
+
+            &:hover:not(.active-route) {
+                background-color: var(--N100);
+            }
+        }
+    }
+
+    .stack-manager__error-icon {
+        margin: auto 0;
+    }
+
+    .stack-manager__component-wrapper {
+        padding: 0 20px;
+        overflow-y: auto;
+        position: relative;
+        max-height: 100%;
+
+        &.about-devtron {
+            background-color: white;
+        }
+    }
+}
+
+.devtron-toast.unauthorized {
+    &:before {
+        background-image: url('../../../assets/icons/ic-locked-filled.svg');
+    }
+}

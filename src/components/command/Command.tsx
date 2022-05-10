@@ -118,6 +118,7 @@ export class Command extends Component<CommandProps, CommandState>  {
         else if (this.props.location.pathname.includes("/chart-store")) return [AllSuggestedArguments[1]];
         else if (this.props.location.pathname.includes("/security")) return [AllSuggestedArguments[2]];
         else if (this.props.location.pathname.includes("/global-config")) return [AllSuggestedArguments[3]];
+        else if (this.props.location.pathname.includes("/stack-manager")) return [AllSuggestedArguments[4]];
         return [];
     }
 
