@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import { DeploymentTemplateHistoryType } from '../cd.type'
 import YAML from 'yaml'
@@ -33,7 +33,7 @@ export default function DeploymentHistoryRightDiffView({
     return (
         <div>
             <div className="en-2 bw-1 br-4 deployment-diff__upper bcn-0 mt-20 mb-16 mr-20 ml-20 pt-2 pb-2">
-                {Object.keys(currentConfiguration || {}).map((config) => {
+                {Object.keys(currentConfiguration || {}).map((config, index) => {
                     if (config === 'template') return <></>
                     const changeBGColor = currentConfiguration[config] !== baseTemplateConfiguration[config]
                     const titleStyle = 'cn-6 pt-8 pl-16 pr-16 lh-16'

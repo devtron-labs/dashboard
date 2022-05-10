@@ -36,6 +36,7 @@ function DeploymentTemplateWrapper({
                     <div className="m-20 fs-13 cn-9" key={`history-list__${index}`}>
                         <NavLink
                             to={`${match.url}/${DEPLOYMENT_HISTORY_LINK_MAP[li.label.toLowerCase()]}`}
+                            activeClassName="active"
                             onClick={() => {
                                 setShowTemplate(true)
                                 setBaseTimeStamp(baseTimeStamp)
