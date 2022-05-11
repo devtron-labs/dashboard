@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Progressing, showError } from '../../../../common'
-import CompareWithBaseConfig from './CompareWithBaseConfig'
+import DeploymentHistoryHeader from './DeploymentHistoryHeader'
 import { getDeploymentHistoryDetail } from '../service'
 import { useParams } from 'react-router'
 import { DeploymentTemplateOptions, CompareViewDeploymentType, DeploymentTemplateViaTargetId } from '../cd.type'
@@ -74,7 +74,7 @@ export default function DeploymentHistoryDetailedView({
         <CDEmptyState />
     ) : (
         <>
-            <CompareWithBaseConfig
+            <DeploymentHistoryHeader
                 deploymentTemplatesConfiguration={deploymentTemplatesConfiguration}
                 selectedDeploymentTemplate={selectedDeploymentTemplate}
                 setSelectedDeploymentTemplate={setSelectedDeploymentTemplate}

@@ -8,7 +8,7 @@ import { ReactComponent as LeftIcon } from '../../../../../assets/icons/ic-arrow
 import { CompareWithBaseConfiguration, DeploymentTemplateOptions } from '../cd.type'
 import { Option, styles } from '../cd.utils'
 
-export default function CompareWithBaseConfig({
+export default function DeploymentHistoryHeader({
     deploymentTemplatesConfiguration,
     selectedDeploymentTemplate,
     setSelectedDeploymentTemplate,
