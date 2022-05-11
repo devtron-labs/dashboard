@@ -209,9 +209,7 @@ export function generateSelectedNodes(
                     ),
             );
         
-            if ( _clickedNodes.length > 0 && (isDevtronApp || _nodeLowerCase !== NodeType.Pod.toLowerCase() &&
-            _nodeTypes.some((_type) => _clickedNodes.includes(_type.toLowerCase())))
-
+            if ( _clickedNodes.length > 0 && (isDevtronApp || _nodeLowerCase !== NodeType.Pod.toLowerCase())
             ) {
                 _clickedNodes.forEach((_node) => clickedNodes.delete(_node));
             }
