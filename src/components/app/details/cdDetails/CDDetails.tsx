@@ -13,7 +13,7 @@ import Reload from '../../../Reload/Reload'
 import {
     default as AnsiUp
 } from 'ansi_up';
-import { getTriggerHistory, getTriggerDetails, getCDBuildReport, getDeploymentTemplateDiff} from './service'
+import { getTriggerHistory, getTriggerDetails, getCDBuildReport, getDeploymentTemplateDiff, getDeploymentDiffSelector, HistoryDiffSelectorList} from './service'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { cancelPrePostCdTrigger } from '../../service';
 import {Scroller} from '../cIDetails/CIDetails';
@@ -54,6 +54,8 @@ export default function CDDetails(){
     const [baseTimeStamp, setBaseTimeStamp] = useState<string>()
     const [baseTemplateId, setBaseTemplateId] = useState< string>();
     const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState<DeploymentTemplateConfiguration[]>([]);
+    const [deploymentTemplatesConfig, setDeploymentTemplatesConfig] = useState<HistoryDiffSelectorList[]>([]);
+
     const [loader, setLoader] = useState<boolean>(false);
 
     useEffect(()=>{
@@ -152,6 +154,10 @@ export default function CDDetails(){
                 setDeploymentTemplatesConfiguration(response.result?.sort((a, b) => sortCallback('id', b, a)));
                 setLoader(false);
             });
+            //   getDeploymentDiffSelector(appId, pipelineId).then((response) => {
+            //     setDeploymentTemplatesConfig(response.result);
+            //    setLoader(false);
+            // })
 
         } catch (err) {
             showError(err);

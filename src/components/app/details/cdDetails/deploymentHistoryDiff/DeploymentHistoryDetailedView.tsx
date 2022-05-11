@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { showError, sortCallback } from '../../../../common'
 import CompareWithBaseConfig from './CompareWithBaseConfig'
 import HistoryDiff from './HistoryDiffWrapper'
-import { getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from '../service'
+import { getDeploymentDiffSelector, getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from '../service'
 import { useParams } from 'react-router'
 import {
     DeploymentTemplateOptions,

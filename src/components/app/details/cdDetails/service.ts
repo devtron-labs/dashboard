@@ -76,7 +76,82 @@ export function getDeploymentTemplateDiff(appId: string, pipelineId: string) {
 export function getDeploymentTemplateDiffId(appId: string, pipelineId: string, id: string) {
     return get(`app/history/template/${appId}/${pipelineId}/${id}`);
 }
+export interface DeploymentTemplateList {
+    id: number
+    name: string
+    childList?: string[]
+}
+export interface DeploymentConfigurationsRes extends ResponseType {
+    result?: DeploymentTemplateList[]
+}
 
-export function getDeploymentHistoryList(){
-    
+export const getDeploymentHistoryList = (appId: string, pipelineId: string, wfrId: string): Promise<DeploymentConfigurationsRes> => {
+    //  return get(`/history/deployed-configuration/${appId}/${pipelineId}/${wfrId}`)
+
+    return Promise.resolve({
+        result: [
+            {
+                id: 0,
+                name: 'DEPLOYMENT_TEMPLATE',
+            },
+            {
+                id: 1,
+                name: 'PIPELINE_CONFIGURATION',
+            },
+            {
+                id: 2,
+                name: 'CONFIG_MAP',
+                childList: ['config-cm', 'Secret-dashboard'],
+            },
+            {
+                id: 3,
+                name: 'SECRET',
+                childList: ['Secret1', 'Secret-dashboard'],
+            },
+        ],
+    } as DeploymentConfigurationsRes)
+}
+
+export interface HistoryDiffSelectorList {
+        id: number,
+        deployedOn: string,
+        deployedBy: string,
+        deploymentStatus: string
+}
+export interface HistoryDiffSelectorRes{
+     result?:HistoryDiffSelectorList[]
+}
+
+export const getDeploymentDiffSelector = (appId: string, pipelineId: string): Promise<HistoryDiffSelectorRes> => {
+    // return get(`app/history/deployed-component/list/${appId}/${pipelineId}`);
+    return Promise.resolve({
+        result: [
+            {
+                id: 0,
+                deployedOn: "2022-04-28T09:23:33.855684Z",
+                deployedBy: "admin",
+                deploymentStatus: "healthy"
+            },
+            {
+                id: 1,
+                deployedOn: "2022-04-28T09:23:33.855684Z",
+                deployedBy: "shivani@devtron.ai",
+                deploymentStatus: "failed"
+            },
+            {
+                id: 2,
+                deployedOn: "2022-04-28T09:43:02.621323Z",
+                deployedBy: "admin",
+                deploymentStatus: "progressing"
+            },
+            {
+                id: 3,
+                deployedOn: "Tue, 8 Apr 2022, 03:13 PM",
+                deployedBy: "shivani@devtron.ai",
+                deploymentStatus: "healthy"
+            },
+
+        ]
+    })
+
 }
