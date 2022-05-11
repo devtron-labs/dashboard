@@ -4,7 +4,8 @@ export const COMMAND = {
     APPLICATIONS: 'app',
     CHART: 'chart',
     SECURITY: 'security',
-    GLOBAL_CONFIG: 'global-config'
+    GLOBAL_CONFIG: 'global-config',
+    STACK_MANAGER: 'stack-manager'
 }
 
 export const COMMAND_REV = {
