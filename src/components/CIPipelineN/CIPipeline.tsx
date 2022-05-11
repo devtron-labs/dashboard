@@ -231,17 +231,14 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
     }
 
     const renderDeleteCIModal = () => {
-        if (ciPipelineId && showDeleteModal) {
-            return (
-                <DeleteDialog
-                    title={`Delete '${formData.name}' ?`}
-                    description={`Are you sure you want to delete this CI Pipeline from '${appName}' ?`}
-                    closeDelete={closeCIDeleteModal}
-                    delete={deletePipeline}
-                />
-            )
-        }
-        return null
+        return (
+            <DeleteDialog
+                title={`Delete '${formData.name}' ?`}
+                description={`Are you sure you want to delete this CI Pipeline from '${appName}' ?`}
+                closeDelete={closeCIDeleteModal}
+                delete={deletePipeline}
+            />
+        )
     }
 
     const renderSecondaryButtton = () => {
@@ -760,7 +757,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                         </div>
                     </>
                 )}
-                {renderDeleteCIModal()}
+                {ciPipelineId && showDeleteModal && renderDeleteCIModal()}
             </div>
         </VisibleModal>
     )
