@@ -53,3 +53,11 @@
 .compare-history__border-left {
     border-left: 1px solid var(--N100);
 }
+
+.configuration-link{
+    &.active {
+        background: var(--B100);
+        color: var(--N900);
+        font-weight: 600;
+    }
+}
