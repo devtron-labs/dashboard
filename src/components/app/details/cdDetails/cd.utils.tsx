@@ -20,7 +20,6 @@ export const styles = {
         ...base,
         fontWeight: 600,
         color: '#06c',
-        direction: 'rtl',
         marginLeft: 0,
     }),
     option: (base, state) => ({
@@ -56,7 +55,7 @@ export function Option(props) {
                 ></div>
                 <div>
                     <div className='cn-9 fs-13'> {props.label}</div>   
-                    <div className='cn-7 flex left'><span className='text-capitalize'>{props.data.workflowType.toLowerCase()}</span>  <div className="bullet ml-4 bullet--d2 mr-4"/> {props.data.author}</div>
+                    <div className='cn-7 flex left'><span className='text-capitalize'>Deploy</span>  <div className="bullet ml-4 bullet--d2 mr-4"/> {props.data.author}</div>
                 </div>
             </div>
         </components.Option>

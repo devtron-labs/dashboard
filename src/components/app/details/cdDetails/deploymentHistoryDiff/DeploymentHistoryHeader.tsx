@@ -5,11 +5,13 @@ import { NavLink } from 'react-router-dom'
 import moment from 'moment'
 import { Moment12HourFormat } from '../../../../../config'
 import { ReactComponent as LeftIcon } from '../../../../../assets/icons/ic-arrow-forward.svg'
-import { CompareWithBaseConfiguration, DeploymentTemplateOptions } from '../cd.type'
+import { CompareWithBaseConfiguration, DeploymentTemplateList, DeploymentTemplateOptions, HistoryDiffSelectorList } from '../cd.type'
 import { Option, styles } from '../cd.utils'
+import { getDeploymentDiffSelector, getDeploymentHistoryList } from '../service'
 
 export default function DeploymentHistoryHeader({
-    deploymentTemplatesConfiguration,
+    // deploymentTemplatesConfiguration,
+    deploymentTemplatesConfigSelector,
     selectedDeploymentTemplate,
     setSelectedDeploymentTemplate,
     setShowTemplate,
@@ -19,22 +21,22 @@ export default function DeploymentHistoryHeader({
 }: CompareWithBaseConfiguration) {
     const { url } = useRouteMatch()
     const history = useHistory()
-    const { triggerId } = useParams<{ triggerId: string }>()
+    const { appId, pipelineId, triggerId } = useParams<{ appId: string; pipelineId: string; triggerId: string }>()
     const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>(baseTimeStamp)
     const [comparedTemplateId, setComparedTemplateId] = useState<string>()
-
-    const deploymentTemplateOption: DeploymentTemplateOptions[] = deploymentTemplatesConfiguration.map((p) => {
+    const [baseTemplateconfig, setBaseTemplateConfig] = useState<DeploymentTemplateList[]>()
+    const deploymentTemplateOption: DeploymentTemplateOptions[] = deploymentTemplatesConfigSelector.map((p) => {
         return {
             value: String(p.id),
             label: moment(p.deployedOn).format(Moment12HourFormat),
-            author: p.emailId,
+            author: p.deployedBy,
             status: p.deploymentStatus,
-            workflowType: p.workflowType,
         }
     })
 
+
     const handleSelector = (selectedTemplateId: string) => {
-        let deploymentTemp = deploymentTemplatesConfiguration.find((e) => e.id.toString() === selectedTemplateId)
+        let deploymentTemp = deploymentTemplatesConfigSelector.find((e) => e.id.toString() === selectedTemplateId)
         setSelectedDeploymentTemplate(deploymentTemp)
     }
 
@@ -44,8 +46,8 @@ export default function DeploymentHistoryHeader({
     }
 
     useEffect(() => {
-        if (deploymentTemplatesConfiguration.length > 0) {
-            const baseTemplate = deploymentTemplatesConfiguration.find((e) => e.wfrId.toString() === triggerId)
+        if (deploymentTemplatesConfigSelector.length > 0) {
+            const baseTemplate = deploymentTemplatesConfigSelector.find((e) => e.id.toString() === triggerId)
             setBaseTemplateTimeStamp(baseTemplate?.deployedOn)
             setBaseTemplateId(baseTemplate?.id.toString())
             if (!selectedDeploymentTemplate && deploymentTemplateOption?.length > 0 && baseTemplateId) {
@@ -57,7 +59,7 @@ export default function DeploymentHistoryHeader({
                 })
             }
         }
-    }, [deploymentTemplatesConfiguration, baseTemplateTimeStamp])
+    }, [deploymentTemplatesConfigSelector, baseTemplateTimeStamp])
 
     const renderGoBacktoConfiguration = () => {
         return (

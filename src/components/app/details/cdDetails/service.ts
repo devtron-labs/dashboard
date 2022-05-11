@@ -2,6 +2,7 @@ import { get } from '../../../../services/api'
 import { Routes } from '../../../../config'
 import { History } from '../cIDetails/types'
 import { ResponseType } from '../../../../services/service.types'
+import { DeploymentTemplateList, HistoryDiffSelectorList } from './cd.type'
 
 export interface DeploymentHistory {
     id: number
@@ -84,11 +85,6 @@ export function getDeploymentHistoryDetail(
         `app/history/template/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent}&historyComponentName=${historyComponentName}`,
     )
 }
-export interface DeploymentTemplateList {
-    id: number
-    name: string
-    childList?: string[]
-}
 export interface DeploymentConfigurationsRes extends ResponseType {
     result?: DeploymentTemplateList[]
 }
@@ -104,32 +100,26 @@ export const getDeploymentHistoryList = (
         result: [
             {
                 id: 0,
-                name: 'DEPLOYMENT_TEMPLATE',
+                name: 'deployment_template',
             },
             {
                 id: 1,
-                name: 'PIPELINE_CONFIGURATION',
+                name: 'pipeline_configuration',
             },
             {
                 id: 2,
-                name: 'CONFIG_MAP',
-                childList: ['config-cm', 'Secret-dashboard'],
+                name: 'config-maps',
+                childList: ['config-cm', 'secret-dashboard'],
             },
             {
                 id: 3,
-                name: 'SECRET',
-                childList: ['Secret1', 'Secret-dashboard'],
+                name: 'secret',
+                childList: ['secret1', 'secret-dashboard'],
             },
         ],
     } as DeploymentConfigurationsRes)
 }
 
-export interface HistoryDiffSelectorList {
-    id: number
-    deployedOn: string
-    deployedBy: string
-    deploymentStatus: string
-}
 export interface HistoryDiffSelectorRes {
     result?: HistoryDiffSelectorList[]
 }
@@ -139,25 +129,25 @@ export const getDeploymentDiffSelector = (appId: string, pipelineId: string): Pr
     return Promise.resolve({
         result: [
             {
-                id: 0,
+                id: 12,
                 deployedOn: '2022-04-28T09:23:33.855684Z',
                 deployedBy: 'admin',
                 deploymentStatus: 'healthy',
             },
             {
-                id: 1,
+                id: 11,
                 deployedOn: '2022-04-28T09:23:33.855684Z',
                 deployedBy: 'shivani@devtron.ai',
                 deploymentStatus: 'failed',
             },
             {
-                id: 2,
+                id: 10,
                 deployedOn: '2022-04-28T09:43:02.621323Z',
                 deployedBy: 'admin',
                 deploymentStatus: 'progressing',
             },
             {
-                id: 3,
+                id: 8,
                 deployedOn: 'Tue, 8 Apr 2022, 03:13 PM',
                 deployedBy: 'shivani@devtron.ai',
                 deploymentStatus: 'healthy',

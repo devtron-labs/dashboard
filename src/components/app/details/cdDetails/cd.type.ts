@@ -30,25 +30,37 @@ export interface DeploymentTemplateOptions {
     value: string
     author: string
     status: string
-    workflowType: string
 }
 export interface CompareWithBaseConfiguration {
-    deploymentTemplatesConfiguration: DeploymentTemplateConfiguration[]
+    // deploymentTemplatesConfiguration: DeploymentTemplateConfiguration[]
     selectedDeploymentTemplate: DeploymentTemplateOptions
     setSelectedDeploymentTemplate: (selected) => void
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>
     baseTimeStamp: string
     baseTemplateId: string
     setBaseTemplateId: React.Dispatch<React.SetStateAction<string>>
+    deploymentTemplatesConfigSelector: HistoryDiffSelectorList[]
 }
-
+export interface HistoryDiffSelectorList {
+    id: number
+    deployedOn: string
+    deployedBy: string
+    deploymentStatus: string
+    wfrId?: number
+}
 export interface CompareViewDeploymentType {
     showTemplate: boolean
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>
     baseTimeStamp: string
     baseTemplateId: string
     setBaseTemplateId: React.Dispatch<React.SetStateAction<string>>
-    deploymentTemplatesConfiguration: DeploymentTemplateConfiguration[]
+    // deploymentTemplatesConfiguration: DeploymentTemplateConfiguration[]
     loader: boolean
     setLoader: React.Dispatch<React.SetStateAction<boolean>>
+    deploymentTemplatesConfigSelector: HistoryDiffSelectorList[]
+}
+export interface DeploymentTemplateList {
+    id: number
+    name: string
+    childList?: string[]
 }

@@ -1,15 +1,15 @@
 export const DEPLOYMENT_HISTORY_LIST = [
-   { label:'Pipeline configuration', href:'pipeline-configuration'},
-    { label:'Deployment Template', href:'deployment-template'},
-   { label:'random-configmap', href:'random-config'},
-    { label:'dashboard-cm', href:'dashboard-cm'},
-    { label:'secret-dashboard', href:'secret-dashboard'},
+    { label: 'pipeline_configuration' },
+    { label: 'deployment_template' },
+    { label: 'config-cm' },
+    { label: 'secret1' },
+    { label: 'secret-dashboard' },
 ]
 
 export const DEPLOYMENT_HISTORY_LINK_MAP = {
-    'pipeline configuration' : 'pipeline-configuration',
-    'deployment template' : 'deployment-template',
-    'random-configmap': "random-config",
-    'dashboard-cm' : 'dashboard-cm',
-    'secret-dashboard': 'secret-dashboard'
+    'pipeline_configuration': 'pipeline-configuration',
+    'deployment_template': 'deployment-template',
+    'config-cm': 'config-cm',
+    'secret1': 'secret1',
+    'secret-dashboard': 'secret-dashboard',
 }

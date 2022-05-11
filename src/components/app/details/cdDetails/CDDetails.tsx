@@ -13,7 +13,7 @@ import Reload from '../../../Reload/Reload'
 import {
     default as AnsiUp
 } from 'ansi_up';
-import { getTriggerHistory, getTriggerDetails, getCDBuildReport, getDeploymentTemplateDiff, getDeploymentDiffSelector, HistoryDiffSelectorList} from './service'
+import { getTriggerHistory, getTriggerDetails, getCDBuildReport, getDeploymentTemplateDiff, getDeploymentDiffSelector} from './service'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { cancelPrePostCdTrigger } from '../../service';
 import {Scroller} from '../cIDetails/CIDetails';
@@ -29,7 +29,7 @@ import {Moment12HourFormat} from '../../../../config';
 import DeploymentTemplateWrapper from './deploymentHistoryDiff/DeploymentHistoryConfigList.component';
 import './cdDetail.scss'
 import DeploymentHistoryDetailedView from './deploymentHistoryDiff/DeploymentHistoryDetailedView';
-import { DeploymentTemplateConfiguration } from './cd.type';
+import { DeploymentTemplateConfiguration, HistoryDiffSelectorList } from './cd.type';
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(["starting", "running", "pending"]);
@@ -54,7 +54,7 @@ export default function CDDetails(){
     const [baseTimeStamp, setBaseTimeStamp] = useState<string>()
     const [baseTemplateId, setBaseTemplateId] = useState< string>();
     const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState<DeploymentTemplateConfiguration[]>([]);
-    const [deploymentTemplatesConfig, setDeploymentTemplatesConfig] = useState<HistoryDiffSelectorList[]>([]);
+    const [deploymentTemplatesConfigSelector, setDeploymentTemplatesConfigSelector] = useState<HistoryDiffSelectorList[]>([]);
 
     const [loader, setLoader] = useState<boolean>(false);
 
@@ -154,10 +154,10 @@ export default function CDDetails(){
                 setDeploymentTemplatesConfiguration(response.result?.sort((a, b) => sortCallback('id', b, a)));
                 setLoader(false);
             });
-            //   getDeploymentDiffSelector(appId, pipelineId).then((response) => {
-            //     setDeploymentTemplatesConfig(response.result);
-            //    setLoader(false);
-            // })
+              getDeploymentDiffSelector(appId, pipelineId).then((response) => {
+                setDeploymentTemplatesConfigSelector(response.result);
+               setLoader(false);
+            })
 
         } catch (err) {
             showError(err);
@@ -266,7 +266,8 @@ export default function CDDetails(){
                                 baseTemplateId={baseTemplateId}
                                 baseTimeStamp={baseTimeStamp}
                                 setBaseTemplateId= {setBaseTemplateId}
-                                deploymentTemplatesConfiguration={deploymentTemplatesConfiguration}
+                                // deploymentTemplatesConfiguration={deploymentTemplatesConfiguration}
+                                deploymentTemplatesConfigSelector={deploymentTemplatesConfigSelector}
                                 loader={loader}
                                 setLoader={setLoader}
                             />
@@ -479,7 +480,7 @@ const TriggerOutput: React.FC<{
                                     : () => cancelPrePostCdTrigger(pipelineId, triggerId)
                             }
                         />
-                        <ul className="ml-20 tab-list mr-20 tab-list--nodes">
+                        <ul className="pl-20 tab-list mr-20 tab-list--nodes border-bottom">
                             {triggerDetails.stage !== 'DEPLOY' && (
                                 <li className="tab-list__tab">
                                     <NavLink

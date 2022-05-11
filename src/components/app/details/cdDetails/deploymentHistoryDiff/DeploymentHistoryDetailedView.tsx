@@ -14,9 +14,10 @@ export default function DeploymentHistoryDetailedView({
     baseTimeStamp,
     baseTemplateId,
     setBaseTemplateId,
-    deploymentTemplatesConfiguration,
+    // deploymentTemplatesConfiguration,
     loader,
     setLoader,
+    deploymentTemplatesConfigSelector
 }: CompareViewDeploymentType) {
     const { appId, pipelineId } = useParams<{ appId: string; pipelineId: string }>()
     const [selectedDeploymentTemplate, setSelectedDeploymentTemplate] = useState<DeploymentTemplateOptions>()
@@ -28,7 +29,7 @@ export default function DeploymentHistoryDetailedView({
     useEffect(() => {
         setLoader(true)
 
-        if (deploymentTemplatesConfiguration && selectedDeploymentTemplate) {
+        if (deploymentTemplatesConfigSelector && selectedDeploymentTemplate) {
             try {
                 getDeploymentHistoryDetail(appId, pipelineId, selectedDeploymentTemplate.value, '', '').then(
                     (response) => {
@@ -46,7 +47,7 @@ export default function DeploymentHistoryDetailedView({
     useEffect(() => {
         try {
             setCodeEditorLoading(true)
-            if (deploymentTemplatesConfiguration && baseTemplateId) {
+            if (deploymentTemplatesConfigSelector && baseTemplateId) {
                 getDeploymentHistoryDetail(appId, pipelineId, baseTemplateId, '', '').then((response) => {
                     setBaseTemplateConfiguration(response.result)
                     setCodeEditorLoading(false)
@@ -70,12 +71,12 @@ export default function DeploymentHistoryDetailedView({
         }
     }, [showTemplate])
 
-    return !deploymentTemplatesConfiguration && deploymentTemplatesConfiguration.length < 1 && !loader ? (
+    return !deploymentTemplatesConfigSelector && deploymentTemplatesConfigSelector.length < 1 && !loader ? (
         <CDEmptyState />
     ) : (
         <>
             <DeploymentHistoryHeader
-                deploymentTemplatesConfiguration={deploymentTemplatesConfiguration}
+                deploymentTemplatesConfigSelector={deploymentTemplatesConfigSelector}
                 selectedDeploymentTemplate={selectedDeploymentTemplate}
                 setSelectedDeploymentTemplate={setSelectedDeploymentTemplate}
                 setShowTemplate={setShowTemplate}
