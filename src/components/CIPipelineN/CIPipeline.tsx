@@ -319,15 +319,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         })
 
         // Below code is to check if all the task name from pre-stage and post-stage is unique
-        const set = new Set()
-        for (let i = 0; i < stageNameList.length; i++) {
-            if (set.has(stageNameList[i])) {
-                return false
-            } else {
-                set.add(stageNameList[i])
-            }
-        }
-        return true
+        return stageNameList.length === new Set(stageNameList).size
     }
 
     const savePipeline = () => {
