@@ -159,7 +159,7 @@ export function generateSelectedNodes(
          * 1. Parent's length 2 is possible only if type is Pod that means click happened on child of pod node
          * 2. Parent length 1 but node is not type pod means it is a leaf node
          */
-        if (parents.length === 2 || (parents.length === 1 && _nodeLowerCase !== NodeType.Pod.toLowerCase())) {
+        if (parents.length === 2 || (parents.length === 1 && (isDevtronApp || _nodeLowerCase !== NodeType.Pod.toLowerCase()))) {
             // remove if leaf node selected previously if any
             let _childNodes = _treeNodes.flatMap((_tn) => _tn.childNodes ?? []);
             let leafNode = _childNodes.find(
@@ -209,8 +209,8 @@ export function generateSelectedNodes(
                     ),
             );
         
-            if ( _clickedNodes.length > 0 && (isDevtronApp || _nodeLowerCase !== NodeType.Pod.toLowerCase()) &&
-            _nodeTypes.some((_type) => _clickedNodes.includes(_type.toLowerCase()))
+            if ( _clickedNodes.length > 0 && (isDevtronApp || _nodeLowerCase !== NodeType.Pod.toLowerCase() &&
+            _nodeTypes.some((_type) => _clickedNodes.includes(_type.toLowerCase())))
 
             ) {
                 _clickedNodes.forEach((_node) => clickedNodes.delete(_node));
