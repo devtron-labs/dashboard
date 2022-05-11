@@ -1,28 +1,28 @@
-import { get } from '../../../../services/api';
-import { Routes } from '../../../../config';
-import { GitTriggers, CiMaterial, History } from '../cIDetails/types';
-import { ResponseType } from '../../../../services/service.types';
+import { get } from '../../../../services/api'
+import { Routes } from '../../../../config'
+import { History } from '../cIDetails/types'
+import { ResponseType } from '../../../../services/service.types'
 
 export interface DeploymentHistory {
-    id: number;
-    cd_workflow_id: number;
-    name: string;
-    status: string;
-    pod_status: string;
-    message: string;
-    started_on: string;
-    finished_on: string;
-    pipeline_id: number;
-    namespace: string;
-    log_file_path: string;
-    triggered_by: number;
-    email_id?: string;
-    image: string;
-    workflow_type?: string;
+    id: number
+    cd_workflow_id: number
+    name: string
+    status: string
+    pod_status: string
+    message: string
+    started_on: string
+    finished_on: string
+    pipeline_id: number
+    namespace: string
+    log_file_path: string
+    triggered_by: number
+    email_id?: string
+    image: string
+    workflow_type?: string
 }
 
 interface DeploymentHistoryResult extends ResponseType {
-    result?: History[];
+    result?: History[]
 }
 export async function getTriggerHistory(
     appId: number | string,
@@ -49,32 +49,40 @@ export async function getTriggerHistory(
             })),
             code,
             status,
-        };
-    });
+        }
+    })
 }
 
 interface TriggerDetails extends ResponseType {
-    result?: History;
+    result?: History
 }
 
 export function getTriggerDetails({ appId, envId, pipelineId, triggerId }): Promise<TriggerDetails> {
     if (triggerId) {
-        return get(`${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/${triggerId}`);
+        return get(`${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/${triggerId}`)
     } else {
-        return get(`${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/last`);
+        return get(`${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/last`)
     }
 }
 
 export function getCDBuildReport(appId, envId, pipelineId, workflowId) {
-    return get(`app/cd-pipeline/workflow/download/${appId}/${envId}/${pipelineId}/${workflowId}`);
+    return get(`app/cd-pipeline/workflow/download/${appId}/${envId}/${pipelineId}/${workflowId}`)
 }
 
 export function getDeploymentTemplateDiff(appId: string, pipelineId: string) {
-    return get(`app/history/template/${appId}/${pipelineId}?offset=0&size=20`);
+    return get(`app/history/template/${appId}/${pipelineId}?offset=0&size=20`)
 }
 
-export function getDeploymentTemplateDiffId(appId: string, pipelineId: string, id: string) {
-    return get(`app/history/template/${appId}/${pipelineId}/${id}`);
+export function getDeploymentHistoryDetail(
+    appId: string,
+    pipelineId: string,
+    id: string,
+    historyComponent: string,
+    historyComponentName: string,
+) {
+    return get(
+        `app/history/template/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent}&historyComponentName=${historyComponentName}`,
+    )
 }
 export interface DeploymentTemplateList {
     id: number
@@ -85,7 +93,11 @@ export interface DeploymentConfigurationsRes extends ResponseType {
     result?: DeploymentTemplateList[]
 }
 
-export const getDeploymentHistoryList = (appId: string, pipelineId: string, wfrId: string): Promise<DeploymentConfigurationsRes> => {
+export const getDeploymentHistoryList = (
+    appId: string,
+    pipelineId: string,
+    wfrId: string,
+): Promise<DeploymentConfigurationsRes> => {
     //  return get(`/history/deployed-configuration/${appId}/${pipelineId}/${wfrId}`)
 
     return Promise.resolve({
@@ -113,13 +125,13 @@ export const getDeploymentHistoryList = (appId: string, pipelineId: string, wfrI
 }
 
 export interface HistoryDiffSelectorList {
-        id: number,
-        deployedOn: string,
-        deployedBy: string,
-        deploymentStatus: string
+    id: number
+    deployedOn: string
+    deployedBy: string
+    deploymentStatus: string
 }
-export interface HistoryDiffSelectorRes{
-     result?:HistoryDiffSelectorList[]
+export interface HistoryDiffSelectorRes {
+    result?: HistoryDiffSelectorList[]
 }
 
 export const getDeploymentDiffSelector = (appId: string, pipelineId: string): Promise<HistoryDiffSelectorRes> => {
@@ -128,30 +140,28 @@ export const getDeploymentDiffSelector = (appId: string, pipelineId: string): Pr
         result: [
             {
                 id: 0,
-                deployedOn: "2022-04-28T09:23:33.855684Z",
-                deployedBy: "admin",
-                deploymentStatus: "healthy"
+                deployedOn: '2022-04-28T09:23:33.855684Z',
+                deployedBy: 'admin',
+                deploymentStatus: 'healthy',
             },
             {
                 id: 1,
-                deployedOn: "2022-04-28T09:23:33.855684Z",
-                deployedBy: "shivani@devtron.ai",
-                deploymentStatus: "failed"
+                deployedOn: '2022-04-28T09:23:33.855684Z',
+                deployedBy: 'shivani@devtron.ai',
+                deploymentStatus: 'failed',
             },
             {
                 id: 2,
-                deployedOn: "2022-04-28T09:43:02.621323Z",
-                deployedBy: "admin",
-                deploymentStatus: "progressing"
+                deployedOn: '2022-04-28T09:43:02.621323Z',
+                deployedBy: 'admin',
+                deploymentStatus: 'progressing',
             },
             {
                 id: 3,
-                deployedOn: "Tue, 8 Apr 2022, 03:13 PM",
-                deployedBy: "shivani@devtron.ai",
-                deploymentStatus: "healthy"
+                deployedOn: 'Tue, 8 Apr 2022, 03:13 PM',
+                deployedBy: 'shivani@devtron.ai',
+                deploymentStatus: 'healthy',
             },
-
-        ]
+        ],
     })
-
 }

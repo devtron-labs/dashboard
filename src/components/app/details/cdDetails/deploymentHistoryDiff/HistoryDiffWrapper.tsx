@@ -1,12 +1,16 @@
-import React from 'react';
-import { Progressing } from '../../../../common';
-import { DeploymentTemplateHistoryType } from '../cd.type';
-import '../cdDetail.scss';
-import DeploymentHistoryRightDiffView from './DeploymentHistoryRightDiffView';
-import DeploymentHistorySidebar from './DeploymentHistorySidebar';
+import React from 'react'
+import { Progressing } from '../../../../common'
+import { DeploymentTemplateHistoryType } from '../cd.type'
+import '../cdDetail.scss'
+import DeploymentHistoryDiffView from './DeploymentHistoryDiffView'
+import DeploymentHistorySidebar from './DeploymentHistorySidebar'
 
-function HistoryDiff({ currentConfiguration, loader, codeEditorLoading, baseTemplateConfiguration }: DeploymentTemplateHistoryType) {
-
+function HistoryDiff({
+    currentConfiguration,
+    loader,
+    codeEditorLoading,
+    baseTemplateConfiguration,
+}: DeploymentTemplateHistoryType) {
     return (
         <div className="">
             {loader ? (
@@ -14,7 +18,7 @@ function HistoryDiff({ currentConfiguration, loader, codeEditorLoading, baseTemp
             ) : (
                 <div className="historical-diff__container bcn-1">
                     <DeploymentHistorySidebar />
-                    <DeploymentHistoryRightDiffView
+                    <DeploymentHistoryDiffView
                         currentConfiguration={currentConfiguration}
                         baseTemplateConfiguration={baseTemplateConfiguration}
                         codeEditorLoading={codeEditorLoading}
@@ -22,7 +26,7 @@ function HistoryDiff({ currentConfiguration, loader, codeEditorLoading, baseTemp
                 </div>
             )}
         </div>
-    );
+    )
 }
 
-export default HistoryDiff;
+export default HistoryDiff

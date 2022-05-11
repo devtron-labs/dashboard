@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { showError, sortCallback } from '../../../../common'
+import { Progressing, showError } from '../../../../common'
 import CompareWithBaseConfig from './CompareWithBaseConfig'
-import HistoryDiff from './HistoryDiffWrapper'
-import { getDeploymentDiffSelector, getDeploymentTemplateDiff, getDeploymentTemplateDiffId } from '../service'
+import { getDeploymentHistoryDetail } from '../service'
 import { useParams } from 'react-router'
-import {
-    DeploymentTemplateOptions,
-    CompareViewDeploymentType,
-    DeploymentTemplateConfiguration,
-    DeploymentTemplateViaTargetId,
-} from '../cd.type'
+import { DeploymentTemplateOptions, CompareViewDeploymentType, DeploymentTemplateViaTargetId } from '../cd.type'
 import CDEmptyState from '../CDEmptyState'
+import DeploymentHistorySidebar from './DeploymentHistorySidebar'
+import DeploymentHistoryDiffView from './DeploymentHistoryDiffView'
 
-function DeploymentHistoryDetailedView({
+export default function DeploymentHistoryDetailedView({
     showTemplate,
     setShowTemplate,
     baseTimeStamp,
@@ -23,7 +19,7 @@ function DeploymentHistoryDetailedView({
     setLoader,
 }: CompareViewDeploymentType) {
     const { appId, pipelineId } = useParams<{ appId: string; pipelineId: string }>()
-    const [selectedDeploymentTemplate, setSeletedDeploymentTemplate] = useState<DeploymentTemplateOptions>()
+    const [selectedDeploymentTemplate, setSelectedDeploymentTemplate] = useState<DeploymentTemplateOptions>()
     const [currentConfiguration, setCurrentConfiguration] = useState<DeploymentTemplateViaTargetId>()
     const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentTemplateViaTargetId>()
 
@@ -34,10 +30,12 @@ function DeploymentHistoryDetailedView({
 
         if (deploymentTemplatesConfiguration && selectedDeploymentTemplate) {
             try {
-                getDeploymentTemplateDiffId(appId, pipelineId, selectedDeploymentTemplate.value).then((response) => {
-                    setCurrentConfiguration(response?.result)
-                    setLoader(false)
-                })
+                getDeploymentHistoryDetail(appId, pipelineId, selectedDeploymentTemplate.value, '', '').then(
+                    (response) => {
+                        setCurrentConfiguration(response?.result)
+                        setLoader(false)
+                    },
+                )
             } catch (err) {
                 showError(err)
                 setLoader(false)
@@ -49,7 +47,7 @@ function DeploymentHistoryDetailedView({
         try {
             setCodeEditorLoading(true)
             if (deploymentTemplatesConfiguration && baseTemplateId) {
-                getDeploymentTemplateDiffId(appId, pipelineId, baseTemplateId).then((response) => {
+                getDeploymentHistoryDetail(appId, pipelineId, baseTemplateId, '', '').then((response) => {
                     setBaseTemplateConfiguration(response.result)
                     setCodeEditorLoading(false)
                 })
@@ -67,10 +65,10 @@ function DeploymentHistoryDetailedView({
 
         return (): void => {
             if (showTemplate) {
-              setShowTemplate(false);
+                setShowTemplate(false)
             }
         }
-    },[showTemplate])
+    }, [showTemplate])
 
     return !deploymentTemplatesConfiguration && deploymentTemplatesConfiguration.length < 1 && !loader ? (
         <CDEmptyState />
@@ -79,20 +77,24 @@ function DeploymentHistoryDetailedView({
             <CompareWithBaseConfig
                 deploymentTemplatesConfiguration={deploymentTemplatesConfiguration}
                 selectedDeploymentTemplate={selectedDeploymentTemplate}
-                setSeletedDeploymentTemplate={setSeletedDeploymentTemplate}
+                setSelectedDeploymentTemplate={setSelectedDeploymentTemplate}
                 setShowTemplate={setShowTemplate}
                 setBaseTemplateId={setBaseTemplateId}
                 baseTemplateId={baseTemplateId}
                 baseTimeStamp={baseTimeStamp}
             />
-            <HistoryDiff
-                currentConfiguration={currentConfiguration}
-                loader={loader}
-                codeEditorLoading={codeEditorLoading}
-                baseTemplateConfiguration={baseTemplateConfiguration}
-            />
+            {loader ? (
+                <Progressing pageLoader />
+            ) : (
+                <div className="historical-diff__container bcn-1">
+                    <DeploymentHistorySidebar />
+                    <DeploymentHistoryDiffView
+                        currentConfiguration={currentConfiguration}
+                        baseTemplateConfiguration={baseTemplateConfiguration}
+                        codeEditorLoading={codeEditorLoading}
+                    />
+                </div>
+            )}
         </>
     )
 }
-
-export default DeploymentHistoryDetailedView

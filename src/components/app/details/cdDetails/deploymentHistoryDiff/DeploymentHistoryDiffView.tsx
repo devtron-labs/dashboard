@@ -1,10 +1,10 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import { DeploymentTemplateHistoryType } from '../cd.type'
 import YAML from 'yaml'
 import { Progressing } from '../../../../common'
 
-export default function DeploymentHistoryRightDiffView({
+export default function DeploymentHistoryDiffView({
     currentConfiguration,
     baseTemplateConfiguration,
     codeEditorLoading,

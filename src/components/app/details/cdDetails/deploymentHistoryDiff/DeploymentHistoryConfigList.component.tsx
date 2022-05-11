@@ -13,7 +13,7 @@ interface TemplateConfiguration {
     baseTimeStamp: string
 }
 
-function DeploymentTemplateWrapper({
+export default function DeploymentTemplateWrapper({
     setShowTemplate,
     deploymentTemplatesConfiguration,
     setBaseTimeStamp,
@@ -41,24 +41,16 @@ function DeploymentTemplateWrapper({
                                 setShowTemplate(true)
                                 setBaseTimeStamp(baseTimeStamp)
                             }}
-                            className="bcb-1 no-decor bcn-0 cn-9 pl-16 pr-16 pt-12 pb-12 br-4 en-2 bw-1 mb-20 flex content-space cursor"
+                            className="bcb-1 no-decor bcn-0 cn-9 pl-16 pr-16 pt-9 pb-9 br-4 en-2 bw-1 mb-20 flex content-space cursor"
                         >
                             {li.label}
-                            <span>
-                                <RightArrow
-                                    className="rotate icon-dim-20"
-                                    style={{ ['--rotateBy' as any]: '180deg' }}
-                                />
-                            </span>
+                            <RightArrow className="rotate icon-dim-20" style={{ ['--rotateBy' as any]: '180deg' }} />
                         </NavLink>
                     </div>
                 )
-            }
-            )}
+            })}
         </>
     ) : (
         <CDEmptyState />
     )
 }
-
-export default DeploymentTemplateWrapper
