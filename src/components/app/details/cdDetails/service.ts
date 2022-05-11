@@ -2,7 +2,7 @@ import { get } from '../../../../services/api'
 import { Routes } from '../../../../config'
 import { History } from '../cIDetails/types'
 import { ResponseType } from '../../../../services/service.types'
-import { DeploymentTemplateList, HistoryDiffSelectorList } from './cd.type'
+import { DeploymentTemplateList, HistoryDiffSelectorList, DeploymentHistoryDetail } from './cd.type'
 
 export interface DeploymentHistory {
     id: number
@@ -73,17 +73,83 @@ export function getCDBuildReport(appId, envId, pipelineId, workflowId) {
 export function getDeploymentTemplateDiff(appId: string, pipelineId: string) {
     return get(`app/history/template/${appId}/${pipelineId}?offset=0&size=20`)
 }
+export interface DeploymentHistoryDetailRes extends ResponseType {
+    result?: DeploymentHistoryDetail
+}
 
-export function getDeploymentHistoryDetail(
+const deploymentHistoryMockMap = (historyComponent: string, historyComponentName: string): DeploymentHistoryDetail => {
+    if (Math.floor(Math.random() * 2) + 1 === 1) {
+        return {
+            values: {
+                stage_to_trigger: {
+                    displayName: `When do you want this stage to trigger?-${historyComponent}-${historyComponentName}`,
+                    value: `Automatic-${new Date().getTime()}`,
+                },
+                secret_execute: {
+                    displayName: `Secrets used to execute script-${historyComponent}-${historyComponentName}`,
+                    value: `configmap-1`,
+                },
+                execute_script: {
+                    displayName: `Secrets used to execute script-${historyComponent}-${historyComponentName}`,
+                },
+                execute_env: {
+                    displayName: `Execute in application environment-${historyComponent}-${historyComponentName}`,
+                    value: `No-${new Date().getTime()}`,
+                },
+                test_string: {
+                    displayName: 'this is a test string',
+                    value: 'test1',
+                },
+            },
+            codeEditorValue: {
+                displayName: `Script-${historyComponent}-${historyComponentName}`,
+                value: `{"ContainerPort":[{"envoyPort":8799,"idleTimeout":"1800s","name":"app","port":8080,"servicePort":80,"supportStreaming":false,"useHTTP2":false}]}`,
+            },
+        }
+    } else {
+        return {
+            values: {
+                stage_to_trigger: {
+                    displayName: `When do you want this stage to trigger?-${historyComponent}-${historyComponentName}`,
+                    value: `Automatic`,
+                },
+                secret_execute: {
+                    displayName: `Secrets used to execute script-${historyComponent}-${historyComponentName}`,
+                    value: `configmap-1`,
+                },
+                execute_script: {
+                    displayName: `Secrets used to execute script-${historyComponent}-${historyComponentName}`,
+                    value: `secret-is-the-key-${new Date().getTime()}`,
+                },
+                execute_env: {
+                    displayName: `Execute in application environment-${historyComponent}-${historyComponentName}`,
+                },
+                test_number: {
+                    displayName: 'this is a test Number',
+                    value: 123,
+                },
+            },
+            codeEditorValue: {
+                displayName: `Script-${historyComponent}-${historyComponentName}`,
+                value: `{"ContainerPort":[{"envoyPort":87399,"idleTimeout":"1800s","name":"app","port":808023,"servicePort":80,"supportStreaming":true,"useHTTP2":false}]}`,
+            },
+        }
+    }
+}
+
+export const getDeploymentHistoryDetail = (
     appId: string,
     pipelineId: string,
     id: string,
     historyComponent: string,
     historyComponentName: string,
-) {
-    return get(
-        `app/history/template/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent}&historyComponentName=${historyComponentName}`,
-    )
+): Promise<DeploymentHistoryDetailRes> => {
+    // return get(
+    //     `app/history/template/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent}&historyComponentName=${historyComponentName}`,
+    // )
+    return Promise.resolve({
+        result: { ...deploymentHistoryMockMap('test', 'test1') },
+    } as DeploymentHistoryDetailRes)
 }
 export interface DeploymentConfigurationsRes extends ResponseType {
     result?: DeploymentTemplateList[]

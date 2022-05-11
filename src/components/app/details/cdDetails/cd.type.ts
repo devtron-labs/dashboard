@@ -13,15 +13,13 @@ export interface DeploymentTemplateConfiguration extends DeploymentTemplateCommo
     wfrId: number
     workflowType: string
 }
-export interface DeploymentTemplateViaTargetId extends DeploymentTemplateCommon {
-    imageDescriptorTemplate: string
-    template: string
-    templateName: string
-    templateVersion: string
+export interface DeploymentHistoryDetail {
+    values: object
+    codeEditorValue: object
 }
 export interface DeploymentTemplateHistoryType {
-    currentConfiguration: DeploymentTemplateViaTargetId
-    baseTemplateConfiguration: DeploymentTemplateViaTargetId
+    currentConfiguration: DeploymentHistoryDetail
+    baseTemplateConfiguration: DeploymentHistoryDetail
     codeEditorLoading: boolean
     loader?: boolean
 }

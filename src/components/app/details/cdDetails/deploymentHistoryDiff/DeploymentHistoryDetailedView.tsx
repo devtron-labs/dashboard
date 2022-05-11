@@ -3,7 +3,7 @@ import { Progressing, showError } from '../../../../common'
 import DeploymentHistoryHeader from './DeploymentHistoryHeader'
 import { getDeploymentHistoryDetail } from '../service'
 import { useParams } from 'react-router'
-import { DeploymentTemplateOptions, CompareViewDeploymentType, DeploymentTemplateViaTargetId } from '../cd.type'
+import { DeploymentTemplateOptions, CompareViewDeploymentType, DeploymentHistoryDetail } from '../cd.type'
 import CDEmptyState from '../CDEmptyState'
 import DeploymentHistorySidebar from './DeploymentHistorySidebar'
 import DeploymentHistoryDiffView from './DeploymentHistoryDiffView'
@@ -21,8 +21,8 @@ export default function DeploymentHistoryDetailedView({
 }: CompareViewDeploymentType) {
     const { appId, pipelineId } = useParams<{ appId: string; pipelineId: string }>()
     const [selectedDeploymentTemplate, setSelectedDeploymentTemplate] = useState<DeploymentTemplateOptions>()
-    const [currentConfiguration, setCurrentConfiguration] = useState<DeploymentTemplateViaTargetId>()
-    const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentTemplateViaTargetId>()
+    const [currentConfiguration, setCurrentConfiguration] = useState<DeploymentHistoryDetail>()
+    const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentHistoryDetail>()
 
     const [codeEditorLoading, setCodeEditorLoading] = useState<boolean>(false)
 
