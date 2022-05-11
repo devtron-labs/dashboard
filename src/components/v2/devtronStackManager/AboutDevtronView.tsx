@@ -112,7 +112,7 @@ function AboutDevtronView({
                 </div>
                 {serverInfo && (
                     <InstallationWrapper
-                        installationStatus={serverInfo?.status}
+                        installationStatus={serverInfo.status}
                         canViewLogs={canViewLogs}
                         logPodName={logPodName}
                         isUpgradeView={true}
