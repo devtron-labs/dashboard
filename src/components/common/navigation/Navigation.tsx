@@ -357,7 +357,9 @@ export default class Navigation extends Component<
                                 <div
                                     className="short-nav--flex"
                                     onClick={() => {
-                                        this.props.getCurrentServerInfo('navigation')
+                                        if (this.props.serverInfo?.installationType === InstallationType.OSS_HELM) {
+                                            this.props.getCurrentServerInfo('navigation')
+                                        }
                                         this.toggleHelpCard()
                                     }}
                                 >
