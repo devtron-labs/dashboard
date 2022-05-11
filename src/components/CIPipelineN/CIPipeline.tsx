@@ -317,6 +317,8 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             }
             return taskData.name
         })
+
+        // Below code is to check if all the task name from pre-stage and post-stage is unique
         const set = new Set()
         for (let i = 0; i < stageNameList.length; i++) {
             if (set.has(stageNameList[i])) {
@@ -524,18 +526,13 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
             _formData[activeStageName].steps = []
         }
         const stepsLength = _formData[activeStageName].steps?.length
-        //let index = 1
         let _outputVariablesFromPrevSteps: Map<string, VariableType> = new Map(),
             _inputVariablesListPerTask: Map<string, VariableType>[] = []
-        let i = 0
-        for (; i < stepsLength; i++) {
+        for (let i = 0; i < stepsLength; i++) {
             if (!_formDataErrorObj[activeStageName].steps[i])
                 _formDataErrorObj[activeStageName].steps.push({ isValid: true })
             _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
             _formData[activeStageName].steps[i].index = i + 1
-            // if (index <= _formData[activeStageName].steps[i].index) {
-            //     index = _formData[activeStageName].steps[i].index
-            // }
             if (!_formData[activeStageName].steps[i].stepType) {
                 continue
             }
@@ -615,7 +612,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
         _inputVariablesListFromPrevStep[activeStageName] = _inputVariablesListPerTask
         setInputVariablesListFromPrevStep(_inputVariablesListFromPrevStep)
         setFormDataErrorObj(_formDataErrorObj)
-        return { index: i + 1, calculatedStageVariables: _inputVariablesListPerTask }
+        return { index: stepsLength + 1, calculatedStageVariables: _inputVariablesListPerTask }
     }
 
     const addNewTask = () => {
