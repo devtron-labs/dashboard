@@ -2,16 +2,15 @@ import React, { useEffect } from 'react'
 import AboutDevtron from '../../../assets/img/about-devtron@2x.png'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import { InstallationWrapper } from './DevtronStackManager.component'
-import { AboutDevtronViewType } from './DevtronStackManager.type'
+import { AboutDevtronViewType, InstallationType } from './DevtronStackManager.type'
 import './AboutDevtronView.scss'
-import { NavLink, RouteComponentProps, useLocation } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { URLS } from '../../../config'
 
 function AboutDevtronView({
     parentRef,
     releaseNotes,
     serverInfo,
-    setShowManagedByDialog,
     canViewLogs,
     logPodName,
     handleTabChange,
@@ -98,10 +97,13 @@ function AboutDevtronView({
     return (
         <div className="about-devtron__view-container flex column left top">
             <img className="about-devtron__view-image" src={AboutDevtron} alt="About Devtron" />
-            <div className="about-devtron__view-wrapper">
+            <div className="about-devtron__view-wrapper mt-24">
                 <div className="about-devtron__details">
                     <h2 className="about-devtron__view-heading cn-9 fs-20 fw-6">
-                        Devtron {serverInfo?.currentVersion ? `(${serverInfo.currentVersion.toLowerCase()})` : ''}
+                        Devtron
+                        {serverInfo?.currentVersion && serverInfo.installationType === InstallationType.OSS_HELM
+                            ? ` (${serverInfo.currentVersion.toLowerCase()})`
+                            : ''}
                     </h2>
                     <div className="about-devtron__view-tabs w-100">
                         {renderTabs()}
@@ -110,13 +112,12 @@ function AboutDevtronView({
                 </div>
                 {serverInfo && (
                     <InstallationWrapper
-                        installationStatus={serverInfo.status}
+                        installationStatus={serverInfo?.status}
                         canViewLogs={canViewLogs}
                         logPodName={logPodName}
                         isUpgradeView={true}
                         serverInfo={serverInfo}
                         upgradeVersion={releaseNotes[0]?.releaseName}
-                        setShowManagedByDialog={setShowManagedByDialog}
                         isActionTriggered={isActionTriggered}
                         updateActionTrigger={(isActionTriggered) =>
                             handleActionTrigger('serverAction', isActionTriggered)

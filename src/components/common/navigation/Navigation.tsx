@@ -20,7 +20,7 @@ import { getRandomColor } from '../helpers/Helpers'
 import NavSprite from '../../../assets/icons/navigation-sprite.svg'
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg'
 import { Command, CommandErrorBoundary } from '../../command'
-import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { InstallationType, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import ReactGA from 'react-ga'
 import './navigation.scss'
 
@@ -193,7 +193,11 @@ export default class Navigation extends Component<
     renderHelpCard() {
         return ReactDOM.createPortal(
             <div className="transparent-div" onClick={this.toggleHelpCard}>
-                <div className={`help-card pt-4 ${window._env_?.HIDE_DISCORD ? 'sticky__bottom-option' : ''}`}>
+                <div
+                    className={`help-card pt-4 ${
+                        this.props.serverInfo?.installationType !== InstallationType.OSS_HELM ? 'pb-4' : ''
+                    } ${window._env_?.HIDE_DISCORD ? 'sticky__bottom-option' : ''}`}
+                >
                     {HelpOptions.map((option) => {
                         return (
                             <Fragment key={option.name}>
@@ -219,15 +223,17 @@ export default class Navigation extends Component<
                             </Fragment>
                         )
                     })}
-                    <div className="help-card__update-option fs-11 fw-6 mt-4">
-                        {this.props.fetchingServerInfo ? (
-                            <span className="loading-dots">Checking current version</span>
-                        ) : (
-                            <span>Devtron {this.props.serverInfo?.currentVersion || ''}</span>
-                        )}
-                        <br />
-                        <NavLink to={URLS.STACK_MANAGER_ABOUT}>Check for Updates</NavLink>
-                    </div>
+                    {this.props.serverInfo?.installationType === InstallationType.OSS_HELM && (
+                        <div className="help-card__update-option fs-11 fw-6 mt-4">
+                            {this.props.fetchingServerInfo ? (
+                                <span className="loading-dots">Checking current version</span>
+                            ) : (
+                                <span>Devtron {this.props.serverInfo?.currentVersion || ''}</span>
+                            )}
+                            <br />
+                            <NavLink to={URLS.STACK_MANAGER_ABOUT}>Check for Updates</NavLink>
+                        </div>
+                    )}
                 </div>
             </div>,
             document.getElementById('root'),
@@ -334,7 +340,11 @@ export default class Navigation extends Component<
                         })}
                         <div className="short-nav__divider" />
                         {this.renderNavLink(NavigationStack, 'short-nav__stack-manager')}
-                        <div className={`short-nav__bottom-options ${window._env_?.HIDE_DISCORD ? 'sticky__bottom-options' : ''}`}>
+                        <div
+                            className={`short-nav__bottom-options ${
+                                window._env_?.HIDE_DISCORD ? 'sticky__bottom-options' : ''
+                            }`}
+                        >
                             <div
                                 className="nav-short-help cursor"
                                 onClick={(event) => {
@@ -344,10 +354,13 @@ export default class Navigation extends Component<
                                     })
                                 }}
                             >
-                                <div className="short-nav--flex" onClick={() => {
-                                    this.props.getCurrentServerInfo('navigation')
-                                    this.toggleHelpCard()
-                                }}>
+                                <div
+                                    className="short-nav--flex"
+                                    onClick={() => {
+                                        this.props.getCurrentServerInfo('navigation')
+                                        this.toggleHelpCard()
+                                    }}
+                                >
                                     <div className="short-nav__icon-container icon-dim-40 flex">
                                         <Help className="help-option-icon icon-dim-24" />
                                     </div>

@@ -5,7 +5,6 @@ import { ErrorBoundary, ErrorScreenManager, Progressing, showError, useInterval 
 import AboutDevtronView from './AboutDevtronView'
 import {
     handleError,
-    ManagedByDialog,
     ModuleDetailsView,
     ModulesListingView,
     NavItem,
@@ -14,6 +13,7 @@ import {
 import { getAllModules, getLogPodName, getModuleInfo, getReleasesNotes } from './DevtronStackManager.service'
 import {
     AllModuleInfoResponse,
+    InstallationType,
     LogPodNameResponse,
     ModuleDetails,
     ModuleInfo,
@@ -35,7 +35,6 @@ export default function DevtronStackManager({
     const { serverMode } = useContext(mainContext)
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
-    const [showManagedByDialog, setShowManagedByDialog] = useState(false)
     const [stackDetails, setStackDetails] = useState<StackDetailsType>({
         isLoading: false,
         discoverModulesList: [],
@@ -59,12 +58,18 @@ export default function DevtronStackManager({
         getModuleDetails()
     }, [])
 
-    // Activate polling for latest server info, module details & logPodName only on stack manager page.
-    useInterval(() => {
-        getCurrentServerInfo()
-        _getDetailsForAllModules(stackDetails.discoverModulesList, stackDetails)
-        _getLogPodName()
-    }, 30000)
+    /**
+     * Activate polling for latest server info, module details & logPodName
+     * only on stack manager page & only when installationType is OSS_HELM.
+     */
+    useInterval(
+        () => {
+            getCurrentServerInfo()
+            _getDetailsForAllModules(stackDetails.discoverModulesList, stackDetails)
+            _getLogPodName()
+        },
+        serverInfo?.installationType === InstallationType.OSS_HELM ? 30000 : null,
+    )
 
     /**
      * To reset detailsMode when switching to "About devtron" using "Help option" (side nav)
@@ -212,7 +217,7 @@ export default function DevtronStackManager({
                 setStackDetails(_stackDetails)
             })
             .catch((e) => {
-                console.error('Error in fetching some modules details')
+                console.error('Error in fetching some integrations details')
             })
     }
 
@@ -308,7 +313,6 @@ export default function DevtronStackManager({
                     <ModuleDetailsView
                         moduleDetails={selectedModule}
                         setDetailsMode={setDetailsMode}
-                        setShowManagedByDialog={setShowManagedByDialog}
                         serverInfo={serverInfo}
                         upgradeVersion={stackDetails.releaseNotes[0]?.releaseName}
                         logPodName={logPodName}
@@ -323,7 +327,6 @@ export default function DevtronStackManager({
                     <ModuleDetailsView
                         moduleDetails={selectedModule}
                         setDetailsMode={setDetailsMode}
-                        setShowManagedByDialog={setShowManagedByDialog}
                         serverInfo={serverInfo}
                         upgradeVersion={stackDetails.releaseNotes[0]?.releaseName}
                         logPodName={logPodName}
@@ -351,7 +354,6 @@ export default function DevtronStackManager({
                         parentRef={stackManagerRef}
                         releaseNotes={stackDetails.releaseNotes}
                         serverInfo={serverInfo}
-                        setShowManagedByDialog={setShowManagedByDialog}
                         canViewLogs={serverMode === SERVER_MODE.FULL}
                         logPodName={logPodName}
                         selectedTabIndex={selectedTabIndex}
@@ -365,7 +367,6 @@ export default function DevtronStackManager({
                         parentRef={stackManagerRef}
                         releaseNotes={stackDetails.releaseNotes}
                         serverInfo={serverInfo}
-                        setShowManagedByDialog={setShowManagedByDialog}
                         canViewLogs={serverMode === SERVER_MODE.FULL}
                         logPodName={logPodName}
                         selectedTabIndex={selectedTabIndex}
@@ -410,6 +411,10 @@ export default function DevtronStackManager({
                                 newVersion={stackDetails.releaseNotes[0]?.releaseName}
                                 handleTabChange={handleTabChange}
                                 showInitializing={!logPodName && serverMode === SERVER_MODE.FULL}
+                                showVersionInfo={
+                                    serverInfo?.currentVersion &&
+                                    serverInfo.installationType === InstallationType.OSS_HELM
+                                }
                             />
                         </section>
                     )}
@@ -424,7 +429,6 @@ export default function DevtronStackManager({
                             </ErrorBoundary>
                         </Suspense>
                     </section>
-                    {showManagedByDialog && <ManagedByDialog setShowManagedByDialog={setShowManagedByDialog} />}
                 </Router>
             )}
         </main>
