@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { Progressing, showError } from '../../../../common'
 import DeploymentHistoryHeader from './DeploymentHistoryHeader'
 import { getDeploymentHistoryDetail } from '../service'
-import { Route, Switch, useParams } from 'react-router'
+import { useParams } from 'react-router'
 import { DeploymentTemplateOptions, CompareViewDeploymentType, DeploymentHistoryDetail } from '../cd.type'
 import CDEmptyState from '../CDEmptyState'
 import DeploymentHistorySidebar from './DeploymentHistorySidebar'
 import DeploymentHistoryDiffView from './DeploymentHistoryDiffView'
-import path from 'path'
 
 export default function DeploymentHistoryDetailedView({
     showTemplate,
@@ -91,18 +90,15 @@ export default function DeploymentHistoryDetailedView({
                 <Progressing pageLoader />
             ) : (
                 <div className="historical-diff__container bcn-1">
-                    <DeploymentHistorySidebar deploymentHistoryList={deploymentHistoryList} />
-                    <Switch>
-                        <Route
-                            path={`${path}/configuration/:configurationType/:configurationId(\\d+)/:configurationName?`}
-                        >
-                            <DeploymentHistoryDiffView
-                                currentConfiguration={currentConfiguration}
-                                baseTemplateConfiguration={baseTemplateConfiguration}
-                                codeEditorLoading={codeEditorLoading}
-                            />
-                        </Route>
-                    </Switch>
+                    <DeploymentHistorySidebar
+                        deploymentHistoryList={deploymentHistoryList}
+                        setDepolymentHistoryList={setDepolymentHistoryList}
+                    />
+                    <DeploymentHistoryDiffView
+                        currentConfiguration={currentConfiguration}
+                        baseTemplateConfiguration={baseTemplateConfiguration}
+                        codeEditorLoading={codeEditorLoading}
+                    />
                 </div>
             )}
         </>

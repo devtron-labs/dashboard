@@ -1,19 +1,30 @@
-import React, { useEffect } from 'react'
-import { NavLink, useRouteMatch } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { NavLink, useRouteMatch, useParams } from 'react-router-dom'
+import { URLS } from '../../../../../config'
 import { DeploymentTemplateList } from '../cd.type'
-import { DEPLOYMENT_HISTORY_LINK_MAP, DEPLOYMENT_HISTORY_LIST } from './constants'
+import { getDeploymentHistoryList } from '../service'
 
 export interface DeploymentHistorySidebar {
     deploymentHistoryList: DeploymentTemplateList[]
+    setDepolymentHistoryList
 }
 
-function DeploymentHistorySidebar({ deploymentHistoryList }: DeploymentHistorySidebar) {
+function DeploymentHistorySidebar({ deploymentHistoryList, setDepolymentHistoryList }: DeploymentHistorySidebar) {
     const match = useRouteMatch()
+    const { appId, pipelineId, triggerId } = useParams<{ appId: string; pipelineId: string; triggerId: string }>()
+    useEffect(() => {
+        if (!deploymentHistoryList) {
+            getDeploymentHistoryList(appId, pipelineId, triggerId).then((response) => {
+                setDepolymentHistoryList(response.result)
+            })
+        }
+    }, [deploymentHistoryList])
     return (
         <div className="bcn-0">
             {deploymentHistoryList?.map((elm, index) => {
-                console.log(elm)
-                const newURL =  `${match.url}/${elm.name}/${elm.id}`
+                const newURL = `${match.url.split(URLS.DEPLOYMENT_HISTORY)[0]}${URLS.DEPLOYMENT_HISTORY}/${elm.name}/${
+                    elm.id
+                }`
 
                 return elm.childList?.length > 1 ? (
                     elm.childList.map((el) => {

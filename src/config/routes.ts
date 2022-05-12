@@ -64,6 +64,7 @@ export const URLS = {
     STACK_MANAGER_INSTALLED_MODULES_DETAILS: '/stack-manager/installed/details',
     STACK_MANAGER_ABOUT: '/stack-manager/about',
     STACK_MANAGER_ABOUT_RELEASES: '/stack-manager/about/releases',
+    DEPLOYMENT_HISTORY: '/configuration',
 }
 
 export enum APP_COMPOSE_STAGE {
