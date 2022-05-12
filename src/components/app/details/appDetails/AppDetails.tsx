@@ -171,7 +171,7 @@ export const Details: React.FC<{
         //     //@ts-ignore
         //     prefix = `${location.protocol}//${location.host}`;
     //}
-
+    const isExternalToolAvailable: boolean = externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
     const interval = 30000;
     const appDetails = appDetailsResult?.result;
     const syncSSE = useEventSource(
@@ -334,10 +334,11 @@ export const Details: React.FC<{
                 severityCount={lastExecutionDetail.severityCount}
                 onClick={() => { toggleScanDetailsModal(true) }} />
             {environment && <AppMetrics appName={appDetails.appName}
+                addExtraSpace={!isExternalToolAvailable}
                 environment={environment}
                 podMap={aggregatedNodes.nodes.Pod}
                 k8sVersion={appDetails.k8sVersion} />}
-            {externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0 && (
+            {isExternalToolAvailable && (
                 <AppLevelExternalLinks
                     appDetails={appDetails}
                     externalLinks={externalLinksAndTools.externalLinks as ExternalLink[]}
