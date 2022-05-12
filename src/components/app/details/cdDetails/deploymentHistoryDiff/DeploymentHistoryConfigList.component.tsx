@@ -23,40 +23,34 @@ export default function DeploymentHistoryConfigList({
     setBaseTimeStamp,
     baseTimeStamp,
     deploymentHistoryList,
-    setDepolymentHistoryList
+    setDepolymentHistoryList,
 }: TemplateConfiguration) {
     const match = useRouteMatch()
     const { appId, pipelineId, triggerId } = useParams<{ appId: string; pipelineId: string; triggerId: string }>()
-    const deploymentTemplateFilteredTrigger = deploymentTemplatesConfiguration?.find(
-        (dt) => dt.wfrId.toString() === triggerId,
-    )
-    const isLastDeploymentTemplatesConfiguration =
-        deploymentTemplatesConfiguration &&
-        deploymentTemplatesConfiguration.length > 0 &&
-        deploymentTemplatesConfiguration[deploymentTemplatesConfiguration.length - 1]?.wfrId.toString() === triggerId
 
-        useEffect(() => {
-            getDeploymentHistoryList(appId, pipelineId, triggerId).then((response) => {
-                setDepolymentHistoryList(response.result)
-            })
-        }, [triggerId])
+    useEffect(() => {
+        getDeploymentHistoryList(appId, pipelineId, triggerId).then((response) => {
+            setDepolymentHistoryList(response.result)
+        })
+    }, [triggerId])
 
-    return deploymentTemplateFilteredTrigger && !isLastDeploymentTemplatesConfiguration ? (
+    return (
         <>
             {deploymentHistoryList &&
                 deploymentHistoryList.map((li, index) => {
-
                     // const newURL =  match.url.includes(li.name) ? match.url : `${match.url}/${li.name}/${li.id}`
                     const newURL = `${match.url}/${li.name}/${li.id}`
 
-                     return (
+                    return (
                         <div className="m-20 fs-13 cn-9" key={`history-list__${index}`}>
-                            <div className="fs-14 fw-6 mb-12 ">{li.childList?.length > 0 && li.name.replace('-', '').toUpperCase()}</div>
+                            <div className="fs-14 fw-6 mb-12 ">
+                                {li.childList?.length > 0 && li.name.replace('-', '').toUpperCase()}
+                            </div>
                             {li.childList?.length > 1 ? (
                                 li.childList.map((el, index) => {
                                     return (
                                         <NavLink
-                                           key={`config-childlist-${index}`}
+                                            key={`config-childlist-${index}`}
                                             to={`${newURL}/${el}`}
                                             activeClassName="active"
                                             onClick={() => {
@@ -94,7 +88,8 @@ export default function DeploymentHistoryConfigList({
                     )
                 })}
         </>
-    ) : (
-        <CDEmptyState />
     )
+    //  : (
+    //     <CDEmptyState />
+    // )
 }

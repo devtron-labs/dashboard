@@ -5,26 +5,44 @@ import { NavLink } from 'react-router-dom'
 import moment from 'moment'
 import { Moment12HourFormat } from '../../../../../config'
 import { ReactComponent as LeftIcon } from '../../../../../assets/icons/ic-arrow-forward.svg'
-import { CompareWithBaseConfiguration, DeploymentTemplateList, DeploymentTemplateOptions, HistoryDiffSelectorList } from '../cd.type'
+import {
+    CompareWithBaseConfiguration,
+    DeploymentTemplateList,
+    DeploymentTemplateOptions,
+    HistoryDiffSelectorList,
+} from '../cd.type'
 import { Option, styles } from '../cd.utils'
 import { getDeploymentDiffSelector, getDeploymentHistoryList } from '../service'
+import { showError } from '../../../../common'
 
 export default function DeploymentHistoryHeader({
-    // deploymentTemplatesConfiguration,
-    deploymentTemplatesConfigSelector,
     selectedDeploymentTemplate,
     setSelectedDeploymentTemplate,
     setShowTemplate,
     baseTemplateId,
     setBaseTemplateId,
     baseTimeStamp,
+    loader,
+    setLoader,
 }: CompareWithBaseConfiguration) {
     const { url } = useRouteMatch()
     const history = useHistory()
-    const { appId, pipelineId, triggerId } = useParams<{ appId: string; pipelineId: string; triggerId: string }>()
+    const { appId, envId, triggerId, pipelineId, historyComponent, baseConfigurationId, historyComponentName } =
+        useParams<{
+            appId: string
+            envId: string
+            triggerId: string
+            pipelineId: string
+            historyComponent: string
+            historyComponentName: string
+            baseConfigurationId: string
+        }>()
     const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>(baseTimeStamp)
     const [comparedTemplateId, setComparedTemplateId] = useState<string>()
     const [baseTemplateconfig, setBaseTemplateConfig] = useState<DeploymentTemplateList[]>()
+    const [deploymentTemplatesConfigSelector, setDeploymentTemplatesConfigSelector] = useState<
+        HistoryDiffSelectorList[]
+    >([])
     const deploymentTemplateOption: DeploymentTemplateOptions[] = deploymentTemplatesConfigSelector.map((p) => {
         return {
             value: String(p.id),
@@ -33,7 +51,6 @@ export default function DeploymentHistoryHeader({
             status: p.deploymentStatus,
         }
     })
-
 
     const handleSelector = (selectedTemplateId: string) => {
         let deploymentTemp = deploymentTemplatesConfigSelector.find((e) => e.id.toString() === selectedTemplateId)
@@ -44,6 +61,31 @@ export default function DeploymentHistoryHeader({
         handleSelector(selected.value)
         setSelectedDeploymentTemplate(selected)
     }
+
+    useEffect(() => {
+        setLoader(true)
+        if (pipelineId) {
+            try {
+                // getDeploymentTemplateDiff(appId, pipelineId).then((response) => {
+                //     setDeploymentTemplatesConfiguration(response.result?.sort((a, b) => sortCallback('id', b, a)))
+                //     setLoader(false)
+                // })
+                getDeploymentDiffSelector(
+                    appId,
+                    pipelineId,
+                    historyComponent,
+                    baseConfigurationId,
+                    historyComponentName,
+                ).then((response) => {
+                    setDeploymentTemplatesConfigSelector(response.result)
+                    setLoader(false)
+                })
+            } catch (err) {
+                showError(err)
+                setLoader(false)
+            }
+        }
+    }, [pipelineId])
 
     useEffect(() => {
         if (deploymentTemplatesConfigSelector.length > 0) {

@@ -7,6 +7,7 @@ import { DeploymentTemplateOptions, CompareViewDeploymentType, DeploymentHistory
 import CDEmptyState from '../CDEmptyState'
 import DeploymentHistorySidebar from './DeploymentHistorySidebar'
 import DeploymentHistoryDiffView from './DeploymentHistoryDiffView'
+import { Settings } from 'http2'
 
 export default function DeploymentHistoryDetailedView({
     showTemplate,
@@ -14,25 +15,32 @@ export default function DeploymentHistoryDetailedView({
     baseTimeStamp,
     baseTemplateId,
     setBaseTemplateId,
-    // deploymentTemplatesConfiguration,
     loader,
     setLoader,
     deploymentTemplatesConfigSelector,
     deploymentHistoryList,
     setDepolymentHistoryList,
 }: CompareViewDeploymentType) {
-    const { appId, pipelineId, configurationType, configurationId, configurationName } = useParams<{
+    const { appId, pipelineId, historyComponent, baseConfigurationId, historyComponentName } = useParams<{
         appId: string
         pipelineId: string
-        configurationType: string
-        configurationId: string
-        configurationName: string
+        historyComponent: string
+        historyComponentName: string
+        baseConfigurationId: string
     }>()
     const [selectedDeploymentTemplate, setSelectedDeploymentTemplate] = useState<DeploymentTemplateOptions>()
     const [currentConfiguration, setCurrentConfiguration] = useState<DeploymentHistoryDetail>()
     const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentHistoryDetail>()
-
+    const params = useParams()
     const [codeEditorLoading, setCodeEditorLoading] = useState<boolean>(false)
+
+    useEffect(() => {
+        getDeploymentHistoryDetail(appId, pipelineId, baseConfigurationId, historyComponent, historyComponentName).then(
+            (response) => {
+                console.log(response.result)
+            },
+        )
+    }, [])
 
     useEffect(() => {
         setLoader(true)
@@ -43,8 +51,8 @@ export default function DeploymentHistoryDetailedView({
                     appId,
                     pipelineId,
                     selectedDeploymentTemplate.value,
-                    configurationType,
-                    configurationName,
+                    historyComponent,
+                    historyComponentName,
                 ).then((response) => {
                     setCurrentConfiguration(response?.result)
                     setLoader(false)
@@ -59,13 +67,13 @@ export default function DeploymentHistoryDetailedView({
     useEffect(() => {
         try {
             setCodeEditorLoading(true)
-            if (deploymentTemplatesConfigSelector && configurationId) {
+            if (deploymentTemplatesConfigSelector && baseConfigurationId) {
                 getDeploymentHistoryDetail(
                     appId,
                     pipelineId,
-                    configurationId,
-                    configurationType,
-                    configurationName,
+                    baseConfigurationId,
+                    historyComponent,
+                    historyComponentName,
                 ).then((response) => {
                     setBaseTemplateConfiguration(response.result)
                     setCodeEditorLoading(false)
@@ -75,7 +83,7 @@ export default function DeploymentHistoryDetailedView({
             showError(err)
             setCodeEditorLoading(false)
         }
-    }, [configurationType, configurationId, configurationName])
+    }, [baseConfigurationId, historyComponent, historyComponentName])
 
     useEffect(() => {
         if (!showTemplate) {
@@ -93,6 +101,7 @@ export default function DeploymentHistoryDetailedView({
         <CDEmptyState />
     ) : (
         <>
+            {console.log(appId)}
             <DeploymentHistoryHeader
                 deploymentTemplatesConfigSelector={deploymentTemplatesConfigSelector}
                 selectedDeploymentTemplate={selectedDeploymentTemplate}
@@ -101,6 +110,8 @@ export default function DeploymentHistoryDetailedView({
                 setBaseTemplateId={setBaseTemplateId}
                 baseTemplateId={baseTemplateId}
                 baseTimeStamp={baseTimeStamp}
+                loader={loader}
+                setLoader={setLoader}
             />
             {loader ? (
                 <Progressing pageLoader />

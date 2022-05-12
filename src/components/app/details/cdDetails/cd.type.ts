@@ -35,7 +35,6 @@ export interface DeploymentTemplateOptions {
     status: string
 }
 export interface CompareWithBaseConfiguration {
-    // deploymentTemplatesConfiguration: DeploymentTemplateConfiguration[]
     selectedDeploymentTemplate: DeploymentTemplateOptions
     setSelectedDeploymentTemplate: (selected) => void
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>
@@ -43,6 +42,8 @@ export interface CompareWithBaseConfiguration {
     baseTemplateId: string
     setBaseTemplateId: React.Dispatch<React.SetStateAction<string>>
     deploymentTemplatesConfigSelector: HistoryDiffSelectorList[]
+    loader: boolean
+    setLoader: React.Dispatch<React.SetStateAction<boolean>>
 }
 export interface HistoryDiffSelectorList {
     id: number

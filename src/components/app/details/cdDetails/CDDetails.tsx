@@ -25,13 +25,7 @@ import EmptyImage from '../../../../assets/img/app-not-deployed.png'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import Reload from '../../../Reload/Reload'
 import { default as AnsiUp } from 'ansi_up'
-import {
-    getTriggerHistory,
-    getTriggerDetails,
-    getCDBuildReport,
-    getDeploymentTemplateDiff,
-    getDeploymentDiffSelector,
-} from './service'
+import { getTriggerHistory, getTriggerDetails, getCDBuildReport, getDeploymentDiffSelector } from './service'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { cancelPrePostCdTrigger } from '../../service'
 import { Scroller } from '../cIDetails/CIDetails'
@@ -53,12 +47,16 @@ const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'f
 let statusSet = new Set(['starting', 'running', 'pending'])
 
 export default function CDDetails() {
-    const { appId, envId, triggerId, pipelineId } = useParams<{
-        appId: string
-        envId: string
-        triggerId: string
-        pipelineId: string
-    }>()
+    const { appId, envId, triggerId, pipelineId, historyComponent, baseConfigurationId, historyComponentName } =
+        useParams<{
+            appId: string
+            envId: string
+            triggerId: string
+            pipelineId: string
+            historyComponent: string
+            historyComponentName: string
+            baseConfigurationId: string
+        }>()
     const [pagination, setPagination] = useState<{ offset: number; size: number }>({ offset: 0, size: 20 })
     const [hasMore, setHasMore] = useState<boolean>(false)
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
@@ -99,7 +97,10 @@ export default function CDDetails() {
     const [deploymentHistoryList, setDepolymentHistoryList] = useState<DeploymentTemplateList[]>()
 
     const [loader, setLoader] = useState<boolean>(false)
-
+    const {} = useParams<{
+        appId: string
+        pipelineId: string
+    }>()
     useEffect(() => {
         if (!pathname.includes('/logs')) return
         switch (keys.join('')) {
@@ -193,25 +194,6 @@ export default function CDDetails() {
             push(newUrl)
         }
     }, [deploymentHistoryResult, loadingDeploymentHistory, deploymentHistoryError])
-
-    useEffect(() => {
-        setLoader(true)
-        if (pipelineId) {
-            try {
-                getDeploymentTemplateDiff(appId, pipelineId).then((response) => {
-                    setDeploymentTemplatesConfiguration(response.result?.sort((a, b) => sortCallback('id', b, a)))
-                    setLoader(false)
-                })
-                getDeploymentDiffSelector(appId, pipelineId).then((response) => {
-                    setDeploymentTemplatesConfigSelector(response.result)
-                    setLoader(false)
-                })
-            } catch (err) {
-                showError(err)
-                setLoader(false)
-            }
-        }
-    }, [pipelineId])
 
     function syncState(triggerId: number, triggerDetail: History) {
         setTriggerHistory((triggerHistory) => {
@@ -308,7 +290,7 @@ export default function CDDetails() {
                 )}
                 <Switch>
                     <Route
-                        path={`${path}${URLS.DEPLOYMENT_HISTORY}/:configurationType/:configurationId(\\d+)/:configurationName?`}
+                        path={`${path}${URLS.DEPLOYMENT_HISTORY}/:historyComponent/:baseConfigurationId(\\d+)/:historyComponentName?`}
                         render={(props) => (
                             <DeploymentHistoryDetailedView
                                 showTemplate={showTemplate}
@@ -316,7 +298,6 @@ export default function CDDetails() {
                                 baseTemplateId={baseTemplateId}
                                 baseTimeStamp={baseTimeStamp}
                                 setBaseTemplateId={setBaseTemplateId}
-                                // deploymentTemplatesConfiguration={deploymentTemplatesConfiguration}
                                 deploymentTemplatesConfigSelector={deploymentTemplatesConfigSelector}
                                 loader={loader}
                                 setLoader={setLoader}

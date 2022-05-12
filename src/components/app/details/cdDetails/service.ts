@@ -76,9 +76,6 @@ export function getCDBuildReport(appId, envId, pipelineId, workflowId) {
     return get(`app/cd-pipeline/workflow/download/${appId}/${envId}/${pipelineId}/${workflowId}`)
 }
 
-export function getDeploymentTemplateDiff(appId: string, pipelineId: string) {
-    return get(`app/history/template/${appId}/${pipelineId}?offset=0&size=20`)
-}
 export interface DeploymentHistoryDetailRes extends ResponseType {
     result?: DeploymentHistoryDetail
 }
@@ -277,13 +274,11 @@ export const getDeploymentHistoryDetail = (
     historyComponentName: string,
 ): Promise<DeploymentHistoryDetailRes> => {
     return get(
-        `app/history/template/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent}${
-            historyComponentName ? '&historyComponentName=' + historyComponentName : ''
-        }`,
+        `app/history/template/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent}&historyComponentName=${historyComponentName}`,
     )
-    return Promise.resolve({
-        result: { ...deploymentHistoryMockMap('test', 'test1') },
-    } as DeploymentHistoryDetailRes)
+    // return Promise.resolve({
+    //     result: { ...deploymentHistoryMockMap('test', 'test1') },
+    // } as DeploymentHistoryDetailRes)
 }
 export interface DeploymentConfigurationsRes extends ResponseType {
     result?: DeploymentTemplateList[]
@@ -292,66 +287,76 @@ export interface DeploymentConfigurationsRes extends ResponseType {
 export const getDeploymentHistoryList = (
     appId: string,
     pipelineId: string,
-    wfrId: string,
+    triggerId: string,
 ): Promise<DeploymentConfigurationsRes> => {
-    //  return get(`/history/deployed-configuration/${appId}/${pipelineId}/${wfrId}`)
+    return get(`app/history/deployed-configuration/${appId}/${pipelineId}/${triggerId}`)
 
-    return Promise.resolve({
-        result: [
-            {
-                id: 5,
-                name: 'deployment_template',
-            },
-            {
-                id: 1,
-                name: 'pipeline_configuration',
-            },
-            {
-                id: 22,
-                name: 'config-maps',
-                childList: ['config-cm', 'config-dashboard'],
-            },
-            {
-                id: 33,
-                name: 'secret',
-                childList: ['secret1', 'secret-dashboard'],
-            },
-        ],
-    } as DeploymentConfigurationsRes)
+    // return Promise.resolve({
+    //     result: [
+    //         {
+    //             id: 5,
+    //             name: 'deployment_template',
+    //         },
+    //         {
+    //             id: 1,
+    //             name: 'pipeline_configuration',
+    //         },
+    //         {
+    //             id: 22,
+    //             name: 'config-maps',
+    //             childList: ['config-cm', 'config-dashboard'],
+    //         },
+    //         {
+    //             id: 33,
+    //             name: 'secret',
+    //             childList: ['secret1', 'secret-dashboard'],
+    //         },
+    //     ],
+    // } as DeploymentConfigurationsRes)
 }
 
 export interface HistoryDiffSelectorRes {
     result?: HistoryDiffSelectorList[]
 }
 
-export const getDeploymentDiffSelector = (appId: string, pipelineId: string): Promise<HistoryDiffSelectorRes> => {
-    // return get(`app/history/deployed-component/list/${appId}/${pipelineId}`);
-    return Promise.resolve({
-        result: [
-            {
-                id: 12,
-                deployedOn: '2022-04-28T09:23:33.855684Z',
-                deployedBy: 'admin',
-                deploymentStatus: 'healthy',
-            },
-            {
-                id: 11,
-                deployedOn: '2022-04-28T09:23:33.855684Z',
-                deployedBy: 'shivani@devtron.ai',
-                deploymentStatus: 'failed',
-            },
-            {
-                id: 10,
-                deployedOn: '2022-04-28T09:43:02.621323Z',
-                deployedBy: 'admin',
-                deploymentStatus: 'progressing',
-            },
-            {
-                id: 8,
-                deployedOn: 'Tue, 8 Apr 2022, 03:13 PM',
-                deployedBy: 'shivani@devtron.ai',
-                deploymentStatus: 'healthy',
-            },
-        ],
-    })
+export const getDeploymentDiffSelector = (
+    appId: string,
+    pipelineId: string,
+    historyComponent,
+    baseConfigurationId,
+    historyComponentName,
+): Promise<HistoryDiffSelectorRes> => {
+    return get(
+        `app/history/deployed-component/list/${appId}/${pipelineId}?baseConfigurationId=${baseConfigurationId}&historyComponent=${historyComponent}${
+            historyComponentName ? '&historyComponentName=' + historyComponentName : ''
+        }`,
+    )
+    // return Promise.resolve({
+    //     result: [
+    //         {
+    //             id: 12,
+    //             deployedOn: '2022-04-28T09:23:33.855684Z',
+    //             deployedBy: 'admin',
+    //             deploymentStatus: 'healthy',
+    //         },
+    //         {
+    //             id: 11,
+    //             deployedOn: '2022-04-28T09:23:33.855684Z',
+    //             deployedBy: 'shivani@devtron.ai',
+    //             deploymentStatus: 'failed',
+    //         },
+    //         {
+    //             id: 10,
+    //             deployedOn: '2022-04-28T09:43:02.621323Z',
+    //             deployedBy: 'admin',
+    //             deploymentStatus: 'progressing',
+    //         },
+    //         {
+    //             id: 8,
+    //             deployedOn: 'Tue, 8 Apr 2022, 03:13 PM',
+    //             deployedBy: 'shivani@devtron.ai',
+    //             deploymentStatus: 'healthy',
+    //         },
+    //     ],
+    // })
 }
