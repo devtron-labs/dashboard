@@ -80,7 +80,7 @@ export interface DeploymentHistoryDetailRes extends ResponseType {
     result?: DeploymentHistoryDetail
 }
 
-const prepareDeploymentTemplateData = (rawData): DeploymentHistorySingleValue => {
+const prepareDeploymentTemplateData = (rawData): Record<string, DeploymentHistorySingleValue> => {
     let deploymentTemplateData = {}
     if (rawData['templateVersion']) {
         deploymentTemplateData['templateVersion'] = { displayName: 'Chart Version', value: rawData['templateVersion'] }
@@ -91,10 +91,10 @@ const prepareDeploymentTemplateData = (rawData): DeploymentHistorySingleValue =>
             value: rawData['isAppMetricsEnabled'] ? 'Disabled' : 'Enabled',
         }
     }
-    return deploymentTemplateData as DeploymentHistorySingleValue
+    return deploymentTemplateData
 }
 
-const preparePipelineConfigData = (rawData): DeploymentHistorySingleValue => {
+const preparePipelineConfigData = (rawData): Record<string, DeploymentHistorySingleValue> => {
     let pipelineConfigData = {}
     if (rawData['templateVersion']) {
         pipelineConfigData['templateVersion'] = {
@@ -108,13 +108,13 @@ const preparePipelineConfigData = (rawData): DeploymentHistorySingleValue => {
             value: rawData['templateVersion'],
         }
     }
-    if (rawData['templateVersion']) {
-        pipelineConfigData['templateVersion'] = {
+    if (rawData['strategy']) {
+        pipelineConfigData['strategy'] = {
             displayName: 'Deployment strategy',
-            value: rawData['templateVersion'],
+            value: rawData['strategy'],
         }
     }
-    return pipelineConfigData as DeploymentHistorySingleValue
+    return pipelineConfigData
 }
 
 // const prepareConfigMapsData = (rawData): DeploymentHistorySingleValue => {
@@ -149,7 +149,7 @@ const preparePipelineConfigData = (rawData): DeploymentHistorySingleValue => {
 //     return configValues as DeploymentHistorySingleValue
 // }
 
-const prepareConfigMapAndSecretData = (rawData, type: string): DeploymentHistorySingleValue => {
+const prepareConfigMapAndSecretData = (rawData, type: string): Record<string, DeploymentHistorySingleValue> => {
     let secretValues = {}
 
     if (rawData['external']) {
@@ -188,84 +188,22 @@ const prepareConfigMapAndSecretData = (rawData, type: string): DeploymentHistory
             secretValues['roleARN'] = { displayName: 'Role ARN', value: rawData['roleARN'] }
         }
     }
-    return secretValues as DeploymentHistorySingleValue
+    return secretValues
 }
 
 export const prepareHistoryData = (rawData, historyComponent: string): DeploymentHistoryDetail => {
     let values
     let historyData = { codeEditorValue: rawData.codeEditorValue, values: {} }
     delete rawData.codeEditorValue
-    if ((historyComponent = 'DEPLOYMENT_TEMPLATE')) {
+    if (historyComponent === 'DEPLOYMENT_TEMPLATE') {
         values = prepareDeploymentTemplateData(rawData)
-    } else if ((historyComponent = 'PIPELINE_STRATEGY')) {
+    } else if (historyComponent === 'PIPELINE_STRATEGY') {
         values = preparePipelineConfigData(rawData)
     } else {
         values = prepareConfigMapAndSecretData(rawData, historyComponent === 'CONFIGMAP' ? 'ConfigMap' : 'Secret')
     }
     historyData.values = values
     return historyData
-}
-
-const deploymentHistoryMockMap = (historyComponent: string, historyComponentName: string): DeploymentHistoryDetail => {
-    if (Math.floor(Math.random() * 2) + 1 === 1) {
-        return {
-            values: {
-                stage_to_trigger: {
-                    displayName: `When do you want this stage to trigger?-${historyComponent}-${historyComponentName}`,
-                    value: `Automatic-${new Date().getTime()}`,
-                },
-                secret_execute: {
-                    displayName: `Secrets used to execute script-${historyComponent}-${historyComponentName}`,
-                    value: `configmap-1`,
-                },
-                execute_script: {
-                    displayName: `Secrets used to execute script-${historyComponent}-${historyComponentName}`,
-                    value: '',
-                },
-                execute_env: {
-                    displayName: `Execute in application environment-${historyComponent}-${historyComponentName}`,
-                    value: `No-${new Date().getTime()}`,
-                },
-                test_string: {
-                    displayName: 'this is a test string',
-                    value: 'test1',
-                },
-            },
-            codeEditorValue: {
-                displayName: `Script-${historyComponent}-${historyComponentName}`,
-                value: `{"ContainerPort":[{"envoyPort":8799,"idleTimeout":"1800s","name":"app","port":8080,"servicePort":80,"supportStreaming":false,"useHTTP2":false}]}`,
-            },
-        }
-    } else {
-        return {
-            values: {
-                stage_to_trigger: {
-                    displayName: `When do you want this stage to trigger?-${historyComponent}-${historyComponentName}`,
-                    value: `Automatic`,
-                },
-                secret_execute: {
-                    displayName: `Secrets used to execute script-${historyComponent}-${historyComponentName}`,
-                    value: `configmap-1`,
-                },
-                execute_script: {
-                    displayName: `Secrets used to execute script-${historyComponent}-${historyComponentName}`,
-                    value: `secret-is-the-key-${new Date().getTime()}`,
-                },
-                execute_env: {
-                    displayName: `Execute in application environment-${historyComponent}-${historyComponentName}`,
-                    value: '',
-                },
-                test_number: {
-                    displayName: 'this is a test Number',
-                    value: '123',
-                },
-            },
-            codeEditorValue: {
-                displayName: `Script-${historyComponent}-${historyComponentName}`,
-                value: `{"ContainerPort":[{"envoyPort":87399,"idleTimeout":"1800s","name":"app","port":808023,"servicePort":80,"supportStreaming":true,"useHTTP2":false}]}`,
-            },
-        }
-    }
 }
 
 export const getDeploymentHistoryDetail = (
@@ -280,9 +218,6 @@ export const getDeploymentHistoryDetail = (
             historyComponentName ? '&historyComponentName=' + historyComponentName : ''
         }`,
     )
-    // return Promise.resolve({
-    //     result: { ...deploymentHistoryMockMap('test', 'test1') },
-    // } as DeploymentHistoryDetailRes)
 }
 export interface DeploymentConfigurationsRes extends ResponseType {
     result?: DeploymentTemplateList[]
