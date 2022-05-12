@@ -13,13 +13,17 @@ interface TemplateConfiguration {
     deploymentTemplatesConfiguration: DeploymentTemplateConfiguration[]
     setBaseTimeStamp
     baseTimeStamp: string
+    deploymentHistoryList: DeploymentTemplateList[]
+    setDepolymentHistoryList
 }
 
-export default function DeploymentTemplateWrapper({
+export default function DeploymentHistoryConfigList({
     setShowTemplate,
     deploymentTemplatesConfiguration,
     setBaseTimeStamp,
     baseTimeStamp,
+    deploymentHistoryList,
+    setDepolymentHistoryList
 }: TemplateConfiguration) {
     const match = useRouteMatch()
     const { appId, pipelineId, triggerId } = useParams<{ appId: string; pipelineId: string; triggerId: string }>()
@@ -30,26 +34,29 @@ export default function DeploymentTemplateWrapper({
         deploymentTemplatesConfiguration &&
         deploymentTemplatesConfiguration.length > 0 &&
         deploymentTemplatesConfiguration[deploymentTemplatesConfiguration.length - 1]?.wfrId.toString() === triggerId
-    const [deploymentHistoryList, setDepolymentHistoryList] = useState<DeploymentTemplateList[]>()
 
-    useEffect(() => {
-        getDeploymentHistoryList(appId, pipelineId, triggerId).then((response) => {
-            setDepolymentHistoryList(response.result)
-        })
-    }, [triggerId])
+        useEffect(() => {
+            getDeploymentHistoryList(appId, pipelineId, triggerId).then((response) => {
+                setDepolymentHistoryList(response.result)
+            })
+        }, [triggerId])
 
     return deploymentTemplateFilteredTrigger && !isLastDeploymentTemplatesConfiguration ? (
         <>
             {deploymentHistoryList &&
                 deploymentHistoryList.map((li, index) => {
-                    return (
+
+                    // const newURL =  match.url.includes(li.name) ? match.url : `${match.url}/${li.name}/${li.id}`
+                    const newURL = `${match.url}/${li.name}/${li.id}`
+
+                     return (
                         <div className="m-20 fs-13 cn-9" key={`history-list__${index}`}>
                             <div className="fs-14 fw-6 mb-12 ">{li.childList?.length > 0 && li.name.replace('-', '').toUpperCase()}</div>
                             {li.childList?.length > 1 ? (
                                 li.childList.map((el) => {
                                     return (
                                         <NavLink
-                                            to={`${match.url}/${DEPLOYMENT_HISTORY_LINK_MAP[li.name.toLowerCase()]}`}
+                                            to={`${newURL}/${el}`}
                                             activeClassName="active"
                                             onClick={() => {
                                                 setShowTemplate(true)
@@ -67,7 +74,7 @@ export default function DeploymentTemplateWrapper({
                                 })
                             ) : (
                                 <NavLink
-                                    to={`${match.url}/${DEPLOYMENT_HISTORY_LINK_MAP[li.name.toLowerCase()]}`}
+                                    to={newURL}
                                     activeClassName="active"
                                     onClick={() => {
                                         setShowTemplate(true)

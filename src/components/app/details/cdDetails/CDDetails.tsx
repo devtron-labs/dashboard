@@ -26,10 +26,10 @@ import Tippy from '@tippyjs/react'
 import {DetectBottom, TriggerDetails, GitChanges, Artifacts, BuildCardPopup} from '../cIDetails/CIDetails'
 import {History} from '../cIDetails/types'
 import {Moment12HourFormat} from '../../../../config';
-import DeploymentTemplateWrapper from './deploymentHistoryDiff/DeploymentHistoryConfigList.component';
+import DeploymentHistoryConfigList from './deploymentHistoryDiff/DeploymentHistoryConfigList.component';
 import './cdDetail.scss'
 import DeploymentHistoryDetailedView from './deploymentHistoryDiff/DeploymentHistoryDetailedView';
-import { DeploymentTemplateConfiguration, HistoryDiffSelectorList } from './cd.type';
+import { DeploymentTemplateConfiguration, DeploymentTemplateList, HistoryDiffSelectorList } from './cd.type';
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(["starting", "running", "pending"]);
@@ -55,6 +55,7 @@ export default function CDDetails(){
     const [baseTemplateId, setBaseTemplateId] = useState< string>();
     const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState<DeploymentTemplateConfiguration[]>([]);
     const [deploymentTemplatesConfigSelector, setDeploymentTemplatesConfigSelector] = useState<HistoryDiffSelectorList[]>([]);
+    const [deploymentHistoryList, setDepolymentHistoryList] = useState<DeploymentTemplateList[]>()
 
     const [loader, setLoader] = useState<boolean>(false);
 
@@ -226,6 +227,8 @@ export default function CDDetails(){
                                         showTemplate={showTemplate}
                                         setBaseTimeStamp={setBaseTimeStamp}
                                         baseTimeStamp={baseTimeStamp}
+                                        setDepolymentHistoryList={setDepolymentHistoryList} 
+                                        deploymentHistoryList={deploymentHistoryList}
                                     />
                                 </Route>
                             )}
@@ -256,9 +259,9 @@ export default function CDDetails(){
                         </div>
                     </>
                 )}
-                 <Switch>
+                 {/* <Switch>
                     <Route
-                        path={`${path}/configuration/:configurationType`}
+                        path={`${path}/configuration/:configurationType/:configurationId(\\d+)/:configurationName?`}
                         render={(props) => (
                             <DeploymentHistoryDetailedView
                                 showTemplate={showTemplate}
@@ -270,10 +273,12 @@ export default function CDDetails(){
                                 deploymentTemplatesConfigSelector={deploymentTemplatesConfigSelector}
                                 loader={loader}
                                 setLoader={setLoader}
+                                setDepolymentHistoryList={setDepolymentHistoryList}
+                                deploymentHistoryList={deploymentHistoryList}
                             />
                         )}
                     />
-                </Switch>
+                </Switch> */}
             </div>
 
             {(scrollToTop || scrollToBottom) && (
@@ -422,7 +427,9 @@ const TriggerOutput: React.FC<{
     showTemplate: boolean
     baseTimeStamp: string;
     setBaseTimeStamp: React.Dispatch<React.SetStateAction<string>>;
-}> = ({ fullScreenView, syncState, triggerHistory, setShowTemplate, setBaseTemplateId, deploymentTemplatesConfiguration , showTemplate, baseTimeStamp, setBaseTimeStamp}) => {
+    deploymentHistoryList: DeploymentTemplateList[]
+    setDepolymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
+}> = ({ fullScreenView, syncState, triggerHistory, setShowTemplate, setBaseTemplateId, deploymentTemplatesConfiguration , showTemplate, baseTimeStamp, setBaseTimeStamp, setDepolymentHistoryList, deploymentHistoryList}) => {
     const { appId, triggerId, envId, pipelineId } = useParams<{appId: string, triggerId: string, envId: string, pipelineId: string}>();
     const triggerDetails = triggerHistory.get(+triggerId);
     const [
@@ -540,6 +547,9 @@ const TriggerOutput: React.FC<{
                 baseTimeStamp={baseTimeStamp}
                 setBaseTimeStamp={setBaseTimeStamp}
                 setBaseTemplateId={setBaseTemplateId}
+                setDepolymentHistoryList={setDepolymentHistoryList} 
+                deploymentHistoryList={deploymentHistoryList}
+                
             />
         </>
     );
@@ -554,7 +564,9 @@ const HistoryLogs: React.FC<{
     deploymentTemplatesConfiguration: DeploymentTemplateConfiguration[];
     baseTimeStamp: string;
     setBaseTimeStamp: React.Dispatch<React.SetStateAction<string>>;
-}> = ({ triggerDetails, loading, setShowTemplate, deploymentTemplatesConfiguration, setBaseTimeStamp, baseTimeStamp }) => {
+    deploymentHistoryList: DeploymentTemplateList[]
+    setDepolymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
+}> = ({ triggerDetails, loading, setShowTemplate, deploymentTemplatesConfiguration, setBaseTimeStamp, baseTimeStamp, deploymentHistoryList, setDepolymentHistoryList }) => {
     let { path } = useRouteMatch();
     const {appId, pipelineId, triggerId, envId} = useParams<{appId: string, pipelineId: string, triggerId: string, envId: string}>()
     const [autoBottomScroll, setAutoBottomScroll] = useState<boolean>(triggerDetails.status.toLowerCase() !== 'succeeded')
@@ -570,7 +582,7 @@ const HistoryLogs: React.FC<{
                     </div>
                 </Route>}
                 <Route path={`${path}/source-code`} render={props => <GitChanges triggerDetails={triggerDetails} />} />
-                <Route path={`${path}/configuration`} render={props => <DeploymentTemplateWrapper setShowTemplate={setShowTemplate} deploymentTemplatesConfiguration={deploymentTemplatesConfiguration} setBaseTimeStamp={setBaseTimeStamp} baseTimeStamp={baseTimeStamp}/>} />
+                <Route path={`${path}/configuration`} render={props => <DeploymentHistoryConfigList setShowTemplate={setShowTemplate} deploymentTemplatesConfiguration={deploymentTemplatesConfiguration} setBaseTimeStamp={setBaseTimeStamp} baseTimeStamp={baseTimeStamp} setDepolymentHistoryList={setDepolymentHistoryList} deploymentHistoryList={deploymentHistoryList}/>} />
                 {triggerDetails.stage !== 'DEPLOY' && <Route path={`${path}/artifacts`} render={props => <Artifacts getArtifactPromise={()=>getCDBuildReport(appId, envId, pipelineId, triggerId)} triggerDetails={triggerDetails} />} />}
                 <Redirect to={triggerDetails.status.toLowerCase() === 'succeeded' ? `${path}/artifacts` : triggerDetails.stage === 'DEPLOY' ? `${path}/source-code` : `${path}/logs`} />
             </Switch>}

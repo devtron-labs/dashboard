@@ -56,6 +56,8 @@ export interface CompareViewDeploymentType {
     loader: boolean
     setLoader: React.Dispatch<React.SetStateAction<boolean>>
     deploymentTemplatesConfigSelector: HistoryDiffSelectorList[]
+    deploymentHistoryList: DeploymentTemplateList[]
+    setDepolymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
 }
 export interface DeploymentTemplateList {
     id: number

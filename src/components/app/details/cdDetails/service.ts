@@ -165,7 +165,7 @@ export const getDeploymentHistoryList = (
     return Promise.resolve({
         result: [
             {
-                id: 0,
+                id: 5,
                 name: 'deployment_template',
             },
             {
