@@ -27,9 +27,9 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDepolymentHistoryL
                 }`
 
                 return elm.childList?.length > 1 ? (
-                    elm.childList.map((el) => {
+                    elm.childList.map((el,idx) => {
                         return (
-                            <div className={`cursor`} key={`deployment-history-sidebar-${index}`}>
+                            <div className={`cursor`} key={`deployment-history-childlist__${idx}`}>
                                 <NavLink
                                     activeClassName="active"
                                     to={`${newURL}/${el}`}
@@ -43,7 +43,7 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDepolymentHistoryL
                         )
                     })
                 ) : (
-                    <div className={`cursor`} key={`deployment-history-sidebar-${index}`}>
+                    <div className={`cursor`} key={`deployment-history-list-${index}`}>
                         <NavLink
                             activeClassName="active"
                             to={newURL}

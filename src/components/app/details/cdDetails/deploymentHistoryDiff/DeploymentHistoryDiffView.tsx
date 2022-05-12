@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import { DeploymentTemplateHistoryType } from '../cd.type'
 import YAML from 'yaml'
@@ -35,7 +35,7 @@ export default function DeploymentHistoryDiffView({
         <div>
             <div className="en-2 bw-1 br-4 bcn-0 mt-20 mb-16 mr-20 ml-20 pt-2 pb-2 deployment-diff__upper">
                 {Object.keys({ ...currentConfiguration?.values, ...baseTemplateConfiguration?.values }).map(
-                    (configKey) => {
+                    (configKey, index) => {
                         const currentValue = currentConfiguration.values[configKey]
                         const baseValue = baseTemplateConfiguration.values[configKey]
                         const changeBGColor = currentValue?.value !== baseValue?.value
@@ -44,7 +44,7 @@ export default function DeploymentHistoryDiffView({
                         const baseTemplateBGStyle = changeBGColor ? ' bcg-1' : ''
                         const currentTemplateBGStyle = changeBGColor ? ' bcr-1' : ''
                         return (
-                            <>
+                            <Fragment key={`deployment-history-diff-view-${index}`}>
                                 {currentValue && currentValue.value ? (
                                     <div className={currentTemplateBGStyle}>
                                         <div className={titleStyle}>{currentValue['displayName']}</div>
@@ -62,7 +62,7 @@ export default function DeploymentHistoryDiffView({
                                 ) : (
                                     <div></div>
                                 )}
-                            </>
+                            </Fragment>
                         )
                     },
                 )}

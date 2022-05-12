@@ -305,12 +305,12 @@ export const getDeploymentHistoryList = (
                 name: 'pipeline_configuration',
             },
             {
-                id: 2,
+                id: 22,
                 name: 'config-maps',
-                childList: ['config-cm', 'secret-dashboard'],
+                childList: ['config-cm', 'config-dashboard'],
             },
             {
-                id: 3,
+                id: 33,
                 name: 'secret',
                 childList: ['secret1', 'secret-dashboard'],
             },

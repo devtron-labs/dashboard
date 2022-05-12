@@ -53,9 +53,10 @@ export default function DeploymentHistoryConfigList({
                         <div className="m-20 fs-13 cn-9" key={`history-list__${index}`}>
                             <div className="fs-14 fw-6 mb-12 ">{li.childList?.length > 0 && li.name.replace('-', '').toUpperCase()}</div>
                             {li.childList?.length > 1 ? (
-                                li.childList.map((el) => {
+                                li.childList.map((el, index) => {
                                     return (
                                         <NavLink
+                                           key={`config-childlist-${index}`}
                                             to={`${newURL}/${el}`}
                                             activeClassName="active"
                                             onClick={() => {
