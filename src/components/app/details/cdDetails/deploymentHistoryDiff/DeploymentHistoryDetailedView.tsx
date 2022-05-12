@@ -21,7 +21,13 @@ export default function DeploymentHistoryDetailedView({
     deploymentHistoryList,
     setDepolymentHistoryList,
 }: CompareViewDeploymentType) {
-    const { appId, pipelineId } = useParams<{ appId: string; pipelineId: string }>()
+    const { appId, pipelineId, configurationType, configurationId, configurationName } = useParams<{
+        appId: string
+        pipelineId: string
+        configurationType: string
+        configurationId: string
+        configurationName: string
+    }>()
     const [selectedDeploymentTemplate, setSelectedDeploymentTemplate] = useState<DeploymentTemplateOptions>()
     const [currentConfiguration, setCurrentConfiguration] = useState<DeploymentHistoryDetail>()
     const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentHistoryDetail>()
@@ -49,8 +55,14 @@ export default function DeploymentHistoryDetailedView({
     useEffect(() => {
         try {
             setCodeEditorLoading(true)
-            if (deploymentTemplatesConfigSelector && baseTemplateId) {
-                getDeploymentHistoryDetail(appId, pipelineId, baseTemplateId, '', '').then((response) => {
+            if (deploymentTemplatesConfigSelector && configurationId) {
+                getDeploymentHistoryDetail(
+                    appId,
+                    pipelineId,
+                    configurationId,
+                    configurationType,
+                    configurationName,
+                ).then((response) => {
                     setBaseTemplateConfiguration(response.result)
                     setCodeEditorLoading(false)
                 })
@@ -59,7 +71,7 @@ export default function DeploymentHistoryDetailedView({
             showError(err)
             setCodeEditorLoading(false)
         }
-    }, [baseTemplateId])
+    }, [configurationType, configurationId, configurationName])
 
     useEffect(() => {
         if (!showTemplate) {
