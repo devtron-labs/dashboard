@@ -85,25 +85,124 @@ export interface DeploymentHistoryDetailRes extends ResponseType {
 
 const prepareDeploymentTemplateData = (rawData): DeploymentHistorySingleValue => {
     let deploymentTemplateData = {}
+    if (rawData['templateVersion']) {
+        deploymentTemplateData['templateVersion'] = { displayName: 'Chart Version', value: rawData['templateVersion'] }
+    }
+    if (rawData['isAppMetricsEnabled'] || rawData['isAppMetricsEnabled'] === false) {
+        deploymentTemplateData['isAppMetricsEnabled'] = {
+            displayName: 'Application metrics',
+            value: rawData['isAppMetricsEnabled'] ? 'Disabled' : 'Enabled',
+        }
+    }
     return deploymentTemplateData as DeploymentHistorySingleValue
 }
 
 const preparePipelineConfigData = (rawData): DeploymentHistorySingleValue => {
     let pipelineConfigData = {}
+    if (rawData['templateVersion']) {
+        pipelineConfigData['templateVersion'] = {
+            displayName: 'When do you want the pipeline to execute?',
+            value: rawData['templateVersion'],
+        }
+    }
+    if (rawData['templateVersion']) {
+        pipelineConfigData['templateVersion'] = {
+            displayName: 'Deploy to environment',
+            value: rawData['templateVersion'],
+        }
+    }
+    if (rawData['templateVersion']) {
+        pipelineConfigData['templateVersion'] = {
+            displayName: 'Deployment strategy',
+            value: rawData['templateVersion'],
+        }
+    }
     return pipelineConfigData as DeploymentHistorySingleValue
 }
 
-const prepareConfigData = (rawData): DeploymentHistorySingleValue => {
-    let configValues = {}
-    return configValues as DeploymentHistorySingleValue
-}
+// const prepareConfigMapsData = (rawData): DeploymentHistorySingleValue => {
+//     let configValues = {}
+//     if (rawData['external']) {
+//         configValues['external'] = { displayName: 'Data type', value: 'Kubernetes External ConfigMap' }
+//     } else {
+//         configValues['external'] = { displayName: 'Data type', value: 'Kubernetes ConfigMap' }
+//     }
+//     if (rawData['type']) {
+//         let typeValue = 'Environment Variable'
+//         if (rawData['templateVersion'] === 'volume') {
+//             typeValue = 'Data Volume'
+//             if (rawData['mountPath']) {
+//                 configValues['mountPath'] = { displayName: 'Volume mount path', value: rawData['mountPath'] }
+//             }
+//             if (rawData['subPath']) {
+//                 configValues['subPath'] = { displayName: 'Set SubPath', value: 'Yes' }
+//             }
+//             if (rawData['filePermission']) {
+//                 configValues['filePermission'] = {
+//                     displayName: 'Set file permission',
+//                     value: rawData['filePermission'],
+//                 }
+//             }
+//         }
+//         configValues['type'] = {
+//             displayName: 'How do you want to use this ConfigMap?',
+//             value: typeValue,
+//         }
+//     }
+//     return configValues as DeploymentHistorySingleValue
+// }
 
-const prepareSecretData = (rawData): DeploymentHistorySingleValue => {
+const prepareConfigMapAndSecretData = (rawData, type: string): DeploymentHistorySingleValue => {
     let secretValues = {}
+
+    if (rawData['external']) {
+        if (rawData['externalType']) {
+            secretValues['external'] = { displayName: 'Data type', value: rawData['externalType'] }
+        } else {
+            secretValues['external'] = { displayName: 'Data type', value: `Kubernetes External ${type}` }
+        }
+    } else {
+        secretValues['external'] = { displayName: 'Data type', value: `Kubernetes ${type}` }
+    }
+    if (rawData['type']) {
+        let typeValue = 'Environment Variable'
+        if (rawData['templateVersion'] === 'volume') {
+            typeValue = 'Data Volume'
+            if (rawData['mountPath']) {
+                secretValues['mountPath'] = { displayName: 'Volume mount path', value: rawData['mountPath'] }
+            }
+            if (rawData['subPath']) {
+                secretValues['subPath'] = { displayName: 'Set SubPath', value: 'Yes' }
+            }
+            if (rawData['filePermission']) {
+                secretValues['filePermission'] = {
+                    displayName: 'Set file permission',
+                    value: rawData['filePermission'],
+                }
+            }
+        }
+        secretValues['type'] = {
+            displayName: `How do you want to use this ${type}?`,
+            value: typeValue,
+        }
+    }
+    if ((type = 'Secret')) {
+        if (rawData['roleARN']) {
+            secretValues['roleARN'] = { displayName: 'Role ARN', value: rawData['roleARN'] }
+        }
+    }
     return secretValues as DeploymentHistorySingleValue
 }
 
-const prepareHistoryData = (rawData): DeploymentHistoryDetail => {
+const prepareHistoryData = (rawData, historyComponent: string): DeploymentHistoryDetail => {
+    let values
+    if ((historyComponent = 'deployment_template')) {
+        values = prepareDeploymentTemplateData(rawData)
+    } else if ((historyComponent = 'pipeline_configuration')) {
+        values = preparePipelineConfigData(rawData)
+    } else {
+        values = prepareConfigMapAndSecretData(rawData, historyComponent === 'config-maps' ? 'ConfigMap' : 'Secret')
+    }
     let historyData = { codeEditorValue: rawData.codeEditorValue, values: {} }
     return historyData
 }
