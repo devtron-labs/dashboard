@@ -13,9 +13,14 @@ export interface DeploymentTemplateConfiguration extends DeploymentTemplateCommo
     wfrId: number
     workflowType: string
 }
+
+export interface DeploymentHistorySingleValue {
+    displayName: string
+    value: string
+}
 export interface DeploymentHistoryDetail {
-    values: object
-    codeEditorValue: object
+    values: Record<string, DeploymentHistorySingleValue>
+    codeEditorValue: DeploymentHistorySingleValue
 }
 export interface DeploymentTemplateHistoryType {
     currentConfiguration: DeploymentHistoryDetail

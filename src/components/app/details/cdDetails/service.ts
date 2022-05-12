@@ -2,7 +2,13 @@ import { get } from '../../../../services/api'
 import { Routes } from '../../../../config'
 import { History } from '../cIDetails/types'
 import { ResponseType } from '../../../../services/service.types'
-import { DeploymentTemplateList, HistoryDiffSelectorList, DeploymentHistoryDetail } from './cd.type'
+import {
+    DeploymentTemplateList,
+    HistoryDiffSelectorList,
+    DeploymentHistoryDetail,
+    DeploymentHistorySingleValue,
+} from './cd.type'
+import { string } from 'prop-types'
 
 export interface DeploymentHistory {
     id: number
@@ -77,6 +83,31 @@ export interface DeploymentHistoryDetailRes extends ResponseType {
     result?: DeploymentHistoryDetail
 }
 
+const prepareDeploymentTemplateData = (rawData): DeploymentHistorySingleValue => {
+    let deploymentTemplateData = {}
+    return deploymentTemplateData as DeploymentHistorySingleValue
+}
+
+const preparePipelineConfigData = (rawData): DeploymentHistorySingleValue => {
+    let pipelineConfigData = {}
+    return pipelineConfigData as DeploymentHistorySingleValue
+}
+
+const prepareConfigData = (rawData): DeploymentHistorySingleValue => {
+    let configValues = {}
+    return configValues as DeploymentHistorySingleValue
+}
+
+const prepareSecretData = (rawData): DeploymentHistorySingleValue => {
+    let secretValues = {}
+    return secretValues as DeploymentHistorySingleValue
+}
+
+const prepareHistoryData = (rawData): DeploymentHistoryDetail => {
+    let historyData = { codeEditorValue: rawData.codeEditorValue, values: {} }
+    return historyData
+}
+
 const deploymentHistoryMockMap = (historyComponent: string, historyComponentName: string): DeploymentHistoryDetail => {
     if (Math.floor(Math.random() * 2) + 1 === 1) {
         return {
@@ -91,6 +122,7 @@ const deploymentHistoryMockMap = (historyComponent: string, historyComponentName
                 },
                 execute_script: {
                     displayName: `Secrets used to execute script-${historyComponent}-${historyComponentName}`,
+                    value: '',
                 },
                 execute_env: {
                     displayName: `Execute in application environment-${historyComponent}-${historyComponentName}`,
@@ -123,10 +155,11 @@ const deploymentHistoryMockMap = (historyComponent: string, historyComponentName
                 },
                 execute_env: {
                     displayName: `Execute in application environment-${historyComponent}-${historyComponentName}`,
+                    value: '',
                 },
                 test_number: {
                     displayName: 'this is a test Number',
-                    value: 123,
+                    value: '123',
                 },
             },
             codeEditorValue: {
