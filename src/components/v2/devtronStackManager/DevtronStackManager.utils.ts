@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router-dom'
 import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
 import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
-import MoreExtentionsIcon from '../../../assets/img/ic-more-extensions.png'
+import MoreIntegrationsIcon from '../../../assets/img/ic-more-extensions.png'
 import { URLS } from '../../../config'
 import { handleError } from './DevtronStackManager.component'
 import { executeModuleAction, executeServerAction } from './DevtronStackManager.service'
@@ -16,11 +16,11 @@ import {
 } from './DevtronStackManager.type'
 
 export const MORE_MODULE_DETAILS: ModuleDetails = {
-    id: 'moreModules',
-    name: 'moreModules',
+    id: 'moreIntegrations',
+    name: 'moreIntegrations',
     title: 'More integrations coming soon',
     info: 'You can submit a ticket to request an integration',
-    icon: MoreExtentionsIcon,
+    icon: MoreIntegrationsIcon,
     installationStatus: ModuleStatus.NONE,
 }
 

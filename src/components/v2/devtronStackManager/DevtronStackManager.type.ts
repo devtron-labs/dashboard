@@ -20,6 +20,12 @@ export enum ModuleActions {
     UPGRADE = 'upgrade',
 }
 
+export enum InstallationType {
+    OSS_KUBECTL = 'oss_kubectl',
+    OSS_HELM = 'oss_helm',
+    ENTERPRISE = 'enterprise'
+}
+
 export interface StackDetailsType {
     isLoading: boolean
     discoverModulesList: ModuleDetails[]
@@ -35,6 +41,7 @@ export interface StackManagerNavItemType {
     newVersion: string
     handleTabChange: (tabIndex: number) => void
     showInitializing: boolean
+    showVersionInfo: boolean
 }
 
 export interface StackManagerNavLinkType {
@@ -71,7 +78,6 @@ export interface ModuleListingViewType {
 export interface ModuleDetailsViewType {
     moduleDetails: ModuleDetails
     setDetailsMode: React.Dispatch<React.SetStateAction<string>>
-    setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>
     serverInfo: ServerInfo
     upgradeVersion: string
     logPodName?: string
@@ -99,7 +105,6 @@ export interface InstallationWrapperType {
     serverInfo: ServerInfo
     upgradeVersion: string
     isUpgradeView?: boolean
-    setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>
     isActionTriggered: boolean
     updateActionTrigger: (isActionTriggered: boolean) => void
 }
@@ -121,7 +126,6 @@ export interface AboutDevtronViewType {
     parentRef: React.MutableRefObject<HTMLElement>
     releaseNotes: ReleaseNotes[]
     serverInfo: ServerInfo
-    setShowManagedByDialog: React.Dispatch<React.SetStateAction<boolean>>
     canViewLogs: boolean
     logPodName: string
     handleTabChange: (tabIndex: number) => void
@@ -152,7 +156,7 @@ export interface ServerInfo {
     currentVersion: string
     status: ModuleStatus
     releaseName: string
-    canUpdateServer: boolean
+    installationType: InstallationType
 }
 
 export interface ServerInfoResponse extends ResponseType {

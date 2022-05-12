@@ -140,3 +140,45 @@ REACT_APP_EDITOR=code
 REACT_APP_ORCHESTRATOR_ROOT=http://demo.devtron.info:32080/orchestrator
 REACT_APP_PASSWORD=argocd-server-74b7b94945-nxxnh
 ```
+
+## How do I make a contribution?
+Never made an open source contribution before? Wondering how contributions work in our project? Here's a quick rundown!
+- Find an issue that you are interested in addressing or a feature that you would like to add.
+- Fork the repository https://github.com/devtron-labs/dashboard.git to your local GitHub organization. This means that you will have a copy of the repository under your-GitHub-username/repository-name.
+- Clone the repository to your local machine using 
+`git clone https://github.com/github-username/dashboard.git.`
+- Create a new branch for your fix using `git checkout -b branch-name-here`.
+- Make the appropriate changes for the issue you are trying to address or the feature that you want to add.
+- Use `git add insert-paths-of-changed-files-here` to add the file contents of the changed files to the "snapshot" git uses to manage the state of the project, also known as the index.
+- Use `git commit -m ‘Insert a short message of the changes made here’` to store the contents of the index with a descriptive message.
+- Push the changes to the remote repository using `git push origin branch-name-here`.
+- Submit a pull request to the upstream repository.
+- Title the pull request with a short description of the changes made and the issue or bug number associated with your change. For example, you can title an issue like so "Added failsafe check to resolve #1423".
+- In the description of the pull request, explain the changes that you made, any issues you think exist with the pull request you made, and any questions you have for the maintainer. It's OK if your pull request is not perfect (no pull request is), the reviewer will be able to help you fix any problems and improve it!
+- Wait for the pull request to be reviewed by a maintainer.
+- Make changes to the pull request if the reviewing maintainer recommends them.
+- Celebrate your success after your pull request is merged!
+
+## How do I run it locally?
+First you need to have the backend project up and running and the dashboard repo cloned on your machine after that follow the below process:
+- Run yarn in the dashboard repo root
+- Open the project in your preferred IDE
+- Open the `setupProxy.js` file
+- Change the target URL of the orchestrator. Replace it with the URL of your orchestrator
+- Save the file
+- Run `npm run start`
+- Go to `localhost:3000`
+- Click Login as administrator
+- Provide Admin as username and password from Devtron BE
+- After login, you will be able to see the dashboard running on your local machine
+
+## Code walkthrough/Project structure
+We have a `src` folder at the root level which holds everything related to the dashboard 
+- `src/assets` have all the image folders like logo, icons, gif etc. These folders have, the related files
+- `src/components` have all the components used in the project further divided into folder component specific folders. Specific component folders hold their local CSS file specific to that component, service file specific to that component, and some required child component.tsx as well
+- `src/config` has config files like constants, route, etc which holds all the constants, route path constants respectively
+- `src/css has` the common CSS files 
+- `src/services` have the common services used across projects
+
+
+

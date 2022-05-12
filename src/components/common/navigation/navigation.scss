@@ -249,7 +249,7 @@
 
 .help-card {
     display: grid;
-    grid-template-rows: 36px 1px 36px 36px 1px 36px 56px;
+    grid-template-rows: 36px 1px 36px 36px 1px 36px auto;
     align-items: center;
 
     .help-card__option {
@@ -270,6 +270,7 @@
     }
 
     .help-card__update-option {
+        height: 56px;
         padding: 8px 10px;
         background-color: var(--N100);
     }
