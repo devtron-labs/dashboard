@@ -39,12 +39,16 @@ export default function DeploymentHistoryDetailedView({
 
         if (deploymentTemplatesConfigSelector && selectedDeploymentTemplate) {
             try {
-                getDeploymentHistoryDetail(appId, pipelineId, selectedDeploymentTemplate.value, '', '').then(
-                    (response) => {
-                        setCurrentConfiguration(response?.result)
-                        setLoader(false)
-                    },
-                )
+                getDeploymentHistoryDetail(
+                    appId,
+                    pipelineId,
+                    selectedDeploymentTemplate.value,
+                    configurationType,
+                    configurationName,
+                ).then((response) => {
+                    setCurrentConfiguration(response?.result)
+                    setLoader(false)
+                })
             } catch (err) {
                 showError(err)
                 setLoader(false)

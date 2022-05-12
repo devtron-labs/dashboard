@@ -276,11 +276,11 @@ export const getDeploymentHistoryDetail = (
     historyComponent: string,
     historyComponentName: string,
 ): Promise<DeploymentHistoryDetailRes> => {
-    // return get(
-    //     `app/history/template/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent}${
-    //         historyComponentName ? '&historyComponentName=' + historyComponentName : ''
-    //     }`,
-    // )
+    return get(
+        `app/history/template/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent}${
+            historyComponentName ? '&historyComponentName=' + historyComponentName : ''
+        }`,
+    )
     return Promise.resolve({
         result: { ...deploymentHistoryMockMap('test', 'test1') },
     } as DeploymentHistoryDetailRes)
