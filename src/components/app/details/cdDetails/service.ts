@@ -191,16 +191,18 @@ const prepareConfigMapAndSecretData = (rawData, type: string): DeploymentHistory
     return secretValues as DeploymentHistorySingleValue
 }
 
-const prepareHistoryData = (rawData, historyComponent: string): DeploymentHistoryDetail => {
+export const prepareHistoryData = (rawData, historyComponent: string): DeploymentHistoryDetail => {
     let values
-    if ((historyComponent = 'deployment_template')) {
+    let historyData = { codeEditorValue: rawData.codeEditorValue, values: {} }
+    delete rawData.codeEditorValue
+    if ((historyComponent = 'DEPLOYMENT_TEMPLATE')) {
         values = prepareDeploymentTemplateData(rawData)
-    } else if ((historyComponent = 'pipeline_configuration')) {
+    } else if ((historyComponent = 'PIPELINE_STRATEGY')) {
         values = preparePipelineConfigData(rawData)
     } else {
-        values = prepareConfigMapAndSecretData(rawData, historyComponent === 'config-maps' ? 'ConfigMap' : 'Secret')
+        values = prepareConfigMapAndSecretData(rawData, historyComponent === 'CONFIGMAP' ? 'ConfigMap' : 'Secret')
     }
-    let historyData = { codeEditorValue: rawData.codeEditorValue, values: {} }
+    historyData.values = values
     return historyData
 }
 
@@ -274,7 +276,9 @@ export const getDeploymentHistoryDetail = (
     historyComponentName: string,
 ): Promise<DeploymentHistoryDetailRes> => {
     return get(
-        `app/history/template/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent}&historyComponentName=${historyComponentName}`,
+        `app/history/deployed-component/detail/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent}${
+            historyComponentName ? '&historyComponentName=' + historyComponentName : ''
+        }`,
     )
     // return Promise.resolve({
     //     result: { ...deploymentHistoryMockMap('test', 'test1') },

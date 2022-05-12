@@ -1,25 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { Progressing, showError } from '../../../../common'
 import DeploymentHistoryHeader from './DeploymentHistoryHeader'
-import { getDeploymentHistoryDetail } from '../service'
+import { getDeploymentHistoryDetail, prepareHistoryData } from '../service'
 import { useParams } from 'react-router'
 import { DeploymentTemplateOptions, CompareViewDeploymentType, DeploymentHistoryDetail } from '../cd.type'
 import CDEmptyState from '../CDEmptyState'
 import DeploymentHistorySidebar from './DeploymentHistorySidebar'
 import DeploymentHistoryDiffView from './DeploymentHistoryDiffView'
-import { Settings } from 'http2'
 
 export default function DeploymentHistoryDetailedView({
     showTemplate,
     setShowTemplate,
-    baseTimeStamp,
-    baseTemplateId,
-    setBaseTemplateId,
     loader,
     setLoader,
-    deploymentTemplatesConfigSelector,
     deploymentHistoryList,
-    setDepolymentHistoryList,
+    setDeploymentHistoryList: setDepolymentHistoryList,
 }: CompareViewDeploymentType) {
     const { appId, pipelineId, historyComponent, baseConfigurationId, historyComponentName } = useParams<{
         appId: string
@@ -31,21 +26,12 @@ export default function DeploymentHistoryDetailedView({
     const [selectedDeploymentTemplate, setSelectedDeploymentTemplate] = useState<DeploymentTemplateOptions>()
     const [currentConfiguration, setCurrentConfiguration] = useState<DeploymentHistoryDetail>()
     const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentHistoryDetail>()
-    const params = useParams()
     const [codeEditorLoading, setCodeEditorLoading] = useState<boolean>(false)
-
-    useEffect(() => {
-        getDeploymentHistoryDetail(appId, pipelineId, baseConfigurationId, historyComponent, historyComponentName).then(
-            (response) => {
-                console.log(response.result)
-            },
-        )
-    }, [])
 
     useEffect(() => {
         setLoader(true)
 
-        if (deploymentTemplatesConfigSelector && selectedDeploymentTemplate) {
+        if (selectedDeploymentTemplate) {
             try {
                 getDeploymentHistoryDetail(
                     appId,
@@ -54,7 +40,7 @@ export default function DeploymentHistoryDetailedView({
                     historyComponent,
                     historyComponentName,
                 ).then((response) => {
-                    setCurrentConfiguration(response?.result)
+                    setCurrentConfiguration(prepareHistoryData(response.result, historyComponent))
                     setLoader(false)
                 })
             } catch (err) {
@@ -67,7 +53,7 @@ export default function DeploymentHistoryDetailedView({
     useEffect(() => {
         try {
             setCodeEditorLoading(true)
-            if (deploymentTemplatesConfigSelector && baseConfigurationId) {
+            if (baseConfigurationId) {
                 getDeploymentHistoryDetail(
                     appId,
                     pipelineId,
@@ -75,7 +61,7 @@ export default function DeploymentHistoryDetailedView({
                     historyComponent,
                     historyComponentName,
                 ).then((response) => {
-                    setBaseTemplateConfiguration(response.result)
+                    setBaseTemplateConfiguration(prepareHistoryData(response.result, historyComponent))
                     setCodeEditorLoading(false)
                 })
             }
@@ -97,20 +83,15 @@ export default function DeploymentHistoryDetailedView({
         }
     }, [showTemplate])
 
-    return !deploymentTemplatesConfigSelector && deploymentTemplatesConfigSelector.length < 1 && !loader ? (
-        <CDEmptyState />
-    ) : (
+    // return !loader ? (
+    //     <CDEmptyState />
+    // ) : (
+    return (
         <>
-            {console.log(appId)}
             <DeploymentHistoryHeader
-                deploymentTemplatesConfigSelector={deploymentTemplatesConfigSelector}
                 selectedDeploymentTemplate={selectedDeploymentTemplate}
                 setSelectedDeploymentTemplate={setSelectedDeploymentTemplate}
                 setShowTemplate={setShowTemplate}
-                setBaseTemplateId={setBaseTemplateId}
-                baseTemplateId={baseTemplateId}
-                baseTimeStamp={baseTimeStamp}
-                loader={loader}
                 setLoader={setLoader}
             />
             {loader ? (

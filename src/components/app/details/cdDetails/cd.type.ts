@@ -38,11 +38,6 @@ export interface CompareWithBaseConfiguration {
     selectedDeploymentTemplate: DeploymentTemplateOptions
     setSelectedDeploymentTemplate: (selected) => void
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>
-    baseTimeStamp: string
-    baseTemplateId: string
-    setBaseTemplateId: React.Dispatch<React.SetStateAction<string>>
-    deploymentTemplatesConfigSelector: HistoryDiffSelectorList[]
-    loader: boolean
     setLoader: React.Dispatch<React.SetStateAction<boolean>>
 }
 export interface HistoryDiffSelectorList {
@@ -55,15 +50,10 @@ export interface HistoryDiffSelectorList {
 export interface CompareViewDeploymentType {
     showTemplate: boolean
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>
-    baseTimeStamp: string
-    baseTemplateId: string
-    setBaseTemplateId: React.Dispatch<React.SetStateAction<string>>
-    // deploymentTemplatesConfiguration: DeploymentTemplateConfiguration[]
     loader: boolean
     setLoader: React.Dispatch<React.SetStateAction<boolean>>
-    deploymentTemplatesConfigSelector: HistoryDiffSelectorList[]
     deploymentHistoryList: DeploymentTemplateList[]
-    setDepolymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
+    setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
 }
 export interface DeploymentTemplateList {
     id: number

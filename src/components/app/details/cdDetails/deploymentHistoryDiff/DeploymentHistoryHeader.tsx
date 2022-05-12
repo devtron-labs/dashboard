@@ -12,53 +12,48 @@ import {
     HistoryDiffSelectorList,
 } from '../cd.type'
 import { Option, styles } from '../cd.utils'
-import { getDeploymentDiffSelector, getDeploymentHistoryList } from '../service'
+import { getDeploymentDiffSelector } from '../service'
 import { showError } from '../../../../common'
 
 export default function DeploymentHistoryHeader({
     selectedDeploymentTemplate,
     setSelectedDeploymentTemplate,
     setShowTemplate,
-    baseTemplateId,
-    setBaseTemplateId,
-    baseTimeStamp,
-    loader,
     setLoader,
 }: CompareWithBaseConfiguration) {
     const { url } = useRouteMatch()
     const history = useHistory()
-    const { appId, envId, triggerId, pipelineId, historyComponent, baseConfigurationId, historyComponentName } =
-        useParams<{
-            appId: string
-            envId: string
-            triggerId: string
-            pipelineId: string
-            historyComponent: string
-            historyComponentName: string
-            baseConfigurationId: string
-        }>()
-    const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>(baseTimeStamp)
-    const [comparedTemplateId, setComparedTemplateId] = useState<string>()
-    const [baseTemplateconfig, setBaseTemplateConfig] = useState<DeploymentTemplateList[]>()
-    const [deploymentTemplatesConfigSelector, setDeploymentTemplatesConfigSelector] = useState<
-        HistoryDiffSelectorList[]
-    >([])
-    const deploymentTemplateOption: DeploymentTemplateOptions[] = deploymentTemplatesConfigSelector.map((p) => {
-        return {
-            value: String(p.id),
-            label: moment(p.deployedOn).format(Moment12HourFormat),
-            author: p.deployedBy,
-            status: p.deploymentStatus,
-        }
-    })
+    const { appId, pipelineId, historyComponent, baseConfigurationId, historyComponentName } = useParams<{
+        appId: string
+        pipelineId: string
+        historyComponent: string
+        historyComponentName: string
+        baseConfigurationId: string
+    }>()
+    const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>('')
+    //const [comparedTemplateId, setComparedTemplateId] = useState<string>()
+    const [deploymentTemplateOption, setDeploymentTemplateOption] = useState<DeploymentTemplateOptions[]>([])
+    // const [deploymentTemplatesConfigSelector, setDeploymentTemplatesConfigSelector] = useState<
+    //     HistoryDiffSelectorList[]
+    // >([])
+    // const deploymentTemplateOption: DeploymentTemplateOptions[] = deploymentTemplatesConfigSelector.map((p) => {
+    //     return {
+    //         value: String(p.id),
+    //         label: moment(p.deployedOn).format(Moment12HourFormat),
+    //         author: p.deployedBy,
+    //         status: p.deploymentStatus,
+    //     }
+    // })
 
-    const handleSelector = (selectedTemplateId: string) => {
-        let deploymentTemp = deploymentTemplatesConfigSelector.find((e) => e.id.toString() === selectedTemplateId)
-        setSelectedDeploymentTemplate(deploymentTemp)
-    }
+    // const handleSelector = (selectedTemplateId: string) => {
+    //     let deploymentTemp = deploymentTemplatesConfigSelector.find((e) => e.id.toString() === selectedTemplateId)
+    //     setSelectedDeploymentTemplate(
+    //         deploymentTemplatesConfigSelector.find((e) => e.id.toString() === selectedTemplateId),
+    //     )
+    // }
 
     const onClickTimeStampSelector = (selected: { label: string; value: string }) => {
-        handleSelector(selected.value)
+        //setSelectedDeploymentTemplate(deploymentTemplatesConfigSelector.find((e) => e.id.toString() === selected.value))
         setSelectedDeploymentTemplate(selected)
     }
 
@@ -77,7 +72,34 @@ export default function DeploymentHistoryHeader({
                     baseConfigurationId,
                     historyComponentName,
                 ).then((response) => {
-                    setDeploymentTemplatesConfigSelector(response.result)
+                    if (response.result) {
+                        //setDeploymentTemplatesConfigSelector(response.result)
+                        let deploymentTemplateOption = []
+                        const resultLen = response.result.length
+                        for (let i = 0; i < resultLen; i++) {
+                            if (response.result[i].id.toString() === baseConfigurationId) {
+                                setBaseTemplateTimeStamp(response.result[i].deployedOn)
+                                //setBaseTemplateId(response.result[i].id.toString())
+                            } else {
+                                deploymentTemplateOption.push({
+                                    value: String(response.result[i].id),
+                                    label: moment(response.result[i].deployedOn).format(Moment12HourFormat),
+                                    author: response.result[i].deployedBy,
+                                    status: response.result[i].deploymentStatus,
+                                })
+                            }
+                        }
+                        setDeploymentTemplateOption(deploymentTemplateOption)
+                        setSelectedDeploymentTemplate(deploymentTemplateOption[0])
+                        // deploymentTemplateOption = response.result.map((p) => {
+                        //     return {
+                        //         value: String(p.id),
+                        //         label: moment(p.deployedOn).format(Moment12HourFormat),
+                        //         author: p.deployedBy,
+                        //         status: p.deploymentStatus,
+                        //     }
+                        // })
+                    }
                     setLoader(false)
                 })
             } catch (err) {
@@ -85,23 +107,23 @@ export default function DeploymentHistoryHeader({
                 setLoader(false)
             }
         }
-    }, [pipelineId])
+    }, [historyComponent, baseConfigurationId, historyComponentName])
 
-    useEffect(() => {
-        if (deploymentTemplatesConfigSelector.length > 0) {
-            const baseTemplate = deploymentTemplatesConfigSelector.find((e) => e.id.toString() === triggerId)
-            setBaseTemplateTimeStamp(baseTemplate?.deployedOn)
-            setBaseTemplateId(baseTemplate?.id.toString())
-            if (!selectedDeploymentTemplate && deploymentTemplateOption?.length > 0 && baseTemplateId) {
-                deploymentTemplateOption.map((dt, key) => {
-                    if (dt.value === baseTemplate?.id.toString()) {
-                        setComparedTemplateId(key.toString())
-                        setSelectedDeploymentTemplate(deploymentTemplateOption[key + 1])
-                    }
-                })
-            }
-        }
-    }, [deploymentTemplatesConfigSelector, baseTemplateTimeStamp])
+    // useEffect(() => {
+    //     if (deploymentTemplatesConfigSelector.length > 0) {
+    //         // const baseTemplate = deploymentTemplatesConfigSelector.find((e) => e.id.toString() === baseConfigurationId)
+    //         // setBaseTemplateTimeStamp(baseTemplate?.deployedOn)
+    //         // setBaseTemplateId(baseTemplate?.id.toString())
+    //         if (!selectedDeploymentTemplate && deploymentTemplateOption?.length > 0 && baseTemplateId) {
+    //             deploymentTemplateOption.map((dt, key) => {
+    //                 if (dt.value === baseTemplate?.id.toString()) {
+    //                     setComparedTemplateId(key.toString())
+    //                     setSelectedDeploymentTemplate(deploymentTemplateOption[key + 1])
+    //                 }
+    //             })
+    //         }
+    //     }
+    // }, [deploymentTemplatesConfigSelector])
 
     const renderGoBacktoConfiguration = () => {
         return (
@@ -112,7 +134,7 @@ export default function DeploymentHistoryHeader({
                     e.preventDefault()
                     setShowTemplate(false)
                     history.push(`${url.split('/configuration')[0]}/configuration`)
-                    setSelectedDeploymentTemplate(deploymentTemplateOption[comparedTemplateId])
+                    //setSelectedDeploymentTemplate(deploymentTemplateOption[comparedTemplateId])
                 }}
             >
                 <LeftIcon className="rotate icon-dim-24 mr-16" style={{ ['--rotateBy' as any]: '180deg' }} />

@@ -34,38 +34,40 @@ export default function DeploymentHistoryDiffView({
     return (
         <div>
             <div className="en-2 bw-1 br-4 bcn-0 mt-20 mb-16 mr-20 ml-20 pt-2 pb-2 deployment-diff__upper">
-                {Object.keys({ ...currentConfiguration?.values, ...baseTemplateConfiguration?.values }).map(
-                    (configKey, index) => {
-                        const currentValue = currentConfiguration.values[configKey]
-                        const baseValue = baseTemplateConfiguration.values[configKey]
-                        const changeBGColor = currentValue?.value !== baseValue?.value
-                        const titleStyle = 'cn-6 pt-8 pl-16 pr-16 lh-16'
-                        const descriptionStyle = 'cn-9 fs-13 pb-8 pl-16 pr-16 lh-20 mh-28'
-                        const baseTemplateBGStyle = changeBGColor ? ' bcg-1' : ''
-                        const currentTemplateBGStyle = changeBGColor ? ' bcr-1' : ''
-                        return (
-                            <Fragment key={`deployment-history-diff-view-${index}`}>
-                                {currentValue && currentValue.value ? (
-                                    <div className={currentTemplateBGStyle}>
-                                        <div className={titleStyle}>{currentValue['displayName']}</div>
-                                        <div className={descriptionStyle}>{currentValue['value'] + ''}</div>
-                                    </div>
-                                ) : (
-                                    <div></div>
-                                )}
+                {currentConfiguration &&
+                    baseTemplateConfiguration &&
+                    Object.keys({ ...currentConfiguration?.values, ...baseTemplateConfiguration?.values }).map(
+                        (configKey, index) => {
+                            const currentValue = currentConfiguration.values[configKey]
+                            const baseValue = baseTemplateConfiguration.values[configKey]
+                            const changeBGColor = currentValue?.value !== baseValue?.value
+                            const titleStyle = 'cn-6 pt-8 pl-16 pr-16 lh-16'
+                            const descriptionStyle = 'cn-9 fs-13 pb-8 pl-16 pr-16 lh-20 mh-28'
+                            const baseTemplateBGStyle = changeBGColor ? ' bcg-1' : ''
+                            const currentTemplateBGStyle = changeBGColor ? ' bcr-1' : ''
+                            return (
+                                <Fragment key={`deployment-history-diff-view-${index}`}>
+                                    {currentValue && currentValue.value ? (
+                                        <div className={currentTemplateBGStyle}>
+                                            <div className={titleStyle}>{currentValue['displayName']}</div>
+                                            <div className={descriptionStyle}>{currentValue['value'] + ''}</div>
+                                        </div>
+                                    ) : (
+                                        <div></div>
+                                    )}
 
-                                {baseValue && baseValue.value ? (
-                                    <div className={baseTemplateBGStyle}>
-                                        <div className={titleStyle}>{baseValue['displayName']}</div>
-                                        <div className={descriptionStyle}>{baseValue['value'] + ''}</div>
-                                    </div>
-                                ) : (
-                                    <div></div>
-                                )}
-                            </Fragment>
-                        )
-                    },
-                )}
+                                    {baseValue && baseValue.value ? (
+                                        <div className={baseTemplateBGStyle}>
+                                            <div className={titleStyle}>{baseValue['displayName']}</div>
+                                            <div className={descriptionStyle}>{baseValue['value'] + ''}</div>
+                                        </div>
+                                    ) : (
+                                        <div></div>
+                                    )}
+                                </Fragment>
+                            )
+                        },
+                    )}
             </div>
 
             <div className=" form__row form__row--code-editor-container en-2 bw-1 br-4 mb-20 mr-20 ml-20">

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useMemo, SetStateAction } from 'react'
+import React, { useRef, useState, useEffect, useMemo } from 'react'
 import { getAppOtherEnvironment, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { AppEnvironment } from '../../../../services/service.types'
 import {
@@ -14,7 +14,6 @@ import {
     asyncWrap,
     ConditionalWrap,
     useAppContext,
-    sortCallback,
 } from '../../../common'
 import { Host, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
@@ -25,7 +24,7 @@ import EmptyImage from '../../../../assets/img/app-not-deployed.png'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import Reload from '../../../Reload/Reload'
 import { default as AnsiUp } from 'ansi_up'
-import { getTriggerHistory, getTriggerDetails, getCDBuildReport, getDeploymentDiffSelector } from './service'
+import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './service'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { cancelPrePostCdTrigger } from '../../service'
 import { Scroller } from '../cIDetails/CIDetails'
@@ -41,22 +40,18 @@ import { Moment12HourFormat } from '../../../../config'
 import DeploymentHistoryConfigList from './deploymentHistoryDiff/DeploymentHistoryConfigList.component'
 import './cdDetail.scss'
 import DeploymentHistoryDetailedView from './deploymentHistoryDiff/DeploymentHistoryDetailedView'
-import { DeploymentTemplateConfiguration, DeploymentTemplateList, HistoryDiffSelectorList } from './cd.type'
+import { DeploymentTemplateConfiguration, DeploymentTemplateList } from './cd.type'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
 
 export default function CDDetails() {
-    const { appId, envId, triggerId, pipelineId, historyComponent, baseConfigurationId, historyComponentName } =
-        useParams<{
-            appId: string
-            envId: string
-            triggerId: string
-            pipelineId: string
-            historyComponent: string
-            historyComponentName: string
-            baseConfigurationId: string
-        }>()
+    const { appId, envId, triggerId, pipelineId } = useParams<{
+        appId: string
+        envId: string
+        triggerId: string
+        pipelineId: string
+    }>()
     const [pagination, setPagination] = useState<{ offset: number; size: number }>({ offset: 0, size: 20 })
     const [hasMore, setHasMore] = useState<boolean>(false)
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
@@ -91,10 +86,10 @@ export default function CDDetails() {
     const [deploymentTemplatesConfiguration, setDeploymentTemplatesConfiguration] = useState<
         DeploymentTemplateConfiguration[]
     >([])
-    const [deploymentTemplatesConfigSelector, setDeploymentTemplatesConfigSelector] = useState<
-        HistoryDiffSelectorList[]
-    >([])
-    const [deploymentHistoryList, setDepolymentHistoryList] = useState<DeploymentTemplateList[]>()
+    // const [deploymentTemplatesConfigSelector, setDeploymentTemplatesConfigSelector] = useState<
+    //     HistoryDiffSelectorList[]
+    // >([])
+    const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
 
     const [loader, setLoader] = useState<boolean>(false)
     const {} = useParams<{
@@ -256,7 +251,7 @@ export default function CDDetails() {
                                         showTemplate={showTemplate}
                                         setBaseTimeStamp={setBaseTimeStamp}
                                         baseTimeStamp={baseTimeStamp}
-                                        setDepolymentHistoryList={setDepolymentHistoryList}
+                                        setDepolymentHistoryList={setDeploymentHistoryList}
                                         deploymentHistoryList={deploymentHistoryList}
                                     />
                                 </Route>
@@ -295,13 +290,9 @@ export default function CDDetails() {
                             <DeploymentHistoryDetailedView
                                 showTemplate={showTemplate}
                                 setShowTemplate={setShowTemplate}
-                                baseTemplateId={baseTemplateId}
-                                baseTimeStamp={baseTimeStamp}
-                                setBaseTemplateId={setBaseTemplateId}
-                                deploymentTemplatesConfigSelector={deploymentTemplatesConfigSelector}
                                 loader={loader}
                                 setLoader={setLoader}
-                                setDepolymentHistoryList={setDepolymentHistoryList}
+                                setDeploymentHistoryList={setDeploymentHistoryList}
                                 deploymentHistoryList={deploymentHistoryList}
                             />
                         )}
@@ -515,7 +506,7 @@ const TriggerOutput: React.FC<{
     showTemplate,
     baseTimeStamp,
     setBaseTimeStamp,
-    setDepolymentHistoryList,
+    setDepolymentHistoryList: setDeploymentHistoryList,
     deploymentHistoryList,
 }) => {
     const { appId, triggerId, envId, pipelineId } = useParams<{
@@ -635,7 +626,7 @@ const TriggerOutput: React.FC<{
                 baseTimeStamp={baseTimeStamp}
                 setBaseTimeStamp={setBaseTimeStamp}
                 setBaseTemplateId={setBaseTemplateId}
-                setDepolymentHistoryList={setDepolymentHistoryList}
+                setDeploymentHistoryList={setDeploymentHistoryList}
                 deploymentHistoryList={deploymentHistoryList}
             />
         </>
@@ -652,7 +643,7 @@ const HistoryLogs: React.FC<{
     baseTimeStamp: string
     setBaseTimeStamp: React.Dispatch<React.SetStateAction<string>>
     deploymentHistoryList: DeploymentTemplateList[]
-    setDepolymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
+    setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
 }> = ({
     triggerDetails,
     loading,
@@ -661,7 +652,7 @@ const HistoryLogs: React.FC<{
     setBaseTimeStamp,
     baseTimeStamp,
     deploymentHistoryList,
-    setDepolymentHistoryList,
+    setDeploymentHistoryList: setDepolymentHistoryList,
 }) => {
     let { path } = useRouteMatch()
     const { appId, pipelineId, triggerId, envId } = useParams<{
