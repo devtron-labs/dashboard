@@ -9,7 +9,7 @@ import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../../config
 interface TemplateConfiguration {
     setShowTemplate: (boolean) => void
     deploymentHistoryList: DeploymentTemplateList[]
-    setDeploymentHistoryList
+    setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
 }
 
 export default function DeploymentHistoryConfigList({
@@ -29,7 +29,7 @@ export default function DeploymentHistoryConfigList({
     const getNavLink = (componentId: number, componentName: string, key: string, childComponentName?: string) => {
         const currentComponent = DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP[componentName]
         const configURL = `${match.url}/${currentComponent.VALUE}/${componentId}${
-            childComponentName ? '/' + childComponentName : ''
+            childComponentName ? `/${childComponentName}` : ''
         }`
         return (
             <NavLink
