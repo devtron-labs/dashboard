@@ -108,7 +108,7 @@ const prepareConfigMapAndSecretData = (rawData, type: string): Record<string, De
     }
     if (rawData['type']) {
         let typeValue = 'Environment Variable'
-        if (rawData['templateVersion'] === 'volume') {
+        if (rawData['type'] === 'volume') {
             typeValue = 'Data Volume'
             if (rawData['mountPath']) {
                 secretValues['mountPath'] = { displayName: 'Volume mount path', value: rawData['mountPath'] }
