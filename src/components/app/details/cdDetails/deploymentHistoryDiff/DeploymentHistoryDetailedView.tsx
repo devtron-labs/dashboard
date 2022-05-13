@@ -94,21 +94,22 @@ export default function DeploymentHistoryDetailedView({
                 setShowTemplate={setShowTemplate}
                 setLoader={setLoader}
             />
-            {loader ? (
-                <Progressing pageLoader />
-            ) : (
-                <div className="historical-diff__container bcn-1">
-                    <DeploymentHistorySidebar
-                        deploymentHistoryList={deploymentHistoryList}
-                        setDepolymentHistoryList={setDepolymentHistoryList}
-                    />
+
+            <div className="historical-diff__container bcn-1">
+                <DeploymentHistorySidebar
+                    deploymentHistoryList={deploymentHistoryList}
+                    setDepolymentHistoryList={setDepolymentHistoryList}
+                />
+                {loader ? (
+                    <Progressing pageLoader />
+                ) : (
                     <DeploymentHistoryDiffView
                         currentConfiguration={currentConfiguration}
                         baseTemplateConfiguration={baseTemplateConfiguration}
                         codeEditorLoading={codeEditorLoading}
                     />
-                </div>
-            )}
+                )}
+            </div>
         </>
     )
 }
