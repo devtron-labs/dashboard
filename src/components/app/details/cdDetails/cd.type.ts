@@ -1,19 +1,3 @@
-interface DeploymentTemplateCommon {
-    id: number
-    appId: number
-    isAppMetricsEnabled: boolean
-    deployed: boolean
-    deployedOn: string
-    deployedBy: number
-    emailId: string
-}
-
-export interface DeploymentTemplateConfiguration extends DeploymentTemplateCommon {
-    deploymentStatus: string
-    wfrId: number
-    workflowType: string
-}
-
 export interface DeploymentHistorySingleValue {
     displayName: string
     value: string
