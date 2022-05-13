@@ -61,11 +61,19 @@ export default function CDDetails() {
         () => Promise.all([getAppOtherEnvironment(appId), getCDPipelines(appId)]),
         [appId],
     )
-    const [loadingDeploymentHistory, deploymentHistoryResult, deploymentHistoryError, dependencyState] = useAsync(
+    const [
+        loadingDeploymentHistory,
+        deploymentHistoryResult,
+        deploymentHistoryError,
+        reloadDeploymentHistory,
+        ,
+        dependencyState,
+    ] = useAsync(
         () => getTriggerHistory(+appId, +envId, pipelineId, pagination),
         [pagination, appId, envId],
         !!envId && !!pipelineId,
     )
+
     const { path } = useRouteMatch()
     const { pathname } = useLocation()
     const { push } = useHistory()
