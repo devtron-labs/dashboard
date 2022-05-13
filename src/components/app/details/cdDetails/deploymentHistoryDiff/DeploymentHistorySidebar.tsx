@@ -21,23 +21,25 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDepolymentHistoryL
     }, [deploymentHistoryList])
     return (
         <div className="bcn-0">
-            {deploymentHistoryList?.map((elm, index) => {
-                const newURL = `${match.url.split(URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS)[0]}${
-                    URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS
-                }/${elm.name}/${elm.id}`
+            {deploymentHistoryList?.map((historicalComponent, index) => {
+                const newURL = `${
+                    match.url.split(URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS)[0]
+                }${URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS.replace('_', '-').toLowerCase()}/${
+                    historicalComponent.name
+                }/${historicalComponent.id}`
 
-                return elm.childList?.length > 1 ? (
-                    elm.childList.map((el, idx) => {
+                return historicalComponent.childList?.length > 1 ? (
+                    historicalComponent.childList.map((historicalComponentName, idx) => {
                         return (
                             <div className={`cursor`} key={`deployment-history-childlist__${idx}`}>
                                 <NavLink
                                     activeClassName="active"
-                                    to={`${newURL}/${el}`}
+                                    to={`${newURL}/${historicalComponentName}`}
                                     className={
                                         'inline-block no-decor pt-12 pb-12 pl-16 pr-12 fs-13 cn-9 configuration-link w-280'
                                     }
                                 >
-                                    {elm.name}/{el.toLowerCase()}
+                                    {historicalComponent.name}/{historicalComponentName.toLowerCase()}
                                 </NavLink>
                             </div>
                         )
@@ -51,7 +53,7 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDepolymentHistoryL
                                 'inline-block no-decor pt-12 pb-12 pl-16 pr-12 fs-13 cn-9 configuration-link w-280 text-capitalize'
                             }
                         >
-                            {elm.name.replace('_', ' ').toLowerCase()}
+                            {historicalComponent.name.replace('_', ' ').toLowerCase()}
                         </NavLink>
                     </div>
                 )
