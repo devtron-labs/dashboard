@@ -102,12 +102,6 @@ const preparePipelineConfigData = (rawData): Record<string, DeploymentHistorySin
             value: rawData['templateVersion'],
         }
     }
-    if (rawData['templateVersion']) {
-        pipelineConfigData['templateVersion'] = {
-            displayName: 'Deploy to environment',
-            value: rawData['templateVersion'],
-        }
-    }
     if (rawData['strategy']) {
         pipelineConfigData['strategy'] = {
             displayName: 'Deployment strategy',
