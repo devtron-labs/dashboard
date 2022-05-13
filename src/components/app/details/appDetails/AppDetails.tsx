@@ -63,7 +63,7 @@ import { TriggerInfoModal } from '../../list/TriggerInfo';
 import { sortObjectArrayAlphabetically, sortOptionsByValue } from '../../../common/helpers/Helpers';
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component';
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service';
-import { ExternalLink, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
+import { ExternalLink, ExternalLinksAndToolsType, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab';
 
@@ -160,9 +160,7 @@ export const Details: React.FC<{
     const [appDetailsError, setAppDetailsError] = useState(undefined);
     const [appDetailsResult, setAppDetailsResult] = useState(undefined);
     const [pollingIntervalID, setPollingIntervalID] = useState(null);
-    const [externalLinksAndTools, setExternalLinksAndTools] = useState<
-        Record<string, ExternalLink[] | OptionTypeWithIcon[]>
-    >({
+    const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         externalLinks: [],
         monitoringTools: [],
     })
@@ -341,15 +339,15 @@ export const Details: React.FC<{
             {isExternalToolAvailable && (
                 <AppLevelExternalLinks
                     appDetails={appDetails}
-                    externalLinks={externalLinksAndTools.externalLinks as ExternalLink[]}
-                    monitoringTools={externalLinksAndTools.monitoringTools  as OptionTypeWithIcon[]}
+                    externalLinks={externalLinksAndTools.externalLinks}
+                    monitoringTools={externalLinksAndTools.monitoringTools}
                 />
             )}
 
             <NodeTreeDetailTab
                 appDetails={appDetails}
-                externalLinks={externalLinksAndTools.externalLinks as ExternalLink[]}
-                monitoringTools={externalLinksAndTools.monitoringTools  as OptionTypeWithIcon[]}
+                externalLinks={externalLinksAndTools.externalLinks}
+                monitoringTools={externalLinksAndTools.monitoringTools}
                 isDevtronApp = {true}
             />
 
