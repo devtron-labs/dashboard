@@ -13,7 +13,7 @@ export default function DeploymentHistoryDetailedView({
     loader,
     setLoader,
     deploymentHistoryList,
-    setDeploymentHistoryList: setDepolymentHistoryList,
+    setDeploymentHistoryList,
 }: CompareViewDeploymentType) {
     const { appId, pipelineId, historyComponent, baseConfigurationId, historyComponentName } = useParams<{
         appId: string
@@ -94,7 +94,7 @@ export default function DeploymentHistoryDetailedView({
             <div className="historical-diff__container bcn-1">
                 <DeploymentHistorySidebar
                     deploymentHistoryList={deploymentHistoryList}
-                    setDeploymentHistoryList={setDepolymentHistoryList}
+                    setDeploymentHistoryList={setDeploymentHistoryList}
                 />
                 {loader ? (
                     <Progressing pageLoader />
