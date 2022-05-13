@@ -117,38 +117,6 @@ const preparePipelineConfigData = (rawData): Record<string, DeploymentHistorySin
     return pipelineConfigData
 }
 
-// const prepareConfigMapsData = (rawData): DeploymentHistorySingleValue => {
-//     let configValues = {}
-//     if (rawData['external']) {
-//         configValues['external'] = { displayName: 'Data type', value: 'Kubernetes External ConfigMap' }
-//     } else {
-//         configValues['external'] = { displayName: 'Data type', value: 'Kubernetes ConfigMap' }
-//     }
-//     if (rawData['type']) {
-//         let typeValue = 'Environment Variable'
-//         if (rawData['templateVersion'] === 'volume') {
-//             typeValue = 'Data Volume'
-//             if (rawData['mountPath']) {
-//                 configValues['mountPath'] = { displayName: 'Volume mount path', value: rawData['mountPath'] }
-//             }
-//             if (rawData['subPath']) {
-//                 configValues['subPath'] = { displayName: 'Set SubPath', value: 'Yes' }
-//             }
-//             if (rawData['filePermission']) {
-//                 configValues['filePermission'] = {
-//                     displayName: 'Set file permission',
-//                     value: rawData['filePermission'],
-//                 }
-//             }
-//         }
-//         configValues['type'] = {
-//             displayName: 'How do you want to use this ConfigMap?',
-//             value: typeValue,
-//         }
-//     }
-//     return configValues as DeploymentHistorySingleValue
-// }
-
 const prepareConfigMapAndSecretData = (rawData, type: string): Record<string, DeploymentHistorySingleValue> => {
     let secretValues = {}
 
@@ -229,29 +197,6 @@ export const getDeploymentHistoryList = (
     triggerId: string,
 ): Promise<DeploymentConfigurationsRes> => {
     return get(`app/history/deployed-configuration/${appId}/${pipelineId}/${triggerId}`)
-
-    // return Promise.resolve({
-    //     result: [
-    //         {
-    //             id: 5,
-    //             name: 'deployment_template',
-    //         },
-    //         {
-    //             id: 1,
-    //             name: 'pipeline_configuration',
-    //         },
-    //         {
-    //             id: 22,
-    //             name: 'config-maps',
-    //             childList: ['config-cm', 'config-dashboard'],
-    //         },
-    //         {
-    //             id: 33,
-    //             name: 'secret',
-    //             childList: ['secret1', 'secret-dashboard'],
-    //         },
-    //     ],
-    // } as DeploymentConfigurationsRes)
 }
 
 export interface HistoryDiffSelectorRes {
@@ -270,32 +215,4 @@ export const getDeploymentDiffSelector = (
             historyComponentName ? '&historyComponentName=' + historyComponentName : ''
         }`,
     )
-    // return Promise.resolve({
-    //     result: [
-    //         {
-    //             id: 12,
-    //             deployedOn: '2022-04-28T09:23:33.855684Z',
-    //             deployedBy: 'admin',
-    //             deploymentStatus: 'healthy',
-    //         },
-    //         {
-    //             id: 11,
-    //             deployedOn: '2022-04-28T09:23:33.855684Z',
-    //             deployedBy: 'shivani@devtron.ai',
-    //             deploymentStatus: 'failed',
-    //         },
-    //         {
-    //             id: 10,
-    //             deployedOn: '2022-04-28T09:43:02.621323Z',
-    //             deployedBy: 'admin',
-    //             deploymentStatus: 'progressing',
-    //         },
-    //         {
-    //             id: 8,
-    //             deployedOn: 'Tue, 8 Apr 2022, 03:13 PM',
-    //             deployedBy: 'shivani@devtron.ai',
-    //             deploymentStatus: 'healthy',
-    //         },
-    //     ],
-    // })
 }
