@@ -1,7 +1,7 @@
-export const RequestTimeout = 60000;
-export const DEFAULT_STATUS = 'Checking Status...';
-export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
-export const DEFAULTK8SVERSION = 'v1.16.0';
+export const RequestTimeout = 60000
+export const DEFAULT_STATUS = 'Checking Status...'
+export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
+export const DEFAULTK8SVERSION = 'v1.16.0'
 
 export const Routes = {
     LOGIN: 'api/v1/session',
@@ -139,14 +139,14 @@ export const Routes = {
     LOG_PODNAME_API: 'k8s/resource/inception/info',
     RELEASE_NOTES_API: 'release/notes',
     MODULES_API: 'modules',
-};
+}
 
 export const ViewType = {
     EMPTY: 'EMPTY',
     LOADING: 'LOADING',
     FORM: 'FORM',
     ERROR: 'ERROR',
-};
+}
 
 export const AppConfigStatus = {
     LOADING: -1,
@@ -159,12 +159,12 @@ export const AppConfigStatus = {
     SECRETS: 6,
     ENV_OVERRIDE: 7,
     END: 10,
-};
+}
 
 export const FullRoutes = {
     LOGIN: `${Routes.LOGIN}`,
-    CENTRAL: 'https://api.devtron.ai'
-};
+    CENTRAL: 'https://api.devtron.ai',
+}
 
 export const PATTERNS = {
     STRING: /[A-Za-z0-9]+$/,
@@ -174,25 +174,25 @@ export const PATTERNS = {
     CONFIGMAP_AND_SECRET_NAME: /^[a-z0-9][a-z0-9-.]*[a-z0-9]$/,
     ALL_DIGITS_BETWEEN_0_AND_7: /^[0-7]*$/,
     APP_LABEL_CHIP: /^.+:.+$/,
-    CONFIG_MAP_AND_SECRET_MULTPLS_KEYS: /^[-._a-zA-Z0-9\,\?\s]*[-._a-zA-Z0-9\s]$/
-};
+    CONFIG_MAP_AND_SECRET_MULTPLS_KEYS: /^[-._a-zA-Z0-9\,\?\s]*[-._a-zA-Z0-9\s]$/,
+}
 
 export const TriggerType = {
     Auto: 'AUTOMATIC',
     Manual: 'MANUAL',
-};
+}
 
 export const TriggerTypeMap = {
     automatic: 'Auto',
     manual: 'Manual',
-};
+}
 
 export const SourceTypeMap = {
     BranchFixed: 'SOURCE_TYPE_BRANCH_FIXED',
     WEBHOOK: 'WEBHOOK',
-};
+}
 
-export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A';
+export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A'
 
 export const DOCUMENTATION = {
     HOME_PAGE: 'https://docs.devtron.ai',
@@ -220,7 +220,7 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/devtron/setup/global-configurations/user-access',
     HYPERION_TO_FULL_MODE: 'https://docs.devtron.ai/hyperion/upgrade-to-devtron',
     HYPERION: 'https://docs.devtron.ai/#hyperion',
-};
+}
 
 // APP LIST STARTS
 export const AppListConstants = {
@@ -240,7 +240,7 @@ export const AppListConstants = {
         NAMESPACE: 'namespace',
         ENVIRONMENT: 'environment',
     },
-};
+}
 // APP LIST ENDS
 
 export enum SERVER_MODE {
@@ -248,7 +248,7 @@ export enum SERVER_MODE {
     FULL = 'FULL',
 }
 
-export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE;
+export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE
 
 export enum ACCESS_TYPE_MAP {
     DEVTRON_APPS = '', // devtron app work flow
@@ -261,22 +261,22 @@ export enum MODES {
     SHELL = 'shell',
 }
 
-export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned';
+export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned'
 export interface InputDetailType {
-    label: string;
-    defaultValue: string;
-    placeholder: string;
+    label: string
+    defaultValue: string
+    placeholder: string
 }
 export interface RegistryTypeDetailType {
-    value: string;
-    label: string;
-    desiredFormat: string;
-    placeholderText: string;
-    gettingStartedLink: string;
-    defaultRegistryURL: string;
-    registryURL: InputDetailType;
-    id: InputDetailType;
-    password: InputDetailType;
+    value: string
+    label: string
+    desiredFormat: string
+    placeholderText: string
+    gettingStartedLink: string
+    defaultRegistryURL: string
+    registryURL: InputDetailType
+    id: InputDetailType
+    password: InputDetailType
 }
 
 export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
@@ -442,14 +442,33 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
             placeholder: '',
         },
     },
-};
+}
 
 export const AppCreationType = {
     Blank: 'BLANK',
     Existing: 'EXISTING',
-};
+}
 
 export const APP_STATUS_CUSTOM_MESSAGES = {
     HIBERNATED: "This application's workloads are scaled down to 0 replicas",
-    'PARTIALLY HIBERNATED': "Some of this application's workloads are scaled down to 0 replicas."
+    'PARTIALLY HIBERNATED': "Some of this application's workloads are scaled down to 0 replicas.",
+}
+
+export const DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP = {
+    DEPLOYMENT_TEMPLATE: {
+        DISPLAY_NAME: 'Deployment template',
+        VALUE: 'deployment_template',
+    },
+    PIPELINE_STRATEGY: {
+        DISPLAY_NAME: 'Pipeline configurations',
+        VALUE: 'pipeline_strategy',
+    },
+    CONFIGMAP: {
+        DISPLAY_NAME: 'ConfigMap',
+        VALUE: 'configmap',
+    },
+    SECRET: {
+        DISPLAY_NAME: 'Secret',
+        VALUE: 'secret',
+    },
 }

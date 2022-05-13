@@ -64,9 +64,3 @@ export function Option(props) {
         </components.Option>
     )
 }
-
-export const firstLettterCapitalize = (historicalName) => {
-    if (typeof historicalName !== 'string') return ''
-    let capitalizeHistoricanName = historicalName.charAt(0).toUpperCase() + historicalName.slice(1)
-    return capitalizeHistoricanName.replace('_', ' ')
-}

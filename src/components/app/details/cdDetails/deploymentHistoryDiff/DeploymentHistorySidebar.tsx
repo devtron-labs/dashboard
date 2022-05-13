@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { NavLink, useRouteMatch, useParams } from 'react-router-dom'
-import { URLS } from '../../../../../config'
+import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, URLS } from '../../../../../config'
 import { DeploymentTemplateList } from '../cd.type'
-import { firstLettterCapitalize } from '../cd.utils'
 import { getDeploymentHistoryList } from '../service'
 
 export interface DeploymentHistorySidebar {
@@ -21,43 +20,37 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDepolymentHistoryL
         }
     }, [deploymentHistoryList])
 
+    const getNavLink = (componentId: number, componentName: string, key: string, childComponentName?: string) => {
+        const currentComponent = DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP[componentName]
+        const configURL = `${match.url.split(URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS)[0]}${
+            URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS
+        }/${currentComponent.VALUE}/${componentId}${childComponentName ? '/' + childComponentName : ''}`
+        return (
+            <div className={`cursor`} key={key}>
+                <NavLink
+                    to={configURL}
+                    activeClassName="active"
+                    className="historical-name inline-block no-decor pt-12 pb-12 pl-16 pr-12 fs-13 cn-9 configuration-link w-280 text-capitalize"
+                >
+                    {currentComponent.DISPLAY_NAME + (childComponentName ? '/' + childComponentName : '')}
+                </NavLink>
+            </div>
+        )
+    }
+
     return (
         <div className="pt-8 pb-8 bcn-0 border-right">
             {deploymentHistoryList?.map((historicalComponent, index) => {
-                const newURL = `${match.url.split(URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS)[0]}${
-                    URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS
-                }/${historicalComponent.name.toLowerCase()}/${historicalComponent.id}`
-
-                return historicalComponent.childList?.length > 1 ? (
-                    historicalComponent.childList.map((historicalComponentName, idx) => {
-                        return (
-                            <div className={`cursor`} key={`deployment-history-childlist__${idx}`}>
-                                <NavLink
-                                    activeClassName="active"
-                                    to={`${newURL}/${historicalComponentName}`}
-                                    className={
-                                        'inline-block no-decor pt-12 pb-12 pl-16 pr-12 fs-13 cn-9 configuration-link w-280'
-                                    }
-                                >
-                                    {firstLettterCapitalize(historicalComponent.name.toLowerCase())}/
-                                    {historicalComponentName.toLowerCase()}
-                                </NavLink>
-                            </div>
-                        )
-                    })
-                ) : (
-                    <div className={`cursor`} key={`deployment-history-list-${index}`}>
-                        <NavLink
-                            activeClassName="active"
-                            to={newURL}
-                            className={
-                                'historical-name inline-block no-decor pt-12 pb-12 pl-16 pr-12 fs-13 cn-9 configuration-link w-280'
-                            }
-                        >
-                            {firstLettterCapitalize(historicalComponent.name.toLowerCase())}
-                        </NavLink>
-                    </div>
-                )
+                return historicalComponent.childList?.length > 0
+                    ? historicalComponent.childList.map((historicalComponentName, childIndex) =>
+                          getNavLink(
+                              historicalComponent.id,
+                              historicalComponent.name,
+                              `config-${index}-${childIndex}`,
+                              historicalComponentName,
+                          ),
+                      )
+                    : getNavLink(historicalComponent.id, historicalComponent.name, `config-${index}`)
             })}
         </div>
     )
