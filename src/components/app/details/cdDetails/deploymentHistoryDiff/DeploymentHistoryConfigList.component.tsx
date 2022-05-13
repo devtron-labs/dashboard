@@ -5,6 +5,7 @@ import { useRouteMatch, useParams } from 'react-router'
 import { DeploymentTemplateConfiguration, DeploymentTemplateList } from '../cd.type'
 import CDEmptyState from '../CDEmptyState'
 import { getDeploymentHistoryList } from '../service'
+import { firstLettterCapitalize } from '../cd.utils'
 
 interface TemplateConfiguration {
     setShowTemplate: (boolean) => void
@@ -57,7 +58,7 @@ export default function DeploymentHistoryConfigList({
                                             }}
                                             className="bcb-1 no-decor bcn-0 cn-9 pl-16 pr-16 pt-12 pb-12 br-4 en-2 bw-1 mb-12 flex content-space cursor lh-20 text-capitalize"
                                         >
-                                            {historicalComponentName.replace('-', ' ')}
+                                            {firstLettterCapitalize(historicalComponentName.replace('-', ' '))}
                                             <RightArrow
                                                 className="rotate icon-dim-20"
                                                 style={{ ['--rotateBy' as any]: '180deg' }}
@@ -73,9 +74,9 @@ export default function DeploymentHistoryConfigList({
                                         setShowTemplate(true)
                                         setBaseTimeStamp(baseTimeStamp)
                                     }}
-                                    className="historical-name bcb-1 no-decor bcn-0 cn-9 pl-16 pr-16 pt-12 pb-12 br-4 en-2 bw-1 mb-20 flex content-space cursor lh-20 text-capitalize"
+                                    className="historical-name bcb-1 no-decor bcn-0 cn-9 pl-16 pr-16 pt-12 pb-12 br-4 en-2 bw-1 mb-20 flex content-space cursor lh-20"
                                 >
-                                    {historicalComponent.name.replace('_', ' ').toLowerCase()}
+                                    {firstLettterCapitalize(historicalComponent.name.toLowerCase())}
                                     <RightArrow
                                         className="rotate icon-dim-20"
                                         style={{ ['--rotateBy' as any]: '180deg' }}

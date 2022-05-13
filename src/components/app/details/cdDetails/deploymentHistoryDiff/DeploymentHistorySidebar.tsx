@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { NavLink, useRouteMatch, useParams } from 'react-router-dom'
 import { URLS } from '../../../../../config'
 import { DeploymentTemplateList } from '../cd.type'
+import { firstLettterCapitalize } from '../cd.utils'
 import { getDeploymentHistoryList } from '../service'
 
 export interface DeploymentHistorySidebar {
@@ -19,6 +20,7 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDepolymentHistoryL
             })
         }
     }, [deploymentHistoryList])
+
     return (
         <div className="pt-8 pb-8 bcn-0 border-right">
             {deploymentHistoryList?.map((historicalComponent, index) => {
@@ -37,7 +39,8 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDepolymentHistoryL
                                         'inline-block no-decor pt-12 pb-12 pl-16 pr-12 fs-13 cn-9 configuration-link w-280'
                                     }
                                 >
-                                    {historicalComponent.name}/{historicalComponentName.toLowerCase()}
+                                    {firstLettterCapitalize(historicalComponent.name.toLowerCase())}/
+                                    {historicalComponentName.toLowerCase()}
                                 </NavLink>
                             </div>
                         )
@@ -48,10 +51,10 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDepolymentHistoryL
                             activeClassName="active"
                             to={newURL}
                             className={
-                                'historical-name inline-block no-decor pt-12 pb-12 pl-16 pr-12 fs-13 cn-9 configuration-link w-280 text-capitalize'
+                                'historical-name inline-block no-decor pt-12 pb-12 pl-16 pr-12 fs-13 cn-9 configuration-link w-280'
                             }
                         >
-                            {historicalComponent.name.replace('_', ' ').toLowerCase()}
+                            {firstLettterCapitalize(historicalComponent.name.toLowerCase())}
                         </NavLink>
                     </div>
                 )

@@ -24,13 +24,13 @@ export default function DeploymentHistoryDiffView({
             )
         )
     }
-    const renderValue = (parentClassName: string, value: DeploymentHistorySingleValue) => {
+    const renderDetailedValue = (parentClassName: string, singleValue: DeploymentHistorySingleValue) => {
         const titleStyle = 'cn-6 pt-8 pl-16 pr-16 lh-16'
         const descriptionStyle = 'cn-9 fs-13 pb-8 pl-16 pr-16 lh-20 mh-28'
         return (
             <div className={parentClassName}>
-                <div className={titleStyle}>{value.displayName}</div>
-                <div className={descriptionStyle}>{value.value}</div>
+                <div className={titleStyle}>{singleValue.displayName}</div>
+                <div className={descriptionStyle}>{singleValue.value}</div>
             </div>
         )
     }
@@ -48,12 +48,12 @@ export default function DeploymentHistoryDiffView({
                             return (
                                 <Fragment key={`deployment-history-diff-view-${index}`}>
                                     {currentValue && currentValue.value ? (
-                                        renderValue(changeBGColor ? ' bcr-1' : '', currentValue)
+                                        renderDetailedValue(changeBGColor ? ' bcr-1' : '', currentValue)
                                     ) : (
                                         <div></div>
                                     )}
                                     {baseValue && baseValue.value ? (
-                                        renderValue(changeBGColor ? ' bcg-1' : '', baseValue)
+                                        renderDetailedValue(changeBGColor ? ' bcg-1' : '', baseValue)
                                     ) : (
                                         <div></div>
                                     )}
