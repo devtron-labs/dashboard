@@ -37,7 +37,7 @@
         height: 56px;
     }
 
-    &.more-extensions__card {
+    &.more-integrations__card {
         background-color: var(--window-bg);
         border: 1px dashed var(--N300);
         padding-top: 4px;
@@ -208,7 +208,7 @@
     }
 }
 
-.no-modules__installed-view {
+.no-integrations__installed-view {
     width: 100%;
     height: 100%;
 
@@ -241,6 +241,24 @@
             &:hover {
                 border: 1px solid var(--B500);
             }
+        }
+    }
+}
+
+.managed-by__note-wrapper {
+    .managed-by__note {
+        padding: 10px 16px;
+        border: 1px solid var(--B200);
+    }
+}
+
+.not-supported__note-wrapper {
+    .not-supported__note {
+        padding: 10px 16px;
+        border: 1px solid var(--Y200);
+
+        .not-supported__note-icon path:nth-child(2) {
+            fill: var(--Y700);
         }
     }
 }
