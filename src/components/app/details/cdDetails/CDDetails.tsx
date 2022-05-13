@@ -285,7 +285,7 @@ export default function CDDetails() {
                 )}
                 <Switch>
                     <Route
-                        path={`${path}${URLS.DEPLOYMENT_HISTORY}/:historyComponent/:baseConfigurationId(\\d+)/:historyComponentName?`}
+                        path={`${path}${URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS}/:historyComponent/:baseConfigurationId(\\d+)/:historyComponentName?`}
                         render={(props) => (
                             <DeploymentHistoryDetailedView
                                 showTemplate={showTemplate}

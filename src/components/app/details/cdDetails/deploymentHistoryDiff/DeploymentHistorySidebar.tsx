@@ -22,12 +22,12 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDepolymentHistoryL
     return (
         <div className="bcn-0">
             {deploymentHistoryList?.map((elm, index) => {
-                const newURL = `${match.url.split(URLS.DEPLOYMENT_HISTORY)[0]}${URLS.DEPLOYMENT_HISTORY}/${elm.name}/${
-                    elm.id
-                }`
+                const newURL = `${match.url.split(URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS)[0]}${
+                    URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS
+                }/${elm.name}/${elm.id}`
 
                 return elm.childList?.length > 1 ? (
-                    elm.childList.map((el,idx) => {
+                    elm.childList.map((el, idx) => {
                         return (
                             <div className={`cursor`} key={`deployment-history-childlist__${idx}`}>
                                 <NavLink
