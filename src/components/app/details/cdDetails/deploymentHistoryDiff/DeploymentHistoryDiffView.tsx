@@ -46,12 +46,12 @@ export default function DeploymentHistoryDiffView({
                             return (
                                 <Fragment key={`deployment-history-diff-view-${index}`}>
                                     {currentValue && currentValue.value ? (
-                                        renderDetailedValue(changeBGColor ? ' bcr-1' : '', currentValue)
+                                        renderDetailedValue(changeBGColor ? 'code-editor-red-diff' : '', currentValue)
                                     ) : (
                                         <div></div>
                                     )}
                                     {baseValue && baseValue.value ? (
-                                        renderDetailedValue(changeBGColor ? ' bcg-1' : '', baseValue)
+                                        renderDetailedValue(changeBGColor ? 'code-editor-green-diff' : '', baseValue)
                                     ) : (
                                         <div></div>
                                     )}
