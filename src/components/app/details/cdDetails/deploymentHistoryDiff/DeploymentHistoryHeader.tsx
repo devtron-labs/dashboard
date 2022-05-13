@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom'
 import moment from 'moment'
 import { Moment12HourFormat, URLS } from '../../../../../config'
 import { ReactComponent as LeftIcon } from '../../../../../assets/icons/ic-arrow-forward.svg'
-import { CompareWithBaseConfiguration, DeploymentTemplateOptions } from '../cd.type'
+import { CompareWithBaseConfiguration, DeploymentHistoryParamsType, DeploymentTemplateOptions } from '../cd.type'
 import { Option, styles } from '../cd.utils'
 import { getDeploymentDiffSelector } from '../service'
 import { showError } from '../../../../common'
@@ -18,13 +18,8 @@ export default function DeploymentHistoryHeader({
 }: CompareWithBaseConfiguration) {
     const { url } = useRouteMatch()
     const history = useHistory()
-    const { appId, pipelineId, historyComponent, baseConfigurationId, historyComponentName } = useParams<{
-        appId: string
-        pipelineId: string
-        historyComponent: string
-        historyComponentName: string
-        baseConfigurationId: string
-    }>()
+    const { appId, pipelineId, historyComponent, baseConfigurationId, historyComponentName } =
+        useParams<DeploymentHistoryParamsType>()
     const [baseTemplateTimeStamp, setBaseTemplateTimeStamp] = useState<string>('')
     const [deploymentTemplateOption, setDeploymentTemplateOption] = useState<DeploymentTemplateOptions[]>([])
 

@@ -62,3 +62,13 @@ export interface DeploymentHistory {
     image: string
     workflow_type?: string
 }
+
+export interface DeploymentHistoryParamsType {
+    appId: string
+    pipelineId?: string
+    historyComponent?: string
+    baseConfigurationId?: string
+    historyComponentName?: string
+    envId?: string
+    triggerId?: string
+}

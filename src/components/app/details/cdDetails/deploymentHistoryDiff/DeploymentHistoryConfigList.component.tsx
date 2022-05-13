@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { ReactComponent as RightArrow } from '../../../../../assets/icons/ic-arrow-left.svg'
 import { NavLink } from 'react-router-dom'
 import { useRouteMatch, useParams } from 'react-router'
-import { DeploymentTemplateList } from '../cd.type'
+import { DeploymentHistoryParamsType, DeploymentTemplateList } from '../cd.type'
 import { getDeploymentHistoryList } from '../service'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../../config'
 
@@ -18,7 +18,7 @@ export default function DeploymentHistoryConfigList({
     setDeploymentHistoryList: setDeploymentHistoryList,
 }: TemplateConfiguration) {
     const match = useRouteMatch()
-    const { appId, pipelineId, triggerId } = useParams<{ appId: string; pipelineId: string; triggerId: string }>()
+    const { appId, pipelineId, triggerId } = useParams<DeploymentHistoryParamsType>()
 
     useEffect(() => {
         getDeploymentHistoryList(appId, pipelineId, triggerId).then((response) => {

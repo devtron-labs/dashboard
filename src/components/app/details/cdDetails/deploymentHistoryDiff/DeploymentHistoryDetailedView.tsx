@@ -3,7 +3,12 @@ import { Progressing, showError } from '../../../../common'
 import DeploymentHistoryHeader from './DeploymentHistoryHeader'
 import { getDeploymentHistoryDetail, prepareHistoryData } from '../service'
 import { useParams } from 'react-router'
-import { DeploymentTemplateOptions, CompareViewDeploymentType, DeploymentHistoryDetail } from '../cd.type'
+import {
+    DeploymentTemplateOptions,
+    CompareViewDeploymentType,
+    DeploymentHistoryDetail,
+    DeploymentHistoryParamsType,
+} from '../cd.type'
 import DeploymentHistorySidebar from './DeploymentHistorySidebar'
 import DeploymentHistoryDiffView from './DeploymentHistoryDiffView'
 
@@ -15,13 +20,8 @@ export default function DeploymentHistoryDetailedView({
     deploymentHistoryList,
     setDeploymentHistoryList,
 }: CompareViewDeploymentType) {
-    const { appId, pipelineId, historyComponent, baseConfigurationId, historyComponentName } = useParams<{
-        appId: string
-        pipelineId: string
-        historyComponent: string
-        historyComponentName: string
-        baseConfigurationId: string
-    }>()
+    const { appId, pipelineId, historyComponent, baseConfigurationId, historyComponentName } =
+        useParams<DeploymentHistoryParamsType>()
     const [selectedDeploymentTemplate, setSelectedDeploymentTemplate] = useState<DeploymentTemplateOptions>()
     const [currentConfiguration, setCurrentConfiguration] = useState<DeploymentHistoryDetail>()
     const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentHistoryDetail>()

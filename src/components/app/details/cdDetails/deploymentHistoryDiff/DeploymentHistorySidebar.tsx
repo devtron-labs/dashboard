@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { NavLink, useRouteMatch, useParams } from 'react-router-dom'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, URLS } from '../../../../../config'
-import { DeploymentTemplateList } from '../cd.type'
+import { DeploymentHistoryParamsType, DeploymentTemplateList } from '../cd.type'
 import { getDeploymentHistoryList } from '../service'
 
 export interface DeploymentHistorySidebar {
@@ -11,7 +11,7 @@ export interface DeploymentHistorySidebar {
 
 function DeploymentHistorySidebar({ deploymentHistoryList, setDeploymentHistoryList }: DeploymentHistorySidebar) {
     const match = useRouteMatch()
-    const { appId, pipelineId, triggerId } = useParams<{ appId: string; pipelineId: string; triggerId: string }>()
+    const { appId, pipelineId, triggerId } = useParams<DeploymentHistoryParamsType>()
     useEffect(() => {
         if (!deploymentHistoryList) {
             getDeploymentHistoryList(appId, pipelineId, triggerId).then((response) => {
