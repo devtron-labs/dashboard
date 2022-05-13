@@ -47,6 +47,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         throughput: "",
         latency: "",
     })
+    const addSpace: string = addExtraSpace ? 'mb-16':''; 
     let pod = podMap?.values().next().value;
     let newPodHash = pod?.networkingInfo?.labels['rollouts-pod-template-hash'];
 
@@ -204,14 +205,14 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
     if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin ) {
         return <>
             <AppMetricsEmptyState isLoading={datasource.isLoading}
-                addExtraSpace={addExtraSpace}
+                addSpace={addSpace}
                 isConfigured={datasource.isConfigured}
                 isHealthy={datasource.isHealthy}
                 hostURLConfig={hostURLConfig} />
         </>
     }
     else {
-        return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100 ${addExtraSpace ? 'mb-16':''}`}
+        return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100 ${addSpace}`}
             style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}>
             {(appMetrics || infraMetrics) && (
                 <div className="flex" style={{ justifyContent: 'space-between', height: '68px' }}>
@@ -351,8 +352,8 @@ function EnableAppMetrics() {
     );
 }
 
-function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfig, addExtraSpace }) {
-    if (isLoading) return <div className={`app-metrics-graph__empty-state-wrapper bcn-0 w-100 p-24 ${addExtraSpace ?'mb-16':''}`}>
+function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfig, addSpace }) {
+    if (isLoading) return <div className={`app-metrics-graph__empty-state-wrapper bcn-0 w-100 p-24 ${addSpace}`}>
         <h4 className="fs-14 fw-6 cn-7 flex left mr-9">
             <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
         </h4>
@@ -367,7 +368,7 @@ function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfi
     else if (!isHealthy) {
         subtitle = 'Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page.';
     }
-    return <div className={`app-metrics-graph__empty-state-wrapper bcn-0 w-100 p-24 ${addExtraSpace ?'mb-16':''}`}>
+    return <div className={`app-metrics-graph__empty-state-wrapper bcn-0 w-100 p-24 ${addSpace}`}>
         <h4 className="fs-14 fw-6 cn-7 flex left mr-9">
             <GraphIcon className="mr-8 fcn-7 icon-dim-20" />APPLICATION METRICS
         </h4>
