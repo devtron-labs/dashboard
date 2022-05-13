@@ -2,15 +2,12 @@ import React, { useEffect } from 'react'
 import { ReactComponent as RightArrow } from '../../../../../assets/icons/ic-arrow-left.svg'
 import { NavLink } from 'react-router-dom'
 import { useRouteMatch, useParams } from 'react-router'
-import { DeploymentTemplateConfiguration, DeploymentTemplateList } from '../cd.type'
+import { DeploymentTemplateList } from '../cd.type'
 import { getDeploymentHistoryList } from '../service'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../../config'
 
 interface TemplateConfiguration {
     setShowTemplate: (boolean) => void
-    deploymentTemplatesConfiguration: DeploymentTemplateConfiguration[]
-    setBaseTimeStamp
-    baseTimeStamp: string
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList
 }

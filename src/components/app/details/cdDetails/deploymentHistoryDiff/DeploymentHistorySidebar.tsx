@@ -6,7 +6,7 @@ import { getDeploymentHistoryList } from '../service'
 
 export interface DeploymentHistorySidebar {
     deploymentHistoryList: DeploymentTemplateList[]
-    setDeploymentHistoryList
+    setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
 }
 
 function DeploymentHistorySidebar({ deploymentHistoryList, setDeploymentHistoryList }: DeploymentHistorySidebar) {
