@@ -96,10 +96,10 @@ const prepareDeploymentTemplateData = (rawData): Record<string, DeploymentHistor
 
 const preparePipelineConfigData = (rawData): Record<string, DeploymentHistorySingleValue> => {
     let pipelineConfigData = {}
-    if (rawData['templateVersion']) {
-        pipelineConfigData['templateVersion'] = {
+    if (rawData['pipelineTriggerType']) {
+        pipelineConfigData['pipelineTriggerType'] = {
             displayName: 'When do you want the pipeline to execute?',
-            value: rawData['templateVersion'],
+            value: rawData['pipelineTriggerType'],
         }
     }
     if (rawData['strategy']) {
