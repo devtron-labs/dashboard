@@ -40,7 +40,7 @@ import { Moment12HourFormat } from '../../../../config'
 import DeploymentHistoryConfigList from './deploymentHistoryDiff/DeploymentHistoryConfigList.component'
 import './cdDetail.scss'
 import DeploymentHistoryDetailedView from './deploymentHistoryDiff/DeploymentHistoryDetailedView'
-import { DeploymentTemplateConfiguration, DeploymentTemplateList } from './cd.type'
+import { DeploymentTemplateList } from './cd.type'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])

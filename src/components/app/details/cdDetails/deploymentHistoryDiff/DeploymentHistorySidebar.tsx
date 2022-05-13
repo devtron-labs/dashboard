@@ -22,9 +22,10 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDeploymentHistoryL
 
     const getNavLink = (componentId: number, componentName: string, key: string, childComponentName?: string) => {
         const currentComponent = DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP[componentName]
+        const childComponentDetail = childComponentName ? '/' + childComponentName : ''
         const configURL = `${match.url.split(URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS)[0]}${
             URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS
-        }/${currentComponent.VALUE}/${componentId}${childComponentName ? '/' + childComponentName : ''}`
+        }/${currentComponent.VALUE}/${componentId}${childComponentDetail}`
         return (
             <div className={`cursor`} key={key}>
                 <NavLink
@@ -32,7 +33,7 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDeploymentHistoryL
                     activeClassName="active"
                     className="historical-name inline-block no-decor pt-12 pb-12 pl-16 pr-12 fs-13 cn-9 configuration-link w-280 text-capitalize"
                 >
-                    {currentComponent.DISPLAY_NAME + (childComponentName ? '/' + childComponentName : '')}
+                    {currentComponent.DISPLAY_NAME + childComponentDetail}
                 </NavLink>
             </div>
         )
