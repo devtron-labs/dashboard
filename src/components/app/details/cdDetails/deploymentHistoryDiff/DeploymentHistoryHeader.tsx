@@ -3,14 +3,9 @@ import ReactSelect from 'react-select'
 import { useHistory, useRouteMatch, useParams } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import moment from 'moment'
-import { Moment12HourFormat } from '../../../../../config'
+import { Moment12HourFormat, URLS } from '../../../../../config'
 import { ReactComponent as LeftIcon } from '../../../../../assets/icons/ic-arrow-forward.svg'
-import {
-    CompareWithBaseConfiguration,
-    DeploymentTemplateList,
-    DeploymentTemplateOptions,
-    HistoryDiffSelectorList,
-} from '../cd.type'
+import { CompareWithBaseConfiguration, DeploymentTemplateOptions } from '../cd.type'
 import { Option, styles } from '../cd.utils'
 import { getDeploymentDiffSelector } from '../service'
 import { showError } from '../../../../common'
@@ -34,14 +29,13 @@ export default function DeploymentHistoryHeader({
     const [deploymentTemplateOption, setDeploymentTemplateOption] = useState<DeploymentTemplateOptions[]>([])
 
     const onClickTimeStampSelector = (selected: { label: string; value: string }) => {
-        //setSelectedDeploymentTemplate(deploymentTemplatesConfigSelector.find((e) => e.id.toString() === selected.value))
         setSelectedDeploymentTemplate(selected)
     }
 
     useEffect(() => {
-        setLoader(true)
-        if (pipelineId) {
+        if (pipelineId && historyComponent && baseConfigurationId) {
             try {
+                setLoader(true)
                 getDeploymentDiffSelector(
                     appId,
                     pipelineId,
@@ -76,7 +70,7 @@ export default function DeploymentHistoryHeader({
         }
     }, [historyComponent, baseConfigurationId, historyComponentName])
 
-    const renderGoBacktoConfiguration = () => {
+    const renderGoBackToConfiguration = () => {
         return (
             <NavLink
                 to={``}
@@ -84,8 +78,11 @@ export default function DeploymentHistoryHeader({
                 onClick={(e) => {
                     e.preventDefault()
                     setShowTemplate(false)
-                    history.push(`${url.split('/configuration')[0]}/configuration`)
-                    //setSelectedDeploymentTemplate(deploymentTemplateOption[comparedTemplateId])
+                    history.push(
+                        `${url.split(URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS)[0]}${
+                            URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS
+                        }`,
+                    )
                 }}
             >
                 <LeftIcon className="rotate icon-dim-24 mr-16" style={{ ['--rotateBy' as any]: '180deg' }} />
@@ -127,7 +124,7 @@ export default function DeploymentHistoryHeader({
     }
     return (
         <div className="border-bottom pl-20 pr-20 flex left bcn-0">
-            {renderGoBacktoConfiguration()}
+            {renderGoBackToConfiguration()}
             {renderCompareDeploymentConfig()}
             {renderBaseDeploymentConfig()}
         </div>
