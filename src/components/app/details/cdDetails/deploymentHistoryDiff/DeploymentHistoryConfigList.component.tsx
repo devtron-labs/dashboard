@@ -77,7 +77,7 @@ export default function DeploymentHistoryConfigList({
                                     }}
                                     className="bcb-1 no-decor bcn-0 cn-9 pl-16 pr-16 pt-12 pb-12 br-4 en-2 bw-1 mb-20 flex content-space cursor lh-20 text-capitalize"
                                 >
-                                    {li.name.replace('_', ' ')}
+                                    {li.name.replace('_', ' ').toLowerCase()}
                                     <RightArrow
                                         className="rotate icon-dim-20"
                                         style={{ ['--rotateBy' as any]: '180deg' }}

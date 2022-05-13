@@ -37,7 +37,7 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDepolymentHistoryL
                                         'inline-block no-decor pt-12 pb-12 pl-16 pr-12 fs-13 cn-9 configuration-link w-280'
                                     }
                                 >
-                                    {el}
+                                    {elm.name}/{el.toLowerCase()}
                                 </NavLink>
                             </div>
                         )
@@ -48,10 +48,10 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDepolymentHistoryL
                             activeClassName="active"
                             to={newURL}
                             className={
-                                'inline-block no-decor pt-12 pb-12 pl-16 pr-12 fs-13 cn-9 configuration-link w-280'
+                                'inline-block no-decor pt-12 pb-12 pl-16 pr-12 fs-13 cn-9 configuration-link w-280 text-capitalize'
                             }
                         >
-                            {elm.name}
+                            {elm.name.replace('_', ' ').toLowerCase()}
                         </NavLink>
                     </div>
                 )
