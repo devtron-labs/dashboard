@@ -7,28 +7,11 @@ import {
     HistoryDiffSelectorList,
     DeploymentHistoryDetail,
     DeploymentHistorySingleValue,
+    DeploymentHistory,
 } from './cd.type'
 import { string } from 'prop-types'
 
-export interface DeploymentHistory {
-    id: number
-    cd_workflow_id: number
-    name: string
-    status: string
-    pod_status: string
-    message: string
-    started_on: string
-    finished_on: string
-    pipeline_id: number
-    namespace: string
-    log_file_path: string
-    triggered_by: number
-    email_id?: string
-    image: string
-    workflow_type?: string
-}
-
-interface DeploymentHistoryResult extends ResponseType {
+export interface DeploymentHistoryResult extends ResponseType {
     result?: History[]
 }
 export async function getTriggerHistory(

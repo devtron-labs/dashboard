@@ -61,14 +61,7 @@ export default function CDDetails() {
         () => Promise.all([getAppOtherEnvironment(appId), getCDPipelines(appId)]),
         [appId],
     )
-    const [
-        loadingDeploymentHistory,
-        deploymentHistoryResult,
-        deploymentHistoryError,
-        reloadDeploymentHistory,
-        ,
-        dependencyState,
-    ] = useAsync(
+    const [loadingDeploymentHistory, deploymentHistoryResult, deploymentHistoryError, dependencyState] = useAsync(
         () => getTriggerHistory(+appId, +envId, pipelineId, pagination),
         [pagination, appId, envId],
         !!envId && !!pipelineId,
@@ -82,12 +75,8 @@ export default function CDDetails() {
     const keys = useKeyDown()
     const [showTemplate, setShowTemplate] = useState(false)
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
-
     const [loader, setLoader] = useState<boolean>(false)
-    const {} = useParams<{
-        appId: string
-        pipelineId: string
-    }>()
+
     useEffect(() => {
         if (!pathname.includes('/logs')) return
         switch (keys.join('')) {
