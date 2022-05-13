@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ReactComponent as RightArrow } from '../../../../../assets/icons/ic-arrow-left.svg'
 import { NavLink } from 'react-router-dom'
 import { useRouteMatch, useParams } from 'react-router'
 import { DeploymentHistoryParamsType, DeploymentTemplateList } from '../cd.type'
 import { getDeploymentHistoryList } from '../service'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../../config'
+import CDEmptyState from '../CDEmptyState'
 
 interface TemplateConfiguration {
     setShowTemplate: (boolean) => void
@@ -19,10 +20,13 @@ export default function DeploymentHistoryConfigList({
 }: TemplateConfiguration) {
     const match = useRouteMatch()
     const { appId, pipelineId, triggerId } = useParams<DeploymentHistoryParamsType>()
+    const [deploymentListLoader, setDeploymentListLoader] = useState<boolean>(false)
 
     useEffect(() => {
+        setDeploymentListLoader(true)
         getDeploymentHistoryList(appId, pipelineId, triggerId).then((response) => {
             setDeploymentHistoryList(response.result)
+            setDeploymentListLoader(false)
         })
     }, [triggerId])
 
@@ -49,7 +53,10 @@ export default function DeploymentHistoryConfigList({
 
     return (
         <>
-            {deploymentHistoryList &&
+            {!deploymentHistoryList && !deploymentListLoader ? (
+                <CDEmptyState />
+            ) : (
+                deploymentHistoryList &&
                 deploymentHistoryList.map((historicalComponent, index) => {
                     return (
                         <div className="m-20 fs-13 cn-9" key={`history-list__${index}`}>
@@ -75,7 +82,8 @@ export default function DeploymentHistoryConfigList({
                             )}
                         </div>
                     )
-                })}
+                })
+            )}
         </>
     )
 }
