@@ -54,10 +54,13 @@
     border-left: 1px solid var(--N100);
 }
 
-.configuration-link{
+.configuration-link {
     &.active {
         background: var(--B100);
         color: var(--N900);
         font-weight: 600;
     }
+}
+.historical-name:hover {
+    color: var(--N900) !important;
 }

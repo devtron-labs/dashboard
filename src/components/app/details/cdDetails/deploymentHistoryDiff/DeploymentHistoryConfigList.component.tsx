@@ -36,8 +36,7 @@ export default function DeploymentHistoryConfigList({
         <>
             {deploymentHistoryList &&
                 deploymentHistoryList.map((historicalComponent, index) => {
-                    // const newURL =  match.url.includes(li.name) ? match.url : `${match.url}/${li.name}/${li.id}`
-                    const newURL = `${match.url}/${historicalComponent.name}/${historicalComponent.id}`
+                    const newURL = `${match.url}/${historicalComponent.name.toLowerCase()}/${historicalComponent.id}`
 
                     return (
                         <div className="m-20 fs-13 cn-9" key={`history-list__${index}`}>
@@ -74,7 +73,7 @@ export default function DeploymentHistoryConfigList({
                                         setShowTemplate(true)
                                         setBaseTimeStamp(baseTimeStamp)
                                     }}
-                                    className="bcb-1 no-decor bcn-0 cn-9 pl-16 pr-16 pt-12 pb-12 br-4 en-2 bw-1 mb-20 flex content-space cursor lh-20 text-capitalize"
+                                    className="historical-name bcb-1 no-decor bcn-0 cn-9 pl-16 pr-16 pt-12 pb-12 br-4 en-2 bw-1 mb-20 flex content-space cursor lh-20 text-capitalize"
                                 >
                                     {historicalComponent.name.replace('_', ' ').toLowerCase()}
                                     <RightArrow

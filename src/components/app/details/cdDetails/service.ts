@@ -163,12 +163,12 @@ export const prepareHistoryData = (rawData, historyComponent: string): Deploymen
     let values
     let historyData = { codeEditorValue: rawData.codeEditorValue, values: {} }
     delete rawData.codeEditorValue
-    if (historyComponent === 'DEPLOYMENT_TEMPLATE') {
+    if (historyComponent === 'deployment_template') {
         values = prepareDeploymentTemplateData(rawData)
-    } else if (historyComponent === 'PIPELINE_STRATEGY') {
+    } else if (historyComponent === 'pipeline_strategy') {
         values = preparePipelineConfigData(rawData)
     } else {
-        values = prepareConfigMapAndSecretData(rawData, historyComponent === 'CONFIGMAP' ? 'ConfigMap' : 'Secret')
+        values = prepareConfigMapAndSecretData(rawData, historyComponent === 'configmap' ? 'ConfigMap' : 'Secret')
     }
     historyData.values = values
     return historyData
@@ -182,7 +182,7 @@ export const getDeploymentHistoryDetail = (
     historyComponentName: string,
 ): Promise<DeploymentHistoryDetailRes> => {
     return get(
-        `app/history/deployed-component/detail/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent}${
+        `app/history/deployed-component/detail/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent.toUpperCase()}${
             historyComponentName ? '&historyComponentName=' + historyComponentName : ''
         }`,
     )
@@ -211,7 +211,7 @@ export const getDeploymentDiffSelector = (
     historyComponentName,
 ): Promise<HistoryDiffSelectorRes> => {
     return get(
-        `app/history/deployed-component/list/${appId}/${pipelineId}?baseConfigurationId=${baseConfigurationId}&historyComponent=${historyComponent}${
+        `app/history/deployed-component/list/${appId}/${pipelineId}?baseConfigurationId=${baseConfigurationId}&historyComponent=${historyComponent.toUpperCase()}${
             historyComponentName ? '&historyComponentName=' + historyComponentName : ''
         }`,
     )
