@@ -12,13 +12,13 @@ interface TemplateConfiguration {
     setBaseTimeStamp
     baseTimeStamp: string
     deploymentHistoryList: DeploymentTemplateList[]
-    setDepolymentHistoryList
+    setDeploymentHistoryList
 }
 
 export default function DeploymentHistoryConfigList({
     setShowTemplate,
     deploymentHistoryList,
-    setDepolymentHistoryList: setDeploymentHistoryList,
+    setDeploymentHistoryList: setDeploymentHistoryList,
 }: TemplateConfiguration) {
     const match = useRouteMatch()
     const { appId, pipelineId, triggerId } = useParams<{ appId: string; pipelineId: string; triggerId: string }>()

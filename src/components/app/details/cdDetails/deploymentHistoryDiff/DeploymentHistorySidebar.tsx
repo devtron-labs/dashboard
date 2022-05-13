@@ -6,16 +6,16 @@ import { getDeploymentHistoryList } from '../service'
 
 export interface DeploymentHistorySidebar {
     deploymentHistoryList: DeploymentTemplateList[]
-    setDepolymentHistoryList
+    setDeploymentHistoryList
 }
 
-function DeploymentHistorySidebar({ deploymentHistoryList, setDepolymentHistoryList }: DeploymentHistorySidebar) {
+function DeploymentHistorySidebar({ deploymentHistoryList, setDeploymentHistoryList }: DeploymentHistorySidebar) {
     const match = useRouteMatch()
     const { appId, pipelineId, triggerId } = useParams<{ appId: string; pipelineId: string; triggerId: string }>()
     useEffect(() => {
         if (!deploymentHistoryList) {
             getDeploymentHistoryList(appId, pipelineId, triggerId).then((response) => {
-                setDepolymentHistoryList(response.result)
+                setDeploymentHistoryList(response.result)
             })
         }
     }, [deploymentHistoryList])

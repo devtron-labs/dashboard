@@ -692,7 +692,7 @@ const HistoryLogs: React.FC<{
                                     deploymentTemplatesConfiguration={deploymentTemplatesConfiguration}
                                     setBaseTimeStamp={setBaseTimeStamp}
                                     baseTimeStamp={baseTimeStamp}
-                                    setDepolymentHistoryList={setDepolymentHistoryList}
+                                    setDeploymentHistoryList={setDepolymentHistoryList}
                                     deploymentHistoryList={deploymentHistoryList}
                                 />
                             )}

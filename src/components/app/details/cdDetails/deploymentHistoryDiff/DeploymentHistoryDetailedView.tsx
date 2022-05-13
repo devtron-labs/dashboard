@@ -4,7 +4,6 @@ import DeploymentHistoryHeader from './DeploymentHistoryHeader'
 import { getDeploymentHistoryDetail, prepareHistoryData } from '../service'
 import { useParams } from 'react-router'
 import { DeploymentTemplateOptions, CompareViewDeploymentType, DeploymentHistoryDetail } from '../cd.type'
-import CDEmptyState from '../CDEmptyState'
 import DeploymentHistorySidebar from './DeploymentHistorySidebar'
 import DeploymentHistoryDiffView from './DeploymentHistoryDiffView'
 
@@ -83,9 +82,6 @@ export default function DeploymentHistoryDetailedView({
         }
     }, [showTemplate])
 
-    // return !loader ? (
-    //     <CDEmptyState />
-    // ) : (
     return (
         <>
             <DeploymentHistoryHeader
@@ -98,7 +94,7 @@ export default function DeploymentHistoryDetailedView({
             <div className="historical-diff__container bcn-1">
                 <DeploymentHistorySidebar
                     deploymentHistoryList={deploymentHistoryList}
-                    setDepolymentHistoryList={setDepolymentHistoryList}
+                    setDeploymentHistoryList={setDepolymentHistoryList}
                 />
                 {loader ? (
                     <Progressing pageLoader />
