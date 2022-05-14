@@ -22,7 +22,7 @@ export function PluginCard({
                 {tags && tags.length > 0 && (
                     <div className="mt-10">
                         {tags.map((tag, index) => (
-                            <span key={index} className="fs-11 br-4 mr-8 cn-7 bcn-1 pr-6 pl-6">
+                            <span key={index} className="fs-11 br-4 mr-8 cn-7 bcn-1 pr-6 pl-6 lh-20 inline-block">
                                 {tag}{' '}
                             </span>
                         ))}
