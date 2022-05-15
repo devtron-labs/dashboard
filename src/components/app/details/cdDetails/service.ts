@@ -71,7 +71,7 @@ const prepareDeploymentTemplateData = (rawData): Record<string, DeploymentHistor
     if (rawData['isAppMetricsEnabled'] || rawData['isAppMetricsEnabled'] === false) {
         deploymentTemplateData['isAppMetricsEnabled'] = {
             displayName: 'Application metrics',
-            value: rawData['isAppMetricsEnabled'] ? 'Disabled' : 'Enabled',
+            value: rawData['isAppMetricsEnabled'] ? 'Enabled' : 'Disabled',
         }
     }
     return deploymentTemplateData
