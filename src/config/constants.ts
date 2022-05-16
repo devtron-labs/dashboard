@@ -472,3 +472,9 @@ export const DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP = {
         VALUE: 'secret',
     },
 }
+
+export const DEPLOYMENT_HISTORY_DATA_TYPE = {
+    AWSSecretsManager: 'AWS Secrets Manager',
+    AWSSystemManager: 'AWS System Manager',
+    HashiCorpVault: 'Hashi Corp Vault',
+}
