@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useEffect, useRef, useState } from 'react'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import { DeploymentHistoryParamsType, DeploymentHistorySingleValue, DeploymentTemplateHistoryType } from '../cd.type'
 import YAML from 'yaml'
@@ -13,13 +13,22 @@ export default function DeploymentHistoryDiffView({
     previousConfigAvailable,
 }: DeploymentTemplateHistoryType) {
     const { historyComponent, historyComponentName } = useParams<DeploymentHistoryParamsType>()
+    const ref = useRef(null)
+    const [height, setHeight] = useState('')
+
+    useEffect(() => {
+        let dynamicHeight = ref.current?.clientHeight + 255 + (!previousConfigAvailable ? 55 : 0)
+        setHeight(`calc(100vh - ${dynamicHeight}px)`)
+        console.log('height', height)
+    }, [ref])
+
     const renderDeploymentDiffViaCodeEditor = () => {
         return (
             baseTemplateConfiguration?.codeEditorValue?.value && (
                 <CodeEditor
                     value={YAML.stringify(JSON.parse(baseTemplateConfiguration.codeEditorValue.value))}
                     defaultValue={currentConfiguration?.codeEditorValue?.value}
-                    height={450}
+                    height={height}
                     mode="yaml"
                     diffView={previousConfigAvailable && true}
                     readOnly={true}
@@ -42,9 +51,9 @@ export default function DeploymentHistoryDiffView({
     return (
         <div>
             {!previousConfigAvailable && (
-                <div className="bcb-1 eb-2 pt-10 pb-10 br-4 flexbox pl-4 cn-9 fs-13 mt-20 mb-16 mr-20 ml-20">
-                    <Info className="mt-2 mb-2 mr-8 ml-14 icon-dim-20" />
-                    <span>
+                <div className="bcb-1 eb-2 pt-8 pb-8 br-4 flexbox pl-4 cn-9 fs-13 mt-16 mb-16 mr-20 ml-20">
+                    <Info className="mr-8 ml-14 icon-dim-20" />
+                    <span className="lh-20">
                         {DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP[historyComponent.toUpperCase()]?.DISPLAY_NAME}
                         {historyComponentName ? ` “${historyComponentName}”` : ''} was added in this deployment. There
                         is no previous instance to compare with.
@@ -52,9 +61,10 @@ export default function DeploymentHistoryDiffView({
                 </div>
             )}
             <div
-                className={`en-2 bw-1 br-4 bcn-0 mt-20 mb-16 mr-20 ml-20 pt-2 pb-2 ${
+                className={`en-2 bw-1 br-4 bcn-0 mt-16 mb-16 mr-20 ml-20 pt-2 pb-2 ${
                     previousConfigAvailable ? 'deployment-diff__upper' : ''
                 }`}
+                ref={ref}
             >
                 {baseTemplateConfiguration &&
                     Object.keys({ ...currentConfiguration?.values, ...baseTemplateConfiguration?.values }).map(
@@ -80,7 +90,7 @@ export default function DeploymentHistoryDiffView({
                     )}
             </div>
 
-            <div className=" form__row form__row--code-editor-container en-2 bw-1 br-4 mb-20 mr-20 ml-20">
+            <div className="form__row--code-editor-container en-2 bw-1 br-4 mr-20 ml-20 mb-20">
                 <div className="code-editor-header-value pl-16 pr-16 pt-12 pb-12 fs-13 fw-6 cn-9 bcn-0">
                     {baseTemplateConfiguration?.codeEditorValue?.['displayName']}
                 </div>
