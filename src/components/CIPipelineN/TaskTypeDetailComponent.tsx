@@ -52,10 +52,14 @@ export function TaskTypeDetailComponent() {
         value: containerImage,
     }))
 
-    const [selectedContainerImage, setSelectedContainerImage] = useState<OptionType>({
-        label: formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.containerImagePath || '',
-        value: formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.containerImagePath || '',
-    })
+    const [selectedContainerImage, setSelectedContainerImage] = useState<OptionType>()
+
+    useEffect(() => {
+        setSelectedContainerImage({
+            label: formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.containerImagePath || '',
+            value: formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.containerImagePath || '',
+        })
+    }, [selectedTaskIndex])
 
     useEffect(() => {
         if (formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.SHELL) {
