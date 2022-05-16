@@ -42,8 +42,8 @@ export default function DeploymentHistoryDiffView({
     return (
         <div>
             {!previousConfigAvailable && (
-                <div className="w-100 bcb-1 eb-2 pt-10 pb-10 br-4 flexbox pl-4 cn-9 fs-12 mt-20 mb-16 mr-20 ml-20">
-                    <Info className="path-info mt-2 mb-2 mr-8 ml-14 icon-dim-16" />
+                <div className="w-100 bcb-1 eb-2 pt-10 pb-10 br-4 flexbox pl-4 cn-9 fs-13 mt-20 mb-16 mr-20 ml-20">
+                    <Info className="path-info mt-2 mb-2 mr-8 ml-14 icon-dim-20" />
                     <span>
                         {DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP[historyComponent.toUpperCase()]?.DISPLAY_NAME}
                         {historyComponentName ? ` “${historyComponentName}”` : ''} was added in this deployment. There
