@@ -1,13 +1,18 @@
 import React, { Fragment } from 'react'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
-import { DeploymentHistorySingleValue, DeploymentTemplateHistoryType } from '../cd.type'
+import { DeploymentHistoryParamsType, DeploymentHistorySingleValue, DeploymentTemplateHistoryType } from '../cd.type'
 import YAML from 'yaml'
+import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
+import { useParams } from 'react-router'
+import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../../config'
 
 export default function DeploymentHistoryDiffView({
     currentConfiguration,
     baseTemplateConfiguration,
     codeEditorLoading,
+    previousConfigAvailable,
 }: DeploymentTemplateHistoryType) {
+    const { historyComponent, historyComponentName } = useParams<DeploymentHistoryParamsType>()
     const renderDeploymentDiffViaCodeEditor = () => {
         return (
             baseTemplateConfiguration?.codeEditorValue?.value && (
@@ -16,7 +21,7 @@ export default function DeploymentHistoryDiffView({
                     defaultValue={currentConfiguration?.codeEditorValue?.value}
                     height={450}
                     mode="yaml"
-                    diffView={true}
+                    diffView={previousConfigAvailable && true}
                     readOnly={true}
                     loading={codeEditorLoading}
                 ></CodeEditor>
@@ -36,13 +41,24 @@ export default function DeploymentHistoryDiffView({
 
     return (
         <div>
-            <div className="en-2 bw-1 br-4 bcn-0 mt-20 mb-16 mr-20 ml-20 pt-2 pb-2 deployment-diff__upper">
+            <div className="w-100 bcb-2 pt-10 pb-10 br-4 flexbox pl-4 cn-9 fs-12 mt-20 mb-16 mr-20 ml-20">
+                <Info className="path-info mt-2 mb-2 mr-8 ml-14 icon-dim-16" />
+                <span>
+                    {DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP[historyComponent.toUpperCase()]?.DISPLAY_NAME} “
+                    {historyComponentName}” was added in this deployment. There is no previous instance to compare with.
+                </span>
+            </div>
+            <div
+                className={`en-2 bw-1 br-4 bcn-0 mt-20 mb-16 mr-20 ml-20 pt-2 pb-2 ${
+                    previousConfigAvailable ? 'deployment-diff__upper' : ''
+                }`}
+            >
                 {baseTemplateConfiguration &&
                     Object.keys({ ...currentConfiguration?.values, ...baseTemplateConfiguration?.values }).map(
                         (configKey, index) => {
                             const currentValue = currentConfiguration?.values?.[configKey]
                             const baseValue = baseTemplateConfiguration.values[configKey]
-                            const changeBGColor = currentValue?.value !== baseValue?.value
+                            const changeBGColor = previousConfigAvailable && currentValue?.value !== baseValue?.value
                             return (
                                 <Fragment key={`deployment-history-diff-view-${index}`}>
                                     {currentValue && currentValue.value ? (

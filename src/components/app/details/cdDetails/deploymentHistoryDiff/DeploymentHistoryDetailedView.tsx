@@ -26,6 +26,7 @@ export default function DeploymentHistoryDetailedView({
     const [currentConfiguration, setCurrentConfiguration] = useState<DeploymentHistoryDetail>()
     const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentHistoryDetail>()
     const [codeEditorLoading, setCodeEditorLoading] = useState<boolean>(false)
+    const [previousConfigAvailable, setPreviousConfigAvailable] = useState<boolean>(true)
 
     useEffect(() => {
         setLoader(true)
@@ -89,6 +90,7 @@ export default function DeploymentHistoryDetailedView({
                 setSelectedDeploymentTemplate={setSelectedDeploymentTemplate}
                 setShowTemplate={setShowTemplate}
                 setLoader={setLoader}
+                setPreviousConfigAvailable={setPreviousConfigAvailable}
             />
 
             <div className="historical-diff__container bcn-1">
@@ -103,6 +105,7 @@ export default function DeploymentHistoryDetailedView({
                         currentConfiguration={currentConfiguration}
                         baseTemplateConfiguration={baseTemplateConfiguration}
                         codeEditorLoading={codeEditorLoading}
+                        previousConfigAvailable={previousConfigAvailable}
                     />
                 )}
             </div>

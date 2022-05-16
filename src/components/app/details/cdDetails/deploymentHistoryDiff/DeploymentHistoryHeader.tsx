@@ -9,12 +9,14 @@ import { CompareWithBaseConfiguration, DeploymentHistoryParamsType, DeploymentTe
 import { Option, styles } from '../cd.utils'
 import { getDeploymentDiffSelector } from '../service'
 import { showError } from '../../../../common'
+import Tippy from '@tippyjs/react'
 
 export default function DeploymentHistoryHeader({
     selectedDeploymentTemplate,
     setSelectedDeploymentTemplate,
     setShowTemplate,
     setLoader,
+    setPreviousConfigAvailable,
 }: CompareWithBaseConfiguration) {
     const { url } = useRouteMatch()
     const history = useHistory()
@@ -53,6 +55,7 @@ export default function DeploymentHistoryHeader({
                                 })
                             }
                         }
+                        setPreviousConfigAvailable(deploymentTemplateOption.length > 0)
                         setDeploymentTemplateOption(deploymentTemplateOption)
                         setSelectedDeploymentTemplate(deploymentTemplateOption[0])
                     }
@@ -90,18 +93,36 @@ export default function DeploymentHistoryHeader({
             <div className="pt-12 pb-12 pl-16 compare-history__border-left pr-16">
                 <div className="cn-6 lh-1-43 ">Compare with</div>
                 <div style={{ minWidth: '200px' }}>
-                    <ReactSelect
-                        placeholder="Select Timestamp"
-                        isSearchable={false}
-                        styles={styles}
-                        onChange={onClickTimeStampSelector}
-                        options={deploymentTemplateOption}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option: Option,
-                        }}
-                        value={selectedDeploymentTemplate || deploymentTemplateOption[0]}
-                    />
+                    {deploymentTemplateOption.length > 0 ? (
+                        <ReactSelect
+                            placeholder="Select Timestamp"
+                            isSearchable={false}
+                            styles={styles}
+                            onChange={onClickTimeStampSelector}
+                            options={deploymentTemplateOption}
+                            components={{
+                                IndicatorSeparator: null,
+                                Option: Option,
+                            }}
+                            value={selectedDeploymentTemplate || deploymentTemplateOption[0]}
+                        />
+                    ) : (
+                        <div className="cn-9 fs-13 fw-4">
+                            <Tippy
+                                className="default-tt left-50"
+                                placement="bottom"
+                                arrow={false}
+                                content={
+                                    <span style={{ display: 'block', width: '180px' }}>
+                                        ConfigMap “dashboard-cm” was added in this deployment. There is no previous
+                                        instance to compare with.
+                                    </span>
+                                }
+                            >
+                                <span>No options</span>
+                            </Tippy>
+                        </div>
+                    )}
                 </div>
             </div>
         )

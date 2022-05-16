@@ -11,6 +11,7 @@ export interface DeploymentTemplateHistoryType {
     baseTemplateConfiguration: DeploymentHistoryDetail
     codeEditorLoading: boolean
     loader?: boolean
+    previousConfigAvailable: boolean
 }
 export interface DeploymentTemplateOptions {
     label: string
@@ -23,6 +24,7 @@ export interface CompareWithBaseConfiguration {
     setSelectedDeploymentTemplate: (selected) => void
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>
     setLoader: React.Dispatch<React.SetStateAction<boolean>>
+    setPreviousConfigAvailable: React.Dispatch<React.SetStateAction<boolean>>
 }
 export interface HistoryDiffSelectorList {
     id: number
