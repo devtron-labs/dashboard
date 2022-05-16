@@ -269,7 +269,11 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         }
         let final = value
         if (obj) {
-            final = state.mode === 'json' ? JSON.stringify(obj, null, tabSize) : YAML.stringify(obj, { indent: 2 })
+            if (state.mode === 'json') {
+                final = JSON.stringify(obj, null, tabSize)
+            } else if (state.mode === 'yaml') {
+                final = YAML.stringify(obj, { indent: 2 })
+            }
         }
         dispatch({ type: 'setCode', value: final })
     }, [value, noParsing])

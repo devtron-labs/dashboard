@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import {
     FormErrorObjectType,
     FormType,
@@ -56,6 +56,26 @@ export function TaskTypeDetailComponent() {
         label: formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.containerImagePath || '',
         value: formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.containerImagePath || '',
     })
+
+    useEffect(() => {
+        if (formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.SHELL) {
+            if (!formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script) {
+                const _formData = { ...formData }
+                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script =
+                    '#!/bin/sh \nset -eo pipefail \n#set -v  ## uncomment this to debug the script \n' //default value for shell
+                setFormData(_formData)
+            }
+        } else {
+            if (
+                JSON.stringify(formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script) ===
+                '"#!/bin/sh \\nset -eo pipefail \\n#set -v  ## uncomment this to debug the script \\n"'
+            ) {
+                const _formData = { ...formData }
+                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script = '' //default value for container image
+                setFormData(_formData)
+            }
+        }
+    }, [formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType])
 
     const handleContainer = (e: any, key: 'containerImagePath' | 'imagePullSecret'): void => {
         const _formData = { ...formData }
@@ -116,27 +136,19 @@ export function TaskTypeDetailComponent() {
     }
 
     const renderShellScript = () => {
-        if (formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.SHELL) {
-            if (!formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script) {
-                const _formData = { ...formData }
-                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script =
-                    '#!/bin/sh \nset -eo pipefail \n#set -v  ## uncomment this to debug the script \n' //default value for shell
-                setFormData(_formData)
-            }
-            return (
-                <>
-                    <CustomScript handleScriptChange={(e) => handleCustomChange(e, 'script')} />
-                    <div className="w-100 bcn-1 pt-7 br-8 flexbox h-32 pl-4 cn-9 fs-12">
-                        <Info className="path-info mt-2 mb-2 mr-8 ml-14 icon-dim-16" />
-                        <span>
-                            Your source code will be available at: <span className="fw-6">/devtroncd</span>
-                        </span>
-                    </div>
-                    <hr />
-                    <OutputDirectoryPath />
-                </>
-            )
-        }
+        return (
+            <>
+                <CustomScript handleScriptChange={(e) => handleCustomChange(e, 'script')} />
+                <div className="w-100 bcn-1 pt-7 br-8 flexbox h-32 pl-4 cn-9 fs-12">
+                    <Info className="path-info mt-2 mb-2 mr-8 ml-14 icon-dim-16" />
+                    <span>
+                        Your source code will be available at: <span className="fw-6">/devtroncd</span>
+                    </span>
+                </div>
+                <hr />
+                <OutputDirectoryPath />
+            </>
+        )
     }
 
     function Option(_props) {
@@ -204,241 +216,228 @@ export function TaskTypeDetailComponent() {
     }
 
     const renderContainerScript = () => {
-        if (
-            formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE
-        ) {
-            const errorObj = formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-            if (
-                JSON.stringify(formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script) ===
-                '"#!/bin/sh \\nset -eo pipefail \\n#set -v  ## uncomment this to debug the script \\n"'
-            ) {
-                const _formData = { ...formData }
-                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script = '' //default value for container image
-                setFormData(_formData)
-            }
-            return (
-                <>
-                    <div className="row-container mb-12">
-                        <TaskFieldTippyDescription
-                            taskField={TaskFieldLabel.CONTAINERIMAGEPATH}
-                            contentDescription={TaskFieldDescription.CONTAINERIMAGEPATH}
+        const errorObj = formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
+        return (
+            <>
+                <div className="row-container mb-12">
+                    <TaskFieldTippyDescription
+                        taskField={TaskFieldLabel.CONTAINERIMAGEPATH}
+                        contentDescription={TaskFieldDescription.CONTAINERIMAGEPATH}
+                    />
+                    <div style={{ width: '80% !important' }}>
+                        <CreatableSelect
+                            tabIndex={1}
+                            value={selectedContainerImage}
+                            options={containerImageOptions}
+                            placeholder="Select container image or input value"
+                            onChange={handleContainerImageSelector}
+                            styles={containerImageSelectStyles}
+                            classNamePrefix="select"
+                            components={{
+                                MenuList: (props) => {
+                                    return (
+                                        <components.MenuList {...props}>
+                                            <div className="cn-5 pl-12 pt-4 pb-4" style={{ fontStyle: 'italic' }}>
+                                                Type to enter a custom value. Press Enter to accept.
+                                            </div>
+                                            {props.children}
+                                        </components.MenuList>
+                                    )
+                                },
+                                Option,
+                                IndicatorSeparator: null,
+                                ValueContainer,
+                            }}
+                            noOptionsMessage={(): string => {
+                                return 'No matching options'
+                            }}
+                            onBlur={handleCreatableBlur}
+                            isValidNewOption={() => false}
+                            onKeyDown={handleKeyDown}
                         />
-                        <div style={{ width: '80% !important' }}>
-                            <CreatableSelect
-                                tabIndex={1}
-                                value={selectedContainerImage}
-                                options={containerImageOptions}
-                                placeholder="Select container image or input value"
-                                onChange={handleContainerImageSelector}
-                                styles={containerImageSelectStyles}
-                                classNamePrefix="select"
-                                components={{
-                                    MenuList: (props) => {
-                                        return (
-                                            <components.MenuList {...props}>
-                                                <div className="cn-5 pl-12 pt-4 pb-4" style={{ fontStyle: 'italic' }}>
-                                                    Type to enter a custom value. Press Enter to accept.
-                                                </div>
-                                                {props.children}
-                                            </components.MenuList>
-                                        )
-                                    },
-                                    Option,
-                                    IndicatorSeparator: null,
-                                    ValueContainer,
-                                }}
-                                noOptionsMessage={(): string => {
-                                    return 'No matching options'
-                                }}
-                                onBlur={handleCreatableBlur}
-                                isValidNewOption={() => false}
-                                onKeyDown={handleKeyDown}
-                            />
 
-                            {errorObj?.containerImagePath && !errorObj.containerImagePath.isValid && (
-                                <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                                    <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                    <span>{errorObj?.containerImagePath.message}</span>
-                                </span>
-                            )}
-                            <div className="w-100 bcb-1 pt-6 br-4 flexbox h-32 cn-9 fs-12 mt-8">
-                                <Info className="container-image-info mt-2 mb-2 mr-8 ml-14 icon-dim-16" />
-                                <span>Devtron only supports container image which include /bin/sh executable</span>
-                            </div>
+                        {errorObj?.containerImagePath && !errorObj.containerImagePath.isValid && (
+                            <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
+                                <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                <span>{errorObj?.containerImagePath.message}</span>
+                            </span>
+                        )}
+                        <div className="w-100 bcb-1 pt-6 br-4 flexbox h-32 cn-9 fs-12 mt-8">
+                            <Info className="container-image-info mt-2 mb-2 mr-8 ml-14 icon-dim-16" />
+                            <span>Devtron only supports container image which include /bin/sh executable</span>
                         </div>
                     </div>
-                    <div className="row-container mb-12 fs-13 fw-6">
-                        <div></div>
-                        <Checkbox
-                            isChecked={
-                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.isMountCustomScript
-                            }
-                            onClick={(e) => {
-                                e.stopPropagation()
-                            }}
-                            rootClassName="top"
-                            value={CHECKBOX_VALUE.CHECKED}
-                            onChange={(e) => handleCustomScript()}
-                            id="mountCustomScriptCheck"
+                </div>
+                <div className="row-container mb-12 fs-13 fw-6">
+                    <div></div>
+                    <Checkbox
+                        isChecked={
+                            formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.isMountCustomScript
+                        }
+                        onClick={(e) => {
+                            e.stopPropagation()
+                        }}
+                        rootClassName="top"
+                        value={CHECKBOX_VALUE.CHECKED}
+                        onChange={(e) => handleCustomScript()}
+                        id="mountCustomScriptCheck"
+                    >
+                        <Tippy
+                            className="default-tt w-220"
+                            arrow={false}
+                            content={TaskFieldDescription.MOUNTCODESNIPPET}
                         >
-                            <Tippy
-                                className="default-tt w-220"
-                                arrow={false}
-                                content={TaskFieldDescription.MOUNTCODESNIPPET}
-                            >
-                                <label className="pt-4" htmlFor="mountCustomScriptCheck">
-                                    {TaskFieldLabel.MOUNTCODESNIPPET}
-                                </label>
-                            </Tippy>
-                        </Checkbox>
-                    </div>
-                    {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.isMountCustomScript && (
-                        <>
-                            <CustomScript handleScriptChange={(e) => handleCustomChange(e, 'script')} />
-                            <div className="row-container mb-12">
-                                <TaskFieldTippyDescription
-                                    taskField={TaskFieldLabel.MOUNTCODEAT}
-                                    contentDescription={TaskFieldDescription.MOUNTCODEAT}
-                                />
-                                <div style={{ width: '80% !important' }}>
-                                    <input
-                                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                                        autoComplete="off"
-                                        placeholder="Eg. /directory/filename"
-                                        type="text"
-                                        name="storeScriptAt"
-                                        onChange={(e) => handleCustomChange(e, 'storeScriptAt')}
-                                        value={
-                                            formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-                                                .storeScriptAt
-                                        }
-                                    />
-
-                                    {errorObj?.storeScriptAt && !errorObj.storeScriptAt.isValid && (
-                                        <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                                            <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                            <span>{errorObj?.storeScriptAt.message}</span>
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-                        </>
-                    )}
-                    <div className="row-container mb-12">
-                        <TaskFieldTippyDescription
-                            taskField={'Command'}
-                            contentDescription={TaskFieldDescription.COMMAND}
-                        />
-                        <input
-                            style={{ width: '80% !important' }}
-                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                            autoComplete="off"
-                            placeholder="Eg. “echo”"
-                            type="text"
-                            onChange={(e) => handleCommandArgs(e, TaskFieldLabel.COMMAND)}
-                            value={
-                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap?.[0][
-                                    TaskFieldLabel.COMMAND
-                                ]
-                            }
-                        />
-                    </div>
-                    <div className="row-container mb-12">
-                        <TaskFieldTippyDescription taskField={'Args'} contentDescription={TaskFieldDescription.ARGS} />
-                        <input
-                            style={{ width: '80% !important' }}
-                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                            autoComplete="off"
-                            placeholder='Eg. "HOSTNAME", "KUBERNETES_PORT"'
-                            type="text"
-                            onChange={(e) => handleCommandArgs(e, TaskFieldLabel.ARGS)}
-                            value={
-                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap?.[0][
-                                    TaskFieldLabel.ARGS
-                                ]
-                            }
-                        />
-                    </div>
-                    <MultiplePort />
-                    <div className="row-container mb-12">
-                        <TaskFieldTippyDescription
-                            taskField={TaskFieldLabel.MOUNTCODETOCONTAINER}
-                            contentDescription={TaskFieldDescription.MOUNTCODETOCONTAINER}
-                        />
-                        <RadioGroup
-                            className="no-border"
-                            value={
-                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer
-                                    ? MountPath.TRUE
-                                    : MountPath.FALSE
-                            }
-                            disabled={false}
-                            name="mountCodeToContainer"
-                            onChange={(event) => {
-                                handleMountChange(event)
-                            }}
-                        >
-                            <RadioGroupItem value={MountPath.FALSE}> {MountPath.FALSE} </RadioGroupItem>
-                            <RadioGroupItem value={MountPath.TRUE}> {MountPath.TRUE} </RadioGroupItem>
-                        </RadioGroup>
-                    </div>
-                    {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer && (
-                        <div className="mb-12">
-                            <div className="row-container">
-                                <div className="fw-6 fs-13 lh-32 cn-7 "></div>
+                            <label className="pt-4" htmlFor="mountCustomScriptCheck">
+                                {TaskFieldLabel.MOUNTCODESNIPPET}
+                            </label>
+                        </Tippy>
+                    </Checkbox>
+                </div>
+                {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.isMountCustomScript && (
+                    <>
+                        <CustomScript handleScriptChange={(e) => handleCustomChange(e, 'script')} />
+                        <div className="row-container mb-12">
+                            <TaskFieldTippyDescription
+                                taskField={TaskFieldLabel.MOUNTCODEAT}
+                                contentDescription={TaskFieldDescription.MOUNTCODEAT}
+                            />
+                            <div style={{ width: '80% !important' }}>
                                 <input
-                                    style={{ width: '80% !important' }}
                                     className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                     autoComplete="off"
-                                    placeholder="Eg file/folder"
+                                    placeholder="Eg. /directory/filename"
                                     type="text"
-                                    onChange={(e) => handleCustomChange(e, 'mountCodeToContainerPath')}
+                                    name="storeScriptAt"
+                                    onChange={(e) => handleCustomChange(e, 'storeScriptAt')}
                                     value={
                                         formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-                                            .mountCodeToContainerPath
+                                            .storeScriptAt
                                     }
                                 />
-                            </div>
-                            <div className="pl-220">
-                                {errorObj['mountCodeToContainerPath'] && !errorObj['mountCodeToContainerPath'].isValid && (
+
+                                {errorObj?.storeScriptAt && !errorObj.storeScriptAt.isValid && (
                                     <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
                                         <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                        <span>{errorObj['mountCodeToContainerPath'].message}</span>
+                                        <span>{errorObj?.storeScriptAt.message}</span>
                                     </span>
                                 )}
                             </div>
                         </div>
-                    )}
-                    <div className="row-container mb-12">
-                        <TaskFieldTippyDescription
-                            taskField={TaskFieldLabel.MOUNTDIRECTORYFROMHOST}
-                            contentDescription={TaskFieldDescription.MOUNTDIRECTORYFROMHOST}
-                        />
-                        <RadioGroup
-                            className="no-border"
-                            value={
-                                formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
-                                    .mountDirectoryFromHost
-                                    ? MountPath.TRUE
-                                    : MountPath.FALSE
-                            }
-                            disabled={false}
-                            name="mountDirectoryFromHost"
-                            onChange={(event) => {
-                                handleMountChange(event)
-                            }}
-                        >
-                            <RadioGroupItem value={MountPath.FALSE}> {MountPath.FALSE} </RadioGroupItem>
-                            <RadioGroupItem value={MountPath.TRUE}> {MountPath.TRUE} </RadioGroupItem>
-                        </RadioGroup>
+                    </>
+                )}
+                <div className="row-container mb-12">
+                    <TaskFieldTippyDescription
+                        taskField={'Command'}
+                        contentDescription={TaskFieldDescription.COMMAND}
+                    />
+                    <input
+                        style={{ width: '80% !important' }}
+                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                        autoComplete="off"
+                        placeholder="Eg. “echo”"
+                        type="text"
+                        onChange={(e) => handleCommandArgs(e, TaskFieldLabel.COMMAND)}
+                        value={
+                            formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap?.[0][
+                                TaskFieldLabel.COMMAND
+                            ]
+                        }
+                    />
+                </div>
+                <div className="row-container mb-12">
+                    <TaskFieldTippyDescription taskField={'Args'} contentDescription={TaskFieldDescription.ARGS} />
+                    <input
+                        style={{ width: '80% !important' }}
+                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                        autoComplete="off"
+                        placeholder='Eg. "HOSTNAME", "KUBERNETES_PORT"'
+                        type="text"
+                        onChange={(e) => handleCommandArgs(e, TaskFieldLabel.ARGS)}
+                        value={
+                            formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap?.[0][
+                                TaskFieldLabel.ARGS
+                            ]
+                        }
+                    />
+                </div>
+                <MultiplePort />
+                <div className="row-container mb-12">
+                    <TaskFieldTippyDescription
+                        taskField={TaskFieldLabel.MOUNTCODETOCONTAINER}
+                        contentDescription={TaskFieldDescription.MOUNTCODETOCONTAINER}
+                    />
+                    <RadioGroup
+                        className="no-border"
+                        value={
+                            formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer
+                                ? MountPath.TRUE
+                                : MountPath.FALSE
+                        }
+                        disabled={false}
+                        name="mountCodeToContainer"
+                        onChange={(event) => {
+                            handleMountChange(event)
+                        }}
+                    >
+                        <RadioGroupItem value={MountPath.FALSE}> {MountPath.FALSE} </RadioGroupItem>
+                        <RadioGroupItem value={MountPath.TRUE}> {MountPath.TRUE} </RadioGroupItem>
+                    </RadioGroup>
+                </div>
+                {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer && (
+                    <div className="mb-12">
+                        <div className="row-container">
+                            <div className="fw-6 fs-13 lh-32 cn-7 "></div>
+                            <input
+                                style={{ width: '80% !important' }}
+                                className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                autoComplete="off"
+                                placeholder="Eg file/folder"
+                                type="text"
+                                onChange={(e) => handleCustomChange(e, 'mountCodeToContainerPath')}
+                                value={
+                                    formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
+                                        .mountCodeToContainerPath
+                                }
+                            />
+                        </div>
+                        <div className="pl-220">
+                            {errorObj['mountCodeToContainerPath'] && !errorObj['mountCodeToContainerPath'].isValid && (
+                                <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
+                                    <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                    <span>{errorObj['mountCodeToContainerPath'].message}</span>
+                                </span>
+                            )}
+                        </div>
                     </div>
-                    {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountDirectoryFromHost && (
-                        <MountFromHost />
-                    )}
-                    <OutputDirectoryPath />
-                </>
-            )
-        }
+                )}
+                <div className="row-container mb-12">
+                    <TaskFieldTippyDescription
+                        taskField={TaskFieldLabel.MOUNTDIRECTORYFROMHOST}
+                        contentDescription={TaskFieldDescription.MOUNTDIRECTORYFROMHOST}
+                    />
+                    <RadioGroup
+                        className="no-border"
+                        value={
+                            formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountDirectoryFromHost
+                                ? MountPath.TRUE
+                                : MountPath.FALSE
+                        }
+                        disabled={false}
+                        name="mountDirectoryFromHost"
+                        onChange={(event) => {
+                            handleMountChange(event)
+                        }}
+                    >
+                        <RadioGroupItem value={MountPath.FALSE}> {MountPath.FALSE} </RadioGroupItem>
+                        <RadioGroupItem value={MountPath.TRUE}> {MountPath.TRUE} </RadioGroupItem>
+                    </RadioGroup>
+                </div>
+                {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountDirectoryFromHost && (
+                    <MountFromHost />
+                )}
+                <OutputDirectoryPath />
+            </>
+        )
     }
 
     const renderDockerScript = () => {
@@ -472,10 +471,13 @@ export function TaskTypeDetailComponent() {
         }
     }
 
-    return (
-        <>
-            {renderShellScript()}
-            {renderContainerScript()}
-        </>
-    )
+    if (formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.SHELL) {
+        return renderShellScript()
+    } else if (
+        formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE
+    ) {
+        return renderContainerScript()
+    } else {
+        return <></>
+    }
 }
