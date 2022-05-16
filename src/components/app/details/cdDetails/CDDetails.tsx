@@ -323,7 +323,7 @@ const DeploymentCard: React.FC<{
                     }}
                 >
                     <div
-                        className={`app-summary__icon icon-dim-22 ${triggerDetails.status
+                        className={`app-summary__icon icon-dim-20 ${triggerDetails.status
                             ?.toLocaleLowerCase()
                             .replace(/\s+/g, '')}`}
                     ></div>
@@ -527,7 +527,7 @@ const TriggerOutput: React.FC<{
                                     : () => cancelPrePostCdTrigger(pipelineId, triggerId)
                             }
                         />
-                        <ul className="pl-20 tab-list mr-20 tab-list--nodes border-bottom">
+                        <ul className="pl-20 tab-list tab-list--nodes border-bottom">
                             {triggerDetails.stage !== 'DEPLOY' && (
                                 <li className="tab-list__tab">
                                     <NavLink

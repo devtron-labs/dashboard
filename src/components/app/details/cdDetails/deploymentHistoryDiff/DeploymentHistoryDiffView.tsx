@@ -25,11 +25,11 @@ export default function DeploymentHistoryDiffView({
     }
     const renderDetailedValue = (parentClassName: string, singleValue: DeploymentHistorySingleValue) => {
         const titleStyle = 'cn-6 pt-8 pl-16 pr-16 lh-16'
-        const descriptionStyle = 'cn-9 fs-13 pb-8 pl-16 pr-16 lh-20 mh-28'
+        const descriptionStyle = 'cn-9 fs-13 pb-8 pl-16 pr-16 lh-20 mh-28 text-capitalize'
         return (
             <div className={parentClassName}>
                 <div className={titleStyle}>{singleValue.displayName}</div>
-                <div className={descriptionStyle}>{singleValue.value}</div>
+                <div className={descriptionStyle}>{singleValue.value.toLowerCase()}</div>
             </div>
         )
     }
