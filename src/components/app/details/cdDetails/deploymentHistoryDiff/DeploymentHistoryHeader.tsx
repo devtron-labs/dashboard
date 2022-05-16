@@ -3,7 +3,7 @@ import ReactSelect from 'react-select'
 import { useHistory, useRouteMatch, useParams } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import moment from 'moment'
-import { Moment12HourFormat, URLS } from '../../../../../config'
+import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, Moment12HourFormat, URLS } from '../../../../../config'
 import { ReactComponent as LeftIcon } from '../../../../../assets/icons/ic-arrow-forward.svg'
 import { CompareWithBaseConfiguration, DeploymentHistoryParamsType, DeploymentTemplateOptions } from '../cd.type'
 import { Option, styles } from '../cd.utils'
@@ -114,8 +114,12 @@ export default function DeploymentHistoryHeader({
                                 arrow={false}
                                 content={
                                     <span style={{ display: 'block', width: '180px' }}>
-                                        ConfigMap “dashboard-cm” was added in this deployment. There is no previous
-                                        instance to compare with.
+                                        {
+                                            DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP[historyComponent.toUpperCase()]
+                                                ?.DISPLAY_NAME
+                                        }
+                                        {historyComponentName ? ` “${historyComponentName}”` : ''} was added in this
+                                        deployment. There is no previous instance to compare with.
                                     </span>
                                 }
                             >
