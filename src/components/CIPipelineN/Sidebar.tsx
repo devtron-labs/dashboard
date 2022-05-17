@@ -5,6 +5,7 @@ import { TaskList } from './TaskList'
 import { ciPipelineContext } from './CIPipeline'
 import { FormType } from '../ciPipeline/types'
 import { Toggle } from '../common'
+import { string } from 'prop-types'
 
 export function Sidebar() {
     const {
@@ -20,7 +21,10 @@ export function Sidebar() {
         setConfigurationType: React.Dispatch<React.SetStateAction<string>>
         activeStageName: string
     } = useContext(ciPipelineContext)
-    const [helpText, setHelpText] = useState('')
+    const [helpData, setHelpData] = useState<{ helpText: string; docLink: string }>({
+        helpText: 'Docs: Configure build stage',
+        docLink: DOCUMENTATION.PRE_POST_BUILD_STAGE,
+    })
     const changeTriggerType = (appCreationType: string): void => {
         const _formData = { ...formData }
         _formData.triggerType = appCreationType
@@ -34,11 +38,11 @@ export function Sidebar() {
 
     useEffect(() => {
         if (activeStageName === BuildStageVariable.Build) {
-            setHelpText('Docs: Configure build')
+            setHelpData({ helpText: 'Docs: Configure build stage', docLink: DOCUMENTATION.PRE_POST_BUILD_STAGE })
         } else if (activeStageName === BuildStageVariable.PostBuild) {
-            setHelpText('Docs: Configure post-build tasks')
+            setHelpData({ helpText: 'Docs: Configure post-build tasks', docLink: DOCUMENTATION.PRE_POST_BUILD_STAGE })
         } else if (activeStageName === BuildStageVariable.PreBuild) {
-            setHelpText('Docs: Configure pre-build tasks')
+            setHelpData({ helpText: 'Docs: Configure pre-build tasks', docLink: DOCUMENTATION.PRE_POST_BUILD_STAGE })
         }
     }, [activeStageName])
 
@@ -99,11 +103,11 @@ export function Sidebar() {
                 <div>
                     <a
                         className="learn-more__href fw-6"
-                        href={DOCUMENTATION.PRE_BUILD_TASK}
+                        href={helpData.docLink}
                         target="_blank"
                         rel="noreferrer noopener"
                     >
-                        {helpText}
+                        {helpData.helpText}
                     </a>
                 </div>
             </div>
