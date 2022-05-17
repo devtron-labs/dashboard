@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { FormErrorObjectType, FormType, ScriptType, TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
@@ -22,6 +22,12 @@ function CustomScript({ handleScriptChange }: CustomScriptType) {
         formDataErrorObj: FormErrorObjectType
     } = useContext(ciPipelineContext)
 
+    const [editorValue, setEditorValue] = useState<string>(
+        formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script,
+    )
+    useEffect(() => {
+        setEditorValue(formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script)
+    }, [formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script])
     return (
         <div className="mb-12">
             <div>
@@ -36,10 +42,11 @@ function CustomScript({ handleScriptChange }: CustomScriptType) {
                     <CodeEditor
                         theme="vs-alice-blue"
                         mode="shell"
+                        noParsing
                         onChange={(value) => handleScriptChange({ target: { value } })}
                         inline
                         height={300}
-                        value={formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script}
+                        value={editorValue}
                     ></CodeEditor>
                 </div>
             </div>
