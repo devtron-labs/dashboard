@@ -20,14 +20,14 @@ export default class ErrorBoundary extends Component<{}, errorBoundaryState> {
     componentDidCatch(error, errorInfo) {
         if (error?.name === 'ChunkLoadError') {
             this.setState({ isChunkLoadError: true })
+        } else {
+            Sentry.withScope((scope) => {
+                scope.setExtras(errorInfo)
+                scope.setTag('page', 'error-boundary')
+                const eventId = Sentry.captureException(error)
+                this.setState({ eventId })
+            })
         }
-
-        Sentry.withScope((scope) => {
-            scope.setExtras(errorInfo)
-            scope.setTag('page', 'error-boundary')
-            const eventId = Sentry.captureException(error)
-            this.setState({ eventId })
-        })
     }
 
     componentDidUpdate(prevProps, prevState) {
