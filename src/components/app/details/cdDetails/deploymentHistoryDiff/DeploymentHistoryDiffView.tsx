@@ -18,10 +18,10 @@ export default function DeploymentHistoryDiffView({
 
     useEffect(() => {
         if (ref.current) {
-            let dynamicHeight = ref.current?.clientHeight + 255 + (!previousConfigAvailable ? 55 : 0)
+            const dynamicHeight = ref.current?.clientHeight + 255 + (!previousConfigAvailable ? 55 : 0)
             setHeight(`calc(100vh - ${dynamicHeight}px)`)
         }
-    }, [ref.current])
+    }, [ref, historyComponent, historyComponentName])
 
     const renderDeploymentDiffViaCodeEditor = () => {
         return (
@@ -70,9 +70,8 @@ export default function DeploymentHistoryDiffView({
                 }`}
                 ref={ref}
             >
-                {currentConfiguration &&
-                    baseTemplateConfiguration &&
-                    Object.keys({ ...currentConfiguration.values, ...baseTemplateConfiguration.values }).map(
+                {baseTemplateConfiguration &&
+                    Object.keys({ ...currentConfiguration?.values, ...baseTemplateConfiguration.values }).map(
                         (configKey, index) => {
                             const currentValue = currentConfiguration?.values?.[configKey]
                             const baseValue = baseTemplateConfiguration.values[configKey]
