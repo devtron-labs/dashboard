@@ -14,7 +14,7 @@ export const reactSelectStyles = {
         ...base,
         boxShadow: 'none',
         height: '40px',
-        backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N000)',
+        backgroundColor: state.isDisabled ? 'var(--N50)' : 'var(--N000)',
         borderColor: state.isDisabled ? 'var(--N200)' : base.borderColor
     }),
     menu: (base, state) => {
@@ -34,7 +34,7 @@ export const reactSelectStyles = {
         return ({
             ...base,
             color: state.isDisabled ? 'var(--N500)' : 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N000)'
+            backgroundColor: state.isFocused ? 'var(--N50)' : 'var(--N000)'
         })
     }
 } 
