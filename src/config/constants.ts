@@ -129,6 +129,11 @@ export const Routes = {
     HELM_LINK_TO_CHART_STORE_API: 'app-store/deployment/application/helm/link-to-chart-store',
     HELM_DEPLOYMENT_ROLLBACK_API: 'application/rollback',
     NAMESPACE: 'env/namespace',
+    APP_RELEASE_DEPLOYMENT_HISTORY_API: 'app-store/installed-app/deployment-history',
+    APP_RELEASE_DEPLOYMENT_DETAIL_API: 'app-store/installed-app/deployment-history/info',
+    PLUGIN_LIST: 'plugin/global/list',
+    PLUGIN_DETAIL: 'plugin/global',
+    GLOBAL_VARIABLES: 'plugin/global/list/global-variable',
     DASHBOARD_ACCESSED: '/dashboard-event/dashboardAccessed',
     DASHBOARD_LOGGEDIN: '/dashboard-event/dashboardLoggedIn',
     HELM_APP_HIBERNATE_API: 'application/hibernate',
@@ -175,6 +180,7 @@ export const PATTERNS = {
     ALL_DIGITS_BETWEEN_0_AND_7: /^[0-7]*$/,
     APP_LABEL_CHIP: /^.+:.+$/,
     CONFIG_MAP_AND_SECRET_MULTPLS_KEYS: /^[-._a-zA-Z0-9\,\?\s]*[-._a-zA-Z0-9\s]$/,
+    VARIABLE: /^[A-z0-9-_]+$/,
 }
 
 export const TriggerType = {
@@ -220,6 +226,10 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_USER: 'https://docs.devtron.ai/devtron/setup/global-configurations/user-access',
     HYPERION_TO_FULL_MODE: 'https://docs.devtron.ai/hyperion/upgrade-to-devtron',
     HYPERION: 'https://docs.devtron.ai/#hyperion',
+    PRE_BUILD_TASK: 'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/cd-pipeline',
+    BUILD_STAGE: 'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/ci-pipeline2#build-stage',
+    PRE_POST_BUILD_STAGE:
+        'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/ci-pipeline2/ci-build-pre-post-plugins',
 }
 
 // APP LIST STARTS
@@ -447,6 +457,23 @@ export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
 export const AppCreationType = {
     Blank: 'BLANK',
     Existing: 'EXISTING',
+}
+
+export const ConfigurationType = {
+    GUI: 'GUI',
+    YAML: 'YAML',
+}
+
+export const BuildStageVariable = {
+    PreBuild: 'preBuildStage',
+    Build: 'buildStage',
+    PostBuild: 'postBuildStage',
+}
+
+export const BuildTabText = {
+    preBuildStage: 'Pre-build stage',
+    buildStage: 'Build stage',
+    postBuildStage: 'Post-build stage',
 }
 
 export const APP_STATUS_CUSTOM_MESSAGES = {
