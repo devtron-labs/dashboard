@@ -42,9 +42,7 @@ export default function DeploymentHistoryDiffView({
         return (
             <div className={parentClassName}>
                 <div className="cn-6 pt-8 pl-16 pr-16 lh-16">{singleValue.displayName}</div>
-                <div className="cn-9 fs-13 pb-8 pl-16 pr-16 lh-20 mh-28 text-capitalize">
-                    {singleValue.value.toLowerCase()}
-                </div>
+                <div className="cn-9 fs-13 pb-8 pl-16 pr-16 lh-20 mh-28">{singleValue.value}</div>
             </div>
         )
     }
