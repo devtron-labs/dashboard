@@ -26,7 +26,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
     const { url } = useRouteMatch();
     const containers = IndexStore.getAllContainersForPod(params.podName);
     const [logsPaused, toggleLogStream] = useState(false);
-    const [selectedContainerName, setSelectedContainerName] = useState(containers[0]);
+    const [selectedContainerName, setSelectedContainerName] = useState(containers ? containers[0] : '')
     const [selectedtTerminalType, setSelectedtTerminalType] = useState(shellTypes[0]);
     const [terminalCleared, setTerminalCleared] = useState(false);
 
@@ -49,7 +49,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
         toggleLogStream(paused);
     }
 
-    return isDeleted ? (
+    return isDeleted || !(selectedContainerName.length ) ? (
         <div>
             <MessageUI msg="This resource no longer exists" size={32} />
         </div>
