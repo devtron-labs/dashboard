@@ -41,7 +41,7 @@ export default function DeploymentHistoryHeader({
                     historyComponentName,
                 ).then((response) => {
                     if (response.result) {
-                        let deploymentTemplateOption = []
+                        const deploymentTemplateOption = []
                         const resultLen = response.result.length
                         for (let i = 0; i < resultLen; i++) {
                             if (response.result[i].id.toString() === baseConfigurationId) {

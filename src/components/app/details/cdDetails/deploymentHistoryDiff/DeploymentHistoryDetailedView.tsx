@@ -69,6 +69,9 @@ export default function DeploymentHistoryDetailedView({
     }, [baseConfigurationId, historyComponent, historyComponentName])
 
     useEffect(() => {
+        //show template showing historical diff detailed view
+        //in case if !shoowTemplate CD detail component being rendered
+
         if (!showTemplate) {
             setShowTemplate(true)
         }
@@ -78,7 +81,7 @@ export default function DeploymentHistoryDetailedView({
                 setShowTemplate(false)
             }
         }
-    }, [showTemplate])
+    }, [])
 
     return (
         <>

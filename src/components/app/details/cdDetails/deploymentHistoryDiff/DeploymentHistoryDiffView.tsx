@@ -17,10 +17,11 @@ export default function DeploymentHistoryDiffView({
     const [height, setHeight] = useState('')
 
     useEffect(() => {
-        let dynamicHeight = ref.current?.clientHeight + 255 + (!previousConfigAvailable ? 55 : 0)
-        setHeight(`calc(100vh - ${dynamicHeight}px)`)
-        console.log('height', height)
-    }, [ref])
+        if (ref.current) {
+            let dynamicHeight = ref.current?.clientHeight + 255 + (!previousConfigAvailable ? 55 : 0)
+            setHeight(`calc(100vh - ${dynamicHeight}px)`)
+        }
+    }, [ref.current])
 
     const renderDeploymentDiffViaCodeEditor = () => {
         return (
@@ -38,12 +39,12 @@ export default function DeploymentHistoryDiffView({
         )
     }
     const renderDetailedValue = (parentClassName: string, singleValue: DeploymentHistorySingleValue) => {
-        const titleStyle = 'cn-6 pt-8 pl-16 pr-16 lh-16'
-        const descriptionStyle = 'cn-9 fs-13 pb-8 pl-16 pr-16 lh-20 mh-28 text-capitalize'
         return (
             <div className={parentClassName}>
-                <div className={titleStyle}>{singleValue.displayName}</div>
-                <div className={descriptionStyle}>{singleValue.value.toLowerCase()}</div>
+                <div className="cn-6 pt-8 pl-16 pr-16 lh-16">{singleValue.displayName}</div>
+                <div className="cn-9 fs-13 pb-8 pl-16 pr-16 lh-20 mh-28 text-capitalize">
+                    {singleValue.value.toLowerCase()}
+                </div>
             </div>
         )
     }
@@ -66,8 +67,9 @@ export default function DeploymentHistoryDiffView({
                 }`}
                 ref={ref}
             >
-                {baseTemplateConfiguration &&
-                    Object.keys({ ...currentConfiguration?.values, ...baseTemplateConfiguration?.values }).map(
+                {currentConfiguration &&
+                    baseTemplateConfiguration &&
+                    Object.keys({ ...currentConfiguration.values, ...baseTemplateConfiguration.values }).map(
                         (configKey, index) => {
                             const currentValue = currentConfiguration?.values?.[configKey]
                             const baseValue = baseTemplateConfiguration.values[configKey]
