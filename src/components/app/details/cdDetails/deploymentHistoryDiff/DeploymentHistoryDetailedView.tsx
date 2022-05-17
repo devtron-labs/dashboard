@@ -29,10 +29,9 @@ export default function DeploymentHistoryDetailedView({
     const [previousConfigAvailable, setPreviousConfigAvailable] = useState<boolean>(true)
 
     useEffect(() => {
-        setLoader(true)
-
         if (selectedDeploymentTemplate) {
             try {
+                setLoader(true)
                 getDeploymentHistoryDetail(
                     appId,
                     pipelineId,
@@ -41,10 +40,10 @@ export default function DeploymentHistoryDetailedView({
                     historyComponentName,
                 ).then((response) => {
                     setCurrentConfiguration(prepareHistoryData(response.result, historyComponent))
-                    setLoader(false)
                 })
             } catch (err) {
                 showError(err)
+            } finally {
                 setLoader(false)
             }
         }
@@ -53,20 +52,18 @@ export default function DeploymentHistoryDetailedView({
     useEffect(() => {
         try {
             setCodeEditorLoading(true)
-            if (baseConfigurationId) {
-                getDeploymentHistoryDetail(
-                    appId,
-                    pipelineId,
-                    baseConfigurationId,
-                    historyComponent,
-                    historyComponentName,
-                ).then((response) => {
-                    setBaseTemplateConfiguration(prepareHistoryData(response.result, historyComponent))
-                    setCodeEditorLoading(false)
-                })
-            }
+            getDeploymentHistoryDetail(
+                appId,
+                pipelineId,
+                baseConfigurationId,
+                historyComponent,
+                historyComponentName,
+            ).then((response) => {
+                setBaseTemplateConfiguration(prepareHistoryData(response.result, historyComponent))
+            })
         } catch (err) {
             showError(err)
+        } finally {
             setCodeEditorLoading(false)
         }
     }, [baseConfigurationId, historyComponent, historyComponentName])
