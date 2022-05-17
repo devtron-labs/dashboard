@@ -9,8 +9,6 @@ export interface DeploymentHistoryDetail {
 export interface DeploymentTemplateHistoryType {
     currentConfiguration: DeploymentHistoryDetail
     baseTemplateConfiguration: DeploymentHistoryDetail
-    codeEditorLoading: boolean
-    loader?: boolean
     previousConfigAvailable: boolean
 }
 export interface DeploymentTemplateOptions {
@@ -36,8 +34,6 @@ export interface HistoryDiffSelectorList {
 export interface CompareViewDeploymentType {
     showTemplate: boolean
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>
-    loader: boolean
-    setLoader: React.Dispatch<React.SetStateAction<boolean>>
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
 }

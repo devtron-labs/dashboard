@@ -9,7 +9,6 @@ import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../../config
 export default function DeploymentHistoryDiffView({
     currentConfiguration,
     baseTemplateConfiguration,
-    codeEditorLoading,
     previousConfigAvailable,
 }: DeploymentTemplateHistoryType) {
     const { historyComponent, historyComponentName } = useParams<DeploymentHistoryParamsType>()
@@ -35,7 +34,6 @@ export default function DeploymentHistoryDiffView({
                 height={codeEditorHeight}
                 diffView={previousConfigAvailable && true}
                 readOnly={true}
-                loading={codeEditorLoading}
                 noParsing
             ></CodeEditor>
         )

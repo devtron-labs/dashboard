@@ -83,7 +83,6 @@ export default function CDDetails() {
     const keys = useKeyDown()
     const [showTemplate, setShowTemplate] = useState(false)
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
-    const [loader, setLoader] = useState<boolean>(false)
 
     useEffect(() => {
         if (!pathname.includes('/logs')) return
@@ -269,8 +268,6 @@ export default function CDDetails() {
                             <DeploymentHistoryDetailedView
                                 showTemplate={showTemplate}
                                 setShowTemplate={setShowTemplate}
-                                loader={loader}
-                                setLoader={setLoader}
                                 setDeploymentHistoryList={setDeploymentHistoryList}
                                 deploymentHistoryList={deploymentHistoryList}
                             />

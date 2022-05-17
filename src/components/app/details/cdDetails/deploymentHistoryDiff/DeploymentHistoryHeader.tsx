@@ -40,8 +40,8 @@ export default function DeploymentHistoryHeader({
                     baseConfigurationId,
                     historyComponentName,
                 ).then((response) => {
+                    const deploymentTemplateOption = []
                     if (response.result) {
-                        const deploymentTemplateOption = []
                         const resultLen = response.result.length
                         for (let i = 0; i < resultLen; i++) {
                             if (response.result[i].id.toString() === baseConfigurationId) {
@@ -55,13 +55,12 @@ export default function DeploymentHistoryHeader({
                                 })
                             }
                         }
-                        setPreviousConfigAvailable(deploymentTemplateOption.length > 0)
-                        setDeploymentTemplateOption(deploymentTemplateOption)
-                        setSelectedDeploymentTemplate(
-                            deploymentTemplateOption[0] || { label: 'NA', value: 'NA', author: 'NA', status: 'NA' },
-                        )
                     }
-                    setLoader(false)
+                    setPreviousConfigAvailable(deploymentTemplateOption.length > 0)
+                    setDeploymentTemplateOption(deploymentTemplateOption)
+                    setSelectedDeploymentTemplate(
+                        deploymentTemplateOption[0] || { label: 'NA', value: 'NA', author: 'NA', status: 'NA' },
+                    )
                 })
             } catch (err) {
                 showError(err)
