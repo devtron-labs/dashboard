@@ -4,7 +4,6 @@ import {
     Host,
     getAppDetailsURL,
     getAppTriggerURL,
-    getAppCDURL
 } from '../../../../config';
 import {
     NavigationArrow,
@@ -29,9 +28,6 @@ import {
 import { Option } from './../../../v2/common/ReactSelect.utils';
 import { getAppConfigStatus, getAppOtherEnvironment, stopStartApp, getLastExecutionMinByAppAndEnv } from '../../../../services/service';
 import { Link } from 'react-router-dom';
-import ResourceTreeNodes from '../../ResourceTreeNodes';
-import EventsLogs from '../../EventsLogs';
-import ResponsiveDrawer from '../../ResponsiveDrawer';
 import { toast } from 'react-toastify';
 import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router';
 //@ts-check
@@ -47,8 +43,6 @@ import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
 import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg';
 import { ReactComponent as AlertTriangle } from '../../../../assets/icons/ic-alert-triangle.svg';
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg';
-import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg';
-import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg';
 import Tippy from '@tippyjs/react';
 import ReactGA from 'react-ga';
 import Select, { components } from 'react-select';
@@ -60,17 +54,18 @@ import {
     NodeType,
     AggregatedNodes,
     NodeDetailTabs,
-    NodeDetailTabsType,
-    AppDetails,
+    NodeDetailTabsType
 } from '../../types';
 import { aggregateNodes, SecurityVulnerabilitites, getSelectedNodeItems, getPodNameSuffix } from './utils';
 import { AppMetrics } from './AppMetrics';
+import IndexStore from '../../../v2/appDetails/index.store';
 import { TriggerInfoModal } from '../../list/TriggerInfo';
 import { sortObjectArrayAlphabetically, sortOptionsByValue } from '../../../common/helpers/Helpers';
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component';
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service';
-import { ExternalLink, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
+import { ExternalLink, ExternalLinksAndToolsType, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
+import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -108,7 +103,7 @@ export default function AppDetail() {
     }, [params.envId]);
     return (
         <div style={{ overflowY: 'auto', height: '100%' }}>
-            <div className="flex left column w-100" style={{ minHeight: '100%', justifyContent: 'flex-start' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                 {/* <div className="flex left w-100 p-16">
                     <EnvSelector environments={otherEnvsResult?.result} />
                 </div> */}
@@ -165,9 +160,7 @@ export const Details: React.FC<{
     const [appDetailsError, setAppDetailsError] = useState(undefined);
     const [appDetailsResult, setAppDetailsResult] = useState(undefined);
     const [pollingIntervalID, setPollingIntervalID] = useState(null);
-    const [externalLinksAndTools, setExternalLinksAndTools] = useState<
-        Record<string, ExternalLink[] | OptionTypeWithIcon[]>
-    >({
+    const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         externalLinks: [],
         monitoringTools: [],
     })
@@ -176,7 +169,7 @@ export const Details: React.FC<{
         //     //@ts-ignore
         //     prefix = `${location.protocol}//${location.host}`;
     //}
-
+    const isExternalToolAvailable: boolean = externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
     const interval = 30000;
     const appDetails = appDetailsResult?.result;
     const syncSSE = useEventSource(
@@ -193,6 +186,7 @@ export const Details: React.FC<{
     async function callAppDetailsAPI() {
         try {
             const response = await appDetailsAPI(params.appId, params.envId, 25000);
+            IndexStore.publishAppDetails(response.result)
             setAppDetailsResult(response)
             if (response.result?.clusterId) {
                 Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId)])
@@ -321,8 +315,8 @@ export const Details: React.FC<{
             setHibernating(false);
         }
     }
-
-    return (
+    
+    return ( 
         <React.Fragment>
             <div className="w-100 pt-16 pr-24 pb-20 pl-24">
                 <SourceInfo
@@ -338,28 +332,24 @@ export const Details: React.FC<{
                 severityCount={lastExecutionDetail.severityCount}
                 onClick={() => { toggleScanDetailsModal(true) }} />
             {environment && <AppMetrics appName={appDetails.appName}
+                addExtraSpace={!isExternalToolAvailable}
                 environment={environment}
                 podMap={aggregatedNodes.nodes.Pod}
                 k8sVersion={appDetails.k8sVersion} />}
-            {externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0 && (
+            {isExternalToolAvailable && (
                 <AppLevelExternalLinks
                     appDetails={appDetails}
-                    externalLinks={externalLinksAndTools.externalLinks as ExternalLink[]}
-                    monitoringTools={externalLinksAndTools.monitoringTools  as OptionTypeWithIcon[]}
+                    externalLinks={externalLinksAndTools.externalLinks}
+                    monitoringTools={externalLinksAndTools.monitoringTools}
                 />
             )}
-            <Route path={`${path}/:kind?/:tab?`}>
-                <NodeDetails
-                    nodes={aggregatedNodes}
-                    describeNode={describeNode}
-                    appDetails={appDetails}
-                    nodeName={detailedNode?.name}
-                    containerName={detailedNode?.containerName}
-                    isAppDeployment={isAppDeployment}
-                    externalLinks={externalLinksAndTools.externalLinks as ExternalLink[]}
-                    monitoringTools={externalLinksAndTools.monitoringTools  as OptionTypeWithIcon[]}
-                />
-            </Route>
+
+            <NodeTreeDetailTab
+                appDetails={appDetails}
+                externalLinks={externalLinksAndTools.externalLinks}
+                monitoringTools={externalLinksAndTools.monitoringTools}
+                isDevtronApp = {true}
+            />
 
             {detailedStatus && (
                 <ProgressStatus
@@ -425,176 +415,7 @@ export const Details: React.FC<{
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
             )}
-        </React.Fragment>
-    );
-};
-
-const NodeDetails: React.FC<{
-    nodes: AggregatedNodes;
-    nodeName?: string;
-    containerName?: string;
-    appDetails: AppDetails;
-    isAppDeployment: boolean;
-    describeNode: (name: string, containerName?: string) => void;
-    externalLinks: ExternalLink[]
-    monitoringTools: OptionTypeWithIcon[]
-}> = ({ nodes, describeNode, appDetails, nodeName, containerName, isAppDeployment, externalLinks, monitoringTools }) => {
-    const [selectedNode, selectNode] = useState<string>(null);
-    const [selectedNodes, setSelectNode] = useState<string>(null);
-    const [nodeItems, setNodeItems] = useState([]);
-    const [selectedContainer, selectContainer] = useState(null);
-    const { searchParams } = useSearchString()
-    const [logsPaused, toggleLogStream] = useState(false);
-    const [logsCleared, setLogsCleared] = useState(false);
-    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>("CONNECTING");
-    const [terminalCleared, setTerminalCleared] = useState(false);
-    const [isReconnection, setIsReconnection] = useState(false);
-    const [shell, selectShell] = useState({ label: "sh", value: "sh" });
-    const { url, path } = useRouteMatch();
-
-    const params = useParams<{ appId: string; envId: string; kind?: NodeType; tab?: NodeDetailTabsType }>();
-
-    const kind: Nodes = searchParams.kind as Nodes
-
-    const nodesMap = nodes.nodes[kind] || new Map();
-
-    let allNodes = [];
-    if (nodeItems?.length < 1 && Array.from(nodesMap).length > 0) {
-        allNodes = Array.from(nodesMap).map(([name]) => (
-            {
-                label: name + getPodNameSuffix(name, isAppDeployment, nodesMap, kind),
-                value: name,
-            }
-        ))
-        setNodeItems(allNodes)
-    }
-
-    useEffect(() => {
-        if (nodeName) {
-            selectNode(nodeName);
-            setSelectNode(nodeName);
-            let container = nodesMap.get(nodeName)?.containers
-            if (container?.length < 2) {
-                selectContainer(container[0])
-            }
-        }
-        else {
-            selectContainer(null);
-            selectNode(null);
-        }
-    }, [nodeName, containerName]);
-
-    useEffect(() => {
-        return () => {
-            selectContainer(null);
-            selectNode(null);
-        };
-    }, [])
-
-    useEffect(() => {
-        if (!params.tab || nodeName || selectedNode || selectedContainer || containerName) return;
-        ReactGA.event({
-            category: 'app-details',
-            action: 'click',
-            label: params.tab,
-        });
-        //select pod
-        const kind: Nodes = searchParams.kind as Nodes || params.kind as Nodes
-        const node = nodes.nodes[kind] ? Array.from(nodes.nodes[kind]).find(([name, nodeDetails]) => kind === Nodes.Pod ? nodeDetails.isNew : !!name) : null
-        if (node && node.length >= 2 && node[1].name) {
-            selectNode(node[1].name);
-            setSelectNode(node[1].name);
-        }
-    }, [params.tab])
-
-    useEffect(() => {
-        if (!selectedNode) return
-        if ((params.tab === NodeDetailTabs.LOGS) || (params.tab === NodeDetailTabs.TERMINAL) && (params.kind === Nodes.Pod || searchParams.kind === Nodes.Pod)) {
-            const containers = nodes.nodes[Nodes.Pod].has(selectedNode) ? nodes.nodes[Nodes.Pod].get(selectedNode).containers : []
-
-            const container = (containers || []).find(c => c !== 'envoy');
-            if (container) {
-                selectContainer(container);
-            }
-            else if (containers?.length) {
-                selectContainer(containers[0]);
-            }
-            else {
-                selectContainer(null)
-            }
-        }
-    }, [selectedNode, params.tab])
-
-    function handleLogsPause(paused: boolean) {
-        toggleLogStream(paused);
-    }
-
-    return (
-        <>
-            <ResourceTreeNodes
-                nodes={nodes}
-                describeNode={describeNode}
-                isAppDeployment={isAppDeployment}
-                appName={appDetails?.appName}
-                environmentName={appDetails?.environmentName}
-                appId={appDetails?.appId}
-                externalLinks={externalLinks}
-                monitoringTools={monitoringTools}
-                appDetails={appDetails}
-            />
-            <ResponsiveDrawer
-                className="events-logs"
-                isDetailedView={!!params.tab}
-                onHeightChange={(height) => (document.getElementById('dummy-div').style.height = `${height}px`)}
-                anchor={params.kind ? <EventsLogsTabSelector /> : null}
-            >
-                <Route path={`${path.replace('/:kind?', '/:kind').replace('/:tab?', '/:tab')}`}>
-                    <NodeSelectors
-                        isAppDeployment={isAppDeployment}
-                        selectedContainer={selectedContainer}
-                        logsPaused={logsPaused}
-                        logsCleared={logsCleared}
-                        socketConnection={socketConnection}
-                        containerName={selectedContainer}
-                        nodeName={selectedNode}
-                        selectedNodes={selectedNodes}
-                        nodeItems={nodeItems}
-                        nodes={nodes}
-                        shell={shell}
-                        isReconnection={isReconnection}
-                        setIsReconnection={setIsReconnection}
-                        setLogsCleared={setLogsCleared}
-                        selectShell={selectShell}
-                        setSocketConnection={setSocketConnection}
-                        setTerminalCleared={setTerminalCleared}
-                        handleLogsPause={handleLogsPause}
-                        selectNode={selectNode}
-                        setSelectNode={setSelectNode}
-                        selectContainer={selectContainer}
-                    />
-                    <EventsLogs nodeName={selectedNode}
-                        isAppDeployment={isAppDeployment}
-                        selectedLogsNode={selectedNodes}
-                        nodeItems={nodeItems}
-                        logsCleared={logsCleared}
-                        nodes={nodes}
-                        appDetails={appDetails}
-                        containerName={selectedContainer}
-                        logsPaused={logsPaused}
-                        socketConnection={socketConnection}
-                        terminalCleared={terminalCleared}
-                        shell={shell}
-                        isReconnection={isReconnection}
-                        setIsReconnection={setIsReconnection}
-                        selectShell={selectShell}
-                        setTerminalCleared={setTerminalCleared}
-                        setSocketConnection={setSocketConnection}
-                        handleLogPause={handleLogsPause}
-                    />
-                </Route>
-            </ResponsiveDrawer>
-            <div id="dummy-div" style={{ width: '100%', height: '32px' }}></div>
-        </>
+        </React.Fragment> 
     );
 };
 
@@ -656,47 +477,6 @@ export function EnvSelector({ environments, disabled }) {
         </>
     );
 }
-
-
-const AppSyncDetails: React.FC<{ streamData: AppStreamData }> = ({ streamData }) => {
-    const gitStatus = streamData?.result?.application?.status?.sync?.status || ''
-    const operationState = streamData ? getOperationStateTitle(streamData?.result?.application) : ''
-    return (
-        <>
-            <div className="material-sync-card bcn-0">
-                <div className="flex left top w-100">
-                    <div className="flex left column">
-                        <span className="fs-12 cn-9">Git Status</span>
-                        <div className={`fs-14 fw-6 app-summary__status-name f-${gitStatus.toLowerCase()}`}>
-                            {gitStatus}
-                        </div>
-                    </div>
-                    <figure
-                        className={`icon-dim-20 app-status-icon ${gitStatus.toLowerCase()}`}
-                        style={{ marginLeft: 'auto' }}
-                    />
-                </div>
-                <div className="material-sync-card--message">
-                    {streamData && SyncStatusMessage(streamData?.result?.application)}
-                </div>
-            </div>
-            <div className="material-sync-card bcn-0">
-                <div className="flex left top w-100">
-                    <div className="flex left column">
-                        <span className="fs-12 cn-9">Git Change Sync</span>
-                        <div className={`fs-14 fw-6 app-summary__status-name f-${operationState.toLowerCase()}`}>
-                            {operationState}
-                        </div>
-                    </div>
-                    <figure
-                        className={`icon-dim-20 app-status-icon ${operationState.toLowerCase()}`}
-                        style={{ marginLeft: 'auto' }}
-                    />
-                </div>
-            </div>
-        </>
-    );
-};
 
 export function EventsLogsTabSelector({ onMouseDown = null }) {
     const params = useParams<{ appId: string; envId: string; tab?: NodeDetailTabs; kind?: NodeDetailTabs }>();

@@ -176,7 +176,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
         let containers = podContainerOptions.containerOptions.filter((_co) => _co.selected).map((_co) => _co.name);
 
         let podsWithContainers = pods
-            .flatMap((_pod) => _pod.containers?.map((_c) => [_pod.name, _c]))
+            .flatMap((_pod) => _pod.containers.map((_c) => [_pod.name, _c]))
             .filter((_pwc) => containers.includes(_pwc[1]));
 
         let urls = podsWithContainers.map((_pwc) => {
@@ -603,7 +603,7 @@ function getPodContainerOptions(
             .flatMap((_pod) => _pod.containers)
             .sort();
 
-        if (containers.length == 0) {
+        if (containers.length == 0 || (containers.length === 1 && !containers[0])) {
             return {
                 containerOptions: [],
                 podOptions: [],
