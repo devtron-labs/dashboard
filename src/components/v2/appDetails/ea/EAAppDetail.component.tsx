@@ -11,7 +11,7 @@ import * as queryString from 'query-string';
 import '../../lib/bootstrap-grid.min.css';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../../../util/URLUtil';
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service';
-import { ExternalLink, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
+import { ExternalLink, ExternalLinksAndToolsType, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
 
 function ExternalAppDetail({appId, appName}) {
@@ -19,9 +19,7 @@ function ExternalAppDetail({appId, appName}) {
     const history = useHistory();
     const [isLoading, setIsLoading] = useState(true);
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
-    const [externalLinksAndTools, setExternalLinksAndTools] = useState<
-        Record<string, ExternalLink[] | OptionTypeWithIcon[]>
-    >({
+    const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         externalLinks: [],
         monitoringTools: [],
     })
@@ -148,8 +146,8 @@ function ExternalAppDetail({appId, appName}) {
 
             { !isLoading && !errorResponseCode &&
                  <AppDetailsComponent
-                    externalLinks={externalLinksAndTools.externalLinks as ExternalLink[]}
-                    monitoringTools={externalLinksAndTools.monitoringTools as OptionTypeWithIcon[]}
+                    externalLinks={externalLinksAndTools.externalLinks}
+                    monitoringTools={externalLinksAndTools.monitoringTools}
                 />
             }
 

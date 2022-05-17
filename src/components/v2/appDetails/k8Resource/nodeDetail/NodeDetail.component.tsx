@@ -104,13 +104,15 @@ function NodeDetailComponent({ logSearchTerms, setLogSearchTerms }: LogSearchTer
                     path={`${path}/${NodeDetailTab.LOGS}`}
                     render={() => {
                         return (
-                            <LogsComponent
-                                selectedTab={handleSelectedTab}
-                                isDeleted={isDeleted}
-                                logSearchTerms={logSearchTerms}
-                                setLogSearchTerms={setLogSearchTerms}
-                            />
-                        );
+                            <div className="resource-node-wrapper">
+                                <LogsComponent
+                                    selectedTab={handleSelectedTab}
+                                    isDeleted={isDeleted}
+                                    logSearchTerms={logSearchTerms}
+                                    setLogSearchTerms={setLogSearchTerms}
+                                />
+                            </div>
+                        )
                     }}
                 />
                 <Route
