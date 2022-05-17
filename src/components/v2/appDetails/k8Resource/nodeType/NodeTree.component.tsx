@@ -5,16 +5,18 @@ import { useHistory, useRouteMatch } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import IndexStore from '../../index.store';
 import { useSharedState } from '../../../utils/useSharedState';
-import { AggregationKeys, getAggregator, iNode, iNodes, NodeType } from '../../appDetails.type';
+import { AggregationKeys, getAggregator, iNode, iNodes, NodeStatus, NodeType } from '../../appDetails.type';
 import { URLS } from '../../../../../config';
 import { ReactComponent as ErrorImage } from '../../../../../assets/icons/misc/errorInfo.svg';
 
 function NodeTreeComponent({
     clickedNodes,
     registerNodeClick,
+    isDevtronApp,
 }: {
     clickedNodes: Map<string, string>;
     registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>;
+    isDevtronApp?:boolean
 }) {
     const { url } = useRouteMatch();
     const history = useHistory();
@@ -35,7 +37,7 @@ function NodeTreeComponent({
         if (e) {
             e.stopPropagation();
         }
-        let _clickedNodes = generateSelectedNodes(clickedNodes, _treeNodes, _node, parents);
+        let _clickedNodes = generateSelectedNodes(clickedNodes, _treeNodes, _node, parents, isDevtronApp);
         registerNodeClick(_clickedNodes);
         setReRender(!reRender);
     };
@@ -63,7 +65,7 @@ function NodeTreeComponent({
         });
     }
 
-    const makeNodeTree = (treeNodes: iNodes, parents: string[]) => {
+    const makeNodeTree = (treeNodes: iNodes, parents: string[], isDevtronApp) => {
         return treeNodes.map((treeNode: iNode, index: number) => {
             return (
                 <div key={index + treeNode.name}>
@@ -71,7 +73,7 @@ function NodeTreeComponent({
                         className={`flex left cursor fw-6 cn-9 fs-14 `}
                         onClick={(e) => handleClickOnNodes(treeNode.name.toLowerCase(), parents, e)}
                     >
-                        {treeNode.childNodes?.length > 0 ? (
+                        {treeNode.childNodes?.length > 0 && !(isDevtronApp && treeNode.name === NodeType.Pod) ? (
                             <React.Fragment>
                                 <DropDown
                                     className={`${treeNode.isSelected ? 'fcn-9' : 'fcn-5'}  rotate icon-dim-24 pointer`}
@@ -79,7 +81,7 @@ function NodeTreeComponent({
                                 />
                                 <div className={`fs-14 fw-6 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 `}>
                                     {treeNode.name}
-                                    {!treeNode.isSelected && treeNode.status === 'degraded' && (
+                                    {!treeNode.isSelected && treeNode.status?.toLowerCase() === NodeStatus.Degraded &&  (
                                         <ErrorImage
                                             className="icon-dim-16 rotate"
                                             style={{ ['--rotateBy' as any]: '180deg', marginLeft: 'auto' }}
@@ -98,7 +100,7 @@ function NodeTreeComponent({
                                     }`}
                                 >
                                     {treeNode.name}
-                                    {treeNode.status === 'degraded' && (
+                                    {treeNode.status?.toLowerCase() === 'degraded' && (
                                         <ErrorImage
                                             className="icon-dim-16 rotate"
                                             style={{ ['--rotateBy' as any]: '180deg', marginLeft: 'auto' }}
@@ -109,9 +111,9 @@ function NodeTreeComponent({
                         )}
                     </div>
 
-                    {treeNode.childNodes?.length > 0 && treeNode.isSelected && (
+                    {treeNode.childNodes?.length > 0 && treeNode.isSelected && !(isDevtronApp && treeNode.name === NodeType.Pod) && (
                         <div className={`pl-24`}>
-                            {makeNodeTree(treeNode.childNodes, [...parents, treeNode.name.toLowerCase()])}{' '}
+                            {makeNodeTree(treeNode.childNodes, [...parents, treeNode.name.toLowerCase()], isDevtronApp)}{' '}
                         </div>
                     )}
                 </div>
@@ -119,7 +121,7 @@ function NodeTreeComponent({
         });
     };
 
-    return <div>{_treeNodes && _treeNodes.length > 0 && makeNodeTree(_treeNodes, [])}</div>;
+    return <div>{_treeNodes && _treeNodes.length > 0 && makeNodeTree(_treeNodes, [], isDevtronApp)}</div>;
 }
 
 export function generateSelectedNodes(
@@ -127,6 +129,7 @@ export function generateSelectedNodes(
     _treeNodes: iNode[],
     _node: string,
     parents?: string[],
+    isDevtronApp?: boolean
 ): Map<string, string> {
     let _nodeLowerCase = _node.toLowerCase();
 
@@ -156,13 +159,14 @@ export function generateSelectedNodes(
          * 1. Parent's length 2 is possible only if type is Pod that means click happened on child of pod node
          * 2. Parent length 1 but node is not type pod means it is a leaf node
          */
-        if (parents.length === 2 || (parents.length === 1 && _nodeLowerCase !== NodeType.Pod.toLowerCase())) {
+        if (parents.length === 2 || (parents.length === 1 && (isDevtronApp || _nodeLowerCase !== NodeType.Pod.toLowerCase()))) {
             // remove if leaf node selected previously if any
             let _childNodes = _treeNodes.flatMap((_tn) => _tn.childNodes ?? []);
             let leafNode = _childNodes.find(
                 (_cn) =>
-                    clickedNodes.has(_cn.name.toLowerCase()) && _cn.name.toLowerCase() !== NodeType.Pod.toLowerCase(),
-            );
+                    clickedNodes.has(_cn.name.toLowerCase()) &&
+                    (isDevtronApp || _cn.name.toLowerCase() !== NodeType.Pod.toLowerCase()),
+            )
             if (leafNode) {
                 clickedNodes.delete(leafNode.name.toLowerCase());
             } else {
@@ -186,7 +190,7 @@ export function generateSelectedNodes(
             }
         }
         parents.forEach((_p) => clickedNodes.set(_p.toLowerCase(), ''));
-        if (parents.length === 1 && _nodeLowerCase === NodeType.Pod.toLowerCase() && clickedNodes.has(_nodeLowerCase)) {
+        if (!isDevtronApp && parents.length === 1 && _nodeLowerCase === NodeType.Pod.toLowerCase() && clickedNodes.has(_nodeLowerCase)) {
             clickedNodes.delete(_nodeLowerCase);
         } else {
             /**
@@ -204,11 +208,8 @@ export function generateSelectedNodes(
                         _node.toLowerCase() === NodeType.Pod.toLowerCase()
                     ),
             );
-
-            if (
-                _clickedNodes.length > 0 &&
-                _nodeLowerCase !== NodeType.Pod.toLowerCase() &&
-                _nodeTypes.some((_type) => _clickedNodes.includes(_type.toLowerCase()))
+        
+            if ( _clickedNodes.length > 0 && (isDevtronApp || _nodeLowerCase !== NodeType.Pod.toLowerCase())
             ) {
                 _clickedNodes.forEach((_node) => clickedNodes.delete(_node));
             }

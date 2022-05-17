@@ -37,6 +37,10 @@ export enum AggregationKeys {
     Other = 'Other',
 }
 
+export enum NodeStatus {
+    Degraded = 'degraded',
+}
+
 export enum NodeType {
     Service = 'Service',
     Alertmanager = 'Alertmanager',
