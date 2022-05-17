@@ -57,7 +57,9 @@ export default function DeploymentHistoryHeader({
                         }
                         setPreviousConfigAvailable(deploymentTemplateOption.length > 0)
                         setDeploymentTemplateOption(deploymentTemplateOption)
-                        setSelectedDeploymentTemplate(deploymentTemplateOption[0])
+                        setSelectedDeploymentTemplate(
+                            deploymentTemplateOption[0] || { label: 'NA', value: 'NA', author: 'NA', status: 'NA' },
+                        )
                     }
                     setLoader(false)
                 })

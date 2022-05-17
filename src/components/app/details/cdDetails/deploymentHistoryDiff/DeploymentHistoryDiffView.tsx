@@ -14,28 +14,30 @@ export default function DeploymentHistoryDiffView({
 }: DeploymentTemplateHistoryType) {
     const { historyComponent, historyComponentName } = useParams<DeploymentHistoryParamsType>()
     const ref = useRef(null)
-    const [height, setHeight] = useState('')
+    const [codeEditorHeight, setCodeEditorHeight] = useState('')
+    const { innerHeight } = window
 
     useEffect(() => {
         if (ref.current) {
             const dynamicHeight = ref.current?.clientHeight + 255 + (!previousConfigAvailable ? 55 : 0)
-            setHeight(`calc(100vh - ${dynamicHeight}px)`)
+            setCodeEditorHeight((innerHeight - dynamicHeight < 400 ? 400 : innerHeight - dynamicHeight) + 'px')
         }
-    }, [ref, historyComponent, historyComponentName])
+    }, [ref?.current?.clientHeight])
 
     const renderDeploymentDiffViaCodeEditor = () => {
         return (
-            baseTemplateConfiguration?.codeEditorValue?.value && (
-                <CodeEditor
-                    value={YAML.stringify(JSON.parse(baseTemplateConfiguration.codeEditorValue.value))}
-                    defaultValue={currentConfiguration?.codeEditorValue?.value}
-                    height={height}
-                    mode="yaml"
-                    diffView={previousConfigAvailable && true}
-                    readOnly={true}
-                    loading={codeEditorLoading}
-                ></CodeEditor>
-            )
+            <CodeEditor
+                value={YAML.stringify(JSON.parse(baseTemplateConfiguration.codeEditorValue.value))}
+                defaultValue={
+                    currentConfiguration?.codeEditorValue?.value &&
+                    YAML.stringify(JSON.parse(currentConfiguration.codeEditorValue.value))
+                }
+                height={codeEditorHeight}
+                diffView={previousConfigAvailable && true}
+                readOnly={true}
+                loading={codeEditorLoading}
+                noParsing
+            ></CodeEditor>
         )
     }
     const renderDetailedValue = (parentClassName: string, singleValue: DeploymentHistorySingleValue) => {
@@ -96,7 +98,7 @@ export default function DeploymentHistoryDiffView({
                 <div className="code-editor-header-value pl-16 pr-16 pt-12 pb-12 fs-13 fw-6 cn-9 bcn-0">
                     {baseTemplateConfiguration?.codeEditorValue?.['displayName']}
                 </div>
-                {renderDeploymentDiffViaCodeEditor()}
+                {baseTemplateConfiguration?.codeEditorValue?.value && renderDeploymentDiffViaCodeEditor()}
             </div>
         </div>
     )

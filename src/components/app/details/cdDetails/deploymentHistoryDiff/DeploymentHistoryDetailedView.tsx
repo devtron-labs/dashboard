@@ -27,29 +27,38 @@ export default function DeploymentHistoryDetailedView({
     const [baseTemplateConfiguration, setBaseTemplateConfiguration] = useState<DeploymentHistoryDetail>()
     const [codeEditorLoading, setCodeEditorLoading] = useState<boolean>(false)
     const [previousConfigAvailable, setPreviousConfigAvailable] = useState<boolean>(true)
+    const [showDetailPage, setShowDetailPage] = useState<boolean>(false)
 
     useEffect(() => {
         if (selectedDeploymentTemplate) {
-            try {
-                setLoader(true)
-                getDeploymentHistoryDetail(
-                    appId,
-                    pipelineId,
-                    selectedDeploymentTemplate.value,
-                    historyComponent,
-                    historyComponentName,
-                ).then((response) => {
-                    setCurrentConfiguration(prepareHistoryData(response.result, historyComponent))
-                })
-            } catch (err) {
-                showError(err)
-            } finally {
-                setLoader(false)
+            if (selectedDeploymentTemplate.value === 'NA') {
+                setShowDetailPage(true)
+            } else {
+                try {
+                    setLoader(true)
+                    getDeploymentHistoryDetail(
+                        appId,
+                        pipelineId,
+                        selectedDeploymentTemplate.value,
+                        historyComponent,
+                        historyComponentName,
+                    ).then((response) => {
+                        setCurrentConfiguration(prepareHistoryData(response.result, historyComponent))
+                        setShowDetailPage(true)
+                    })
+                } catch (err) {
+                    showError(err)
+                } finally {
+                    setLoader(false)
+                }
             }
         }
     }, [selectedDeploymentTemplate])
 
     useEffect(() => {
+        setShowDetailPage(false)
+        setSelectedDeploymentTemplate(null)
+        setCurrentConfiguration(null)
         try {
             setCodeEditorLoading(true)
             getDeploymentHistoryDetail(
@@ -98,7 +107,7 @@ export default function DeploymentHistoryDetailedView({
                     deploymentHistoryList={deploymentHistoryList}
                     setDeploymentHistoryList={setDeploymentHistoryList}
                 />
-                {loader ? (
+                {loader || !showDetailPage ? (
                     <Progressing pageLoader />
                 ) : (
                     <DeploymentHistoryDiffView
