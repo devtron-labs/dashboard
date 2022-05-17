@@ -457,11 +457,11 @@ export const APP_STATUS_CUSTOM_MESSAGES = {
 export const DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP = {
     DEPLOYMENT_TEMPLATE: {
         DISPLAY_NAME: 'Deployment template',
-        VALUE: 'deployment_template',
+        VALUE: 'deployment-template',
     },
     PIPELINE_STRATEGY: {
         DISPLAY_NAME: 'Pipeline configurations',
-        VALUE: 'pipeline_strategy',
+        VALUE: 'pipeline-strategy',
     },
     CONFIGMAP: {
         DISPLAY_NAME: 'ConfigMap',

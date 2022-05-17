@@ -115,8 +115,9 @@ export default function DeploymentHistoryHeader({
                                 content={
                                     <span style={{ display: 'block', width: '180px' }}>
                                         {
-                                            DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP[historyComponent.toUpperCase()]
-                                                ?.DISPLAY_NAME
+                                            DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP[
+                                                historyComponent.replace('-', '_').toUpperCase()
+                                            ]?.DISPLAY_NAME
                                         }
                                         {historyComponentName ? ` “${historyComponentName}”` : ''} was added in this
                                         deployment. There is no previous instance to compare with.

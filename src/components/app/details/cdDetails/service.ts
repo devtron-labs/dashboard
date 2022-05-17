@@ -1,5 +1,5 @@
 import { get } from '../../../../services/api'
-import { DEPLOYMENT_HISTORY_DATA_TYPE, Routes } from '../../../../config'
+import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, DEPLOYMENT_HISTORY_DATA_TYPE, Routes } from '../../../../config'
 import { History } from '../cIDetails/types'
 import { ResponseType } from '../../../../services/service.types'
 import {
@@ -143,12 +143,17 @@ export const prepareHistoryData = (rawData, historyComponent: string): Deploymen
     let values
     let historyData = { codeEditorValue: rawData.codeEditorValue, values: {} }
     delete rawData.codeEditorValue
-    if (historyComponent === 'deployment_template') {
+    if (historyComponent === DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.DEPLOYMENT_TEMPLATE.VALUE) {
         values = prepareDeploymentTemplateData(rawData)
-    } else if (historyComponent === 'pipeline_strategy') {
+    } else if (historyComponent === DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.PIPELINE_STRATEGY.VALUE) {
         values = preparePipelineConfigData(rawData)
     } else {
-        values = prepareConfigMapAndSecretData(rawData, historyComponent === 'configmap' ? 'ConfigMap' : 'Secret')
+        values = prepareConfigMapAndSecretData(
+            rawData,
+            historyComponent === DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE
+                ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.DISPLAY_NAME
+                : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.DISPLAY_NAME,
+        )
     }
     historyData.values = values
     return historyData
@@ -162,9 +167,9 @@ export const getDeploymentHistoryDetail = (
     historyComponentName: string,
 ): Promise<DeploymentHistoryDetailRes> => {
     return get(
-        `app/history/deployed-component/detail/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent.toUpperCase()}${
-            historyComponentName ? '&historyComponentName=' + historyComponentName : ''
-        }`,
+        `app/history/deployed-component/detail/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent
+            .replace('-', '_')
+            .toUpperCase()}${historyComponentName ? '&historyComponentName=' + historyComponentName : ''}`,
     )
 }
 export interface DeploymentConfigurationsRes extends ResponseType {
@@ -191,8 +196,8 @@ export const getDeploymentDiffSelector = (
     historyComponentName,
 ): Promise<HistoryDiffSelectorRes> => {
     return get(
-        `app/history/deployed-component/list/${appId}/${pipelineId}?baseConfigurationId=${baseConfigurationId}&historyComponent=${historyComponent.toUpperCase()}${
-            historyComponentName ? '&historyComponentName=' + historyComponentName : ''
-        }`,
+        `app/history/deployed-component/list/${appId}/${pipelineId}?baseConfigurationId=${baseConfigurationId}&historyComponent=${historyComponent
+            .replace('-', '_')
+            .toUpperCase()}${historyComponentName ? '&historyComponentName=' + historyComponentName : ''}`,
     )
 }

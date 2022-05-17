@@ -55,7 +55,10 @@ export default function DeploymentHistoryDiffView({
                 <div className="bcb-1 eb-2 pt-8 pb-8 br-4 flexbox pl-4 cn-9 fs-13 mt-16 mb-16 mr-20 ml-20">
                     <Info className="mr-8 ml-14 icon-dim-20" />
                     <span className="lh-20">
-                        {DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP[historyComponent.toUpperCase()]?.DISPLAY_NAME}
+                        {
+                            DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP[historyComponent.replace('-', '_').toUpperCase()]
+                                ?.DISPLAY_NAME
+                        }
                         {historyComponentName ? ` “${historyComponentName}”` : ''} was added in this deployment. There
                         is no previous instance to compare with.
                     </span>
