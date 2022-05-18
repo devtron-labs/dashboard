@@ -442,7 +442,7 @@ const Details: React.FC<BuildDetails> = ({
     ] = useAsync(
         () => getCIHistoricalStatus({ appId, pipelineId, buildId }),
         [pipelineId, buildId, appId],
-        !pipeline.parentCiPipeline && !terminalStatus.has(triggerDetails?.status?.toLowerCase()),
+        !pipeline?.parentCiPipeline && !terminalStatus.has(triggerDetails?.status?.toLowerCase()),
     )
 
     useEffect(() => {
@@ -453,7 +453,7 @@ const Details: React.FC<BuildDetails> = ({
     const timeout = useMemo(() => {
         if (!triggerDetails) return null // no interval
         if (
-            statusSet.has(triggerDetails.status.toLowerCase()) ||
+            statusSet.has(triggerDetails.status?.toLowerCase()) ||
             (triggerDetails.podStatus && statusSet.has(triggerDetails.podStatus.toLowerCase()))
         ) {
             // 10s because progressing
