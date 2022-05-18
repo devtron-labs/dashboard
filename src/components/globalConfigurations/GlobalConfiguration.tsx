@@ -1,35 +1,35 @@
-import React, { lazy, useState, useEffect, Suspense, useContext } from 'react';
-import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom';
-import { useHistory, useLocation } from 'react-router';
-import { URLS } from '../../config';
-import { Toggle, Progressing, ErrorBoundary } from '../common';
-import arrowTriangle from '../../assets/icons/ic-chevron-down.svg';
-import { AddNotification } from '../notifications/AddNotification';
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
-import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg';
-import { getHostURLConfiguration } from '../../services/service';
-import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList';
-import { getAppCheckList } from '../../services/service';
-import { showError } from '../common';
-import './globalConfigurations.scss';
-import { SERVER_MODE } from '../../config/constants';
-import { mainContext } from '../common/navigation/NavigationRoutes';
-import ExternalLinks from '../externalLinks/ExternalLinks';
+import React, { lazy, useState, useEffect, Suspense, useContext } from 'react'
+import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router'
+import { URLS } from '../../config'
+import { Toggle, Progressing, ErrorBoundary } from '../common'
+import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
+import { AddNotification } from '../notifications/AddNotification'
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
+import { getHostURLConfiguration } from '../../services/service'
+import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList'
+import { getAppCheckList } from '../../services/service'
+import { showError } from '../common'
+import './globalConfigurations.scss'
+import { SERVER_MODE } from '../../config/constants'
+import { mainContext } from '../common/navigation/NavigationRoutes'
+import ExternalLinks from '../externalLinks/ExternalLinks'
 
-const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'));
-const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'));
-const GitProvider = lazy(() => import('../gitProvider/GitProvider'));
-const Docker = lazy(() => import('../dockerRegistry/Docker'));
-const ClusterList = lazy(() => import('../cluster/Cluster'));
-const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'));
-const Notifier = lazy(() => import('../notifications/Notifications'));
-const Project = lazy(() => import('../project/ProjectList'));
-const UserGroup = lazy(() => import('../userGroups/UserGroup'));
-const SSOLogin = lazy(() => import('../login/SSOLogin'));
+const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
+const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
+const GitProvider = lazy(() => import('../gitProvider/GitProvider'))
+const Docker = lazy(() => import('../dockerRegistry/Docker'))
+const ClusterList = lazy(() => import('../cluster/Cluster'))
+const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
+const Notifier = lazy(() => import('../notifications/Notifications'))
+const Project = lazy(() => import('../project/ProjectList'))
+const UserGroup = lazy(() => import('../userGroups/UserGroup'))
+const SSOLogin = lazy(() => import('../login/SSOLogin'))
 
 export default function GlobalConfiguration(props) {
-    const location = useLocation();
-    const [hostURLConfig, setIsHostURLConfig] = useState(undefined);
+    const location = useLocation()
+    const [hostURLConfig, setIsHostURLConfig] = useState(undefined)
     const [checkList, setCheckList] = useState({
         isLoading: true,
         isAppCreated: false,
@@ -37,58 +37,58 @@ export default function GlobalConfiguration(props) {
         chartChecklist: undefined,
         appStageCompleted: 0,
         chartStageCompleted: 0,
-    });
-    const { serverMode, setServerMode } = useContext(mainContext);
+    })
+    const { serverMode, setServerMode } = useContext(mainContext)
 
     useEffect(() => {
-        serverMode !== SERVER_MODE.EA_ONLY && getHostURLConfig();
-        serverMode !== SERVER_MODE.EA_ONLY && fetchCheckList();
-    }, []);
+        serverMode !== SERVER_MODE.EA_ONLY && getHostURLConfig()
+        serverMode !== SERVER_MODE.EA_ONLY && fetchCheckList()
+    }, [])
 
     useEffect(() => {
         if (location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)) {
-            getHostURLConfig();
+            getHostURLConfig()
         }
-    }, [location.pathname]);
+    }, [location.pathname])
 
     function getHostURLConfig() {
         getHostURLConfiguration()
             .then((response) => {
-                setIsHostURLConfig(response.result);
+                setIsHostURLConfig(response.result)
             })
-            .catch((error) => {});
+            .catch((error) => {})
     }
 
     function handleChecklistUpdate(itemName: string): void {
-        const list = checkList;
+        const list = checkList
 
         if (!list.appChecklist[itemName]) {
-            list.appStageCompleted += 1;
-            list.appChecklist[itemName] = 1;
+            list.appStageCompleted += 1
+            list.appChecklist[itemName] = 1
         }
 
         if (!list.chartChecklist[itemName]) {
-            list.chartStageCompleted += 1;
-            list.chartChecklist[itemName] = 1;
+            list.chartStageCompleted += 1
+            list.chartChecklist[itemName] = 1
         }
-        setCheckList(list);
+        setCheckList(list)
     }
 
     function fetchCheckList(): void {
         getAppCheckList()
             .then((response) => {
-                let appChecklist = response.result.appChecklist;
-                let chartChecklist = response.result.chartChecklist;
-                let appStageArray: number[] = Object.values(appChecklist);
-                let chartStageArray: number[] = Object.values(chartChecklist);
+                let appChecklist = response.result.appChecklist
+                let chartChecklist = response.result.chartChecklist
+                let appStageArray: number[] = Object.values(appChecklist)
+                let chartStageArray: number[] = Object.values(chartChecklist)
                 let appStageCompleted: number = appStageArray.reduce((item, sum) => {
-                    sum = sum + item;
-                    return sum;
-                }, 0);
+                    sum = sum + item
+                    return sum
+                }, 0)
                 let chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
-                    sum = sum + item;
-                    return sum;
-                }, 0);
+                    sum = sum + item
+                    return sum
+                }, 0)
 
                 setCheckList({
                     isLoading: false,
@@ -97,11 +97,11 @@ export default function GlobalConfiguration(props) {
                     chartChecklist,
                     appStageCompleted,
                     chartStageCompleted,
-                });
+                })
             })
             .catch((error) => {
-                showError(error);
-            });
+                showError(error)
+            })
     }
 
     return (
@@ -127,11 +127,11 @@ export default function GlobalConfiguration(props) {
                 </section>
             </Router>
         </main>
-    );
+    )
 }
 
 function NavItem({ hostURLConfig, serverMode }) {
-    const location = useLocation();
+    const location = useLocation()
     const ConfigRequired = [
         {
             name: 'Host URL',
@@ -149,17 +149,17 @@ function NavItem({ hostURLConfig, serverMode }) {
         },
         { name: 'Git accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider, isAvailableInEA: false },
         { name: 'Container registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker, isAvailableInEA: false },
-    ];
+    ]
 
     const ConfigOptional = [
         { name: 'Chart repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: true },
         { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin, isAvailableInEA: true },
         { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup, isAvailableInEA: true },
         { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier, isAvailableInEA: false },
-    ];
+    ]
     let showError =
         (!hostURLConfig || hostURLConfig.value !== window.location.origin) &&
-        !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL);
+        !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)
 
     return (
         <div className="flex column left">
@@ -195,17 +195,19 @@ function NavItem({ hostURLConfig, serverMode }) {
                     ),
             )}
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
-            <NavLink to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} activeClassName="active-route">
-                <div className="flexbox flex-justify">
-                    External links
-                </div>
+            <NavLink
+                to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
+                key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
+                activeClassName="active-route"
+            >
+                <div className="flexbox flex-justify">External links</div>
             </NavLink>
         </div>
-    );
+    )
 }
 
 function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }) {
-    const location = useLocation();
+    const location = useLocation()
 
     return (
         <Switch location={location}>
@@ -221,7 +223,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                             />
                             <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
-                    );
+                    )
                 }}
             />
             <Route
@@ -232,7 +234,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                             <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
                             <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
-                    );
+                    )
                 }}
             />
             <Route
@@ -243,7 +245,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                             <Project {...props} />
                             <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
-                    );
+                    )
                 }}
             />
             <Route
@@ -254,7 +256,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                             <ClusterList {...props} serverMode={serverMode} />
                             <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
-                    );
+                    )
                 }}
             />
             <Route
@@ -265,7 +267,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                             <GitProvider {...props} />
                             <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
-                    );
+                    )
                 }}
             />
             <Route
@@ -276,38 +278,44 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                             <Docker {...props} handleChecklistUpdate={handleChecklistUpdate} />
                             <GlobalConfigCheckList {...checkList} {...props} />
                         </div>
-                    );
+                    )
                 }}
             />
 
             <Route
+                path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}
+                render={(props) => {
+                    return <ChartRepo />
+                }}
+            />
+            <Route
                 path={URLS.GLOBAL_CONFIG_CHART}
                 render={(props) => {
-                    return <ChartRepo />;
+                    return <ChartRepo />
                 }}
             />
             <Route
                 path={URLS.GLOBAL_CONFIG_LOGIN}
                 render={(props) => {
-                    return <SSOLogin {...props} />;
+                    return <SSOLogin {...props} />
                 }}
             />
             <Route
                 path={URLS.GLOBAL_CONFIG_AUTH}
                 render={(props) => {
-                    return <UserGroup />;
+                    return <UserGroup />
                 }}
             />
             <Route
                 path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`}
                 render={(props) => {
-                    return <AddNotification {...props} />;
+                    return <AddNotification {...props} />
                 }}
             />
             <Route
                 path={URLS.GLOBAL_CONFIG_NOTIFIER}
                 render={(props) => {
-                    return <Notifier {...props} />;
+                    return <Notifier {...props} />
                 }}
             />
             <Route path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
@@ -320,7 +328,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                 }
             />
         </Switch>
-    );
+    )
 }
 
 function Logo({ src = '', style = {}, className = '', children = null }) {
@@ -329,7 +337,7 @@ function Logo({ src = '', style = {}, className = '', children = null }) {
             {src && <img src={src} alt="" className={`list__logo ${className}`} style={style} />}
             {children}
         </>
-    );
+    )
 }
 
 function Title({ title = '', subtitle = '', style = {}, className = '', tag = '', ...props }) {
@@ -340,16 +348,16 @@ function Title({ title = '', subtitle = '', style = {}, className = '', tag = ''
             </div>
             {subtitle && <div className={`list__subtitle ${className}`}>{subtitle}</div>}
         </div>
-    );
+    )
 }
 
 function ListToggle({ onSelect, enabled = false, ...props }) {
-    return <Toggle {...props} onSelect={onSelect} selected={enabled} />;
+    return <Toggle {...props} onSelect={onSelect} selected={enabled} />
 }
 
 function DropDown({ className = '', style = {}, src = null, ...props }) {
-    if (React.isValidElement(src)) return src;
-    return <img {...props} src={src || arrowTriangle} alt="" className={`list__arrow ${className}`} style={style} />;
+    if (React.isValidElement(src)) return src
+    return <img {...props} src={src || arrowTriangle} alt="" className={`list__arrow ${className}`} style={style} />
 }
 
 export function List({ children = null, className = '', ...props }) {
@@ -357,19 +365,19 @@ export function List({ children = null, className = '', ...props }) {
         <div className={`list ${className}`} {...props}>
             {children}
         </div>
-    );
+    )
 }
 
 function handleError(error: any): any[] {
     if (!error) {
-        return [];
+        return []
     }
 
     if (!Array.isArray(error)) {
-        return [error];
+        return [error]
     }
 
-    return error;
+    return error
 }
 
 export function CustomInput({
@@ -392,8 +400,8 @@ export function CustomInput({
                 autoComplete="off"
                 className="form__input"
                 onChange={(e) => {
-                    e.persist();
-                    onChange(e);
+                    e.persist()
+                    onChange(e)
                 }}
                 value={value}
                 disabled={disabled}
@@ -405,7 +413,7 @@ export function CustomInput({
                 </div>
             ))}
         </div>
-    );
+    )
 }
 
 export function ProtectedInput({
@@ -421,10 +429,10 @@ export function ProtectedInput({
     labelClassName = '',
     placeholder = '',
 }) {
-    const [shown, toggleShown] = useState(false);
+    const [shown, toggleShown] = useState(false)
     useEffect(() => {
-        toggleShown(!hidden);
-    }, [hidden]);
+        toggleShown(!hidden)
+    }, [hidden])
 
     return (
         <div className="flex column left top ">
@@ -439,8 +447,8 @@ export function ProtectedInput({
                     name={name}
                     placeholder={placeholder}
                     onChange={(e) => {
-                        e.persist();
-                        onChange(e);
+                        e.persist()
+                        onChange(e)
                     }}
                     value={value}
                     disabled={disabled}
@@ -459,7 +467,7 @@ export function ProtectedInput({
                 </div>
             )}
         </div>
-    );
+    )
 }
 
 export function ShowHide({ hidden = true, className = '', onClick = null, defaultOnClick = null, disabled = false }) {
@@ -497,11 +505,11 @@ export function ShowHide({ hidden = true, className = '', onClick = null, defaul
                 />
             </g>
         </svg>
-    );
+    )
 }
 
-ProtectedInput.ShowHide = ShowHide;
-List.Logo = Logo;
-List.Title = Title;
-List.Toggle = ListToggle;
-List.DropDown = DropDown;
+ProtectedInput.ShowHide = ShowHide
+List.Logo = Logo
+List.Title = Title
+List.Toggle = ListToggle
+List.DropDown = DropDown
