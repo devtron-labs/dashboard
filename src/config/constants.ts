@@ -227,9 +227,9 @@ export const DOCUMENTATION = {
     HYPERION_TO_FULL_MODE: 'https://docs.devtron.ai/hyperion/upgrade-to-devtron',
     HYPERION: 'https://docs.devtron.ai/#hyperion',
     PRE_BUILD_TASK: 'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/cd-pipeline',
-    BUILD_STAGE: 'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/ci-pipeline2#build-stage',
+    BUILD_STAGE: 'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/ci-pipeline#build-stage',
     PRE_POST_BUILD_STAGE:
-        'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/ci-pipeline2/ci-build-pre-post-plugins',
+        'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/ci-pipeline/ci-build-pre-post-plugins',
 }
 
 // APP LIST STARTS
