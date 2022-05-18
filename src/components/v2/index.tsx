@@ -14,7 +14,7 @@ import IndexStore from './appDetails/index.store';
 import ErrorImage from './assets/icons/ic-404-error.png';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil';
 import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHistory.component';
-import { ExternalLink, OptionTypeWithIcon } from '../externalLinks/ExternalLinks.type';
+import { ExternalLink, ExternalLinksAndToolsType, OptionTypeWithIcon } from '../externalLinks/ExternalLinks.type';
 import { getExternalLinks, getMonitoringTools } from '../externalLinks/ExternalLinks.service';
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils';
 
@@ -27,9 +27,7 @@ function RouterComponent({ envType }) {
     const location = useLocation();
     const history = useHistory();
     const [errorResponseCode, setErrorResponseCode] = useState(undefined);
-    const [externalLinksAndTools, setExternalLinksAndTools] = useState<
-        Record<string, ExternalLink[] | OptionTypeWithIcon[]>
-    >({
+    const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         externalLinks: [],
         monitoringTools: [],
     })
@@ -151,8 +149,8 @@ function RouterComponent({ envType }) {
                         <Switch>
                             <Route path={`${path}/${URLS.APP_DETAILS}`}>
                                 <AppDetailsComponent
-                                    externalLinks={externalLinksAndTools.externalLinks as ExternalLink[]}
-                                    monitoringTools={externalLinksAndTools.monitoringTools as OptionTypeWithIcon[]}
+                                    externalLinks={externalLinksAndTools.externalLinks}
+                                    monitoringTools={externalLinksAndTools.monitoringTools}
                                 />
                             </Route>
                             <Route path={`${path}/${URLS.APP_VALUES}`} component={ValuesComponent} />

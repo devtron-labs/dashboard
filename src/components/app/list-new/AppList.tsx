@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {useLocation, useHistory, useParams} from 'react-router';
-import { Link, Switch, Route } from 'react-router-dom';
+import { Link, Switch, Route, NavLink } from 'react-router-dom';
 import {Progressing, Filter, showError, FilterOption, Modal, ErrorScreenManager, handleUTCTime } from '../../common';
 import {ReactComponent as Search} from '../../../assets/icons/ic-search.svg';
 import {ReactComponent as ChartIcon} from '../../../assets/icons/ic-charts.svg';
@@ -688,33 +688,66 @@ export default function AppList() {
     }
 
     function renderAppTabs() {
-        return <div className="app-tabs-wrapper">
-            <ul className="tab-list">
-                <li className="tab-list__tab">
-                    <a className={`tab-list__tab-link ${currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? 'active' : ''}`}
-                       onClick={() => changeAppTab(AppListConstants.AppTabs.DEVTRON_APPS)}>Devtron Apps</a>
-                </li>
-                <li className="tab-list__tab">
-                    <a className={`tab-list__tab-link ${currentTab == AppListConstants.AppTabs.HELM_APPS ? 'active' : ''}`}
-                       onClick={() => changeAppTab(AppListConstants.AppTabs.HELM_APPS)}>Helm Apps</a>
-                </li>
-            </ul>
-            <div className="app-tabs-sync">
-                {
-                    lastDataSyncTimeString && ((params.appType == AppListConstants.AppType.DEVTRON_APPS) || (params.appType == AppListConstants.AppType.HELM_APPS && !fetchingExternalApps)) &&
-                    <span>{lastDataSyncTimeString} <button className="btn btn-link p-0 fw-6 cb-5" onClick={syncNow}>Sync now</button></span>
-                }
-                {
-                    params.appType == AppListConstants.AppType.HELM_APPS && fetchingExternalApps &&
-                    <div className="flex left">
-                        <span className="mr-10">
-                            <Progressing />
-                        </span>
-                        <span>Fetching apps...</span>
-                    </div>
-                }
+        return (
+            <div className="app-tabs-wrapper">
+                <ul className="tab-list">
+                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                        <li className="tab-list__tab">
+                            <a
+                                className={`tab-list__tab-link ${
+                                    currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? 'active' : ''
+                                }`}
+                                onClick={() => changeAppTab(AppListConstants.AppTabs.DEVTRON_APPS)}
+                            >
+                                Devtron Apps
+                            </a>
+                        </li>
+                    )}
+                    <li className="tab-list__tab">
+                        <a
+                            className={`tab-list__tab-link ${
+                                currentTab == AppListConstants.AppTabs.HELM_APPS ? 'active' : ''
+                            }`}
+                            onClick={() => changeAppTab(AppListConstants.AppTabs.HELM_APPS)}
+                        >
+                            Helm Apps
+                        </a>
+                    </li>
+                    {serverMode === SERVER_MODE.EA_ONLY && (
+                        <li className="tab-list__tab">
+                            <NavLink
+                                to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`}
+                                className={`tab-list__tab-link ${
+                                    currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? 'active' : ''
+                                }`}
+                            >
+                                Install CI/CD
+                            </NavLink>
+                        </li>
+                    )}
+                </ul>
+                <div className="app-tabs-sync">
+                    {lastDataSyncTimeString &&
+                        (params.appType == AppListConstants.AppType.DEVTRON_APPS ||
+                            (params.appType == AppListConstants.AppType.HELM_APPS && !fetchingExternalApps)) && (
+                            <span>
+                                {lastDataSyncTimeString}{' '}
+                                <button className="btn btn-link p-0 fw-6 cb-5" onClick={syncNow}>
+                                    Sync now
+                                </button>
+                            </span>
+                        )}
+                    {params.appType == AppListConstants.AppType.HELM_APPS && fetchingExternalApps && (
+                        <div className="flex left">
+                            <span className="mr-10">
+                                <Progressing />
+                            </span>
+                            <span>Fetching apps...</span>
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+        )
     }
 
     const closeDevtronAppCreateModal = () => {

@@ -316,6 +316,10 @@ $color-suffix: 00;
     border-style: dashed !important;
 }
 
+.text-underline-dashed{
+    border-bottom: 1px dashed var(--N400);
+}
+
 .header {
     position: fixed;
     top: 0;

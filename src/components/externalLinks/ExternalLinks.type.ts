@@ -111,3 +111,8 @@ export interface NodeLevelExternalLinksType  {
     containerName?: string
     addExtraSpace?: boolean
 }
+
+export interface ExternalLinksAndToolsType {
+    externalLinks: ExternalLink[]
+    monitoringTools: OptionTypeWithIcon[]
+}

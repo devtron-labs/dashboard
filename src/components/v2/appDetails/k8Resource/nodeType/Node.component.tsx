@@ -17,15 +17,18 @@ import { useSharedState } from '../../../utils/useSharedState';
 import { NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component';
 import { ExternalLink, OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type';
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils';
+import { NoPod } from '../../../../app/ResourceTreeNodes';
 
 function NodeComponent({ 
     handleFocusTabs,
     externalLinks,
-    monitoringTools
+    monitoringTools,
+    isDevtronApp
 }: { 
     handleFocusTabs: () => void,
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
+    isDevtronApp?:boolean
 }) {
     const { path, url } = useRouteMatch();
     const history = useHistory();
@@ -38,13 +41,15 @@ function NodeComponent({
     const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null);
     const appDetails = IndexStore.getAppDetails();
     const params = useParams<{ nodeType: NodeType, resourceName: string }>();
+    const podMetaData = IndexStore.getPodMetaData();
     const [filteredNodes] = useSharedState(
         IndexStore.getAppDetailsFilteredNodes(),
         IndexStore.getAppDetailsNodesFilteredObservable(),
     );
     const [podLevelExternalLinks, setPodLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
     const [containerLevelExternalLinks, setContainerLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
-
+    const isPodAvailable: boolean = params.nodeType === NodeType.Pod.toLowerCase() && isDevtronApp;
+    
     useEffect(() => {
         if (externalLinks.length > 0) {
             const _podLevelExternalLinks = []
@@ -121,8 +126,12 @@ function NodeComponent({
                     _healthyNodeCount++;
                 }
             });
+            let podsType = []
+            if(isPodAvailable){
+                podsType = ( _selectedNodes.filter(el => podMetaData.some((f) =>  f.name === el.name && f.isNew === podType)))
+            }
 
-            setSelectedNodes([..._selectedNodes]);
+            setSelectedNodes( isPodAvailable ? [...podsType]: [..._selectedNodes]);
 
             setSelectedHealthyNodeCount(_healthyNodeCount);
         }
@@ -311,12 +320,12 @@ function NodeComponent({
 
     return (
         <>
-            {selectedNodes && selectedNodes.length > 0 && (
+            {selectedNodes && (
                 <div
                     className="container-fluid"
                     style={{ paddingRight: 0, paddingLeft: 0, height: '600px', overflow: 'scroll' }}
                 >
-                    {false ? (
+                    {isPodAvailable ? (
                         <PodHeaderComponent callBack={setPodType} />
                     ) : (
                         <div className="node-detail__sticky-header border-bottom pt-10 pb-10">
@@ -341,15 +350,21 @@ function NodeComponent({
                                 >
                                     {cell}
                                 </div>
-                            );
+                            )
                         })}
                     </div>
 
-                    {selectedNodes && makeNodeTree(selectedNodes)}
+                    {selectedNodes.length > 0 ? (
+                        makeNodeTree(selectedNodes)
+                    ) : (
+                        <div className="w-100 flex" style={{ height: '400px' }}>
+                            <NoPod selectMessage="No Available Pods" />
+                        </div>
+                    )}
                 </div>
             )}
         </>
-    );
+    )
 }
 
 export default NodeComponent;

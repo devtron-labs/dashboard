@@ -13,13 +13,15 @@ export default function K8ResourceComponent({
     registerNodeClick,
     handleFocusTabs,
     externalLinks,
-    monitoringTools
+    monitoringTools,
+    isDevtronApp,
 }: {
     clickedNodes: Map<string, string>;
     registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>;
     handleFocusTabs: () => void;
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
+    isDevtronApp?: boolean
 }) {
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable());
 
@@ -35,10 +37,10 @@ export default function K8ResourceComponent({
             {nodes.length > 0 ? (
                 <div className="resource-node-wrapper d-flex">
                     <div className="k8-resources-node-tree pt-8 pl-16 border-right">
-                        <NodeTreeComponent clickedNodes={clickedNodes} registerNodeClick={registerNodeClick} />
+                        <NodeTreeComponent clickedNodes={clickedNodes} registerNodeClick={registerNodeClick} isDevtronApp={isDevtronApp} />
                     </div>
                     <div className="flex-grow-1 p-0">
-                        <NodeComponent handleFocusTabs={handleFocusTabs} externalLinks={externalLinks} monitoringTools={monitoringTools} />
+                        <NodeComponent handleFocusTabs={handleFocusTabs} externalLinks={externalLinks} monitoringTools={monitoringTools} isDevtronApp={isDevtronApp} />
                     </div>
                 </div>
             ) : (
