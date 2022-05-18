@@ -102,8 +102,7 @@ export default function AppDetail() {
         setEnvironmentId(Number(params.envId));
     }, [params.envId]);
     return (
-        <div style={{ overflowY: 'auto', height: '100%' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                 {/* <div className="flex left w-100 p-16">
                     <EnvSelector environments={otherEnvsResult?.result} />
                 </div> */}
@@ -128,7 +127,6 @@ export default function AppDetail() {
                         {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) && <AppNotConfigured text="You have not finished configuring this app" />}
                         {(!params.envId && otherEnvsResult?.result?.length > 0) && <EnvironmentNotConfigured environments={otherEnvsResult?.result} />}
                     </>}
-            </div>
         </div>
     );
 }
