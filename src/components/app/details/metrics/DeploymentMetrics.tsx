@@ -147,7 +147,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     }
 
     callGetDeploymentMetricsAPI(appId, envId) {
-        if (!this.state.startDate.isValid() || !this.state.endDate || !this.state.endDate.isValid()) return;
+        if (!this.state.startDate?.isValid() || !this.state.endDate?.isValid()) return;
         let startTime = this.state.startDate.format("YYYY-MM-DDThh:mm:ss.SSS");
         let endTime = this.state.endDate.format("YYYY-MM-DDThh:mm:ss.SSS");
         getDeploymentMetrics(startTime, endTime, appId, envId).then((metricsResponse) => {
