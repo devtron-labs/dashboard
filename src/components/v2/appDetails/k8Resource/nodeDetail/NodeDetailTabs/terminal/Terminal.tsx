@@ -110,6 +110,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
             let dim = _fitAddon.proposeDimensions();
             const resize = { Op: 'resize', Cols: dim.cols, Rows: dim.rows };
+
             _socket.send(JSON.stringify(resize));
 
             if (isReconnection) {
