@@ -10,6 +10,7 @@ import {
     DeploymentHistory,
 } from './cd.type'
 import { string } from 'prop-types'
+import { decode } from '../../../../util/Util'
 
 export interface DeploymentHistoryResult extends ResponseType {
     result?: History[]
@@ -94,7 +95,11 @@ const preparePipelineConfigData = (rawData): Record<string, DeploymentHistorySin
     return pipelineConfigData
 }
 
-const prepareConfigMapAndSecretData = (rawData, type: string): Record<string, DeploymentHistorySingleValue> => {
+const prepareConfigMapAndSecretData = (
+    rawData,
+    type: string,
+    historyData: DeploymentHistoryDetail,
+): Record<string, DeploymentHistorySingleValue> => {
     let secretValues = {}
 
     if (rawData['external']) {
@@ -108,6 +113,7 @@ const prepareConfigMapAndSecretData = (rawData, type: string): Record<string, De
         }
     } else {
         secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[''] }
+        historyData.codeEditorValue = decode(historyData.codeEditorValue) as DeploymentHistorySingleValue
     }
     if (rawData['type']) {
         let typeValue = 'Environment Variable'
@@ -153,6 +159,7 @@ export const prepareHistoryData = (rawData, historyComponent: string): Deploymen
             historyComponent === DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.DISPLAY_NAME
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.DISPLAY_NAME,
+            historyData,
         )
     }
     historyData.values = values
