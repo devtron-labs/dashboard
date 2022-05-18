@@ -560,17 +560,22 @@ export default function AppList() {
     }
 
     function renderPageHeader() {
-        return <div className="app-header__title">
+        return (
+            <div className="app-header__title">
                 <h1 className="app-header__text">Applications</h1>
-                {serverMode == SERVER_MODE.FULL &&
-                    <button type="button" className="cta h-32 lh-n"
-                            onClick={() => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)}>
-                        Create new
-                        <span className="round-button__icon"><i className="fa fa-caret-down" aria-hidden="true"></i></span>
-                    </button>
-                }
+                <button
+                    type="button"
+                    className="cta h-32 lh-n"
+                    onClick={() => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)}
+                >
+                    Create new
+                    <span className="round-button__icon">
+                        <i className="fa fa-caret-down" aria-hidden="true"></i>
+                    </span>
+                </button>
                 {showCreateNewAppSelectionModal && renderAppCreateSelectionModal()}
             </div>
+        )
     }
 
     function renderMasterFilters() {
@@ -768,22 +773,33 @@ export default function AppList() {
     }
 
     function renderAppCreateSelectionModal() {
-        return <Modal rootClassName="app-create-model-wrapper" onClick={ () => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)} >
-                <div className="app-create-child c-pointer" onClick={openDevtronAppCreateModel}>
-                    <AddIcon className="icon-dim-20 fcn-9"/>
-                    <div className="ml-8">
-                        <strong>Custom app</strong>
-                        <div>Connect a git repository to deploy <br/> a custom application</div>
+        return (
+            <Modal
+                rootClassName="app-create-model-wrapper"
+                onClick={() => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)}
+            >
+                {serverMode == SERVER_MODE.FULL && (
+                    <div className="app-create-child c-pointer" onClick={openDevtronAppCreateModel}>
+                        <AddIcon className="icon-dim-20 fcn-9" />
+                        <div className="ml-8">
+                            <strong>Custom app</strong>
+                            <div>
+                                Connect a git repository to deploy <br /> a custom application
+                            </div>
+                        </div>
                     </div>
-                </div>
+                )}
                 <div className="app-create-child c-pointer" onClick={redirectToHelmAppDiscover}>
-                    <ChartIcon className="icon-dim-20"/>
+                    <ChartIcon className="icon-dim-20" />
                     <div className="ml-8">
                         <strong>From Chart store</strong>
-                        <div>Deploy apps using third party helm <br/> charts (eg. prometheus, redis etc.)</div>
+                        <div>
+                            Deploy apps using third party helm <br /> charts (eg. prometheus, redis etc.)
+                        </div>
                     </div>
                 </div>
-        </Modal>
+            </Modal>
+        )
     }
 
     
