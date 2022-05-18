@@ -113,7 +113,7 @@ const prepareConfigMapAndSecretData = (
         }
     } else {
         secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[''] }
-        if ((type = 'Secret')) {
+        if (type === 'Secret') {
             historyData.codeEditorValue.value = historyData.codeEditorValue.value
                 ? JSON.stringify(decode(JSON.parse(historyData.codeEditorValue.value)))
                 : ''
@@ -141,7 +141,7 @@ const prepareConfigMapAndSecretData = (
             value: typeValue,
         }
     }
-    if ((type = 'Secret')) {
+    if (type === 'Secret') {
         if (rawData['roleARN']) {
             secretValues['roleARN'] = { displayName: 'Role ARN', value: rawData['roleARN'] }
         }
