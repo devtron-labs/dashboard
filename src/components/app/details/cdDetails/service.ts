@@ -1,5 +1,5 @@
 import { get } from '../../../../services/api'
-import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, DEPLOYMENT_HISTORY_DATA_TYPE, Routes } from '../../../../config'
+import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, EXTERNAL_TYPES, Routes } from '../../../../config'
 import { History } from '../cIDetails/types'
 import { ResponseType } from '../../../../services/service.types'
 import {
@@ -101,13 +101,13 @@ const prepareConfigMapAndSecretData = (rawData, type: string): Record<string, De
         if (rawData['externalType']) {
             secretValues['external'] = {
                 displayName: 'Data type',
-                value: DEPLOYMENT_HISTORY_DATA_TYPE[rawData['externalType']],
+                value: EXTERNAL_TYPES[rawData['externalType']],
             }
         } else {
-            secretValues['external'] = { displayName: 'Data type', value: `Kubernetes External ${type}` }
+            secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES['KubernetesSecret'] }
         }
     } else {
-        secretValues['external'] = { displayName: 'Data type', value: `Kubernetes ${type}` }
+        secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[''] }
     }
     if (rawData['type']) {
         let typeValue = 'Environment Variable'

@@ -500,7 +500,9 @@ export const DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP = {
     },
 }
 
-export const DEPLOYMENT_HISTORY_DATA_TYPE = {
+export const EXTERNAL_TYPES = {
+    '': 'Kubernetes Secret',
+    KubernetesSecret: 'Kubernetes External Secret',
     AWSSecretsManager: 'AWS Secrets Manager',
     AWSSystemManager: 'AWS System Manager',
     HashiCorpVault: 'Hashi Corp Vault',
