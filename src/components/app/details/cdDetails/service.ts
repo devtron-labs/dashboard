@@ -113,7 +113,11 @@ const prepareConfigMapAndSecretData = (
         }
     } else {
         secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[''] }
-        historyData.codeEditorValue = decode(historyData.codeEditorValue) as DeploymentHistorySingleValue
+        if ((type = 'Secret')) {
+            historyData.codeEditorValue.value = historyData.codeEditorValue.value
+                ? JSON.stringify(decode(JSON.parse(historyData.codeEditorValue.value)))
+                : ''
+        }
     }
     if (rawData['type']) {
         let typeValue = 'Environment Variable'
