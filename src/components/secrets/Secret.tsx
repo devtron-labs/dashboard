@@ -16,6 +16,7 @@ import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import { KeyValueFileInput } from '../util/KeyValueFileInput';
 import '../configMaps/ConfigMap.scss';
+import { decode } from '../../util/Util'
 
 let sampleJSON = [{
     "key": "service/credentials",
@@ -100,9 +101,6 @@ const Secret = ({ respondOnSuccess, ...props }) => {
         }
     }
 
-    function decode(data) {
-        return Object.keys(data).map(m => ({ key: m, value: data[m] ? atob(data[m]) : data[m] })).reduce((agg, curr) => { agg[curr.key] = curr.value; return agg }, {})
-    }
     if (secretLoading) return <Progressing pageLoader />
     return (
         <div className="form__app-compose">
