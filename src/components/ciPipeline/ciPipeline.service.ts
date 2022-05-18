@@ -91,7 +91,7 @@ export function getPipelineMetaConfiguration(
 ): Promise<any> {
     return getPipelineBaseMetaConfiguration(appId).then((baseResponse) => {
         // if webhook data is not to be included, or materials not found, or multigit new pipeline, then return
-        let _materials = baseResponse.result.materials || []
+        const _materials = baseResponse.result.materials || []
         if (!includeWebhookData || _materials.length == 0 || (isNewPipeline && _materials.length > 1)) {
             return baseResponse
         }
