@@ -65,7 +65,7 @@ export interface DeploymentHistoryDetailRes extends ResponseType {
 }
 
 const prepareDeploymentTemplateData = (rawData): Record<string, DeploymentHistorySingleValue> => {
-    let deploymentTemplateData = {}
+    const deploymentTemplateData = {}
     if (rawData['templateVersion']) {
         deploymentTemplateData['templateVersion'] = { displayName: 'Chart Version', value: rawData['templateVersion'] }
     }
@@ -79,7 +79,7 @@ const prepareDeploymentTemplateData = (rawData): Record<string, DeploymentHistor
 }
 
 const preparePipelineConfigData = (rawData): Record<string, DeploymentHistorySingleValue> => {
-    let pipelineConfigData = {}
+    const pipelineConfigData = {}
     if (rawData['pipelineTriggerType']) {
         pipelineConfigData['pipelineTriggerType'] = {
             displayName: 'When do you want the pipeline to execute?',
@@ -100,7 +100,7 @@ const prepareConfigMapAndSecretData = (
     type: string,
     historyData: DeploymentHistoryDetail,
 ): Record<string, DeploymentHistorySingleValue> => {
-    let secretValues = {}
+    const secretValues = {}
 
     if (rawData['external']) {
         if (rawData['externalType']) {
@@ -151,7 +151,7 @@ const prepareConfigMapAndSecretData = (
 
 export const prepareHistoryData = (rawData, historyComponent: string): DeploymentHistoryDetail => {
     let values
-    let historyData = { codeEditorValue: rawData.codeEditorValue, values: {} }
+    const historyData = { codeEditorValue: rawData.codeEditorValue, values: {} }
     delete rawData.codeEditorValue
     if (historyComponent === DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.DEPLOYMENT_TEMPLATE.VALUE) {
         values = prepareDeploymentTemplateData(rawData)

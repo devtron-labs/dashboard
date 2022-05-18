@@ -21,7 +21,7 @@ export default function DeploymentHistoryDiffView({
             const dynamicHeight = ref.current?.clientHeight + 255 + (!previousConfigAvailable ? 55 : 0)
             setCodeEditorHeight((innerHeight - dynamicHeight < 400 ? 400 : innerHeight - dynamicHeight) + 'px')
         }
-    }, [ref?.current?.clientHeight])
+    }, [ref.current?.clientHeight])
 
     const renderDeploymentDiffViaCodeEditor = () => {
         return (

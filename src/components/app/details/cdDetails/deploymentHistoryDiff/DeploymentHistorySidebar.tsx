@@ -1,15 +1,10 @@
 import React, { useEffect } from 'react'
 import { NavLink, useRouteMatch, useParams } from 'react-router-dom'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, URLS } from '../../../../../config'
-import { DeploymentHistoryParamsType, DeploymentTemplateList } from '../cd.type'
+import { DeploymentHistoryParamsType, DeploymentHistorySidebarType } from '../cd.type'
 import { getDeploymentHistoryList } from '../service'
 
-export interface DeploymentHistorySidebar {
-    deploymentHistoryList: DeploymentTemplateList[]
-    setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
-}
-
-function DeploymentHistorySidebar({ deploymentHistoryList, setDeploymentHistoryList }: DeploymentHistorySidebar) {
+function DeploymentHistorySidebar({ deploymentHistoryList, setDeploymentHistoryList }: DeploymentHistorySidebarType) {
     const match = useRouteMatch()
     const { appId, pipelineId, triggerId } = useParams<DeploymentHistoryParamsType>()
     useEffect(() => {

@@ -70,3 +70,8 @@ export interface DeploymentHistoryParamsType {
     envId?: string
     triggerId?: string
 }
+
+export interface DeploymentHistorySidebarType {
+    deploymentHistoryList: DeploymentTemplateList[]
+    setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
+}
