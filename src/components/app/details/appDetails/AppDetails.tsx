@@ -103,9 +103,6 @@ export default function AppDetail() {
     }, [params.envId]);
     return (
         <div className="app-details-page-wrapper">
-                {/* <div className="flex left w-100 p-16">
-                    <EnvSelector environments={otherEnvsResult?.result} />
-                </div> */}
                 {!params.envId && otherEnvsResult?.result?.length > 0 && (
                     <div className="w-100 pt-16 pr-24 pb-20 pl-24">
                         <SourceInfo
