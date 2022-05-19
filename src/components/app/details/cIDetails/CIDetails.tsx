@@ -312,7 +312,7 @@ const BuildDetails: React.FC<BuildDetails> = ({ triggerHistory, pipeline, fullSc
 const Details: React.FC<BuildDetails> = ({ pipeline, fullScreenView, setFullScreenView, synchroniseState, triggerHistory }) => {
     const { pipelineId, appId, buildId } = useParams<{appId: string, buildId:string, pipelineId: string}>()
     const triggerDetails = triggerHistory.get(+buildId);
-    const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails, setTriggerDetails, dependency] = useAsync(() => getCIHistoricalStatus({ appId, pipelineId, buildId }), [pipelineId, buildId, appId], !pipeline.parentCiPipeline && !terminalStatus.has(triggerDetails?.status?.toLowerCase()))
+    const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails, setTriggerDetails, dependency] = useAsync(() => getCIHistoricalStatus({ appId, pipelineId, buildId }), [pipelineId, buildId, appId], !pipeline?.parentCiPipeline && !terminalStatus.has(triggerDetails?.status?.toLowerCase()))
 
     useEffect(() => {
         if (triggerDetailsLoading || triggerDetailsError) return
@@ -321,7 +321,7 @@ const Details: React.FC<BuildDetails> = ({ pipeline, fullScreenView, setFullScre
 
     const timeout = useMemo(() => {
         if (!triggerDetails) return null; // no interval
-        if (statusSet.has(triggerDetails.status.toLowerCase()) || (triggerDetails.podStatus && statusSet.has(triggerDetails.podStatus.toLowerCase()))) {
+        if (statusSet.has(triggerDetails.status?.toLowerCase()) || (triggerDetails.podStatus && statusSet.has(triggerDetails.podStatus.toLowerCase()))) {
             // 10s because progressing
             return 10000
         }
