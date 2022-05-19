@@ -604,6 +604,7 @@ export default function AppList() {
                     buttonText="new"
                     onClickCreateButton={handleCreateButton}
                     serverModeName={SERVER_MODE.FULL}
+                    isShownCreatedButton={true}
                 />
                 {showCreateNewAppSelectionModal && renderAppCreateSelectionModal()}
             </div>
