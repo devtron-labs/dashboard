@@ -17,3 +17,9 @@
     width: 100%;
     background: #0a0f22;
 }
+
+.terminal-container {
+    height: calc(100% - 30px);
+    width: auto;
+    overflow: hidden;
+}
