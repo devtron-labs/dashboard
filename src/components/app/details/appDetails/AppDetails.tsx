@@ -102,7 +102,7 @@ export default function AppDetail() {
         setEnvironmentId(Number(params.envId));
     }, [params.envId]);
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <div className="app-details-page-wrapper">
                 {/* <div className="flex left w-100 p-16">
                     <EnvSelector environments={otherEnvsResult?.result} />
                 </div> */}
