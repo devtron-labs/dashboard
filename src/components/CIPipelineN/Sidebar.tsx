@@ -23,7 +23,7 @@ export function Sidebar() {
     } = useContext(ciPipelineContext)
     const [helpData, setHelpData] = useState<{ helpText: string; docLink: string }>({
         helpText: 'Docs: Configure build stage',
-        docLink: DOCUMENTATION.PRE_POST_BUILD_STAGE,
+        docLink: DOCUMENTATION.BUILD_STAGE,
     })
     const changeTriggerType = (appCreationType: string): void => {
         const _formData = { ...formData }
