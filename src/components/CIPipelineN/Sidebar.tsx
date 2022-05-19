@@ -38,7 +38,7 @@ export function Sidebar() {
 
     useEffect(() => {
         if (activeStageName === BuildStageVariable.Build) {
-            setHelpData({ helpText: 'Docs: Configure build stage', docLink: DOCUMENTATION.PRE_POST_BUILD_STAGE })
+            setHelpData({ helpText: 'Docs: Configure build stage', docLink: DOCUMENTATION.BUILD_STAGE })
         } else if (activeStageName === BuildStageVariable.PostBuild) {
             setHelpData({ helpText: 'Docs: Configure post-build tasks', docLink: DOCUMENTATION.PRE_POST_BUILD_STAGE })
         } else if (activeStageName === BuildStageVariable.PreBuild) {
