@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { VisibleModal } from '../common'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
 
@@ -7,6 +7,17 @@ interface UploadChartModalType {
 }
 
 export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }: UploadChartModalType) {
+    const inputFileRef = useRef(null)
+
+    const onFileChange = (e) => {
+        /*Selected files data can be collected here.*/
+        console.log(e.target.files)
+    }
+    const onBtnClick = () => {
+        /*Collecting node-element and performing click*/
+        inputFileRef.current.click()
+    }
+
     return (
         <VisibleModal className="transition-effect">
             <div className="modal__body upload-modal">
@@ -34,7 +45,17 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
                     <div className="p-5">Inserts environment label</div>
                 </div>
                 <div className="footer border-top">
-                    <button className="cta align-right flex">Select tar.gz file...</button>
+                    <button className="cta align-right flex" onClick={onBtnClick}>
+                        Select tar.gz file...
+                    </button>
+
+                    <input
+                        type="file"
+                        ref={inputFileRef}
+                        onChange={onFileChange}
+                        accept=".jpeg"
+                        className="hide-section"
+                    />
                 </div>
             </div>
         </VisibleModal>

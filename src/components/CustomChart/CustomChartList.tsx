@@ -5,7 +5,7 @@ import UploadChartModal from './UploadChartModal'
 import emptyCustomChart from '../../assets/img/ic-empty-custom-charts.png'
 import { ReactComponent as Upload } from '../../assets/icons/ic-arrow-line-up.svg'
 
-export default function CustomChart() {
+export default function CustomChartList() {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
     const openUploadPopup = () => {
         setShowUploadPopup(true)
