@@ -1,45 +1,45 @@
-import React, { useEffect, useState } from 'react';
-import Select from 'react-select';
-import { multiSelectStyles } from '../../../common';
-import './sourceInfo.css';
-import IndexStore from '../index.store';
-import { AppEnvironment } from './environment.type';
-import { useParams, useHistory, useRouteMatch } from 'react-router';
+import React, { useEffect, useState } from 'react'
+import Select from 'react-select'
+import { multiSelectStyles } from '../../../common'
+import './sourceInfo.css'
+import IndexStore from '../index.store'
+import { AppEnvironment } from './environment.type'
+import { useParams, useHistory, useRouteMatch } from 'react-router'
 
-import { getAppOtherEnvironment } from '../appDetails.api';
-import { useSharedState } from '../../utils/useSharedState';
-import { AppType } from "../appDetails.type";
-import { ReactComponent as ScaleObjects } from '../../../../assets/icons/ic-scale-objects.svg';
-import ScaleWorkloadsModal from './scaleWorkloads/ScaleWorkloadsModal.component';
-import Tippy from '@tippyjs/react';
+import { getAppOtherEnvironment } from '../appDetails.api'
+import { useSharedState } from '../../utils/useSharedState'
+import { AppType } from '../appDetails.type'
+import { ReactComponent as ScaleObjects } from '../../../../assets/icons/ic-scale-objects.svg'
+import ScaleWorkloadsModal from './scaleWorkloads/ScaleWorkloadsModal.component'
+import Tippy from '@tippyjs/react'
 
 function EnvironmentSelectorComponent() {
-    const params = useParams<{ appId: string; envId?: string }>();
-    const { url, path } = useRouteMatch();
-    const history = useHistory();
-    const [showWorkloadsModal, setWorkloadsModal] = useState(false);
-    const [environments, setEnvironments] = useState<Array<AppEnvironment>>();
-    const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable());
+    const params = useParams<{ appId: string; envId?: string }>()
+    const { url, path } = useRouteMatch()
+    const history = useHistory()
+    const [showWorkloadsModal, setWorkloadsModal] = useState(false)
+    const [environments, setEnvironments] = useState<Array<AppEnvironment>>()
+    const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [canScaleWorkloads, setCanScaleWorkloads] = useState(false)
 
     useEffect(() => {
         if (appDetails.appType != AppType.EXTERNAL_HELM_CHART) {
             getAppOtherEnvironment(params.appId)
                 .then((response) => {
-                    setEnvironments(response.result || []);
+                    setEnvironments(response.result || [])
                 })
                 .catch((error) => {
-                    console.error('erroe in fetching environments');
-                    setEnvironments([]);
-                });
+                    console.error('erroe in fetching environments')
+                    setEnvironments([])
+                })
         }
-    }, [params.appId]);
+    }, [params.appId])
 
     useEffect(() => {
         if (!params.envId && appDetails.environmentId) {
-            handleEnvironmentChange(appDetails.environmentId);
+            handleEnvironmentChange(appDetails.environmentId)
         }
-    }, [appDetails.environmentId]);
+    }, [appDetails.environmentId])
 
     useEffect(() => {
         if (appDetails.appType === AppType.EXTERNAL_HELM_CHART && appDetails.resourceTree?.nodes) {
@@ -52,8 +52,8 @@ function EnvironmentSelectorComponent() {
     }, [appDetails])
 
     const handleEnvironmentChange = (envId: number) => {
-        history.push(`${url}/${envId}`);
-    };
+        history.push(`${url}/${envId}`)
+    }
 
     return (
         <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
@@ -101,7 +101,7 @@ function EnvironmentSelectorComponent() {
                                             : null
                                     }
                                     onChange={(selected) => {
-                                        handleEnvironmentChange(selected.value);
+                                        handleEnvironmentChange(selected.value)
                                     }}
                                     styles={{
                                         ...multiSelectStyles,
@@ -153,9 +153,7 @@ function EnvironmentSelectorComponent() {
                             className="default-tt"
                             content={'No scalable workloads available'}
                         >
-                            <button
-                                className="scale-workload__btn flex left cta pb-6 pt-6 pl-12 pr-12 not-allowed"
-                            >
+                            <button className="scale-workload__btn flex left cta pb-6 pt-6 pl-12 pr-12 not-allowed">
                                 <ScaleObjects className="scale-workload-icon mr-4" /> Scale workloads
                             </button>
                         </Tippy>
@@ -166,7 +164,7 @@ function EnvironmentSelectorComponent() {
                 <ScaleWorkloadsModal appId={params.appId} onClose={() => setWorkloadsModal(false)} history={history} />
             )}
         </div>
-    );
+    )
 }
 
-export default EnvironmentSelectorComponent;
+export default EnvironmentSelectorComponent

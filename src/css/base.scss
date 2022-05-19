@@ -1814,6 +1814,11 @@ button.anchor {
     border-top-right-radius: 4px;
 }
 
+.no-top-radius {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
 .left-radius-4 {
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
@@ -1852,6 +1857,6 @@ button.anchor {
     height: 32px;
 }
 
-input{
+input {
     background-color: var(--N50);
 }
