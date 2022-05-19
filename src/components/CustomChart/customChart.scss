@@ -1,0 +1,14 @@
+.upload-modal {
+    width: 600px;
+    height: 500px;
+    position: relative;
+    .prerequisite-table {
+        display: grid;
+        grid-template-columns: 55% 45%;
+    }
+    .footer {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+    }
+}

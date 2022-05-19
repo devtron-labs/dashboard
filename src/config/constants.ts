@@ -230,6 +230,8 @@ export const DOCUMENTATION = {
     BUILD_STAGE: 'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/ci-pipeline#build-stage',
     PRE_POST_BUILD_STAGE:
         'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/ci-pipeline/ci-build-pre-post-plugins',
+    CUSTOM_CHART:
+        'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/ci-pipeline/ci-build-pre-post-plugins',
 }
 
 // APP LIST STARTS

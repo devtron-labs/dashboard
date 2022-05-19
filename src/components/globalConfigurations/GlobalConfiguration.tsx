@@ -26,6 +26,7 @@ const Notifier = lazy(() => import('../notifications/Notifications'))
 const Project = lazy(() => import('../project/ProjectList'))
 const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
+const CustomChart = lazy(() => import('../CustomChart/CustomChart'))
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -153,6 +154,12 @@ function NavItem({ hostURLConfig, serverMode }) {
 
     const ConfigOptional = [
         { name: 'Chart repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: true },
+        {
+            name: 'Custom charts',
+            href: URLS.GLOBAL_CONFIG_CUSTOM_CHARTS,
+            component: CustomChart,
+            isAvailableInEA: true,
+        },
         { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin, isAvailableInEA: true },
         { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup, isAvailableInEA: true },
         { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier, isAvailableInEA: false },
@@ -283,15 +290,15 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
             />
 
             <Route
-                path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}
+                path={URLS.GLOBAL_CONFIG_CHART}
                 render={(props) => {
                     return <ChartRepo />
                 }}
             />
             <Route
-                path={URLS.GLOBAL_CONFIG_CHART}
+                path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}
                 render={(props) => {
-                    return <ChartRepo />
+                    return <CustomChart />
                 }}
             />
             <Route
