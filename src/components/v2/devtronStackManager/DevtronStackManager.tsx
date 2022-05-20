@@ -41,7 +41,8 @@ export default function DevtronStackManager({
     serverInfo: ServerInfo
     getCurrentServerInfo: () => Promise<void>
 }) {
-    const { serverMode, setServerMode } = useContext(mainContext)
+    const { serverMode } = useContext(mainContext)
+    const updateToastRef = useRef(null)
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const [stackDetails, setStackDetails] = useState<StackDetailsType>({
@@ -140,17 +141,18 @@ export default function DevtronStackManager({
         getVersionConfig()
             .then((response) => {
                 if (response.code == 200 && response.result.serverMode === SERVER_MODE.FULL) {
-                    setServerMode(response.result.serverMode)
-                    const updateToastBody = (
-                        <UpdateToast
-                            onClick={() => {
-                                window.location.reload()
-                            }}
-                            text="You are viewing an outdated version of Devtron UI."
-                            buttonText="Reload"
-                        />
-                    )
-                    toast.info(updateToastBody, { autoClose: false, closeButton: false })
+                    if (!toast.isActive(updateToastRef.current)) {
+                        updateToastRef.current = toast.info(
+                            <UpdateToast
+                                onClick={() => {
+                                    window.location.reload()
+                                }}
+                                text="You are viewing an outdated version of Devtron UI."
+                                buttonText="Reload"
+                            />,
+                            { autoClose: false, closeButton: false },
+                        )
+                    }
                 }
             })
             .catch((errors) => {})
