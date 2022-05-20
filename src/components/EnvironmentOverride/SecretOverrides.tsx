@@ -11,7 +11,7 @@ import { Progressing } from '../common';
 import warningIcon from '../../assets/icons/ic-warning.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml';
-import { PATTERNS } from '../../config';
+import { PATTERNS, EXTERNAL_TYPES } from '../../config';
 import { KeyValueFileInput } from '../util/KeyValueFileInput';
 import { getAppChartRef } from '../../services/service';
 import './environmentOverride.scss';
@@ -437,13 +437,6 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         }
     }
     const memoisedHandleChange = (index, k, v) => dispatch({ type: 'key-value-change', value: { index, k, v } })
-    const externalTypes = {
-        "": "Kubernetes Secret",
-        "KubernetesSecret": "Kubernetes External Secret",
-        "AWSSecretsManager": "AWS Secrets Manager",
-        "AWSSystemManager": "AWS System Manager",
-        "HashiCorpVault": "Hashi Corp Vault"
-    }
     return (<>
         {name && isGlobal ? <form onSubmit={handleSubmit} className="override-secrets-form">
             <Override external={externalType === "KubernetesSecret" && type === 'environment'}
@@ -454,7 +447,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 <label className="form__label">Data type</label>
                 <div className="form-row__select-external-type">
                     <Select disabled onChange={e => { }} >
-                        <Select.Button>{externalTypes[externalType]}</Select.Button>
+                        <Select.Button>{EXTERNAL_TYPES[externalType]}</Select.Button>
                     </Select>
                 </div>
             </div>
