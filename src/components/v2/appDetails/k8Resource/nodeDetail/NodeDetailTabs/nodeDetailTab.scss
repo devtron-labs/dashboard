@@ -30,7 +30,7 @@
 
 .no-border {
     border: none;
-    display: table-row;
+    display: table-row !important;
 }
 
 .events-logs__events-table-row {
