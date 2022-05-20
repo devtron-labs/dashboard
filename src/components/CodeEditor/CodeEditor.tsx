@@ -265,7 +265,10 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         scrollbar: {
             alwaysConsumeMouseWheel: false,
             vertical: inline ? 'hidden' : 'auto'
-        }
+        },
+        lineNumbers: function (lineNumber) {
+            return `<span style="padding-right:6px">${lineNumber}</span>`
+        },
     };
     return (
         <CodeEditorContext.Provider value={{ dispatch, state, handleLanguageChange, error, defaultValue, height }}>
