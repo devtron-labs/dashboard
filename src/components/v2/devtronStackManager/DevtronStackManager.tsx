@@ -138,6 +138,7 @@ export default function DevtronStackManager({
 
     useEffect(() => {
         if (serverMode === SERVER_MODE.FULL) return
+        //Check for SERVER_MODE on every route change if Current SERVER_MODE is EA_ONLY
         getVersionConfig()
             .then((response) => {
                 if (response.code == 200 && response.result.serverMode === SERVER_MODE.FULL) {
