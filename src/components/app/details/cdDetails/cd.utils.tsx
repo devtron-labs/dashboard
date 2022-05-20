@@ -1,7 +1,7 @@
-import React from 'react';
-import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg';
-import { components } from 'react-select';
-import { multiSelectStyles } from '../../../common';
+import React from 'react'
+import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
+import { components } from 'react-select'
+import { multiSelectStyles } from '../../../common'
 
 export const styles = {
     ...multiSelectStyles,
@@ -14,13 +14,12 @@ export const styles = {
         border: 0,
         outline: 'none',
         boxShadow: 'none',
-        fontSize: '13px'
+        fontSize: '13px',
     }),
     singleValue: (base, state) => ({
         ...base,
         fontWeight: 600,
         color: '#06c',
-        direction: 'rtl',
         marginLeft: 0,
     }),
     option: (base, state) => ({
@@ -31,7 +30,7 @@ export const styles = {
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         cursor: 'pointer',
-        padding: '0 4px'
+        padding: '0 4px',
     }),
     valueContainer: (base, state) => ({
         ...base,
@@ -43,7 +42,7 @@ export const styles = {
         padding: 0,
     }),
     dropdownIndicator: (styles) => ({ ...styles, padding: 0 }),
-};
+}
 
 export function Option(props) {
     return (
@@ -55,10 +54,13 @@ export function Option(props) {
                         .replace(/\s+/g, '')} mr-8`}
                 ></div>
                 <div>
-                    <div className='cn-9 fs-13'> {props.label}</div>   
-                    <div className='cn-7 flex left'><span className='text-capitalize'>{props.data.workflowType.toLowerCase()}</span>  <div className="bullet ml-4 bullet--d2 mr-4"/> {props.data.author}</div>
+                    <div className="cn-9 fs-13"> {props.label}</div>
+                    <div className="cn-7 flex left">
+                        <span className="text-capitalize">Deploy</span> <div className="bullet ml-4 bullet--d2 mr-4" />{' '}
+                        {props.data.author === 'system' ? 'auto-triggered' : props.data.author}
+                    </div>
                 </div>
             </div>
         </components.Option>
-    );
+    )
 }

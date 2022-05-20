@@ -35,24 +35,6 @@
     }
 }
 
-.tab-list {
-    list-style: none;
-    display: flex;
-    margin: 0px;
-    padding: 0px;
-}
-
-.tab-list__tab {
-    user-select: none;
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
-    text-align: center;
-    color: var(--N700);
-    margin-right: 16px;
-}
-
 .app-detail__default-tab {
     max-width: 173px;
     white-space: nowrap;
@@ -66,7 +48,7 @@
 
 .resource-tree__tab-hover:hover {
     color: #0066cc !important;
-} 
+}
 
 .resource-tree__tab-hover:hover div:not(.cn-9) .resource-tree__tab-hover svg path {
     fill: #0066cc;

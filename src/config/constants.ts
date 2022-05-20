@@ -482,3 +482,30 @@ export const APP_STATUS_CUSTOM_MESSAGES = {
     HIBERNATED: "This application's workloads are scaled down to 0 replicas",
     'PARTIALLY HIBERNATED': "Some of this application's workloads are scaled down to 0 replicas.",
 }
+
+export const DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP = {
+    DEPLOYMENT_TEMPLATE: {
+        DISPLAY_NAME: 'Deployment template',
+        VALUE: 'deployment-template',
+    },
+    PIPELINE_STRATEGY: {
+        DISPLAY_NAME: 'Pipeline configurations',
+        VALUE: 'pipeline-strategy',
+    },
+    CONFIGMAP: {
+        DISPLAY_NAME: 'ConfigMap',
+        VALUE: 'configmap',
+    },
+    SECRET: {
+        DISPLAY_NAME: 'Secret',
+        VALUE: 'secret',
+    },
+}
+
+export const EXTERNAL_TYPES = {
+    '': 'Kubernetes Secret',
+    KubernetesSecret: 'Kubernetes External Secret',
+    AWSSecretsManager: 'AWS Secrets Manager',
+    AWSSystemManager: 'AWS System Manager',
+    HashiCorpVault: 'Hashi Corp Vault',
+}

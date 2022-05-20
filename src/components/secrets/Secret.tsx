@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import { KeyValueInput, useKeyValueYaml, validateKeyValuePair } from '../configMaps/ConfigMap'
 import { getSecretList } from '../../services/service';
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { DOCUMENTATION, PATTERNS } from '../../config';
+import { DOCUMENTATION, PATTERNS, EXTERNAL_TYPES } from '../../config';
 import YAML from 'yaml'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import addIcon from '../../assets/icons/ic-add.svg'
@@ -16,6 +16,7 @@ import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import { KeyValueFileInput } from '../util/KeyValueFileInput';
 import '../configMaps/ConfigMap.scss';
+import { decode } from '../../util/Util'
 
 let sampleJSON = [{
     "key": "service/credentials",
@@ -100,9 +101,6 @@ const Secret = ({ respondOnSuccess, ...props }) => {
         }
     }
 
-    function decode(data) {
-        return Object.keys(data).map(m => ({ key: m, value: data[m] ? atob(data[m]) : data[m] })).reduce((agg, curr) => { agg[curr.key] = curr.value; return agg }, {})
-    }
     if (secretLoading) return <Progressing pageLoader />
     return (
         <div className="form__app-compose">
@@ -235,13 +233,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const [codeEditorRadio, setCodeEditorRadio] = useState("data")
     const isExternalValues = externalType !== "KubernetesSecret";
     const tabs = [{ title: 'Environment Variable' }, { title: 'Data Volume' }].map(data => ({ ...data, active: data.title === selectedTab }))
-    const externalTypes = {
-        "": "Kubernetes Secret",
-        "KubernetesSecret": "Kubernetes External Secret",
-        "AWSSecretsManager": "AWS Secrets Manager",
-        "AWSSystemManager": "AWS System Manager",
-        "HashiCorpVault": "Hashi Corp Vault"
-    }
     const isHashiOrAWS = (externalType === "AWSSecretsManager" || externalType === "AWSSystemManager" || externalType === "HashiCorpVault");
 
     function setKeyValueArray(arr) {
@@ -549,8 +540,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             <label className="form__label">Data type</label>
             <div className="form-row__select-external-type flex">
                 <Select value={externalType} onChange={e => { setExternalType(e.target.value) }} disabled={secretMode}>
-                    <Select.Button>{externalType || (externalType === "") ? externalTypes[externalType] : `Select Secret Type`}</Select.Button>
-                    {Object.entries(externalTypes).map(([value, name]) =>
+                    <Select.Button>{externalType || (externalType === "") ? EXTERNAL_TYPES[externalType] : `Select Secret Type`}</Select.Button>
+                    {Object.entries(EXTERNAL_TYPES).map(([value, name]) =>
                         <Select.Option key={value} value={value}>{name}</Select.Option>)}
                 </Select>
             </div>
