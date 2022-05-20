@@ -15,6 +15,7 @@ import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component';
 import Tippy from '@tippyjs/react';
 import IndexStore from './index.store';
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type';
+import '../../common/nodeTreeDetails.scss';
 import '../lib/bootstrap-grid.min.css'
 
 function NodeTreeDetailTab({
