@@ -783,7 +783,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         }
 
         return (
-            <div className="fs-13">
+            <div className="header-body-grid-page fs-13">
                 {this.renderBulkEditHeader()}
                 {this.props.serverMode == SERVER_MODE.EA_ONLY
                     ? this.renderEmptyStateForEAOnlyMode()

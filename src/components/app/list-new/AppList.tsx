@@ -892,7 +892,7 @@ export default function AppList() {
     }
 
     return (
-        <div>
+        <div className="header-body-grid-page">
             {dataStateType == AppListViewType.LOADING && (
                 <div className="loading-wrapper">
                     <Progressing pageLoader />
@@ -905,7 +905,7 @@ export default function AppList() {
             )}
             {dataStateType == AppListViewType.LIST && (
                 <>
-                    <div className="app-header">{renderPageHeader()}</div>
+                    {renderPageHeader()}
                     {renderMasterFilters()}
                     {renderAppliedFilters()}
                     {renderAppTabs()}
