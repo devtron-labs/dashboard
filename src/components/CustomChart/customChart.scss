@@ -15,7 +15,6 @@
 }
 .upload-modal {
     width: 600px;
-    height: 500px;
     position: relative;
     padding: 20px 0;
     .prerequisite-table {
@@ -26,5 +25,6 @@
         position: absolute;
         bottom: 20px;
         width: 100%;
+        margin: 0;
     }
 }

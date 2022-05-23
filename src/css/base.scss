@@ -1865,6 +1865,11 @@ button.anchor {
     height: 32px;
 }
 
-input {
+input,
+textarea {
     background-color: var(--N50);
+}
+
+.no-text-transform {
+    text-transform: none !important;
 }

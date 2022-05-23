@@ -41,7 +41,7 @@ export default function CustomChartList() {
     const renderSubtitleAndUploadButton = (subtitleText: string, isShowSearch) => {
         return (
             <>
-                <p className="subtitle">
+                <p className="fs-13 fw-4">
                     {subtitleText}
                     <a className="no-decor" href={DOCUMENTATION.CUSTOM_CHART}>
                         Learn more
