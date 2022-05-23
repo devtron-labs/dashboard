@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, Fragment } from 'react'
 import { useLocation, useHistory, useParams } from 'react-router'
 import { Link, Switch, Route, NavLink } from 'react-router-dom'
 import { Progressing, Filter, showError, FilterOption, Modal, ErrorScreenManager, handleUTCTime } from '../../common'
@@ -598,7 +598,7 @@ export default function AppList() {
 
     function renderPageHeader() {
         return (
-            <div className="border-bottom">
+            <Fragment>
                 <PageHeader
                     headerName="Applications"
                     buttonText="new"
@@ -606,7 +606,7 @@ export default function AppList() {
                     showCreateButton={serverMode === SERVER_MODE.FULL ? true : false}
                 />
                 {showCreateNewAppSelectionModal && renderAppCreateSelectionModal()}
-            </div>
+            </Fragment>
         )
     }
 
@@ -891,7 +891,7 @@ export default function AppList() {
     }
 
     return (
-        <div className="header-body-grid-page">
+        <div>
             {dataStateType == AppListViewType.LOADING && (
                 <div className="loading-wrapper">
                     <Progressing pageLoader />

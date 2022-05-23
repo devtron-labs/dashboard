@@ -300,7 +300,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
 
     render() {
         return (
-            <div className="header-body-grid-page">
+            <div>
                 <PageHeader headerName="Deployment Groups" />
 
                 {this.state.view === ViewType.FORM && (
