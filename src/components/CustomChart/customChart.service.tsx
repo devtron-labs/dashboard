@@ -1,31 +1,13 @@
-import { Routes } from '../../config';
-import { post, get, trash } from '../../services/api';
+import { Host, Routes } from '../../config'
+import { post, get, put } from '../../services/api'
 
-export const getChartProviderConfig = (id: number): Promise<any> => {
-    const URL = `${Routes.CHART_REPO}/${Routes.CHART_LIST_SUBPATH}/${id}`;
-    return get(URL);
+export const getChartLIST = (): Promise<any> => {
+    return get(Routes.CUSTOM_CHART_LIST)
 }
 
-export const updateChartProviderConfig = (request: any, id: number) => {
-    const URL = `${Routes.CHART_REPO}/update`;
-    return post(URL, request);
+export const validateChart = (payload): Promise<any> => {
+    return post(Routes.VALIDATE_CUSTOM_CHART, payload, {}, true)
 }
-
-export const saveChartProviderConfig = (request: any, id: any) => {
-    const URL = `${Routes.CHART_REPO}/create`;
-    return post(URL, request);
-}
-
-export const validateChartRepoConfiguration = (request: any):Promise<any> => {
-    const URL = `${Routes.CHART_REPO}/validate`;
-    return post(URL, request);
-}
-
-export const reSyncChartRepo = ():Promise<any> => {
-    const URL = `${Routes.CHART_REPO}/${Routes.CHART_RESYNC}`;
-    return post(URL, undefined);
-}
-
-export function deleteChartRepo(request){
-    return trash(`${Routes.CHART_REPO}`, request);
+export const uploadChart = (payload): Promise<any> => {
+    return put(Routes.UPLOAD_CUSTOM_CHART, payload)
 }

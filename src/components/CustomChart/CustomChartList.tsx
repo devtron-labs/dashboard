@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { DOCUMENTATION } from '../../config'
 import './customChart.scss'
 import UploadChartModal from './UploadChartModal'
@@ -7,11 +7,26 @@ import { ReactComponent as Upload } from '../../assets/icons/ic-arrow-line-up.sv
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Folder } from '../../assets/icons/ic-folder.svg'
+import { getChartLIST } from './customChart.service'
+import { showError } from '../common'
 
 export default function CustomChartList() {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
     const [searchApplied, setSearchApplied] = useState(false)
     const [searchText, setSearchText] = useState('')
+    const [chartList, setChartList] = useState([])
+
+    useEffect(() => {
+        getChartLIST()
+            .then((response) => {
+                if (response.result) {
+                    setChartList(response.result)
+                }
+            })
+            .catch((error) => {
+                showError(error)
+            })
+    }, [])
 
     const openUploadPopup = () => {
         setShowUploadPopup(true)
@@ -97,52 +112,19 @@ export default function CustomChartList() {
                         <div>Version</div>
                         <div>Description</div>
                     </div>
-                    <div className="chart-list-row fw-4 cn-9 fs-13 border-bottom pt-14 pb-14 pr-20 pl-20">
-                        <div className="flexbox">
-                            <Folder className="folder-icon icon-dim-16 mt-2 mr-15" />
-                            <span className="cb-5">Bitcoind</span>
+                    {chartList?.map((chartData) => (
+                        <div className="chart-list-row fw-4 cn-9 fs-13 border-bottom pt-14 pb-14 pr-20 pl-20">
+                            <div className="flexbox">
+                                <Folder className="folder-icon icon-dim-16 mt-2 mr-15" />
+                                <span className="cb-5">{chartData.name}</span>
+                            </div>
+                            <div>
+                                {chartData.version}
+                                <span className="cn-5">{chartData.count > 1 ? `+${chartData.count} more` : ''}</span>
+                            </div>
+                            <div className="ellipsis-right">{chartData.ChartDescription}</div>
                         </div>
-                        <div>
-                            12.3.6 <span className="cn-5">+23 more</span>
-                        </div>
-                        <div className="ellipsis-right">
-                            Bitcoin uses peer-to-peer technology to operate with no central authority or banks; managing
-                        </div>
-                    </div>
-                    <div className="chart-list-row fw-4 cn-9 fs-13 border-bottom pt-14 pb-14 pr-20 pl-20">
-                        <div className="flexbox">
-                            <Folder className="folder-icon icon-dim-16 mt-2 mr-15" />
-                            <span className="cb-5">StatefulSet</span>
-                        </div>
-                        <div>
-                            12.3.6 <span className="cn-5">+1 more</span>
-                        </div>
-                        <div className="ellipsis-right">
-                            StatefulSet is an open source, Kubernetes-native microservices API gateway built on the
-                            Envoy Proxy.
-                        </div>
-                    </div>
-                    <div className="chart-list-row fw-4 cn-9 fs-13 border-bottom pt-14 pb-14 pr-20 pl-20">
-                        <div className="flexbox">
-                            <Folder className="folder-icon icon-dim-16 mt-2 mr-15" />
-                            <span className="cb-5">BitcoinE</span>
-                        </div>
-                        <div>
-                            21.0.1 <span className="cn-5">+7 more</span>
-                        </div>
-                        <div className="ellipsis-right"></div>
-                    </div>
-                    <div className="chart-list-row fw-4 cn-9 fs-13 border-bottom pt-14 pb-14 pr-20 pl-20">
-                        <div className="flexbox">
-                            <Folder className="folder-icon icon-dim-16 mt-2 mr-15" />
-                            <span className="cb-5">BitcoinF</span>
-                        </div>
-                        <div>3.9.0</div>
-                        <div className="ellipsis-right">
-                            Bitcoin uses peer-to-peer technology to operate with no central authority or banks;
-                            managing.
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </div>
         )
@@ -150,7 +132,7 @@ export default function CustomChartList() {
 
     return (
         <>
-            {renderChartList()}
+            {chartList.length === 0 ? renderEmptyState() : renderChartList()}
             {showUploadPopup && <UploadChartModal closeUploadPopup={closeUploadPopup}></UploadChartModal>}
         </>
     )
