@@ -119,7 +119,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         components={{
                             IndicatorSeparator: null,
                             Option: (props) => {
-                                props.selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none' })
+                                props.selectProps.styles.option = getCustomOptionSelectionStyle()
                                 return <components.Option {...props}>
                                     {props.data.url.includes("gitlab") ? <GitLab className="mr-8 vertical-align-middle icon-dim-20" /> : null}
                                     {props.data.url.includes("github") ? <GitHub className="mr-8 vertical-align-middle icon-dim-20" /> : null}

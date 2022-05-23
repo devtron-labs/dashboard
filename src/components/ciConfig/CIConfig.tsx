@@ -229,7 +229,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
     };
 
     const containerRegistryOption = (props) => {
-        props.selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none' });
+        props.selectProps.styles.option = getCustomOptionSelectionStyle();
         return (
             <components.Option {...props}>
                 <div style={{ display: 'flex' }}>
@@ -270,7 +270,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
     };
 
     const repositoryOption = (props) => {
-        props.selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none' })
+        props.selectProps.styles.option = getCustomOptionSelectionStyle()
         return (
             <components.Option {...props}>
                 {props.data.url.includes('gitlab') && <GitLab className="mr-8 vertical-align-middle icon-dim-20" />}
