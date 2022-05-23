@@ -1,8 +1,5 @@
+import React from 'react'
 import Tippy from '@tippyjs/react'
-import React, { useContext } from 'react'
-import { NavLink } from 'react-router-dom'
-import { DOCUMENTATION, SERVER_MODE, URLS } from '../../../config'
-import { mainContext } from '../../common/navigation/NavigationRoutes'
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
 
 export interface PageHeaderType {
@@ -11,14 +8,16 @@ export interface PageHeaderType {
     onClickCreateButton?: () => void
     isTippyShown?: boolean
     showCreateButton?: boolean
+    tippyRedirectLink?: string
 }
 
 function PageHeader({
     headerName,
-    buttonText = '',
+    buttonText,
     onClickCreateButton,
     isTippyShown = false,
     showCreateButton = false,
+    tippyRedirectLink,
 }: PageHeaderType) {
     return (
         <div className={`page-header flex content-space cn-9 bcn-0 pl-20 pr-20`}>
@@ -33,7 +32,7 @@ function PageHeader({
                     >
                         <a
                             className="learn-more__href flex"
-                            href={DOCUMENTATION.BULK_UPDATE}
+                            href={tippyRedirectLink}
                             rel="noreferrer noopener"
                             target="_blank"
                         >
