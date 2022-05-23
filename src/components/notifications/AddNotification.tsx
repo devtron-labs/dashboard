@@ -20,6 +20,7 @@ import Tippy from '@tippyjs/react';
 import CreatableSelect from 'react-select/creatable';
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
 import './notifications.css';
+import { getAppListMin, getEnvironmentListMin, getTeamListMin } from '../../services/service';
 
 interface AddNotificationsProps extends RouteComponentProps<{}> {
 
@@ -55,6 +56,11 @@ interface AddNotificationState {
     pipelineList: PipelineType[];
     filterInput: string;
     sesConfigId: number;
+    options: {
+        value: string;
+        label: string
+        type: string
+    }[]
 }
 
 export class AddNotification extends Component<AddNotificationsProps, AddNotificationState> {
@@ -68,7 +74,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     constructor(props) {
         super(props);
         this.state = {
-            view: ViewType.LOADING,
+            view: ViewType.FORM,
             channelOptions: [],
             sesConfigOptions: [],
             showSlackConfigModal: false,
@@ -80,6 +86,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             selectedChannels: [],
             pipelineList: [],
             sesConfigId: 0,
+            options:[],
         }
         this.handleFilterInput = this.handleFilterInput.bind(this);
         this.selectFilterType = this.selectFilterType.bind(this);
@@ -98,7 +105,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
 
     getInitialData() {
         getAddNotificationInitData().then((result) => {
-            this.filterOptionsInner = result.filterOptionsInner;
+            // this.filterOptionsInner = result.filterOptionsInner;
             this.setState({
                 sesConfigOptions: result.sesConfigOptions,
                 channelOptions: result.channelOptions,
@@ -112,6 +119,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             filterInput: event.target.value,
             openSelectPipeline: true
         });
+        this.getData(event.target.value)
     }
 
     handleFilterTag(event): void {
@@ -186,6 +194,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                 })
             });
         }
+        this.setState({options:[]})
     }
 
     clearFilter(filter: { type, label, value }) {
@@ -299,15 +308,45 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         }
     }
 
+    getData(text) {
+        if (text.length > 2) {
+            let unsavedFilter = this.state.appliedFilters.find((e) => e.type && !e.value)
+            let getDataList
+            if (unsavedFilter.type === 'environment') {
+                getDataList = getEnvironmentListMin()
+            } else if (unsavedFilter.type === 'project') {
+                getDataList = getTeamListMin()
+            } else if (unsavedFilter.type === 'application') {
+                getDataList = getAppListMin()
+            }
+
+            getDataList?.then((response) => {
+                let state = { ...this.state }
+                state.options = response.result.map((elem) => {
+                    return {
+                        label:
+                            unsavedFilter.type === 'environment'
+                                ? `${elem.environment_name.toLowerCase()}`
+                                : `${elem.name.toLowerCase()}`,
+                        value: elem.id,
+                        type: unsavedFilter.type,
+                    }
+                })
+                this.setState(state)
+            })
+        }
+        console.log(text,this.state)
+    }
+
     renderSelectPipelines() {
         let unsavedFilter = this.state.appliedFilters.find(e => e.type && !e.value);
         let options = this.filterOptionsMain;
         if (unsavedFilter) {
             let input = this.state.filterInput.toLowerCase();
             if (input.length > 0) {
-                options = this.filterOptionsInner.filter(filter => (filter.type === unsavedFilter.type) && filter.label.indexOf(input) >= 0);
+                options = this.state.options
             }
-            else options = this.filterOptionsInner.filter(filter => filter.type === unsavedFilter.type);
+            else options = this.state.options
         }
         return <div className="position-rel">
             <div className="form__input pipeline-filter__select-pipeline" onClick={() => this.setState({ openSelectPipeline: true })}>
@@ -322,8 +361,8 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                 })}
                 {unsavedFilter ? `${unsavedFilter.type}: ` : ""}
                 {unsavedFilter ? <input autoComplete="off" type="text" className="pipeline-filter__search transparent flex-1" autoFocus onKeyDown={this.handleFilterTag}
-                    placeholder="Filter by Project, applications and environment, search by name."
-                    onChange={this.handleFilterInput} value={this.state.filterInput} /> : null}
+                    placeholder="Type 3 chars to see matching results"
+                    onChange={this.handleFilterInput} value={this.state.filterInput} /> : !this.state.appliedFilters.length && <span>Filter by Project, applications and environment, search by name.</span>}
             </div>
             {this.state.openSelectPipeline ? <div className="transparent-div" onClick={this.toggleSelectPipeline}></div> : null}
             {this.state.openSelectPipeline ? <div className="pipeline-filter__menu">

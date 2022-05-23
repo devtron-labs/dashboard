@@ -5,6 +5,7 @@ import { sortCallback } from '../common';
 import { NotificationConfiguration } from './NotificationTab';
 import { PipelineType } from './AddNotification';
 import { ResponseType } from '../../services/service.types';
+import { Environment } from '../cdPipeline/cdPipeline.types';
 
 interface UpdateNotificationEvent {
     id: number; eventTypeIds: number[];
@@ -397,12 +398,12 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
     })
 }
 
-export function getAddNotificationInitData(): Promise<{
+
+
+export function getAddNotificationInitDataFilter(): Promise<{
     filterOptionsInner: any[];
-    channelOptions: any[];
-    sesConfigOptions: any[];
 }> {
-    return Promise.all([getTeamListMin(), getEnvironmentListMin(), getAppListMin(), getChannelsAndEmailsFilteredByEmail(), getChannelConfigs()]).then(([teams, environments, applications, providerRes, channelRes]) => {
+    return Promise.all([getTeamListMin(), getEnvironmentListMin(), getAppListMin()]).then(([teams, environments, applications]) => {
         let filters = {
             environment: environments.result ? environments.result.map((env) => {
                 return {
@@ -429,11 +430,21 @@ export function getAddNotificationInitData(): Promise<{
         filters.environment = filters.environment.sort((a, b) => { return sortCallback("label", a, b) });
         filters.application = filters.application.sort((a, b) => { return sortCallback("label", a, b) });
         filters.project = filters.project.sort((a, b) => { return sortCallback("label", a, b) });
-        let providerOptions = providerRes.result || [];
-        let sesConfigOptions = channelRes.result.sesConfigs || [];
         let filterOptionsInner = filters.project.concat(filters.application, filters.environment);
         return {
-            filterOptionsInner,
+            filterOptionsInner
+        };
+    })
+}
+
+export function getAddNotificationInitData(): Promise<{
+    channelOptions: any[];
+    sesConfigOptions: any[];
+}> {
+    return Promise.all([ getChannelsAndEmailsFilteredByEmail(), getChannelConfigs()]).then(([providerRes, channelRes]) => {
+        let providerOptions = providerRes.result || [];
+        let sesConfigOptions = channelRes.result.sesConfigs || [];
+        return {
             channelOptions: providerOptions.map(p => {
                 return {
                     label: p.recipient,
