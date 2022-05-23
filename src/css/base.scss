@@ -1855,3 +1855,9 @@ button.anchor {
 input {
     background-color: var(--N50);
 }
+
+.header-body-grid-page {
+    height: 100%;
+    display: grid;
+    grid-template-rows: 48px auto;
+}

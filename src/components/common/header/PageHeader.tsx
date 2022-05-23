@@ -9,7 +9,7 @@ export interface PageHeaderType {
     headerName: string
     buttonText?: string
     onClickCreateButton?: () => void
-    serverModeName: string
+    serverModeName?: string
     isTippyShown?: boolean
     isShownCreatedButton?: boolean
 }
@@ -25,8 +25,8 @@ function PageHeader({
     const { serverMode } = useContext(mainContext)
 
     return (
-        <div className="flex content-space cn-9 bcn-0 pl-20 pr-20 pt-8 pb-8 border-bottom">
-            <h1 className="page-header__title flex left fs-14 fw-6">
+        <div className={`page-header flex content-space cn-9 bcn-0 pl-20 pr-20`}>
+            <h1 className="page-header__title flex left fs-14 fw-6 lh-20">
                 {headerName}
                 {isTippyShown && (
                     <Tippy
