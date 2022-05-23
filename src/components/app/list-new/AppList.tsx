@@ -598,7 +598,7 @@ export default function AppList() {
 
     function renderPageHeader() {
         return (
-            <div>
+            <div className="border-bottom">
                 <PageHeader
                     headerName="Applications"
                     buttonText="new"
