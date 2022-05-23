@@ -372,7 +372,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                             }}
                                             components={{
                                                 IndicatorSeparator: null,
-                                                Option: (props)=> <Option {...props} showTippy={true} />,
+                                                Option: (props)=> <Option {...props} showTippy={true} style={{direction:'rtl'}}/>,
                                             }}
                                         />
                                     </div>
@@ -426,7 +426,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                                         }}
                                         components={{
                                             IndicatorSeparator: null,
-                                            Option: (props)=> <Option {...props} showTippy={true} />,
+                                            Option: (props)=> <Option {...props} showTippy={true} style={{direction:'rtl'}}/>,
                                         }}
                                     />
                                 </div>

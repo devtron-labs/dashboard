@@ -231,7 +231,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
 
     function Option(_props) {
         const { selectProps, data } = _props
-        selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none', padding: '4px 10px' })
+        selectProps.styles.option = getCustomOptionSelectionStyle({ padding: '4px 10px' })
         if (data.description) {
             return (
                 <Tippy

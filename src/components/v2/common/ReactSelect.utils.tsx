@@ -15,7 +15,6 @@ export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
         overflow: 'hidden',
         textAlign: 'left',
         whiteSpace: 'nowrap',
-        direction: 'rtl',
         cursor: 'pointer',
         ...styleOverrides,
     })
@@ -49,8 +48,8 @@ export const styles = {
 }
 
 export function Option(props) {
-    const { selectProps, data, showTippy } = props
-    selectProps.styles.option = getCustomOptionSelectionStyle()
+    const { selectProps, data, showTippy, style } = props
+    selectProps.styles.option = getCustomOptionSelectionStyle(style)
     const getOption = () => {
         return (
             <div>
