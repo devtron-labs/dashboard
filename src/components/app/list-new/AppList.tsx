@@ -598,13 +598,13 @@ export default function AppList() {
 
     function renderPageHeader() {
         return (
-            <div className="">
+            <div>
                 <PageHeader
                     headerName="Applications"
                     buttonText="new"
                     onClickCreateButton={handleCreateButton}
                     serverModeName={SERVER_MODE.FULL}
-                    isShownCreatedButton={true}
+                    showCreateButton={true}
                 />
                 {showCreateNewAppSelectionModal && renderAppCreateSelectionModal()}
             </div>

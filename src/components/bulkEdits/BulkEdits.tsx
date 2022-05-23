@@ -110,10 +110,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             })
     }
 
-    renderBulkEditHeader = () => {
-        return <PageHeader headerName="Bulk Edit" serverModeName={SERVER_MODE.FULL} isTippyShown={true} />
-    }
-
     renderBulkHeaderDescription = () => {
         return (
             <div className="deployment-group-list-page">
@@ -127,7 +123,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                             rel="noreferrer noopener"
                             target="_blank"
                         >
-                            {' '}
                             Learn more
                         </a>
                     </div>
@@ -330,12 +325,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div>
                 <div>
-                    {' '}
                     *CONFIGMAPS: <br />
                     <br />
                 </div>
                 <div>
-                    {' '}
                     #Message: <br />
                     <br />
                     {this.state.outputResult.configMap?.message?.map((elm) => {
@@ -424,12 +417,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div>
                 <div>
-                    {' '}
                     *DEPLOYMENT TEMPLATE: <br />
                     <br />
                 </div>
                 <div>
-                    {' '}
                     #Message: <br />
                     <br />
                     {this.state.outputResult.deploymentTemplate?.message.map((elm) => {
@@ -482,12 +473,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div>
                 <div>
-                    {' '}
                     *SECRETS: <br />
                     <br />
                 </div>
                 <div>
-                    {' '}
                     #Message: <br />
                     <br />
                     {this.state.outputResult.secret?.message.map((elm) => {
@@ -560,7 +549,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div>
                 <div>
-                    {' '}
                     *CONFIGMAPS: <br /> <br />
                     {this.state.impactedObjects.configMap.length === 0 ? (
                         <>No Result Found </>
@@ -581,7 +569,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div>
                 <div>
-                    {' '}
                     *DEPLOYMENT TEMPLATE: <br /> <br />
                     {this.state.impactedObjects.deploymentTemplate.length === 0 ? (
                         <>No Result Found</>
@@ -609,7 +596,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div>
                 <div>
-                    {' '}
                     *SECRETS: <br /> <br />
                     {this.state.impactedObjects.secret.length === 0 ? (
                         <>No Result Found</>
@@ -784,7 +770,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         return (
             <div className="header-body-grid-page fs-13">
-                {this.renderBulkEditHeader()}
+                <PageHeader headerName="Bulk Edit" serverModeName={SERVER_MODE.FULL} isTippyShown={true} />
                 {this.props.serverMode == SERVER_MODE.EA_ONLY
                     ? this.renderEmptyStateForEAOnlyMode()
                     : this.renderBulkEditBody()}

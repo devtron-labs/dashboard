@@ -11,7 +11,7 @@ export interface PageHeaderType {
     onClickCreateButton?: () => void
     serverModeName?: string
     isTippyShown?: boolean
-    isShownCreatedButton?: boolean
+    showCreateButton?: boolean
 }
 
 function PageHeader({
@@ -20,7 +20,7 @@ function PageHeader({
     onClickCreateButton,
     serverModeName,
     isTippyShown = false,
-    isShownCreatedButton = false,
+    showCreateButton = false,
 }: PageHeaderType) {
     const { serverMode } = useContext(mainContext)
 
@@ -46,7 +46,7 @@ function PageHeader({
                     </Tippy>
                 )}
             </h1>
-            {isShownCreatedButton && serverMode == serverModeName && (
+            {showCreateButton && serverMode == serverModeName && (
                 <button type="button" className="cta h-32 lh-n" onClick={() => onClickCreateButton()}>
                     Create {buttonText}
                     <span className="round-button__icon">
