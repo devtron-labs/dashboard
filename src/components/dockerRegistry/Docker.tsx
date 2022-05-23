@@ -413,7 +413,7 @@ function DockerForm({
     ];
 
     const registryOptions = (props) => {
-        props.selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none'})
+        props.selectProps.styles.option = getCustomOptionSelectionStyle()
         return (
             <components.Option {...props}>
                 <div style={{ display: 'flex' }}>

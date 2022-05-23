@@ -1069,7 +1069,7 @@ table.pod__table td:last-child {
 }
 
 .pod-readyState {
-    position: absolute;
+    position: relative;
     left: 0;
     right: 0;
     height: 0;
@@ -1748,4 +1748,10 @@ table.resource-tree {
 
 .select-material--h450 {
     height: 450px;
+}
+
+.app-details-page-wrapper{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }

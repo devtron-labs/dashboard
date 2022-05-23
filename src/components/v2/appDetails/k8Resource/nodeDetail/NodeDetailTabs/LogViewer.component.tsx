@@ -4,6 +4,7 @@ import { FitAddon } from 'xterm-addon-fit';
 import CopyToast, { handleSelectionChange } from './CopyToast';
 import * as XtermWebfont from 'xterm-webfont';
 import { SearchAddon } from 'xterm-addon-search';
+import { AutoSizer } from 'react-virtualized';
 import '../../../../../../../node_modules/xterm/css/xterm.css';
 import './nodeDetailTab.scss';
 import { Subject } from '../../../../../../util/Subject';
@@ -126,14 +127,20 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
 
     return (
         <>
-            <CopyToast showCopyToast={popupText} />
+            <AutoSizer>
+                {({ height, width }) => (
+                    <div style={{ height, width }} id="xterm-logs">
+                        <CopyToast showCopyToast={popupText} />
+                    </div>
+                )}
+            </AutoSizer>
             <Scroller
                 scrollToBottom={scrollToBottom}
                 scrollToTop={scrollToTop}
-                style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: '3' }}
+                style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: '5' }}
             />
         </>
-    );
+    )
 };
 
 export default LogViewerComponent;

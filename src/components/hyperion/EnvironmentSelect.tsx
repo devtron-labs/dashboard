@@ -13,10 +13,10 @@ export default function HyperionEnvironmentSelect({ selectEnvironment, environme
         return (
             <components.ValueContainer {...props}>
                 {length > 0 ? (
-                    <>
+                    <div className='flex'>
                         {!props.selectProps.menuIsOpen && value}
                         {React.cloneElement(props.children[1])}
-                    </>
+                    </div>
                 ) : (
                     <>{props.children}</>
                 )}
