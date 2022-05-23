@@ -9,7 +9,6 @@ export interface PageHeaderType {
     headerName: string
     buttonText?: string
     onClickCreateButton?: () => void
-    serverModeName?: string
     isTippyShown?: boolean
     showCreateButton?: boolean
 }
@@ -18,12 +17,9 @@ function PageHeader({
     headerName,
     buttonText = '',
     onClickCreateButton,
-    serverModeName,
     isTippyShown = false,
     showCreateButton = false,
 }: PageHeaderType) {
-    const { serverMode } = useContext(mainContext)
-
     return (
         <div className={`page-header flex content-space cn-9 bcn-0 pl-20 pr-20`}>
             <h1 className="page-header__title flex left fs-14 fw-6 lh-20">
@@ -46,7 +42,7 @@ function PageHeader({
                     </Tippy>
                 )}
             </h1>
-            {showCreateButton && serverMode == serverModeName && (
+            {showCreateButton && (
                 <button type="button" className="cta h-32 lh-n" onClick={() => onClickCreateButton()}>
                     Create {buttonText}
                     <span className="round-button__icon">
