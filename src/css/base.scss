@@ -94,7 +94,7 @@ a:focus {
     all: unset;
     margin: unset;
     border-bottom: unset;
-    height: 47px;
+    height: 100%;
     padding: 0 24px;
     display: grid;
     grid-template-columns: 1fr auto;
@@ -106,6 +106,10 @@ a:focus {
     position: sticky;
     top: 0px;
     overflow: visible;
+}
+
+.page-header__height {
+    height: 47px;
 }
 
 .page-header--tabs {

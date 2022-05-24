@@ -301,17 +301,20 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
     render() {
         return (
             <div>
-                <PageHeader headerName="Deployment Groups" />
+                <PageHeader
+                    headerName="Deployment Groups"
+                    showCreateButton={this.state.view === ViewType.FORM ? true : false}
+                    buttonText="group"
+                />
 
-                {this.state.view === ViewType.FORM && (
+                {/* {this.state.view === ViewType.FORM && (
                     <div className="page-header__cta-container flex right">
-                        {' '}
                         <Link to={`${URLS.DEPLOYMENT_GROUPS}/0/edit`} className="cta align-right flex cta--link">
                             <Add className="icon-dim-20 mr-5" />
                             Create Group
                         </Link>
                     </div>
-                )}
+                )} */}
                 <div className="deployment-group-list-page__body">
                     {this.state.view === ViewType.LOADING && <Progressing pageLoader />}
                     {this.state.view === ViewType.EMPTY && <NoDeploymentGroups />}
