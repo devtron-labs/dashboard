@@ -398,45 +398,6 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
     })
 }
 
-
-
-export function getAddNotificationInitDataFilter(): Promise<{
-    filterOptionsInner: any[];
-}> {
-    return Promise.all([getTeamListMin(), getEnvironmentListMin(), getAppListMin()]).then(([teams, environments, applications]) => {
-        let filters = {
-            environment: environments.result ? environments.result.map((env) => {
-                return {
-                    label: `${env.environment_name.toLocaleLowerCase()}`,
-                    value: env.id,
-                    type: "environment",
-                }
-            }) : [],
-            project: teams.result ? teams.result.map((team) => {
-                return {
-                    label: `${team.name.toLocaleLowerCase()}`,
-                    value: team.id,
-                    type: "project",
-                }
-            }) : [],
-            application: applications.result ? applications.result.map((app) => {
-                return {
-                    label: `${app.name.toLocaleLowerCase()}`,
-                    value: app.id,
-                    type: "application",
-                }
-            }) : [],
-        }
-        filters.environment = filters.environment.sort((a, b) => { return sortCallback("label", a, b) });
-        filters.application = filters.application.sort((a, b) => { return sortCallback("label", a, b) });
-        filters.project = filters.project.sort((a, b) => { return sortCallback("label", a, b) });
-        let filterOptionsInner = filters.project.concat(filters.application, filters.environment);
-        return {
-            filterOptionsInner
-        };
-    })
-}
-
 export function getAddNotificationInitData(): Promise<{
     channelOptions: any[];
     sesConfigOptions: any[];
