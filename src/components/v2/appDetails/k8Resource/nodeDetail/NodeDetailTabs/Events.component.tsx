@@ -53,7 +53,7 @@ function EventsComponent({ selectedTab, isDeleted }) {
                             <div className="cn-0 ">
                                 <table className="table pl-20">
                                     <thead style={{ minHeight: '600px', background: '#0B0F22' }}>
-                                        <tr className="no-border pl-20 event-row">
+                                        <tr className="no-events-border pl-20 event-row">
                                             {['reason', 'message', 'count', 'last timestamp'].map((head, idx) => {
                                                 return (
                                                     <th
@@ -75,7 +75,7 @@ function EventsComponent({ selectedTab, isDeleted }) {
                                             return (
                                                 <tr
                                                     className={
-                                                        'no-border pl-20 event-row ' +
+                                                        'no-events-border pl-20 event-row ' +
                                                         (index % 2 === 0 && 'alternate-row')
                                                     }
                                                     key={`eb_${index}`}
