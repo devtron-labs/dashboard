@@ -613,7 +613,7 @@ export default function AppList() {
     function renderMasterFilters() {
         let _isAnyClusterFilterApplied = masterFilters.clusters.some((_cluster) => _cluster.isChecked)
         return (
-            <div className="search-filter-section">
+            <div className="search-filter-section mt-48">
                 <form style={{ display: 'inline' }} onSubmit={searchApp}>
                     <div className="search">
                         <Search className="search__icon icon-dim-18" />

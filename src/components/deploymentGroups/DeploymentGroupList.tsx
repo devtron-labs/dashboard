@@ -147,7 +147,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
     renderListHeader() {
         return (
             <>
-                <div className="bulk-action-list__row bulk-action-list__row--header">
+                <div className="bulk-action-list__row bulk-action-list__row--header mt-48">
                     <div className="bulk-action-list__cell bulk-action-list__cell--name">Name</div>
                     <div className="bulk-action-list__cell bulk-action-list__cell--source">Source</div>
                     <div className="bulk-action-list__cell bulk-action-list__cell--action">Actions</div>
