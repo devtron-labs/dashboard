@@ -1,11 +1,9 @@
 import { Routes } from '../../config/constants';
 import { get, post, trash, put } from '../../services/api';
-import { getEnvironmentListMin, getTeamListMin, getAppListMin } from '../../services/service';
 import { sortCallback } from '../common';
 import { NotificationConfiguration } from './NotificationTab';
 import { PipelineType } from './AddNotification';
 import { ResponseType } from '../../services/service.types';
-import { Environment } from '../cdPipeline/cdPipeline.types';
 
 interface UpdateNotificationEvent {
     id: number; eventTypeIds: number[];
