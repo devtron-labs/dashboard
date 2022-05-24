@@ -26,6 +26,11 @@ interface AddNotificationsProps extends RouteComponentProps<{}> {
 
 }
 
+enum FilterOptions {
+    ENVIRONMENT = 'environment',
+    APPLICATION = 'application',
+    PROJECT = 'project'
+}
 interface Options {
     environment:{
         value: number;
@@ -88,7 +93,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     constructor(props) {
         super(props);
         this.state = {
-            view: ViewType.FORM,
+            view: ViewType.LOADING,
             channelOptions: [],
             sesConfigOptions: [],
             showSlackConfigModal: false,
@@ -135,7 +140,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             openSelectPipeline: true
         });
         let unsavedFilter = this.state.appliedFilters.find(e => e.type && !e.value);
-        if(unsavedFilter.type === 'application'){
+        if(unsavedFilter.type === FilterOptions.APPLICATION){
             this.getData(event.target.value)
         }
     }
@@ -333,14 +338,14 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                     return {
                         label: `${elem.environment_name.toLowerCase()}`,
                         value: elem.id,
-                        type: 'environment',
+                        type: FilterOptions.ENVIRONMENT,
                     }
                 })
                 state.options.project = teams.result.map((elem) => {
                     return {
                         label: `${elem.name.toLowerCase()}`,
                         value: elem.id,
-                        type: 'project',
+                        type: FilterOptions.PROJECT,
                     }
                 })
                 this.setState(state)
@@ -356,7 +361,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                     return {
                         label:`${elem.name.toLowerCase()}`,
                         value: elem.id,
-                        type: 'application',
+                        type: FilterOptions.APPLICATION,
                     }
                 })
                 state.isApplistLoading = false
@@ -370,12 +375,12 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         let options = this.filterOptionsMain
         if (unsavedFilter) {
             let input = this.state.filterInput.toLowerCase()
-            if (unsavedFilter.type === 'environment') {
+            if (unsavedFilter.type === FilterOptions.ENVIRONMENT) {
                 options =
                     input.length === 0
                         ? this.state.options.environment
                         : this.state.options.environment.filter((filter) => filter.label.indexOf(input) >= 0)
-            } else if (unsavedFilter.type === 'project') {
+            } else if (unsavedFilter.type === FilterOptions.PROJECT) {
                 options =
                     input.length === 0
                         ? this.state.options.project
@@ -416,7 +421,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                             autoFocus
                             onKeyDown={this.handleFilterTag}
                             placeholder={
-                                unsavedFilter.type === 'application'
+                                unsavedFilter.type === FilterOptions.APPLICATION
                                     ? 'Type 3 chars to see matching results'
                                     : 'Type to see matching results'
                             }
@@ -453,7 +458,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                     ) : this.state.filterInput.length <= 2 ? (
                         this.state.filterInput.length > 0 && (
                             <div className="pipeline-filter__menu select-button--pipeline-filter loading-applist">
-                                {unsavedFilter.type === 'application'
+                                {unsavedFilter.type === FilterOptions.APPLICATION
                                     ? 'Type 3 chars to see matching results'
                                     : 'Type to see matching results'}
                             </div>
