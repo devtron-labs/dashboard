@@ -299,7 +299,6 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                                 getOptionLabel={(option) => `${option.name}`}
                                 getOptionValue={(option) => `${option.name}`}
                                 value={selectedChart}
-                                menuIsOpen={true}
                                 classNamePrefix="chart_select"
                                 isOptionDisabled={(option) => !option.id}
                                 components={{
