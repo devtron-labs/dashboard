@@ -4,7 +4,7 @@
     height: 100%;
 }
 
-.main>.chart-grid {
+.main > .chart-grid {
     height: calc(100% - 80px);
 }
 
@@ -335,7 +335,7 @@
 .chart-group--details-page,
 .discover-charts {
     display: grid;
-    grid-template-rows: 80px 1fr;
+    grid-template-rows: 47px 1fr;
     overflow: hidden;
     height: 100%;
 
