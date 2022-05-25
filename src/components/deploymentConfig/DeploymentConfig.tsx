@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import {
     getDeploymentTemplate,
     updateDeploymentTemplate,
     saveDeploymentTemplate,
     toggleAppMetrics as updateAppMetrics,
-} from './service';
-import { getChartReferences } from '../../services/service';
+} from './service'
+import { getChartReferences } from '../../services/service'
 import {
     Toggle,
     Progressing,
@@ -13,21 +13,23 @@ import {
     VisibleModal,
     useJsonYaml,
     isVersionLessThanOrEqualToTarget,
-} from '../common';
-import { useEffectAfterMount, showError } from '../common/helpers/Helpers';
-import ReadmeConfig from './ReadmeConfig';
-import { useParams } from 'react-router';
-import { toast } from 'react-toastify';
+} from '../common'
+import { useEffectAfterMount, showError } from '../common/helpers/Helpers'
+import ReadmeConfig from './ReadmeConfig'
+import { useParams } from 'react-router'
+import { toast } from 'react-toastify'
 import { Option } from '../v2/common/ReactSelect.utils'
-import CodeEditor from '../CodeEditor/CodeEditor';
-import warningIcon from '../../assets/icons/ic-info-filled.svg';
-import { ReactComponent as ArrowSquareOut } from '../../assets/icons/misc/arrowSquareOut.svg';
-import ReactSelect from 'react-select';
-import { DOCUMENTATION } from '../../config';
-import './deploymentConfig.scss';
-import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
-import { MODES } from '../../../src/config/constants';
-import YAML from 'yaml';
+import CodeEditor from '../CodeEditor/CodeEditor'
+import warningIcon from '../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as ArrowSquareOut } from '../../assets/icons/misc/arrowSquareOut.svg'
+import ReactSelect, { components } from 'react-select'
+import { DOCUMENTATION, URLS } from '../../config'
+import './deploymentConfig.scss'
+import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
+import { MODES } from '../../../src/config/constants'
+import YAML from 'yaml'
+import { NavLink } from 'react-router-dom'
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 
 export function OptApplicationMetrics({
     currentVersion,
@@ -38,7 +40,7 @@ export function OptApplicationMetrics({
     className = '',
     disabled = false,
 }) {
-    let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersion, [3, 7, 0]);
+    let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersion, [3, 7, 0])
 
     return (
         <div
@@ -71,7 +73,7 @@ export function OptApplicationMetrics({
                 </div>
             )}
         </div>
-    );
+    )
 }
 
 export default function DeploymentConfig({ respondOnSuccess, isUnSet }) {
@@ -91,69 +93,69 @@ export default function DeploymentConfig({ respondOnSuccess, isUnSet }) {
             </p>
             <DeploymentConfigForm respondOnSuccess={respondOnSuccess} isUnSet={isUnSet} />
         </div>
-    );
+    )
 }
 
 function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
-    const [charts, setCharts] = useState<{ id: number; version: string; name: string }[]>([]);
-    const [selectedChartRefId, selectChartRefId] = useState(0);
-    const [selectedChart, selectChart] = useState<{ id: number; version: string; name: string }>(null);
-    const [template, setTemplate] = useState('');
-    const [schemas, setSchema] = useState();
-    const [loading, setLoading] = useState(false);
-    const [appMetricsLoading, setAppMetricsLoading] = useState(false);
-    const [chartConfig, setChartConfig] = useState(null);
-    const [isAppMetricsEnabled, toggleAppMetrics] = useState(null);
-    const [tempFormData, setTempFormData] = useState('');
-    const [obj, json, yaml, error] = useJsonYaml(tempFormData, 4, 'yaml', true);
-    const [chartConfigLoading, setChartConfigLoading] = useState(null);
-    const [showConfirmation, toggleConfirmation] = useState(false);
-    const [showReadme, setShowReadme] = useState(false);
-    const [readme, setReadme] = useState('');
+    const [charts, setCharts] = useState<{ id: number; version: string; name: string }[]>([])
+    const [selectedChartRefId, selectChartRefId] = useState(0)
+    const [selectedChart, selectChart] = useState<{ id: number; version: string; name: string }>(null)
+    const [template, setTemplate] = useState('')
+    const [schemas, setSchema] = useState()
+    const [loading, setLoading] = useState(false)
+    const [appMetricsLoading, setAppMetricsLoading] = useState(false)
+    const [chartConfig, setChartConfig] = useState(null)
+    const [isAppMetricsEnabled, toggleAppMetrics] = useState(null)
+    const [tempFormData, setTempFormData] = useState('')
+    const [obj, json, yaml, error] = useJsonYaml(tempFormData, 4, 'yaml', true)
+    const [chartConfigLoading, setChartConfigLoading] = useState(null)
+    const [showConfirmation, toggleConfirmation] = useState(false)
+    const [showReadme, setShowReadme] = useState(false)
+    const [readme, setReadme] = useState('')
 
     useEffect(() => {
-        initialise();
-    }, []);
+        initialise()
+    }, [])
 
     useEffectAfterMount(() => {
-        fetchDeploymentTemplate();
-    }, [selectedChart]);
+        fetchDeploymentTemplate()
+    }, [selectedChart])
 
-    const { appId, envId } = useParams<{ appId: string, envId: string }>();
+    const { appId, envId } = useParams<{ appId: string; envId: string }>()
 
     async function saveAppMetrics(appMetricsEnabled) {
         try {
-            setAppMetricsLoading(true);
+            setAppMetricsLoading(true)
             await updateAppMetrics(+appId, {
                 isAppMetricsEnabled: appMetricsEnabled,
-            });
-            toast.success(`Successfully ${appMetricsEnabled ? 'subscribed' : 'unsubscribed'}.`, { autoClose: null });
-            initialise();
+            })
+            toast.success(`Successfully ${appMetricsEnabled ? 'subscribed' : 'unsubscribed'}.`, { autoClose: null })
+            initialise()
         } catch (err) {
-            showError(err);
-            setAppMetricsLoading(false);
+            showError(err)
+            setAppMetricsLoading(false)
         }
     }
 
     async function initialise() {
-        setChartConfigLoading(true);
+        setChartConfigLoading(true)
         try {
             const {
                 result: { chartRefs, latestAppChartRef, latestChartRef },
-            } = await getChartReferences(+appId);
-            setCharts(chartRefs);
-            let selectedChartId: number = latestAppChartRef || latestChartRef;
-            let chart = chartRefs.find((chart) => chart.id === selectedChartId);
-            selectChartRefId(selectedChartId);
-            selectChart(chart);
+            } = await getChartReferences(+appId)
+            setCharts(chartRefs)
+            let selectedChartId: number = latestAppChartRef || latestChartRef
+            let chart = chartRefs.find((chart) => chart.id === selectedChartId)
+            selectChartRefId(selectedChartId)
+            selectChart(chart)
         } catch (err) {
         } finally {
-            setChartConfigLoading(false);
+            setChartConfigLoading(false)
         }
     }
 
     async function fetchDeploymentTemplate() {
-        setChartConfigLoading(true);
+        setChartConfigLoading(true)
         try {
             const {
                 result: {
@@ -168,37 +170,37 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                         schema,
                     },
                 },
-            } = await getDeploymentTemplate(+appId, selectedChart.id);
-            setTemplate(defaultAppOverride);
-            setSchema(schema);
-            setReadme(readme);
-            setChartConfig({ id, refChartTemplate, refChartTemplateVersion, chartRefId, readme });
-            toggleAppMetrics(isAppMetricsEnabled);
-            setTempFormData(YAML.stringify(defaultAppOverride, null));
+            } = await getDeploymentTemplate(+appId, selectedChart.id)
+            setTemplate(defaultAppOverride)
+            setSchema(schema)
+            setReadme(readme)
+            setChartConfig({ id, refChartTemplate, refChartTemplateVersion, chartRefId, readme })
+            toggleAppMetrics(isAppMetricsEnabled)
+            setTempFormData(YAML.stringify(defaultAppOverride, null))
         } catch (err) {
-            showError(err);
+            showError(err)
         } finally {
-            setChartConfigLoading(false);
+            setChartConfigLoading(false)
             if (appMetricsLoading) {
-                setAppMetricsLoading(false);
+                setAppMetricsLoading(false)
             }
         }
     }
 
     async function handleSubmit(e) {
-        e.preventDefault();
+        e.preventDefault()
         if (!obj) {
-            toast.error(error);
-            return;
+            toast.error(error)
+            return
         }
         if (chartConfig.id) {
             //update flow, might have overridden
-            toggleConfirmation(true);
-        } else save();
+            toggleConfirmation(true)
+        } else save()
     }
 
     async function save() {
-        setLoading(true);
+        setLoading(true)
         try {
             let requestBody = {
                 ...(chartConfig.chartRefId === selectedChart.id ? chartConfig : {}),
@@ -207,40 +209,76 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                 valuesOverride: obj,
                 defaultAppOverride: template,
                 isAppMetricsEnabled,
-            };
-            const api = chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate;
-            const { result } = await api(requestBody);
-            fetchDeploymentTemplate();
-            respondOnSuccess();
+            }
+            const api = chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
+            const { result } = await api(requestBody)
+            fetchDeploymentTemplate()
+            respondOnSuccess()
             toast.success(
                 <div className="toast">
                     <div className="toast__title">{chartConfig.id ? 'Updated' : 'Saved'}</div>
                     <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
                 </div>,
-            );
+            )
         } catch (err) {
-            showError(err);
+            showError(err)
         } finally {
-            setLoading(false);
-            toggleConfirmation(false);
+            setLoading(false)
+            toggleConfirmation(false)
         }
     }
 
-    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED;
-    let uniqueCharts = new Map<string, boolean>();
-    let chartsWithUniqueNames = charts
-        .filter((cv) => {
-            if (uniqueCharts.get(cv.name)) {
-                return false;
-            } else {
-                uniqueCharts.set(cv.name, true);
-                return true;
+    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
+    const uniqueChartsByDevtron = new Map<string, boolean>()
+    const uniqueCustomCharts = new Map<string, boolean>()
+    let devtronCharts = []
+    let customCharts = []
+    const chartLength = charts.length
+    for (let i = 0; i < chartLength; i++) {
+        const chartName = charts[i].name
+        if (charts[i]['userUploaded']) {
+            if (!uniqueCustomCharts.get(chartName)) {
+                uniqueCustomCharts.set(chartName, true)
+                customCharts.push(charts[i])
             }
-        })
-        .sort((a, b) => b.name.localeCompare(a.name));
+        } else {
+            if (!uniqueChartsByDevtron.get(chartName)) {
+                uniqueChartsByDevtron.set(chartName, true)
+                devtronCharts.push(charts[i])
+            }
+        }
+    }
+    customCharts = customCharts.sort((a, b) => b.name.localeCompare(a.name))
+    devtronCharts = devtronCharts.sort((a, b) => b.name.localeCompare(a.name))
+    const groupedChartOptions = [
+        {
+            label: 'Charts by Devtron',
+            options: devtronCharts,
+        },
+        {
+            label: 'Custom charts',
+            options: customCharts.length === 0 ? [{ name: 'No options', disabled: true }] : customCharts,
+        },
+    ]
     let filteredCharts = selectedChart
         ? charts.filter((cv) => cv.name == selectedChart.name).sort((a, b) => b.id - a.id)
-        : [];
+        : []
+
+    const chartMenuList = (props) => {
+        return (
+            <components.MenuList {...props}>
+                {props.children}
+                <NavLink
+                    to={`${URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}`}
+                    className="cb-5 select__sticky-bottom block fw-5 anchor w-100 cursor no-decor bottom-0"
+                    style={{ backgroundColor: '#FFF', bottom: 0 }}
+                >
+                    <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
+                    Upload custom chart
+                </NavLink>
+            </components.MenuList>
+        )
+    }
     return (
         <>
             <form action="" className="white-card white-card__deployment-config" onSubmit={handleSubmit}>
@@ -256,14 +294,18 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                         <label className="form__label">Chart type</label>
                         {isUnSet ? (
                             <ReactSelect
-                                options={chartsWithUniqueNames}
+                                options={groupedChartOptions}
                                 isMulti={false}
                                 getOptionLabel={(option) => `${option.name}`}
                                 getOptionValue={(option) => `${option.name}`}
                                 value={selectedChart}
+                                menuIsOpen={true}
+                                classNamePrefix="chart_select"
+                                isOptionDisabled={(option) => !option.id}
                                 components={{
                                     IndicatorSeparator: null,
                                     Option,
+                                    MenuList: chartMenuList,
                                 }}
                                 styles={{
                                     control: (base, state) => ({
@@ -276,27 +318,35 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                                             ...base,
                                             color: 'var(--N900)',
                                             backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                        };
+                                        }
                                     },
                                     container: (base, state) => {
                                         return {
                                             ...base,
                                             width: '100%',
-                                        };
+                                        }
+                                    },
+                                    menuList: (base) => {
+                                        return {
+                                            ...base,
+                                            position: 'relative',
+                                            paddingBottom: '0px',
+                                            maxHeight: '250px',
+                                        }
                                     },
                                 }}
                                 onChange={(selected) => {
-                                    let filteredCharts = charts.filter((chart) => chart.name == selected.name);
-                                    let selectedChart = filteredCharts.find((chart) => chart.id == selectedChartRefId);
+                                    let filteredCharts = charts.filter((chart) => chart.name == selected.name)
+                                    let selectedChart = filteredCharts.find((chart) => chart.id == selectedChartRefId)
                                     if (selectedChart) {
-                                        selectChart(selectedChart);
+                                        selectChart(selectedChart)
                                     } else {
-                                        let sortedFilteredCharts = filteredCharts.sort((a, b) => a.id - b.id);
+                                        let sortedFilteredCharts = filteredCharts.sort((a, b) => a.id - b.id)
                                         selectChart(
                                             sortedFilteredCharts[
                                                 sortedFilteredCharts.length ? sortedFilteredCharts.length - 1 : 0
                                             ],
-                                        );
+                                        )
                                     }
                                 }}
                             />
@@ -327,13 +377,13 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                                         ...base,
                                         color: 'var(--N900)',
                                         backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                    };
+                                    }
                                 },
                                 container: (base, state) => {
                                     return {
                                         ...base,
                                         width: '100%',
-                                    };
+                                    }
                                 },
                             }}
                             onChange={(selected) =>
@@ -354,7 +404,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                     <CodeEditor
                         value={tempFormData}
                         onChange={(resp) => {
-                            setTempFormData(resp);
+                            setTempFormData(resp)
                         }}
                         mode={MODES.YAML}
                         validatorSchema={schemas}
@@ -389,7 +439,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                         value={tempFormData}
                         schema={schemas}
                         onChange={(resp) => {
-                            setTempFormData(resp);
+                            setTempFormData(resp)
                         }}
                         readme={chartConfig.readme}
                         handleClose={(e) => setShowReadme(false)}
@@ -423,5 +473,5 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                 />
             )}
         </>
-    );
+    )
 }

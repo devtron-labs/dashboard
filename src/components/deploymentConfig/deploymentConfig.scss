@@ -34,7 +34,7 @@
     overflow: hidden;
 }
 
-.form__row--code-editor-container{
+.form__row--code-editor-container {
     height: 500px;
     border: 1px solid var(--N200);
     display: grid;
@@ -43,64 +43,85 @@
     overflow: hidden;
 }
 
-.deploymentConfig__warning{
+.deploymentConfig__warning {
     color: #6b778c;
 }
 
-.border-bottom-1px{
+.border-bottom-1px {
     border-bottom: 1px solid var(--N200);
 }
 
-.readme-container{
+.readme-container {
     display: grid;
     grid-template-columns: 1fr auto;
     background: var(--N100);
 }
 
-.rotateBy--90{
+.rotateBy--90 {
     transform: rotate(-90deg);
 }
 
-.advanced-config-readme{
+.advanced-config-readme {
     height: calc(100vh - 80px);
     width: calc(100vw - 100px);
     background: var(--N000);
     margin: 40px 50px;
     display: grid;
     grid-row-gap: 12px;
-    
-    .config-editor{
+
+    .config-editor {
         display: grid;
         grid-template-columns: 50% 50%;
         min-height: 0;
         height: 100%;
     }
 
-    .infobar{
+    .infobar {
         flex-grow: 1;
         max-height: 36px;
     }
 
-    .done-button{
-      font-size: 13px !important;
-      max-height: 36px;
+    .done-button {
+        font-size: 13px !important;
+        max-height: 36px;
     }
 
-    .readme{
+    .readme {
         height: calc(100% - 40px);
         overflow-y: scroll;
         min-height: 0;
     }
 
-    .readmeEditor{
+    .readmeEditor {
         background: var(--N000);
-        border-right: 1px solid #D0D4D9;
+        border-right: 1px solid #d0d4d9;
         height: 100%;
         min-height: 0;
     }
 
-    .code-editor{
+    .code-editor {
         min-height: 0;
         height: 100%;
+    }
+}
+
+.chart_select__group {
+    padding: 0;
+    .chart_select__group-heading {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--N900);
+        text-transform: initial;
+        background-color: var(--window-bg);
+        padding: 4px 10px;
+    }
+}
+.chart_select__option {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--N900);
+    &.chart_select__option--is-disabled {
+        color: var(--N700);
+        pointer-events: none;
     }
 }

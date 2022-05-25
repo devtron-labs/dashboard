@@ -1,14 +1,15 @@
 import React, { useRef, useState } from 'react'
-import { showError, VisibleModal } from '../common'
+import { ButtonWithLoader, showError, VisibleModal } from '../common'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
 import { uploadChart, validateChart } from './customChart.service'
 import errorImage from '../../assets/img/ic_upload_chart_error.png'
-import uploadImage from '../../assets/img/ic-empty-custom-charts.png'
+import uploadingImage from '../../assets/gif/uploading.gif'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import { toast } from 'react-toastify'
 
 const UPLOAD_STATE = {
     UPLOAD: 'Upload',
-    VALIDATE: 'Validate',
+    UPLOADING: 'Uploading',
     ERROR: 'Error',
     SUCCESS: 'Success',
 }
@@ -20,16 +21,15 @@ interface UploadChartModalType {
 export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }: UploadChartModalType) {
     const inputFileRef = useRef(null)
     const [chartDetail, setChartDetail] =
-        useState<{ chartName: string; description: string; fileId: number; message: string; version: number }>()
+        useState<{ chartName: string; description: string; fileId: number; message: string; chartVersion: number }>()
     const [uploadState, setUploadState] = useState<string>(UPLOAD_STATE.UPLOAD)
-    const [errorData, setErrorData] = useState<{ title: string; message: string }>({
-        title: 'Unsupported chart template',
-        message: '',
-    })
+    const [errorData, setErrorData] = useState<{ title: string; message: string[] }>({ title: '', message: [] })
+    const [loadingData, setLoadingData] = useState(false)
 
     const onFileChange = (e) => {
         /*Selected files data can be collected here.*/
         //setSelectedChart(e.target.files)
+        setUploadState(UPLOAD_STATE.UPLOADING)
         let formData = new FormData()
         formData.append('BinaryFile', e.target.files[0])
         validateChart(formData)
@@ -39,7 +39,14 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
             })
             .catch((error) => {
                 setUploadState(UPLOAD_STATE.ERROR)
-                setErrorData({ title: 'Unsupported chart template', message: error.errors[0].userMessage })
+                if (error.errors[0].code === '5001') {
+                    setErrorData({ title: error.errors[0].userMessage, message: ['Try uploading another chart'] })
+                } else {
+                    setErrorData({
+                        title: 'Unsupported chart template',
+                        message: error.errors[0].userMessage.split('; '),
+                    })
+                }
             })
     }
 
@@ -65,6 +72,9 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
     }
 
     const onCancelUpload = (actionType: string) => {
+        if (actionType === 'Save') {
+            setLoadingData(true)
+        }
         const chartData = { ...chartDetail }
         chartData['action'] = actionType
         if (!chartData.fileId) {
@@ -73,10 +83,14 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
         }
         uploadChart(chartData)
             .then((response) => {
+                if (actionType === 'Save') {
+                    toast.success('Chart saved')
+                }
                 closeUploadPopup()
             })
             .catch((error) => {
                 showError(error)
+                setLoadingData(false)
             })
     }
 
@@ -89,8 +103,8 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
                         <span className="lh-20">
                             <span className="inline-block fs-13 fw-6">{chartDetail.message}</span>
                             <span className="inline-block fs-13 fw-4">
-                                The version ({chartDetail.version || 'xx.xx'}) you’re uploading will be added to the
-                                existing chart.
+                                The version ({chartDetail.chartVersion}) you’re uploading will be added to the existing
+                                chart.
                             </span>
                         </span>
                     </div>
@@ -114,6 +128,7 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
                             className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-8 pb-8 mt-6"
                             value={chartDetail.description}
                             onChange={handleDescriptionChange}
+                            disabled={loadingData}
                         ></textarea>
                     </div>
                 </div>
@@ -126,7 +141,9 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
             <div className="flex column" style={{ width: '100%', height: '310px' }}>
                 <img src={errorImage} alt="Error image" style={{ height: '100px' }} />
                 <h4 className="fw-6 fs-16">{errorData.title}</h4>
-                <p className="fs-13 fw-4">{errorData.message}</p>
+                {errorData.message.map((error) => (
+                    <p className="fs-13 fw-4 m-0">{error}</p>
+                ))}
             </div>
         )
     }
@@ -161,6 +178,12 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
             return renderSuccessPage()
         } else if (uploadState === UPLOAD_STATE.UPLOAD) {
             return renderPreRequisitePage()
+        } else if (uploadState === UPLOAD_STATE.UPLOADING) {
+            return (
+                <div className="flex column" style={{ width: '100%', height: '310px' }}>
+                    <img src={uploadingImage} alt="Uploading image" style={{ height: '100px' }} />
+                </div>
+            )
         } else {
             return renderErrorPage()
         }
@@ -170,21 +193,35 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
         return (
             <div
                 className={`footer pt-15 border-top flexbox ${
-                    uploadState === UPLOAD_STATE.UPLOAD ? 'content-end' : 'content-space'
+                    uploadState === UPLOAD_STATE.UPLOAD || uploadState === UPLOAD_STATE.UPLOADING
+                        ? 'content-end'
+                        : 'content-space'
                 }`}
             >
                 {uploadState !== UPLOAD_STATE.UPLOAD && (
-                    <button className="cta delete ml-20 no-text-transform" onClick={(e) => onCancelUpload('Cancel')}>
+                    <button
+                        className={`cta delete no-text-transform ${
+                            uploadState === UPLOAD_STATE.UPLOADING ? '  mr-20' : '  ml-20'
+                        }`}
+                        onClick={(e) => onCancelUpload('Cancel')}
+                    >
                         Cancel upload
                     </button>
                 )}
-                <button className="cta mr-20 no-text-transform" onClick={handleSuccessButton}>
-                    {uploadState === UPLOAD_STATE.UPLOAD
-                        ? 'Select tar.gz file...'
-                        : uploadState === UPLOAD_STATE.ERROR
-                        ? 'Upload another chart'
-                        : 'Save'}
-                </button>
+                {uploadState !== UPLOAD_STATE.UPLOADING && (
+                    <ButtonWithLoader
+                        rootClassName="cta mr-20 no-text-transform"
+                        loaderColor="white"
+                        onClick={handleSuccessButton}
+                        isLoading={loadingData}
+                    >
+                        {uploadState === UPLOAD_STATE.UPLOAD
+                            ? 'Select tar.gz file...'
+                            : uploadState === UPLOAD_STATE.ERROR
+                            ? 'Upload another chart'
+                            : 'Save'}
+                    </ButtonWithLoader>
+                )}
             </div>
         )
     }

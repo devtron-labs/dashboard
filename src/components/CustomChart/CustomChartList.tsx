@@ -6,27 +6,56 @@ import emptyCustomChart from '../../assets/img/ic-empty-custom-charts.png'
 import { ReactComponent as Upload } from '../../assets/icons/ic-arrow-line-up.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
-import { ReactComponent as Folder } from '../../assets/icons/ic-folder.svg'
 import { getChartLIST } from './customChart.service'
-import { showError } from '../common'
+import { Progressing, showError } from '../common'
+import { chartDetailType } from './types'
 
 export default function CustomChartList() {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
+    const [loader, setLoader] = useState(false)
     const [searchApplied, setSearchApplied] = useState(false)
     const [searchText, setSearchText] = useState('')
     const [chartList, setChartList] = useState([])
 
     useEffect(() => {
+        getData()
+    }, [])
+
+    const getData = () => {
+        setLoader(true)
         getChartLIST()
             .then((response) => {
                 if (response.result) {
-                    setChartList(response.result)
+                    setChartList(processChartData(response.result))
                 }
+                setLoader(false)
             })
             .catch((error) => {
                 showError(error)
+                setLoader(false)
             })
-    }, [])
+    }
+
+    const processChartData = (data: chartDetailType[]): chartDetailType[] => {
+        const resultData = []
+        const uniqueChartList = new Map()
+        data.forEach((element) => {
+            const chartDetail = uniqueChartList.get(element.name)
+            if (chartDetail) {
+                chartDetail.count++
+                if (chartDetail.version < element.version) {
+                    chartDetail.version = element.version
+                    chartDetail.chartDescription = element.chartDescription
+                }
+            } else {
+                uniqueChartList.set(element.name, { ...element, count: 0 })
+            }
+        })
+        uniqueChartList.forEach((element) => {
+            resultData.push(element)
+        })
+        return resultData
+    }
 
     const openUploadPopup = () => {
         setShowUploadPopup(true)
@@ -34,6 +63,7 @@ export default function CustomChartList() {
 
     const closeUploadPopup = () => {
         setShowUploadPopup(false)
+        getData()
     }
 
     const handleFilterChanges = (selected, key): void => {}
@@ -115,21 +145,24 @@ export default function CustomChartList() {
                     {chartList?.map((chartData) => (
                         <div className="chart-list-row fw-4 cn-9 fs-13 border-bottom pt-14 pb-14 pr-20 pl-20">
                             <div className="flexbox">
-                                <Folder className="folder-icon icon-dim-16 mt-2 mr-15" />
                                 <span className="cb-5">{chartData.name}</span>
                             </div>
                             <div>
                                 {chartData.version}
-                                <span className="cn-5">{chartData.count > 1 ? `+${chartData.count} more` : ''}</span>
+                                <span className="cn-5 ml-8">
+                                    {chartData.count > 0 ? `+${chartData.count} more` : ''}
+                                </span>
                             </div>
-                            <div className="ellipsis-right">{chartData.ChartDescription}</div>
+                            <div className="ellipsis-right">{chartData.chartDescription}</div>
                         </div>
                     ))}
                 </div>
             </div>
         )
     }
-
+    if (loader) {
+        return <Progressing />
+    }
     return (
         <>
             {chartList.length === 0 ? renderEmptyState() : renderChartList()}
