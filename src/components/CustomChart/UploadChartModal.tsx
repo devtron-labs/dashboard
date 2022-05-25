@@ -27,8 +27,6 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
     const [loadingData, setLoadingData] = useState(false)
 
     const onFileChange = (e) => {
-        /*Selected files data can be collected here.*/
-        //setSelectedChart(e.target.files)
         setUploadState(UPLOAD_STATE.UPLOADING)
         let formData = new FormData()
         formData.append('BinaryFile', e.target.files[0])

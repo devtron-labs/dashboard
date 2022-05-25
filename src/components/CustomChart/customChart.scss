@@ -6,11 +6,6 @@
     .chart-list-row {
         display: grid;
         grid-template-columns: 220px 120px auto;
-        .folder-icon {
-            path {
-                fill: var(--N600);
-            }
-        }
     }
 }
 .upload-modal {

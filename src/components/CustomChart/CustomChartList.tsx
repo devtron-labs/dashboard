@@ -6,7 +6,7 @@ import emptyCustomChart from '../../assets/img/ic-empty-custom-charts.png'
 import { ReactComponent as Upload } from '../../assets/icons/ic-arrow-line-up.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
-import { getChartLIST } from './customChart.service'
+import { getChartList } from './customChart.service'
 import { Progressing, showError } from '../common'
 import { chartDetailType } from './types'
 
@@ -23,7 +23,7 @@ export default function CustomChartList() {
 
     const getData = () => {
         setLoader(true)
-        getChartLIST()
+        getChartList()
             .then((response) => {
                 if (response.result) {
                     setChartList(processChartData(response.result))

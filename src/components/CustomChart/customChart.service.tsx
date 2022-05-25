@@ -1,7 +1,7 @@
 import { Host, Routes } from '../../config'
 import { post, get, put } from '../../services/api'
 
-export const getChartLIST = (): Promise<any> => {
+export const getChartList = (): Promise<any> => {
     return get(Routes.CUSTOM_CHART_LIST)
 }
 
