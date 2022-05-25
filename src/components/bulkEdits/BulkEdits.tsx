@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { AppListConstants, DOCUMENTATION, SERVER_MODE } from '../../config';
-import Tippy from '@tippyjs/react';
-import CodeEditor from '../CodeEditor/CodeEditor';
-import { ViewType } from '../../config';
+import React, { Component } from 'react'
+import { AppListConstants, DOCUMENTATION, SERVER_MODE } from '../../config'
+import Tippy from '@tippyjs/react'
+import CodeEditor from '../CodeEditor/CodeEditor'
+import { ViewType } from '../../config'
 import {
     BulkEditsProps,
     BulkEditsState,
@@ -10,23 +10,24 @@ import {
     CMandSecretOutputKeys,
     DtOutputKeys,
     CMandSecretImpactedObjects,
-} from './bulkEdits.type';
-import yamlJsParser from 'yaml';
-import { Progressing, showError, ErrorScreenManager } from '../common';
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
-import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg';
-import { updateBulkList, getSeeExample, updateImpactedObjectsList } from './bulkedits.service';
-import ReactSelect from 'react-select';
-import { DropdownIndicator } from '../charts/charts.util';
-import './bulkEdit.css';
-import { multiSelectStyles } from './bulkedit.utils';
-import { Option } from '../../components/v2/common/ReactSelect.utils';
-import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails';
-import { toast } from 'react-toastify';
-import '../charts/discoverChartDetail/DiscoverChartDetails.scss';
-import '../charts/modal/DeployChart.scss';
-import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState';
+} from './bulkEdits.type'
+import yamlJsParser from 'yaml'
+import { Progressing, showError, ErrorScreenManager } from '../common'
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg'
+import { updateBulkList, getSeeExample, updateImpactedObjectsList } from './bulkedits.service'
+import ReactSelect from 'react-select'
+import { DropdownIndicator } from '../charts/charts.util'
+import './bulkEdit.css'
+import { multiSelectStyles } from './bulkedit.utils'
+import { Option } from '../../components/v2/common/ReactSelect.utils'
+import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
+import { toast } from 'react-toastify'
+import '../charts/discoverChartDetail/DiscoverChartDetails.scss'
+import '../charts/modal/DeployChart.scss'
+import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
+import PageHeader from '../common/header/PageHeader'
 
 export enum OutputObjectTabs {
     OUTPUT = 'Output',
@@ -36,7 +37,7 @@ export enum OutputObjectTabs {
 const STATUS = {
     ERROR: "Please check the apiVersion and kind, apiVersion and kind provided by you don't exist",
     EMPTY_IMPACTED: 'We could not find any matching devtron applications.',
-};
+}
 
 const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, value, name }) => {
     return (
@@ -44,12 +45,12 @@ const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, val
             <input type="radio" name="status" checked={outputName === value} value={value} onClick={handleOutputTabs} />
             <div className="tertiary-output-tab cursor mr-12 pb-6"> {name} </div>
         </label>
-    );
-};
+    )
+}
 
 export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
     constructor(props) {
-        super(props);
+        super(props)
 
         this.state = {
             view: ViewType.LOADING,
@@ -66,34 +67,34 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             showOutputData: true,
             showImpactedtData: false,
             codeEditorPayload: undefined,
-        };
+        }
     }
 
     componentDidMount = () => {
-        if(this.props.serverMode == SERVER_MODE.FULL){
+        if (this.props.serverMode == SERVER_MODE.FULL) {
             this.setState({
                 view: ViewType.LOADING,
-            });
-            this.initialise();
+            })
+            this.initialise()
         }
-    };
+    }
 
     initialise() {
         getSeeExample()
             .then((res) => {
-                this.setState({ view: ViewType.LOADING });
-                let bulkConfig = res.result;
-                let kind = bulkConfig.map((elm) => elm.script.kind);
-                kind = kind.toString().toLocaleLowerCase();
-                let apiVersion = bulkConfig.map((elm) => elm.script.apiVersion);
-                apiVersion = apiVersion.toString();
-                let readmeResult = bulkConfig.map((elm) => elm.readme);
+                this.setState({ view: ViewType.LOADING })
+                let bulkConfig = res.result
+                let kind = bulkConfig.map((elm) => elm.script.kind)
+                kind = kind.toString().toLocaleLowerCase()
+                let apiVersion = bulkConfig.map((elm) => elm.script.apiVersion)
+                apiVersion = apiVersion.toString()
+                let readmeResult = bulkConfig.map((elm) => elm.readme)
                 let updatedTemplate = bulkConfig.map((elm) => {
                     return {
                         value: elm.operation,
                         label: elm.operation,
-                    };
-                });
+                    }
+                })
 
                 this.setState({
                     view: ViewType.FORM,
@@ -101,45 +102,29 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     bulkConfig: bulkConfig,
                     updatedTemplate: updatedTemplate,
                     readmeResult: readmeResult,
-                });
+                })
             })
             .catch((error) => {
-                showError(error);
-                this.setState({ view: ViewType.FORM, statusCode: error.code });
-            });
+                showError(error)
+                this.setState({ view: ViewType.FORM, statusCode: error.code })
+            })
     }
 
-    renderBulkEditHeader = () => {
+    renderBulkHeaderDescription = () => {
         return (
-            <div className="page-header brdr-btm pl-20">
-                <div className="page-header__title flex left fs-16 pt-16 pb-16 "> Bulk Edit
-                    <Tippy
-                        className="default-tt "
-                        arrow={false}
-                        placement="top"
-                        content={<span style={{ display: 'block', width: '66px' }}> Learn more </span>}
-                    >
+            <div className="deployment-group-list-page ">
+                <div className="bulk-desciription flex left pt-10 pb-10 pl-20 pr-20 cn-9">
+                    <Question className="icon-dim-16 mr-13 fcv-5" />
+                    <div>
+                        Run scripts to bulk edit configurations for multiple devtron components.
                         <a
-                            className="learn-more__href flex"
+                            className="learn-more__href"
                             href={DOCUMENTATION.BULK_UPDATE}
                             rel="noreferrer noopener"
                             target="_blank"
                         >
-                            <Question className="icon-dim-20 ml-16 cursor" />
+                            Learn more
                         </a>
-                    </Tippy>
-                </div>
-            </div>
-        );
-    };
-
-    renderBulkHeaderDescription = () => {
-        return (
-            <div className="deployment-group-list-page">
-                <div className="bulk-desciription flex left pt-10 pb-10 pl-20 pr-20 cn-9">
-                    <Question className="icon-dim-16 mr-13 fcv-5" />
-                    <div>Run scripts to bulk edit configurations for multiple devtron components.
-                        <a className="learn-more__href" href={DOCUMENTATION.BULK_UPDATE} rel="noreferrer noopener" target="_blank"> Learn more</a>
                     </div>
                     <Close
                         style={{ margin: 'auto', marginRight: '0' }}
@@ -148,35 +133,35 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     />
                 </div>
             </div>
-        );
-    };
+        )
+    }
 
     handleRunButton = (e) => {
-        var outputDiv = document.querySelector('.code-editor-body');
-        outputDiv.scrollTop = outputDiv.scrollHeight;
+        var outputDiv = document.querySelector('.code-editor-body')
+        outputDiv.scrollTop = outputDiv.scrollHeight
 
         this.setState({
             view: ViewType.LOADING,
             outputName: 'output',
-        });
+        })
 
-        let configJson: any = {};
+        let configJson: any = {}
         try {
-            configJson = yamlJsParser.parse(this.state.codeEditorPayload);
+            configJson = yamlJsParser.parse(this.state.codeEditorPayload)
         } catch (error) {
             //Invalid YAML, couldn't be parsed to JSON. Show error toast
-            toast.error('Invalid Yaml');
-            this.setState({ view: ViewType.FORM });
-            return;
+            toast.error('Invalid Yaml')
+            this.setState({ view: ViewType.FORM })
+            return
         }
-        let errorMessage = [];
-        errorMessage.push(STATUS.ERROR);
+        let errorMessage = []
+        errorMessage.push(STATUS.ERROR)
 
-        let payload = configJson;
+        let payload = configJson
 
         updateBulkList(payload)
             .then((response) => {
-                let outputResult = response.result;
+                let outputResult = response.result
                 this.setState({
                     statusCode: 0,
                     view: ViewType.FORM,
@@ -185,38 +170,38 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     outputResult: outputResult,
                     showImpactedtData: false,
                     impactedObjects: undefined,
-                });
+                })
             })
             .catch((error) => {
-                showError(error);
-                this.setState({ view: ViewType.FORM, statusCode: error.code, outputName: 'output' });
-            });
-    };
+                showError(error)
+                this.setState({ view: ViewType.FORM, statusCode: error.code, outputName: 'output' })
+            })
+    }
 
     handleShowImpactedObjectButton = () => {
-        var outputDiv = document.querySelector('.code-editor-body');
-        outputDiv.scrollTop = outputDiv.scrollHeight;
+        var outputDiv = document.querySelector('.code-editor-body')
+        outputDiv.scrollTop = outputDiv.scrollHeight
 
         this.setState({
             view: ViewType.LOADING,
             outputName: 'impacted',
-        });
+        })
 
-        let configJson: any = {};
+        let configJson: any = {}
         try {
-            configJson = yamlJsParser.parse(this.state.codeEditorPayload);
+            configJson = yamlJsParser.parse(this.state.codeEditorPayload)
         } catch (error) {
             //Invalid YAML, couldn't be parsed to JSON. Show error toast
-            toast.error('Invalid Yaml');
-            this.setState({ view: ViewType.FORM });
-            return;
+            toast.error('Invalid Yaml')
+            this.setState({ view: ViewType.FORM })
+            return
         }
 
-        let payload = configJson;
+        let payload = configJson
 
         updateImpactedObjectsList(payload)
             .then((response) => {
-                let impactedObjects = response.result;
+                let impactedObjects = response.result
                 this.setState({
                     statusCode: 0,
                     view: ViewType.FORM,
@@ -224,13 +209,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     outputResult: undefined,
                     outputName: 'impacted',
                     showImpactedtData: true,
-                });
+                })
             })
             .catch((error) => {
-                showError(error);
-                this.setState({ view: ViewType.FORM, statusCode: error.code, outputName: 'impacted' });
-            });
-    };
+                showError(error)
+                this.setState({ view: ViewType.FORM, statusCode: error.code, outputName: 'impacted' })
+            })
+    }
 
     renderCodeEditorHeader = () => {
         return (
@@ -262,14 +247,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     </div>
                 ) : null}
             </div>
-        );
-    };
+        )
+    }
 
     handleConfigChange = (value) => {
         this.setState({
             codeEditorPayload: value,
-        });
-    };
+        })
+    }
 
     handleOutputTab = (e, key: string) => {
         if (key == 'output') {
@@ -277,16 +262,16 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 outputName: 'output',
                 showOutputData: true,
                 showImpactedtData: false,
-            });
+            })
         }
         if (key == 'impacted') {
             this.setState({
                 outputName: 'impacted',
                 showImpactedtData: true,
                 showOutputData: false,
-            });
+            })
         }
-    };
+    }
 
     renderCodeEditorBody = () => {
         return (
@@ -297,7 +282,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     value={this.state.codeEditorPayload}
                     mode="yaml"
                     onChange={(event) => {
-                        this.handleConfigChange(event);
+                        this.handleConfigChange(event)
                     }}
                 ></CodeEditor>
                 <div className="bulk-output-drawer bcn-0 fs-13">
@@ -333,16 +318,18 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     </div>
                 </div>
             </div>
-        );
-    };
+        )
+    }
 
     renderConfigMapOutput = () => {
         return (
             <div>
-                <div> *CONFIGMAPS: <br />
+                <div>
+                    *CONFIGMAPS: <br />
                     <br />
                 </div>
-                <div> #Message: <br />
+                <div>
+                    #Message: <br />
                     <br />
                     {this.state.outputResult.configMap?.message?.map((elm) => {
                         return (
@@ -350,7 +337,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                 {elm}
                                 <br />
                             </>
-                        );
+                        )
                     })}
                 </div>
                 --------------------------
@@ -364,7 +351,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     ) : (
                         <>
                             {this.state.outputResult.configMap?.failure.map((elm) => {
-                                return this.renderCmAndSecretResponseForOneApp(elm);
+                                return this.renderCmAndSecretResponseForOneApp(elm)
                             })}
                         </>
                     )}
@@ -379,15 +366,15 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     ) : (
                         <>
                             {this.state.outputResult.configMap?.successful.map((elm) => {
-                                return this.renderCmAndSecretResponseForOneApp(elm);
+                                return this.renderCmAndSecretResponseForOneApp(elm)
                             })}
                         </>
                     )}
                 </div>
                 ----------------------------------------------------
             </div>
-        );
-    };
+        )
+    }
 
     renderDTResponseForOneApp = (DTOutputKeys: DtOutputKeys) => {
         return (
@@ -398,8 +385,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 Message: {DTOutputKeys.message} <br />
                 <br />
             </div>
-        );
-    };
+        )
+    }
 
     renderCmAndSecretResponseForOneApp = (CMandSecretOutputKeys: CMandSecretOutputKeys) => {
         return (
@@ -411,8 +398,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 Message: {CMandSecretOutputKeys.message} <br />
                 <br />
             </div>
-        );
-    };
+        )
+    }
 
     renderCMAndSecretImpObj = (CMandSecretImpactedObject: CMandSecretImpactedObjects) => {
         return (
@@ -423,16 +410,18 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 Names : {CMandSecretImpactedObject.names.join(', ')} <br />
                 <br />
             </div>
-        );
-    };
+        )
+    }
 
     renderDeploymentTemplateOutput = () => {
         return (
             <div>
-                <div> *DEPLOYMENT TEMPLATE: <br />
+                <div>
+                    *DEPLOYMENT TEMPLATE: <br />
                     <br />
                 </div>
-                <div> #Message: <br />
+                <div>
+                    #Message: <br />
                     <br />
                     {this.state.outputResult.deploymentTemplate?.message.map((elm) => {
                         return (
@@ -440,7 +429,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                 {elm}
                                 <br />
                             </>
-                        );
+                        )
                     })}
                 </div>
                 --------------------------
@@ -454,7 +443,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     ) : (
                         <>
                             {this.state.outputResult.deploymentTemplate?.failure.map((elm) => {
-                                return this.renderDTResponseForOneApp(elm);
+                                return this.renderDTResponseForOneApp(elm)
                             })}
                         </>
                     )}
@@ -470,23 +459,25 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     ) : (
                         <>
                             {this.state.outputResult.deploymentTemplate?.successful.map((elm) => {
-                                return this.renderDTResponseForOneApp(elm);
+                                return this.renderDTResponseForOneApp(elm)
                             })}
                         </>
                     )}
                 </div>
                 ----------------------------------------------------
             </div>
-        );
-    };
+        )
+    }
 
     renderSecretOutput = () => {
         return (
             <div>
-                <div> *SECRETS: <br />
+                <div>
+                    *SECRETS: <br />
                     <br />
                 </div>
-                <div> #Message: <br />
+                <div>
+                    #Message: <br />
                     <br />
                     {this.state.outputResult.secret?.message.map((elm) => {
                         return (
@@ -494,7 +485,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                 {elm}
                                 <br />
                             </>
-                        );
+                        )
                     })}
                 </div>
                 --------------------------
@@ -508,7 +499,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     ) : (
                         <>
                             {this.state.outputResult.secret?.failure.map((elm) => {
-                                return this.renderCmAndSecretResponseForOneApp(elm);
+                                return this.renderCmAndSecretResponseForOneApp(elm)
                             })}
                         </>
                     )}
@@ -524,21 +515,21 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     ) : (
                         <>
                             {this.state.outputResult.secret?.successful.map((elm) => {
-                                return this.renderCmAndSecretResponseForOneApp(elm);
+                                return this.renderCmAndSecretResponseForOneApp(elm)
                             })}
                         </>
                     )}
                 </div>
                 -----------------------------------------------------------------
             </div>
-        );
-    };
+        )
+    }
 
     renderOutputs = () => {
-        let payloadStringWithoutSpaces = this.state.codeEditorPayload?.split(' ').join('');
-        let deploymentTemplateInPayload = payloadStringWithoutSpaces?.includes('deploymentTemplate:\nspec:');
-        let configMapInPayload = payloadStringWithoutSpaces?.includes('configMap:\nspec:');
-        let secretInPayload = payloadStringWithoutSpaces?.includes('secret:\nspec:');
+        let payloadStringWithoutSpaces = this.state.codeEditorPayload?.split(' ').join('')
+        let deploymentTemplateInPayload = payloadStringWithoutSpaces?.includes('deploymentTemplate:\nspec:')
+        let configMapInPayload = payloadStringWithoutSpaces?.includes('configMap:\nspec:')
+        let secretInPayload = payloadStringWithoutSpaces?.includes('secret:\nspec:')
         return this.state.view === ViewType.LOADING ? (
             <div style={{ height: 'calc(100vh - 600px)' }}>
                 <Progressing pageLoader />
@@ -551,32 +542,34 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 {deploymentTemplateInPayload ? this.renderDeploymentTemplateOutput() : null}
                 {secretInPayload ? this.renderSecretOutput() : null}
             </div>
-        );
-    };
+        )
+    }
 
     renderConfigMapImpObj = () => {
         return (
             <div>
-                <div> *CONFIGMAPS: <br /> <br />
+                <div>
+                    *CONFIGMAPS: <br /> <br />
                     {this.state.impactedObjects.configMap.length === 0 ? (
                         <>No Result Found </>
                     ) : (
                         <>
                             {this.state.impactedObjects.configMap.map((elm) => {
-                                return this.renderCMAndSecretImpObj(elm);
+                                return this.renderCMAndSecretImpObj(elm)
                             })}
                         </>
                     )}
                 </div>
                 -----------------------------------------------------------------
             </div>
-        );
-    };
+        )
+    }
 
     renderDeploymentTemplateImpObj = () => {
         return (
             <div>
-                <div> *DEPLOYMENT TEMPLATE: <br /> <br />
+                <div>
+                    *DEPLOYMENT TEMPLATE: <br /> <br />
                     {this.state.impactedObjects.deploymentTemplate.length === 0 ? (
                         <>No Result Found</>
                     ) : (
@@ -589,39 +582,40 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         Environment Id: {elm.envId} <br />
                                         <br />
                                     </div>
-                                );
+                                )
                             })}
                         </>
                     )}
                 </div>
                 -----------------------------------------------------------------
             </div>
-        );
-    };
+        )
+    }
 
     renderSecretImpObj = () => {
         return (
             <div>
-                <div> *SECRETS: <br /> <br />
+                <div>
+                    *SECRETS: <br /> <br />
                     {this.state.impactedObjects.secret.length === 0 ? (
                         <>No Result Found</>
                     ) : (
                         <>
                             {this.state.impactedObjects.secret.map((elm) => {
-                                return this.renderCMAndSecretImpObj(elm);
+                                return this.renderCMAndSecretImpObj(elm)
                             })}
                         </>
                     )}
                 </div>
                 -----------------------------------------------------------------
             </div>
-        );
-    };
+        )
+    }
     renderImpactedObjects = () => {
-        let payloadStringWithoutSpaces = this.state.codeEditorPayload?.split(' ').join('');
-        let deploymentTemplateInPayload = payloadStringWithoutSpaces?.includes('deploymentTemplate:\nspec:');
-        let configMapInPayload = payloadStringWithoutSpaces?.includes('configMap:\nspec:');
-        let secretInPayload = payloadStringWithoutSpaces?.includes('secret:\nspec:');
+        let payloadStringWithoutSpaces = this.state.codeEditorPayload?.split(' ').join('')
+        let deploymentTemplateInPayload = payloadStringWithoutSpaces?.includes('deploymentTemplate:\nspec:')
+        let configMapInPayload = payloadStringWithoutSpaces?.includes('configMap:\nspec:')
+        let secretInPayload = payloadStringWithoutSpaces?.includes('secret:\nspec:')
         return this.state.view === ViewType.LOADING ? (
             <div style={{ height: 'calc(100vh - 600px)' }}>
                 <Progressing pageLoader />
@@ -634,24 +628,24 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 {deploymentTemplateInPayload ? this.renderDeploymentTemplateImpObj() : null}
                 {secretInPayload ? this.renderSecretImpObj() : null}
             </div>
-        );
-    };
+        )
+    }
 
     handleUpdateTemplate = () => {
-        this.setState({ isReadmeLoading: true });
+        this.setState({ isReadmeLoading: true })
         getSeeExample()
             .then((res) => {
-                let readmeResult = res.result.map((elm) => elm.readme);
+                let readmeResult = res.result.map((elm) => elm.readme)
                 this.setState({
                     isReadmeLoading: false,
                     readmeResult: readmeResult,
-                });
+                })
             })
             .catch((error) => {
-                showError(error);
-                this.setState({ isReadmeLoading: false, statusCode: error.code });
-            });
-    };
+                showError(error)
+                this.setState({ isReadmeLoading: false, statusCode: error.code })
+            })
+    }
 
     renderSampleTemplateHeader = () => {
         return (
@@ -679,11 +673,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     onClick={() => this.setState({ showExamples: false })}
                 />
             </div>
-        );
-    };
+        )
+    }
 
     renderSampleTemplateBody = () => {
-        let readmeJson = this.state.readmeResult.toString();
+        let readmeJson = this.state.readmeResult.toString()
         return this.state.isReadmeLoading ? (
             <div className="bcn-0" style={{ height: 'calc(100vh - 150px)' }}>
                 <Progressing pageLoader />
@@ -694,8 +688,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     <MarkDown markdown={readmeJson} className="deploy-chart__readme-markdown" />
                 </div>
             </div>
-        );
-    };
+        )
+    }
 
     renderBulkCodeEditor = () => {
         return (
@@ -703,8 +697,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 {this.renderCodeEditorHeader()}
                 <div className="code-editor-body">{this.renderCodeEditorBody()}</div>
             </div>
-        );
-    };
+        )
+    }
 
     renderReadmeSection = () => {
         return (
@@ -712,8 +706,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 {this.renderSampleTemplateHeader()}
                 {this.renderSampleTemplateBody()}
             </div>
-        );
-    };
+        )
+    }
 
     renderCodeEditorAndReadme = () => {
         return (
@@ -721,8 +715,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <div>{this.renderBulkCodeEditor()}</div>
                 <div>{this.renderReadmeSection()}</div>
             </div>
-        );
-    };
+        )
+    }
 
     renderReadmeAndCodeEditor = () => {
         return (
@@ -734,8 +728,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     </div>
                 ) : null}
             </div>
-        );
-    };
+        )
+    }
 
     renderBulkEditBody = () => {
         return (
@@ -747,8 +741,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     this.renderCodeEditorAndReadme()
                 )}
             </div>
-        );
-    };
+        )
+    }
 
     renderEmptyStateForEAOnlyMode = () => {
         return (
@@ -762,8 +756,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     knowMoreLink={DOCUMENTATION.HOME_PAGE}
                 />
             </div>
-        );
-    };
+        )
+    }
 
     render() {
         if (this.state.view === ViewType.ERROR) {
@@ -771,14 +765,16 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <div className="global-configuration__component flex">
                     <ErrorScreenManager code={this.state.statusCode} />
                 </div>
-            );
+            )
         }
-        
+
         return (
             <div className="fs-13">
-                {this.renderBulkEditHeader()}
-                {this.props.serverMode == SERVER_MODE.EA_ONLY ? this.renderEmptyStateForEAOnlyMode() : this.renderBulkEditBody()}
+                <PageHeader headerName="Bulk Edit" isTippyShown={true} tippyRedirectLink={DOCUMENTATION.BULK_UPDATE} />
+                {this.props.serverMode == SERVER_MODE.EA_ONLY
+                    ? this.renderEmptyStateForEAOnlyMode()
+                    : this.renderBulkEditBody()}
             </div>
-        );
+        )
     }
 }

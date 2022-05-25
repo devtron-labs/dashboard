@@ -1,6 +1,5 @@
 import { Routes } from '../../config/constants';
 import { get, post, trash, put } from '../../services/api';
-import { getEnvironmentListMin, getTeamListMin, getAppListMin } from '../../services/service';
 import { sortCallback } from '../common';
 import { NotificationConfiguration } from './NotificationTab';
 import { PipelineType } from './AddNotification';
@@ -398,42 +397,13 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
 }
 
 export function getAddNotificationInitData(): Promise<{
-    filterOptionsInner: any[];
     channelOptions: any[];
     sesConfigOptions: any[];
 }> {
-    return Promise.all([getTeamListMin(), getEnvironmentListMin(), getAppListMin(), getChannelsAndEmailsFilteredByEmail(), getChannelConfigs()]).then(([teams, environments, applications, providerRes, channelRes]) => {
-        let filters = {
-            environment: environments.result ? environments.result.map((env) => {
-                return {
-                    label: `${env.environment_name.toLocaleLowerCase()}`,
-                    value: env.id,
-                    type: "environment",
-                }
-            }) : [],
-            project: teams.result ? teams.result.map((team) => {
-                return {
-                    label: `${team.name.toLocaleLowerCase()}`,
-                    value: team.id,
-                    type: "project",
-                }
-            }) : [],
-            application: applications.result ? applications.result.map((app) => {
-                return {
-                    label: `${app.name.toLocaleLowerCase()}`,
-                    value: app.id,
-                    type: "application",
-                }
-            }) : [],
-        }
-        filters.environment = filters.environment.sort((a, b) => { return sortCallback("label", a, b) });
-        filters.application = filters.application.sort((a, b) => { return sortCallback("label", a, b) });
-        filters.project = filters.project.sort((a, b) => { return sortCallback("label", a, b) });
+    return Promise.all([ getChannelsAndEmailsFilteredByEmail(), getChannelConfigs()]).then(([providerRes, channelRes]) => {
         let providerOptions = providerRes.result || [];
         let sesConfigOptions = channelRes.result.sesConfigs || [];
-        let filterOptionsInner = filters.project.concat(filters.application, filters.environment);
         return {
-            filterOptionsInner,
             channelOptions: providerOptions.map(p => {
                 return {
                     label: p.recipient,

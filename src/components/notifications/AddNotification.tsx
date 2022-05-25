@@ -20,11 +20,34 @@ import Tippy from '@tippyjs/react';
 import CreatableSelect from 'react-select/creatable';
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
 import './notifications.css';
+import { getAppListMin, getEnvironmentListMin, getTeamListMin } from '../../services/service';
 
 interface AddNotificationsProps extends RouteComponentProps<{}> {
 
 }
 
+enum FilterOptions {
+    ENVIRONMENT = 'environment',
+    APPLICATION = 'application',
+    PROJECT = 'project'
+}
+interface Options {
+    environment:{
+        value: number;
+        label: string
+        type: string
+    }[],
+    application:{
+        value: number;
+        label: string
+        type: string
+    }[],
+    project:{
+        value: number;
+        label: string
+        type: string
+    }[],
+}
 export interface PipelineType {
     checkbox: {
         isChecked: boolean;
@@ -55,13 +78,15 @@ interface AddNotificationState {
     pipelineList: PipelineType[];
     filterInput: string;
     sesConfigId: number;
+    options:Options;
+    isApplistLoading:boolean
 }
 
 export class AddNotification extends Component<AddNotificationsProps, AddNotificationState> {
     filterOptionsMain = [
-        { value: "application", label: "application", type: "main" },
-        { value: "project", label: "project", type: "main" },
-        { value: "environment", label: "environment", type: "main" },
+        { value: 1, label: "application", type: "main" },
+        { value: 2, label: "project", type: "main" },
+        { value: 3, label: "environment", type: "main" },
     ];
     filterOptionsInner = [];
 
@@ -77,9 +102,11 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             filterInput: "",
             appliedFilters: [],
             isLoading: false,
+            isApplistLoading: false,
             selectedChannels: [],
             pipelineList: [],
             sesConfigId: 0,
+            options:{environment:[],application:[],project:[]},
         }
         this.handleFilterInput = this.handleFilterInput.bind(this);
         this.selectFilterType = this.selectFilterType.bind(this);
@@ -97,8 +124,8 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     }
 
     getInitialData() {
+        this.getEnvTeamData()
         getAddNotificationInitData().then((result) => {
-            this.filterOptionsInner = result.filterOptionsInner;
             this.setState({
                 sesConfigOptions: result.sesConfigOptions,
                 channelOptions: result.channelOptions,
@@ -112,6 +139,10 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             filterInput: event.target.value,
             openSelectPipeline: true
         });
+        let unsavedFilter = this.state.appliedFilters.find(e => e.type && !e.value);
+        if(unsavedFilter.type === FilterOptions.APPLICATION){
+            this.getData(event.target.value)
+        }
     }
 
     handleFilterTag(event): void {
@@ -186,6 +217,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                 })
             });
         }
+        this.setState({options:{...state.options, application:[]}})
     }
 
     clearFilter(filter: { type, label, value }) {
@@ -299,42 +331,148 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         }
     }
 
-    renderSelectPipelines() {
-        let unsavedFilter = this.state.appliedFilters.find(e => e.type && !e.value);
-        let options = this.filterOptionsMain;
-        if (unsavedFilter) {
-            let input = this.state.filterInput.toLowerCase();
-            if (input.length > 0) {
-                options = this.filterOptionsInner.filter(filter => (filter.type === unsavedFilter.type) && filter.label.indexOf(input) >= 0);
-            }
-            else options = this.filterOptionsInner.filter(filter => filter.type === unsavedFilter.type);
-        }
-        return <div className="position-rel">
-            <div className="form__input pipeline-filter__select-pipeline" onClick={() => this.setState({ openSelectPipeline: true })}>
-                <Filter className="icon-dim-20 mr-5 vertical-align-middle" />
-                {this.state.appliedFilters.filter(p => p.value).map((p) => {
-                    return <span key={p.label} className="devtron-tag m-2">
-                        {`${p.type}:${" "}${p.label}`}
-                        <button type="button" className="transparent ml-5" onClick={(event) => this.clearFilter(p)}>
-                            <i className="fa fa-times-circle" aria-hidden="true"></i>
-                        </button>
-                    </span>
-                })}
-                {unsavedFilter ? `${unsavedFilter.type}: ` : ""}
-                {unsavedFilter ? <input autoComplete="off" type="text" className="pipeline-filter__search transparent flex-1" autoFocus onKeyDown={this.handleFilterTag}
-                    placeholder="Filter by Project, applications and environment, search by name."
-                    onChange={this.handleFilterInput} value={this.state.filterInput} /> : null}
-            </div>
-            {this.state.openSelectPipeline ? <div className="transparent-div" onClick={this.toggleSelectPipeline}></div> : null}
-            {this.state.openSelectPipeline ? <div className="pipeline-filter__menu">
-                <div className="select-button--pipeline-filter">Filter by</div>
-                {options.map((o) => {
-                    return <div className="pipeline-filter__option" key={o.label}
-                        onClick={() => { this.selectFilterType(o); }}>{o.label}</div>
-                })}
-            </div> : null}
-        </div>
+    getEnvTeamData(): void {
+        Promise.all([getEnvironmentListMin(), getTeamListMin()]).then(([environments, teams]) => {
+            let state = { ...this.state }
+                state.options.environment = environments.result.map((elem) => {
+                    return {
+                        label: `${elem.environment_name.toLowerCase()}`,
+                        value: elem.id,
+                        type: FilterOptions.ENVIRONMENT,
+                    }
+                })
+                state.options.project = teams.result.map((elem) => {
+                    return {
+                        label: `${elem.name.toLowerCase()}`,
+                        value: elem.id,
+                        type: FilterOptions.PROJECT,
+                    }
+                })
+                this.setState(state)
+            })
     }
+
+    getData(text) {
+        this.setState({isApplistLoading:true})
+        if (text.length > 2) {
+            getAppListMin(null,null,text).then((response) => {
+                let state = { ...this.state }
+                state.options.application = response.result.map((elem) => {
+                    return {
+                        label:`${elem.name.toLowerCase()}`,
+                        value: elem.id,
+                        type: FilterOptions.APPLICATION,
+                    }
+                })
+                state.isApplistLoading = false
+                this.setState(state)
+            })
+        }
+    }
+
+    renderSelectPipelines() {
+        let unsavedFilter = this.state.appliedFilters.find((e) => e.type && !e.value)
+        let options = this.filterOptionsMain
+        if (unsavedFilter) {
+            let input = this.state.filterInput.toLowerCase()
+            if (unsavedFilter.type === FilterOptions.ENVIRONMENT) {
+                options =
+                    input.length === 0
+                        ? this.state.options.environment
+                        : this.state.options.environment.filter((filter) => filter.label.indexOf(input) >= 0)
+            } else if (unsavedFilter.type === FilterOptions.PROJECT) {
+                options =
+                    input.length === 0
+                        ? this.state.options.project
+                        : this.state.options.project.filter((filter) => filter.label.indexOf(input) >= 0)
+            } else {
+                options = input.length <= 2 ? [] : this.state.options.application
+            }
+        }
+        return (
+            <div className="position-rel">
+                <div
+                    className="form__input pipeline-filter__select-pipeline"
+                    onClick={() => this.setState({ openSelectPipeline: true })}
+                >
+                    <Filter className="icon-dim-20 mr-5 vertical-align-middle" />
+                    {this.state.appliedFilters
+                        .filter((p) => p.value)
+                        .map((p) => {
+                            return (
+                                <span key={p.label} className="devtron-tag m-2">
+                                    {`${p.type}:${' '}${p.label}`}
+                                    <button
+                                        type="button"
+                                        className="transparent ml-5"
+                                        onClick={(event) => this.clearFilter(p)}
+                                    >
+                                        <i className="fa fa-times-circle" aria-hidden="true"></i>
+                                    </button>
+                                </span>
+                            )
+                        })}
+                    {unsavedFilter ? `${unsavedFilter.type}: ` : ''}
+                    {unsavedFilter ? (
+                        <input
+                            autoComplete="off"
+                            type="text"
+                            className="pipeline-filter__search transparent flex-1"
+                            autoFocus
+                            onKeyDown={this.handleFilterTag}
+                            placeholder={
+                                unsavedFilter.type === FilterOptions.APPLICATION
+                                    ? 'Type 3 chars to see matching results'
+                                    : 'Type to see matching results'
+                            }
+                            onChange={this.handleFilterInput}
+                            value={this.state.filterInput}
+                        />
+                    ) : (
+                        !this.state.appliedFilters.length && (
+                            <span>Filter by Project, applications and environment, search by name.</span>
+                        )
+                    )}
+                </div>
+                {this.state.openSelectPipeline ? (
+                    <div className="transparent-div" onClick={this.toggleSelectPipeline}></div>
+                ) : null}
+                {this.state.openSelectPipeline ? (
+                    options.length > 0 ? (
+                        <div className="pipeline-filter__menu">
+                            <div className="select-button--pipeline-filter">Filter by</div>
+                            {options.map((o) => {
+                                return (
+                                    <div
+                                        className="pipeline-filter__option"
+                                        key={o.label}
+                                        onClick={() => {
+                                            this.selectFilterType(o)
+                                        }}
+                                    >
+                                        {o.label}
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    ) : this.state.filterInput.length <= 2 ? (
+                        this.state.filterInput.length > 0 && (
+                            <div className="pipeline-filter__menu select-button--pipeline-filter loading-applist">
+                                {unsavedFilter.type === FilterOptions.APPLICATION
+                                    ? 'Type 3 chars to see matching results'
+                                    : 'Type to see matching results'}
+                            </div>
+                        )
+                    ) : (
+                        <div className="pipeline-filter__menu select-button--pipeline-filter loading-applist">
+                            {this.state.isApplistLoading ? 'loading' : 'No matching results'}
+                        </div>
+                    )
+                ) : null}
+            </div>
+        )
+    }
+    
 
     renderPipelineList() {
         if (this.state.view === ViewType.LOADING) {

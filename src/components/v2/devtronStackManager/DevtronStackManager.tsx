@@ -15,7 +15,7 @@ import {
     ModuleDetailsView,
     ModulesListingView,
     NavItem,
-    PageHeader,
+    StackPageHeader,
 } from './DevtronStackManager.component'
 import { getAllModules, getLogPodName, getModuleInfo, getReleasesNotes } from './DevtronStackManager.service'
 import {
@@ -422,7 +422,7 @@ export default function DevtronStackManager({
                     : ''
             }`}
         >
-            <PageHeader
+            <StackPageHeader
                 detailsMode={detailsMode}
                 selectedModule={selectedModule}
                 handleBreadcrumbClick={handleBreadcrumbClick}

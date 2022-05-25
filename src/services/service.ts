@@ -65,9 +65,10 @@ export const getUserTeams = (): Promise<any> => {
     return get(URL);
 }
 
-export function getAppListMin(teamId = null, options?): Promise<AppListMin> {
+export function getAppListMin(teamId = null, options?, appName?): Promise<AppListMin> {
     let URL = `${Routes.APP_LIST_MIN}`;
     if (teamId) URL = `${URL}?teamId=${teamId}`
+    if (appName) URL = `${URL}?appName=${appName}`
     return get(URL, options).then(response => {
         let list = response?.result || []
         list = list.sort((a, b) => {
