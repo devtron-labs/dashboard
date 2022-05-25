@@ -21,6 +21,7 @@ import { mainContext } from '../../common/navigation/NavigationRoutes'
 import '../list/list.css'
 import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
 import PageHeader from '../../common/header/PageHeader'
+import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
 
 export default function AppList() {
     const location = useLocation()
@@ -604,7 +605,8 @@ export default function AppList() {
                     buttonText="new"
                     onClickCreateButton={handleCreateButton}
                     showCreateButton={serverMode === SERVER_MODE.FULL ? true : false}
-                    iconType="caret-down"
+                    CreateButtonIcon={DropDown}
+                    preButtonIcon={false}
                 />
                 {showCreateNewAppSelectionModal && renderAppCreateSelectionModal()}
             </Fragment>

@@ -311,7 +311,8 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                     showCreateButton={this.state.view === ViewType.FORM ? true : false}
                     buttonText="group"
                     onClickCreateButton={this.redirectToCreateGroup}
-                    iconType="add"
+                    CreateButtonIcon={Add}
+                    preButtonIcon={true}
                 />
 
                 <div className="deployment-group-list-page__body">
