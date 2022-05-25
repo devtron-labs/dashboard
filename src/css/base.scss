@@ -103,6 +103,13 @@ a:focus {
     color: var(--N900);
     z-index: var(--page-header-index);
     border-bottom: 1px solid var(--N200);
+    position: sticky;
+    top: 0px;
+    overflow: visible;
+}
+
+.page-header__height {
+    height: 47px;
 }
 
 .page-header--tabs {
