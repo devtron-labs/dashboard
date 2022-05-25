@@ -10,6 +10,7 @@ export interface PageHeaderType {
     isTippyShown?: boolean
     showCreateButton?: boolean
     tippyRedirectLink?: string
+    iconType?: string
 }
 
 function PageHeader({
@@ -19,6 +20,7 @@ function PageHeader({
     isTippyShown = false,
     showCreateButton = false,
     tippyRedirectLink,
+    iconType,
 }: PageHeaderType) {
     return (
         <div className={`page-header flex content-space cn-9 bcn-0 pl-20 pr-20 page-header__height`}>
@@ -43,11 +45,11 @@ function PageHeader({
                 )}
             </h1>
             {showCreateButton && (
-                <button type="button" className="cta h-32 lh-n" onClick={() => onClickCreateButton()}>
-                    {/* <Add className="icon-dim-16 mr-5" /> */}
+                <button type="button" className="flex cta h-32 lh-n" onClick={() => onClickCreateButton()}>
+                    {iconType === 'add' && <Add className="icon-dim-16 mr-5" />}
                     Create {buttonText}
                     <span className="round-button__icon">
-                        <i className="fa fa-caret-down" aria-hidden="true"></i>
+                        {iconType === 'caret-down' && <i className="fa fa-caret-down" aria-hidden="true"></i>}
                     </span>
                 </button>
             )}

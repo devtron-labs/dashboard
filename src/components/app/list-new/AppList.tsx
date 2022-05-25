@@ -604,6 +604,7 @@ export default function AppList() {
                     buttonText="new"
                     onClickCreateButton={handleCreateButton}
                     showCreateButton={serverMode === SERVER_MODE.FULL ? true : false}
+                    iconType="caret-down"
                 />
                 {showCreateNewAppSelectionModal && renderAppCreateSelectionModal()}
             </Fragment>
