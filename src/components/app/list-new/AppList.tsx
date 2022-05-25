@@ -40,9 +40,9 @@ export default function AppList() {
     const [showCreateNewAppSelectionModal, setShowCreateNewAppSelectionModal] = useState(false)
 
     // API master data
-    const [appCheckListRes, setAppCheckListRes] = useState({})
-    const [projectListRes, setProjectListRes] = useState({ result: [] })
-    const [environmentListRes, setEnvironmentListRes] = useState({ result: [] })
+    const [appCheckListRes, setAppCheckListRes] = useState({result: undefined});
+    const [projectListRes, setProjectListRes] = useState({result : []});
+    const [environmentListRes, setEnvironmentListRes] = useState({result : []});
 
     // search
     const [searchString, setSearchString] = useState(undefined)
@@ -871,7 +871,7 @@ export default function AppList() {
                 rootClassName="app-create-model-wrapper"
                 onClick={() => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)}
             >
-                {serverMode == SERVER_MODE.FULL && (
+                {serverMode == SERVER_MODE.FULL && appCheckListRes?.result?.appChecklist && Object.values(appCheckListRes.result.appChecklist).every((check) => check)  && (
                     <div className="app-create-child c-pointer" onClick={openDevtronAppCreateModel}>
                         <AddIcon className="icon-dim-20 fcn-9" />
                         <div className="ml-8">
