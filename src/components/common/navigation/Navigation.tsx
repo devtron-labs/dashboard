@@ -25,14 +25,6 @@ import ReactGA from 'react-ga'
 import './navigation.scss'
 
 const NavigationList = [
-    // {
-    //     title: 'Search (⌘+/)',
-    //     type: 'button',
-    //     iconClass: 'nav-short-search',
-    //     icon: SearchIcon,
-    //     href: URLS.APP,
-    //     isAvailableInEA: true,
-    // },
     {
         title: 'Applications',
         type: 'link',
