@@ -237,7 +237,7 @@ export const StackPageHeader = ({
     }
     return (
         <>
-            {!detailsMode && <PageHeader headerName={'Devtron Stack Manager'} />}
+            {!detailsMode && <PageHeader headerName="Devtron Stack Manager" />}
             {detailsMode === 'discover' && (
                 <PageHeader
                     headerName="Discover integrations"
@@ -257,27 +257,6 @@ export const StackPageHeader = ({
                 />
             )}
         </>
-        // <section className="page-header bcn-0 border-bottom h-100 flex left">
-        //     {!detailsMode && <div className="flex left page-header__title cn-9 fs-14 fw-6">Devtron Stack Manager</div>}
-        //     {detailsMode === 'discover' && (
-        //         <div className="flex left page-header__title cn-9 fs-14 fw-6">
-        //             <NavLink to={URLS.STACK_MANAGER_DISCOVER_MODULES} onClick={handleBreadcrumbClick}>
-        //                 Discover integrations
-        //             </NavLink>
-        //             <span className="mr-4 ml-4">/</span>
-        //             <span>{selectedModule?.title}</span>
-        //         </div>
-        //     )}
-        //     {detailsMode === 'installed' && (
-        //         <div className="flex left page-header__title cn-9 fs-14 fw-6">
-        //             <NavLink to={URLS.STACK_MANAGER_INSTALLED_MODULES} onClick={handleBreadcrumbClick}>
-        //                 Installed integrations
-        //             </NavLink>
-        //             <span className="mr-4 ml-4">/</span>
-        //             <span>{selectedModule?.title}</span>
-        //         </div>
-        //     )}
-        // </section>
     )
 }
 
