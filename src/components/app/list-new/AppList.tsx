@@ -40,7 +40,7 @@ export default function AppList() {
     const [showCreateNewAppSelectionModal, setShowCreateNewAppSelectionModal] = useState(false)
 
     // API master data
-    const [appCheckListRes, setAppCheckListRes] = useState({result: undefined});
+    const [appCheckListRes, setAppCheckListRes] = useState({result: null});
     const [projectListRes, setProjectListRes] = useState({result : []});
     const [environmentListRes, setEnvironmentListRes] = useState({result : []});
 
