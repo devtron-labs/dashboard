@@ -90,13 +90,13 @@ export const getParsedURL = (
     containerName?: string,
 ): string => {
     let parsedUrl = url
-        .replace('{appName}', appDetails.appName)
-        .replace('{appId}', `${appDetails.appId}`)
-        .replace('{envId}', `${appDetails.environmentId}`)
-        .replace('{namespace}', `${appDetails.namespace}`)
+        .replace(/{appName}/g, appDetails.appName)
+        .replace(/{appId}/g, `${appDetails.appId}`)
+        .replace(/{envId}/g, `${appDetails.environmentId}`)
+        .replace(/{namespace}/g, appDetails.namespace)
 
     if (!isAppLevel) {
-        parsedUrl = parsedUrl.replace('{podName}', podName).replace('{containerName}', `${containerName}`)
+        parsedUrl = parsedUrl.replace(/{podName}/g, podName).replace(/{containerName}/g, containerName)
     }
 
     return parsedUrl
