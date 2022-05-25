@@ -15,6 +15,7 @@ import './globalConfigurations.scss'
 import { SERVER_MODE } from '../../config/constants'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExternalLinks from '../externalLinks/ExternalLinks'
+import PageHeader from '../common/header/PageHeader'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -106,10 +107,7 @@ export default function GlobalConfiguration(props) {
 
     return (
         <main className="global-configuration">
-            {/* <PageHeader headerName="Global configurations"/> */}
-            <section className="page-header flex left">
-                <div className="flex left page-header__title">Global configurations</div>
-            </section>
+            <PageHeader headerName="Global configurations" />
             <Router history={useHistory()}>
                 <section className="global-configuration__navigation">
                     <NavItem hostURLConfig={hostURLConfig} serverMode={serverMode} />

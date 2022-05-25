@@ -40,6 +40,7 @@ import {
 } from './DevtronStackManager.utils'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import './devtronStackManager.component.scss'
+import PageHeader from '../../common/header/PageHeader'
 
 const getInstallationStatusLabel = (installationStatus: ModuleStatus): JSX.Element => {
     if (installationStatus === ModuleStatus.INSTALLING) {
@@ -227,28 +228,56 @@ export const StackPageHeader = ({
     selectedModule,
     handleBreadcrumbClick,
 }: StackManagerPageHeaderType): JSX.Element => {
+    const history = useHistory()
+
+    const handleRedirectToModule = (detailsMode) => {
+        let url =
+            detailsMode === 'discover' ? URLS.STACK_MANAGER_DISCOVER_MODULES : URLS.STACK_MANAGER_INSTALLED_MODULES
+        history.push(url)
+    }
     return (
-        <section className="page-header bcn-0 border-bottom h-100 flex left">
-            {!detailsMode && <div className="flex left page-header__title cn-9 fs-14 fw-6">Devtron Stack Manager</div>}
+        <>
+            {!detailsMode && <PageHeader headerName={'Devtron Stack Manager'} />}
             {detailsMode === 'discover' && (
-                <div className="flex left page-header__title cn-9 fs-14 fw-6">
-                    <NavLink to={URLS.STACK_MANAGER_DISCOVER_MODULES} onClick={handleBreadcrumbClick}>
-                        Discover integrations
-                    </NavLink>
-                    <span className="mr-4 ml-4">/</span>
-                    <span>{selectedModule?.title}</span>
-                </div>
+                <PageHeader
+                    headerName="Discover integrations"
+                    onClickCreateButton={handleBreadcrumbClick}
+                    postHeaderName={selectedModule?.title}
+                    isHeaderNameClickable={true}
+                    onClickHeaderName={() => handleRedirectToModule('discover')}
+                />
             )}
             {detailsMode === 'installed' && (
-                <div className="flex left page-header__title cn-9 fs-14 fw-6">
-                    <NavLink to={URLS.STACK_MANAGER_INSTALLED_MODULES} onClick={handleBreadcrumbClick}>
-                        Installed integrations
-                    </NavLink>
-                    <span className="mr-4 ml-4">/</span>
-                    <span>{selectedModule?.title}</span>
-                </div>
+                <PageHeader
+                    headerName="Installed integrations"
+                    onClickCreateButton={handleBreadcrumbClick}
+                    postHeaderName={selectedModule?.title}
+                    isHeaderNameClickable={true}
+                    onClickHeaderName={() => handleRedirectToModule('installed')}
+                />
             )}
-        </section>
+        </>
+        // <section className="page-header bcn-0 border-bottom h-100 flex left">
+        //     {!detailsMode && <div className="flex left page-header__title cn-9 fs-14 fw-6">Devtron Stack Manager</div>}
+        //     {detailsMode === 'discover' && (
+        //         <div className="flex left page-header__title cn-9 fs-14 fw-6">
+        //             <NavLink to={URLS.STACK_MANAGER_DISCOVER_MODULES} onClick={handleBreadcrumbClick}>
+        //                 Discover integrations
+        //             </NavLink>
+        //             <span className="mr-4 ml-4">/</span>
+        //             <span>{selectedModule?.title}</span>
+        //         </div>
+        //     )}
+        //     {detailsMode === 'installed' && (
+        //         <div className="flex left page-header__title cn-9 fs-14 fw-6">
+        //             <NavLink to={URLS.STACK_MANAGER_INSTALLED_MODULES} onClick={handleBreadcrumbClick}>
+        //                 Installed integrations
+        //             </NavLink>
+        //             <span className="mr-4 ml-4">/</span>
+        //             <span>{selectedModule?.title}</span>
+        //         </div>
+        //     )}
+        // </section>
     )
 }
 

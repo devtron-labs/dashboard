@@ -11,6 +11,9 @@ export interface PageHeaderType {
     tippyRedirectLink?: string
     CreateButtonIcon?: React.FunctionComponent<any>
     showIconBeforeText?: boolean
+    postHeaderName?: string
+    onClickHeaderName?: () => void
+    isHeaderNameClickable?: boolean
 }
 
 function PageHeader({
@@ -22,11 +25,21 @@ function PageHeader({
     tippyRedirectLink,
     CreateButtonIcon,
     showIconBeforeText,
+    postHeaderName,
+    onClickHeaderName,
+    isHeaderNameClickable = false,
 }: PageHeaderType) {
     return (
         <div className={`page-header flex content-space cn-9 bcn-0 pl-20 pr-20 page-header__height`}>
-            <h1 className="page-header__title flex left fs-16 fw-6 lh-20">
-                {headerName}
+            <h1 className="page-header__title flex left fs-16 fw-6 lh-20" onClick={onClickHeaderName}>
+                <span className={isHeaderNameClickable ? 'cb-5 cursor' : ''}>{headerName}</span>
+                {postHeaderName && (
+                    <>
+                        <span className="mr-4 ml-4">/</span>
+                        <span>{postHeaderName}</span>
+                    </>
+                )}
+
                 {isTippyShown && (
                     <Tippy
                         className="default-tt "
