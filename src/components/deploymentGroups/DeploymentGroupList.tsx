@@ -147,7 +147,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
     renderListHeader() {
         return (
             <>
-                <div className="bulk-action-list__row bulk-action-list__row--header mt-48">
+                <div className="bulk-action-list__row bulk-action-list__row--header">
                     <div className="bulk-action-list__cell bulk-action-list__cell--name">Name</div>
                     <div className="bulk-action-list__cell bulk-action-list__cell--source">Source</div>
                     <div className="bulk-action-list__cell bulk-action-list__cell--action">Actions</div>
@@ -298,6 +298,11 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
             )
     }
 
+    redirectToCreateGroup = () => {
+        const LINK = `${URLS.DEPLOYMENT_GROUPS}/0/edit`
+        this.props.history.push(LINK)
+    }
+
     render() {
         return (
             <div>
@@ -305,6 +310,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                     headerName="Deployment Groups"
                     showCreateButton={this.state.view === ViewType.FORM ? true : false}
                     buttonText="group"
+                    onClickCreateButton={this.redirectToCreateGroup}
                 />
 
                 {/* {this.state.view === ViewType.FORM && (
@@ -315,6 +321,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                         </Link>
                     </div>
                 )} */}
+
                 <div className="deployment-group-list-page__body">
                     {this.state.view === ViewType.LOADING && <Progressing pageLoader />}
                     {this.state.view === ViewType.EMPTY && <NoDeploymentGroups />}

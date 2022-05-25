@@ -110,8 +110,6 @@ a:focus {
 
 .page-header__height {
     height: 47px;
-    position: fixed;
-    width: calc(100% - 100px);
 }
 
 .page-header--tabs {
@@ -1871,8 +1869,4 @@ button.anchor {
 
 input {
     background-color: var(--N50);
-}
-
-.mt-48 {
-    margin-top: 48px;
 }

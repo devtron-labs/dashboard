@@ -112,7 +112,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderBulkHeaderDescription = () => {
         return (
-            <div className="deployment-group-list-page mt-48">
+            <div className="deployment-group-list-page ">
                 <div className="bulk-desciription flex left pt-10 pb-10 pl-20 pr-20 cn-9">
                     <Question className="icon-dim-16 mr-13 fcv-5" />
                     <div>
@@ -711,7 +711,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderCodeEditorAndReadme = () => {
         return (
-            <div className={`bulk-container ${!this.state.showHeaderDescription ? 'mt-48' : null}`}>
+            <div className="bulk-container">
                 <div>{this.renderBulkCodeEditor()}</div>
                 <div>{this.renderReadmeSection()}</div>
             </div>
