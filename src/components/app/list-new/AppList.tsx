@@ -606,7 +606,7 @@ export default function AppList() {
                     onClickCreateButton={handleCreateButton}
                     showCreateButton={serverMode === SERVER_MODE.FULL ? true : false}
                     CreateButtonIcon={DropDown}
-                    preButtonIcon={false}
+                    showIconBeforeText={false}
                 />
                 {showCreateNewAppSelectionModal && renderAppCreateSelectionModal()}
             </Fragment>

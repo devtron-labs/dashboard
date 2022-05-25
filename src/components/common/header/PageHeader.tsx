@@ -10,7 +10,7 @@ export interface PageHeaderType {
     showCreateButton?: boolean
     tippyRedirectLink?: string
     CreateButtonIcon?: React.FunctionComponent<any>
-    preButtonIcon?: boolean
+    showIconBeforeText?: boolean
 }
 
 function PageHeader({
@@ -21,7 +21,7 @@ function PageHeader({
     showCreateButton = false,
     tippyRedirectLink,
     CreateButtonIcon,
-    preButtonIcon,
+    showIconBeforeText,
 }: PageHeaderType) {
     return (
         <div className={`page-header flex content-space cn-9 bcn-0 pl-20 pr-20 page-header__height`}>
@@ -47,9 +47,9 @@ function PageHeader({
             </h1>
             {showCreateButton && (
                 <button type="button" className="flex cta h-32 lh-n" onClick={() => onClickCreateButton()}>
-                    {preButtonIcon && CreateButtonIcon && <CreateButtonIcon className="icon-dim-20" />}
+                    {showIconBeforeText && CreateButtonIcon && <CreateButtonIcon className="icon-dim-20" />}
                     Create {buttonText}
-                    {!preButtonIcon && CreateButtonIcon && <CreateButtonIcon className="icon-dim-20" />}
+                    {!showIconBeforeText && CreateButtonIcon && <CreateButtonIcon className="icon-dim-20" />}
                 </button>
             )}
         </div>
