@@ -219,7 +219,7 @@ function DiscoverChartList() {
     return (
         <>
             <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''}`}>
-                <div className={`page-header ${state.charts.length === 0 ? 'page-header--tabs' : ''}`}>
+                <div className={`page-header `}>
                     <ConditionalWrap
                         condition={state.charts.length > 0}
                         wrap={(children) => <div className="flex left column">{children}</div>}
