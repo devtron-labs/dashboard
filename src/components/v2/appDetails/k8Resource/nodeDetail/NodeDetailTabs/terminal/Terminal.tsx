@@ -290,18 +290,14 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     };
 
     return (
-        <div className="terminal-view">
+        <div className="terminal-view h-100 w-100">
             <div
                 style={{ zIndex: 4, textTransform: 'capitalize' }}
                 className={`${
                     terminalViewProps.socketConnection !== 'CONNECTED'
-                        ? `${
-                              terminalViewProps.socketConnection === 'CONNECTING' ? 'bcy-2' : 'bcr-7'
-                          }  pl-20`
+                        ? `${terminalViewProps.socketConnection === 'CONNECTING' ? 'bcy-2' : 'bcr-7'}  pl-20`
                         : 'pb-10'
-                } ${
-                    terminalViewProps.socketConnection === 'CONNECTING' ? 'cn-9' : 'cn-0'
-                } m-0 pl-20 w-100`}
+                } ${terminalViewProps.socketConnection === 'CONNECTING' ? 'cn-9' : 'cn-0'} m-0 pl-20 w-100`}
             >
                 {terminalViewProps.socketConnection !== 'CONNECTED' && (
                     <span className={terminalViewProps.socketConnection === 'CONNECTING' ? 'loading-dots' : ''}>
@@ -328,8 +324,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 )}
             </div>
 
-            <div>
-                <div id="terminal-id" className="pl-20"></div>
+            <div id="terminal-id" className="terminal-container ml-20">
+                <CopyToast showCopyToast={popupText} />
             </div>
 
             {terminalViewProps.socketConnection === 'CONNECTED' && (
@@ -337,8 +333,6 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     {terminalViewProps.socketConnection}
                 </p>
             )}
-             
-            <CopyToast showCopyToast={popupText} />
         </div>
     );
 }

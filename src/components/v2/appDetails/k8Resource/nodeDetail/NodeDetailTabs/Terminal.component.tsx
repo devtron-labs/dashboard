@@ -130,7 +130,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                         }}
                         components={{
                             IndicatorSeparator: null,
-                            Option,
+                            Option: (props)=> <Option {...props} style={{direction:'rtl'}} />
                         }}
                     />
                 </div>

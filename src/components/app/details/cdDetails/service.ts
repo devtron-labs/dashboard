@@ -1,28 +1,19 @@
-import { get } from '../../../../services/api';
-import { Routes } from '../../../../config';
-import { GitTriggers, CiMaterial, History } from '../cIDetails/types';
-import { ResponseType } from '../../../../services/service.types';
+import { get } from '../../../../services/api'
+import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, EXTERNAL_TYPES, Routes } from '../../../../config'
+import { History } from '../cIDetails/types'
+import { ResponseType } from '../../../../services/service.types'
+import {
+    DeploymentTemplateList,
+    HistoryDiffSelectorList,
+    DeploymentHistoryDetail,
+    DeploymentHistorySingleValue,
+    DeploymentHistory,
+} from './cd.type'
+import { string } from 'prop-types'
+import { decode } from '../../../../util/Util'
 
-export interface DeploymentHistory {
-    id: number;
-    cd_workflow_id: number;
-    name: string;
-    status: string;
-    pod_status: string;
-    message: string;
-    started_on: string;
-    finished_on: string;
-    pipeline_id: number;
-    namespace: string;
-    log_file_path: string;
-    triggered_by: number;
-    email_id?: string;
-    image: string;
-    workflow_type?: string;
-}
-
-interface DeploymentHistoryResult extends ResponseType {
-    result?: History[];
+export interface DeploymentHistoryResult extends ResponseType {
+    result?: History[]
 }
 export async function getTriggerHistory(
     appId: number | string,
@@ -49,30 +40,177 @@ export async function getTriggerHistory(
             })),
             code,
             status,
-        };
-    });
+        }
+    })
 }
 
 interface TriggerDetails extends ResponseType {
-    result?: History;
+    result?: History
 }
 
 export function getTriggerDetails({ appId, envId, pipelineId, triggerId }): Promise<TriggerDetails> {
     if (triggerId) {
-        return get(`${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/${triggerId}`);
+        return get(`${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/${triggerId}`)
     } else {
-        return get(`${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/last`);
+        return get(`${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/last`)
     }
 }
 
 export function getCDBuildReport(appId, envId, pipelineId, workflowId) {
-    return get(`app/cd-pipeline/workflow/download/${appId}/${envId}/${pipelineId}/${workflowId}`);
+    return get(`app/cd-pipeline/workflow/download/${appId}/${envId}/${pipelineId}/${workflowId}`)
 }
 
-export function getDeploymentTemplateDiff(appId: string, pipelineId: string) {
-    return get(`app/history/template/${appId}/${pipelineId}?offset=0&size=20`);
+export interface DeploymentHistoryDetailRes extends ResponseType {
+    result?: DeploymentHistoryDetail
 }
 
-export function getDeploymentTemplateDiffId(appId: string, pipelineId: string, id: string) {
-    return get(`app/history/template/${appId}/${pipelineId}/${id}`);
+const prepareDeploymentTemplateData = (rawData): Record<string, DeploymentHistorySingleValue> => {
+    const deploymentTemplateData = {}
+    if (rawData['templateVersion']) {
+        deploymentTemplateData['templateVersion'] = { displayName: 'Chart Version', value: rawData['templateVersion'] }
+    }
+    if (rawData['isAppMetricsEnabled'] || rawData['isAppMetricsEnabled'] === false) {
+        deploymentTemplateData['isAppMetricsEnabled'] = {
+            displayName: 'Application metrics',
+            value: rawData['isAppMetricsEnabled'] ? 'Enabled' : 'Disabled',
+        }
+    }
+    return deploymentTemplateData
+}
+
+const preparePipelineConfigData = (rawData): Record<string, DeploymentHistorySingleValue> => {
+    const pipelineConfigData = {}
+    if (rawData['pipelineTriggerType']) {
+        pipelineConfigData['pipelineTriggerType'] = {
+            displayName: 'When do you want the pipeline to execute?',
+            value: rawData['pipelineTriggerType'],
+        }
+    }
+    if (rawData['strategy']) {
+        pipelineConfigData['strategy'] = {
+            displayName: 'Deployment strategy',
+            value: rawData['strategy'],
+        }
+    }
+    return pipelineConfigData
+}
+
+const prepareConfigMapAndSecretData = (
+    rawData,
+    type: string,
+    historyData: DeploymentHistoryDetail,
+): Record<string, DeploymentHistorySingleValue> => {
+    const secretValues = {}
+
+    if (rawData['external']) {
+        if (rawData['externalType']) {
+            secretValues['external'] = {
+                displayName: 'Data type',
+                value: EXTERNAL_TYPES[rawData['externalType']],
+            }
+        } else {
+            secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES['KubernetesSecret'] }
+        }
+    } else {
+        secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[''] }
+        if (type === 'Secret' && historyData.codeEditorValue.value) {
+            const secretData = JSON.parse(historyData.codeEditorValue.value)
+            const decodeNotRequired = Object.keys(secretData).some((data) => secretData[data] === '*****') // Don't decode in case of non admin user
+            historyData.codeEditorValue.value = decodeNotRequired
+                ? historyData.codeEditorValue.value
+                : JSON.stringify(decode(secretData))
+        }
+    }
+    if (rawData['type']) {
+        let typeValue = 'Environment Variable'
+        if (rawData['type'] === 'volume') {
+            typeValue = 'Data Volume'
+            if (rawData['mountPath']) {
+                secretValues['mountPath'] = { displayName: 'Volume mount path', value: rawData['mountPath'] }
+            }
+            if (rawData['subPath']) {
+                secretValues['subPath'] = { displayName: 'Set SubPath', value: 'Yes' }
+            }
+            if (rawData['filePermission']) {
+                secretValues['filePermission'] = {
+                    displayName: 'Set file permission',
+                    value: rawData['filePermission'],
+                }
+            }
+        }
+        secretValues['type'] = {
+            displayName: `How do you want to use this ${type}?`,
+            value: typeValue,
+        }
+    }
+    if (type === 'Secret') {
+        if (rawData['roleARN']) {
+            secretValues['roleARN'] = { displayName: 'Role ARN', value: rawData['roleARN'] }
+        }
+    }
+    return secretValues
+}
+
+export const prepareHistoryData = (rawData, historyComponent: string): DeploymentHistoryDetail => {
+    let values
+    const historyData = { codeEditorValue: rawData.codeEditorValue, values: {} }
+    delete rawData.codeEditorValue
+    if (historyComponent === DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.DEPLOYMENT_TEMPLATE.VALUE) {
+        values = prepareDeploymentTemplateData(rawData)
+    } else if (historyComponent === DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.PIPELINE_STRATEGY.VALUE) {
+        values = preparePipelineConfigData(rawData)
+    } else {
+        values = prepareConfigMapAndSecretData(
+            rawData,
+            historyComponent === DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE
+                ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.DISPLAY_NAME
+                : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.DISPLAY_NAME,
+            historyData,
+        )
+    }
+    historyData.values = values
+    return historyData
+}
+
+export const getDeploymentHistoryDetail = (
+    appId: string,
+    pipelineId: string,
+    id: string,
+    historyComponent: string,
+    historyComponentName: string,
+): Promise<DeploymentHistoryDetailRes> => {
+    return get(
+        `app/history/deployed-component/detail/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent
+            .replace('-', '_')
+            .toUpperCase()}${historyComponentName ? '&historyComponentName=' + historyComponentName : ''}`,
+    )
+}
+export interface DeploymentConfigurationsRes extends ResponseType {
+    result?: DeploymentTemplateList[]
+}
+
+export const getDeploymentHistoryList = (
+    appId: string,
+    pipelineId: string,
+    triggerId: string,
+): Promise<DeploymentConfigurationsRes> => {
+    return get(`app/history/deployed-configuration/${appId}/${pipelineId}/${triggerId}`)
+}
+
+export interface HistoryDiffSelectorRes {
+    result?: HistoryDiffSelectorList[]
+}
+
+export const getDeploymentDiffSelector = (
+    appId: string,
+    pipelineId: string,
+    historyComponent,
+    baseConfigurationId,
+    historyComponentName,
+): Promise<HistoryDiffSelectorRes> => {
+    return get(
+        `app/history/deployed-component/list/${appId}/${pipelineId}?baseConfigurationId=${baseConfigurationId}&historyComponent=${historyComponent
+            .replace('-', '_')
+            .toUpperCase()}${historyComponentName ? '&historyComponentName=' + historyComponentName : ''}`,
+    )
 }

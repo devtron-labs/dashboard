@@ -11,7 +11,6 @@ interface toastType {
 
 function CopyToast({ showCopyToast }: toastType) {
     return (
-        <div id="xterm-logs">
             <span
                 className={`br-8 bcn-0 cn-9 clipboard-toast ${showCopyToast ? 'clipboard-toast--show' : ''}`}
                 style={{ zIndex: 9 }}
@@ -19,7 +18,6 @@ function CopyToast({ showCopyToast }: toastType) {
                 <CheckIcon className="icon-dim-24 scn-9" />
                 <div className="">Copied!</div>
             </span>
-        </div>
     );
 }
 

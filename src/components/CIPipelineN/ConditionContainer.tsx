@@ -174,7 +174,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
 
     function Option(_props) {
         const { selectProps, selectOption, data } = _props
-        selectProps.styles.option = getCustomOptionSelectionStyle({ direction: 'none', padding: '4px 10px' })
+        selectProps.styles.option = getCustomOptionSelectionStyle({ padding: '4px 10px' })
         return (
             <div className="flex left">
                 <components.Option {..._props}>{_props.children}</components.Option>

@@ -222,13 +222,13 @@ export const NavItem = ({
     )
 }
 
-export const PageHeader = ({
+export const StackPageHeader = ({
     detailsMode,
     selectedModule,
     handleBreadcrumbClick,
 }: StackManagerPageHeaderType): JSX.Element => {
     return (
-        <section className="page-header flex left">
+        <section className="page-header bcn-0 border-bottom h-100 flex left">
             {!detailsMode && <div className="flex left page-header__title cn-9 fs-14 fw-6">Devtron Stack Manager</div>}
             {detailsMode === 'discover' && (
                 <div className="flex left page-header__title cn-9 fs-14 fw-6">

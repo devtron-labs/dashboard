@@ -1,14 +1,21 @@
 import React, { Suspense, useCallback, useEffect, useRef, useState, useContext } from 'react'
 import { Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLocation } from 'react-router-dom'
 import { SERVER_MODE, URLS } from '../../../config'
-import { ErrorBoundary, ErrorScreenManager, Progressing, showError, useInterval } from '../../common'
+import {
+    ErrorBoundary,
+    ErrorScreenManager,
+    Progressing,
+    showError,
+    useInterval,
+    ToastBody3 as UpdateToast,
+} from '../../common'
 import AboutDevtronView from './AboutDevtronView'
 import {
     handleError,
     ModuleDetailsView,
     ModulesListingView,
     NavItem,
-    PageHeader,
+    StackPageHeader,
 } from './DevtronStackManager.component'
 import { getAllModules, getLogPodName, getModuleInfo, getReleasesNotes } from './DevtronStackManager.service'
 import {
@@ -24,6 +31,8 @@ import {
 } from './DevtronStackManager.type'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import './devtronStackManager.scss'
+import { getVersionConfig } from '../../../services/service'
+import { toast } from 'react-toastify'
 
 export default function DevtronStackManager({
     serverInfo,
@@ -33,6 +42,7 @@ export default function DevtronStackManager({
     getCurrentServerInfo: () => Promise<void>
 }) {
     const { serverMode } = useContext(mainContext)
+    const updateToastRef = useRef(null)
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const [stackDetails, setStackDetails] = useState<StackDetailsType>({
@@ -125,6 +135,29 @@ export default function DevtronStackManager({
             }
         }
     }, [stackDetails.discoverModulesList])
+
+    useEffect(() => {
+        if (serverMode === SERVER_MODE.FULL) return
+        //Check for SERVER_MODE on every route change if Current SERVER_MODE is EA_ONLY
+        getVersionConfig()
+            .then((response) => {
+                if (response.code == 200 && response.result.serverMode === SERVER_MODE.FULL) {
+                    if (!toast.isActive(updateToastRef.current)) {
+                        updateToastRef.current = toast.info(
+                            <UpdateToast
+                                onClick={() => {
+                                    window.location.reload()
+                                }}
+                                text="You are viewing an outdated version of Devtron UI."
+                                buttonText="Reload"
+                            />,
+                            { autoClose: false, closeButton: false },
+                        )
+                    }
+                }
+            })
+            .catch((errors) => {})
+    }, [location])
 
     /**
      * 1. If query params has 'id' then module installation action has been triggered
@@ -389,7 +422,7 @@ export default function DevtronStackManager({
                     : ''
             }`}
         >
-            <PageHeader
+            <StackPageHeader
                 detailsMode={detailsMode}
                 selectedModule={selectedModule}
                 handleBreadcrumbClick={handleBreadcrumbClick}

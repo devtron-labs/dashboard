@@ -103,6 +103,13 @@ a:focus {
     color: var(--N900);
     z-index: var(--page-header-index);
     border-bottom: 1px solid var(--N200);
+    position: sticky;
+    top: 0px;
+    overflow: visible;
+}
+
+.page-header__height {
+    height: 47px;
 }
 
 .page-header--tabs {
@@ -1630,6 +1637,10 @@ button.anchor {
     width: 250px;
 }
 
+.w-280 {
+    width: 280px;
+}
+
 .w-600 {
     width: 600px;
 }
@@ -1687,6 +1698,10 @@ button.anchor {
 
 .lh-16 {
     line-height: 16px;
+}
+
+.mh-28 {
+    min-height: 28px;
 }
 
 .lh-28 {
@@ -1852,6 +1867,6 @@ button.anchor {
     height: 32px;
 }
 
-input{
+input {
     background-color: var(--N50);
 }
