@@ -1370,6 +1370,14 @@ button.anchor {
     }
 }
 
+.text-underline {
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
 .tertiary-tab__radio {
     margin-bottom: 0px;
     font-size: 12px;

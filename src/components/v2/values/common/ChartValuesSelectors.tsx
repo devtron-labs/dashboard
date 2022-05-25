@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
-import ReactSelect, { components } from 'react-select';
-import AsyncSelect from 'react-select/async';
-import { menuList } from '../../../charts/charts.util';
-import { DropdownIndicator, styles } from '../../common/ReactSelect.utils';
-import { ReactComponent as AlertTriangle } from '../../../../assets/icons/ic-alert-triangle.svg';
-import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg';
-import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg';
-import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.svg';
-import checkIcon from '../../../../assets/icons/appstatus/ic-check.svg';
-import warn from '../../../../assets/icons/ic-warning.svg';
-import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect';
-import { ConfirmationDialog, DeleteDialog, Select } from '../../../common';
+import React, { useState, useEffect, useRef } from 'react'
+import ReactSelect, { components } from 'react-select'
+import AsyncSelect from 'react-select/async'
+import { menuList } from '../../../charts/charts.util'
+import { DropdownIndicator, styles } from '../../common/ReactSelect.utils'
+import { ReactComponent as AlertTriangle } from '../../../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
+import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg'
+import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.svg'
+import checkIcon from '../../../../assets/icons/appstatus/ic-check.svg'
+import warn from '../../../../assets/icons/ic-warning.svg'
+import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
+import { ConfirmationDialog, DeleteDialog, Select } from '../../../common'
 import {
     ChartEnvironmentSelectorType,
     ChartRepoSelectorType,
@@ -21,16 +21,16 @@ import {
     ChartValuesEditorType,
     ChartRepoDetailsType,
     ChartSelectorType,
-} from './chartValuesSelectors.type';
-import { getChartsByKeyword } from '../../../charts/charts.service';
-import { ChartRepoOtions } from '../DeployChart';
-import ReadmeColumn from './ReadmeColumn.component';
-import CodeEditor from '../../../CodeEditor/CodeEditor';
-import { NavLink } from 'react-router-dom';
-import { URLS } from '../../../../config';
-import { getChartRelatedReadMe } from './chartValues.api';
-import { ChartVersionType } from '../../../charts/charts.types';
-import Tippy from '@tippyjs/react';
+} from './chartValuesSelectors.type'
+import { getChartsByKeyword } from '../../../charts/charts.service'
+import { ChartRepoOtions } from '../DeployChart'
+import ReadmeColumn from './ReadmeColumn.component'
+import CodeEditor from '../../../CodeEditor/CodeEditor'
+import { NavLink } from 'react-router-dom'
+import { URLS } from '../../../../config'
+import { getChartRelatedReadMe } from './chartValues.api'
+import { ChartVersionType } from '../../../charts/charts.types'
+import Tippy from '@tippyjs/react'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -42,20 +42,16 @@ export const ChartEnvironmentSelector = ({
     environments,
 }: ChartEnvironmentSelectorType): JSX.Element => {
     return isExternal ? (
-        <label className="form__row form__row--w-100">
-            <span className="form__label">Environment</span>
-            <input
-                className="form__input"
-                value={`${
-                    installedAppInfo
-                        ? installedAppInfo.environmentName
-                        : releaseInfo.deployedAppDetail.environmentDetail.clusterName +
-                          '__' +
-                          releaseInfo.deployedAppDetail.environmentDetail.namespace
-                }`}
-                disabled={true}
-            />
-        </label>
+        <div className="chart-values__environment-container mb-12">
+            <h2 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7">Environment</h2>
+            <span className="chart-values__environment fs-13 fw-6 lh-20 cn-9">
+                {installedAppInfo
+                    ? installedAppInfo.environmentName
+                    : releaseInfo.deployedAppDetail.environmentDetail.clusterName +
+                      '__' +
+                      releaseInfo.deployedAppDetail.environmentDetail.namespace}
+            </span>
+        </div>
     ) : (
         <div className="form__row form__row--w-100">
             <span className="form__label">Environment</span>
@@ -75,8 +71,8 @@ export const ChartEnvironmentSelector = ({
                 options={environments}
             />
         </div>
-    );
-};
+    )
+}
 
 export const StaticChartRepoInput = ({ releaseInfo }: ChartSelectorType) => {
     return (
@@ -88,8 +84,8 @@ export const StaticChartRepoInput = ({ releaseInfo }: ChartSelectorType) => {
                 disabled={true}
             />
         </label>
-    );
-};
+    )
+}
 
 export const ChartRepoSelector = ({
     isExternal,
@@ -99,59 +95,59 @@ export const ChartRepoSelector = ({
     handleRepoChartValueChange,
     chartDetails,
 }: ChartRepoSelectorType) => {
-    const [repoChartAPIMade, setRepoChartAPIMade] = useState(false);
+    const [repoChartAPIMade, setRepoChartAPIMade] = useState(false)
     const [repoChartOptions, setRepoChartOptions] = useState<ChartRepoOtions[] | null>(
         isExternal && !installedAppInfo ? [] : [chartDetails],
-    );
-    const [refetchingCharts, setRefetchingCharts] = useState(false);
+    )
+    const [refetchingCharts, setRefetchingCharts] = useState(false)
 
     async function handleRepoChartFocus(refetch: boolean) {
         if (!repoChartAPIMade || refetch) {
             try {
-                const { result } = await getChartsByKeyword(chartDetails.chartName);
-                filterMatchedCharts(result);
+                const { result } = await getChartsByKeyword(chartDetails.chartName)
+                filterMatchedCharts(result)
             } catch (e) {
-                filterMatchedCharts([]);
+                filterMatchedCharts([])
             } finally {
-                setRepoChartAPIMade(true);
-                setRefetchingCharts(false);
+                setRepoChartAPIMade(true)
+                setRefetchingCharts(false)
             }
         }
     }
 
     function refetchCharts() {
-        setRefetchingCharts(true);
-        handleRepoChartFocus(true);
+        setRefetchingCharts(true)
+        handleRepoChartFocus(true)
     }
 
     function filterMatchedCharts(matchedCharts) {
         if (repoChartOptions !== null) {
-            const deprecatedCharts = [];
-            const nonDeprecatedCharts = [];
+            const deprecatedCharts = []
+            const nonDeprecatedCharts = []
             for (let i = 0; i < matchedCharts.length; i++) {
                 if (matchedCharts[i].deprecated) {
-                    deprecatedCharts.push(matchedCharts[i]);
+                    deprecatedCharts.push(matchedCharts[i])
                 } else {
-                    nonDeprecatedCharts.push(matchedCharts[i]);
+                    nonDeprecatedCharts.push(matchedCharts[i])
                 }
             }
-            setRepoChartOptions(nonDeprecatedCharts.concat(deprecatedCharts));
-            return nonDeprecatedCharts.concat(deprecatedCharts);
+            setRepoChartOptions(nonDeprecatedCharts.concat(deprecatedCharts))
+            return nonDeprecatedCharts.concat(deprecatedCharts)
         }
-        return [];
+        return []
     }
 
     async function repoChartLoadOptions(inputValue: string, callback) {
         try {
-            const { result } = await getChartsByKeyword(inputValue);
-            callback(filterMatchedCharts(result));
+            const { result } = await getChartsByKeyword(inputValue)
+            callback(filterMatchedCharts(result))
         } catch (err) {
-            callback(filterMatchedCharts([]));
+            callback(filterMatchedCharts([]))
         }
     }
 
     function repoChartSelectOptionLabel({ chartRepoName, chartName, version }: ChartRepoDetailsType) {
-        return <div>{!chartRepoName ? `${chartName} (${version})` : `${chartRepoName}/${chartName}`}</div>;
+        return <div>{!chartRepoName ? `${chartName} (${version})` : `${chartRepoName}/${chartName}`}</div>
     }
 
     function repoChartOptionLabel(props: any) {
@@ -176,16 +172,14 @@ export const ChartRepoSelector = ({
                 </div>
                 {props.data.deprecated && <div className="dropdown__deprecated-text">Chart deprecated</div>}
             </div>
-        );
+        )
     }
 
     function customMenuListItem(props: any): JSX.Element {
         return (
             <components.MenuList {...props}>
                 {props.children}
-                <div
-                    className="flex react-select__bottom bcn-0"
-                >
+                <div className="flex react-select__bottom bcn-0">
                     <div className="flex sticky-information__bottom">
                         <Info className="code-editor__information-info-icon" />
                         Unable to find the desired chart? To connect a chart repo or Re-sync connected repos.&nbsp;
@@ -195,13 +189,29 @@ export const ChartRepoSelector = ({
                     </div>
                 </div>
             </components.MenuList>
-        );
+        )
     }
 
     return (
         (isExternal || isUpdate) && (
             <div className="form__row form__row--w-100">
-                <span className="form__label">{isExternal ? 'Chart' : 'Repo/Chart'}</span>
+                <div className="flex content-space">
+                    <span className="form__label fs-13 fw-4 lh-20 cn-7">{isExternal ? 'Chart' : 'Repo/Chart'}</span>
+                    <Tippy
+                        className="default-tt "
+                        arrow={false}
+                        content="Fetch latest charts from connected chart repositories"
+                    >
+                        <span
+                            className={`refetch-charts cb-5 cursor text-underline ${
+                                refetchingCharts ? 'refetching' : ''
+                            }`}
+                            onClick={refetchCharts}
+                        >
+                            {refetchingCharts ? <Refetch className="icon-dim-20" /> : 'Refetch Charts'}
+                        </span>
+                    </Tippy>
+                </div>
                 <div className="repo-chart-selector flex">
                     <AsyncSelect
                         cacheOptions
@@ -237,7 +247,7 @@ export const ChartRepoSelector = ({
                                     color: 'var(--N900)',
                                     backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
                                     padding: '10px 12px',
-                                };
+                                }
                             },
                             dropdownIndicator: (base, state) => {
                                 return {
@@ -245,31 +255,22 @@ export const ChartRepoSelector = ({
                                     color: 'var(--N400)',
                                     transition: 'all .2s ease',
                                     transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                                };
+                                }
                             },
                             loadingMessage: (base) => {
                                 return {
                                     ...base,
                                     color: 'var(--N600)',
-                                };
+                                }
                             },
                             noOptionsMessage: (base) => {
                                 return {
                                     ...base,
                                     color: 'var(--N600)',
-                                };
+                                }
                             },
                         }}
                     />
-                    <Tippy className="default-tt " arrow={false} content={'Refetch Charts'}>
-                        <button
-                            className={`refetch-charts${refetchingCharts ? ' refetching' : ''} flex p-10 ml-8`}
-                            onClick={refetchCharts}
-                            disabled={refetchingCharts}
-                        >
-                            <Refetch className="icon-dim-16" />
-                        </button>
-                    </Tippy>
                 </div>
                 {repoChartValue.deprecated && (
                     <div className="deprecated-text-image flex left">
@@ -278,9 +279,11 @@ export const ChartRepoSelector = ({
                     </div>
                 )}
                 {isExternal && !installedAppInfo && !repoChartValue.chartRepoName && (
-                    <div className="no-helm-chart-linked flex left">
-                        <Error className="icon-dim-16" />
-                        <span className="no-helm-chart-linked-text">
+                    <div className="no-helm-chart-linked flex top left br-4 cn-9 bcr-1 mt-12">
+                        <div className="icon-dim-16 mr-10">
+                            <Error className="icon-dim-16" />
+                        </div>
+                        <span className="no-helm-chart-linked-text fs-12 fw-4">
                             This app is not linked to a helm chart. Select a helm chart to keep up with latest chart
                             versions.
                         </span>
@@ -288,8 +291,8 @@ export const ChartRepoSelector = ({
                 )}
             </div>
         )
-    );
-};
+    )
+}
 
 export const ChartDeprecated = ({ isUpdate, deprecated, chartName, name }: ChartDeprecatedType): JSX.Element => {
     return (
@@ -308,10 +311,10 @@ export const ChartDeprecated = ({ isUpdate, deprecated, chartName, name }: Chart
                 </div>
             </div>
         )
-    );
-};
+    )
+}
 
-const ChartVersionSelector = ({
+export const ChartVersionSelector = ({
     isUpdate,
     selectedVersion,
     selectVersion,
@@ -322,8 +325,8 @@ const ChartVersionSelector = ({
     chartVersionsData,
 }: ChartVersionSelectorType) => {
     return !isUpdate ? (
-        <div className="w-50">
-            <span className="form__label">Chart Version</span>
+        <div className="w-100 mb-12">
+            <span className="form__label fs-13 fw-4 lh-20 cn-7">Chart Version</span>
             <Select
                 tabIndex={4}
                 rootClassName="select-button--default"
@@ -339,8 +342,8 @@ const ChartVersionSelector = ({
             </Select>
         </div>
     ) : (
-        <div className="w-50">
-            <span className="form__label">Chart Version</span>
+        <div className="w-100 mb-12">
+            <span className="form__label fs-13 fw-4 lh-20 cn-7">Chart Version</span>
             <Select
                 tabIndex={4}
                 rootClassName="select-button--default"
@@ -360,10 +363,10 @@ const ChartVersionSelector = ({
                 ))}
             </Select>
         </div>
-    );
-};
+    )
+}
 
-const ChartValuesSelector = ({
+export const ChartValuesSelector = ({
     chartValuesList,
     chartValues,
     redirectToChartValues,
@@ -371,8 +374,8 @@ const ChartValuesSelector = ({
     hideVersionFromLabel,
 }: ChartValuesSelectorType) => {
     return (
-        <div className="w-50">
-            <span className="form__label">Chart Values*</span>
+        <div className="w-100 mb-12">
+            <span className="form__label fs-13 fw-4 lh-20 cn-7">Chart Values</span>
             <ChartValuesSelect
                 chartValuesList={chartValuesList}
                 chartValues={chartValues}
@@ -381,8 +384,8 @@ const ChartValuesSelector = ({
                 hideVersionFromLabel={hideVersionFromLabel}
             />
         </div>
-    );
-};
+    )
+}
 
 export const ChartVersionValuesSelector = ({
     isUpdate,
@@ -420,8 +423,8 @@ export const ChartVersionValuesSelector = ({
                 hideVersionFromLabel={hideVersionFromLabel}
             />
         </div>
-    );
-};
+    )
+}
 
 export const ActiveReadmeColumn = ({
     readmeCollapsed,
@@ -429,19 +432,19 @@ export const ActiveReadmeColumn = ({
     defaultReadme,
     selectedVersionUpdatePage,
 }: {
-    readmeCollapsed: boolean;
-    toggleReadmeCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
-    defaultReadme: string;
-    selectedVersionUpdatePage: ChartVersionType;
+    readmeCollapsed: boolean
+    toggleReadmeCollapsed: React.Dispatch<React.SetStateAction<boolean>>
+    defaultReadme: string
+    selectedVersionUpdatePage: ChartVersionType
 }) => {
-    const [activeReadMe, setActiveReadMe] = useState<string>(defaultReadme);
-    const [fetchingReadMe, setFetchingReadMe] = useState<boolean>(false);
+    const [activeReadMe, setActiveReadMe] = useState<string>(defaultReadme)
+    const [fetchingReadMe, setFetchingReadMe] = useState<boolean>(false)
 
     useEffect(() => {
         if (selectedVersionUpdatePage && selectedVersionUpdatePage.id) {
-            getChartRelatedReadMe(selectedVersionUpdatePage.id, setFetchingReadMe, setActiveReadMe);
+            getChartRelatedReadMe(selectedVersionUpdatePage.id, setFetchingReadMe, setActiveReadMe)
         }
-    }, [selectedVersionUpdatePage]);
+    }, [selectedVersionUpdatePage])
 
     return (
         <ReadmeColumn
@@ -450,8 +453,8 @@ export const ActiveReadmeColumn = ({
             readme={activeReadMe}
             loading={fetchingReadMe}
         />
-    );
-};
+    )
+}
 
 export const ChartValuesEditor = ({
     loading,
@@ -462,34 +465,12 @@ export const ChartValuesEditor = ({
     parentRef,
     autoFocus,
 }: ChartValuesEditorType) => {
-    const editorRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        // scroll to the editor view with animation for only update-chart
-        // subtracting - 100 from offset top because of floating header's tab
-        let timer;
-        if (autoFocus && parentRef && editorRef) {
-            timer = setTimeout(() => {
-                parentRef?.current?.scrollTo({
-                    top: editorRef?.current?.offsetTop - 100,
-                    behavior: 'smooth',
-                });
-            }, 1000);
-        }
-
-        return (): void => {
-            if (timer) {
-                clearTimeout(timer);
-            }
-        }
-    }, []);
-
     return (
-        <div className="code-editor-container" ref={editorRef}>
+        <div className="code-editor-container">
             <CodeEditor value={valuesText} noParsing mode="yaml" onChange={onChange} loading={loading}>
-                <CodeEditor.Header>
+                {/* <CodeEditor.Header>
                     <span className="bold">values.yaml</span>
-                </CodeEditor.Header>
+                </CodeEditor.Header> */}
                 {hasChartChanged && (
                     <CodeEditor.Information
                         text={`Please ensure that the values are compatible with "${repoChartValue.chartRepoName}/${repoChartValue.chartName}"`}
@@ -497,17 +478,17 @@ export const ChartValuesEditor = ({
                 )}
             </CodeEditor>
         </div>
-    );
-};
+    )
+}
 
 export const DeleteChartDialog = ({
     appName,
     handleDelete,
     toggleConfirmation,
 }: {
-    appName: string;
-    handleDelete: (force?: boolean) => void;
-    toggleConfirmation: React.Dispatch<React.SetStateAction<boolean>>;
+    appName: string
+    handleDelete: (force?: boolean) => void
+    toggleConfirmation: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
     return (
         <DeleteDialog
@@ -520,15 +501,15 @@ export const DeleteChartDialog = ({
                 <p>Deleted applications cannot be restored.</p>
             </DeleteDialog.Description>
         </DeleteDialog>
-    );
-};
+    )
+}
 
 export const AppNotLinkedDialog = ({
     close,
     update,
 }: {
-    close: () => void;
-    update: (forceUpdate: boolean) => void;
+    close: () => void
+    update: (forceUpdate: boolean) => void
 }) => {
     return (
         <ConfirmationDialog>
@@ -547,8 +528,8 @@ export const AppNotLinkedDialog = ({
                         type="button"
                         className="cta ml-12 no-decor"
                         onClick={() => {
-                            close();
-                            update(true);
+                            close()
+                            update(true)
                         }}
                     >
                         Deploy without linking helm chart
@@ -556,5 +537,5 @@ export const AppNotLinkedDialog = ({
                 </div>
             </ConfirmationDialog.ButtonGroup>
         </ConfirmationDialog>
-    );
-};
+    )
+}
