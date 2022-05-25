@@ -76,9 +76,10 @@ function ExternalAppDetail({appId, appName}) {
             notes: helmAppDetail.chartMetadata.notes,
         }
 
-        if(installedAppInfo){
+        if (installedAppInfo) {
             genericAppDetail.appStoreChartId = installedAppInfo.appStoreChartId;
             genericAppDetail.environmentName = installedAppInfo.environmentName;
+            genericAppDetail.environmentId = installedAppInfo.environmentId;
         }
 
         return genericAppDetail
