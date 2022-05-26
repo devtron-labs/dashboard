@@ -6,6 +6,7 @@ import errorImage from '../../assets/img/ic_upload_chart_error.png'
 import uploadingImage from '../../assets/gif/uploading.gif'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { toast } from 'react-toastify'
+import { DOCUMENTATION } from '../../config'
 
 const UPLOAD_STATE = {
     UPLOAD: 'Upload',
@@ -134,13 +135,13 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
         )
     }
 
-    const renderErrorPage = () => {
+    const renderImageWithTitleDescription = (imgSrc: string, title: string, descriptionList: string[]) => {
         return (
             <div className="flex column" style={{ width: '100%', height: '310px' }}>
-                <img src={errorImage} alt="Error image" style={{ height: '100px' }} className="mb-10" />
-                <h4 className="fw-6 fs-16">{errorData.title}</h4>
-                {errorData.message.map((error) => (
-                    <p className="fs-13 fw-4 m-0">{error}</p>
+                <img src={imgSrc} alt="image" style={{ height: '100px' }} className="mb-10" />
+                <h4 className="fw-6 fs-16">{title}</h4>
+                {descriptionList.map((description) => (
+                    <p className="fs-13 fw-4 m-0">{description}</p>
                 ))}
             </div>
         )
@@ -149,23 +150,26 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
     const renderPreRequisitePage = () => {
         return (
             <>
-                <div className="cn-9 fw-6 fs-14">
-                    Pre-requisites to upload and use a custom chart View documentation
+                <div className="cn-9 fw-6 fs-14 mb-8">Pre-requisites to upload a custom chart</div>
+                <div className="cn-7 fw-4 fs-14 cn-7">
+                    1. A valid helm chart, which contains Chart.yaml file with name and version fields.
                 </div>
-                <div className="cn-7 fw-4 fs-14">
-                    Use these variables in your custom chart to enable Devtron to populate required values{' '}
+                <div className="cn-7 fw-4 fs-14 cn-7">
+                    2. Image descriptor template file - .image_descriptor_template.json.
                 </div>
-                <div className="prerequisite-table en-2 bw-1 mt-20">
-                    <div className="p-5 border-bottom border-right">Variable</div>
-                    <div className="p-5 border-bottom">Description</div>
-                    <div className="p-5 border-bottom border-right">
-                        {'{{ $.Values.server.deployment.image }}:{{ $.Values.server.deployment.image_tag }}'}
+                <div className="cn-7 fw-4 fs-14 cn-7 mb-20">3. Custom chart packaged in the *.tgz format.</div>
+                <div className="sidebar-action-container pr-20">
+                    <div className="fw-6 fs-13 cn-9 mb-8">
+                        📙 Need help?&nbsp;
+                        <a
+                            className="learn-more__href fw-6"
+                            href={DOCUMENTATION.APP_CREATE}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                        >
+                            View documentation
+                        </a>
                     </div>
-                    <div className="p-5 border-bottom">Inserts container image</div>
-                    <div className="p-5 border-bottom border-right">{'{{.App}}'}</div>
-                    <div className="p-5 border-bottom">Inserts app label</div>
-                    <div className="p-5 border-right">{'{{.Env}}'}</div>
-                    <div className="p-5">Inserts environment label</div>
                 </div>
             </>
         )
@@ -177,13 +181,11 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
         } else if (uploadState === UPLOAD_STATE.UPLOAD) {
             return renderPreRequisitePage()
         } else if (uploadState === UPLOAD_STATE.UPLOADING) {
-            return (
-                <div className="flex column" style={{ width: '100%', height: '310px' }}>
-                    <img src={uploadingImage} alt="Uploading image" style={{ height: '100px' }} />
-                </div>
-            )
+            return renderImageWithTitleDescription(uploadingImage, 'Uploading chart...', [
+                'Hold tight! We’re uploading your chart.',
+            ])
         } else {
-            return renderErrorPage()
+            return renderImageWithTitleDescription(errorImage, errorData.title, errorData.message)
         }
     }
 
@@ -233,7 +235,7 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
                     </div>
                     <CloseIcon className="pointer mt-2" onClick={closeUploadPopup} />
                 </div>
-                <div className="pl-20 pr-20 pt-16" style={{ paddingBottom: '89px' }}>
+                <div className="p-20" style={{ paddingBottom: '93px' }}>
                     {renderPageContent()}
                 </div>
                 {renderFooter()}
