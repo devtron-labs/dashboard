@@ -667,6 +667,16 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
     }
 
+    handleAdvanceClick = () => {
+        let strategies = this.state.strategies.filter(
+            (strategy) => strategy.deploymentTemplate != this.state.pipelineConfig.strategies[0].deploymentTemplate,
+        )
+        let state = { ...this.state }
+        state.strategies = strategies
+        state.isAdvanced = true
+        this.setState(state)
+    }
+
     closeCDDeleteModal = () => {
         this.setState({ showDeleteModal: false })
     }
@@ -998,7 +1008,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         type="button"
                         className="cta cta--workflow cancel mr-16"
                         onClick={() => {
-                            this.setState({ isAdvanced: true })
+                            this.handleAdvanceClick()
                         }}
                     >
                         Advanced Options
