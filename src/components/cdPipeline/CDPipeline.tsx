@@ -60,6 +60,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     preStage
     postStage
     configMapAndSecrets = []
+    noStrategyAvailable = true
     constructor(props) {
         super(props)
         const urlParams = new URLSearchParams(this.props.location.search)
@@ -171,6 +172,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 .catch((error) => {
                                     showError(error)
                                 })
+                            this.noStrategyAvailable = this.state.strategies.length === 0
                             if (this.state.strategies.length > 0) {
                                 let defaultStrategy = this.state.strategies.find((strategy) => strategy.default)
                                 this.handleStrategy(defaultStrategy.deploymentTemplate)
@@ -691,7 +693,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderDeploymentStrategy() {
-        if (this.state.strategies.length === 0) {
+        if (this.noStrategyAvailable) {
             return null
         }
         return (
@@ -1199,7 +1201,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             <>
                 <p className="fs-14 fw-6 cn-9 mb-16">Select Environment</p>
                 {this.renderEnvAndNamespace()}
-                {this.state.strategies.length > 0 && (
+                {!this.noStrategyAvailable && (
                     <>
                         <div className="divider mt-0 mb-0"></div>
                         <p className="fs-14 fw-6 cn-9 mb-16 mt-20">Deployment Strategy</p>
