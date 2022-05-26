@@ -1,35 +1,36 @@
-import React, { Component } from 'react';
-import { Switch, Route, Redirect, NavLink, RouteComponentProps } from 'react-router-dom';
-import { SecurityPoliciesTab } from './SecurityPoliciesTab';
-import { SecurityScansTab } from './SecurityScansTab';
-import './security.css';
-import { DOCUMENTATION, SERVER_MODE, SERVER_MODE_TYPE } from '../../config';
-import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState';
-import Tippy from '@tippyjs/react';
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg';
+import React, { Component } from 'react'
+import { Switch, Route, Redirect, NavLink, RouteComponentProps } from 'react-router-dom'
+import { SecurityPoliciesTab } from './SecurityPoliciesTab'
+import { SecurityScansTab } from './SecurityScansTab'
+import './security.css'
+import { DOCUMENTATION, SERVER_MODE, SERVER_MODE_TYPE } from '../../config'
+import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
+import Tippy from '@tippyjs/react'
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 
 interface SecurityProps extends RouteComponentProps<{}> {
-    serverMode: SERVER_MODE_TYPE;
+    serverMode: SERVER_MODE_TYPE
 }
 
 export class Security extends Component<SecurityProps> {
     renderRouter() {
-        const path = this.props.match.path;
+        const path = this.props.match.path
         return (
             <Switch>
                 <Route path={`${path}/scans`} component={SecurityScansTab} />
                 <Route path={`${path}/policies`} component={SecurityPoliciesTab} />
                 <Redirect to={`${path}/scans`} />
             </Switch>
-        );
+        )
     }
 
     renderPageheader() {
-        const path = this.props.match.path;
+        const path = this.props.match.path
         return (
             <div className="page-header page-header--security position-rel">
-                <h1 className="flex left page-header__title mt-8">Security
-                <Tippy
+                <h1 className="flex left page-header__title mt-8">
+                    Security
+                    <Tippy
                         className="default-tt "
                         arrow={false}
                         placement="top"
@@ -44,8 +45,8 @@ export class Security extends Component<SecurityProps> {
                             <Question className="icon-dim-20 ml-16 cursor" />
                         </a>
                     </Tippy>
-              </h1>
-             
+                </h1>
+
                 <ul role="tablist" className="tab-list">
                     <li className="tab-list__tab ellipsis-right">
                         <NavLink activeClassName="active" to={`${path}/scans`} className="tab-list__tab-link">
@@ -59,7 +60,7 @@ export class Security extends Component<SecurityProps> {
                     </li>
                 </ul>
             </div>
-        );
+        )
     }
 
     renderEmptyStateForEAOnlyMode = () => {
@@ -74,15 +75,17 @@ export class Security extends Component<SecurityProps> {
                     knowMoreLink={DOCUMENTATION.SECURITY}
                 />
             </div>
-        );
-    };
+        )
+    }
 
     render() {
         return (
             <>
                 {this.renderPageheader()}
-                {this.props.serverMode === SERVER_MODE.EA_ONLY ? this.renderEmptyStateForEAOnlyMode() : this.renderRouter()}
+                {this.props.serverMode === SERVER_MODE.EA_ONLY
+                    ? this.renderEmptyStateForEAOnlyMode()
+                    : this.renderRouter()}
             </>
-        );
+        )
     }
 }
