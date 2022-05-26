@@ -220,19 +220,22 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             }
         })
         let savedStrategies = []
-        for (let i = 0; i < pipelineConfigFromRes.strategies.length; i++) {
-            savedStrategies.push({
-                ...pipelineConfigFromRes.strategies[i],
-                defaultConfig: this.allStrategies[pipelineConfigFromRes.strategies[i].deploymentTemplate],
-                jsonStr: JSON.stringify(pipelineConfigFromRes.strategies[i].config, null, 4),
-                selection: yamlJsParser.stringify(this.allStrategies[pipelineConfigFromRes.strategies[i].config], {
-                    indent: 2,
-                }),
-                isCollapsed: true,
-            })
-            strategies = strategies.filter(
-                (strategy) => strategy.deploymentTemplate !== pipelineConfigFromRes.strategies[i].deploymentTemplate,
-            )
+        if (pipelineConfigFromRes.strategies) {
+            for (let i = 0; i < pipelineConfigFromRes.strategies.length; i++) {
+                savedStrategies.push({
+                    ...pipelineConfigFromRes.strategies[i],
+                    defaultConfig: this.allStrategies[pipelineConfigFromRes.strategies[i].deploymentTemplate],
+                    jsonStr: JSON.stringify(pipelineConfigFromRes.strategies[i].config, null, 4),
+                    selection: yamlJsParser.stringify(this.allStrategies[pipelineConfigFromRes.strategies[i].config], {
+                        indent: 2,
+                    }),
+                    isCollapsed: true,
+                })
+                strategies = strategies.filter(
+                    (strategy) =>
+                        strategy.deploymentTemplate !== pipelineConfigFromRes.strategies[i].deploymentTemplate,
+                )
+            }
         }
         let env = environments.find((e) => e.id === pipelineConfigFromRes.environmentId)
         pipelineConfig = {
