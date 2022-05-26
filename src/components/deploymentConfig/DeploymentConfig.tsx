@@ -29,7 +29,7 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
 import { MODES } from '../../../src/config/constants'
 import YAML from 'yaml'
 import { NavLink } from 'react-router-dom'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { ReactComponent as Upload } from '../../assets/icons/ic-arrow-line-up.svg'
 
 export function OptApplicationMetrics({
     currentVersion,
@@ -270,10 +270,9 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                 {props.children}
                 <NavLink
                     to={`${URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}`}
-                    className="cb-5 select__sticky-bottom block fw-5 anchor w-100 cursor no-decor bottom-0"
-                    style={{ backgroundColor: '#FFF', bottom: 0 }}
+                    className="upload-custom-chart-link cb-5 select__sticky-bottom fw-4 fs-13 no-decor bottom-radius-4"
                 >
-                    <Add className="icon-dim-20 mr-5 fcb-5 mr-12 vertical-align-bottom" />
+                    <Upload className="icon-dim-16 mr-8 vertical-align-bottom upload-icon-stroke" />
                     Upload custom chart
                 </NavLink>
             </components.MenuList>
@@ -310,7 +309,6 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                                     control: (base, state) => ({
                                         ...base,
                                         boxShadow: 'none',
-                                        border: `solid 1px var(--B500)`,
                                     }),
                                     option: (base, state) => {
                                         return {
@@ -369,7 +367,6 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                                 control: (base, state) => ({
                                     ...base,
                                     boxShadow: 'none',
-                                    border: `solid 1px var(--B500)`,
                                 }),
                                 option: (base, state) => {
                                     return {

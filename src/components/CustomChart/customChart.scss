@@ -11,14 +11,14 @@
 .upload-modal {
     width: 600px;
     position: relative;
-    padding: 20px 0;
+    padding: 0;
     .prerequisite-table {
         display: grid;
         grid-template-columns: 55% 45%;
     }
     .footer {
         position: absolute;
-        bottom: 20px;
+        bottom: 0px;
         width: 100%;
         margin: 0;
     }

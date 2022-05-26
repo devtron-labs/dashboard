@@ -114,7 +114,7 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
                         </span>
                         <input
                             type="text"
-                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-8 pb-8 mt-6"
+                            className="w-100 br-4 en-2 bw-1 mt-6 form__input"
                             disabled
                             value={chartDetail.chartName}
                         />
@@ -123,7 +123,7 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
                         <span className="fs-13 fw-4 cn-7">Description</span>
                         <textarea
                             cols={3}
-                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-8 pb-8 mt-6"
+                            className="w-100 br-4 en-2 bw-1 mt-6 form__input"
                             value={chartDetail.description}
                             onChange={handleDescriptionChange}
                             disabled={loadingData}
@@ -137,7 +137,7 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
     const renderErrorPage = () => {
         return (
             <div className="flex column" style={{ width: '100%', height: '310px' }}>
-                <img src={errorImage} alt="Error image" style={{ height: '100px' }} />
+                <img src={errorImage} alt="Error image" style={{ height: '100px' }} className="mb-10" />
                 <h4 className="fw-6 fs-16">{errorData.title}</h4>
                 {errorData.message.map((error) => (
                     <p className="fs-13 fw-4 m-0">{error}</p>
@@ -190,7 +190,7 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
     const renderFooter = () => {
         return (
             <div
-                className={`footer pt-15 border-top flexbox ${
+                className={`footer pt-16 pb-16 border-top flexbox ${
                     uploadState === UPLOAD_STATE.UPLOAD || uploadState === UPLOAD_STATE.UPLOADING
                         ? 'content-end'
                         : 'content-space'
@@ -214,7 +214,7 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
                         isLoading={loadingData}
                     >
                         {uploadState === UPLOAD_STATE.UPLOAD
-                            ? 'Select tar.gz file...'
+                            ? 'Select .tgz file...'
                             : uploadState === UPLOAD_STATE.ERROR
                             ? 'Upload another chart'
                             : 'Save'}
@@ -227,14 +227,13 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
     return (
         <VisibleModal className="transition-effect">
             <div className="modal__body upload-modal no-top-radius mt-0">
-                <div className="flexbox content-space pl-20 pr-20">
+                <div className="flexbox content-space pl-20 pr-20 pt-16 pb-16 border-bottom">
                     <div className="fw-6 fs-16 cn-9">
                         {uploadState === UPLOAD_STATE.UPLOAD ? 'Using custom chart' : 'Upload chart'}
                     </div>
                     <CloseIcon className="pointer mt-2" onClick={closeUploadPopup} />
                 </div>
-                <hr />
-                <div className="pl-20 pr-20" style={{ paddingBottom: '68px' }}>
+                <div className="pl-20 pr-20 pt-16" style={{ paddingBottom: '89px' }}>
                     {renderPageContent()}
                 </div>
                 {renderFooter()}

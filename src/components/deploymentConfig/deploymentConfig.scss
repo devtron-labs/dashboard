@@ -114,14 +114,24 @@
         text-transform: initial;
         background-color: var(--window-bg);
         padding: 4px 10px;
+        margin-bottom: 0;
     }
 }
 .chart_select__option {
     font-size: 13px;
     font-weight: 400;
-    color: var(--N900);
     &.chart_select__option--is-disabled {
         color: var(--N700);
         pointer-events: none;
+    }
+}
+
+.upload-custom-chart-link {
+    background-color: rgb(255, 255, 255);
+    bottom: 0px;
+    .upload-icon-stroke {
+        path {
+            stroke: var(--B500);
+        }
     }
 }

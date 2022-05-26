@@ -8,7 +8,7 @@ import Tippy from '@tippyjs/react'
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     return (base, state) => ({
         ...base,
-        backgroundColor: state.isSelected ? 'var(--B100)' : state.isFocused ? 'var(--N100)' : 'white',
+        backgroundColor: state.isSelected ? 'var(--B100)' : state.isFocused ? 'var(--N50)' : 'white',
         color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
         textOverflow: 'ellipsis',
         fontWeight: '500',
@@ -41,8 +41,8 @@ export const styles = {
     option: (base, state) => {
         return {
             ...base,
-            color: 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+            color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
+            backgroundColor: state.isFocused ? 'var(--N50)' : 'white',
         }
     },
 }

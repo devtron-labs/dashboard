@@ -79,11 +79,11 @@ export default function CustomChartList() {
                 </p>
                 <div className="flexbox content-space">
                     <div
-                        className="bcb-5 fw-6 fs-13 flexbox cn-0 en-2 br-4 pl-16 pr-16 pt-8 pb-8 pointer lh-16"
+                        className="bcb-5 fw-6 fs-13 flexbox cn-0 br-4 pl-16 pr-16 pt-8 pb-8 pointer"
                         onClick={openUploadPopup}
                         style={{ width: 'max-content' }}
                     >
-                        <Upload className="dim-20 mr-10" /> Upload Chart
+                        <Upload className="dim-20 mr-10 mt-3" /> Upload Chart
                     </div>
                     {isShowSearch && (
                         <form
@@ -135,17 +135,17 @@ export default function CustomChartList() {
         return (
             <div className="chart-list">
                 <div className="cn-9 fw-6 fs-16">Custom charts</div>
-                {renderSubtitleAndUploadButton('Manage custom charts to be used in Devtron applications.', true)}
-                <div className="mt-16 en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 220px)' }}>
+                {renderSubtitleAndUploadButton('Manage custom charts to be used in Devtron applications.', false)}
+                <div className="mt-16 en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 235px)' }}>
                     <div className="chart-list-row fw-6 cn-7 fs-12 border-bottom pt-10 pb-10 pr-20 pl-20 text-uppercase">
                         <div>Name</div>
                         <div>Version</div>
                         <div>Description</div>
                     </div>
                     {chartList?.map((chartData) => (
-                        <div className="chart-list-row fw-4 cn-9 fs-13 border-bottom pt-14 pb-14 pr-20 pl-20">
+                        <div className="chart-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-14 pb-14 pr-20 pl-20">
                             <div className="flexbox">
-                                <span className="cb-5">{chartData.name}</span>
+                                <span className="cn-9">{chartData.name}</span>
                             </div>
                             <div>
                                 {chartData.version}
