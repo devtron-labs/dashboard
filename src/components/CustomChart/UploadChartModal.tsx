@@ -166,7 +166,7 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
                         📙 Need help?&nbsp;
                         <a
                             className="learn-more__href fw-6"
-                            href={DOCUMENTATION.APP_CREATE}
+                            href={DOCUMENTATION.CUSTOM_CHART_PRE_REQUISITES}
                             target="_blank"
                             rel="noreferrer noopener"
                         >
