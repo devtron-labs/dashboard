@@ -7,6 +7,7 @@ import uploadingImage from '../../assets/gif/uploading.gif'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION } from '../../config'
+import { ChartUploadResponse } from './types'
 
 const UPLOAD_STATE = {
     UPLOAD: 'Upload',
@@ -27,12 +28,12 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
     const [errorData, setErrorData] = useState<{ title: string; message: string[] }>({ title: '', message: [] })
     const [loadingData, setLoadingData] = useState(false)
 
-    const onFileChange = (e) => {
+    const onFileChange = (e): void => {
         setUploadState(UPLOAD_STATE.UPLOADING)
         let formData = new FormData()
         formData.append('BinaryFile', e.target.files[0])
         validateChart(formData)
-            .then((response) => {
+            .then((response: ChartUploadResponse) => {
                 setChartDetail(response.result)
                 setUploadState(UPLOAD_STATE.SUCCESS)
             })
@@ -49,28 +50,28 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
             })
     }
 
-    const handleSuccessButton = () => {
+    const handleSuccessButton = (): void => {
         if (uploadState === UPLOAD_STATE.SUCCESS) {
             onCancelUpload('Save')
         } else if (uploadState === UPLOAD_STATE.UPLOAD) {
             inputFileRef.current.click()
         } else {
-            return resetCustomChart()
+            resetCustomChart()
         }
     }
 
-    const resetCustomChart = () => {
+    const resetCustomChart = (): void => {
         setChartDetail(null)
         setUploadState(UPLOAD_STATE.UPLOAD)
     }
 
-    const handleDescriptionChange = (e) => {
+    const handleDescriptionChange = (e): void => {
         const chartData = { ...chartDetail }
         chartData.description = e.target.value
         setChartDetail(chartData)
     }
 
-    const onCancelUpload = (actionType: string) => {
+    const onCancelUpload = (actionType: string): void => {
         if (actionType === 'Save') {
             setLoadingData(true)
         }
@@ -81,7 +82,7 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
             return
         }
         uploadChart(chartData)
-            .then((response) => {
+            .then((response: ChartUploadResponse) => {
                 if (actionType === 'Save') {
                     toast.success('Chart saved')
                     closeUploadPopup(true)
@@ -95,7 +96,7 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
             })
     }
 
-    const renderSuccessPage = () => {
+    const renderSuccessPage = (): JSX.Element => {
         return (
             <>
                 {chartDetail.message && (
@@ -137,7 +138,7 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
         )
     }
 
-    const renderImageWithTitleDescription = (imgSrc: string, title: string, descriptionList: string[]) => {
+    const renderImageWithTitleDescription = (imgSrc: string, title: string, descriptionList: string[]): JSX.Element => {
         return (
             <div className="flex column" style={{ width: '100%', height: '310px' }}>
                 <img src={imgSrc} alt="image" style={{ height: '100px' }} className="mb-10" />
@@ -149,7 +150,7 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
         )
     }
 
-    const renderPreRequisitePage = () => {
+    const renderPreRequisitePage = (): JSX.Element => {
         return (
             <>
                 <div className="cn-9 fw-6 fs-14 mb-8">Pre-requisites to upload a custom chart</div>
@@ -177,7 +178,7 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
         )
     }
 
-    const renderPageContent = () => {
+    const renderPageContent = (): JSX.Element => {
         if (uploadState === UPLOAD_STATE.SUCCESS) {
             return renderSuccessPage()
         } else if (uploadState === UPLOAD_STATE.UPLOAD) {
@@ -191,7 +192,7 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
         }
     }
 
-    const renderFooter = () => {
+    const renderFooter = (): JSX.Element => {
         return (
             <div
                 className={`footer pt-16 pb-16 border-top flexbox ${

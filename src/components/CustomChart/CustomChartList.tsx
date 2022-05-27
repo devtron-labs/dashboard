@@ -8,7 +8,7 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getChartList } from './customChart.service'
 import { Progressing, showError, sortObjectArrayAlphabetically } from '../common'
-import { chartDetailType } from './types'
+import { chartDetailType, ChartListResponse } from './types'
 
 export default function CustomChartList() {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
@@ -21,10 +21,10 @@ export default function CustomChartList() {
         getData()
     }, [])
 
-    const getData = () => {
+    const getData = (): void => {
         setLoader(true)
         getChartList()
-            .then((response) => {
+            .then((response: ChartListResponse) => {
                 if (response.result) {
                     setChartList(processChartData(response.result))
                 }
@@ -58,18 +58,18 @@ export default function CustomChartList() {
         return resultData
     }
 
-    const openUploadPopup = () => {
+    const openUploadPopup = (): void => {
         setShowUploadPopup(true)
     }
 
-    const closeUploadPopup = (isReloadChartList: boolean) => {
+    const closeUploadPopup = (isReloadChartList: boolean): void => {
         setShowUploadPopup(false)
         isReloadChartList && getData()
     }
 
     const handleFilterChanges = (selected, key): void => {}
 
-    const renderSubtitleAndUploadButton = (subtitleText: string, isShowSearch) => {
+    const renderSubtitleAndUploadButton = (subtitleText: string, isShowSearch: boolean): JSX.Element => {
         return (
             <>
                 <p className="fs-13 fw-4">
@@ -117,7 +117,7 @@ export default function CustomChartList() {
         )
     }
 
-    const renderEmptyState = () => {
+    const renderEmptyState = (): JSX.Element => {
         return (
             <>
                 <div className="flex column" style={{ width: '100%', height: '100%' }}>
@@ -132,7 +132,7 @@ export default function CustomChartList() {
         )
     }
 
-    const renderChartList = () => {
+    const renderChartList = (): JSX.Element => {
         return (
             <div className="chart-list">
                 <div className="cn-9 fw-6 fs-16">Custom charts</div>
