@@ -62,9 +62,9 @@ export default function CustomChartList() {
         setShowUploadPopup(true)
     }
 
-    const closeUploadPopup = () => {
+    const closeUploadPopup = (isReloadChartList: boolean) => {
         setShowUploadPopup(false)
-        getData()
+        isReloadChartList && getData()
     }
 
     const handleFilterChanges = (selected, key): void => {}

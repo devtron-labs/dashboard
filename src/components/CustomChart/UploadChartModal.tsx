@@ -16,7 +16,7 @@ const UPLOAD_STATE = {
 }
 
 interface UploadChartModalType {
-    closeUploadPopup: () => void
+    closeUploadPopup: (reloadData: boolean) => void
 }
 
 export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }: UploadChartModalType) {
@@ -77,15 +77,17 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
         const chartData = { ...chartDetail }
         chartData['action'] = actionType
         if (!chartData.fileId) {
-            closeUploadPopup()
+            closeUploadPopup(false)
             return
         }
         uploadChart(chartData)
             .then((response) => {
                 if (actionType === 'Save') {
                     toast.success('Chart saved')
+                    closeUploadPopup(true)
+                } else {
+                    closeUploadPopup(false)
                 }
-                closeUploadPopup()
             })
             .catch((error) => {
                 showError(error)
@@ -233,7 +235,7 @@ export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }:
                     <div className="fw-6 fs-16 cn-9">
                         {uploadState === UPLOAD_STATE.UPLOAD ? 'Using custom chart' : 'Upload chart'}
                     </div>
-                    <CloseIcon className="pointer mt-2" onClick={closeUploadPopup} />
+                    <CloseIcon className="pointer mt-2" onClick={() => closeUploadPopup(false)} />
                 </div>
                 <div className="p-20" style={{ paddingBottom: '93px' }}>
                     {renderPageContent()}

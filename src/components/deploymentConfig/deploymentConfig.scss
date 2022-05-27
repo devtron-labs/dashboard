@@ -128,6 +128,8 @@
 
 .upload-custom-chart-link {
     background-color: rgb(255, 255, 255);
+    bottom: 0 !important;
+    margin: 0 !important;
     .upload-icon-stroke {
         path {
             stroke: var(--B500);
