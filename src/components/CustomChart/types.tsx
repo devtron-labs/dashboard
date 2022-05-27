@@ -1,11 +1,11 @@
 import { ResponseType } from '../../services/service.types'
-export interface chartDetailType {
+export interface ChartDetailType {
     chartDescription: string
     name: string
     version: string
     count?: number
 }
-export interface chartUploadType {
+export interface ChartUploadType {
     chartName: string
     description: string
     fileId: number
@@ -14,8 +14,8 @@ export interface chartUploadType {
 }
 
 export interface ChartListResponse extends ResponseType {
-    result?: chartDetailType[]
+    result?: ChartDetailType[]
 }
 export interface ChartUploadResponse extends ResponseType {
-    result?: chartUploadType
+    result?: ChartUploadType
 }

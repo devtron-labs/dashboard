@@ -8,7 +8,7 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getChartList } from './customChart.service'
 import { Progressing, showError, sortObjectArrayAlphabetically } from '../common'
-import { chartDetailType, ChartListResponse } from './types'
+import { ChartDetailType, ChartListResponse } from './types'
 
 export default function CustomChartList() {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
@@ -36,7 +36,7 @@ export default function CustomChartList() {
             })
     }
 
-    const processChartData = (data: chartDetailType[]): chartDetailType[] => {
+    const processChartData = (data: ChartDetailType[]): ChartDetailType[] => {
         let resultData = []
         const uniqueChartList = new Map()
         data.forEach((element) => {
