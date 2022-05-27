@@ -13,24 +13,17 @@ export class ChartCheckList extends Component<ChartCheckListProps, {}> {
 
         return (
             <>
-                <div className="cursor cn-9 pt-12 pb-12 fw-6 flex" onClick={this.props.toggleChartChecklist}>
-                    <div className="fs-14">To deploy chart ({this.props.chartStageCompleted}/3 completed)</div>
-                    <span className="checklist__dropdown">
-                        <Dropdown className="icon-dim-20 rotate " style={{ ['--rotateBy' as any]: this.props.isChartCollapsed ? '180deg' : '0deg' }} />
-                    </span>
+                <div className="cn-9 pt-12 pb-12 fw-6">
+                    <div className="fs-14">To deploy chart</div>
                 </div>
-                {!this.props.isChartCollapsed ? <div className="fs-13">
-                    {this.props.showDivider && <hr className="checklist__divider mt-0 mb-0" />}
-                    <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor  mt-8 flex left" style={{ ['color']: gitOps ? `#767d84` : `#0066cc` }}>
-                        {!this.props.chartChecklist.gitOps ? <img src={Uncheck} className="icon-dim-16 mr-8" /> : <Check className="icon-dim-16 mr-8" />}
-                    Configure gitops</NavLink>
-                    <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor  mt-8 flex left" style={{ ['color']: project ? `#767d84` : `#0066cc` }}>
-                        {!this.props.chartChecklist.project ? <img src={Uncheck} className="icon-dim-16 mr-8" /> : <Check className="icon-dim-16 mr-8" />}
-                    Add project</NavLink>
-                    <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} className="no-decor mt-8 pb-8 flex left" style={{ ['color']: environment ? `#767d84` : `#0066cc` }}>
-                        {!this.props.chartChecklist.environment ? <img src={Uncheck} className="icon-dim-16 mr-8" /> : <Check className="icon-dim-16 mr-8" />}
-                    Add cluster & environment</NavLink>
-                </div> : ''}
+                <div className="fs-13">
+                    {!this.props.chartChecklist.gitOps && <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor  mt-8 flex left" style={{ ['color']: gitOps ? `#767d84` : `#0066cc` }}>
+                    Configure gitops</NavLink>}
+                    {!this.props.chartChecklist.project && <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor  mt-8 flex left" style={{ ['color']: project ? `#767d84` : `#0066cc` }}>
+                    Add project</NavLink>}
+                    {!this.props.chartChecklist.environment && <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} className="no-decor mt-8 pb-8 flex left" style={{ ['color']: environment ? `#767d84` : `#0066cc` }}>
+                    Add cluster & environment</NavLink>}
+                </div>
             </>
         )
     }
