@@ -74,7 +74,7 @@ export default function CustomChartList() {
             <>
                 <p className="fs-13 fw-4">
                     {subtitleText}&nbsp;
-                    <a className="no-decor" href={DOCUMENTATION.CUSTOM_CHART}>
+                    <a className="no-decor" href={DOCUMENTATION.CUSTOM_CHART} target="_blank" rel="noreferrer noopener">
                         Learn more
                     </a>
                 </p>

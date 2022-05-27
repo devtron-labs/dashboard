@@ -272,6 +272,8 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                 <NavLink
                     to={`${URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}`}
                     className="upload-custom-chart-link cb-5 select__sticky-bottom fw-4 fs-13 no-decor bottom-radius-4"
+                    target="_blank"
+                    rel="noreferrer noopener"
                 >
                     <Upload className="icon-dim-16 mr-8 vertical-align-bottom upload-icon-stroke" />
                     Upload custom chart
