@@ -29,7 +29,7 @@ export function installChart(request) {
 }
 
 export function updateChart(request) {
-    return put(`app-store/application/update`, request)
+    return put(Routes.UPDATE_APP_API, request)
 }
 
 export function deleteInstalledChart(installedAppId, force?: boolean) {
