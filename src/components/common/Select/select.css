@@ -105,8 +105,6 @@
 
 .select__sticky-bottom {
     position: sticky;
-    bottom: -8px;
-    margin-bottom: -8px;
     box-shadow: 0 -1px 0 0 var(--N200);
     background-color: inherit;
     padding: 10px 12px;

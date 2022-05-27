@@ -7,7 +7,7 @@ import { ReactComponent as Upload } from '../../assets/icons/ic-arrow-line-up.sv
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getChartList } from './customChart.service'
-import { Progressing, showError } from '../common'
+import { Progressing, showError, sortObjectArrayAlphabetically } from '../common'
 import { chartDetailType } from './types'
 
 export default function CustomChartList() {
@@ -37,7 +37,7 @@ export default function CustomChartList() {
     }
 
     const processChartData = (data: chartDetailType[]): chartDetailType[] => {
-        const resultData = []
+        let resultData = []
         const uniqueChartList = new Map()
         data.forEach((element) => {
             const chartDetail = uniqueChartList.get(element.name)
@@ -54,6 +54,7 @@ export default function CustomChartList() {
         uniqueChartList.forEach((element) => {
             resultData.push(element)
         })
+        resultData = sortObjectArrayAlphabetically(resultData, 'name')
         return resultData
     }
 
@@ -72,7 +73,7 @@ export default function CustomChartList() {
         return (
             <>
                 <p className="fs-13 fw-4">
-                    {subtitleText}
+                    {subtitleText}&nbsp;
                     <a className="no-decor" href={DOCUMENTATION.CUSTOM_CHART}>
                         Learn more
                     </a>

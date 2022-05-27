@@ -13,6 +13,7 @@ import {
     VisibleModal,
     useJsonYaml,
     isVersionLessThanOrEqualToTarget,
+    sortObjectArrayAlphabetically,
 } from '../common'
 import { useEffectAfterMount, showError } from '../common/helpers/Helpers'
 import ReadmeConfig from './ReadmeConfig'
@@ -248,8 +249,8 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
             }
         }
     }
-    customCharts = customCharts.sort((a, b) => b.name.localeCompare(a.name))
-    devtronCharts = devtronCharts.sort((a, b) => b.name.localeCompare(a.name))
+    customCharts = sortObjectArrayAlphabetically(customCharts, 'name') //customCharts.sort((a, b) => b.name.localeCompare(a.name))
+    devtronCharts = sortObjectArrayAlphabetically(devtronCharts, 'name') //devtronCharts.sort((a, b) => b.name.localeCompare(a.name))
     const groupedChartOptions = [
         {
             label: 'Charts by Devtron',
@@ -300,6 +301,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                                 value={selectedChart}
                                 classNamePrefix="chart_select"
                                 isOptionDisabled={(option) => !option.id}
+                                menuIsOpen={true}
                                 components={{
                                     IndicatorSeparator: null,
                                     Option,
