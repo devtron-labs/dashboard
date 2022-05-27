@@ -347,7 +347,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             setFilePermissionValue({ value: filePermissionValue.value, error: 'This is octal number, use numbers between 0 to 7' });
             return;
         }
-        if(selectedTab === 'Data Volume' && isSubPathChecked ){
+        if(selectedTab === 'Data Volume' && isSubPathChecked  && !isExternalValues){
             if (!externalSubpathValues.value) {
                 setExternalSubpathValues({ value: externalSubpathValues.value, error: 'This is a required field' });
                 return;
