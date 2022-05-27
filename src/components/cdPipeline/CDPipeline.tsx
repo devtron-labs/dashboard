@@ -60,7 +60,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     preStage
     postStage
     configMapAndSecrets = []
-    noStrategyAvailable = true
+    noStrategyAvailable = false
     constructor(props) {
         super(props)
         const urlParams = new URLSearchParams(this.props.location.search)
