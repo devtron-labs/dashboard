@@ -301,7 +301,6 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                                 value={selectedChart}
                                 classNamePrefix="chart_select"
                                 isOptionDisabled={(option) => !option.id}
-                                menuIsOpen={true}
                                 components={{
                                     IndicatorSeparator: null,
                                     Option,
