@@ -20,7 +20,7 @@ interface UploadChartModalType {
     closeUploadPopup: (reloadData: boolean) => void
 }
 
-export default function UploadChartModal({ closeUploadPopup: closeUploadPopup }: UploadChartModalType) {
+export default function UploadChartModal({ closeUploadPopup }: UploadChartModalType) {
     const inputFileRef = useRef(null)
     const [chartDetail, setChartDetail] =
         useState<{ chartName: string; description: string; fileId: number; message: string; chartVersion: number }>()

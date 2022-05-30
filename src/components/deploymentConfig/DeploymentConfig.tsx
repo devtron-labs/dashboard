@@ -31,17 +31,27 @@ import { MODES } from '../../../src/config/constants'
 import YAML from 'yaml'
 import { NavLink } from 'react-router-dom'
 import { ReactComponent as Upload } from '../../assets/icons/ic-arrow-line-up.svg'
+import { ROLLOUT_DEPLOYMENT } from '../../config'
 
 export function OptApplicationMetrics({
-    currentVersion,
+    currentChart,
     onChange,
     opted,
     focus = false,
     loading,
     className = '',
     disabled = false,
+}: {
+    currentChart: { id: number; version: string; name: string }
+    onChange
+    opted: boolean
+    focus?: boolean
+    loading: boolean
+    className?: string
+    disabled?: boolean
 }) {
-    let isChartVersionSupported = isVersionLessThanOrEqualToTarget(currentVersion, [3, 7, 0])
+    let isUnSupportedChartVersion =
+        currentChart.name === ROLLOUT_DEPLOYMENT && isVersionLessThanOrEqualToTarget(currentChart.version, [3, 7, 0])
 
     return (
         <div
@@ -60,11 +70,11 @@ export function OptApplicationMetrics({
                     {loading ? (
                         <Progressing />
                     ) : (
-                        <Toggle disabled={disabled || isChartVersionSupported} onSelect={onChange} selected={opted} />
+                        <Toggle disabled={disabled || isUnSupportedChartVersion} onSelect={onChange} selected={opted} />
                     )}
                 </div>
             </div>
-            {isChartVersionSupported && (
+            {isUnSupportedChartVersion && (
                 <div className="flex left p-lr-20 chart-version-warning" style={{ width: '100%' }}>
                     <img />
                     <span>
@@ -249,8 +259,8 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
             }
         }
     }
-    customCharts = sortObjectArrayAlphabetically(customCharts, 'name') //customCharts.sort((a, b) => b.name.localeCompare(a.name))
-    devtronCharts = sortObjectArrayAlphabetically(devtronCharts, 'name') //devtronCharts.sort((a, b) => b.name.localeCompare(a.name))
+    customCharts = sortObjectArrayAlphabetically(customCharts, 'name')
+    devtronCharts = sortObjectArrayAlphabetically(devtronCharts, 'name')
     const groupedChartOptions = [
         {
             label: 'Charts by Devtron',
@@ -258,7 +268,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
         },
         {
             label: 'Custom charts',
-            options: customCharts.length === 0 ? [{ name: 'No options', disabled: true }] : customCharts,
+            options: customCharts.length === 0 ? [{ name: 'No options' }] : customCharts,
         },
     ]
     let filteredCharts = selectedChart
@@ -270,7 +280,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
             <components.MenuList {...props}>
                 {props.children}
                 <NavLink
-                    to={`${URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}`}
+                    to={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}
                     className="upload-custom-chart-link cb-5 select__sticky-bottom fw-4 fs-13 no-decor bottom-radius-4"
                     target="_blank"
                     rel="noreferrer noopener"
@@ -465,7 +475,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
             )}
             {charts && selectedChart && appMetricsEnvironmentVariableEnabled && (
                 <OptApplicationMetrics
-                    currentVersion={selectedChart?.version}
+                    currentChart={selectedChart}
                     onChange={(e) => saveAppMetrics(!isAppMetricsEnabled)}
                     opted={isAppMetricsEnabled}
                     loading={appMetricsLoading}

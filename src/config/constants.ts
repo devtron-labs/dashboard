@@ -513,3 +513,5 @@ export const EXTERNAL_TYPES = {
     AWSSystemManager: 'AWS System Manager',
     HashiCorpVault: 'Hashi Corp Vault',
 }
+
+export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
