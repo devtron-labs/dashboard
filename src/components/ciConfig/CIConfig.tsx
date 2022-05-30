@@ -36,7 +36,7 @@ export default function CIConfig({ respondOnSuccess, ...rest }) {
                 getCIConfig(+appId),
             ]);
             Array.isArray(dockerRegistries) && sortObjectArrayAlphabetically(dockerRegistries, 'id');
-            setDockerRegistries(dockerRegistries);
+            setDockerRegistries(dockerRegistries || []);
             sourceConfig &&
                 Array.isArray(sourceConfig.material) &&
                 sortObjectArrayAlphabetically(sourceConfig.material, 'name');
@@ -357,13 +357,13 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                     </div>
                     <div className="form__field">
                         <label htmlFor="" className="form__label">
-                            Container Repository {REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.desiredFormat}
+                            Container Repository {selectedRegistry && REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.desiredFormat}
                         </label>
                         <input
                             tabIndex={2}
                             type="text"
                             className="form__input"
-                            placeholder={
+                            placeholder={selectedRegistry &&
                                 REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.placeholderText ||
                                 'Enter repository name'
                             }
@@ -374,7 +374,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                             autoComplete={'off'}
                         />
                         {repository_name.error && <label className="form__error">{repository_name.error}</label>}
-                        {!ciConfig && selectedRegistry.registryType === 'ecr' && (
+                        {!ciConfig && selectedRegistry?.registryType === 'ecr' && (
                             <label className="form__error form__error--info">
                                 New repository will be created if not provided
                             </label>
