@@ -295,12 +295,9 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                     return <ChartRepo />
                 }}
             />
-            <Route
-                path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}
-                render={(props) => {
-                    return <CustomChartList />
-                }}
-            />
+            <Route path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>
+                <CustomChartList />
+            </Route>
             <Route
                 path={URLS.GLOBAL_CONFIG_LOGIN}
                 render={(props) => {
