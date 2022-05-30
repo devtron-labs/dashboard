@@ -134,6 +134,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         this.allStrategies[strategies[i].deploymentTemplate] = {}
                     this.allStrategies[strategies[i].deploymentTemplate] = strategies[i].config
                 }
+                this.noStrategyAvailable = strategies.length === 0
                 this.setState(
                     {
                         strategies,
@@ -172,7 +173,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 .catch((error) => {
                                     showError(error)
                                 })
-                            this.noStrategyAvailable = this.state.strategies.length === 0
                             if (this.state.strategies.length > 0) {
                                 let defaultStrategy = this.state.strategies.find((strategy) => strategy.default)
                                 this.handleStrategy(defaultStrategy.deploymentTemplate)
