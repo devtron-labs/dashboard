@@ -37,7 +37,6 @@ import ChartHeaderFilter from '../ChartHeaderFilters'
 import { QueryParams } from '../charts.util'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
-import PageHeader from '../../common/header/PageHeader'
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -217,23 +216,10 @@ function DiscoverChartList() {
         setSelectedChartRepo(appliedChartRepoFilter)
     }
 
-    const handleToggleChartGroupModal = () => {
-        toggleChartGroupModal(!showChartGroupModal)
-    }
     return (
         <>
             <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''}`}>
-                <ConditionalWrap condition={state.charts.length > 0} wrap={(children) => <div>{children}</div>}>
-                    <PageHeader
-                        headerName={state.charts.length === 0 ? 'Chart Store' : 'Deploy multiple charts'}
-                        buttonText="group"
-                        onClickCreateButton={handleToggleChartGroupModal}
-                        showCreateButton={serverMode === SERVER_MODE.FULL && state.charts.length === 0 ? true : false}
-                        CreateButtonIcon={Add}
-                        showIconBeforeText={false}
-                    />
-                </ConditionalWrap>
-                {/* <div className={`page-header `}>
+                <div className={`page-header ${state.charts.length === 0 ? 'page-header--tabs' : ''}`}>
                     <ConditionalWrap
                         condition={state.charts.length > 0}
                         wrap={(children) => <div className="flex left column">{children}</div>}
@@ -247,7 +233,7 @@ function DiscoverChartList() {
                             <div className="page-header__title flex left">
                                 {state.charts.length === 0 ? 'Chart Store' : 'Deploy multiple charts'}
                             </div>
-                           {state.charts.length === 0 && <ChartDetailNavigator />
+                            {state.charts.length === 0 && <ChartDetailNavigator />}
                         </>
                     </ConditionalWrap>
 
@@ -263,7 +249,7 @@ function DiscoverChartList() {
                             </button>
                         )}
                     </div>
-                    </div>*/}
+                </div>
                 <Prompt
                     when={isLeavingPageNotAllowed.current}
                     message={'Your changes will be lost. Do you want to leave without deploying?'}
