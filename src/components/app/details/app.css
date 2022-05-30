@@ -1,10 +1,18 @@
+.tab-list__tab {
+    font-size: 13px;
+}
+
 .tab-list__tab-link.active .tab-list__icon path {
     fill: var(--B500);
 }
 
-.tab-list__info-icon + .tab-list__info{
+.tab-list__info-icon + .tab-list__info {
     min-width: 400px;
     position: absolute;
     top: 40px;
     margin-left: 140px;
+}
+
+.tab-list__tab-link {
+    padding: 0 0 8px 0;
 }

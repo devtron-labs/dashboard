@@ -43,7 +43,7 @@ function PageHeader({
             }`}
         >
             <h1 className="page-header__title flex left fs-16 fw-6 lh-20">
-                {headerName}
+                <span className="fw-6">{headerName}</span>
                 {isBreadcrumbs && breadCrumbs()}
                 {isTippyShown && (
                     <a className="learn-more__href flex" target="_blank" href={tippyRedirectLink}>

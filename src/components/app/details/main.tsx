@@ -206,7 +206,7 @@ export function AppHeader() {
                     linked: false,
                 },
                 app: {
-                    component: <span className="cn-5 fs-18 lowercase">apps</span>,
+                    component: <span className="cb-5 fs-16 text-capitalize">apps</span>,
                     linked: true,
                 },
             },
