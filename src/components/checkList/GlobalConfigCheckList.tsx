@@ -39,7 +39,7 @@ export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps,
                     isAppCollapsed={this.state.isAppCollapsed}
                     appStageCompleted={this.props.appStageCompleted}
                     toggleAppChecklist={this.toggleAppChecklist} />
-                <hr className="checklist__divider mt-0 mb-0" />
+                <hr className="checklist__divider mt-16 mb-0" />
                 <ChartCheckList chartChecklist={this.props.chartChecklist}
                     showDivider={false}
                     isChartCollapsed={this.state.isChartCollapsed}
