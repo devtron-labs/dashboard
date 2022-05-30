@@ -1,0 +1,5 @@
+.page-header-tabs__height {
+    height: 76px;
+    display: grid;
+    grid-template-columns: 1fr;
+}

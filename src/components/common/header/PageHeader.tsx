@@ -1,7 +1,7 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
-
+import './page-headers.css'
 export interface PageHeaderType {
     headerName: string
     buttonText?: string
@@ -11,6 +11,8 @@ export interface PageHeaderType {
     tippyRedirectLink?: string
     CreateButtonIcon?: React.FunctionComponent<any>
     showIconBeforeText?: boolean
+    showTabs?: boolean
+    renderHeaderTabs?: () => void
 }
 
 function PageHeader({
@@ -22,9 +24,15 @@ function PageHeader({
     tippyRedirectLink,
     CreateButtonIcon,
     showIconBeforeText,
+    showTabs = false,
+    renderHeaderTabs,
 }: PageHeaderType) {
     return (
-        <div className={`page-header flex content-space cn-9 bcn-0 pl-20 pr-20 page-header__height`}>
+        <div
+            className={`page-header flex content-space cn-9 bcn-0 pl-20 pr-20 ${
+                showTabs ? 'page-header-tabs__height' : 'page-header__height'
+            }`}
+        >
             <h1 className="page-header__title flex left fs-16 fw-6 lh-20">
                 {headerName}
                 {isTippyShown && (
@@ -45,6 +53,7 @@ function PageHeader({
                     </Tippy>
                 )}
             </h1>
+            {showTabs && renderHeaderTabs()}
             {showCreateButton && (
                 <button type="button" className="flex cta h-32 lh-n" onClick={() => onClickCreateButton()}>
                     {showIconBeforeText && CreateButtonIcon && <CreateButtonIcon className="icon-dim-20" />}
