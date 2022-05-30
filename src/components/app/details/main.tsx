@@ -1,7 +1,6 @@
 import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react'
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
-import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, useAsync, showError, VisibleModal } from '../../common'
-import { getAppListMin } from '../../../services/service'
+import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, showError, VisibleModal } from '../../common'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import { URLS } from '../../../config'
 import { AppSelector } from '../../AppSelector'
@@ -18,6 +17,7 @@ import { validateTags, TAG_VALIDATION_MESSAGE, createOption, handleKeyDown } fro
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
+import PageHeader from '../../common/header/PageHeader'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -343,12 +343,6 @@ export function AppHeader() {
                         App Configuration
                     </NavLink>
                 </li>
-                {/* commented for time being */}
-                {/* <li className="tab-list__tab">
-          <NavLink activeClassName="active" to={`${url}/tests`} className="tab-list__tab-link">
-              Tests
-          </NavLink>
-      </li> */}
             </ul>
         )
     }
@@ -356,23 +350,36 @@ export function AppHeader() {
     const renderBreadcrumbs = () => {
         return <BreadCrumb breadcrumbs={breadcrumbs} />
     }
+
+    const renderInfoIcon = () => {
+        return (
+            <div
+                className="tab-list__info-icon ml-4 cursor"
+                onClick={() => {
+                    return
+                }}
+            >
+                <Tippy className="default-tt " arrow={false} content={'About app'}>
+                    <Info className="icon-dim-20 fcn-5" />
+                </Tippy>
+            </div>
+        )
+    }
+
     return (
-        <div className="page-header" style={{ gridTemplateColumns: 'unset' }}>
-            <h1 className="m-0 fw-6 flex left fs-18 cn-9">
-                {renderBreadcrumbs()}
-                <div
-                    className="tab-list__info-icon ml-4 cursor"
-                    onClick={() => {
-                        return setShowInfoModal(true), getAppMetaInfoRes()
-                    }}
-                >
-                    <Tippy className="default-tt " arrow={false} content={'About app'}>
-                        <Info className="icon-dim-20 fcn-5" />
-                    </Tippy>
-                </div>
-                {renderInfoModal()}
-            </h1>
-            {renderAppDetailsTabs()}
-        </div>
+        <>
+            <PageHeader
+                headerName=""
+                breadCrumbs={renderBreadcrumbs}
+                isBreadcrumbs={true}
+                showTabs={true}
+                renderHeaderTabs={renderAppDetailsTabs}
+                isTippyShown={true}
+                TippyIcon={Info}
+                onClickTippybutton={() => setShowInfoModal(true)}
+                tippyMessage={'About app'}
+            />
+            {showInfoModal && getAppMetaInfoRes()}
+        </>
     )
 }

@@ -1,6 +1,5 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
 import './page-headers.css'
 export interface PageHeaderType {
     headerName: string
@@ -13,6 +12,11 @@ export interface PageHeaderType {
     showIconBeforeText?: boolean
     showTabs?: boolean
     renderHeaderTabs?: () => void
+    isBreadcrumbs?: boolean
+    breadCrumbs?: () => void
+    TippyIcon?: React.FunctionComponent<any>
+    tippyMessage?: string
+    onClickTippybutton?: () => void
 }
 
 function PageHeader({
@@ -21,11 +25,16 @@ function PageHeader({
     onClickCreateButton,
     isTippyShown = false,
     showCreateButton = false,
-    tippyRedirectLink,
     CreateButtonIcon,
     showIconBeforeText,
     showTabs = false,
     renderHeaderTabs,
+    isBreadcrumbs = false,
+    breadCrumbs,
+    TippyIcon,
+    tippyMessage,
+    onClickTippybutton,
+    tippyRedirectLink,
 }: PageHeaderType) {
     return (
         <div
@@ -35,22 +44,18 @@ function PageHeader({
         >
             <h1 className="page-header__title flex left fs-16 fw-6 lh-20">
                 {headerName}
+                {isBreadcrumbs && breadCrumbs()}
                 {isTippyShown && (
-                    <Tippy
-                        className="default-tt "
-                        arrow={false}
-                        placement="top"
-                        content={<span style={{ display: 'block', width: '66px' }}> Learn more </span>}
-                    >
-                        <a
-                            className="learn-more__href flex"
-                            href={tippyRedirectLink}
-                            rel="noreferrer noopener"
-                            target="_blank"
+                    <a className="learn-more__href flex" target="_blank" href={tippyRedirectLink}>
+                        <Tippy
+                            className="default-tt "
+                            arrow={false}
+                            placement="top"
+                            content={<span style={{ display: 'block', width: '66px' }}> {tippyMessage} </span>}
                         >
-                            <Question className="icon-dim-20 ml-16 cursor" />
-                        </a>
-                    </Tippy>
+                            <TippyIcon className="icon-dim-20 ml-16 cursor fcn-5" />
+                        </Tippy>
+                    </a>
                 )}
             </h1>
             {showTabs && renderHeaderTabs()}

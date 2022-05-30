@@ -5,7 +5,6 @@ import { SecurityScansTab } from './SecurityScansTab'
 import './security.css'
 import { DOCUMENTATION, SERVER_MODE, SERVER_MODE_TYPE } from '../../config'
 import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import PageHeader from '../common/header/PageHeader'
 
@@ -51,6 +50,8 @@ export class Security extends Component<SecurityProps> {
                 headerName="Security"
                 isTippyShown={true}
                 tippyRedirectLink={DOCUMENTATION.SECURITY}
+                tippyMessage={'Learn more'}
+                TippyIcon={Question}
                 showTabs={true}
                 renderHeaderTabs={this.renderSecurityTabs}
             />
