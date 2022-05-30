@@ -86,7 +86,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
     }
 
     renderForm() {
-        const sortedProviders = this.props.providers? sortObjectArrayAlphabetically(this.props.providers,"name") : this.props.providers;
+        const sortedProviders = this.props.providers? sortObjectArrayAlphabetically(this.props.providers,"name") : this.props.providers || [];
         return <form key={`${(this.props.material).id}`} className="white-card p-20 mb-16">
             <div className="mb-20 cn-9 fs-16 fw-6 white-card__header--form">
                 {(this.props.material).id ? "Edit Git Repository" : "Add Git Repository"}
@@ -101,7 +101,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         tabIndex={1}
                         isMulti={false}
                         isClearable={false}
-                        options={sortedProviders || []}
+                        options={sortedProviders}
                         getOptionLabel={option => `${option.name}`}
                         getOptionValue={option => `${option.id}`}
                         value={this.props.material.gitProvider}
