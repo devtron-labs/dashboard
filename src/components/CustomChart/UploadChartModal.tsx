@@ -54,6 +54,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
         if (uploadState === UPLOAD_STATE.SUCCESS) {
             onCancelUpload('Save')
         } else if (uploadState === UPLOAD_STATE.UPLOAD) {
+            inputFileRef.current.value = null //to upload the same chart
             inputFileRef.current.click()
         } else {
             resetCustomChart()

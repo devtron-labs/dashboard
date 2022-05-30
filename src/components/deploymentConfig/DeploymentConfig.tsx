@@ -252,11 +252,9 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                 uniqueCustomCharts.set(chartName, true)
                 customCharts.push(charts[i])
             }
-        } else {
-            if (!uniqueChartsByDevtron.get(chartName)) {
-                uniqueChartsByDevtron.set(chartName, true)
-                devtronCharts.push(charts[i])
-            }
+        } else if (!uniqueChartsByDevtron.get(chartName)) {
+            uniqueChartsByDevtron.set(chartName, true)
+            devtronCharts.push(charts[i])
         }
     }
     customCharts = sortObjectArrayAlphabetically(customCharts, 'name')

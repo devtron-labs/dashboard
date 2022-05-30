@@ -7,8 +7,9 @@ import { ReactComponent as Upload } from '../../assets/icons/ic-arrow-line-up.sv
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getChartList } from './customChart.service'
-import { Progressing, showError, sortObjectArrayAlphabetically } from '../common'
+import { ErrorScreenManager, Progressing, showError, sortObjectArrayAlphabetically } from '../common'
 import { ChartDetailType, ChartListResponse } from './types'
+import EmptyState from '../EmptyState/EmptyState'
 
 export default function CustomChartList() {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
@@ -16,6 +17,7 @@ export default function CustomChartList() {
     const [searchApplied, setSearchApplied] = useState(false)
     const [searchText, setSearchText] = useState('')
     const [chartList, setChartList] = useState([])
+    const [errorStatusCode, setErrorStatusCode] = useState(0)
 
     useEffect(() => {
         getData()
@@ -32,6 +34,7 @@ export default function CustomChartList() {
             })
             .catch((error) => {
                 showError(error)
+                setErrorStatusCode(error.code)
                 setLoader(false)
             })
     }
@@ -69,24 +72,33 @@ export default function CustomChartList() {
 
     const handleFilterChanges = (selected, key): void => {}
 
-    const renderSubtitleAndUploadButton = (subtitleText: string, isShowSearch: boolean): JSX.Element => {
+    const renderUploadButton = (): JSX.Element => {
+        return (
+            <button onClick={openUploadPopup} className="add-link cta flex">
+                <Upload className="icon-dim-16 mr-8" />
+                Upload Chart
+            </button>
+        )
+    }
+
+    const renderLearnMoreLink = (): JSX.Element => {
+        return (
+            <a className="no-decor" href={DOCUMENTATION.CUSTOM_CHART} target="_blank" rel="noreferrer noopener">
+                Learn more
+            </a>
+        )
+    }
+
+    const renderSubtitleAndUploadButton = (subtitleText: string): JSX.Element => {
         return (
             <>
                 <p className="fs-13 fw-4">
                     {subtitleText}&nbsp;
-                    <a className="no-decor" href={DOCUMENTATION.CUSTOM_CHART} target="_blank" rel="noreferrer noopener">
-                        Learn more
-                    </a>
+                    {renderLearnMoreLink()}
                 </p>
                 <div className="flexbox content-space">
-                    <div
-                        className="bcb-5 fw-6 fs-13 flexbox cn-0 br-4 pl-16 pr-16 pt-8 pb-8 pointer"
-                        onClick={openUploadPopup}
-                        style={{ width: 'max-content' }}
-                    >
-                        <Upload className="dim-20 mr-10 mt-3" /> Upload Chart
-                    </div>
-                    {isShowSearch && (
+                    {renderUploadButton()}
+                    {false && (
                         <form
                             onSubmit={(e) => handleFilterChanges(e, 'search')}
                             className="search position-rel margin-right-0 en-2 bw-1 br-4"
@@ -119,16 +131,19 @@ export default function CustomChartList() {
 
     const renderEmptyState = (): JSX.Element => {
         return (
-            <>
-                <div className="flex column" style={{ width: '100%', height: '100%' }}>
-                    <img src={emptyCustomChart} alt="Empty custom chart" style={{ height: '132px' }} />
-                    <h4 className="fw-6 fs-16">Use custom charts in applications</h4>
-                    {renderSubtitleAndUploadButton(
-                        'Import custom charts to use them in apps instead of the default system template.',
-                        false,
-                    )}
-                </div>
-            </>
+            <EmptyState>
+                <EmptyState.Image>
+                    <img src={emptyCustomChart} alt="Empty external links" />
+                </EmptyState.Image>
+                <EmptyState.Title>
+                    <h4 className="title">Use custom charts in applications</h4>
+                </EmptyState.Title>
+                <EmptyState.Subtitle>
+                    Import custom charts to use them in apps instead of the default system template.&nbsp;
+                    {renderLearnMoreLink()}
+                </EmptyState.Subtitle>
+                <EmptyState.Button>{renderUploadButton()}</EmptyState.Button>
+            </EmptyState>
         )
     }
 
@@ -136,7 +151,7 @@ export default function CustomChartList() {
         return (
             <div className="chart-list">
                 <div className="cn-9 fw-6 fs-16">Custom charts</div>
-                {renderSubtitleAndUploadButton('Manage custom charts to be used in Devtron applications.', false)}
+                {renderSubtitleAndUploadButton('Manage custom charts to be used in Devtron applications.')}
                 <div className="mt-16 en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 235px)' }}>
                     <div className="chart-list-row fw-6 cn-7 fs-12 border-bottom pt-10 pb-10 pr-20 pl-20 text-uppercase">
                         <div>Name</div>
@@ -163,6 +178,16 @@ export default function CustomChartList() {
     }
     if (loader) {
         return <Progressing />
+    }
+    if (errorStatusCode > 0) {
+        return (
+            <div className="error-screen-wrapper flex column h-100">
+                <ErrorScreenManager
+                    code={errorStatusCode}
+                    subtitle="Information on this page is available only to superadmin users."
+                />
+            </div>
+        )
     }
     return (
         <>
