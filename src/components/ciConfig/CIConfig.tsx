@@ -363,8 +363,8 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                             tabIndex={2}
                             type="text"
                             className="form__input"
-                            placeholder={selectedRegistry &&
-                                REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.placeholderText ||
+                            placeholder={(selectedRegistry &&
+                                REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.placeholderText) ||
                                 'Enter repository name'
                             }
                             name="repository_name"
