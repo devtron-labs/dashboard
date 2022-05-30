@@ -17,7 +17,7 @@ export function getChartVersionDetails(versionId) {
 }
 
 export function getChartVersionDetails2(versionId) {
-    return get(`app-store/application/version/${versionId}`)
+    return get(`app-store/deployment/application/version/${versionId}`)
 }
 
 export function getInstalledAppDetail(installedAppId, envId) {
