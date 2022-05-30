@@ -193,6 +193,7 @@ export const ChartRepoSelector = ({
                     <AsyncSelect
                         cacheOptions
                         defaultOptions={repoChartOptions}
+                        isSearchable={false}
                         formatOptionLabel={repoChartSelectOptionLabel}
                         value={repoChartValue}
                         loadOptions={repoChartLoadOptions}
