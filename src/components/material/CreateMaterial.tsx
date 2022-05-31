@@ -68,7 +68,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
     isGitUrlValid(url: string, selectedId): string | undefined {
         if (!url.length) return "This is a required field"
 
-        const res = this.props.providers?.filter((provider)=>provider?.id == selectedId )
+        const res = this.props.providers?.filter((provider)=>provider?.id == selectedId ) || []
         if(res[0]?.authMode != "SSH" ){
             if(!url.startsWith("https")) return "Git Repo URL must start with 'https:'";
         }
