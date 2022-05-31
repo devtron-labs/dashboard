@@ -44,13 +44,14 @@ export default class ErrorBoundary extends Component<{}, errorBoundaryState> {
                 <div className="flex column" style={{ width: '100%', height: '100%' }}>
                     <img src={bugFixing} alt="" style={{ height: '300px', width: 'auto', marginBottom: '20px' }} />
                     <h2 style={{ marginBottom: '20px' }}>We encountered an error.</h2>
-                    <button
-                        type="button"
-                        className="cta"
+                    <a
+                        href="https://discord.devtron.ai/"
+                        className="cta flex no-decor"
+                        target="_blank"
                         onClick={() => Sentry.showReportDialog({ eventId: this.state.eventId })}
                     >
                         Report feedback
-                    </button>
+                    </a>
                 </div>
             )
         } else {

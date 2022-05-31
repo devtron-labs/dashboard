@@ -4,6 +4,7 @@ import { useJsonYaml, Select, RadioGroup, Progressing, useWindowSize, copyToClip
 import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg';
+import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg';
 import YAML from 'yaml'
 import './codeEditor.scss';
 import ReactGA from 'react-ga';
@@ -364,7 +365,10 @@ function ValidationError() {
 }
 
 const Warning: React.FC<WarningProps> = function (props) {
-    return <div className="code-editor__warning">{props.text}</div>
+    return <div className="code-editor__warning">
+        <WarningIcon className="code-editor__information-info-icon" />
+        {props.text}
+    </div>
 }
 
 const ErrorBar: React.FC<ErrorBarProps> = function (props) {

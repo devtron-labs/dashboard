@@ -403,6 +403,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 selectEnvironment={selectEnvironment}
                                 environments={environments}
                             />
+                            {/* TODO: remove ChartDeprecated */}
                             <ChartDeprecated
                                 isUpdate={!!isUpdate}
                                 deprecated={deprecated}

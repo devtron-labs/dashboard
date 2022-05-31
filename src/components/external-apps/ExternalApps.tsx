@@ -23,7 +23,7 @@ export default function ExternalApps() {
                     </Route>
                     <Route path={`${path}/${URLS.APP_VALUES}`}>
                         {/* <ExternalAppValues appId={params.appId} /> */}
-                        <ChartValuesView appId={params.appId} />
+                        <ChartValuesView appId={params.appId} isExternalApp={true} />
                     </Route>
                     <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}>
                         <ChartDeploymentHistory appId={params.appId} appName={params.appName} isExternal={true} />

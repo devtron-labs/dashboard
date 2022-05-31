@@ -10,7 +10,7 @@ import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.
 import checkIcon from '../../../../assets/icons/appstatus/ic-check.svg'
 import warn from '../../../../assets/icons/ic-warning.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
-import { ConfirmationDialog, DeleteDialog, Select } from '../../../common'
+import { ConfirmationDialog, DeleteDialog, Progressing, Select } from '../../../common'
 import {
     ChartEnvironmentSelectorType,
     ChartRepoSelectorType,
@@ -31,6 +31,7 @@ import { URLS } from '../../../../config'
 import { getChartRelatedReadMe } from './chartValues.api'
 import { ChartVersionType } from '../../../charts/charts.types'
 import Tippy from '@tippyjs/react'
+import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -71,19 +72,6 @@ export const ChartEnvironmentSelector = ({
                 options={environments}
             />
         </div>
-    )
-}
-
-export const StaticChartRepoInput = ({ releaseInfo }: ChartSelectorType) => {
-    return (
-        <label className="form__row form__row--w-100">
-            <span className="form__label">Chart</span>
-            <input
-                className="form__input"
-                value={`${releaseInfo.deployedAppDetail.chartName} (${releaseInfo.deployedAppDetail.chartVersion})`}
-                disabled={true}
-            />
-        </label>
     )
 }
 
@@ -180,12 +168,16 @@ export const ChartRepoSelector = ({
             <components.MenuList {...props}>
                 {props.children}
                 <div className="flex react-select__bottom bcn-0">
-                    <div className="flex sticky-information__bottom">
-                        <Info className="code-editor__information-info-icon" />
-                        Unable to find the desired chart? To connect a chart repo or Re-sync connected repos.&nbsp;
-                        <NavLink to={URLS.GLOBAL_CONFIG_CHART} target="_blank">
-                            Go to chart repository
-                        </NavLink>
+                    <div className="sticky-information__bottom">
+                        <div className="sticky-information__icon mt-2">
+                            <Info className="icon-dim-16" />
+                        </div>
+                        <div className="sticky-information__note fs-13">
+                            Unable to find the desired chart? To connect a chart repo or Re-sync connected repos.&nbsp;
+                            <NavLink to={URLS.GLOBAL_CONFIG_CHART} target="_blank" className="fw-6">
+                                Go to chart repository
+                            </NavLink>
+                        </div>
                     </div>
                 </div>
             </components.MenuList>
@@ -216,6 +208,7 @@ export const ChartRepoSelector = ({
                     <AsyncSelect
                         cacheOptions
                         defaultOptions={repoChartOptions}
+                        isSearchable={false}
                         formatOptionLabel={repoChartSelectOptionLabel}
                         value={repoChartValue}
                         loadOptions={repoChartLoadOptions}
@@ -237,7 +230,9 @@ export const ChartRepoSelector = ({
                             }),
                             control: (base, state) => ({
                                 ...base,
+                                minHeight: '32px',
                                 boxShadow: 'none',
+                                backgroundColor: 'var(--N50)',
                                 border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
                                 cursor: 'pointer',
                             }),
@@ -253,8 +248,15 @@ export const ChartRepoSelector = ({
                                 return {
                                     ...base,
                                     color: 'var(--N400)',
+                                    padding: '0 8px',
                                     transition: 'all .2s ease',
                                     transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                                }
+                            },
+                            valueContainer: (base, state) => {
+                                return {
+                                    ...base,
+                                    padding: '0 8px',
                                 }
                             },
                             loadingMessage: (base) => {
@@ -273,9 +275,13 @@ export const ChartRepoSelector = ({
                     />
                 </div>
                 {repoChartValue.deprecated && (
-                    <div className="deprecated-text-image flex left">
-                        <AlertTriangle className="icon-dim-16 update-chart" />
-                        <span className="deprecated-text">This chart has been deprecated. Select another chart.</span>
+                    <div className="chart-deprecated-wrapper flex top left br-4 cn-9 bcy-1 mt-12">
+                        <div className="icon-dim-16 mr-10">
+                            <AlertTriangle className="icon-dim-16 chart-deprecated-icon" />
+                        </div>
+                        <span className="chart-deprecated-text fs-12 fw-4">
+                            This chart has been deprecated. Please select another chart to continue receiving updates.
+                        </span>
                     </div>
                 )}
                 {isExternal && !installedAppInfo && !repoChartValue.chartRepoName && (
@@ -329,7 +335,7 @@ export const ChartVersionSelector = ({
             <span className="form__label fs-13 fw-4 lh-20 cn-7">Chart Version</span>
             <Select
                 tabIndex={4}
-                rootClassName="select-button--default"
+                rootClassName="select-button--default chart-values-selector"
                 value={selectedVersion}
                 onChange={(event) => selectVersion(event.target.value)}
             >
@@ -346,7 +352,7 @@ export const ChartVersionSelector = ({
             <span className="form__label fs-13 fw-4 lh-20 cn-7">Chart Version</span>
             <Select
                 tabIndex={4}
-                rootClassName="select-button--default"
+                rootClassName="select-button--default chart-values-selector"
                 value={selectedVersionUpdatePage?.id}
                 onChange={(event) =>
                     setSelectedVersionUpdatePage({
@@ -377,6 +383,7 @@ export const ChartValuesSelector = ({
         <div className="w-100 mb-12">
             <span className="form__label fs-13 fw-4 lh-20 cn-7">Chart Values</span>
             <ChartValuesSelect
+                className="chart-values-selector"
                 chartValuesList={chartValuesList}
                 chartValues={chartValues}
                 redirectToChartValues={redirectToChartValues}
@@ -446,13 +453,10 @@ export const ActiveReadmeColumn = ({
         }
     }, [selectedVersionUpdatePage])
 
-    return (
-        <ReadmeColumn
-            readmeCollapsed={readmeCollapsed}
-            toggleReadmeCollapsed={toggleReadmeCollapsed}
-            readme={activeReadMe}
-            loading={fetchingReadMe}
-        />
+    return fetchingReadMe ? (
+        <Progressing pageLoader />
+    ) : (
+        <MarkDown markdown={activeReadMe} className="chart-values-view__readme-markdown" />
     )
 }
 
@@ -472,7 +476,7 @@ export const ChartValuesEditor = ({
                     <span className="bold">values.yaml</span>
                 </CodeEditor.Header> */}
                 {hasChartChanged && (
-                    <CodeEditor.Information
+                    <CodeEditor.Warning
                         text={`Please ensure that the values are compatible with "${repoChartValue.chartRepoName}/${repoChartValue.chartName}"`}
                     />
                 )}

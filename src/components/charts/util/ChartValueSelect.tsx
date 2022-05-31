@@ -11,6 +11,7 @@ export interface ChartValuesSelectProps {
     chartValues: ChartValuesType;
     chartValuesList: ChartValuesType[];
     hideVersionFromLabel?: boolean;
+    className?: string;
 }
 
 export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
@@ -51,7 +52,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
 
         return <>
             <Select tabIndex={this.props.tabIndex || 0}
-                rootClassName="select-button--default"
+                rootClassName={`select-button--default ${this.props.className || ''}`}
                 valueComparator={this.selectionComparator}
                 value={this.props.chartValues}
                 onChange={this.onChange}>

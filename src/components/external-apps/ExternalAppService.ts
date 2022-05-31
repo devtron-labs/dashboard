@@ -39,14 +39,16 @@ export interface ReleaseInfo {
 }
 
 export interface InstalledAppInfo {
-    appId: number,
-    installedAppId: number,
-    installedAppVersionId: number,
-    environmentName: string,
-    appOfferingMode: string,
-    appStoreChartId: number,
-    clusterId: number,
+    appId: number
+    installedAppId: number
+    installedAppVersionId: number
     environmentId: number
+    environmentName: string
+    appOfferingMode: string
+    appStoreChartId: number
+    appStoreChartName: string
+    appStoreChartRepoName: string
+    clusterId: number
 }
 
 export interface HelmAppDetail {
@@ -82,18 +84,27 @@ interface HelmReleaseStatus {
     description: string
 }
 
-export interface UpdateApplicationRequest {
-    appId: string,
+export interface UpdateAppReleaseWithoutLinkingRequest {
+    appId: string
     valuesYaml: string
 }
 
 export interface LinkToChartStoreRequest {
-    appId: string;
-    valuesYaml: string;
-    appStoreApplicationVersionId: number;
-    referenceValueId: number;
-    referenceValueKind: string;
+    appId: string
+    valuesYaml: string
+    appStoreApplicationVersionId: number
+    referenceValueId: number
+    referenceValueKind: string
 }
+
+export interface UpdateAppReleaseRequest {
+    id: string
+    valuesOverrideYaml: string
+    installedAppId: number
+    appStoreVersion: number
+    referenceValueId: number
+    referenceValueKind: string
+} 
 
 export const getReleaseInfo = (appId: string): Promise<ReleaseInfoResponse> => {
     let url = `${Routes.HELM_RELEASE_INFO_API}?appId=${appId}`
@@ -110,8 +121,12 @@ export const deleteApplicationRelease = (appId: string): Promise<UninstallReleas
     return trash(url);
 }
 
-export const updateApplicationRelease = (requestPayload: UpdateApplicationRequest): Promise<UpdateReleaseResponse> => {
-    return put(Routes.HELM_RELEASE_APP_UPDATE_API, requestPayload);
+export const updateAppReleaseWithoutLinking = (requestPayload: UpdateAppReleaseWithoutLinkingRequest): Promise<UpdateReleaseResponse> => {
+    return put(Routes.HELM_RELEASE_APP_UPDATE_WITHOUT_LINKING_API, requestPayload);
+};
+
+export const updateAppRelease = (requestPayload: UpdateAppReleaseRequest): Promise<any> => {
+    return put(Routes.UPDATE_APP_API, requestPayload);
 };
 
 export const linkToChartStore = (request: LinkToChartStoreRequest): Promise<UpdateReleaseResponse> => {
