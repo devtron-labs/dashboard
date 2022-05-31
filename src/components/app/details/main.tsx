@@ -377,7 +377,7 @@ export function AppHeader() {
                 onClickTippybutton={handleinfoModal}
                 tippyMessage={'About app'}
             />
-            {showInfoModal && getAppMetaInfoRes()}
+            {showInfoModal && renderInfoModal()}
         </>
     )
 }
