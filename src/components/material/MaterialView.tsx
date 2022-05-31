@@ -66,7 +66,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
     }
 
     gitAuthType = (key) => {
-        const res = this.props.providers?.filter((provider) => provider?.id === this.props.material?.gitProvider?.id)
+        const res = this.props.providers?.filter((provider) => provider?.id === this.props.material?.gitProvider?.id) || []
         if (key === "host") { return res[0]?.authMode == "SSH" ? "ssh" : "https" }
         if (key === "placeholder") {
             return res[0]?.authMode == "SSH" ? "e.g. git@github.com:abc/xyz.git" : "e.g. https://gitlab.com/abc/xyz.git"
@@ -86,7 +86,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
     }
 
     renderForm() {
-        const sortedProviders = this.props.providers? sortObjectArrayAlphabetically(this.props.providers,"name") : this.props.providers;
+        const sortedProviders: any[] = this.props.providers? sortObjectArrayAlphabetically(this.props.providers,"name") : [];
         return <form key={`${(this.props.material).id}`} className="white-card p-20 mb-16">
             <div className="mb-20 cn-9 fs-16 fw-6 white-card__header--form">
                 {(this.props.material).id ? "Edit Git Repository" : "Add Git Repository"}
