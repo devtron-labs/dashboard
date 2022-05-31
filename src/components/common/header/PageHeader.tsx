@@ -46,7 +46,12 @@ function PageHeader({
                 <span className="fw-6">{headerName}</span>
                 {isBreadcrumbs && breadCrumbs()}
                 {isTippyShown && (
-                    <a className="learn-more__href flex" target="_blank" href={tippyRedirectLink}>
+                    <a
+                        className="learn-more__href flex"
+                        target="_blank"
+                        href={tippyRedirectLink}
+                        onClick={onClickTippybutton}
+                    >
                         <Tippy
                             className="default-tt "
                             arrow={false}
@@ -60,7 +65,7 @@ function PageHeader({
             </h1>
             {showTabs && renderHeaderTabs()}
             {showCreateButton && (
-                <button type="button" className="flex cta h-32 lh-n" onClick={() => onClickCreateButton()}>
+                <button type="button" className="flex cta h-32 lh-n" onChange={() => onClickCreateButton()}>
                     {showIconBeforeText && CreateButtonIcon && <CreateButtonIcon className="icon-dim-20" />}
                     Create {buttonText}
                     {!showIconBeforeText && CreateButtonIcon && <CreateButtonIcon className="icon-dim-20" />}

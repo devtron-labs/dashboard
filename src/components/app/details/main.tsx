@@ -109,11 +109,20 @@ export function AppHeader() {
     }
 
     useEffect(() => {
+        let isMounted = true
+        // if (isMounted) {
         try {
             getAppMetaInfoRes()
         } catch (err) {
             showError(err)
         }
+        return () => {
+            setShowInfoModal(false)
+        }
+        // }
+        // return () => {
+        //     isMounted = false
+        // }
     }, [appId])
 
     function validateForm(): boolean {
@@ -351,19 +360,8 @@ export function AppHeader() {
         return <BreadCrumb breadcrumbs={breadcrumbs} />
     }
 
-    const renderInfoIcon = () => {
-        return (
-            <div
-                className="tab-list__info-icon ml-4 cursor"
-                onClick={() => {
-                    return
-                }}
-            >
-                <Tippy className="default-tt " arrow={false} content={'About app'}>
-                    <Info className="icon-dim-20 fcn-5" />
-                </Tippy>
-            </div>
-        )
+    const handleinfoModal = () => {
+        setShowInfoModal(true)
     }
 
     return (
@@ -376,7 +374,7 @@ export function AppHeader() {
                 renderHeaderTabs={renderAppDetailsTabs}
                 isTippyShown={true}
                 TippyIcon={Info}
-                onClickTippybutton={() => setShowInfoModal(true)}
+                onClickTippybutton={handleinfoModal}
                 tippyMessage={'About app'}
             />
             {showInfoModal && getAppMetaInfoRes()}

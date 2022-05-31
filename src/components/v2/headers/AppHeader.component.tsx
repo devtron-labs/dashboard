@@ -10,6 +10,7 @@ import { OptionType } from './appHeader.type'
 import { useSharedState } from '../utils/useSharedState'
 import './header.css'
 import IndexStore from '../appDetails/index.store'
+import PageHeader from '../../common/header/PageHeader'
 
 function AppHeaderComponent() {
     const { appId } = useParams<{ appId }>()
@@ -79,36 +80,12 @@ function AppHeaderComponent() {
         [appId],
     )
 
-    return (
-        <div className="app-page-header" style={{ display: 'grid', gridTemplateRows: '40px 40px' }}>
-            <h1 className="m-0 flex left fs-18 cn-9">
-                <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 2)} />
+    const renderBreadcrumbs = () => {
+        return <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 2)} />
+    }
 
-                {/* <div className="tab-list__info-icon ml-4 cursor" onClick={() => { return setShowInfoModal(true), getAppMetaInfoRes() }}>
-                <Tippy className="default-tt " arrow={false} content={'About app'}>
-                    <Info className="icon-dim-20 fcn-5" />
-                </Tippy>
-            </div> */}
-                {/* {showInfoModal &&
-                <VisibleModal className="app-status__material-modal"  >
-                    <div className="modal__body br-8 bcn-0 p-20">
-                        {/* <AboutAppInfoModal
-                            appMetaResult={result?.result}
-                            onClose={setShowInfoModal}
-                            isLoading={isLoading}
-                            labelTags={labelTags}
-                            handleCreatableBlur={handleCreatableBlur}
-                            handleInputChange={handleInputChange}
-                            handleKeyDown={(event) => handleKeyDown(labelTags, setAppTagLabel, event)}
-                            handleSubmit={handleSubmit}
-                            handleTagsChange={handleTagsChange}
-                            submitting={submitting}
-                        />
-                    </div>
-                </VisibleModal>}
-                */}
-            </h1>
-
+    const renderHelmDetailsTabs = () => {
+        return (
             <ul role="tablist" className="tab-list">
                 <li className="tab-list__tab ellipsis-right fs-13">
                     <NavLink
@@ -141,7 +118,19 @@ function AppHeaderComponent() {
                     </NavLink>
                 </li>
             </ul>
-        </div>
+        )
+    }
+
+    return (
+        <>
+            <PageHeader
+                headerName=""
+                isBreadcrumbs={true}
+                breadCrumbs={renderBreadcrumbs}
+                showTabs={true}
+                renderHeaderTabs={renderHelmDetailsTabs}
+            />
+        </>
     )
 }
 
