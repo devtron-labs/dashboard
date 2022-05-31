@@ -7,23 +7,11 @@ import uploadingImage from '../../assets/gif/uploading.gif'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION } from '../../config'
-import { ChartUploadResponse } from './types'
-
-const UPLOAD_STATE = {
-    UPLOAD: 'Upload',
-    UPLOADING: 'Uploading',
-    ERROR: 'Error',
-    SUCCESS: 'Success',
-}
-
-interface UploadChartModalType {
-    closeUploadPopup: (reloadData: boolean) => void
-}
+import { ChartUploadResponse, ChartUploadType, UploadChartModalType, UPLOAD_STATE } from './types'
 
 export default function UploadChartModal({ closeUploadPopup }: UploadChartModalType) {
     const inputFileRef = useRef(null)
-    const [chartDetail, setChartDetail] =
-        useState<{ chartName: string; description: string; fileId: number; message: string; chartVersion: number }>()
+    const [chartDetail, setChartDetail] = useState<ChartUploadType>()
     const [uploadState, setUploadState] = useState<string>(UPLOAD_STATE.UPLOAD)
     const [errorData, setErrorData] = useState<{ title: string; message: string[] }>({ title: '', message: [] })
     const [loadingData, setLoadingData] = useState(false)
@@ -39,13 +27,17 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
             })
             .catch((error) => {
                 setUploadState(UPLOAD_STATE.ERROR)
-                if (error.errors[0].code === '5001') {
-                    setErrorData({ title: error.errors[0].userMessage, message: ['Try uploading another chart'] })
+                if (Array.isArray(error.errors)) {
+                    if (error.errors[0].code === '5001') {
+                        setErrorData({ title: error.errors[0].userMessage, message: ['Try uploading another chart'] })
+                    } else {
+                        setErrorData({
+                            title: 'Unsupported chart template',
+                            message: error.errors[0].userMessage.split('; '),
+                        })
+                    }
                 } else {
-                    setErrorData({
-                        title: 'Unsupported chart template',
-                        message: error.errors[0].userMessage.split('; '),
-                    })
+                    showError(error)
                 }
             })
     }
