@@ -18,6 +18,7 @@ import { validateTags, TAG_VALIDATION_MESSAGE, createOption, handleKeyDown } fro
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
+import PageHeader from '../../common/header/PageHeader'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -206,7 +207,7 @@ export function AppHeader() {
                     linked: false,
                 },
                 app: {
-                    component: <span className="cn-5 fs-18 lowercase">apps</span>,
+                    component: <span className="cb-5 fs-16 text-capitalize">apps</span>,
                     linked: true,
                 },
             },
@@ -225,40 +226,31 @@ export function AppHeader() {
             tagError: '',
         })
 
-    return (
-        <div className="page-header" style={{ gridTemplateColumns: 'unset' }}>
-            <h1 className="m-0 fw-6 flex left fs-18 cn-9">
-                <BreadCrumb breadcrumbs={breadcrumbs} />
-                <div
-                    className="tab-list__info-icon ml-4 cursor"
-                    onClick={() => {
-                        return setShowInfoModal(true), getAppMetaInfoRes()
-                    }}
-                >
-                    <Tippy className="default-tt " arrow={false} content={'About app'}>
-                        <Info className="icon-dim-20 fcn-5" />
-                    </Tippy>
-                </div>
-                {showInfoModal && (
-                    <VisibleModal className="app-status__material-modal">
-                        <div className="modal__body br-8 bcn-0 p-20">
-                            <AboutAppInfoModal
-                                appMetaResult={result?.result}
-                                onClose={setShowInfoModal}
-                                isLoading={isLoading}
-                                labelTags={labelTags}
-                                handleCreatableBlur={handleCreatableBlur}
-                                handleInputChange={handleInputChange}
-                                handleKeyDown={(event) => handleKeyDown(labelTags, setAppTagLabel, event)}
-                                handleSubmit={handleSubmit}
-                                handleTagsChange={handleTagsChange}
-                                submitting={submitting}
-                            />
-                        </div>
-                    </VisibleModal>
-                )}
-            </h1>
+    const renderInfoModal = () => {
+        return (
+            showInfoModal && (
+                <VisibleModal className="app-status__material-modal">
+                    <div className="modal__body br-8 bcn-0 p-20">
+                        <AboutAppInfoModal
+                            appMetaResult={result?.result}
+                            onClose={setShowInfoModal}
+                            isLoading={isLoading}
+                            labelTags={labelTags}
+                            handleCreatableBlur={handleCreatableBlur}
+                            handleInputChange={handleInputChange}
+                            handleKeyDown={(event) => handleKeyDown(labelTags, setAppTagLabel, event)}
+                            handleSubmit={handleSubmit}
+                            handleTagsChange={handleTagsChange}
+                            submitting={submitting}
+                        />
+                    </div>
+                </VisibleModal>
+            )
+        )
+    }
 
+    const renderAppDetailsTabs = () => {
+        return (
             <ul role="tablist" className="tab-list">
                 <li className="tab-list__tab ellipsis-right">
                     <NavLink
@@ -352,13 +344,31 @@ export function AppHeader() {
                         App Configuration
                     </NavLink>
                 </li>
-                {/* commented for time being */}
-                {/* <li className="tab-list__tab">
-                    <NavLink activeClassName="active" to={`${url}/tests`} className="tab-list__tab-link">
-                        Tests
-                    </NavLink>
-                </li> */}
             </ul>
-        </div>
+        )
+    }
+
+    const renderBreadcrumbs = () => {
+        return <BreadCrumb breadcrumbs={breadcrumbs} />
+    }
+
+    const handleInfoModal = () => {
+        setShowInfoModal(true)
+    }
+
+    return (
+        <>
+            <PageHeader
+                breadCrumbs={renderBreadcrumbs}
+                isBreadcrumbs={true}
+                showTabs={true}
+                renderHeaderTabs={renderAppDetailsTabs}
+                isTippyShown={true}
+                TippyIcon={Info}
+                onClickTippybutton={handleInfoModal}
+                tippyMessage={'About app'}
+            />
+            {showInfoModal && renderInfoModal()}
+        </>
     )
 }

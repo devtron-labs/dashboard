@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
+import { Link, NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
 import {
     ModuleDetailsCardType,
     ModuleStatus,
@@ -235,25 +235,33 @@ export const StackPageHeader = ({
             detailsMode === 'discover' ? URLS.STACK_MANAGER_DISCOVER_MODULES : URLS.STACK_MANAGER_INSTALLED_MODULES
         history.push(url)
     }
+
+    const renderBreadcrumbs = (headerTitleName, detailsMode) => {
+        return (
+            <div className="m-0 flex left ">
+                <div onClick={() => handleRedirectToModule(detailsMode)} className="devtron-breadcrumb__item">
+                    <span className="cb-5 fs-16">{headerTitleName} </span>
+                </div>
+                <span className="fs-16 cn-9 ml-4 mr-4"> / </span>
+                <span className="fs-16 cn-9">{selectedModule?.title}</span>
+            </div>
+        )
+    }
     return (
         <>
             {!detailsMode && <PageHeader headerName="Devtron Stack Manager" />}
             {detailsMode === 'discover' && (
                 <PageHeader
-                    headerName="Discover integrations"
-                    onClickCreateButton={handleBreadcrumbClick}
-                    postHeaderName={selectedModule?.title}
+                    isBreadcrumbs={true}
                     isHeaderNameClickable={true}
-                    onClickHeaderName={() => handleRedirectToModule('discover')}
+                    breadCrumbs={() => renderBreadcrumbs('Discover integrations', 'discover')}
                 />
             )}
             {detailsMode === 'installed' && (
                 <PageHeader
-                    headerName="Installed integrations"
-                    onClickCreateButton={handleBreadcrumbClick}
-                    postHeaderName={selectedModule?.title}
+                    isBreadcrumbs={true}
                     isHeaderNameClickable={true}
-                    onClickHeaderName={() => handleRedirectToModule('installed')}
+                    breadCrumbs={() => renderBreadcrumbs('Installed integrations', 'installed')}
                 />
             )}
         </>

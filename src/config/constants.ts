@@ -125,7 +125,8 @@ export const Routes = {
     DELETE_RESOURCE: 'k8s/resource/delete',
     CREATE_RESOURCE: 'k8s/resource/create',
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
-    HELM_RELEASE_APP_UPDATE_API: 'application/update',
+    HELM_RELEASE_APP_UPDATE_WITHOUT_LINKING_API: 'application/update',
+    UPDATE_APP_API: 'app-store/deployment/application/update',
     HELM_LINK_TO_CHART_STORE_API: 'app-store/deployment/application/helm/link-to-chart-store',
     HELM_DEPLOYMENT_ROLLBACK_API: 'application/rollback',
     NAMESPACE: 'env/namespace',
@@ -144,6 +145,9 @@ export const Routes = {
     LOG_PODNAME_API: 'k8s/resource/inception/info',
     RELEASE_NOTES_API: 'release/notes',
     MODULES_API: 'modules',
+    CUSTOM_CHART_LIST: 'deployment/template/fetch',
+    VALIDATE_CUSTOM_CHART: 'deployment/template/validate',
+    UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
 }
 
 export const ViewType = {
@@ -230,6 +234,9 @@ export const DOCUMENTATION = {
     BUILD_STAGE: 'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/ci-pipeline#build-stage',
     PRE_POST_BUILD_STAGE:
         'https://docs.devtron.ai/devtron/user-guide/creating-application/workflow/ci-pipeline/ci-build-pre-post-plugins',
+    CUSTOM_CHART: 'https://docs.devtron.ai/devtron/setup/global-configurations/custom-charts',
+    CUSTOM_CHART_PRE_REQUISITES:
+        'https://docs.devtron.ai/devtron/setup/global-configurations/custom-charts#prerequisites',
 }
 
 // APP LIST STARTS
@@ -507,3 +514,5 @@ export const EXTERNAL_TYPES = {
     AWSSystemManager: 'AWS System Manager',
     HashiCorpVault: 'Hashi Corp Vault',
 }
+
+export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'

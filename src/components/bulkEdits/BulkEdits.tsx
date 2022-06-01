@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { AppListConstants, DOCUMENTATION, SERVER_MODE } from '../../config'
-import Tippy from '@tippyjs/react'
+import { DOCUMENTATION, SERVER_MODE } from '../../config'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { ViewType } from '../../config'
 import {
@@ -770,7 +769,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         return (
             <div className="fs-13">
-                <PageHeader headerName="Bulk Edit" isTippyShown={true} tippyRedirectLink={DOCUMENTATION.BULK_UPDATE} />
+                <PageHeader
+                    headerName="Bulk Edit"
+                    isTippyShown={true}
+                    TippyIcon={Question}
+                    tippyMessage={'Learn more'}
+                    tippyRedirectLink={DOCUMENTATION.BULK_UPDATE}
+                />
                 {this.props.serverMode == SERVER_MODE.EA_ONLY
                     ? this.renderEmptyStateForEAOnlyMode()
                     : this.renderBulkEditBody()}

@@ -1,17 +1,17 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { URLS } from '../../config';
-import { VisibleModal } from '../common';
-import { ReactComponent as SuccessIcon } from '../../assets/icons/ic-success-with-light-background.svg';
-import { ReactComponent as GotToBuildDeploy } from '../../assets/icons/go-to-buildanddeploy@2x.svg';
-import { ReactComponent as GoToEnvOverride } from '../../assets/icons/go-to-envoverride@2x.svg';
+import React from 'react'
+import { NavLink } from 'react-router-dom'
+import { URLS } from '../../config'
+import { VisibleModal } from '../common'
+import { ReactComponent as SuccessIcon } from '../../assets/icons/ic-success-with-light-background.svg'
+import { ReactComponent as GotToBuildDeploy } from '../../assets/icons/go-to-buildanddeploy@2x.svg'
+import { ReactComponent as GoToEnvOverride } from '../../assets/icons/go-to-envoverride@2x.svg'
 
 interface CDSuccessModalType {
-    appId: string;
-    envId: number;
-    closeSuccessPopup: () => void;
-    envName: string;
-    successTitle: string;
+    appId: string
+    envId: number
+    closeSuccessPopup: () => void
+    envName: string
+    successTitle: string
 }
 
 export default function CDSuccessModal({ appId, envId, closeSuccessPopup, envName, successTitle }: CDSuccessModalType) {
@@ -29,7 +29,7 @@ export default function CDSuccessModal({ appId, envId, closeSuccessPopup, envNam
                 </div>
                 <NavLink to={`${URLS.APP}/${appId}/${URLS.APP_TRIGGER}`} className="cb-5 no-decor">
                     <div className="flex left br-4 p-15 mb-12 en-2 bw-1 action-card">
-                        <div className="icon-container">
+                        <div className="cd-success-icon-container ">
                             <GotToBuildDeploy />
                         </div>
                         <div className="ml-16 mr-16 flex-1">
@@ -43,7 +43,7 @@ export default function CDSuccessModal({ appId, envId, closeSuccessPopup, envNam
                     className="cb-5 no-decor"
                 >
                     <div className="flex left br-4 p-15 mb-12 en-2 bw-1 action-card">
-                        <div className="icon-container">
+                        <div className="cd-success-icon-container ">
                             <GoToEnvOverride />
                         </div>
                         <div className="ml-16 mr-16 flex-1">
@@ -59,5 +59,5 @@ export default function CDSuccessModal({ appId, envId, closeSuccessPopup, envNam
                 </div>
             </div>
         </VisibleModal>
-    );
+    )
 }
