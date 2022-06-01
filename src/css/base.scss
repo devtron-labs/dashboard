@@ -128,6 +128,12 @@ a:focus {
     grid-column: 2;
 }
 
+.page-header-tabs__height {
+    height: 76px;
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
 .tab-list {
     list-style: none;
     display: flex;
@@ -1180,6 +1186,7 @@ button.anchor {
 .devtron-breadcrumb__item {
     color: inherit;
     text-transform: capitalize;
+    font-weight: 400;
 }
 
 .devtron-breadcrumb__item:hover {
@@ -1190,7 +1197,7 @@ button.anchor {
 .devtron-breadcrumb__item:last-child {
     text-decoration: none;
     cursor: unset;
-    font-weight: 600;
+    font-weight: 400;
 
     &:hover {
         color: inherit;
@@ -1199,6 +1206,7 @@ button.anchor {
 
 .devtron-breadcrumb__item.param {
     text-transform: unset;
+    font-weight: 400;
 }
 
 .devtron-breadcrumb__item__separator {
