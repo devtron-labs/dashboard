@@ -60,7 +60,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     preStage
     postStage
     configMapAndSecrets = []
-    noStrategyAvailable = false
+    userUploadedChart = false
     constructor(props) {
         super(props)
         const urlParams = new URLSearchParams(this.props.location.search)
@@ -134,7 +134,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         this.allStrategies[strategies[i].deploymentTemplate] = {}
                     this.allStrategies[strategies[i].deploymentTemplate] = strategies[i].config
                 }
-                this.noStrategyAvailable = strategies.length === 0
+                this.userUploadedChart = response.result.userUploaded
                 this.setState(
                     {
                         strategies,
@@ -706,7 +706,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderDeploymentStrategy() {
-        if (this.noStrategyAvailable) {
+        if (this.userUploadedChart) {
             return null
         }
         return (
@@ -1214,7 +1214,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             <>
                 <p className="fs-14 fw-6 cn-9 mb-16">Select Environment</p>
                 {this.renderEnvAndNamespace()}
-                {!this.noStrategyAvailable && (
+                {!this.userUploadedChart && (
                     <>
                         <div className="divider mt-0 mb-0"></div>
                         <p className="fs-14 fw-6 cn-9 mb-16 mt-20">Deployment Strategy</p>
