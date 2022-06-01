@@ -1,0 +1,25 @@
+.chart-list {
+    margin: 20px 95px;
+    .margin-right-0 {
+        margin-right: 0 !important;
+    }
+    .chart-list-row {
+        display: grid;
+        grid-template-columns: 220px 120px auto;
+    }
+}
+.upload-modal {
+    width: 600px;
+    position: relative;
+    padding: 0;
+    .prerequisite-table {
+        display: grid;
+        grid-template-columns: 55% 45%;
+    }
+    .footer {
+        position: absolute;
+        bottom: 0px;
+        width: 100%;
+        margin: 0;
+    }
+}
