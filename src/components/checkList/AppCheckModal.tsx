@@ -39,7 +39,7 @@ export class AppCheckListModal extends Component<AppCheckListModalProps, AppChec
                     isAppCollapsed={this.state.isAppCollapsed}
                     appStageCompleted={this.props.appStageCompleted}
                     toggleAppChecklist={this.toggleAppChecklist} />
-                <hr className="checklist__divider mt-0 mb-0" />
+                <hr className="checklist__divider mt-16 mb-0" />
                 <ChartCheckList chartChecklist={this.props.chartChecklist}
                     isChartCollapsed={this.state.isChartCollapsed}
                     showDivider={false}
