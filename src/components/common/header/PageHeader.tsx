@@ -11,9 +11,9 @@ export interface PageHeaderType {
     CreateButtonIcon?: React.FunctionComponent<any>
     showIconBeforeText?: boolean
     showTabs?: boolean
-    renderHeaderTabs?: () => void
+    renderHeaderTabs?: () => JSX.Element
     isBreadcrumbs?: boolean
-    breadCrumbs?: () => void
+    breadCrumbs?: () => JSX.Element
     TippyIcon?: React.FunctionComponent<any>
     tippyMessage?: string
     onClickTippybutton?: () => void
