@@ -39,7 +39,7 @@ function PageHeader({
     return (
         <div
             className={`page-header content-space cn-9 bcn-0 pl-20 pr-20 ${
-                showTabs ? 'page-header-tabs__height' : 'page-header__height'
+                showTabs ? 'page-header-tabs__height' : 'page-header__height flex'
             }`}
         >
             <h1 className="page-header__title flex left fs-16 fw-6 lh-20">
