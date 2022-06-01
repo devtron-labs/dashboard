@@ -65,7 +65,7 @@ function PageHeader({
             </h1>
             {showTabs && renderHeaderTabs()}
             {showCreateButton && (
-                <button type="button" className="flex cta h-32 lh-n" onChange={() => onClickCreateButton()}>
+                <button type="button" className="flex cta h-32 lh-n" onClick={() => onClickCreateButton()}>
                     {showIconBeforeText && CreateButtonIcon && <CreateButtonIcon className="icon-dim-20" />}
                     Create {buttonText}
                     {!showIconBeforeText && CreateButtonIcon && <CreateButtonIcon className="icon-dim-20" />}
