@@ -1,17 +1,12 @@
-import React, { lazy, useState } from 'react'
+import React from 'react'
 import { Route, Switch, Redirect } from 'react-router-dom'
-import { DOCUMENTATION, URLS } from '../../config'
-import Deployed from './list/Deployed'
 import DeploymentDetail from './deploymentDetail/DeploymentDetail'
 import DiscoverCharts from './list/DiscoverCharts'
 import { NavLink } from 'react-router-dom'
 import './list/list.scss'
 import '../app/details/appDetails/appDetails.scss'
 import './charts.css'
-import { RedirectWithSentry } from '../common/navigation/NavigationRoutes'
-import { ErrorBoundary, AppContext } from '../common'
-import { useRouteMatch, useHistory, useLocation } from 'react-router'
-import { EnvType } from '../v2/appDetails/appDetails.type'
+import { useRouteMatch } from 'react-router'
 
 export default function Charts() {
     const { path } = useRouteMatch()

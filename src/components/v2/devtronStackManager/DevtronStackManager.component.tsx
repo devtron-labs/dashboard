@@ -253,14 +253,12 @@ export const StackPageHeader = ({
             {detailsMode === 'discover' && (
                 <PageHeader
                     isBreadcrumbs={true}
-                    isHeaderNameClickable={true}
                     breadCrumbs={() => renderBreadcrumbs('Discover integrations', 'discover')}
                 />
             )}
             {detailsMode === 'installed' && (
                 <PageHeader
                     isBreadcrumbs={true}
-                    isHeaderNameClickable={true}
                     breadCrumbs={() => renderBreadcrumbs('Installed integrations', 'installed')}
                 />
             )}

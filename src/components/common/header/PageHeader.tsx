@@ -2,14 +2,10 @@ import React from 'react'
 import Tippy from '@tippyjs/react'
 export interface PageHeaderType {
     headerName?: string
-    buttonText?: string
     onClickCreateButton?: () => void
     isTippyShown?: boolean
     showCreateButton?: boolean
     tippyRedirectLink?: string
-    CreateButtonIcon?: React.FunctionComponent<any>
-    showIconBeforeText?: boolean
-    isHeaderNameClickable?: boolean
     showTabs?: boolean
     renderHeaderTabs?: () => JSX.Element
     isBreadcrumbs?: boolean
@@ -17,17 +13,14 @@ export interface PageHeaderType {
     TippyIcon?: React.FunctionComponent<any>
     tippyMessage?: string
     onClickTippybutton?: () => void
+    renderCreateButton?: () => JSX.Element
 }
 
 function PageHeader({
     headerName,
-    buttonText,
-    onClickCreateButton,
     isTippyShown = false,
     showCreateButton = false,
     tippyRedirectLink,
-    CreateButtonIcon,
-    showIconBeforeText,
     showTabs = false,
     renderHeaderTabs,
     isBreadcrumbs = false,
@@ -35,6 +28,7 @@ function PageHeader({
     TippyIcon,
     tippyMessage,
     onClickTippybutton,
+    renderCreateButton,
 }: PageHeaderType) {
     return (
         <div
@@ -64,13 +58,7 @@ function PageHeader({
                 )}
             </h1>
             {showTabs && renderHeaderTabs()}
-            {showCreateButton && (
-                <button type="button" className="flex cta h-32 lh-n" onClick={() => onClickCreateButton()}>
-                    {showIconBeforeText && CreateButtonIcon && <CreateButtonIcon className="icon-dim-20" />}
-                    Create {buttonText}
-                    {!showIconBeforeText && CreateButtonIcon && <CreateButtonIcon className="icon-dim-20" />}
-                </button>
-            )}
+            {showCreateButton && renderCreateButton()}
         </div>
     )
 }
