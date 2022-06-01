@@ -109,7 +109,7 @@
     margin-bottom: -8px;
     box-shadow: 0 -1px 0 0 var(--N200);
     background-color: inherit;
-    padding: 16px 12px;
+    padding: 10px 12px;
     width: 100%;
     display: flex;
     align-items: center;
@@ -132,7 +132,7 @@
 
 .select__option-with-subtitle:hover,
 .select__option:hover {
-    background-color: var(--window-bg)
+    background-color: var(--window-bg);
 }
 
 .select__option-with-subtitle--empty-state:hover {
