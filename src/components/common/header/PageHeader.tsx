@@ -1,5 +1,7 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
+import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+
 export interface PageHeaderType {
     headerName?: string
     onClickCreateButton?: () => void
@@ -14,6 +16,8 @@ export interface PageHeaderType {
     tippyMessage?: string
     onClickTippybutton?: () => void
     renderCreateButton?: () => JSX.Element
+    showCloseButton?: boolean
+    onClose?: () => void
 }
 
 function PageHeader({
@@ -29,6 +33,8 @@ function PageHeader({
     tippyMessage,
     onClickTippybutton,
     renderCreateButton,
+    showCloseButton = false,
+    onClose,
 }: PageHeaderType) {
     return (
         <div
@@ -37,6 +43,11 @@ function PageHeader({
             }`}
         >
             <h1 className="page-header__title flex left fs-16 fw-6 lh-20">
+                {showCloseButton && (
+                    <button className="transparent flex mr-8" onClick={onClose}>
+                        <Close className="icon-dim-24 cursor" />
+                    </button>
+                )}
                 <span className="fw-6">{headerName}</span>
                 {isBreadcrumbs && breadCrumbs()}
                 {isTippyShown && (
