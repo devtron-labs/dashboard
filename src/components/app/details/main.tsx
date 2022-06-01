@@ -109,8 +109,6 @@ export function AppHeader() {
     }
 
     useEffect(() => {
-        let isMounted = true
-        // if (isMounted) {
         try {
             getAppMetaInfoRes()
         } catch (err) {
@@ -119,10 +117,6 @@ export function AppHeader() {
         return () => {
             setShowInfoModal(false)
         }
-        // }
-        // return () => {
-        //     isMounted = false
-        // }
     }, [appId])
 
     function validateForm(): boolean {
@@ -360,7 +354,7 @@ export function AppHeader() {
         return <BreadCrumb breadcrumbs={breadcrumbs} />
     }
 
-    const handleinfoModal = () => {
+    const handleInfoModal = () => {
         setShowInfoModal(true)
     }
 
@@ -374,7 +368,7 @@ export function AppHeader() {
                 renderHeaderTabs={renderAppDetailsTabs}
                 isTippyShown={true}
                 TippyIcon={Info}
-                onClickTippybutton={handleinfoModal}
+                onClickTippybutton={handleInfoModal}
                 tippyMessage={'About app'}
             />
             {showInfoModal && renderInfoModal()}
