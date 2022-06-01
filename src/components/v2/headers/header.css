@@ -13,3 +13,6 @@
     position: sticky;
     top: 0;
 }
+.tab-list__tab-link {
+    padding: 0 0 8px 0;
+}

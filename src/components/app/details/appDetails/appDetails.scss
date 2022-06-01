@@ -1,6 +1,6 @@
 .app-details-page {
     display: grid;
-    grid-template-rows: 80px 1fr;
+    grid-template-rows: 78px 1fr;
     height: 100%;
     max-width: 100%;
     width: 100%;
@@ -104,7 +104,7 @@
     text-transform: lowercase;
     margin-bottom: 15px;
     font-weight: 600;
-    letter-spacing: .005em;
+    letter-spacing: 0.005em;
 }
 
 .info-block .small-text {
@@ -114,7 +114,7 @@
     text-transform: lowercase;
     font-weight: 500;
     margin-bottom: 0px;
-    letter-spacing: .005em;
+    letter-spacing: 0.005em;
 }
 
 .info-block .small-text a {
@@ -147,7 +147,7 @@
     box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.1);
 }
 
-.event-block>div {
+.event-block > div {
     display: inline-block;
     vertical-align: middle;
 }
@@ -161,7 +161,7 @@
     border-left: solid 6px white;
 }
 
-.event-labels>div {
+.event-labels > div {
     display: inline-block;
     vertical-align: middle;
     text-transform: capitalize;
@@ -315,8 +315,6 @@ table.pod__table td:last-child {
         position: sticky;
         top: 0;
         background: white;
-        ;
-
         &:hover {
             background: white;
         }
@@ -345,18 +343,18 @@ table.pod__table td:last-child {
 .services-info {
     .generic_row {
         svg {
-            path[fill="black"] {
+            path[fill='black'] {
                 fill: --N500;
             }
 
             &:hover {
-                path[fill="black"] {
+                path[fill='black'] {
                     fill: var(--N900);
                 }
             }
         }
 
-        &>div {
+        & > div {
             flex: 0 0 50%;
             justify-content: flex-start;
 
@@ -388,7 +386,6 @@ table.pod__table td:last-child {
     }
 
     &.detailed {
-
         .services-info,
         .status-info {
             flex-basis: 50%;
@@ -401,7 +398,7 @@ table.pod__table td:last-child {
         box-shadow: inset 0 -1px 0 0 var(--N100);
         position: sticky;
         top: 0;
-        background: var(--N000)
+        background: var(--N000);
     }
 }
 
@@ -496,7 +493,7 @@ table.pod__table td:last-child {
                     display: inline;
 
                     &:not(:last-child):after {
-                        content: "•";
+                        content: '•';
                         padding: 0 4px;
                     }
                 }
@@ -589,7 +586,7 @@ table.pod__table td:last-child {
             }
         }
 
-        .header-column:nth-child(-n+5) {
+        .header-column:nth-child(-n + 5) {
             position: sticky;
             top: 0;
             font-weight: 600;
@@ -731,7 +728,6 @@ table.pod__table td:last-child {
     }
 
     .app-summary__status-name {
-
         &.f-healthy,
         &.f-scalingreplicasetdown {
             color: var(--green);
@@ -844,18 +840,18 @@ table.pod__table td:last-child {
 
                 .b-suspended,
                 .b-switchedtoactiveservice {
-                    background-color: #FFF0CF;
+                    background-color: #fff0cf;
                 }
 
                 .b-degraded {
-                    background-color: #FFEBEB;
+                    background-color: #ffebeb;
                 }
 
                 .b-progressing,
                 .b-inprogress,
                 .b-unknown,
                 .initiated {
-                    background-color: #FFF0CF;
+                    background-color: #fff0cf;
                 }
 
                 b,
@@ -938,8 +934,8 @@ table.pod__table td:last-child {
         }
     }
 
-    .events-logs__events-table-row{
-        width:100%
+    .events-logs__events-table-row {
+        width: 100%;
     }
 
     .events-logs__event,
@@ -1221,11 +1217,11 @@ table.pod__table td:last-child {
             align-items: center;
             justify-items: start;
 
-            &>span:first-child {
+            & > span:first-child {
                 padding-left: 20px;
             }
 
-            &>span:last-child {
+            & > span:last-child {
                 padding-right: 20px;
             }
 
@@ -1253,7 +1249,6 @@ table.pod__table td:last-child {
 
                 .tag {
                     max-width: calc(100% - 12px);
-                    ;
                     font-family: monospace;
                 }
             }
@@ -1367,7 +1362,7 @@ table.pod__table td:last-child {
             margin-bottom: 8px;
         }
 
-        &>div {
+        & > div {
             overflow: auto;
             position: relative;
         }
@@ -1454,7 +1449,7 @@ table.trigger-history {
     }
 
     tr {
-        &:nth-child(2n+2) {
+        &:nth-child(2n + 2) {
             background: #f5f5f5;
         }
     }
@@ -1750,7 +1745,7 @@ table.resource-tree {
     height: 450px;
 }
 
-.app-details-page-wrapper{
+.app-details-page-wrapper {
     display: flex;
     flex-direction: column;
     flex: 1;
