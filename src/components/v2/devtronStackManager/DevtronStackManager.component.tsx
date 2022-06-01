@@ -240,7 +240,7 @@ export const StackPageHeader = ({
         return (
             <div className="m-0 flex left ">
                 <div onClick={() => handleRedirectToModule(detailsMode)} className="devtron-breadcrumb__item">
-                    <span className="cb-5 fs-16">{headerTitleName} </span>
+                    <span className="cb-5 fs-16 cursor">{headerTitleName} </span>
                 </div>
                 <span className="fs-16 cn-9 ml-4 mr-4"> / </span>
                 <span className="fs-16 cn-9">{selectedModule?.title}</span>

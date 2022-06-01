@@ -207,7 +207,7 @@ export function AppHeader() {
                     linked: false,
                 },
                 app: {
-                    component: <span className="cb-5 fs-16 text-capitalize">apps</span>,
+                    component: <span className="cb-5 fs-16 text-capitalize">devtron apps</span>,
                     linked: true,
                 },
             },
