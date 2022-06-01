@@ -17,7 +17,7 @@ export function getChartVersionDetails(versionId) {
 }
 
 export function getChartVersionDetails2(versionId) {
-    return get(`app-store/application/version/${versionId}`)
+    return get(`app-store/deployment/application/version/${versionId}`)
 }
 
 export function getInstalledAppDetail(installedAppId, envId) {
@@ -29,7 +29,7 @@ export function installChart(request) {
 }
 
 export function updateChart(request) {
-    return put(`app-store/application/update`, request)
+    return put(Routes.UPDATE_APP_API, request)
 }
 
 export function deleteInstalledChart(installedAppId, force?: boolean) {
