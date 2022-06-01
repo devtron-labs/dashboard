@@ -1,0 +1,6 @@
+.cluster-list {
+    .cluster-list-row {
+        display: grid;
+        grid-template-columns: auto 60px 50px 50px 100px 100px 120px;
+    }
+}
