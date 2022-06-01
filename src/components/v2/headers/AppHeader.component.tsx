@@ -122,15 +122,12 @@ function AppHeaderComponent() {
     }
 
     return (
-        <>
-            <PageHeader
-                headerName=""
-                isBreadcrumbs={true}
-                breadCrumbs={renderBreadcrumbs}
-                showTabs={true}
-                renderHeaderTabs={renderHelmDetailsTabs}
-            />
-        </>
+        <PageHeader
+            isBreadcrumbs={true}
+            breadCrumbs={renderBreadcrumbs}
+            showTabs={true}
+            renderHeaderTabs={renderHelmDetailsTabs}
+        />
     )
 }
 

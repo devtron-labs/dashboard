@@ -361,7 +361,6 @@ export function AppHeader() {
     return (
         <>
             <PageHeader
-                headerName=""
                 breadCrumbs={renderBreadcrumbs}
                 isBreadcrumbs={true}
                 showTabs={true}

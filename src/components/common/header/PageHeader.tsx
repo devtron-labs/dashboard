@@ -1,8 +1,7 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
-import './page-headers.css'
 export interface PageHeaderType {
-    headerName: string
+    headerName?: string
     buttonText?: string
     onClickCreateButton?: () => void
     isTippyShown?: boolean
@@ -38,7 +37,7 @@ function PageHeader({
 }: PageHeaderType) {
     return (
         <div
-            className={`page-header flex content-space cn-9 bcn-0 pl-20 pr-20 ${
+            className={`page-header content-space cn-9 bcn-0 pl-20 pr-20 ${
                 showTabs ? 'page-header-tabs__height' : 'page-header__height'
             }`}
         >

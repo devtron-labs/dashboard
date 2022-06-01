@@ -595,7 +595,6 @@ export default function AppList() {
 
     const handleCreateButton = () => {
         setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)
-        console.log('hi')
     }
 
     function renderPageHeader() {
