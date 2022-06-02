@@ -305,17 +305,24 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
 
     renderCreateButton = () => {
         return (
-            <button type="button" className="flex cta h-32 lh-n" onClick={() => this.redirectToCreateGroup()}>
-                <Add className="icon-dim-20" />
-                Create Group
-            </button>
+            this.state.view !== ViewType.LOADING &&
+            this.state.view !== ViewType.EMPTY && (
+                <button type="button" className="flex cta h-32 lh-n" onClick={() => this.redirectToCreateGroup()}>
+                    <Add className="icon-dim-20" />
+                    Create Group
+                </button>
+            )
         )
     }
 
     render() {
         return (
             <div>
-                <PageHeader headerName="Deployment Groups" />
+                <PageHeader
+                    headerName="Deployment Groups"
+                    showCreateButton={true}
+                    renderCreateButton={this.renderCreateButton}
+                />
 
                 <div className="deployment-group-list-page__body">
                     {this.state.view === ViewType.LOADING && <Progressing pageLoader />}
