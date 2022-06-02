@@ -303,7 +303,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
         this.props.history.push(LINK)
     }
 
-    renderCreateButton = () => {
+    renderActionButtons = () => {
         return (
             this.state.view !== ViewType.LOADING &&
             this.state.view !== ViewType.EMPTY && (
@@ -318,7 +318,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
     render() {
         return (
             <div>
-                <PageHeader headerName="Deployment Groups" renderCreateButton={this.renderCreateButton} />
+                <PageHeader headerName="Deployment Groups" renderActionButtons={this.renderActionButtons} />
 
                 <div className="deployment-group-list-page__body">
                     {this.state.view === ViewType.LOADING && <Progressing pageLoader />}

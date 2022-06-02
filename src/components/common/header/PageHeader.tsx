@@ -13,7 +13,7 @@ export interface PageHeaderType {
     TippyIcon?: React.FunctionComponent<any>
     tippyMessage?: string
     onClickTippybutton?: () => void
-    renderCreateButton?: () => JSX.Element
+    renderActionButtons?: () => JSX.Element
     showCloseButton?: boolean
     onClose?: () => void
 }
@@ -29,7 +29,7 @@ function PageHeader({
     TippyIcon,
     tippyMessage,
     onClickTippybutton,
-    renderCreateButton,
+    renderActionButtons,
     showCloseButton = false,
     onClose,
 }: PageHeaderType) {
@@ -66,7 +66,7 @@ function PageHeader({
                 )}
             </h1>
             {showTabs && renderHeaderTabs()}
-            {renderCreateButton && renderCreateButton()}
+            {renderActionButtons && renderActionButtons()}
         </div>
     )
 }
