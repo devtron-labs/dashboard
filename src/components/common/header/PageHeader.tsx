@@ -42,7 +42,7 @@ function PageHeader({
                 showTabs ? 'page-header-tabs__height' : 'page-header__height flex'
             }`}
         >
-            <h1 className="page-header__title flex left fs-16 fw-6 lh-20 pb-13">
+            <h1 className={`page-header__title flex left fs-16 fw-6 lh-20 ${showTabs ? 'pb-13' : ''}`}>
                 {showCloseButton && (
                     <button className="transparent flex mr-8" onClick={onClose}>
                         <Close className="icon-dim-24 cursor" />
