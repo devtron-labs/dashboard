@@ -66,7 +66,7 @@ function PageHeader({
                 )}
             </h1>
             {showTabs && renderHeaderTabs()}
-            {renderActionButtons && renderActionButtons()}
+            {typeof renderActionButtons === 'function' && renderActionButtons()}
         </div>
     )
 }
