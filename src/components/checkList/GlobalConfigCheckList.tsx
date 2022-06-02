@@ -28,7 +28,7 @@ export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps,
     }
 
     renderGlobalChecklist() {
-        if (this.props.appStageCompleted < 6 && this.props.chartStageCompleted < 3) {
+        if (this.props.appStageCompleted < 5 && this.props.chartStageCompleted < 2) {
             //(app + chart) incomplete
             return <div className="">
                 <img src={Checklist} className="applist__checklist-img" />
@@ -47,7 +47,7 @@ export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps,
                     toggleChartChecklist={this.toggleChartChecklist} />
             </div>
         }
-        else if (this.props.appStageCompleted >= 6 && this.props.chartStageCompleted >= 3) {
+        else if (this.props.appStageCompleted >= 5 && this.props.chartStageCompleted >= 2) {
             //(app + chart) complete
             return <GlobalAllCheckModal />
         }
