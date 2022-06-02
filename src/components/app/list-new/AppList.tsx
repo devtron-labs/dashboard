@@ -598,22 +598,18 @@ export default function AppList() {
     }
 
     const renderCreateButton = () => {
-        return (
+        return serverMode === SERVER_MODE.FULL ? (
             <button type="button" className="flex cta h-32 lh-n" onClick={() => handleCreateButton()}>
                 Create New
                 <DropDown className="icon-dim-20" />
             </button>
-        )
+        ) : null
     }
 
     function renderPageHeader() {
         return (
             <Fragment>
-                <PageHeader
-                    headerName="Applications"
-                    showCreateButton={serverMode === SERVER_MODE.FULL ? true : false}
-                    renderCreateButton={renderCreateButton}
-                />
+                <PageHeader headerName="Applications" renderCreateButton={renderCreateButton} />
                 {showCreateNewAppSelectionModal && renderAppCreateSelectionModal()}
             </Fragment>
         )

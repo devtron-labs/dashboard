@@ -4,9 +4,7 @@ import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 
 export interface PageHeaderType {
     headerName?: string
-    onClickCreateButton?: () => void
     isTippyShown?: boolean
-    showCreateButton?: boolean
     tippyRedirectLink?: string
     showTabs?: boolean
     renderHeaderTabs?: () => JSX.Element
@@ -23,7 +21,6 @@ export interface PageHeaderType {
 function PageHeader({
     headerName,
     isTippyShown = false,
-    showCreateButton = false,
     tippyRedirectLink,
     showTabs = false,
     renderHeaderTabs,
@@ -69,7 +66,7 @@ function PageHeader({
                 )}
             </h1>
             {showTabs && renderHeaderTabs()}
-            {showCreateButton && renderCreateButton()}
+            {renderCreateButton && renderCreateButton()}
         </div>
     )
 }
