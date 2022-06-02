@@ -122,7 +122,7 @@
 
 .table__row:hover .table__row-icon {
     visibility: visible;
-    fill: var(--N500)
+    fill: var(--N500);
 }
 
 .security-policy {
@@ -534,10 +534,14 @@
 }
 
 .form__title.form__title--mt-20 {
-    margin-top: 20px
+    margin-top: 20px;
 }
 
 .form__label.form__label--flex {
     display: flex;
     align-items: flex-start;
+}
+
+.tab-list__tab-link {
+    padding: 0 0 8px 0;
 }

@@ -1,14 +1,11 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
+import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+
 export interface PageHeaderType {
     headerName?: string
-    buttonText?: string
-    onClickCreateButton?: () => void
     isTippyShown?: boolean
-    showCreateButton?: boolean
     tippyRedirectLink?: string
-    CreateButtonIcon?: React.FunctionComponent<any>
-    showIconBeforeText?: boolean
     showTabs?: boolean
     renderHeaderTabs?: () => JSX.Element
     isBreadcrumbs?: boolean
@@ -16,16 +13,15 @@ export interface PageHeaderType {
     TippyIcon?: React.FunctionComponent<any>
     tippyMessage?: string
     onClickTippybutton?: () => void
+    renderActionButtons?: () => JSX.Element
+    showCloseButton?: boolean
+    onClose?: () => void
 }
 
 function PageHeader({
     headerName,
-    buttonText,
-    onClickCreateButton,
     isTippyShown = false,
-    showCreateButton = false,
-    CreateButtonIcon,
-    showIconBeforeText,
+    tippyRedirectLink,
     showTabs = false,
     renderHeaderTabs,
     isBreadcrumbs = false,
@@ -33,15 +29,22 @@ function PageHeader({
     TippyIcon,
     tippyMessage,
     onClickTippybutton,
-    tippyRedirectLink,
+    renderActionButtons,
+    showCloseButton = false,
+    onClose,
 }: PageHeaderType) {
     return (
         <div
             className={`page-header content-space cn-9 bcn-0 pl-20 pr-20 ${
-                showTabs ? 'page-header-tabs__height' : 'page-header__height'
+                showTabs ? 'page-header-tabs__height' : 'page-header__height flex'
             }`}
         >
-            <h1 className="page-header__title flex left fs-16 fw-6 lh-20">
+            <h1 className={`page-header__title flex left fs-16 fw-6 lh-20`}>
+                {showCloseButton && (
+                    <button className="transparent flex mr-8" onClick={onClose}>
+                        <Close className="icon-dim-24 cursor" />
+                    </button>
+                )}
                 <span className="fw-6">{headerName}</span>
                 {isBreadcrumbs && breadCrumbs()}
                 {isTippyShown && (
@@ -63,13 +66,7 @@ function PageHeader({
                 )}
             </h1>
             {showTabs && renderHeaderTabs()}
-            {showCreateButton && (
-                <button type="button" className="flex cta h-32 lh-n" onClick={() => onClickCreateButton()}>
-                    {showIconBeforeText && CreateButtonIcon && <CreateButtonIcon className="icon-dim-20" />}
-                    Create {buttonText}
-                    {!showIconBeforeText && CreateButtonIcon && <CreateButtonIcon className="icon-dim-20" />}
-                </button>
-            )}
+            {typeof renderActionButtons === 'function' && renderActionButtons()}
         </div>
     )
 }
