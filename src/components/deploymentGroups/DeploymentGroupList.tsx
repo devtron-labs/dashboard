@@ -315,10 +315,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
     render() {
         return (
             <div>
-                <PageHeader
-                    headerName="Deployment Groups"
-                    showCreateButton={this.state.view === ViewType.FORM ? true : false}
-                />
+                <PageHeader headerName="Deployment Groups" />
 
                 <div className="deployment-group-list-page__body">
                     {this.state.view === ViewType.LOADING && <Progressing pageLoader />}

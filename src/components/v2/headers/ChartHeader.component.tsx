@@ -135,7 +135,7 @@ function ChartHeaderComponent() {
     }
 
     return (
-        <div>
+        <div className="helm-app-page-header">
             <PageHeader
                 isBreadcrumbs={true}
                 showTabs={true}
