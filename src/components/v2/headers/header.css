@@ -13,3 +13,13 @@
     position: sticky;
     top: 0;
 }
+
+.tab-list__tab-link {
+    padding: 0 0 8px 0;
+}
+
+.helm-app-page-header {
+    z-index: var(--page-header-index);
+    position: sticky;
+    top: 0;
+}

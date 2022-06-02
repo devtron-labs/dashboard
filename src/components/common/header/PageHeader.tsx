@@ -1,57 +1,72 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 
 export interface PageHeaderType {
-    headerName: string
-    buttonText?: string
-    onClickCreateButton?: () => void
+    headerName?: string
     isTippyShown?: boolean
-    showCreateButton?: boolean
     tippyRedirectLink?: string
-    CreateButtonIcon?: React.FunctionComponent<any>
-    showIconBeforeText?: boolean
+    showTabs?: boolean
+    renderHeaderTabs?: () => JSX.Element
+    isBreadcrumbs?: boolean
+    breadCrumbs?: () => JSX.Element
+    TippyIcon?: React.FunctionComponent<any>
+    tippyMessage?: string
+    onClickTippybutton?: () => void
+    renderActionButtons?: () => JSX.Element
+    showCloseButton?: boolean
+    onClose?: () => void
 }
 
 function PageHeader({
     headerName,
-    buttonText,
-    onClickCreateButton,
     isTippyShown = false,
-    showCreateButton = false,
     tippyRedirectLink,
-    CreateButtonIcon,
-    showIconBeforeText,
+    showTabs = false,
+    renderHeaderTabs,
+    isBreadcrumbs = false,
+    breadCrumbs,
+    TippyIcon,
+    tippyMessage,
+    onClickTippybutton,
+    renderActionButtons,
+    showCloseButton = false,
+    onClose,
 }: PageHeaderType) {
     return (
-        <div className={`page-header flex content-space cn-9 bcn-0 pl-20 pr-20 page-header__height`}>
-            <h1 className="page-header__title flex left fs-16 fw-6 lh-20">
-                {headerName}
+        <div
+            className={`page-header content-space cn-9 bcn-0 pl-20 pr-20 ${
+                showTabs ? 'page-header-tabs__height' : 'page-header__height flex'
+            }`}
+        >
+            <h1 className={`page-header__title flex left fs-16 fw-6 lh-20`}>
+                {showCloseButton && (
+                    <button className="transparent flex mr-8" onClick={onClose}>
+                        <Close className="icon-dim-24 cursor" />
+                    </button>
+                )}
+                <span className="fw-6">{headerName}</span>
+                {isBreadcrumbs && breadCrumbs()}
                 {isTippyShown && (
-                    <Tippy
-                        className="default-tt "
-                        arrow={false}
-                        placement="top"
-                        content={<span style={{ display: 'block', width: '66px' }}> Learn more </span>}
+                    <a
+                        className="learn-more__href flex"
+                        target="_blank"
+                        href={tippyRedirectLink}
+                        onClick={onClickTippybutton}
                     >
-                        <a
-                            className="learn-more__href flex"
-                            href={tippyRedirectLink}
-                            rel="noreferrer noopener"
-                            target="_blank"
+                        <Tippy
+                            className="default-tt "
+                            arrow={false}
+                            placement="top"
+                            content={<span style={{ display: 'block', width: '66px' }}> {tippyMessage} </span>}
                         >
-                            <Question className="icon-dim-20 ml-16 cursor" />
-                        </a>
-                    </Tippy>
+                            <TippyIcon className="icon-dim-20 ml-16 cursor fcn-5" />
+                        </Tippy>
+                    </a>
                 )}
             </h1>
-            {showCreateButton && (
-                <button type="button" className="flex cta h-32 lh-n" onClick={() => onClickCreateButton()}>
-                    {showIconBeforeText && CreateButtonIcon && <CreateButtonIcon className="icon-dim-20" />}
-                    Create {buttonText}
-                    {!showIconBeforeText && CreateButtonIcon && <CreateButtonIcon className="icon-dim-20" />}
-                </button>
-            )}
+            {showTabs && renderHeaderTabs()}
+            {typeof renderActionButtons === 'function' && renderActionButtons()}
         </div>
     )
 }
