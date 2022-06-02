@@ -1,32 +1,38 @@
 import { ResponseType } from '../../services/service.types'
-export interface ChartDetailType {
-    chartDescription: string
+export interface ResourceDetail {
     name: string
-    version: string
-    count?: number
-}
-export interface ChartUploadType {
-    chartName: string
-    description: string
-    fileId: number
-    message: string
-    chartVersion: number
+    usage: string
+    capacity: string
+    request: string
+    limits: string
 }
 
-export interface ChartListResponse extends ResponseType {
-    result?: ChartDetailType[]
-}
-export interface ChartUploadResponse extends ResponseType {
-    result?: ChartUploadType
-}
-
-export const UPLOAD_STATE = {
-    UPLOAD: 'Upload',
-    UPLOADING: 'Uploading',
-    ERROR: 'Error',
-    SUCCESS: 'Success',
+export interface ClusterDetail {
+    id: number
+    name: string
+    nodeCount: 0
+    nodeErrors: string[]
+    nodeK8sVersions: string[]
+    cpu: ResourceDetail
+    memory: ResourceDetail
 }
 
-export interface UploadChartModalType {
-    closeUploadPopup: (reloadData: boolean) => void
+export interface NodeDetail {
+    name: string
+    status: string
+    roles: string[]
+    errors: string[]
+    k8sVersion: string
+    pods: number
+    taints: number
+    cpu: ResourceDetail
+    memory: ResourceDetail
+    age: string
+}
+
+export interface ClusterListResponse extends ResponseType {
+    result?: ClusterDetail[]
+}
+export interface NodeListResponse extends ResponseType {
+    result?: NodeDetail[]
 }

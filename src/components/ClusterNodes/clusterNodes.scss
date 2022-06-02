@@ -2,5 +2,13 @@
     .cluster-list-row {
         display: grid;
         grid-template-columns: auto 60px 50px 50px 100px 100px 120px;
+        column-gap: 16px;
+    }
+}
+.node-list {
+    .node-list-row {
+        display: grid;
+        grid-template-columns: auto 100px 60px 50px 100px 50px 60px 100px 100px 60px;
+        column-gap: 16px;
     }
 }

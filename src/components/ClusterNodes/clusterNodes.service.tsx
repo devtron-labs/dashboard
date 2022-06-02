@@ -1,14 +1,19 @@
-import { Host, Routes } from '../../config'
-import { post, get, put } from '../../services/api'
-import { ChartListResponse, ChartUploadResponse, ChartUploadType } from './types'
+import { Routes } from '../../config'
+import { post, get } from '../../services/api'
+import { ClusterListResponse, NodeListResponse } from './types'
 
-export const getChartList = (): Promise<ChartListResponse> => {
-    return get(Routes.CUSTOM_CHART_LIST)
+export const getClusterList = (): Promise<ClusterListResponse> => {
+    return get(Routes.CLUSTER_LIST)
 }
 
-export const validateChart = (payload: FormData): Promise<ChartUploadResponse> => {
-    return post(Routes.VALIDATE_CUSTOM_CHART, payload, {}, true)
+export const getClusterCapacity = (): Promise<any> => {
+    return get(Routes.CLUSTER_CAPACITY)
 }
-export const uploadChart = (payload: ChartUploadType): Promise<ChartUploadResponse> => {
-    return put(Routes.UPLOAD_CUSTOM_CHART, payload)
+
+export const getNodeList = (): Promise<NodeListResponse> => {
+    return get(Routes.NODE_LIST)
+}
+
+export const getNodeCapacity = (): Promise<any> => {
+    return get(Routes.NODE_CAPACITY)
 }

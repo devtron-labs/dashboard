@@ -4,104 +4,145 @@ import { useRouteMatch } from 'react-router'
 import './clusterNodes.scss'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
-import { getClusterList } from './clusterNodes.service'
+import { getNodeList } from './clusterNodes.service'
 import { Progressing, showError, sortObjectArrayAlphabetically } from '../common'
-import { ClusterDetail, ClusterListResponse } from './types'
+import { NodeDetail, NodeListResponse } from './types'
 import { URLS } from '../../config'
 
-const clusterListData = [
+const nodeListData = [
     {
-        id: 0,
-        name: 'azure-cluster',
-        nodeCount: 6,
-        nodeErrors: ['string', 'string'],
-        nodeK8sVersions: ['1.12.6_1546'],
+        id: 10,
+        name: 'ip-172-31-2-152.us-east-2.compute.internal',
+        status: 'Not running',
+        roles: ['Worker'],
+        errors: ['string'],
+        k8sVersion: '1.12.6_121',
+        pods: 21,
+        taints: 3,
         cpu: {
             name: 'string',
-            usage: 'string',
+            usage: '',
             capacity: '6,503 GHz',
             request: 'string',
             limits: 'string',
         },
         memory: {
             name: 'string',
-            usage: 'string',
+            usage: '',
             capacity: '26 TB',
             request: 'string',
             limits: 'string',
         },
+        age: '',
     },
     {
-        id: 1,
-        name: 'azure-vm',
-        nodeCount: 8,
-        nodeErrors: [],
-        nodeK8sVersions: ['1.12.6', '1.12.3', '1.12.8'],
+        id: 11,
+        name: 'ip-172-31-2-152.us-east-2.compute.internal',
+        status: 'Not running',
+        roles: ['Worker'],
+        errors: ['string'],
+        k8sVersion: '1.12.6_1546',
+        pods: 13,
+        taints: 0,
         cpu: {
             name: 'string',
-            usage: 'string',
+            usage: '34',
             capacity: '6,503 GHz',
             request: 'string',
             limits: 'string',
         },
         memory: {
             name: 'string',
-            usage: 'string',
+            usage: '65',
             capacity: '26 TB',
             request: 'string',
             limits: 'string',
         },
+        age: '2d',
     },
     {
-        id: 2,
-        name: 'bayern-cluster',
-        nodeCount: 14,
-        nodeErrors: ['string'],
-        nodeK8sVersions: ['1.12.9'],
+        id: 12,
+        name: 'ip-172-31-2-152.us-east-2.compute.internal',
+        status: 'Running',
+        roles: ['Worker'],
+        errors: [],
+        k8sVersion: '1.12.6_1546',
+        pods: 21,
+        taints: 3,
         cpu: {
             name: 'string',
-            usage: 'string',
+            usage: '34',
             capacity: '6,503 GHz',
             request: 'string',
             limits: 'string',
         },
         memory: {
             name: 'string',
-            usage: 'string',
+            usage: '65',
             capacity: '26 TB',
             request: 'string',
             limits: 'string',
         },
+        age: '8d',
     },
     {
-        id: 3,
-        name: 'default_cluster',
-        nodeCount: 26,
-        nodeErrors: ['string'],
-        nodeK8sVersions: ['1.11.6_1532'],
+        id: 13,
+        name: 'ip-172-31-2-152.us-east-2.compute.internal',
+        status: 'Not running',
+        roles: ['Worker'],
+        errors: ['string'],
+        k8sVersion: '1.12.6_1546',
+        pods: 21,
+        taints: 3,
         cpu: {
             name: 'string',
-            usage: 'string',
+            usage: '',
             capacity: '6,503 GHz',
             request: 'string',
             limits: 'string',
         },
         memory: {
             name: 'string',
-            usage: 'string',
+            usage: '',
             capacity: '26 TB',
             request: 'string',
             limits: 'string',
         },
+        age: '8d',
+    },
+    {
+        id: 14,
+        name: 'ip-172-31-2-152.us-east-2.compute.internal',
+        status: 'Running',
+        roles: ['Worker'],
+        errors: [],
+        k8sVersion: '1.12.6_1548',
+        pods: 21,
+        taints: 0,
+        cpu: {
+            name: 'string',
+            usage: '54',
+            capacity: '6,503 GHz',
+            request: 'string',
+            limits: 'string',
+        },
+        memory: {
+            name: 'string',
+            usage: '34',
+            capacity: '26 TB',
+            request: 'string',
+            limits: 'string',
+        },
+        age: '24h',
     },
 ]
 
-export default function ClusterList() {
+export default function NodeList() {
     const match = useRouteMatch()
     const [loader, setLoader] = useState(false)
     const [searchApplied, setSearchApplied] = useState(false)
     const [searchText, setSearchText] = useState('')
-    const [clusterList, setClusterList] = useState<ClusterDetail[]>([])
+    const [clusterList, setClusterList] = useState<NodeDetail[]>([])
 
     useEffect(() => {
         //setLoader(true)
@@ -154,31 +195,35 @@ export default function ClusterList() {
     }
 
     return (
-        <div className="cluster-list">
+        <div className="node-list">
             {renderSearch()}
             <div className="mt-16 en-2 bw-1 bcn-0" style={{ minHeight: 'calc(100vh - 125px)' }}>
-                <div className="cluster-list-row fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 pl-20 text-uppercase">
-                    <div>Cluster</div>
+                <div className="node-list-row fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 pl-20 text-uppercase">
+                    <div>Node</div>
                     <div>Status</div>
+                    <div>Role</div>
                     <div>Errors</div>
-                    <div>Nodes</div>
                     <div>K8s version</div>
-                    <div>CPU Capacity</div>
-                    <div>Memory Capacity</div>
+                    <div>Pods</div>
+                    <div>Taints</div>
+                    <div>CPU Usage</div>
+                    <div>Mem Usage</div>
+                    <div>Age</div>
                 </div>
-                {clusterListData?.map((clusterData) => (
-                    <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
+                {nodeListData?.map((nodeData) => (
+                    <div className="node-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
                         <div className="cb-5 ellipsis-right">
-                            <NavLink to={`${match.url}/${clusterData.id}${URLS.NODES_LIST}`}>
-                                {clusterData.name}
-                            </NavLink>
+                            <NavLink to={`${match.url}/${nodeData.id}${URLS.NODE_DETAILS}`}>{nodeData.name}</NavLink>
                         </div>
-                        <div>{clusterData['status']}</div>
-                        <div>{clusterData.nodeErrors?.length > 0 ? clusterData.nodeErrors.length : ''}</div>
-                        <div>{clusterData.nodeCount}</div>
-                        <div>{clusterData.nodeK8sVersions[0]}</div>
-                        <div>{clusterData.cpu?.capacity}</div>
-                        <div>{clusterData.memory?.capacity}</div>
+                        <div>{nodeData.status || '-'}</div>
+                        <div>{nodeData.roles || '-'}</div>
+                        <div>{nodeData.errors?.length > 0 ? nodeData.errors.length : ''}</div>
+                        <div>{nodeData.k8sVersion || '-'}</div>
+                        <div>{nodeData.pods || '-'}</div>
+                        <div>{nodeData.taints || '-'}</div>
+                        <div>{nodeData.cpu?.usage ? nodeData.cpu.usage + '%' : '-'}</div>
+                        <div>{nodeData.memory?.usage ? nodeData.memory.usage + '%' : '-'}</div>
+                        <div>{nodeData.age || '-'}</div>
                     </div>
                 ))}
             </div>
