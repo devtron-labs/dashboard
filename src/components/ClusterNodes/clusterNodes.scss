@@ -6,6 +6,16 @@
     }
 }
 .node-list {
+    .width-50 {
+        width: 50%;
+    }
+    .width-25 {
+        width: 25%;
+    }
+
+    .error-icon path[fill='#06C'] {
+        fill: var(--R500);
+    }
     .node-list-row {
         display: grid;
         grid-template-columns: auto 100px 60px 50px 100px 50px 60px 100px 100px 60px;

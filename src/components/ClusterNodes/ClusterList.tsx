@@ -5,96 +5,9 @@ import './clusterNodes.scss'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getClusterList } from './clusterNodes.service'
-import { Progressing, showError, sortObjectArrayAlphabetically } from '../common'
+import { handleUTCTime, Progressing, showError, sortObjectArrayAlphabetically } from '../common'
 import { ClusterDetail, ClusterListResponse } from './types'
 import { URLS } from '../../config'
-
-const clusterListData = [
-    {
-        id: 0,
-        name: 'azure-cluster',
-        nodeCount: 6,
-        nodeErrors: ['string', 'string'],
-        nodeK8sVersions: ['1.12.6_1546'],
-        cpu: {
-            name: 'string',
-            usage: 'string',
-            capacity: '6,503 GHz',
-            request: 'string',
-            limits: 'string',
-        },
-        memory: {
-            name: 'string',
-            usage: 'string',
-            capacity: '26 TB',
-            request: 'string',
-            limits: 'string',
-        },
-    },
-    {
-        id: 1,
-        name: 'azure-vm',
-        nodeCount: 8,
-        nodeErrors: [],
-        nodeK8sVersions: ['1.12.6', '1.12.3', '1.12.8'],
-        cpu: {
-            name: 'string',
-            usage: 'string',
-            capacity: '6,503 GHz',
-            request: 'string',
-            limits: 'string',
-        },
-        memory: {
-            name: 'string',
-            usage: 'string',
-            capacity: '26 TB',
-            request: 'string',
-            limits: 'string',
-        },
-    },
-    {
-        id: 2,
-        name: 'bayern-cluster',
-        nodeCount: 14,
-        nodeErrors: ['string'],
-        nodeK8sVersions: ['1.12.9'],
-        cpu: {
-            name: 'string',
-            usage: 'string',
-            capacity: '6,503 GHz',
-            request: 'string',
-            limits: 'string',
-        },
-        memory: {
-            name: 'string',
-            usage: 'string',
-            capacity: '26 TB',
-            request: 'string',
-            limits: 'string',
-        },
-    },
-    {
-        id: 3,
-        name: 'default_cluster',
-        nodeCount: 26,
-        nodeErrors: ['string'],
-        nodeK8sVersions: ['1.11.6_1532'],
-        cpu: {
-            name: 'string',
-            usage: 'string',
-            capacity: '6,503 GHz',
-            request: 'string',
-            limits: 'string',
-        },
-        memory: {
-            name: 'string',
-            usage: 'string',
-            capacity: '26 TB',
-            request: 'string',
-            limits: 'string',
-        },
-    },
-]
 
 export default function ClusterList() {
     const match = useRouteMatch()
@@ -102,21 +15,39 @@ export default function ClusterList() {
     const [searchApplied, setSearchApplied] = useState(false)
     const [searchText, setSearchText] = useState('')
     const [clusterList, setClusterList] = useState<ClusterDetail[]>([])
+    const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
+    const [lastDataSync, setLastDataSync] = useState(false)
+
+    const getData = () => {
+        setLoader(true)
+        getClusterList()
+            .then((response: ClusterListResponse) => {
+                setLastDataSync(!lastDataSync)
+                if (response.result) {
+                    setClusterList(response.result)
+                }
+                setLoader(false)
+            })
+            .catch((error) => {
+                showError(error)
+                setLoader(false)
+            })
+    }
 
     useEffect(() => {
-        //setLoader(true)
-        // getClusterList()
-        //     .then((response: ClusterListResponse) => {
-        //         if (response.result) {
-        //             setClusterList(response.result)
-        //         }
-        //         setLoader(false)
-        //     })
-        //     .catch((error) => {
-        //         showError(error)
-        //         setLoader(false)
-        //     })
+        getData()
     }, [])
+
+    useEffect(() => {
+        const _lastDataSyncTime = Date()
+        setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
+        const interval = setInterval(() => {
+            setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
+        }, 1000)
+        return () => {
+            clearInterval(interval)
+        }
+    }, [lastDataSync])
 
     const handleFilterChanges = (selected, key): void => {}
 
@@ -154,9 +85,22 @@ export default function ClusterList() {
     }
 
     return (
-        <div className="cluster-list">
-            {renderSearch()}
-            <div className="mt-16 en-2 bw-1 bcn-0" style={{ minHeight: 'calc(100vh - 125px)' }}>
+        <div className="cluster-list bcn-0">
+            <div className="flexbox content-space pl-20 pr-20 pt-16 pb-20">
+                {renderSearch()}
+                <div className="app-tabs-sync">
+                    {lastDataSyncTimeString && (
+                        <span>
+                            {lastDataSyncTimeString}{' '}
+                            <button className="btn btn-link p-0 fw-6 cb-5" onClick={getData}>
+                                Refresh
+                            </button>
+                        </span>
+                    )}
+                </div>
+            </div>
+
+            <div className="" style={{ minHeight: 'calc(100vh - 125px)' }}>
                 <div className="cluster-list-row fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 pl-20 text-uppercase">
                     <div>Cluster</div>
                     <div>Status</div>
@@ -166,7 +110,7 @@ export default function ClusterList() {
                     <div>CPU Capacity</div>
                     <div>Memory Capacity</div>
                 </div>
-                {clusterListData?.map((clusterData) => (
+                {clusterList?.map((clusterData) => (
                     <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
                         <div className="cb-5 ellipsis-right">
                             <NavLink to={`${match.url}/${clusterData.id}${URLS.NODES_LIST}`}>

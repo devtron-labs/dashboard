@@ -1,16 +1,23 @@
 import { ResponseType } from '../../services/service.types'
 export interface ResourceDetail {
     name: string
-    usage: string
     capacity: string
+    allocatable: string
+    usage: string
     request: string
-    limits: string
+    limit: string
+    usagePercentage: string
+    requestPercentage: string
+    limitPercentage: string
 }
-
+export interface ClusterCapacityType {
+    cpu: ResourceDetail
+    memory: ResourceDetail
+}
 export interface ClusterDetail {
     id: number
     name: string
-    nodeCount: 0
+    nodeCount: number
     nodeErrors: string[]
     nodeK8sVersions: string[]
     cpu: ResourceDetail
@@ -18,13 +25,14 @@ export interface ClusterDetail {
 }
 
 export interface NodeDetail {
+    id: number
     name: string
     status: string
     roles: string[]
     errors: string[]
     k8sVersion: string
-    pods: number
-    taints: number
+    podCount: number
+    taintCount: number
     cpu: ResourceDetail
     memory: ResourceDetail
     age: string
@@ -32,6 +40,9 @@ export interface NodeDetail {
 
 export interface ClusterListResponse extends ResponseType {
     result?: ClusterDetail[]
+}
+export interface ClusterCapacityResponse extends ResponseType {
+    result?: ClusterCapacityType
 }
 export interface NodeListResponse extends ResponseType {
     result?: NodeDetail[]
