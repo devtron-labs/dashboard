@@ -135,12 +135,14 @@ function ChartHeaderComponent() {
     }
 
     return (
-        <PageHeader
-            isBreadcrumbs={true}
-            showTabs={true}
-            renderHeaderTabs={renderHelmDetailsTabs}
-            breadCrumbs={renderBreadcrumbs}
-        />
+        <div>
+            <PageHeader
+                isBreadcrumbs={true}
+                showTabs={true}
+                renderHeaderTabs={renderHelmDetailsTabs}
+                breadCrumbs={renderBreadcrumbs}
+            />
+        </div>
     )
 }
 
