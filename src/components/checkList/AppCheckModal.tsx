@@ -61,8 +61,9 @@ export class AppCheckListModal extends Component<AppCheckListModalProps, AppChec
                     <img src={Checklist} className="applist__checklist-img" />
                     <h2 className="cn-9 fw-6 fs-16 mt-16 mb-4">Let’s get you started!</h2>
                     <p className="cn-9 mb-16 fs-13">Complete the required configurations to perform desired task</p>
-                    <SampleAppDeploy parentClassName="bcg-1 flexbox" />
-                    <CustomAppDeploy parentClassName="bcg-1 flexbox" />
+                    <SampleAppDeploy parentClassName="bcg-1 flexbox" imageClassName="pb-12" />
+                    <CustomAppDeploy parentClassName="bcg-1 flexbox" imageClassName="pb-12" />
+                    <hr className="checklist__divider mt-16 mb-0" />
                     <div className="mb-8">
                         <ChartCheckList
                             chartChecklist={this.props.chartChecklist}
