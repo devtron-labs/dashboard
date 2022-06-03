@@ -1,29 +1,30 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useRouteMatch, useHistory, useLocation } from 'react-router';
-import ChartSelect from './util/ChartSelect';
-import { ChartGroupEntry, Chart } from './charts.types';
-import MultiChartSummary from './MultiChartSummary';
-import AdvancedConfig from './AdvancedConfig';
-import { updateChartGroupEntries, getChartGroups } from './charts.service';
-import useChartGroup from './useChartGroup';
-import { showError, Pencil, Progressing, BreadCrumb, useBreadcrumb } from '../common';
-import CreateChartGroup from './modal/CreateChartGroup';
-import { URLS } from '../../config';
-import { toast } from 'react-toastify';
-import { Prompt } from 'react-router';
-import { ReactComponent as SaveIcon } from '../../assets/icons/ic-save.svg';
-import { ChartSelector } from '../AppSelector';
-import ChartHeaderFilters from './ChartHeaderFilters';
-import { QueryParams } from './charts.util';
-import ChartEmptyState from '../common/emptyState/ChartEmptyState';
+import React, { useState, useEffect, useRef } from 'react'
+import { useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
+import ChartSelect from './util/ChartSelect'
+import { ChartGroupEntry, Chart } from './charts.types'
+import MultiChartSummary from './MultiChartSummary'
+import AdvancedConfig from './AdvancedConfig'
+import { updateChartGroupEntries, getChartGroups } from './charts.service'
+import useChartGroup from './useChartGroup'
+import { showError, Pencil, Progressing, BreadCrumb, useBreadcrumb } from '../common'
+import CreateChartGroup from './modal/CreateChartGroup'
+import { URLS } from '../../config'
+import { toast } from 'react-toastify'
+import { Prompt } from 'react-router'
+import { ReactComponent as SaveIcon } from '../../assets/icons/ic-save.svg'
+import { ChartSelector } from '../AppSelector'
+import ChartHeaderFilters from './ChartHeaderFilters'
+import { QueryParams } from './charts.util'
+import ChartEmptyState from '../common/emptyState/ChartEmptyState'
+import PageHeader from '../common/header/PageHeader'
 
 export default function ChartGroupUpdate({}) {
-    const history = useHistory();
-    const location = useLocation();
-    const match = useRouteMatch();
-    const { groupId } = useParams<{ groupId }>();
-    const [chartDetailsUpdate, setChartDetailsUpdate] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const history = useHistory()
+    const location = useLocation()
+    const match = useRouteMatch()
+    const { groupId } = useParams<{ groupId }>()
+    const [chartDetailsUpdate, setChartDetailsUpdate] = useState(false)
+    const [loading, setLoading] = useState(false)
     const {
         state,
         getChartVersionsAndValues,
@@ -41,16 +42,16 @@ export default function ChartGroupUpdate({}) {
         updateChartGroupNameAndDescription,
         reloadState,
         applyFilterOnCharts,
-    } = useChartGroup(Number(groupId));
-    const isLeavingPageNotAllowed = useRef(false);
-    const [selectedChartRepo, setSelectedChartRepo] = useState([]);
-    const [appliedChartRepoFilter, setAppliedChartRepoFilter] = useState([]);
-    const [appStoreName, setAppStoreName] = useState('');
-    const [searchApplied, setSearchApplied] = useState(false);
-    const [includeDeprecated, setIncludeDeprecated] = useState(0);
-    const { url } = match;
-    const [chartListLoading, setChartListLoading] = useState(true);
-    const chartList: Chart[] = Array.from(state.availableCharts.values());
+    } = useChartGroup(Number(groupId))
+    const isLeavingPageNotAllowed = useRef(false)
+    const [selectedChartRepo, setSelectedChartRepo] = useState([])
+    const [appliedChartRepoFilter, setAppliedChartRepoFilter] = useState([])
+    const [appStoreName, setAppStoreName] = useState('')
+    const [searchApplied, setSearchApplied] = useState(false)
+    const [includeDeprecated, setIncludeDeprecated] = useState(0)
+    const { url } = match
+    const [chartListLoading, setChartListLoading] = useState(true)
+    const chartList: Chart[] = Array.from(state.availableCharts.values())
 
     const { breadcrumbs } = useBreadcrumb(
         {
@@ -71,14 +72,14 @@ export default function ChartGroupUpdate({}) {
             },
         },
         [state.name],
-    );
+    )
 
     isLeavingPageNotAllowed.current = state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
-        return (acc = acc || chart.isUnsaved);
-    }, false);
+        return (acc = acc || chart.isUnsaved)
+    }, false)
 
     async function handleSave(e) {
-        setLoading(true);
+        setLoading(true)
         try {
             const requestBody = {
                 id: Number(groupId),
@@ -92,122 +93,129 @@ export default function ChartGroupUpdate({}) {
                               }
                             : {}),
                         appStoreApplicationVersionId: chart.appStoreApplicationVersionId,
-                    };
-                    return result;
+                    }
+                    return result
                 }),
-            };
-            await updateChartGroupEntries(requestBody);
-            await reloadState();
-            updateChartGroupEntriesFromResponse();
-            toast.success('Successfully saved.');
+            }
+            await updateChartGroupEntries(requestBody)
+            await reloadState()
+            updateChartGroupEntriesFromResponse()
+            toast.success('Successfully saved.')
         } catch (err) {
-            showError(err);
+            showError(err)
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
     }
 
     useEffect(() => {
-        window.addEventListener('beforeunload', reloadCallback);
+        window.addEventListener('beforeunload', reloadCallback)
         return () => {
-            window.removeEventListener('beforeunload', reloadCallback);
-        };
-    }, []);
+            window.removeEventListener('beforeunload', reloadCallback)
+        }
+    }, [])
 
     useEffect(() => {
         if (!state.loading) {
-            initialiseFromQueryParams(state.chartRepos);
-            callApplyFilterOnCharts();
+            initialiseFromQueryParams(state.chartRepos)
+            callApplyFilterOnCharts()
         }
-    }, [location.search, state.loading]);
+    }, [location.search, state.loading])
 
     function reloadCallback(event) {
-        event.preventDefault();
+        event.preventDefault()
         if (isLeavingPageNotAllowed.current) {
-            event.returnValue = 'Your changes will be lost. Do you want to leave without deploying?';
+            event.returnValue = 'Your changes will be lost. Do you want to leave without deploying?'
         }
     }
 
     function redirectToGroupDetail() {
-        let url = `${URLS.CHARTS}/discover/group/${groupId}`;
-        history.push(url);
+        let url = `${URLS.CHARTS}/discover/group/${groupId}`
+        history.push(url)
     }
 
     function closeChartGroupModal(props) {
         if (props?.name) {
-            updateChartGroupNameAndDescription(props.name, props?.description || '');
+            updateChartGroupNameAndDescription(props.name, props?.description || '')
         }
-        setChartDetailsUpdate(false);
+        setChartDetailsUpdate(false)
     }
 
     function handleCloseFilter() {
-        setSelectedChartRepo(appliedChartRepoFilter);
+        setSelectedChartRepo(appliedChartRepoFilter)
     }
 
     function initialiseFromQueryParams(chartRepoList) {
-        let searchParams = new URLSearchParams(location.search);
-        let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId);
-        let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated);
-        let appStoreName: string = searchParams.get(QueryParams.AppStoreName);
-        let chartRepoIdArray = [];
-        if (allChartRepoIds) chartRepoIdArray = allChartRepoIds.split(',');
-        chartRepoIdArray = chartRepoIdArray.map((chartRepoId) => parseInt(chartRepoId));
-        let selectedRepos = [];
+        let searchParams = new URLSearchParams(location.search)
+        let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId)
+        let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated)
+        let appStoreName: string = searchParams.get(QueryParams.AppStoreName)
+        let chartRepoIdArray = []
+        if (allChartRepoIds) chartRepoIdArray = allChartRepoIds.split(',')
+        chartRepoIdArray = chartRepoIdArray.map((chartRepoId) => parseInt(chartRepoId))
+        let selectedRepos = []
         for (let i = 0; i < chartRepoIdArray.length; i++) {
-            let chartRepo = chartRepoList.find((item) => item.value === chartRepoIdArray[i]);
-            if (chartRepo) selectedRepos.push(chartRepo);
+            let chartRepo = chartRepoList.find((item) => item.value === chartRepoIdArray[i])
+            if (chartRepo) selectedRepos.push(chartRepo)
         }
-        if (selectedRepos) setSelectedChartRepo(selectedRepos);
-        if (deprecated) setIncludeDeprecated(parseInt(deprecated));
+        if (selectedRepos) setSelectedChartRepo(selectedRepos)
+        if (deprecated) setIncludeDeprecated(parseInt(deprecated))
         if (appStoreName) {
-            setSearchApplied(true);
-            setAppStoreName(appStoreName);
+            setSearchApplied(true)
+            setAppStoreName(appStoreName)
         } else {
-            setSearchApplied(false);
-            setAppStoreName('');
+            setSearchApplied(false)
+            setAppStoreName('')
         }
-        if (selectedRepos) setAppliedChartRepoFilter(selectedRepos);
+        if (selectedRepos) setAppliedChartRepoFilter(selectedRepos)
     }
 
     async function callApplyFilterOnCharts() {
-        setChartListLoading(true);
-        await applyFilterOnCharts(location.search);
-        setChartListLoading(false);
+        setChartListLoading(true)
+        await applyFilterOnCharts(location.search)
+        setChartListLoading(false)
+    }
+
+    const renderBreadcrumbs = () => {
+        return (
+            <div className="flex left">
+                <BreadCrumb breadcrumbs={breadcrumbs.slice(1)} />
+            </div>
+        )
+    }
+
+    const renderChartGroupEditActionButton = () => {
+        return (
+            <div className="page-header__cta-container flex right">
+                <button className="cta h-32 flex cancel mr-16" onClick={handleSave}>
+                    {loading ? (
+                        <Progressing />
+                    ) : (
+                        <div className="flex left " style={{ width: '100%' }}>
+                            <SaveIcon className="mr-5" />
+                            Save
+                        </div>
+                    )}
+                </button>
+                <button className="cta flex cancel h-32" onClick={redirectToGroupDetail}>
+                    Group Detail
+                </button>
+            </div>
+        )
     }
 
     function handleViewAllCharts() {
-        history.push(`${url}?${QueryParams.IncludeDeprecated}=1`);
+        history.push(`${url}?${QueryParams.IncludeDeprecated}=1`)
     }
 
     return (
         <>
             <div className="chart-group--details-page">
-                <div className="page-header">
-                    <div className="flex column left">
-                        <div className="flex left">
-                            <BreadCrumb breadcrumbs={breadcrumbs.slice(1)} />
-                        </div>
-                        <div className="flex left page-header__title">
-                            {state.name}
-                            <Pencil className="pointer" onClick={(e) => setChartDetailsUpdate(true)} />
-                        </div>
-                    </div>
-                    <div className="page-header__cta-container flex right">
-                        <button className="cta cancel mr-16" onClick={handleSave}>
-                            {loading ? (
-                                <Progressing />
-                            ) : (
-                                <div className="flex left" style={{ width: '100%' }}>
-                                    <SaveIcon className="mr-5" />
-                                    Save
-                                </div>
-                            )}
-                        </button>
-                        <button className="cta cancel" onClick={redirectToGroupDetail}>
-                            Group Detail
-                        </button>
-                    </div>
-                </div>
+                <PageHeader
+                    isBreadcrumbs={true}
+                    breadCrumbs={renderBreadcrumbs}
+                    renderActionButtons={renderChartGroupEditActionButton}
+                />
                 <Prompt
                     when={isLeavingPageNotAllowed.current}
                     message={'Your changes will be lost. Do you want to leave without saving?'}
@@ -281,6 +289,8 @@ export default function ChartGroupUpdate({}) {
                                 configureChartIndex={state.configureChartIndex}
                                 removeChart={removeChart}
                                 hideDeployedValues
+                                name={state.name}
+                                setChartDetailsUpdate={setChartDetailsUpdate}
                             />
                         </div>
                     </div>
@@ -298,7 +308,7 @@ export default function ChartGroupUpdate({}) {
                 />
             )}
         </>
-    );
+    )
 }
 
 function ChartList({ availableCharts, selectedInstances, addChart, subtractChart }) {
@@ -315,5 +325,5 @@ function ChartList({ availableCharts, selectedInstances, addChart, subtractChart
                 />
             ))}
         </div>
-    );
+    )
 }

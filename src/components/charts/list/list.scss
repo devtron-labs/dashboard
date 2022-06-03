@@ -335,7 +335,7 @@
 .chart-group--details-page,
 .discover-charts {
     display: grid;
-    grid-template-rows: 78px 1fr;
+    grid-template-rows: 48px 1fr;
     overflow: hidden;
     height: 100%;
 
@@ -490,7 +490,7 @@
 .chart-group-list-page {
     height: 100%;
     display: grid;
-    grid-template-rows: 80px 1fr;
+    grid-template-rows: 48px 1fr;
     overflow: hidden;
 
     .chart-group-list-page__body {
