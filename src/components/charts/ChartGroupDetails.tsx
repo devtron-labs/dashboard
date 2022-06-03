@@ -1,37 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useHistory, useRouteMatch } from 'react-router';
-import ChartGroupDeployments from './ChartGroupDeployments';
-import MultiChartSummary from './MultiChartSummary';
-import useChartGroup from './useChartGroup';
-import { URLS } from '../../config';
-import { Progressing, showError, BreadCrumb, Pencil, useBreadcrumb, ConditionalWrap, useAsync } from '../common';
-import { getDeployableChartsFromConfiguredCharts } from './list/DiscoverCharts';
+import React, { useState, useEffect } from 'react'
+import { useParams, useHistory, useRouteMatch } from 'react-router'
+import ChartGroupDeployments from './ChartGroupDeployments'
+import MultiChartSummary from './MultiChartSummary'
+import useChartGroup from './useChartGroup'
+import { URLS } from '../../config'
+import { Progressing, showError, BreadCrumb, Pencil, useBreadcrumb, ConditionalWrap, useAsync } from '../common'
+import { getDeployableChartsFromConfiguredCharts } from './list/DiscoverCharts'
 import {
     deployChartGroup,
     getChartGroupInstallationDetails,
     deleteInstalledChart,
     getChartGroups,
     deleteChartGroup,
-} from './charts.service';
-import { toast } from 'react-toastify';
-import ChartGroupBasicDeploy from './modal/ChartGroupBasicDeploy';
-import Tippy from '@tippyjs/react';
-import { isGitopsConfigured } from '../../services/service';
-import { ConfirmationDialog } from '../common';
-import warn from '../../assets/icons/ic-warning.svg';
-import { NavLink } from 'react-router-dom';
-import DeleteComponent from '../../util/DeleteComponent';
-import { DeleteComponentsName } from '../../config/constantMessaging';
-import { ChartSelector } from '../AppSelector';
+} from './charts.service'
+import { toast } from 'react-toastify'
+import ChartGroupBasicDeploy from './modal/ChartGroupBasicDeploy'
+import Tippy from '@tippyjs/react'
+import { isGitopsConfigured } from '../../services/service'
+import { ConfirmationDialog } from '../common'
+import warn from '../../assets/icons/ic-warning.svg'
+import { NavLink } from 'react-router-dom'
+import DeleteComponent from '../../util/DeleteComponent'
+import { DeleteComponentsName } from '../../config/constantMessaging'
+import { ChartSelector } from '../AppSelector'
+import PageHeader from '../common/header/PageHeader'
 
 export default function ChartGroupDetails() {
-    const { groupId } = useParams<{ groupId }>();
-    const { push } = useHistory();
-    const { url } = useRouteMatch();
-    const [projectId, setProjectId] = useState(null);
-    const [loading, setLoading] = useState(null);
-    const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false);
-    const [isGitOpsConfigAvailable, setIsGitOpsConfigAvailable] = useState(false);
+    const { groupId } = useParams<{ groupId }>()
+    const { push } = useHistory()
+    const { url } = useRouteMatch()
+    const [projectId, setProjectId] = useState(null)
+    const [loading, setLoading] = useState(null)
+    const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false)
+    const [isGitOpsConfigAvailable, setIsGitOpsConfigAvailable] = useState(false)
     const {
         state,
         validateData,
@@ -41,7 +42,7 @@ export default function ChartGroupDetails() {
         handleChartVersionChange,
         handleChartValueChange,
         handleEnvironmentChangeOfAllCharts,
-    } = useChartGroup(groupId);
+    } = useChartGroup(groupId)
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
@@ -62,37 +63,35 @@ export default function ChartGroupDetails() {
             },
         },
         [state.name],
-    );
-    const [showDeployModal, toggleDeployModal] = useState(false);
-    const [
-        chartGroupDetailsLoading,
-        chartGroupInstalled,
-        chartGroupDetailsError,
-        reloadChartGroupDetails,
-    ] = useAsync(() => getChartGroupInstallationDetails(groupId), [groupId]);
-    const [deleting, setDeleting] = useState(false);
-    const [confirmation, toggleConfirmation] = useState(false);
+    )
+    const [showDeployModal, toggleDeployModal] = useState(false)
+    const [chartGroupDetailsLoading, chartGroupInstalled, chartGroupDetailsError, reloadChartGroupDetails] = useAsync(
+        () => getChartGroupInstallationDetails(groupId),
+        [groupId],
+    )
+    const [deleting, setDeleting] = useState(false)
+    const [confirmation, toggleConfirmation] = useState(false)
 
     const getGitopsConfiguration = () => {
         isGitopsConfigured()
             .then((response) => {
-                let isGitOpsConfigAvailable = response.result && response.result.exists;
-                setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
+                let isGitOpsConfigAvailable = response.result && response.result.exists
+                setIsGitOpsConfigAvailable(isGitOpsConfigAvailable)
             })
             .catch((error) => {
-                showError(error);
-            });
-    };
+                showError(error)
+            })
+    }
 
     useEffect(() => {
-        getGitopsConfiguration();
-    }, []);
+        getGitopsConfiguration()
+    }, [])
 
     function handleOnDeployTo() {
         if (isGitOpsConfigAvailable) {
-            toggleDeployModal(true);
+            toggleDeployModal(true)
         } else {
-            toggleGitOpsWarningModal(true);
+            toggleGitOpsWarningModal(true)
         }
     }
 
@@ -101,45 +100,45 @@ export default function ChartGroupDetails() {
             push(`${url}/deploy`, {
                 charts: state.charts,
                 configureChartIndex: state.charts.findIndex((chart) => chart.isEnabled),
-            });
+            })
         } else {
-            toggleGitOpsWarningModal(true);
+            toggleGitOpsWarningModal(true)
         }
     }
 
     function redirectToConfigure() {
-        let url = `${URLS.CHARTS}/discover/group/${groupId}/edit`;
-        push(url);
+        let url = `${URLS.CHARTS}/discover/group/${groupId}/edit`
+        push(url)
     }
 
     async function deleteInstalledChartFromDeployments(installedAppId: number) {
         try {
-            await deleteInstalledChart(installedAppId);
-            toast.success('Successfully Deleted');
-            reloadChartGroupDetails();
+            await deleteInstalledChart(installedAppId)
+            toast.success('Successfully Deleted')
+            reloadChartGroupDetails()
         } catch (err) {
-            showError(err);
+            showError(err)
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
     }
 
     async function handleInstall() {
         try {
-            setLoading(true);
-            const validated = await validateData();
+            setLoading(true)
+            const validated = await validateData()
             if (!validated) {
-                return;
+                return
             }
-            const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts);
-            await deployChartGroup(projectId, deployableCharts, Number(groupId));
-            toast.success('Deployment initiated');
-            toggleDeployModal(false);
-            reloadChartGroupDetails();
+            const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts)
+            await deployChartGroup(projectId, deployableCharts, Number(groupId))
+            toast.success('Deployment initiated')
+            toggleDeployModal(false)
+            reloadChartGroupDetails()
         } catch (err) {
-            showError(err);
+            showError(err)
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
     }
 
@@ -150,7 +149,7 @@ export default function ChartGroupDetails() {
             id: parseInt(groupId),
             chartGroupEntries: state.charts,
             installedChartData: chartGroupInstalled?.result?.installedChartData,
-        };
+        }
 
         return (
             <DeleteComponent
@@ -164,28 +163,37 @@ export default function ChartGroupDetails() {
                 url={`${URLS.CHARTS}/discover`}
                 reload={getGitopsConfiguration}
             />
-        );
+        )
     }
 
+    const renderChartGroupActionButton = () => {
+        return (
+            <div className="page-header__cta-container flex">
+                <button type="button" className="cta flex cancel mr-16 h-32" onClick={redirectToConfigure}>
+                    <Pencil className="mr-5" />
+                    Edit
+                </button>
+                <button className="cta flex delete h-32" type="button" onClick={() => toggleConfirmation(true)}>
+                    {deleting ? <Progressing /> : 'Delete'}
+                </button>
+            </div>
+        )
+    }
+
+    const renderBreadcrumbs = () => {
+        return (
+            <div className="flex left">
+                <BreadCrumb sep={'/'} breadcrumbs={breadcrumbs} />
+            </div>
+        )
+    }
     return (
         <div className="chart-group-details-page">
-            <div className="page-header">
-                <div className="flex left column">
-                    <div className="flex left">
-                        <BreadCrumb sep={'/'} breadcrumbs={breadcrumbs} />
-                    </div>
-                    <div className="page-header__title">{state.name}</div>
-                </div>
-                <div className="page-header__cta-container flex">
-                    <button type="button" className="cta flex cancel mr-16" onClick={redirectToConfigure}>
-                        <Pencil className="mr-5" />
-                        Edit
-                    </button>
-                    <button className="cta delete" type="button" onClick={() => toggleConfirmation(true)}>
-                        {deleting ? <Progressing /> : 'Delete'}
-                    </button>
-                </div>
-            </div>
+            <PageHeader
+                isBreadcrumbs={true}
+                breadCrumbs={renderBreadcrumbs}
+                renderActionButtons={renderChartGroupActionButton}
+            />
             <div className="chart-group-details-page__body">
                 {state.loading && <Progressing pageLoader />}
                 {!state.loading && (
@@ -206,14 +214,14 @@ export default function ChartGroupDetails() {
                                 getChartVersionsAndValues={getChartVersionsAndValues}
                                 configureChart={(index) => {
                                     if (!state.charts[index].isEnabled) {
-                                        toast.warn('Please enable chart to configure.');
-                                        return;
+                                        toast.warn('Please enable chart to configure.')
+                                        return
                                     }
                                     push(`${url}/deploy`, {
                                         configureChartIndex: index,
                                         charts: state.charts,
                                         projectId,
-                                    });
+                                    })
                                 }}
                                 handleChartValueChange={handleChartValueChange}
                                 handleChartVersionChange={handleChartVersionChange}
@@ -290,8 +298,8 @@ export default function ChartGroupDetails() {
                     validateData={validateData}
                     handleEnvironmentChangeOfAllCharts={handleEnvironmentChangeOfAllCharts}
                     redirectToAdvancedOptions={() => {
-                        toggleDeployModal(false);
-                        push(`${url}/deploy`, { charts: state.charts, projectId });
+                        toggleDeployModal(false)
+                        push(`${url}/deploy`, { charts: state.charts, projectId })
                     }}
                 />
             ) : null}
@@ -321,5 +329,5 @@ export default function ChartGroupDetails() {
                 </ConfirmationDialog>
             )}
         </div>
-    );
+    )
 }
