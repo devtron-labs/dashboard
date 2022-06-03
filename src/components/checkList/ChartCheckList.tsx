@@ -9,7 +9,7 @@ import Uncheck from '../../assets/img/ic-success@2x.png';
 export class ChartCheckList extends Component<ChartCheckListProps, {}> {
 
     render() {
-        let { environment, project } = this.props.chartChecklist;
+        let { gitOps, environment, project } = this.props.chartChecklist;
 
         return (
             <>
@@ -17,8 +17,8 @@ export class ChartCheckList extends Component<ChartCheckListProps, {}> {
                     <div className="fs-14">To deploy chart</div>
                 </div>
                 <div className="fs-13">
-                    {/* {!this.props.chartChecklist.gitOps && <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor  mt-8 flex left" style={{ ['color']: gitOps ? `#767d84` : `#0066cc` }}>
-                    Configure gitops</NavLink>} */}
+                    {!this.props.chartChecklist.gitOps && <NavLink to={`${URLS.GLOBAL_CONFIG_GITOPS}`} className="no-decor  mt-8 flex left" style={{ ['color']: gitOps ? `#767d84` : `#0066cc` }}>
+                    Configure gitops</NavLink>}
                     {!this.props.chartChecklist.project && <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="no-decor  mt-8 flex left" style={{ ['color']: project ? `#767d84` : `#0066cc` }}>
                     Add project</NavLink>}
                     {!this.props.chartChecklist.environment && <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} className="no-decor mt-8 pb-8 flex left" style={{ ['color']: environment ? `#767d84` : `#0066cc` }}>
