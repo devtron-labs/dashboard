@@ -5,9 +5,9 @@ import './clusterNodes.scss'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getClusterList } from './clusterNodes.service'
-import { handleUTCTime, Progressing, showError, sortObjectArrayAlphabetically } from '../common'
+import { handleUTCTime, Progressing, showError } from '../common'
 import { ClusterDetail, ClusterListResponse } from './types'
-import { URLS } from '../../config'
+import PageHeader from '../common/header/PageHeader'
 
 export default function ClusterList() {
     const match = useRouteMatch()
@@ -85,47 +85,48 @@ export default function ClusterList() {
     }
 
     return (
-        <div className="cluster-list bcn-0">
-            <div className="flexbox content-space pl-20 pr-20 pt-16 pb-20">
-                {renderSearch()}
-                <div className="app-tabs-sync">
-                    {lastDataSyncTimeString && (
-                        <span>
-                            {lastDataSyncTimeString}{' '}
-                            <button className="btn btn-link p-0 fw-6 cb-5" onClick={getData}>
-                                Refresh
-                            </button>
-                        </span>
-                    )}
-                </div>
-            </div>
-
-            <div className="" style={{ minHeight: 'calc(100vh - 125px)' }}>
-                <div className="cluster-list-row fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 pl-20 text-uppercase">
-                    <div>Cluster</div>
-                    <div>Status</div>
-                    <div>Errors</div>
-                    <div>Nodes</div>
-                    <div>K8s version</div>
-                    <div>CPU Capacity</div>
-                    <div>Memory Capacity</div>
-                </div>
-                {clusterList?.map((clusterData) => (
-                    <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
-                        <div className="cb-5 ellipsis-right">
-                            <NavLink to={`${match.url}/${clusterData.id}${URLS.NODES_LIST}`}>
-                                {clusterData.name}
-                            </NavLink>
-                        </div>
-                        <div>{clusterData['status']}</div>
-                        <div>{clusterData.nodeErrors?.length > 0 ? clusterData.nodeErrors.length : ''}</div>
-                        <div>{clusterData.nodeCount}</div>
-                        <div>{clusterData.nodeK8sVersions[0]}</div>
-                        <div>{clusterData.cpu?.capacity}</div>
-                        <div>{clusterData.memory?.capacity}</div>
+        <>
+            <PageHeader headerName="Clusters" />
+            <div className="cluster-list bcn-0">
+                <div className="flexbox content-space pl-20 pr-20 pt-16 pb-20">
+                    {renderSearch()}
+                    <div className="app-tabs-sync">
+                        {lastDataSyncTimeString && (
+                            <span>
+                                {lastDataSyncTimeString}{' '}
+                                <button className="btn btn-link p-0 fw-6 cb-5" onClick={getData}>
+                                    Refresh
+                                </button>
+                            </span>
+                        )}
                     </div>
-                ))}
+                </div>
+
+                <div className="" style={{ minHeight: 'calc(100vh - 125px)' }}>
+                    <div className="cluster-list-row fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 pl-20 text-uppercase">
+                        <div>Cluster</div>
+                        <div>Status</div>
+                        <div>Errors</div>
+                        <div>Nodes</div>
+                        <div>K8s version</div>
+                        <div>CPU Capacity</div>
+                        <div>Memory Capacity</div>
+                    </div>
+                    {clusterList?.map((clusterData) => (
+                        <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
+                            <div className="cb-5 ellipsis-right">
+                                <NavLink to={`${match.url}/${clusterData.id}`}>{clusterData.name}</NavLink>
+                            </div>
+                            <div>{clusterData['status']}</div>
+                            <div>{clusterData.nodeErrors?.length > 0 ? clusterData.nodeErrors.length : ''}</div>
+                            <div>{clusterData.nodeCount}</div>
+                            <div>{clusterData.nodeK8sVersions[0]}</div>
+                            <div>{clusterData.cpu?.capacity}</div>
+                            <div>{clusterData.memory?.capacity}</div>
+                        </div>
+                    ))}
+                </div>
             </div>
-        </div>
+        </>
     )
 }

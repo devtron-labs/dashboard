@@ -167,7 +167,6 @@ export const getNodeList = (): Promise<NodeListResponse> => {
         status: '',
         result: [
             {
-                id: 10,
                 name: 'ip-172-31-2-152.us-east-2.compute.internal',
                 status: 'Not running',
                 roles: ['Worker'],
@@ -200,7 +199,6 @@ export const getNodeList = (): Promise<NodeListResponse> => {
                 age: '',
             },
             {
-                id: 11,
                 name: 'ip-172-31-2-152.us-east-2.compute.internal',
                 status: 'Not running',
                 roles: ['Worker'],
@@ -233,7 +231,6 @@ export const getNodeList = (): Promise<NodeListResponse> => {
                 age: '2d',
             },
             {
-                id: 12,
                 name: 'ip-172-31-2-152.us-east-2.compute.internal',
                 status: 'Running',
                 roles: ['Worker'],
@@ -266,7 +263,6 @@ export const getNodeList = (): Promise<NodeListResponse> => {
                 age: '8d',
             },
             {
-                id: 13,
                 name: 'ip-172-31-2-152.us-east-2.compute.internal',
                 status: 'Not running',
                 roles: ['Worker'],
@@ -299,7 +295,6 @@ export const getNodeList = (): Promise<NodeListResponse> => {
                 age: '8d',
             },
             {
-                id: 14,
                 name: 'ip-172-31-2-152.us-east-2.compute.internal',
                 status: 'Running',
                 roles: ['Worker'],

@@ -25,7 +25,6 @@ export interface ClusterDetail {
 }
 
 export interface NodeDetail {
-    id: number
     name: string
     status: string
     roles: string[]
