@@ -57,8 +57,9 @@ export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps,
 
             return (
                 <div>
-                    <div className="cn-9 fw-6 fs-16 mb-8">Get started!</div>
-                    <div className="cn-9 mb-16 fs-13"> You’re all set to get started with Devtron.</div>
+                   <img src={Checklist} className="applist__checklist-img" />
+                   <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Configuration checklist</div>
+                   <div className="cn-9 mb-16 fs-13">Complete the required configurations to perform desired task</div>
                     {!this.props.isAppCreated && 
                         <>
                             <SampleAppDeploy />
