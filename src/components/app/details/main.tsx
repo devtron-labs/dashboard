@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react'
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
-import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, showError, VisibleModal } from '../../common'
+import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, useAsync, showError, VisibleModal } from '../../common'
+import { getAppListMin } from '../../../services/service'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import { URLS } from '../../../config'
 import { AppSelector } from '../../AppSelector'
@@ -114,9 +115,6 @@ export function AppHeader() {
         } catch (err) {
             showError(err)
         }
-        return () => {
-            setShowInfoModal(false)
-        }
     }, [appId])
 
     function validateForm(): boolean {
@@ -209,7 +207,7 @@ export function AppHeader() {
                     linked: false,
                 },
                 app: {
-                    component: <span className="cb-5 fs-16 text-capitalize">apps</span>,
+                    component: <span className="cb-5 fs-16 text-capitalize">devtron apps</span>,
                     linked: true,
                 },
             },
