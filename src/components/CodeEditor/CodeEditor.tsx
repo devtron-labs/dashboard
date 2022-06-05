@@ -36,9 +36,9 @@ window.MonacoEnvironment = {
 const { yaml } = monaco.languages || {};
 
 
-interface WarningProps { text: string }
-interface ErrorBarProps { text: string }
-interface InformationProps { text: string }
+interface WarningProps { text: string; className?: string }
+interface ErrorBarProps { text: string; className?: string }
+interface InformationProps { text: string; className?: string }
 
 interface CodeEditorInterface {
     value?: string;
@@ -77,8 +77,8 @@ interface CodeEditorComposition {
     ThemeChanger?: React.FC<any>;
     ValidationError?: React.FC<any>;
     Clipboard?: React.FC<any>;
-    Warning?: React.FC<{ text: string }>;
-    ErrorBar?: React.FC<{ text: string }>;
+    Warning?: React.FC<WarningProps>;
+    ErrorBar?: React.FC<ErrorBarProps>;
     Information?: React.FC<InformationProps>
 }
 interface CodeEditorHeaderComposition {
@@ -365,7 +365,7 @@ function ValidationError() {
 }
 
 const Warning: React.FC<WarningProps> = function (props) {
-    return <div className="code-editor__warning">
+    return <div className={`code-editor__warning ${props.className || ''}`}>
         <WarningIcon className="code-editor__information-info-icon" />
         {props.text}
     </div>
@@ -373,7 +373,7 @@ const Warning: React.FC<WarningProps> = function (props) {
 
 const ErrorBar: React.FC<ErrorBarProps> = function (props) {
     return (
-        <div className="code-editor__error">
+        <div className={`code-editor__error ${props.className || ''}`}>
             <ErrorIcon className="code-editor__information-info-icon" />
             {props.text}
         </div>
@@ -381,7 +381,7 @@ const ErrorBar: React.FC<ErrorBarProps> = function (props) {
 };
 
 const Information: React.FC<InformationProps> = function (props) {
-    return <div className="code-editor__information">
+    return <div className={`code-editor__information ${props.className || ''}`}>
         <Info className="code-editor__information-info-icon" />
         {props.text}
     </div>

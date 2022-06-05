@@ -24,6 +24,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
 
     onChange(event) {
         let chartValue = event.target.value;
+        console.log(chartValue)
         this.props.onChange(chartValue);
     }
 

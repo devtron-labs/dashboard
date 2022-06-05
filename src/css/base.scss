@@ -1167,6 +1167,14 @@ button.anchor {
     line-height: 1.6;
     border: 1px solid rgba(255, 255, 255, 0.4);
     background-color: var(--N900);
+
+    &.fixed-width-200 {
+        width: 200px;
+    }
+
+    &.fixed-width-250 {
+        width: 250px;
+    }
 }
 
 .tippy-box.default-white {
@@ -1722,6 +1730,10 @@ button.anchor {
 
 .lh-16 {
     line-height: 16px;
+}
+
+.lh-18 {
+    line-height: 18px;
 }
 
 .mh-28 {

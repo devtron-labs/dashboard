@@ -1,7 +1,7 @@
 import { get, post, put, trash } from '../../services/api';
 import { Routes } from '../../config';
 import { handleUTCTime, sortCallback } from '../common';
-import { ChartValuesType, ChartGroup } from './charts.types';
+import { ChartValuesType, ChartGroup, HelmTemplateChartRequest } from './charts.types';
 
 interface RootObject {
     code: number;
@@ -179,6 +179,10 @@ export function getReadme(appStoreApplicationVersionId: number) {
 
 export function getChartGroupInstallationDetails(chartGroupId: number | string) {
     return get(`${Routes.CHART_GROUP}/installation-detail/${chartGroupId}`);
+}
+
+export function generateHelmManifest(templateChartRequest: HelmTemplateChartRequest) {
+    return post(Routes.HELM_APP_TEMPLATE_CHART, templateChartRequest)
 }
 
 export interface DeployableCharts {

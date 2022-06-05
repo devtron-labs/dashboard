@@ -357,12 +357,12 @@ const DeployChart: React.FC<DeployChartProps> = ({
                         ''
                     )}
                 </div>
-                <ActiveReadmeColumn
+                {/* <ActiveReadmeColumn
                     readmeCollapsed={readmeCollapsed}
                     toggleReadmeCollapsed={toggleReadmeCollapsed}
                     defaultReadme={readme}
                     selectedVersionUpdatePage={selectedVersionUpdatePage}
-                />
+                /> */}
                 <div className="deploy-chart-body">
                     <div className="overflown" ref={deployChartForm}>
                         <div className="hide-scroll">
@@ -437,7 +437,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 redirectToChartValues={redirectToChartValues}
                                 setChartValues={setChartValues}
                             />
-                            <ChartValuesEditor
+                            {/* <ChartValuesEditor
                                 loading={fetchingValuesYaml}
                                 valuesText={textRef}
                                 onChange={setTextRef}
@@ -445,7 +445,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 hasChartChanged={hasChartChanged()}
                                 parentRef={deployChartForm}
                                 autoFocus={!!envId}
-                            />
+                            /> */}
                         </div>
                     </div>
                 </div>

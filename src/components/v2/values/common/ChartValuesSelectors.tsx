@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import ReactSelect, { components } from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { menuList } from '../../../charts/charts.util'
-import { DropdownIndicator, styles } from '../../common/ReactSelect.utils'
+import { DropdownIndicator, Option, styles } from '../../common/ReactSelect.utils'
 import { ReactComponent as AlertTriangle } from '../../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg'
-import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled-prple.svg'
+import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
 import checkIcon from '../../../../assets/icons/appstatus/ic-check.svg'
 import warn from '../../../../assets/icons/ic-warning.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
-import { ConfirmationDialog, DeleteDialog, Progressing, Select } from '../../../common'
+import { ConfirmationDialog, DeleteDialog, DetailsProgressing, Progressing, Select, showError } from '../../../common'
 import {
     ChartEnvironmentSelectorType,
     ChartRepoSelectorType,
@@ -21,20 +22,26 @@ import {
     ChartValuesEditorType,
     ChartRepoDetailsType,
     ChartSelectorType,
+    ChartProjectSelectorType,
+    ChartValuesDiffOptionType,
 } from './chartValuesSelectors.type'
-import { getChartsByKeyword } from '../../../charts/charts.service'
+import { getChartsByKeyword, getChartValues } from '../../../charts/charts.service'
 import { ChartRepoOtions } from '../DeployChart'
 import ReadmeColumn from './ReadmeColumn.component'
 import CodeEditor from '../../../CodeEditor/CodeEditor'
 import { NavLink } from 'react-router-dom'
-import { URLS } from '../../../../config'
+import { Moment12HourFormat, URLS } from '../../../../config'
 import { getChartRelatedReadMe } from './chartValues.api'
-import { ChartVersionType } from '../../../charts/charts.types'
+import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import Tippy from '@tippyjs/react'
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
+import moment from 'moment'
+import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
+import YAML from 'yaml'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
+    isDeployChartView,
     installedAppInfo,
     releaseInfo,
     isUpdate,
@@ -42,36 +49,166 @@ export const ChartEnvironmentSelector = ({
     selectEnvironment,
     environments,
 }: ChartEnvironmentSelectorType): JSX.Element => {
-    return isExternal ? (
+    return !isDeployChartView ? (
         <div className="chart-values__environment-container mb-12">
             <h2 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7">Environment</h2>
-            <span className="chart-values__environment fs-13 fw-6 lh-20 cn-9">
-                {installedAppInfo
-                    ? installedAppInfo.environmentName
-                    : releaseInfo.deployedAppDetail.environmentDetail.clusterName +
-                      '__' +
-                      releaseInfo.deployedAppDetail.environmentDetail.namespace}
-            </span>
+            {isExternal ? (
+                <span className="chart-values__environment fs-13 fw-6 lh-20 cn-9">
+                    {installedAppInfo
+                        ? installedAppInfo.environmentName
+                        : releaseInfo.deployedAppDetail.environmentDetail.clusterName +
+                          '__' +
+                          releaseInfo.deployedAppDetail.environmentDetail.namespace}
+                </span>
+            ) : (
+                <span className="chart-values__environment fs-13 fw-6 lh-20 cn-9">{selectedEnvironment.label}</span>
+            )}
         </div>
     ) : (
-        <div className="form__row form__row--w-100">
-            <span className="form__label">Environment</span>
+        <div className="form__row form__row--w-100 fw-4">
+            <span className="form__label required-field">Deploy to environment</span>
             <ReactSelect
                 components={{
                     IndicatorSeparator: null,
                     DropdownIndicator,
+                    Option,
                 }}
                 isDisabled={!!isUpdate}
                 placeholder="Select Environment"
                 value={selectedEnvironment}
                 styles={{
-                    ...styles,
-                    ...menuList,
+                    menuList: (base) => ({
+                        ...base,
+                        paddingTop: 0,
+                        paddingBottom: 0,
+                    }),
+                    control: (base, state) => ({
+                        ...base,
+                        minHeight: '32px',
+                        boxShadow: 'none',
+                        backgroundColor: 'var(--N50)',
+                        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                        cursor: 'pointer',
+                    }),
+                    option: (base, state) => {
+                        return {
+                            ...base,
+                            color: 'var(--N900)',
+                            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                            padding: '10px 12px',
+                        }
+                    },
+                    dropdownIndicator: (base, state) => {
+                        return {
+                            ...base,
+                            color: 'var(--N400)',
+                            padding: '0 8px',
+                            transition: 'all .2s ease',
+                            transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                        }
+                    },
+                    valueContainer: (base, state) => {
+                        return {
+                            ...base,
+                            padding: '0 8px',
+                        }
+                    },
+                    loadingMessage: (base) => {
+                        return {
+                            ...base,
+                            color: 'var(--N600)',
+                        }
+                    },
+                    noOptionsMessage: (base) => {
+                        return {
+                            ...base,
+                            color: 'var(--N600)',
+                        }
+                    },
                 }}
                 onChange={selectEnvironment}
                 options={environments}
             />
         </div>
+    )
+}
+
+export const ChartProjectSelector = ({
+    isDeployChartView,
+    selectedProject,
+    selectProject,
+    projects,
+}: ChartProjectSelectorType): JSX.Element => {
+    return !isDeployChartView ? (
+        <div className="chart-values__project-container mb-12">
+            <h2 className="chart-values__project-label fs-13 fw-4 lh-20 cn-7">Project</h2>
+            <span className="chart-values__project-name fs-13 fw-6 lh-20 cn-9">{selectedProject.label}</span>
+        </div>
+    ) : (
+        <label className="form__row form__row--w-100 fw-4">
+            <span className="form__label required-field">Project</span>
+            <ReactSelect
+                components={{
+                    IndicatorSeparator: null,
+                    DropdownIndicator,
+                    Option,
+                }}
+                placeholder="Select Project"
+                value={selectedProject}
+                styles={{
+                    menuList: (base) => ({
+                        ...base,
+                        paddingTop: 0,
+                        paddingBottom: 0,
+                    }),
+                    control: (base, state) => ({
+                        ...base,
+                        minHeight: '32px',
+                        boxShadow: 'none',
+                        backgroundColor: 'var(--N50)',
+                        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                        cursor: 'pointer',
+                    }),
+                    option: (base, state) => {
+                        return {
+                            ...base,
+                            color: 'var(--N900)',
+                            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                            padding: '10px 12px',
+                        }
+                    },
+                    dropdownIndicator: (base, state) => {
+                        return {
+                            ...base,
+                            color: 'var(--N400)',
+                            padding: '0 8px',
+                            transition: 'all .2s ease',
+                            transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                        }
+                    },
+                    valueContainer: (base, state) => {
+                        return {
+                            ...base,
+                            padding: '0 8px',
+                        }
+                    },
+                    loadingMessage: (base) => {
+                        return {
+                            ...base,
+                            color: 'var(--N600)',
+                        }
+                    },
+                    noOptionsMessage: (base) => {
+                        return {
+                            ...base,
+                            color: 'var(--N600)',
+                        }
+                    },
+                }}
+                onChange={selectProject}
+                options={projects}
+            />
+        </label>
     )
 }
 
@@ -173,7 +310,7 @@ export const ChartRepoSelector = ({
                             <Info className="icon-dim-16" />
                         </div>
                         <div className="sticky-information__note fs-13">
-                            Unable to find the desired chart? To connect a chart repo or Re-sync connected repos.&nbsp;
+                            Unable to find the desired chart? To connect or re-sync a repo.&nbsp;
                             <NavLink to={URLS.GLOBAL_CONFIG_CHART} target="_blank" className="fw-6">
                                 Go to chart repository
                             </NavLink>
@@ -208,7 +345,7 @@ export const ChartRepoSelector = ({
                     <AsyncSelect
                         cacheOptions
                         defaultOptions={repoChartOptions}
-                        isSearchable={false}
+                        isSearchable={true}
                         formatOptionLabel={repoChartSelectOptionLabel}
                         value={repoChartValue}
                         loadOptions={repoChartLoadOptions}
@@ -434,50 +571,395 @@ export const ChartVersionValuesSelector = ({
 }
 
 export const ActiveReadmeColumn = ({
-    readmeCollapsed,
-    toggleReadmeCollapsed,
-    defaultReadme,
-    selectedVersionUpdatePage,
+    fetchingReadMe,
+    activeReadMe,
 }: {
-    readmeCollapsed: boolean
-    toggleReadmeCollapsed: React.Dispatch<React.SetStateAction<boolean>>
-    defaultReadme: string
-    selectedVersionUpdatePage: ChartVersionType
+    fetchingReadMe: boolean
+    activeReadMe: string
 }) => {
-    const [activeReadMe, setActiveReadMe] = useState<string>(defaultReadme)
-    const [fetchingReadMe, setFetchingReadMe] = useState<boolean>(false)
+    return (
+        <div className="chart-values-view__readme">
+            <div className="code-editor__header flex left fs-12 fw-6 cn-7">Readme</div>
+            {fetchingReadMe ? (
+                <Progressing pageLoader />
+            ) : (
+                <MarkDown markdown={activeReadMe} className="chart-values-view__readme-markdown" />
+            )}
+        </div>
+    )
+}
+
+const formatOptionLabel = (option: { label: string; value: number; info: string }): JSX.Element => {
+    return (
+        <div className="flex left column">
+            <span className="w-100 ellipsis-right">{option.label}</span>
+            {option.info && <small className="cn-6">{option.info}</small>}
+        </div>
+    )
+}
+
+const customValueContainer = (props: any): JSX.Element => {
+    return (
+        <components.ValueContainer {...props}>
+            {props.selectProps.value?.label}
+            {React.cloneElement(props.children[1], {
+                style: { position: 'absolute' },
+            })}
+        </components.ValueContainer>
+    )
+}
+
+const CompareWithDropdown = ({
+    filteredChartValuesList,
+    deploymentHistoryOptionsList,
+    selectedVersionForDiff,
+    handleSelectedVersionForDiff,
+}: {
+    filteredChartValuesList: ChartValuesDiffOptionType[]
+    deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
+    selectedVersionForDiff: ChartValuesDiffOptionType
+    handleSelectedVersionForDiff: (selected: ChartValuesDiffOptionType) => void
+}) => {
+    const [groupedOptions, setGroupedOptions] = useState<
+        {
+            label: string
+            options: ChartValuesDiffOptionType[]
+        }[]
+    >([
+        {
+            label: '',
+            options: [],
+        },
+    ])
 
     useEffect(() => {
-        if (selectedVersionUpdatePage && selectedVersionUpdatePage.id) {
-            getChartRelatedReadMe(selectedVersionUpdatePage.id, setFetchingReadMe, setActiveReadMe)
+        if (deploymentHistoryOptionsList.length > 0) {
+            const _groupedOptions = [
+                {
+                    label: 'Previous deployments',
+                    options: deploymentHistoryOptionsList,
+                },
+                {
+                    label: 'Other apps using this chart',
+                    options:
+                        filteredChartValuesList.length > 0
+                            ? filteredChartValuesList
+                            : [{ label: 'No options', value: 0, info: '' }],
+                },
+            ]
+            setGroupedOptions(_groupedOptions)
+        } else {
+            const _groupedOptions = [
+                {
+                    label: 'Other apps using this chart',
+                    options:
+                        filteredChartValuesList.length > 0
+                            ? filteredChartValuesList
+                            : [{ label: 'No options', value: 0, info: '' }],
+                },
+            ]
+            setGroupedOptions(_groupedOptions)
         }
-    }, [selectedVersionUpdatePage])
+    }, [filteredChartValuesList, deploymentHistoryOptionsList])
 
-    return fetchingReadMe ? (
-        <Progressing pageLoader />
-    ) : (
-        <MarkDown markdown={activeReadMe} className="chart-values-view__readme-markdown" />
+    return (
+        <ReactSelect
+            options={groupedOptions}
+            isMulti={false}
+            isSearchable={false}
+            value={selectedVersionForDiff}
+            classNamePrefix="chart_select"
+            isOptionDisabled={(option) => option.label === 'No options'}
+            formatOptionLabel={formatOptionLabel}
+            components={{
+                IndicatorSeparator: null,
+                ValueContainer: customValueContainer,
+                Option,
+            }}
+            styles={{
+                control: (base, state) => ({
+                    ...base,
+                    backgroundColor: 'var(--N100)',
+                    border: 'none',
+                    boxShadow: 'none',
+                    minHeight: '32px',
+                }),
+                option: (base, state) => {
+                    return {
+                        ...base,
+                        color: 'var(--N900)',
+                        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                    }
+                },
+                container: (base) => {
+                    return {
+                        ...base,
+                        width: '100%',
+                        maxWidth: '240px',
+                    }
+                },
+                menu: (base) => {
+                    return {
+                        ...base,
+                        marginTop: '2px',
+                    }
+                },
+                menuList: (base) => {
+                    return {
+                        ...base,
+                        position: 'relative',
+                        paddingBottom: '0px',
+                        maxHeight: '250px',
+                    }
+                },
+                dropdownIndicator: (base) => {
+                    return {
+                        ...base,
+                        padding: '0 8px',
+                        color: 'var(--N600)',
+                    }
+                },
+            }}
+            onChange={handleSelectedVersionForDiff}
+        />
     )
 }
 
 export const ChartValuesEditor = ({
     loading,
+    isExternalApp,
+    appId,
+    appName,
     valuesText,
     onChange,
     repoChartValue,
+    chartValuesList,
+    deploymentHistoryList,
+    defaultValuesText,
+    showEditorHeader,
     hasChartChanged,
-    parentRef,
-    autoFocus,
+    showInfoText,
+    manifestView,
+    generatedManifest,
+    comparisonView,
 }: ChartValuesEditorType) => {
+    const [valuesForDiffState, setValuesForDiffState] = useState<{
+        loadingValuesForDiff: boolean
+        filteredChartValues: ChartValuesDiffOptionType[]
+        deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
+        selectedVersionForDiff: ChartValuesDiffOptionType
+        valuesForDiff: Map<number, string>
+        selectedValuesForDiff: string
+    }>({
+        loadingValuesForDiff: false,
+        filteredChartValues: [],
+        deploymentHistoryOptionsList: [],
+        selectedValuesForDiff: defaultValuesText,
+        valuesForDiff: new Map<number, string>(),
+        selectedVersionForDiff: null,
+    })
+
+    useEffect(() => {
+        if (!manifestView && chartValuesList.length > 0 && deploymentHistoryList.length > 0) {
+            const filteredChartValues = chartValuesList
+                .filter((_chartValue) => _chartValue.kind === 'DEPLOYED' && _chartValue.name !== appName)
+                .map((_chartValue) => {
+                    return {
+                        label: _chartValue.name,
+                        value: _chartValue.appStoreVersionId || _chartValue.id,
+                        info: `Deployed on: ${_chartValue.environmentName}`,
+                        kind: _chartValue.kind,
+                    }
+                })
+            const deploymentHistoryOptionsList = deploymentHistoryList.map((_deploymentHistory) => {
+                return {
+                    label: moment(new Date(_deploymentHistory.deployedAt.seconds * 1000)).format(Moment12HourFormat),
+                    value: _deploymentHistory.version,
+                    info: '',
+                }
+            })
+            deploymentHistoryOptionsList.splice(0, 1)
+
+            setValuesForDiffState({
+                ...valuesForDiffState,
+                filteredChartValues,
+                deploymentHistoryOptionsList,
+                selectedVersionForDiff:
+                    deploymentHistoryOptionsList.length > 0 ? deploymentHistoryOptionsList[0] : filteredChartValues[0],
+            })
+        }
+    }, [chartValuesList, deploymentHistoryList])
+
+    useEffect(() => {
+        if (comparisonView && valuesForDiffState.selectedVersionForDiff) {
+            setValuesForDiffState({
+                ...valuesForDiffState,
+                loadingValuesForDiff: true,
+            })
+            const selectedVersionForDiff = valuesForDiffState.selectedVersionForDiff
+            const _version = manifestView ? deploymentHistoryList[0].version : selectedVersionForDiff.value
+            const _currentValues = valuesForDiffState.valuesForDiff.get(_version)
+            if (!_currentValues) {
+                if (selectedVersionForDiff.kind === 'DEPLOYED') {
+                    getChartValues(selectedVersionForDiff.value, selectedVersionForDiff.kind)
+                        .then((res) => {
+                            const _valuesForDiff = valuesForDiffState.valuesForDiff
+                            _valuesForDiff.set(selectedVersionForDiff.value, res.result.values)
+                            setValuesForDiffState({
+                                ...valuesForDiffState,
+                                loadingValuesForDiff: false,
+                                valuesForDiff: _valuesForDiff,
+                                selectedValuesForDiff: res.result.values,
+                            })
+                        })
+                        .catch((e) => {
+                            showError(e)
+                            setValuesForDiffState({
+                                ...valuesForDiffState,
+                                selectedValuesForDiff: '',
+                                loadingValuesForDiff: false,
+                            })
+                        })
+                } else {
+                    getDeploymentManifestDetails(
+                        appId,
+                        manifestView ? _version : selectedVersionForDiff.value,
+                        isExternalApp,
+                    )
+                        .then((res) => {
+                            const _valuesForDiff = valuesForDiffState.valuesForDiff
+                            const _selectedValues = manifestView
+                                ? res.result.manifest
+                                : isExternalApp
+                                ? YAML.stringify(JSON.parse(res.result.valuesYaml))
+                                : res.result.valuesYaml
+                            _valuesForDiff.set(manifestView ? _version : selectedVersionForDiff.value, _selectedValues)
+
+                            setValuesForDiffState({
+                                ...valuesForDiffState,
+                                loadingValuesForDiff: false,
+                                valuesForDiff: _valuesForDiff,
+                                selectedValuesForDiff: _selectedValues,
+                            })
+                        })
+                        .catch((e) => {
+                            showError(e)
+                            setValuesForDiffState({
+                                ...valuesForDiffState,
+                                selectedValuesForDiff: '',
+                                loadingValuesForDiff: false,
+                            })
+                        })
+                }
+            } else {
+                setValuesForDiffState({
+                    ...valuesForDiffState,
+                    loadingValuesForDiff: false,
+                    selectedValuesForDiff: _currentValues,
+                })
+            }
+        }
+    }, [comparisonView, valuesForDiffState.selectedVersionForDiff])
+
+    useEffect(() => {
+        if (
+            (!comparisonView && valuesForDiffState.selectedVersionForDiff) ||
+            (comparisonView && !valuesForDiffState.selectedVersionForDiff)
+        ) {
+            setValuesForDiffState({
+                ...valuesForDiffState,
+                selectedVersionForDiff:
+                    valuesForDiffState.deploymentHistoryOptionsList.length > 0
+                        ? valuesForDiffState.deploymentHistoryOptionsList[0]
+                        : valuesForDiffState.filteredChartValues[0],
+            })
+        }
+    }, [comparisonView])
+
+    const handleSelectedVersionForDiff = useCallback(
+        (selected: ChartValuesDiffOptionType) => {
+            if (selected.value !== valuesForDiffState.selectedVersionForDiff.value) {
+                setValuesForDiffState({
+                    ...valuesForDiffState,
+                    selectedVersionForDiff: selected,
+                })
+            }
+        },
+        [valuesForDiffState.selectedVersionForDiff],
+    )
+
     return (
-        <div className="code-editor-container">
-            <CodeEditor value={valuesText} noParsing mode="yaml" onChange={onChange} loading={loading}>
-                {/* <CodeEditor.Header>
-                    <span className="bold">values.yaml</span>
-                </CodeEditor.Header> */}
-                {hasChartChanged && (
+        <div
+            className={`code-editor-container ${
+                showInfoText && (hasChartChanged || manifestView) ? 'code-editor__info-enabled' : ''
+            }`}
+        >
+            {comparisonView && (
+                <div className="code-editor__header chart-values-view__diff-view-header">
+                    <div className="chart-values-view__diff-view-default flex left fs-12 fw-6 cn-7">
+                        {manifestView ? (
+                            <span>Deployed manifest</span>
+                        ) : (
+                            <>
+                                <span style={{ width: '90px' }}>Compare with: </span>
+                                <CompareWithDropdown
+                                    filteredChartValuesList={valuesForDiffState.filteredChartValues}
+                                    deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
+                                    selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
+                                    handleSelectedVersionForDiff={handleSelectedVersionForDiff}
+                                />
+                            </>
+                        )}
+                    </div>
+                    <div className="chart-values-view__diff-view-current flex left fs-12 fw-6 cn-7 pl-12">
+                        {manifestView ? (
+                            <span>Manifest output for YAML</span>
+                        ) : (
+                            <>
+                                <Edit className="icon-dim-16 mr-10" />
+                                values.yaml
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
+            <CodeEditor
+                defaultValue={comparisonView ? valuesForDiffState.selectedValuesForDiff : ''}
+                value={manifestView ? generatedManifest : valuesText}
+                diffView={comparisonView}
+                noParsing
+                mode="yaml"
+                onChange={onChange}
+                loading={loading || valuesForDiffState.loadingValuesForDiff}
+                customLoader={
+                    <DetailsProgressing
+                        loadingText={manifestView && !comparisonView ? 'Generating the manifest. Please wait...' : ''}
+                        size={32}
+                    />
+                }
+                height={
+                    !showInfoText || showEditorHeader ? 'height: calc(100vh - 162px)' : 'height: calc(100vh - 196px)'
+                }
+                readOnly={manifestView}
+            >
+                {showEditorHeader && (
+                    <CodeEditor.Header>
+                        <div className="flex fs-12 fw-6 cn-7">
+                            <Edit className="icon-dim-16 mr-10" />
+                            values.yaml
+                        </div>
+                    </CodeEditor.Header>
+                )}
+                {!manifestView && showInfoText && hasChartChanged && (
                     <CodeEditor.Warning
+                        className="ellipsis-right"
                         text={`Please ensure that the values are compatible with "${repoChartValue.chartRepoName}/${repoChartValue.chartName}"`}
+                    />
+                )}
+                {manifestView && showInfoText && (
+                    <CodeEditor.Information
+                        className="ellipsis-right"
+                        text="Manifest is generated locally from the YAML. Server-side testing of chart validity (e.g. API support) is NOT done. K8s version based templating may differ depending on cluster version."
                     />
                 )}
             </CodeEditor>

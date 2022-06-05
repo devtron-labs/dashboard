@@ -314,12 +314,12 @@ function ExternalAppValues({ appId }: { appId: string }) {
                 style={{ height: 'calc(100vh - 50px)' }}
             >
                 <div className="header-container flex column"></div>
-                <ActiveReadmeColumn
+                {/* <ActiveReadmeColumn
                     readmeCollapsed={readmeCollapsed}
                     toggleReadmeCollapsed={toggleReadmeCollapsed}
                     defaultReadme={releaseInfo.readme}
                     selectedVersionUpdatePage={selectedVersionUpdatePage}
-                />
+                /> */}
                 <div className="deploy-chart-body">
                     <div className="overflown" ref={deployChartRef}>
                         <div className="hide-scroll">
@@ -359,7 +359,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
                                     redirectToChartValues={redirectToChartValues}
                                 />
                             )}
-                            <ChartValuesEditor
+                            {/* <ChartValuesEditor
                                 loading={fetchingValuesYaml}
                                 valuesText={modifiedValuesYaml}
                                 onChange={OnEditorValueChange}
@@ -367,7 +367,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
                                 hasChartChanged={hasChartChanged()}
                                 parentRef={deployChartRef}
                                 autoFocus={!!installedAppInfo}
-                            />
+                            /> */}
                         </div>
                     </div>
                 </div>
