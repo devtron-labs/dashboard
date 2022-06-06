@@ -20,6 +20,8 @@ import {
     ChartValuesEditorType,
     ChartRepoDetailsType,
     ChartProjectSelectorType,
+    ChartValuesOptionType,
+    ChartGroupOptionType,
     ChartValuesDiffOptionType,
 } from './ChartValuesView.type'
 import { getChartsByKeyword, getChartValues } from '../../../charts/charts.service'
@@ -41,7 +43,7 @@ export const ChartEnvironmentSelector = ({
     releaseInfo,
     isUpdate,
     selectedEnvironment,
-    selectEnvironment,
+    handleEnvironmentSelection,
     environments,
     invalidaEnvironment,
 }: ChartEnvironmentSelectorType): JSX.Element => {
@@ -70,6 +72,7 @@ export const ChartEnvironmentSelector = ({
                     Option,
                 }}
                 isDisabled={!!isUpdate}
+                classNamePrefix="values-environment-select"
                 placeholder="Select Environment"
                 value={selectedEnvironment}
                 styles={{
@@ -122,9 +125,7 @@ export const ChartEnvironmentSelector = ({
                         }
                     },
                 }}
-                onChange={(selected) => {
-                    selectEnvironment(selected)
-                }}
+                onChange={handleEnvironmentSelection}
                 options={environments}
             />
             {invalidaEnvironment && renderValidationErrorLabel()}
@@ -135,7 +136,7 @@ export const ChartEnvironmentSelector = ({
 export const ChartProjectSelector = ({
     isDeployChartView,
     selectedProject,
-    selectProject,
+    handleProjectSelection,
     projects,
     invalidProject,
 }: ChartProjectSelectorType): JSX.Element => {
@@ -205,7 +206,7 @@ export const ChartProjectSelector = ({
                         }
                     },
                 }}
-                onChange={selectProject}
+                onChange={handleProjectSelection}
                 options={projects}
             />
             {invalidProject && renderValidationErrorLabel()}
@@ -439,12 +440,10 @@ export const ChartRepoSelector = ({
 }
 
 export const ChartVersionSelector = ({
-    isUpdate,
     selectedVersion,
-    selectVersion,
     chartVersionObj,
     selectedVersionUpdatePage,
-    setSelectedVersionUpdatePage,
+    handleVersionSelection,
     chartVersionsData,
 }: ChartVersionSelectorType) => {
     return (
@@ -455,8 +454,7 @@ export const ChartVersionSelector = ({
                 rootClassName="select-button--default chart-values-selector"
                 value={selectedVersionUpdatePage?.id || selectedVersion}
                 onChange={(event) => {
-                    selectVersion(event.target.value)
-                    setSelectedVersionUpdatePage({
+                    handleVersionSelection(event.target.value, {
                         id: event.target.value,
                         version: event.target.innerText,
                     })
@@ -477,7 +475,7 @@ export const ChartValuesSelector = ({
     chartValuesList,
     chartValues,
     redirectToChartValues,
-    setChartValues,
+    handleChartValuesSelection,
     hideVersionFromLabel,
 }: ChartValuesSelectorType) => {
     return (
@@ -488,7 +486,7 @@ export const ChartValuesSelector = ({
                 chartValuesList={chartValuesList}
                 chartValues={chartValues}
                 redirectToChartValues={redirectToChartValues}
-                onChange={setChartValues}
+                onChange={handleChartValuesSelection}
                 hideVersionFromLabel={hideVersionFromLabel}
             />
         </div>
@@ -498,26 +496,23 @@ export const ChartValuesSelector = ({
 export const ChartVersionValuesSelector = ({
     isUpdate,
     selectedVersion,
-    selectVersion,
     selectedVersionUpdatePage,
-    setSelectedVersionUpdatePage,
+    handleVersionSelection,
     chartVersionsData,
     chartVersionObj,
     chartValuesList,
     chartValues,
     redirectToChartValues,
-    setChartValues,
+    handleChartValuesSelection,
     hideVersionFromLabel,
-    installedConfig,
 }: ChartVersionValuesSelectorType) => {
     return (
         <>
             <ChartVersionSelector
                 isUpdate={isUpdate}
                 selectedVersion={selectedVersion}
-                selectVersion={selectVersion}
                 selectedVersionUpdatePage={selectedVersionUpdatePage}
-                setSelectedVersionUpdatePage={setSelectedVersionUpdatePage}
+                handleVersionSelection={handleVersionSelection}
                 chartVersionsData={chartVersionsData}
                 chartVersionObj={chartVersionObj}
             />
@@ -525,7 +520,7 @@ export const ChartVersionValuesSelector = ({
                 chartValuesList={chartValuesList}
                 chartValues={chartValues}
                 redirectToChartValues={redirectToChartValues}
-                setChartValues={setChartValues}
+                handleChartValuesSelection={handleChartValuesSelection}
                 hideVersionFromLabel={hideVersionFromLabel}
             />
         </>
@@ -582,12 +577,7 @@ const CompareWithDropdown = ({
     selectedVersionForDiff: ChartValuesDiffOptionType
     handleSelectedVersionForDiff: (selected: ChartValuesDiffOptionType) => void
 }) => {
-    const [groupedOptions, setGroupedOptions] = useState<
-        {
-            label: string
-            options: ChartValuesDiffOptionType[]
-        }[]
-    >([
+    const [groupedOptions, setGroupedOptions] = useState<ChartGroupOptionType[]>([
         {
             label: '',
             options: [],
@@ -679,6 +669,12 @@ const CompareWithDropdown = ({
                     return {
                         ...base,
                         padding: '0 8px',
+                        color: 'var(--N600)',
+                    }
+                },
+                noOptionsMessage: (base) => {
+                    return {
+                        ...base,
                         color: 'var(--N600)',
                     }
                 },

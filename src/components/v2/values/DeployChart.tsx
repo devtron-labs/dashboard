@@ -184,7 +184,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
 
     useEffect(() => {
         if (chartId) {
-            getChartValuesList(chartId, setChartValuesList, setChartValues, setLoading);
+            getChartValuesList(chartId, setChartValuesList, setChartValues);
         }
         document.addEventListener('keydown', closeMe);
         if (versions) {
@@ -297,19 +297,19 @@ const DeployChart: React.FC<DeployChartProps> = ({
 
     function handleRepoChartValueChange(event) {
         setRepoChartValue(event);
-        fetchChartVersionsData(
-            event.chartId,
-            true,
-            false,
-            setSelectedVersionUpdatePage,
-            setChartVersionsData,
-            setLoading,
-        );
+        // fetchChartVersionsData(
+        //     event.chartId,
+        //     // true,
+        //     // false,
+        //     setSelectedVersionUpdatePage,
+        //     setChartVersionsData,
+        //     // setLoading,
+        // );
         getChartValuesList(
             event.chartId,
             setChartValuesList,
             setChartValues,
-            setLoading,
+            // setLoading,
             initialChartValuesFromParent.id,
             installedAppVersionId,
         );
@@ -321,14 +321,14 @@ const DeployChart: React.FC<DeployChartProps> = ({
     // fetch chart versions for update route
     useEffect(() => {
         if (isUpdate !== null) {
-            fetchChartVersionsData(
-                chartIdFromDeploymentDetail,
-                false,
-                false,
-                setSelectedVersionUpdatePage,
-                setChartVersionsData,
-                setLoading,
-            );
+            // fetchChartVersionsData(
+            //     chartIdFromDeploymentDetail,
+            //     // false,
+            //     // false,
+            //     setSelectedVersionUpdatePage,
+            //     setChartVersionsData,
+            //     // setLoading,
+            // );
         }
     }, []);
     return (

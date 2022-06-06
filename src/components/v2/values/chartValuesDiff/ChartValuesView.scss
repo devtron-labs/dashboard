@@ -15,7 +15,7 @@
                     height: calc(100vh - 130px);
                 }
             }
-    
+
             .chart-values-view__editor {
                 &.chart-values-view__full-mode {
                     .code-editor-container {
@@ -96,6 +96,30 @@
         grid-template-columns: 300px 1px calc(100% - 301px);
         transition: all 0.2s ease-out;
         position: relative;
+
+        .compare-values-select__group,
+        .values-environment-select__group {
+            padding-top: 0;
+            padding-bottom: 0;
+
+            .compare-values-select__group-heading,
+            .values-environment-select__group-heading {
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: none;
+                color: var(--N900);
+                background-color: var(--window-bg);
+                padding: 4px 10px;
+                border-top-left-radius: 4px;
+                border-top-right-radius: 4px;
+                margin: 0;
+            }
+
+            .compare-values-select__option,
+            .values-environment-select__option {
+                margin: 4px 0;
+            }
+        }
 
         .chart-values-view__details {
             padding: 16px 16px 12px;
@@ -190,27 +214,6 @@
 
                     .chart-values-view__diff-view-default {
                         border-right: 1px solid var(--N200);
-
-                        .compare-values-select__group {
-                            padding-top: 0;
-                            padding-bottom: 0;
-
-                            .compare-values-select__group-heading {
-                                font-size: 12px;
-                                font-weight: 600;
-                                text-transform: none;
-                                color: var(--N900);
-                                background-color: var(--window-bg);
-                                padding: 4px 10px;
-                                border-top-left-radius: 4px;
-                                border-top-right-radius: 4px;
-                                margin: 0;
-                            }
-
-                            .compare-values-select__option {
-                                margin: 4px 0;
-                            }
-                        }
                     }
                 }
 

@@ -1,6 +1,8 @@
 import React from 'react'
 import { SERVER_MODE } from '../../../../config'
 import { getEnvironmentListHelmApps, getEnvironmentListMin, getTeamListMin } from '../../../../services/service'
+import { EnvironmentListHelmResult, Teams } from '../../../../services/service.types'
+import { OptionType } from '../../../app/types'
 import {
     generateHelmManifest,
     getChartValuesCategorizedListParsed,
@@ -8,59 +10,45 @@ import {
     getReadme,
 } from '../../../charts/charts.service'
 import { ChartVersionType } from '../../../charts/charts.types'
-import { showError, sortCallback } from '../../../common'
+import { showError, sortCallback, sortObjectArrayAlphabetically } from '../../../common'
+import { ChartProjectAndEnvironmentType } from '../chartValuesDiff/ChartValuesView.type'
 
 export async function fetchChartVersionsData(
     id: number,
-    isExternal: boolean,
-    valueUpdateRequired: boolean,
-    setSelectedVersionUpdatePage: React.Dispatch<React.SetStateAction<ChartVersionType>>,
     setChartVersionsData: React.Dispatch<React.SetStateAction<ChartVersionType[]>>,
-    setLoading?: React.Dispatch<React.SetStateAction<boolean>>,
+    handleVersionSelection: (selectedVersion: number, selectedVersionUpdatePage: ChartVersionType) => void,
     currentChartVersion?: string,
-    selectVersion?: React.Dispatch<React.SetStateAction<number>>,
 ) {
     try {
-        setLoading && setLoading(true)
         const { result } = await getChartVersionsMin(id)
         setChartVersionsData(result)
 
-        const specificVersion = currentChartVersion && result.find((e) => e.version === currentChartVersion)
-        if (specificVersion) {
-            selectVersion && selectVersion(specificVersion.id)
-            setSelectedVersionUpdatePage(specificVersion)
-        } else {
-            setSelectedVersionUpdatePage(result[0])
-        }
+        const _currentVersion =
+            (currentChartVersion && result.find((e) => e.version === currentChartVersion)) || result[0]
+        handleVersionSelection(_currentVersion.id, _currentVersion)
     } catch (err) {
         showError(err)
-    } finally {
-        setLoading && setLoading(false)
     }
 }
 
 export async function getChartValuesList(
     id: number,
     setChartValuesList: React.Dispatch<React.SetStateAction<any>>,
-    setChartValues: React.Dispatch<React.SetStateAction<any>>,
-    setLoading?: React.Dispatch<React.SetStateAction<boolean>>,
+    handleChartValuesSelection?: (chartValues) => void,
     initId?: number,
     installedAppVersionId = null,
 ) {
-    setLoading && setLoading(true)
     try {
         const { result } = await getChartValuesCategorizedListParsed(id, installedAppVersionId)
         setChartValuesList(result)
-        if (installedAppVersionId) {
-            setChartValues({
+        if (installedAppVersionId && handleChartValuesSelection) {
+            handleChartValuesSelection({
                 id: initId,
                 kind: 'EXISTING',
             })
         }
     } catch (err) {
         showError(err)
-    } finally {
-        setLoading && setLoading(false)
     }
 }
 
@@ -88,12 +76,17 @@ export async function getGeneratedHelManifest(
     appName: string,
     appStoreApplicationVersionId: number,
     valuesYaml: string,
-    setGeneratingManifest: React.Dispatch<React.SetStateAction<boolean>>,
-    setGeneratedManifest: React.Dispatch<React.SetStateAction<string>>,
-    setValuesEditorError: React.Dispatch<React.SetStateAction<string>>,
+    dispatchYamlData: (action: { type: string; payload: any }) => void,
 ) {
     try {
-        setGeneratingManifest(true)
+        dispatchYamlData({
+            type: 'multipleOptions',
+            payload: {
+                generatingManifest: true,
+                valuesEditorError: '',
+            },
+        })
+
         const { result } = await generateHelmManifest({
             environmentId,
             clusterId,
@@ -103,59 +96,81 @@ export async function getGeneratedHelManifest(
             valuesYaml,
         })
 
-        setGeneratedManifest(result.manifest)
-        setGeneratingManifest(false)
-    } catch (e: any) {
-        if (Array.isArray(e.errors) && e.errors.length > 0) {
-            setValuesEditorError(e.errors[0].userMessage)
-        } else {
-            setValuesEditorError(e.message)
-        }
-        setGeneratingManifest(false)
-    }
-}
-
-export async function fetchProjects(setProjects: React.Dispatch<React.SetStateAction<any[]>>) {
-    let { result } = await getTeamListMin()
-    let projectList = result.map((p) => {
-        return { value: p.id, label: p.name }
-    })
-    projectList = projectList.sort((a, b) => sortCallback('label', a, b, true))
-    setProjects(projectList)
-}
-
-export async function fetchEnvironments(
-    serverMode: SERVER_MODE,
-    setEnvironments: React.Dispatch<React.SetStateAction<any[]>>,
-) {
-    if (serverMode === SERVER_MODE.FULL) {
-        const { result } = await getEnvironmentListMin()
-        let envList = result ? result : []
-        console.log(result)
-        envList = envList.map((env) => {
-            return {
-                value: env.id,
-                label: env.environment_name,
-                active: env.active,
-                namespace: env.namespace,
-            }
+        dispatchYamlData({
+            type: 'multipleOptions',
+            payload: {
+                generatingManifest: false,
+                generatedManifest: result.manifest,
+                valuesEditorError: '',
+            },
         })
-        envList = envList.sort((a, b) => sortCallback('label', a, b, true))
-        setEnvironments(envList)
-    } else {
-        const { result } = await getEnvironmentListHelmApps()
-        const envList = (result ? result : []).map((cluster) => ({
-            label: cluster.clusterName,
-            options: [
-                ...cluster.environments?.map((env) => ({
-                    label: env.environmentName,
-                    value: env.environmentIdentifier,
-                    namespace: env.namespace,
-                    clusterName: cluster.clusterName,
-                    clusterId: cluster.clusterId,
-                })),
-            ],
-        }))
-        setEnvironments(envList)
+    } catch (e: any) {
+        let errorMessage = ''
+        if (Array.isArray(e.errors) && e.errors.length > 0) {
+            errorMessage = e.errors[0].userMessage
+        } else {
+            errorMessage = e.message
+        }
+
+        dispatchYamlData({
+            type: 'multipleOptions',
+            payload: {
+                generatingManifest: false,
+                valuesEditorError: errorMessage,
+            },
+        })
     }
+}
+
+export async function fetchProjectsAndEnvironments(
+    serverMode: SERVER_MODE,
+    setProjectsAndEnvironment: React.Dispatch<React.SetStateAction<ChartProjectAndEnvironmentType>>,
+): Promise<void> {
+    Promise.allSettled([
+        getTeamListMin(),
+        serverMode === SERVER_MODE.FULL ? getEnvironmentListMin() : getEnvironmentListHelmApps(),
+    ]).then((responses: { status: string; value?: any; reason?: any }[]) => {
+        const projectListRes: Teams[] = responses[0].value?.result || []
+        const environmentListRes: any[] = responses[1].value?.result || []
+        let envList = []
+
+        if (serverMode === SERVER_MODE.FULL) {
+            envList = environmentListRes.map((env) => {
+                return {
+                    value: env.id,
+                    label: env.environment_name,
+                    active: env.active,
+                    namespace: env.namespace,
+                }
+            })
+            envList = envList.sort((a, b) => sortCallback('label', a, b, true))
+        } else {
+            const _sortedResult = (
+                environmentListRes ? sortObjectArrayAlphabetically(environmentListRes, 'clusterName') : []
+            ) as EnvironmentListHelmResult[]
+            envList = _sortedResult.map((cluster) => ({
+                label: cluster.clusterName,
+                options: [
+                    ...cluster.environments?.map((env) => ({
+                        label: env.environmentName,
+                        value: env.environmentId,
+                        namespace: env.namespace,
+                        clusterName: cluster.clusterName,
+                        clusterId: cluster.clusterId,
+                    })),
+                ],
+            }))
+        }
+
+        const projectList = projectListRes
+            .map((p) => {
+                return { value: p.id, label: p.name }
+            })
+            .sort((a, b) => sortCallback('label', a, b, true))
+
+        setProjectsAndEnvironment({
+            environments: envList,
+            projects: projectList,
+        })
+    })
 }

@@ -139,16 +139,16 @@ function ExternalAppValues({ appId }: { appId: string }) {
                 deprecated: result?.deprecated,
             }
 
-            fetchChartVersionsData(
-                _repoChartValue.chartId,
-                true,
-                false,
-                setSelectedVersionUpdatePage,
-                setChartVersionsData,
-                setIsLoading,
-                _releaseInfo.deployedAppDetail.chartVersion,
-                selectVersion,
-            )
+            // fetchChartVersionsData(
+            //     _repoChartValue.chartId,
+            //     // true,
+            //     // false,
+            //     setSelectedVersionUpdatePage,
+            //     setChartVersionsData,
+            //     // setIsLoading,
+            //     _releaseInfo.deployedAppDetail.chartVersion,
+            //     selectVersion,
+            // )
             getChartValuesList(_repoChartValue.chartId, setChartValuesList, setChartValues)
 
             setInstalledConfig(result)
@@ -166,16 +166,16 @@ function ExternalAppValues({ appId }: { appId: string }) {
 
     const handleRepoChartValueChange = (event) => {
         setRepoChartValue(event)
-        fetchChartVersionsData(
-            event.chartId,
-            true,
-            false,
-            setSelectedVersionUpdatePage,
-            setChartVersionsData,
-            undefined,
-            releaseInfo.deployedAppDetail.chartVersion,
-            selectVersion,
-        )
+        // fetchChartVersionsData(
+        //     event.chartId,
+        //     // true,
+        //     // false,
+        //     setSelectedVersionUpdatePage,
+        //     setChartVersionsData,
+        //     // undefined,
+        //     releaseInfo.deployedAppDetail.chartVersion,
+        //     selectVersion,
+        // )
         getChartValuesList(
             event.chartId,
             (_chartValuesList: ChartValuesType[]) => {

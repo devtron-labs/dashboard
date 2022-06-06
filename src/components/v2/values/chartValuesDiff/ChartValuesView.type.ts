@@ -4,6 +4,18 @@ import { InstalledAppInfo, ReleaseInfo } from '../../../external-apps/ExternalAp
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import { ChartRepoOtions } from '../DeployChart'
 
+export interface ChartValuesViewType {
+    appId?: string
+    isExternalApp?: boolean
+    isDeployChartView?: boolean
+    installedConfigFromParent?: any
+    appDetails?: any
+    chartValuesListFromParent?: ChartValuesType[]
+    chartVersionsDataFromParent?: ChartVersionType[]
+    chartValuesFromParent?: ChartValuesType
+    selectedVersionFromParent?: any
+}
+
 export interface ChartSelectorType {
     isExternal?: boolean
     releaseInfo?: ReleaseInfo
@@ -11,27 +23,54 @@ export interface ChartSelectorType {
     isUpdate?: boolean
 }
 
+export interface ChartValuesOptionType {
+    label: string
+    value: number
+}
+
 export interface ChartEnvironmentOptionType {
     label: string
-    value: string | number
+    value: number
     namespace?: string
     clusterName?: string
     clusterId?: number
+    active?: boolean
+}
+
+export interface ChartEnvironmentListType {
+    label: string
+    options: ChartEnvironmentOptionType[]
+}
+
+export interface ChartValuesDiffOptionType extends ChartValuesOptionType {
+    appStoreVersionId?: number
+    info: string
+    kind?: string
+}
+
+export interface ChartGroupOptionType {
+    label: string
+    options: ChartValuesDiffOptionType[]
+}
+
+export interface ChartProjectAndEnvironmentType {
+    environments: ChartEnvironmentOptionType[] | ChartEnvironmentListType[]
+    projects: ChartValuesOptionType[]
 }
 
 export interface ChartEnvironmentSelectorType extends ChartSelectorType {
     isDeployChartView?: boolean
     selectedEnvironment?: ChartEnvironmentOptionType
-    selectEnvironment?: React.Dispatch<React.SetStateAction<ChartEnvironmentOptionType>>
-    environments?: ChartEnvironmentOptionType[]
+    handleEnvironmentSelection?: (selected: ChartEnvironmentOptionType) => void
+    environments?: ChartEnvironmentOptionType[] | ChartEnvironmentListType[]
     invalidaEnvironment: boolean
 }
 
 export interface ChartProjectSelectorType {
     isDeployChartView: boolean
-    selectedProject: OptionType
-    selectProject: React.Dispatch<React.SetStateAction<OptionType>>
-    projects: any[]
+    selectedProject: ChartValuesOptionType
+    handleProjectSelection: (selected: ChartValuesOptionType) => void
+    projects: ChartValuesOptionType[]
     invalidProject: boolean
 }
 
@@ -59,24 +98,21 @@ export interface ChartDeprecatedType {
 export interface ChartVersionSelectorType {
     isUpdate: boolean
     selectedVersion: number
-    selectVersion: React.Dispatch<React.SetStateAction<number>>
     chartVersionObj: ChartVersionType
     selectedVersionUpdatePage: ChartVersionType
-    setSelectedVersionUpdatePage: React.Dispatch<React.SetStateAction<ChartVersionType>>
+    handleVersionSelection: (selectedVersion: number, selectedVersionUpdatePage: ChartVersionType) => void
     chartVersionsData: ChartVersionType[]
 }
 
 export interface ChartValuesSelectorType {
     chartValuesList: ChartValuesType[]
     chartValues: ChartValuesType
-    setChartValues: React.Dispatch<React.SetStateAction<ChartValuesType>>
+    handleChartValuesSelection: (chartValues: ChartValuesType) => void
     redirectToChartValues?: () => Promise<void>
     hideVersionFromLabel?: boolean
 }
 
-export interface ChartVersionValuesSelectorType extends ChartVersionSelectorType, ChartValuesSelectorType {
-    installedConfig: any
-}
+export interface ChartVersionValuesSelectorType extends ChartVersionSelectorType, ChartValuesSelectorType {}
 
 export interface ChartValuesEditorType {
     loading: boolean
@@ -98,10 +134,16 @@ export interface ChartValuesEditorType {
     comparisonView: boolean
 }
 
-export interface ChartValuesDiffOptionType {
-    label: string
-    value: number
-    appStoreVersionId?: number
-    info: string
-    kind?: string
+export interface ChartValuesYamlDataType {
+    fetchingValuesYaml: boolean
+    modifiedValuesYaml: string
+    generatingManifest: boolean
+    generatedManifest: string
+    valuesEditorError: string
+}
+
+export interface ForceDeleteDataType {
+    forceDelete: boolean
+    title: string
+    message: string
 }
