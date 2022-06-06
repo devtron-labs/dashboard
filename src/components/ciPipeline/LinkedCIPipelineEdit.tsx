@@ -56,7 +56,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
 
     selectApp({ value }): void {
         let { form, isValid } = { ...this.state }
-        form.parentAppId = value //[0].id
+        form.parentAppId = value
         form.parentCIPipelineId = 0
         isValid.parentAppId = true
         isValid.parentCIPipelineId = false
@@ -229,7 +229,6 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     }
 
     renderCIPipelineBody() {
-        //let app = this.state.apps.find((app) => app.id === this.state.form.parentAppId)
         if (this.state.view === ViewType.LOADING) {
             return (
                 <div style={{ minHeight: '250px' }} className="flex">
