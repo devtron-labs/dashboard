@@ -140,6 +140,15 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                 maxHeight: '180px',
             }
         },
+        valueContainer: (base, state) => ({
+            ...base,
+            color: 'var(--N900)',
+            background: state.isDisabled ? 'var(--N100) !important' : 'var(--N50) !important',
+        }),
+        indicatorsContainer: (base, state) => ({
+            ...base,
+            background: state.isDisabled ? 'var(--N100) !important' : 'var(--N50) !important',
+        }),
     }
 
     renderHeader() {
