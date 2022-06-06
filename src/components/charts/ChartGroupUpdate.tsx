@@ -58,15 +58,7 @@ export default function ChartGroupUpdate({}) {
             alias: {
                 group: 'Chart Groups',
                 ':groupId': {
-                    component: (
-                        <ChartSelector
-                            api={() => getChartGroups().then((res) => ({ result: res.result.groups }))}
-                            primaryKey="groupId"
-                            primaryValue="name"
-                            matchedKeys={[]}
-                            apiPrimaryKey="id"
-                        />
-                    ),
+                    component: state.name,
                     linked: false,
                 },
                 edit: { component: 'Edit group', linked: false },
