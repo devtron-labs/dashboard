@@ -229,7 +229,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     }
 
     renderCIPipelineBody() {
-        let app = this.state.apps.find((app) => app.id === this.state.form.parentAppId)
+        //let app = this.state.apps.find((app) => app.id === this.state.form.parentAppId)
         if (this.state.view === ViewType.LOADING) {
             return (
                 <div style={{ minHeight: '250px' }} className="flex">
@@ -259,7 +259,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                             </span>
                         ) : null}
                     </div>
-                    {this.renderCIPipelinesDropdown(app)}
+                    {this.renderCIPipelinesDropdown(null)}
                     {this.state.form.parentCIPipelineId ? (
                         <label className="form__row">
                             <span className="form__label">Name*</span>
