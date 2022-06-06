@@ -121,6 +121,10 @@ a:focus {
     font-size: 20px;
     color: var(--N900);
     font-weight: 600;
+
+    .page-header__close-icon use {
+        fill: var(--N600);
+    }
 }
 
 .page-header__cta-container {

@@ -853,6 +853,16 @@ export const ChartValuesEditor = ({
         [valuesForDiffState.selectedVersionForDiff],
     )
 
+    const getDynamicHeight = () => {
+        if (isDeployChartView && (!showInfoText || showEditorHeader)) {
+            return 'height: calc(100vh - 130px)'
+        } else if (isDeployChartView || (!isDeployChartView && (!showInfoText || showEditorHeader))) {
+            return 'height: calc(100vh - 162px)'
+        } else {
+            return 'height: calc(100vh - 196px)'
+        }
+    }
+
     return (
         <div
             className={`code-editor-container ${
@@ -905,9 +915,7 @@ export const ChartValuesEditor = ({
                         )}
                     </DetailsProgressing>
                 }
-                height={
-                    !showInfoText || showEditorHeader ? 'height: calc(100vh - 162px)' : 'height: calc(100vh - 196px)'
-                }
+                height={getDynamicHeight()}
                 readOnly={manifestView}
             >
                 {showEditorHeader && (

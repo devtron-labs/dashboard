@@ -2,6 +2,47 @@
     position: relative;
     height: calc(100vh - 81px);
 
+    &.chart-values-view__deploy-chart {
+        height: calc(100vh - 48px);
+
+        .chart-values-view__vr-divider {
+            height: calc(100vh - 98px);
+        }
+
+        .chart-values-view__wrapper {
+            .chart-values-view__readme {
+                .chart-values-view__readme-markdown {
+                    height: calc(100vh - 130px);
+                }
+            }
+    
+            .chart-values-view__editor {
+                &.chart-values-view__full-mode {
+                    .code-editor-container {
+                        .react-monaco-editor-container,
+                        .details-loader-height {
+                            height: calc(100vh - 130px) !important;
+                        }
+                    }
+                }
+
+                .code-editor-container {
+                    .react-monaco-editor-container,
+                    .details-loader-height {
+                        height: calc(100vh - 162px) !important;
+                    }
+
+                    &.code-editor__info-enabled {
+                        .react-monaco-editor-container,
+                        .details-loader-height {
+                            height: calc(100vh - 196px) !important;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     &.readmeOpened {
         .chart-values-view__wrapper {
             grid-template-columns: 50% auto 50%;

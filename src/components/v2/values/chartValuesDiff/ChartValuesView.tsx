@@ -697,7 +697,7 @@ function ChartValuesView({
     const renderReadMeOption = (disabled?: boolean) => {
         return (
             <span
-                className={`chart-values-view__option flex fs-13 fw-6 cn-7 ${disabled ? 'disabled' : ''}`}
+                className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 ${disabled ? 'disabled' : ''}`}
                 onClick={() => {
                     if (fetchingReadMe || disabled) {
                         return
@@ -834,9 +834,9 @@ function ChartValuesView({
     const renderData = () => {
         return (
             <div
-                className={`chart-values-view__container bcn-0 ${openReadMe ? 'readmeOpened' : ''} ${
-                    openComparison ? 'comparisonOpened' : ''
-                }`}
+                className={`chart-values-view__container bcn-0 ${
+                    isDeployChartView ? 'chart-values-view__deploy-chart' : ''
+                } ${openReadMe ? 'readmeOpened' : ''} ${openComparison ? 'comparisonOpened' : ''}`}
             >
                 {renderValuesTabsContainer()}
                 <div className="chart-values-view__hr-divider bcn-2" />

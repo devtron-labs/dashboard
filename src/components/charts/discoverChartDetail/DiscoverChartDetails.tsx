@@ -246,7 +246,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                     path={`${URLS.CHARTS}/discover/chart/:chartId/deploy-chart`}
                     render={(props) => {
                         return (
-                            <OpaqueModal>
+                            <div className="deploy-chart__container">
                                 {!chartInformation.chartName ||
                                 !selectedVersion ||
                                 chartValuesList.length <= 0 ||
@@ -269,7 +269,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                                         />
                                     </>
                                 )}
-                            </OpaqueModal>
+                            </div>
                         )
                     }}
                 />
