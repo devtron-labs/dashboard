@@ -300,7 +300,6 @@ export interface LinkedCIPipelineState {
     view: string
     showError: boolean
     loadingData: boolean
-    apps: { id: number; name: string }[]
     ciPipelines: any[]
     loadingPipelines: boolean
     form: {
