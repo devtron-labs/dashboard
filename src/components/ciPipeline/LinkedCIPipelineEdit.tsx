@@ -294,7 +294,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     render() {
         return (
             <VisibleModal className="">
-                <div className="modal__body modal__body--ci br-0 modal__body--p-0">
+                <div className="modal__body modal__body--ci-mt-0 modal__body--p-0 no-top-radius">
                     {this.renderHeader()}
                     <hr className="divider m-0" />
                     <div className="pl-20 pr-20 pt-20">
@@ -302,7 +302,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                         {this.renderCIPipelineBody()}
                     </div>
                     {this.state.view !== ViewType.LOADING && (
-                        <div className="ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex flex-justify">
+                        <div className="ci-button-container pt-12 pb-12 pl-20 pr-20 flex flex-justify">
                             <button
                                 type="button"
                                 className="cta cta--workflow cancel mr-16"
