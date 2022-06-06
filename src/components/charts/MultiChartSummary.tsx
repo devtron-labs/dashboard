@@ -33,32 +33,31 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
     return (
         <div className="chart-group--summary">
             {chartListing && (
-                <div className="flex column left border-bottom mb-20">
-                    <span className="flex flex-justify w-100 fs-14 cn-9">
-                        Group name
-                        <Pencil className="pointer" onClick={(e) => setChartDetailsUpdate(true)} />
-                    </span>
-                    <div className="flex left fw-6 fs-14 mt-8 mb-20">{name}</div>
-                </div>
-            )}
-            {chartListing && (
-                <div
-                    className={`selected-chart-widget p-12 select-chart cursor ${
-                        typeof configureChartIndex !== 'number' ? 'active' : ''
-                    }`}
-                    style={{ gridTemplateColumns: '40px 1fr 24px' }}
-                    onClick={chartListing}
-                >
-                    <Forward className="rotate anchor" style={{ ['--rotateBy' as any]: '180deg' }} />
-                    <div className="anchor ml-18">Select Charts</div>
-                    <span />
-                </div>
-            )}
-            {chartListing && (
-                <div className="chart-count flex left column">
-                    <b>{charts.length} charts selected</b>
-                    <span>Set default chart version and values for each chart.</span>
-                </div>
+                <>
+                    <div className="flex column left border-bottom mb-20">
+                        <span className="flex flex-justify w-100 fs-14 cn-9">
+                            Group name
+                            <Pencil className="pointer" onClick={(e) => setChartDetailsUpdate(true)} />
+                        </span>
+                        <div className="flex left fw-6 fs-14 mt-8 mb-20">{name}</div>
+                    </div>
+                    <div
+                        className={`selected-chart-widget p-12 select-chart cursor ${
+                            typeof configureChartIndex !== 'number' ? 'active' : ''
+                        }`}
+                        style={{ gridTemplateColumns: '40px 1fr 24px' }}
+                        onClick={chartListing}
+                    >
+                        <Forward className="rotate anchor" style={{ ['--rotateBy' as any]: '180deg' }} />
+                        <div className="anchor ml-18">Select Charts</div>
+                        <span />
+                    </div>
+
+                    <div className="chart-count flex left column">
+                        <b>{charts.length} charts selected</b>
+                        <span>Set default chart version and values for each chart.</span>
+                    </div>
+                </>
             )}
             {!chartListing && charts.length === 0 && (
                 <div className="flex column" style={{ height: '100%' }}>
