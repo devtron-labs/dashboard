@@ -13,22 +13,30 @@ import PageHeader from '../../common/header/PageHeader'
 
 function ChartGroupList() {
     const [loading, result, error, reload] = useAsync(getChartGroups, [])
-    const { breadcrumbs } = useBreadcrumb({})
+    const { breadcrumbs } = useBreadcrumb(
+        {
+            alias: {
+                'chart-store': null,
+                group: { component: 'Chart group', linked: false },
+            },
+        },
+        [],
+    )
     const match = useRouteMatch()
     const { url } = match
 
     const renderBreadcrumbs = () => {
         return (
             <div className="flex left">
-                <BreadCrumb breadcrumbs={breadcrumbs.slice(1, 2)} /> / Chart Group
+                <BreadCrumb breadcrumbs={breadcrumbs} />
             </div>
         )
     }
 
     const renderCreateGroupButton = () => {
         return (
-            <div className="page-header__cta-container flex">
-                <Link className="flex cta" to={`${url}/create`}>
+            <div className="page-header__cta-container flex ">
+                <Link className="flex cta h-32" to={`${url}/create`}>
                     <Add className="icon-dim-18 mr-5" /> Create Group
                 </Link>
             </div>
