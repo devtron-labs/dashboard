@@ -48,7 +48,7 @@ const RadioGroup: React.FC<RadioGroupInterface> & RadioGroupComposition = React.
     )
 })
 
-function Radio({ value, children, className = '', showTippy = false, tippyContent = '' }) {
+function Radio({ value, children, className = '', showTippy = false, tippyContent = '', canSelect = true }) {
     const { name, selected, select, disabled, onChange } = useRadioContext()
     return showTippy ? (
         <Tippy className="default-tt fixed-width-250" arrow={false} placement="bottom" content={tippyContent}>
@@ -60,7 +60,9 @@ function Radio({ value, children, className = '', showTippy = false, tippyConten
                     checked={value === selected}
                     onChange={(e) => {
                         e.persist()
-                        select(e.target.value)
+                        if (canSelect) {
+                            select(e.target.value)
+                        }
                         onChange(e)
                     }}
                     disabled={disabled}
@@ -77,7 +79,9 @@ function Radio({ value, children, className = '', showTippy = false, tippyConten
                 checked={value === selected}
                 onChange={(e) => {
                     e.persist()
-                    select(e.target.value)
+                    if (canSelect) {
+                        select(e.target.value)
+                    }
                     onChange(e)
                 }}
                 disabled={disabled}

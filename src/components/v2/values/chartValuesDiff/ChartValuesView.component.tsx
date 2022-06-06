@@ -1,14 +1,12 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import ReactSelect, { components } from 'react-select'
 import AsyncSelect from 'react-select/async'
-import { menuList } from '../../../charts/charts.util'
-import { DropdownIndicator, Option, styles } from '../../common/ReactSelect.utils'
-import { ReactComponent as AlertTriangle } from '../../../../assets/icons/ic-alert-triangle.svg'
+import { DropdownIndicator, Option } from '../../common/ReactSelect.utils'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
+import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled-prple.svg'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
-import checkIcon from '../../../../assets/icons/appstatus/ic-check.svg'
 import warn from '../../../../assets/icons/ic-warning.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { ConfirmationDialog, DeleteDialog, DetailsProgressing, Progressing, Select, showError } from '../../../common'
@@ -21,23 +19,20 @@ import {
     ChartVersionValuesSelectorType,
     ChartValuesEditorType,
     ChartRepoDetailsType,
-    ChartSelectorType,
     ChartProjectSelectorType,
     ChartValuesDiffOptionType,
-} from './chartValuesSelectors.type'
+} from './ChartValuesView.type'
 import { getChartsByKeyword, getChartValues } from '../../../charts/charts.service'
 import { ChartRepoOtions } from '../DeployChart'
-import ReadmeColumn from './ReadmeColumn.component'
 import CodeEditor from '../../../CodeEditor/CodeEditor'
 import { NavLink } from 'react-router-dom'
 import { Moment12HourFormat, URLS } from '../../../../config'
-import { getChartRelatedReadMe } from './chartValues.api'
-import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import Tippy from '@tippyjs/react'
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
 import moment from 'moment'
 import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
+import EmptyState from '../../../EmptyState/EmptyState'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -48,6 +43,7 @@ export const ChartEnvironmentSelector = ({
     selectedEnvironment,
     selectEnvironment,
     environments,
+    invalidaEnvironment,
 }: ChartEnvironmentSelectorType): JSX.Element => {
     return !isDeployChartView ? (
         <div className="chart-values__environment-container mb-12">
@@ -126,9 +122,12 @@ export const ChartEnvironmentSelector = ({
                         }
                     },
                 }}
-                onChange={selectEnvironment}
+                onChange={(selected) => {
+                    selectEnvironment(selected)
+                }}
                 options={environments}
             />
+            {invalidaEnvironment && renderValidationErrorLabel()}
         </div>
     )
 }
@@ -138,6 +137,7 @@ export const ChartProjectSelector = ({
     selectedProject,
     selectProject,
     projects,
+    invalidProject,
 }: ChartProjectSelectorType): JSX.Element => {
     return !isDeployChartView ? (
         <div className="chart-values__project-container mb-12">
@@ -208,6 +208,7 @@ export const ChartProjectSelector = ({
                 onChange={selectProject}
                 options={projects}
             />
+            {invalidProject && renderValidationErrorLabel()}
         </label>
     )
 }
@@ -414,7 +415,7 @@ export const ChartRepoSelector = ({
                 {repoChartValue.deprecated && (
                     <div className="chart-deprecated-wrapper flex top left br-4 cn-9 bcy-1 mt-12">
                         <div className="icon-dim-16 mr-10">
-                            <AlertTriangle className="icon-dim-16 chart-deprecated-icon" />
+                            <Error className="icon-dim-16 chart-deprecated-icon" />
                         </div>
                         <span className="chart-deprecated-text fs-12 fw-4">
                             This chart has been deprecated. Please select another chart to continue receiving updates.
@@ -426,7 +427,7 @@ export const ChartRepoSelector = ({
                         <div className="icon-dim-16 mr-10">
                             <Error className="icon-dim-16" />
                         </div>
-                        <span className="no-helm-chart-linked-text fs-12 fw-4">
+                        <span className="no-helm-chart-linked-text fs-12 fw-4 cn-9">
                             This app is not linked to a helm chart. Select a helm chart to keep up with latest chart
                             versions.
                         </span>
@@ -437,71 +438,34 @@ export const ChartRepoSelector = ({
     )
 }
 
-export const ChartDeprecated = ({ isUpdate, deprecated, chartName, name }: ChartDeprecatedType): JSX.Element => {
-    return (
-        isUpdate &&
-        deprecated && (
-            <div className="info__container--update-chart">
-                <div className="flex left">
-                    <AlertTriangle className="icon-dim-24 update-chart" />
-                    <div className="info__container--update-chart-text">
-                        {chartName}/{name} is deprecated
-                    </div>
-                </div>
-                <div className="info__container--update-chart-disclaimer">
-                    Selected chart has been deprecated. Please select another chart to continue receiving updates in
-                    future.
-                </div>
-            </div>
-        )
-    )
-}
-
 export const ChartVersionSelector = ({
     isUpdate,
     selectedVersion,
     selectVersion,
     chartVersionObj,
-    versions,
     selectedVersionUpdatePage,
     setSelectedVersionUpdatePage,
     chartVersionsData,
 }: ChartVersionSelectorType) => {
-    return !isUpdate ? (
+    return (
         <div className="w-100 mb-12">
             <span className="form__label fs-13 fw-4 lh-20 cn-7">Chart Version</span>
             <Select
                 tabIndex={4}
                 rootClassName="select-button--default chart-values-selector"
-                value={selectedVersion}
-                onChange={(event) => selectVersion(event.target.value)}
-            >
-                <Select.Button>{chartVersionObj ? chartVersionObj.version : 'Select Version'}</Select.Button>
-                {Array.from(versions).map(([versionId, versionData], idx) => (
-                    <Select.Option key={versionId} value={versionId}>
-                        {versionData.version}
-                    </Select.Option>
-                ))}
-            </Select>
-        </div>
-    ) : (
-        <div className="w-100 mb-12">
-            <span className="form__label fs-13 fw-4 lh-20 cn-7">Chart Version</span>
-            <Select
-                tabIndex={4}
-                rootClassName="select-button--default chart-values-selector"
-                value={selectedVersionUpdatePage?.id}
-                onChange={(event) =>
+                value={selectedVersionUpdatePage?.id || selectedVersion}
+                onChange={(event) => {
+                    selectVersion(event.target.value)
                     setSelectedVersionUpdatePage({
                         id: event.target.value,
                         version: event.target.innerText,
                     })
-                }
+                }}
             >
-                <Select.Button>{selectedVersionUpdatePage?.version}</Select.Button>
-                {chartVersionsData.map(({ version, id }) => (
-                    <Select.Option key={id} value={id}>
-                        {version}
+                <Select.Button>{selectedVersionUpdatePage?.version || chartVersionObj?.version}</Select.Button>
+                {chartVersionsData.map((_chartVersion) => (
+                    <Select.Option key={_chartVersion.id} value={_chartVersion.id}>
+                        {_chartVersion.version}
                     </Select.Option>
                 ))}
             </Select>
@@ -535,30 +499,28 @@ export const ChartVersionValuesSelector = ({
     isUpdate,
     selectedVersion,
     selectVersion,
-    chartVersionObj,
-    versions,
     selectedVersionUpdatePage,
     setSelectedVersionUpdatePage,
     chartVersionsData,
+    chartVersionObj,
     chartValuesList,
     chartValues,
     redirectToChartValues,
     setChartValues,
     hideVersionFromLabel,
+    installedConfig,
 }: ChartVersionValuesSelectorType) => {
     return (
-        <div className="form__row form__row--flex form__row--w-100">
+        <>
             <ChartVersionSelector
                 isUpdate={isUpdate}
                 selectedVersion={selectedVersion}
                 selectVersion={selectVersion}
-                chartVersionObj={chartVersionObj}
-                versions={versions}
                 selectedVersionUpdatePage={selectedVersionUpdatePage}
                 setSelectedVersionUpdatePage={setSelectedVersionUpdatePage}
                 chartVersionsData={chartVersionsData}
+                chartVersionObj={chartVersionObj}
             />
-            <span className="mr-16"></span>
             <ChartValuesSelector
                 chartValuesList={chartValuesList}
                 chartValues={chartValues}
@@ -566,7 +528,7 @@ export const ChartVersionValuesSelector = ({
                 setChartValues={setChartValues}
                 hideVersionFromLabel={hideVersionFromLabel}
             />
-        </div>
+        </>
     )
 }
 
@@ -668,7 +630,7 @@ const CompareWithDropdown = ({
             isMulti={false}
             isSearchable={false}
             value={selectedVersionForDiff}
-            classNamePrefix="chart_select"
+            classNamePrefix="compare-values-select"
             isOptionDisabled={(option) => option.label === 'No options'}
             formatOptionLabel={formatOptionLabel}
             components={{
@@ -708,7 +670,8 @@ const CompareWithDropdown = ({
                     return {
                         ...base,
                         position: 'relative',
-                        paddingBottom: '0px',
+                        paddingBottom: '0',
+                        paddingTop: '0',
                         maxHeight: '250px',
                     }
                 },
@@ -728,6 +691,7 @@ const CompareWithDropdown = ({
 export const ChartValuesEditor = ({
     loading,
     isExternalApp,
+    isDeployChartView,
     appId,
     appName,
     valuesText,
@@ -760,13 +724,18 @@ export const ChartValuesEditor = ({
     })
 
     useEffect(() => {
-        if (!manifestView && chartValuesList.length > 0 && deploymentHistoryList.length > 0) {
+        if (
+            !manifestView &&
+            chartValuesList.length > 0 &&
+            (isDeployChartView || (!isDeployChartView && deploymentHistoryList.length > 0))
+        ) {
             const filteredChartValues = chartValuesList
                 .filter((_chartValue) => _chartValue.kind === 'DEPLOYED' && _chartValue.name !== appName)
                 .map((_chartValue) => {
                     return {
                         label: _chartValue.name,
-                        value: _chartValue.appStoreVersionId || _chartValue.id,
+                        value: _chartValue.id,
+                        appStoreVersionId: _chartValue.appStoreVersionId,
                         info: `Deployed on: ${_chartValue.environmentName}`,
                         kind: _chartValue.kind,
                     }
@@ -797,14 +766,16 @@ export const ChartValuesEditor = ({
                 loadingValuesForDiff: true,
             })
             const selectedVersionForDiff = valuesForDiffState.selectedVersionForDiff
-            const _version = manifestView ? deploymentHistoryList[0].version : selectedVersionForDiff.value
+            const _version = manifestView
+                ? deploymentHistoryList[0].version
+                : selectedVersionForDiff.appStoreVersionId || selectedVersionForDiff.value
             const _currentValues = valuesForDiffState.valuesForDiff.get(_version)
             if (!_currentValues) {
                 if (selectedVersionForDiff.kind === 'DEPLOYED') {
-                    getChartValues(selectedVersionForDiff.value, selectedVersionForDiff.kind)
+                    getChartValues(_version, selectedVersionForDiff.kind)
                         .then((res) => {
                             const _valuesForDiff = valuesForDiffState.valuesForDiff
-                            _valuesForDiff.set(selectedVersionForDiff.value, res.result.values)
+                            _valuesForDiff.set(_version, res.result.values)
                             setValuesForDiffState({
                                 ...valuesForDiffState,
                                 loadingValuesForDiff: false,
@@ -821,11 +792,7 @@ export const ChartValuesEditor = ({
                             })
                         })
                 } else {
-                    getDeploymentManifestDetails(
-                        appId,
-                        manifestView ? _version : selectedVersionForDiff.value,
-                        isExternalApp,
-                    )
+                    getDeploymentManifestDetails(appId, _version, isExternalApp)
                         .then((res) => {
                             const _valuesForDiff = valuesForDiffState.valuesForDiff
                             const _selectedValues = manifestView
@@ -833,7 +800,7 @@ export const ChartValuesEditor = ({
                                 : isExternalApp
                                 ? YAML.stringify(JSON.parse(res.result.valuesYaml))
                                 : res.result.valuesYaml
-                            _valuesForDiff.set(manifestView ? _version : selectedVersionForDiff.value, _selectedValues)
+                            _valuesForDiff.set(_version, _selectedValues)
 
                             setValuesForDiffState({
                                 ...valuesForDiffState,
@@ -932,10 +899,13 @@ export const ChartValuesEditor = ({
                 onChange={onChange}
                 loading={loading || valuesForDiffState.loadingValuesForDiff}
                 customLoader={
-                    <DetailsProgressing
-                        loadingText={manifestView && !comparisonView ? 'Generating the manifest. Please wait...' : ''}
-                        size={32}
-                    />
+                    <DetailsProgressing size={32}>
+                        {manifestView && !comparisonView && (
+                            <span className="fs-13 fw-4 cn-7 mt-8 align-center">
+                                Generating the manifest. <br /> Please wait...
+                            </span>
+                        )}
+                    </DetailsProgressing>
                 }
                 height={
                     !showInfoText || showEditorHeader ? 'height: calc(100vh - 162px)' : 'height: calc(100vh - 196px)'
@@ -1023,5 +993,120 @@ export const AppNotLinkedDialog = ({
                 </div>
             </ConfirmationDialog.ButtonGroup>
         </ConfirmationDialog>
+    )
+}
+
+const renderValidationErrorLabel = (): JSX.Element => {
+    return (
+        <div className="error-label flex left align-start fs-11 mt-6">
+            <div className="error-label-icon">
+                <Error className="icon-dim-16" />
+            </div>
+            <div className="ml-4 cr-5">This is a required field</div>
+        </div>
+    )
+}
+
+export const AppNameInput = ({
+    appName,
+    setAppName,
+    invalidAppName,
+}: {
+    appName: string
+    setAppName: React.Dispatch<React.SetStateAction<string>>
+    invalidAppName: boolean
+}) => {
+    return (
+        <label className="form__row form__row--w-100">
+            <span className="form__label required-field">App Name</span>
+            <input
+                autoComplete="off"
+                tabIndex={1}
+                placeholder="Eg. kube-prometheus"
+                className="form__input"
+                value={appName}
+                onChange={(e) => setAppName(e.target.value)}
+            />
+            {invalidAppName && renderValidationErrorLabel()}
+        </label>
+    )
+}
+
+export const DeleteApplicationButton = ({
+    isUpdateInProgress,
+    isDeleteInProgress,
+    setShowDeleteAppConfirmationDialog,
+}: {
+    isUpdateInProgress: boolean
+    isDeleteInProgress: boolean
+    setShowDeleteAppConfirmationDialog: React.Dispatch<React.SetStateAction<boolean>>
+}) => {
+    return (
+        <button
+            className="chart-values-view__delete-cta cta delete"
+            disabled={isUpdateInProgress || isDeleteInProgress}
+            onClick={(e) => setShowDeleteAppConfirmationDialog(true)}
+        >
+            {isDeleteInProgress ? (
+                <div className="flex">
+                    <span>Deleting</span>
+                    <span className="ml-10">
+                        <Progressing />
+                    </span>
+                </div>
+            ) : (
+                'Delete Application'
+            )}
+        </button>
+    )
+}
+
+export const UpdateApplicationButton = ({
+    isUpdateInProgress,
+    isDeleteInProgress,
+    isDeployChartView,
+    deployOrUpdateApplication,
+}: {
+    isUpdateInProgress: boolean
+    isDeleteInProgress: boolean
+    isDeployChartView: boolean
+    deployOrUpdateApplication: (forceUpdate?: boolean) => Promise<void>
+}) => {
+    return (
+        <button
+            type="button"
+            tabIndex={6}
+            disabled={isUpdateInProgress || isDeleteInProgress}
+            className={`chart-values-view__update-cta cta ${
+                isUpdateInProgress || isDeleteInProgress ? 'disabled' : ''
+            }`}
+            onClick={() => {
+                deployOrUpdateApplication(false)
+            }}
+        >
+            {isUpdateInProgress ? (
+                <div className="flex">
+                    <span>{isDeployChartView ? 'Deploying chart' : 'Updating and deploying'}</span>
+                    <span className="ml-10">
+                        <Progressing />
+                    </span>
+                </div>
+            ) : isDeployChartView ? (
+                'Deploy chart'
+            ) : (
+                'Update and deploy'
+            )}
+        </button>
+    )
+}
+
+export const ErrorScreenWithInfo = ({ info }: { info: string }) => {
+    return (
+        <EmptyState>
+            <EmptyState.Image>
+                <ErrorExclamation className="icon-dim-20 mb-10" />
+            </EmptyState.Image>
+            <EmptyState.Subtitle>{info}</EmptyState.Subtitle>
+        </EmptyState>
     )
 }

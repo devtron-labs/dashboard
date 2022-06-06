@@ -1,7 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback, useContext } from 'react'
 import { useHistory, useRouteMatch } from 'react-router'
 import { toast } from 'react-toastify'
-import { showError, Progressing, ErrorScreenManager, sortCallback, RadioGroup } from '../../../common'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    sortCallback,
+    RadioGroup,
+    useJsonYaml,
+} from '../../../common'
 import {
     getReleaseInfo,
     ReleaseInfoResponse,
@@ -17,7 +24,6 @@ import {
 } from '../../../external-apps/ExternalAppService'
 import {
     deleteInstalledChart,
-    generateHelmManifest,
     getChartValues,
     getChartVersionDetails2,
     installChart,
@@ -28,15 +34,17 @@ import YAML from 'yaml'
 import {
     ChartEnvironmentSelector,
     ChartRepoSelector,
-    ChartVersionValuesSelector,
     ActiveReadmeColumn,
     DeleteChartDialog,
     ChartValuesEditor,
     AppNotLinkedDialog,
-    ChartValuesSelector,
-    ChartVersionSelector,
     ChartProjectSelector,
-} from '../common/ChartValuesSelectors'
+    ChartVersionValuesSelector,
+    DeleteApplicationButton,
+    UpdateApplicationButton,
+    AppNameInput,
+    ErrorScreenWithInfo,
+} from './ChartValuesView.component'
 import { ChartRepoOtions } from '../DeployChart'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import {
@@ -49,21 +57,17 @@ import {
 } from '../common/chartValues.api'
 import { getChartValuesURL } from '../../../charts/charts.helper'
 import './ChartValuesView.scss'
-import ReactSelect from 'react-select'
-import { DropdownIndicator, styles } from '../../common/ReactSelect.utils'
-import { menuList } from '../../../charts/charts.util'
 import { OptionType } from '../../../app/types'
-import { getEnvironmentListHelmApps, getEnvironmentListMin, getTeamListMin } from '../../../../services/service'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Arrows } from '../../../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as File } from '../../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
+import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import Tippy from '@tippyjs/react'
 import {
     ChartDeploymentDetail,
     ChartDeploymentHistoryResponse,
     getDeploymentHistory,
-    getDeploymentManifestDetails,
 } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import { mainContext } from '../../../common/navigation/NavigationRoutes'
 import ForceDeleteDialog from '../../../common/dialogs/ForceDeleteDialog'
@@ -74,12 +78,20 @@ function ChartValuesView({
     isDeployChartView,
     installedConfigFromParent,
     appDetails,
+    chartValuesListFromParent,
+    chartVersionsDataFromParent,
+    chartValuesFromParent,
+    selectedVersionFromParent,
 }: {
-    appId: string
+    appId?: string
     isExternalApp?: boolean
     isDeployChartView?: boolean
     installedConfigFromParent?: any
     appDetails?: any
+    chartValuesListFromParent?: ChartValuesType[]
+    chartVersionsDataFromParent?: ChartVersionType[]
+    chartValuesFromParent?: ChartValuesType
+    selectedVersionFromParent?: any
 }) {
     const history = useHistory()
     const { url } = useRouteMatch()
@@ -97,14 +109,20 @@ function ChartValuesView({
     const [modifiedValuesYaml, setModifiedValuesYaml] = useState('')
     const [installedAppInfo, setInstalledAppInfo] = useState<InstalledAppInfo>(undefined)
     const [repoChartValue, setRepoChartValue] = useState<ChartRepoOtions>()
-    const [chartVersionsData, setChartVersionsData] = useState<ChartVersionType[]>([])
-    const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>([])
-    const [selectedVersion, selectVersion] = useState<any>()
+    const [chartVersionsData, setChartVersionsData] = useState<ChartVersionType[]>(chartVersionsDataFromParent || [])
+    const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
+    const [selectedVersion, selectVersion] = useState<any>(selectedVersionFromParent)
     const [selectedVersionUpdatePage, setSelectedVersionUpdatePage] = useState<ChartVersionType>()
-    const [chartValues, setChartValues] = useState<ChartValuesType>()
+    const [chartValues, setChartValues] = useState<ChartValuesType>(chartValuesFromParent)
     const [installedConfig, setInstalledConfig] = useState(installedConfigFromParent)
     const [environments, setEnvironments] = useState([])
-    const [selectedEnvironment, selectEnvironment] = useState<{ label: string; value: number }>()
+    const [selectedEnvironment, selectEnvironment] = useState<{
+        label: string
+        value: string | number
+        namespace?: string
+        clusterName?: string
+        clusterId?: number
+    }>()
     const [projects, setProjects] = useState([])
     const [selectedProject, selectProject] = useState<OptionType>()
     const [activeTab, setActiveTab] = useState('yaml')
@@ -112,7 +130,6 @@ function ChartValuesView({
     const [generatingManifest, setGeneratingManifest] = useState<boolean>(false)
     const [generatedManifest, setGeneratedManifest] = useState('')
     const [deploymentHistoryArr, setDeploymentHistoryArr] = useState<ChartDeploymentDetail[]>([])
-    const [deployedManifest, setDeployedManifest] = useState('')
     const [forceDeleteData, setForceDeleteData] = useState<{
         forceDelete: boolean
         title: string
@@ -130,12 +147,31 @@ function ChartValuesView({
         isComparisonAvailable: true,
         isReadMeAvailable: true,
     })
+    const [valuesEditorError, setValuesEditorError] = useState('')
+    const [chartValidations, setChartValidations] = useState<{
+        invalidAppName: boolean
+        invalidaEnvironment: boolean
+        invalidProject: boolean
+    }>({
+        invalidAppName: false,
+        invalidaEnvironment: false,
+        invalidProject: false,
+    })
     const isUpdate = isExternalApp || (installedConfig?.environmentId && installedConfig.teamId)
     const { serverMode } = useContext(mainContext)
+    const [obj] = useJsonYaml(modifiedValuesYaml, 4, 'yaml', true)
 
     // component load
     useEffect(() => {
-        if (!isExternalApp && !isDeployChartView) {
+        if (isDeployChartView) {
+            fetchProjects(setProjects)
+            fetchEnvironments(serverMode, setEnvironments)
+            const _fetchedReadMe = fetchedReadMe
+            _fetchedReadMe.set(0, installedConfig.readme)
+            setFetchedReadMe(_fetchedReadMe)
+
+            setIsLoading(false)
+        } else if (!isExternalApp && !isDeployChartView) {
             fetchProjects(setProjects)
             fetchEnvironments(serverMode, setEnvironments)
             setRepoChartValue({
@@ -171,6 +207,10 @@ function ChartValuesView({
                     const _installedAppInfo = releaseInfoResponse.result.installedAppInfo
                     setReleaseInfo(_releaseInfo)
                     setInstalledAppInfo(_installedAppInfo)
+
+                    const _fetchedReadMe = fetchedReadMe
+                    _fetchedReadMe.set(0, _releaseInfo.readme)
+                    setFetchedReadMe(_fetchedReadMe)
 
                     if (_installedAppInfo) {
                         initData(_installedAppInfo, _releaseInfo)
@@ -236,16 +276,38 @@ function ChartValuesView({
                         if (
                             activeTab === 'manifest' &&
                             (!isExternalApp || (isExternalApp && installedAppInfo)) &&
-                            installedConfig &&
-                            selectedVersionUpdatePage
+                            installedConfig
                         ) {
-                            getGeneratedHelManifest(
-                                installedConfig,
-                                chartValues.appStoreVersionId || chartValues.id,
-                                response.result.values || modifiedValuesYaml,
-                                setGeneratingManifest,
-                                setGeneratedManifest,
-                            )
+                            setValuesEditorError('')
+                            if (isDeployChartView) {
+                                getGeneratedHelManifest(
+                                    selectedEnvironment.value as number,
+                                    selectedEnvironment.clusterId || installedConfig.clusterId,
+                                    selectedEnvironment.namespace,
+                                    appName,
+                                    chartValues?.appStoreVersionId ||
+                                        chartValues?.id ||
+                                        installedConfig.appStoreVersion,
+                                    response.result.values || modifiedValuesYaml,
+                                    setGeneratingManifest,
+                                    setGeneratedManifest,
+                                    setValuesEditorError,
+                                )
+                            } else {
+                                getGeneratedHelManifest(
+                                    installedConfig.environmentId,
+                                    installedConfig.clusterId,
+                                    installedConfig.namespace,
+                                    installedConfig.appName,
+                                    chartValues?.appStoreVersionId ||
+                                        chartValues?.id ||
+                                        installedConfig.appStoreVersion,
+                                    response.result.values || modifiedValuesYaml,
+                                    setGeneratingManifest,
+                                    setGeneratedManifest,
+                                    setValuesEditorError,
+                                )
+                            }
                         }
                     })
                     .catch((error) => {
@@ -303,15 +365,36 @@ function ChartValuesView({
         if (
             activeTab === 'manifest' &&
             installedConfig &&
-            (!generatedManifest || (generatedManifest && hasChartChanged()))
+            (!generatedManifest ||
+                (generatedManifest &&
+                    (hasChartChanged() || (chartValues.appStoreVersionId || chartValues.id) !== installedConfig.id)))
         ) {
-            getGeneratedHelManifest(
-                installedConfig,
-                chartValues?.appStoreVersionId || chartValues?.id || installedConfig.appStoreVersion,
-                isExternalApp ? releaseInfo?.mergedValues : installedConfig.valuesOverrideYaml,
-                setGeneratingManifest,
-                setGeneratedManifest,
-            )
+            setValuesEditorError('')
+            if (isDeployChartView) {
+                getGeneratedHelManifest(
+                    selectedEnvironment.value as number,
+                    selectedEnvironment.clusterId || installedConfig.clusterId,
+                    selectedEnvironment.namespace,
+                    appName,
+                    chartValues?.appStoreVersionId || chartValues?.id || installedConfig.appStoreVersion,
+                    installedConfig.valuesYaml,
+                    setGeneratingManifest,
+                    setGeneratedManifest,
+                    setValuesEditorError,
+                )
+            } else {
+                getGeneratedHelManifest(
+                    installedConfig.environmentId,
+                    installedConfig.clusterId,
+                    installedConfig.namespace,
+                    installedConfig.appName,
+                    chartValues?.appStoreVersionId || chartValues?.id || installedConfig.appStoreVersion,
+                    isExternalApp ? releaseInfo?.mergedValues : installedConfig.valuesOverrideYaml,
+                    setGeneratingManifest,
+                    setGeneratedManifest,
+                    setValuesEditorError,
+                )
+            }
         }
     }, [activeTab, installedConfig])
 
@@ -326,6 +409,8 @@ function ChartValuesView({
                 isComparisonAvailable: isVersionAvailableForDiff,
             })
         }
+
+        // if (fetchedReadMe.get())
     }, [chartValuesList, deploymentHistoryArr])
 
     const initData = async (_installedAppInfo: InstalledAppInfo, _releaseInfo: ReleaseInfo) => {
@@ -466,8 +551,28 @@ function ChartValuesView({
         )
     }
 
-    const updateApplication = async (forceUpdate?: boolean) => {
+    const isValidData = () => {
+        if (
+            isDeployChartView &&
+            (!appName.trim() || !selectedEnvironment || (serverMode === SERVER_MODE.FULL && !selectedProject))
+        ) {
+            return false
+        }
+
+        return true
+    }
+
+    const deployOrUpdateApplication = async (forceUpdate?: boolean) => {
         if (isUpdateInProgress) {
+            return
+        }
+
+        if (!isValidData()) {
+            setChartValidations({
+                invalidAppName: !appName.trim(),
+                invalidaEnvironment: !selectedEnvironment,
+                invalidProject: !selectedProject,
+            })
             return
         }
 
@@ -485,6 +590,11 @@ function ChartValuesView({
         }
 
         setUpdateInProgress(true)
+        setChartValidations({
+            invalidAppName: false,
+            invalidaEnvironment: false,
+            invalidProject: false,
+        })
 
         try {
             let res
@@ -508,14 +618,16 @@ function ChartValuesView({
                 }
             } else if (isDeployChartView) {
                 const payload = {
-                    teamId: selectedProject.value,
+                    teamId: serverMode == SERVER_MODE.FULL ? selectedProject.value : 0,
                     referenceValueId: chartValues.id,
                     referenceValueKind: chartValues.kind,
-                    environmentId: selectedEnvironment.value,
+                    environmentId: serverMode == SERVER_MODE.FULL ? selectedEnvironment.value : 0,
+                    clusterId: selectedEnvironment.clusterId,
+                    namespace: selectedEnvironment.namespace,
                     appStoreVersion: selectedVersion,
-                    // valuesOverride: obj,
-                    // valuesOverrideYaml: textRef,
-                    appName,
+                    valuesOverride: obj,
+                    valuesOverrideYaml: modifiedValuesYaml,
+                    appName: appName.trim(),
                 }
                 res = await installChart(payload)
             } else {
@@ -564,27 +676,37 @@ function ChartValuesView({
         }
     }
 
-    const handleTabSwitch = useCallback(
-        (e) => {
-            if (e?.target && e.target.value !== activeTab) {
-                setActiveTab(e.target.value)
-                setOpenComparison(false)
-                setOpenReadMe(false)
+    const handleTabSwitch = (e) => {
+        if (e?.target && e.target.value !== activeTab) {
+            if (e.target.value === 'manifest') {
+                if (!isValidData()) {
+                    setChartValidations({
+                        invalidAppName: !appName.trim(),
+                        invalidaEnvironment: !selectedEnvironment,
+                        invalidProject: !selectedProject,
+                    })
+                    toast.error('Please provide the required inputs to view generated manifest')
+                    return
+                } else if (Object.values(chartValidations).some((isInvalid) => isInvalid)) {
+                    setChartValidations({
+                        invalidAppName: false,
+                        invalidaEnvironment: false,
+                        invalidProject: false,
+                    })
+                }
             }
-        },
-        [activeTab],
-    )
+            setActiveTab(e.target.value)
+            setOpenComparison(false)
+            setOpenReadMe(false)
+        }
+    }
 
-    const renderReadMeOption = () => {
+    const renderReadMeOption = (disabled?: boolean) => {
         return (
             <span
-                className={`chart-values-view__option flex fs-13 fw-6 cn-7 ${
-                    fetchingReadMe || !fetchedReadMe.get(selectedVersionUpdatePage?.id)
-                        ? 'cursor-not-allowed'
-                        : 'cursor'
-                }`}
+                className={`chart-values-view__option flex fs-13 fw-6 cn-7 ${disabled ? 'disabled' : ''}`}
                 onClick={() => {
-                    if (fetchingReadMe) {
+                    if (fetchingReadMe || disabled) {
                         return
                     }
 
@@ -655,6 +777,7 @@ function ChartValuesView({
                 <RadioGroup.Radio
                     value="manifest"
                     showTippy={isExternalApp && !installedAppInfo}
+                    canSelect={isValidData()}
                     tippyContent={
                         'Manifest is generated only for apps linked to a helm chart. Link this app to a helm chart to view generated manifest.'
                     }
@@ -695,14 +818,15 @@ function ChartValuesView({
                     )}
                     {activeTab !== 'manifest' && (
                         <>
-                            {!openReadMe && (fetchingReadMe || !fetchedReadMe.get(selectedVersionUpdatePage?.id)) ? (
+                            {!openReadMe &&
+                            (fetchingReadMe || !fetchedReadMe.get(selectedVersionUpdatePage?.id || 0)) ? (
                                 <Tippy
                                     className="default-tt"
                                     arrow={false}
                                     placement="bottom"
                                     content={fetchingReadMe ? 'Fetching...' : 'Readme is not available for this chart'}
                                 >
-                                    {renderReadMeOption()}
+                                    {renderReadMeOption(true)}
                                 </Tippy>
                             ) : (
                                 renderReadMeOption()
@@ -714,7 +838,7 @@ function ChartValuesView({
         )
     }
 
-    function renderData() {
+    const renderData = () => {
         return (
             <div
                 className={`chart-values-view__container bcn-0 ${openReadMe ? 'readmeOpened' : ''} ${
@@ -726,30 +850,27 @@ function ChartValuesView({
                 <div className="chart-values-view__wrapper">
                     <div className="chart-values-view__details">
                         {isDeployChartView && (
-                            <label className="form__row form__row--w-100">
-                                <span className="form__label required-field">App Name</span>
-                                <input
-                                    autoComplete="off"
-                                    tabIndex={1}
-                                    placeholder="Eg. kube-prometheus"
-                                    className="form__input"
-                                    value={appName}
-                                    onChange={(e) => setAppName(e.target.value)}
-                                />
-                            </label>
+                            <AppNameInput
+                                appName={appName}
+                                setAppName={setAppName}
+                                invalidAppName={chartValidations.invalidAppName}
+                            />
                         )}
                         {!isExternalApp &&
                             ((!isDeployChartView && selectedProject) ||
                                 (isDeployChartView && serverMode === SERVER_MODE.FULL)) && (
-                                <ChartProjectSelector
-                                    isDeployChartView={isDeployChartView}
-                                    selectedProject={selectedProject}
-                                    selectProject={selectProject}
-                                    projects={projects}
-                                />
+                                <>
+                                    <ChartProjectSelector
+                                        isDeployChartView={isDeployChartView}
+                                        selectedProject={selectedProject}
+                                        selectProject={selectProject}
+                                        projects={projects}
+                                        invalidProject={chartValidations.invalidProject}
+                                    />
+                                </>
                             )}
-                        {isDeployChartView ||
-                            (!isDeployChartView && (isExternalApp || selectedEnvironment) && (
+                        {(isDeployChartView || (!isDeployChartView && (isExternalApp || selectedEnvironment))) && (
+                            <>
                                 <ChartEnvironmentSelector
                                     isExternal={isExternalApp}
                                     isDeployChartView={isDeployChartView}
@@ -759,8 +880,10 @@ function ChartValuesView({
                                     selectedEnvironment={selectedEnvironment}
                                     selectEnvironment={selectEnvironment}
                                     environments={environments}
+                                    invalidaEnvironment={chartValidations.invalidaEnvironment}
                                 />
-                            ))}
+                            </>
+                        )}
                         <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
                         {!isDeployChartView && (
                             <ChartRepoSelector
@@ -772,48 +895,40 @@ function ChartValuesView({
                                 chartDetails={repoChartValue}
                             />
                         )}
-                        {(installedAppInfo || (!installedAppInfo && repoChartValue?.chartRepoName)) && (
-                            <>
-                                <ChartVersionSelector
-                                    isUpdate={isUpdate}
-                                    selectedVersion={selectedVersion}
-                                    selectVersion={selectVersion}
-                                    selectedVersionUpdatePage={selectedVersionUpdatePage}
-                                    setSelectedVersionUpdatePage={setSelectedVersionUpdatePage}
-                                    chartVersionsData={chartVersionsData}
-                                />
-                                <ChartValuesSelector
-                                    chartValuesList={chartValuesList}
-                                    chartValues={chartValues}
-                                    redirectToChartValues={redirectToChartValues}
-                                    setChartValues={setChartValues}
-                                    hideVersionFromLabel={!installedAppInfo && chartValues.kind === 'EXISTING'}
-                                />
-                            </>
+                        {(isDeployChartView ||
+                            !isExternalApp ||
+                            (isExternalApp &&
+                                (installedAppInfo || (!installedAppInfo && repoChartValue?.chartRepoName)))) && (
+                            <ChartVersionValuesSelector
+                                isUpdate={isUpdate}
+                                selectedVersion={selectedVersion}
+                                selectVersion={selectVersion}
+                                selectedVersionUpdatePage={selectedVersionUpdatePage}
+                                setSelectedVersionUpdatePage={setSelectedVersionUpdatePage}
+                                chartVersionsData={chartVersionsData}
+                                chartVersionObj={chartVersionsData.find(
+                                    (_chartVersion) => _chartVersion.id === selectedVersion,
+                                )}
+                                chartValuesList={chartValuesList}
+                                chartValues={chartValues}
+                                redirectToChartValues={redirectToChartValues}
+                                setChartValues={setChartValues}
+                                hideVersionFromLabel={!installedAppInfo && chartValues.kind === 'EXISTING'}
+                                installedConfig={installedConfig}
+                            />
                         )}
                         {!isDeployChartView && (
-                            <button
-                                className="chart-values-view__delete-cta cta delete"
-                                disabled={isUpdateInProgress || isDeleteInProgress}
-                                onClick={(e) => setShowDeleteAppConfirmationDialog(true)}
-                            >
-                                {isDeleteInProgress ? (
-                                    <div className="flex">
-                                        <span>Deleting</span>
-                                        <span className="ml-10">
-                                            <Progressing />
-                                        </span>
-                                    </div>
-                                ) : (
-                                    'Delete Application'
-                                )}
-                            </button>
+                            <DeleteApplicationButton
+                                isUpdateInProgress={isUpdateInProgress}
+                                isDeleteInProgress={isDeleteInProgress}
+                                setShowDeleteAppConfirmationDialog={setShowDeleteAppConfirmationDialog}
+                            />
                         )}
                     </div>
                     {openReadMe && (
                         <ActiveReadmeColumn
                             fetchingReadMe={fetchingReadMe}
-                            activeReadMe={fetchedReadMe.get(selectedVersionUpdatePage?.id)}
+                            activeReadMe={fetchedReadMe.get(selectedVersionUpdatePage?.id || 0)}
                         />
                     )}
                     {!openComparison && <div className="chart-values-view__vr-divider bcn-2" />}
@@ -822,60 +937,45 @@ function ChartValuesView({
                             openReadMe || openComparison ? 'chart-values-view__full-mode' : ''
                         }`}
                     >
-                        <ChartValuesEditor
-                            loading={
-                                (activeTab === 'yaml' && fetchingValuesYaml) ||
-                                (activeTab === 'manifest' && generatingManifest)
-                            }
-                            isExternalApp={isExternalApp}
-                            appId={appId}
-                            appName={isExternalApp ? releaseInfo.deployedAppDetail.appName : installedConfig.appName}
-                            valuesText={modifiedValuesYaml}
-                            defaultValuesText={
-                                isExternalApp
-                                    ? YAML.stringify(JSON.parse(releaseInfo.mergedValues))
-                                    : installedConfig?.valuesOverrideYaml
-                            }
-                            onChange={OnEditorValueChange}
-                            repoChartValue={repoChartValue}
-                            showEditorHeader={openReadMe}
-                            hasChartChanged={hasChartChanged()}
-                            showInfoText={!openReadMe && !openComparison}
-                            manifestView={activeTab === 'manifest'}
-                            generatedManifest={generatedManifest}
-                            comparisonView={openComparison}
-                            chartValuesList={chartValuesList}
-                            deploymentHistoryList={deploymentHistoryArr}
-                        />
+                        {valuesEditorError ? (
+                            <ErrorScreenWithInfo info={valuesEditorError} />
+                        ) : (
+                            <ChartValuesEditor
+                                loading={
+                                    (activeTab === 'yaml' && fetchingValuesYaml) ||
+                                    (activeTab === 'manifest' && generatingManifest)
+                                }
+                                isExternalApp={isExternalApp}
+                                isDeployChartView={isDeployChartView}
+                                appId={appId}
+                                appName={
+                                    isExternalApp ? releaseInfo.deployedAppDetail.appName : installedConfig.appName
+                                }
+                                valuesText={modifiedValuesYaml}
+                                defaultValuesText={
+                                    isExternalApp
+                                        ? YAML.stringify(JSON.parse(releaseInfo.mergedValues))
+                                        : installedConfig?.valuesOverrideYaml
+                                }
+                                onChange={OnEditorValueChange}
+                                repoChartValue={repoChartValue}
+                                showEditorHeader={openReadMe}
+                                hasChartChanged={hasChartChanged()}
+                                showInfoText={!openReadMe && !openComparison}
+                                manifestView={activeTab === 'manifest'}
+                                generatedManifest={generatedManifest}
+                                comparisonView={openComparison}
+                                chartValuesList={chartValuesList}
+                                deploymentHistoryList={deploymentHistoryArr}
+                            />
+                        )}
                         {!openComparison && !openReadMe && (
-                            <button
-                                type="button"
-                                tabIndex={6}
-                                disabled={isUpdateInProgress || isDeleteInProgress}
-                                className={`chart-values-view__update-cta cta ${
-                                    isUpdateInProgress || isDeleteInProgress ? 'disabled' : ''
-                                }`}
-                                onClick={() => {
-                                    if (isDeployChartView) {
-                                        // Deploy chart
-                                    } else {
-                                        updateApplication(false)
-                                    }
-                                }}
-                            >
-                                {isUpdateInProgress ? (
-                                    <div className="flex">
-                                        <span>{isDeployChartView ? 'Deploying chart' : 'Updating and deploying'}</span>
-                                        <span className="ml-10">
-                                            <Progressing />
-                                        </span>
-                                    </div>
-                                ) : isDeployChartView ? (
-                                    'Deploy chart'
-                                ) : (
-                                    'Update and deploy'
-                                )}
-                            </button>
+                            <UpdateApplicationButton
+                                isUpdateInProgress={isUpdateInProgress}
+                                isDeleteInProgress={isDeleteInProgress}
+                                isDeployChartView={isDeployChartView}
+                                deployOrUpdateApplication={deployOrUpdateApplication}
+                            />
                         )}
                     </div>
                 </div>
@@ -902,33 +1002,30 @@ function ChartValuesView({
                     />
                 )}
                 {showAppNotLinkedDialog && (
-                    <AppNotLinkedDialog close={() => setShowAppNotLinkedDialog(false)} update={updateApplication} />
+                    <AppNotLinkedDialog
+                        close={() => setShowAppNotLinkedDialog(false)}
+                        update={deployOrUpdateApplication}
+                    />
                 )}
             </div>
         )
     }
 
-    return (
-        <>
-            {isLoading && (
-                <div className="loading-wrapper">
-                    <Progressing pageLoader />
-                </div>
-            )}
+    if (isLoading) {
+        return (
+            <div className="loading-wrapper">
+                <Progressing pageLoader />
+            </div>
+        )
+    } else if (errorResponseCode) {
+        return (
+            <div className="loading-wrapper">
+                <ErrorScreenManager code={errorResponseCode} />
+            </div>
+        )
+    }
 
-            {!isLoading && errorResponseCode && (
-                <div className="loading-wrapper">
-                    <ErrorScreenManager code={errorResponseCode} />
-                </div>
-            )}
-
-            {!isLoading &&
-                !errorResponseCode &&
-                (!isExternalApp || (isExternalApp && releaseInfo)) &&
-                repoChartValue &&
-                renderData()}
-        </>
-    )
+    return !isExternalApp || (isExternalApp && releaseInfo && repoChartValue) ? renderData() : <></>
 }
 
 export default ChartValuesView

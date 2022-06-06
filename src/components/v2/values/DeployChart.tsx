@@ -19,15 +19,7 @@ import {
     getChartValues,
     deleteInstalledChart,
 } from '../../charts/charts.service';
-import {
-    ChartDeprecated,
-    ChartEnvironmentSelector,
-    ChartRepoSelector,
-    ChartVersionValuesSelector,
-    ActiveReadmeColumn,
-    DeleteChartDialog,
-    ChartValuesEditor,
-} from './common/ChartValuesSelectors';
+import { ChartRepoSelector, DeleteChartDialog } from './chartValuesDiff/ChartValuesView.component';
 import { fetchChartVersionsData, getChartValuesList } from './common/chartValues.api';
 
 function mapById(arr) {
@@ -397,19 +389,13 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                     options={projects}
                                 />
                             </label>
-                            <ChartEnvironmentSelector
+                            {/* <ChartEnvironmentSelector
                                 isUpdate={!!isUpdate}
                                 selectedEnvironment={selectedEnvironment}
                                 selectEnvironment={selectEnvironment}
                                 environments={environments}
-                            />
+                            /> */}
                             {/* TODO: remove ChartDeprecated */}
-                            <ChartDeprecated
-                                isUpdate={!!isUpdate}
-                                deprecated={deprecated}
-                                chartName={chartName}
-                                name={name}
-                            />
                             <ChartRepoSelector
                                 isUpdate={!!isUpdate}
                                 repoChartValue={repoChartValue}
@@ -423,7 +409,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                     deprecated: deprecated,
                                 }}
                             />
-                            <ChartVersionValuesSelector
+                            {/* <ChartVersionValuesSelector
                                 isUpdate={!!isUpdate}
                                 selectedVersion={selectedVersion}
                                 selectVersion={selectVersion}
@@ -436,7 +422,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 chartValues={chartValues}
                                 redirectToChartValues={redirectToChartValues}
                                 setChartValues={setChartValues}
-                            />
+                            /> */}
                             {/* <ChartValuesEditor
                                 loading={fetchingValuesYaml}
                                 valuesText={textRef}

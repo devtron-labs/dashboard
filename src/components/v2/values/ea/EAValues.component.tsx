@@ -23,12 +23,9 @@ import '../../../charts/modal/DeployChart.scss'
 import {
     ChartEnvironmentSelector,
     ChartRepoSelector,
-    ChartVersionValuesSelector,
-    ActiveReadmeColumn,
     DeleteChartDialog,
-    ChartValuesEditor,
     AppNotLinkedDialog,
-} from '../common/ChartValuesSelectors'
+} from '../chartValuesDiff/ChartValuesView.component'
 import { ChartRepoOtions } from '../DeployChart'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import { fetchChartVersionsData, getChartValuesList } from '../common/chartValues.api'
@@ -332,11 +329,11 @@ function ExternalAppValues({ appId }: { appId: string }) {
                                     disabled={true}
                                 />
                             </label>
-                            <ChartEnvironmentSelector
+                            {/* <ChartEnvironmentSelector
                                 isExternal={true}
                                 installedAppInfo={installedAppInfo}
                                 releaseInfo={releaseInfo}
-                            />
+                            /> */}
                             <ChartRepoSelector
                                 isExternal={true}
                                 installedAppInfo={installedAppInfo}
@@ -344,7 +341,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
                                 repoChartValue={repoChartValue}
                                 chartDetails={repoChartValue}
                             />
-                            {(installedAppInfo || (!installedAppInfo && repoChartValue?.chartRepoName)) && (
+                            {/* {(installedAppInfo || (!installedAppInfo && repoChartValue?.chartRepoName)) && (
                                 <ChartVersionValuesSelector
                                     isUpdate={true}
                                     selectedVersion={selectedVersion}
@@ -358,7 +355,7 @@ function ExternalAppValues({ appId }: { appId: string }) {
                                     hideVersionFromLabel={!installedAppInfo && chartValues.kind === 'EXISTING'}
                                     redirectToChartValues={redirectToChartValues}
                                 />
-                            )}
+                            )} */}
                             {/* <ChartValuesEditor
                                 loading={fetchingValuesYaml}
                                 valuesText={modifiedValuesYaml}

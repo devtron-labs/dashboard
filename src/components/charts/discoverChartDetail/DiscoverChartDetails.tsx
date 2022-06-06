@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Route, Switch, NavLink } from 'react-router-dom';
-import { useRouteMatch, useLocation, useParams, useHistory } from 'react-router';
+import React, { useState, useEffect, useContext } from 'react'
+import { Route, Switch, NavLink } from 'react-router-dom'
+import { useRouteMatch, useLocation, useParams, useHistory } from 'react-router'
 import {
     Select as DevtronSelect,
     OpaqueModal,
@@ -10,65 +10,72 @@ import {
     Progressing,
     useBreadcrumb,
     BreadCrumb,
-} from '../../common';
-import { URLS, SERVER_MODE } from '../../../config';
-import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service';
-import { getAvailableCharts } from '../../../services/service';
-import { DiscoverChartDetailsProps, DeploymentProps } from './types';
-import placeHolder from '../../../assets/icons/ic-plc-chart.svg';
-import fileIcon from '../../../assets/icons/ic-file.svg';
-import { marked } from 'marked';
-import DeployChart from '../modal/DeployChart';
-import ManageValues from '../modal/ManageValues';
-import { About } from './About';
-import { ChartDeploymentList } from './ChartDeploymentList';
-import { ChartValuesSelect } from '../util/ChartValueSelect';
-import { getManageValuesURL, getChartValuesURL } from '../charts.helper';
-import { getDiscoverChartDetailsURL } from '../charts.helper';
-import { ChartSelector } from '../../AppSelector';
-import { DeprecatedWarn } from '../../common/DeprecatedUpdateWarn';
-import { isGitopsConfigured } from '../../../services/service';
-import { ConfirmationDialog } from '../../common';
-import { mainContext } from '../../common/navigation/NavigationRoutes';
-import warn from '../../../assets/icons/ic-warning.svg';
-import './DiscoverChartDetails.scss';
+} from '../../common'
+import { URLS, SERVER_MODE } from '../../../config'
+import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service'
+import { getAvailableCharts } from '../../../services/service'
+import { DiscoverChartDetailsProps, DeploymentProps } from './types'
+import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
+import fileIcon from '../../../assets/icons/ic-file.svg'
+import { marked } from 'marked'
+import DeployChart from '../modal/DeployChart'
+import ManageValues from '../modal/ManageValues'
+import { About } from './About'
+import { ChartDeploymentList } from './ChartDeploymentList'
+import { ChartValuesSelect } from '../util/ChartValueSelect'
+import { getManageValuesURL, getChartValuesURL } from '../charts.helper'
+import { getDiscoverChartDetailsURL } from '../charts.helper'
+import { ChartSelector } from '../../AppSelector'
+import { DeprecatedWarn } from '../../common/DeprecatedUpdateWarn'
+import { isGitopsConfigured } from '../../../services/service'
+import { ConfirmationDialog } from '../../common'
+import { mainContext } from '../../common/navigation/NavigationRoutes'
+import warn from '../../../assets/icons/ic-warning.svg'
+import './DiscoverChartDetails.scss'
+import PageHeader from '../../common/header/PageHeader'
+import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
 
-const DiscoverDetailsContext = React.createContext(null);
+const DiscoverDetailsContext = React.createContext(null)
 
 function useDiscoverDetailsContext() {
-    const context = React.useContext(DiscoverDetailsContext);
+    const context = React.useContext(DiscoverDetailsContext)
     if (!context) {
-        throw new Error(`Chart Detail Context Not Found`);
+        throw new Error(`Chart Detail Context Not Found`)
     }
-    return context;
+    return context
 }
 
 function mapById(arr) {
     if (!Array.isArray(arr)) {
-        throw Error('parameter is not an array');
+        throw Error('parameter is not an array')
     }
-    return arr.reduce((agg, curr) => agg.set(curr.id || curr.Id, curr), new Map());
+    return arr.reduce((agg, curr) => agg.set(curr.id || curr.Id, curr), new Map())
 }
 
 const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, history, location }) => {
-    const { serverMode } = useContext(mainContext);
+    const { serverMode } = useContext(mainContext)
 
-    const [selectedVersion, selectVersion] = React.useState(null);
-    const [availableVersions, setChartVersions] = React.useState(new Map());
-    const [chartInformation, setInformation] = React.useState({ appStoreApplicationName: '', deprecated: false });
-    const [chartYaml, setChartYaml] = React.useState(null);
-    const [loading, setLoading] = React.useState(false);
-    const [chartValuesList, setChartValuesList] = useState([]);
-    const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false);
-    const [isGitOpsConfigAvailable, setIsGitOpsConfigAvailable] = useState(false);
+    const [selectedVersion, selectVersion] = React.useState(null)
+    const [availableVersions, setChartVersions] = React.useState([])
+    const [chartInformation, setInformation] = React.useState({
+        appStoreApplicationName: '',
+        deprecated: false,
+        chartName: '',
+        name: '',
+    })
+    const [chartYaml, setChartYaml] = React.useState(null)
+    const [loading, setLoading] = React.useState(false)
+    const [chartValuesList, setChartValuesList] = useState([])
+    const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false)
+    const [isGitOpsConfigAvailable, setIsGitOpsConfigAvailable] = useState(false)
     const [chartValues, setChartValues] = useState({
         id: 0,
         kind: null,
         name: '',
         chartVersion: '',
         environmentName: '',
-    });
-    const { chartId } = useParams<{ chartId }>();
+    })
+    const { chartId } = useParams<{ chartId }>()
 
     function formatOptionLabel({ label, value, ...rest }) {
         return rest?.chart_name ? (
@@ -77,15 +84,15 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
             </div>
         ) : (
             label
-        );
+        )
     }
 
     function filterOption({ data: { label, value, ...rest } }, searchString: string): boolean {
-        if (!searchString) return true;
-        searchString = searchString.toLowerCase();
+        if (!searchString) return true
+        searchString = searchString.toLowerCase()
         const match: boolean =
-            label.toLowerCase().includes(searchString) || (rest?.chart_name || '').toLowerCase().includes(searchString);
-        return match;
+            label.toLowerCase().includes(searchString) || (rest?.chart_name || '').toLowerCase().includes(searchString)
+        return match
     }
     const { breadcrumbs } = useBreadcrumb(
         {
@@ -109,82 +116,82 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
             },
         },
         [chartId],
-    );
+    )
 
-    function goBackToDiscoverChart(isReload) {
-        const url = `${URLS.CHARTS}/discover/chart/${chartId}`;
-        history.push(url);
+    function goBackToDiscoverChart(isReload = false) {
+        const url = `${URLS.CHARTS}/discover/chart/${chartId}`
+        history.push(url)
     }
 
     async function fetchVersions() {
-        setLoading(true);
+        setLoading(true)
         try {
-            const { result } = await getChartVersionsMin(chartId);
-            setChartVersions(mapById(result));
-            selectVersion(result[0].id);
+            const { result } = await getChartVersionsMin(chartId)
+            setChartVersions(result)
+            selectVersion(result[0].id)
         } catch (err) {
-            showError(err);
+            showError(err)
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
     }
 
     async function fetchChartVersionDetails() {
-        setLoading(true);
+        setLoading(true)
         try {
-            const { result } = await getChartVersionDetails(selectedVersion);
-            setInformation(result);
+            const { result } = await getChartVersionDetails(selectedVersion)
+            setInformation(result)
             try {
-                setChartYaml(JSON.parse(result.chartYaml));
+                setChartYaml(JSON.parse(result.chartYaml))
             } catch (err) {}
         } catch (err) {
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
     }
 
     function openManageValues() {
-        let link = getManageValuesURL(chartId);
-        history.push(link);
+        let link = getManageValuesURL(chartId)
+        history.push(link)
     }
 
     async function getChartValuesList() {
         try {
-            const { result } = await getChartValuesCategorizedListParsed(chartId);
-            setChartValuesList(result);
+            const { result } = await getChartValuesCategorizedListParsed(chartId)
+            setChartValuesList(result)
         } catch (err) {}
     }
 
     async function redirectToChartValues() {
-        let url = getChartValuesURL(chartId);
-        history.push(url);
+        let url = getChartValuesURL(chartId)
+        history.push(url)
     }
 
     useEffect(() => {
-        fetchVersions();
-        getChartValuesList();
+        fetchVersions()
+        getChartValuesList()
         if (serverMode == SERVER_MODE.FULL) {
             isGitopsConfigured()
                 .then((response) => {
-                    let isGitOpsConfigAvailable = response.result && response.result.exists;
-                    setIsGitOpsConfigAvailable(isGitOpsConfigAvailable);
+                    let isGitOpsConfigAvailable = response.result && response.result.exists
+                    setIsGitOpsConfigAvailable(isGitOpsConfigAvailable)
                 })
                 .catch((error) => {
-                    showError(error);
-                });
+                    showError(error)
+                })
         }
-    }, [chartId]);
+    }, [chartId])
 
     useEffectAfterMount(() => {
-        fetchChartVersionDetails();
-    }, [selectedVersion]);
+        fetchChartVersionDetails()
+    }, [selectedVersion])
 
     useEffect(() => {
         let chartValues = chartValuesList.find((chrtValue) => {
-            if (chrtValue.kind === 'DEFAULT' && chrtValue.id === selectedVersion) return chrtValue;
-        });
-        if (chartValues) setChartValues(chartValues);
-    }, [selectedVersion, chartValuesList]);
+            if (chrtValue.kind === 'DEFAULT' && chrtValue.id === selectedVersion) return chrtValue
+        })
+        if (chartValues) setChartValues(chartValues)
+    }, [selectedVersion, chartValuesList])
 
     return (
         <DiscoverDetailsContext.Provider
@@ -224,7 +231,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                                 <Deployment
                                     chartId={chartId}
                                     {...chartInformation}
-                                    availableVersions={availableVersions}
+                                    availableVersions={mapById(availableVersions)}
                                     isGitOpsConfigAvailable={isGitOpsConfigAvailable}
                                     showGitOpsWarningModal={showGitOpsWarningModal}
                                     toggleGitOpsWarningModal={toggleGitOpsWarningModal}
@@ -239,16 +246,39 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                     path={`${URLS.CHARTS}/discover/chart/:chartId/deploy-chart`}
                     render={(props) => {
                         return (
-                            <OpaqueModal onHide={goBackToDiscoverChart}>
-                                <DeployChart
+                            <OpaqueModal>
+                                {!chartInformation.chartName ||
+                                !selectedVersion ||
+                                chartValuesList.length <= 0 ||
+                                availableVersions.length <= 0 ? (
+                                    <Progressing pageLoader />
+                                ) : (
+                                    <>
+                                        <PageHeader
+                                            headerName={`Deploy chart: ${chartInformation.chartName}/${chartInformation.name}`}
+                                            showCloseButton={true}
+                                            onClose={goBackToDiscoverChart}
+                                        />
+                                        )
+                                        <ChartValuesView
+                                            isDeployChartView={true}
+                                            installedConfigFromParent={chartInformation}
+                                            chartValuesListFromParent={chartValuesList}
+                                            chartVersionsDataFromParent={availableVersions}
+                                            chartValuesFromParent={chartValues}
+                                            selectedVersionFromParent={selectedVersion}
+                                        />
+                                    </>
+                                )}
+                                {/* <DeployChart
                                     chartValuesFromParent={chartValues}
                                     {...chartInformation}
                                     appStoreVersion={selectedVersion}
                                     versions={availableVersions}
                                     onHide={goBackToDiscoverChart}
-                                />
+                                /> */}
                             </OpaqueModal>
-                        );
+                        )
                     }}
                 />
                 <Route
@@ -259,17 +289,17 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                                 chartId={chartId}
                                 onDeleteChartValue={getChartValuesList}
                                 close={() => {
-                                    let link = getDiscoverChartDetailsURL(chartId);
-                                    history.push(link);
+                                    let link = getDiscoverChartDetailsURL(chartId)
+                                    history.push(link)
                                 }}
                             />
-                        );
+                        )
                     }}
                 />
             </Switch>
         </DiscoverDetailsContext.Provider>
-    );
-};
+    )
+}
 
 const Deployment: React.FC<DeploymentProps> = ({
     icon = '',
@@ -292,22 +322,22 @@ const Deployment: React.FC<DeploymentProps> = ({
         chartValuesList,
         chartValues,
         setChartValues,
-    } = useDiscoverDetailsContext();
-    const match = useRouteMatch();
-    const { push } = useHistory();
-    const { serverMode } = useContext(mainContext);
+    } = useDiscoverDetailsContext()
+    const match = useRouteMatch()
+    const { push } = useHistory()
+    const { serverMode } = useContext(mainContext)
 
     const handleImageError = (e) => {
-        const target = e.target as HTMLImageElement;
-        target.onerror = null;
-        target.src = placeHolder;
-    };
+        const target = e.target as HTMLImageElement
+        target.onerror = null
+        target.src = placeHolder
+    }
 
     function handleDeploy() {
         if (serverMode == SERVER_MODE.EA_ONLY || isGitOpsConfigAvailable) {
-            push(`${match.url}/deploy-chart`);
+            push(`${match.url}/deploy-chart`)
         } else {
-            toggleGitOpsWarningModal(true);
+            toggleGitOpsWarningModal(true)
         }
     }
 
@@ -336,7 +366,7 @@ const Deployment: React.FC<DeploymentProps> = ({
                         : null
                 }
                 onChange={(event) => {
-                    selectVersion(event.target.value);
+                    selectVersion(event.target.value)
                 }}
             >
                 <DevtronSelect.Button>
@@ -364,7 +394,7 @@ const Deployment: React.FC<DeploymentProps> = ({
                     chartValues={chartValues}
                     redirectToChartValues={redirectToChartValues}
                     onChange={(event) => {
-                        setChartValues(event);
+                        setChartValues(event)
                     }}
                 />
             </div>
@@ -397,11 +427,11 @@ const Deployment: React.FC<DeploymentProps> = ({
                 </ConfirmationDialog>
             ) : null}
         </div>
-    );
-};
+    )
+}
 
 function ReadmeRowHorizontal({ readme = null, version = '', ...props }) {
-    const [collapsed, toggleCollapse] = useState(true);
+    const [collapsed, toggleCollapse] = useState(true)
     return (
         <div className="discover__readme discover__readme--horizontal">
             <List onClick={readme ? (e) => toggleCollapse((t) => !t) : (e) => {}}>
@@ -420,12 +450,12 @@ function ReadmeRowHorizontal({ readme = null, version = '', ...props }) {
             </List>
             {!collapsed && readme && <MarkDown markdown={readme} />}
         </div>
-    );
+    )
 }
 
 export function MarkDown({ markdown = '', className = '', breaks = false, ...props }) {
-    const { hash } = useLocation();
-    const renderer = new marked.Renderer();
+    const { hash } = useLocation()
+    const renderer = new marked.Renderer()
     renderer.table = function (header, body) {
         return `
         <div class="table-container">
@@ -434,11 +464,11 @@ export function MarkDown({ markdown = '', className = '', breaks = false, ...pro
                 ${body}
             </table>
         </div>
-        `;
-    };
+        `
+    }
 
     renderer.heading = function (text, level) {
-        const escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
+        const escapedText = text.toLowerCase().replace(/[^\w]+/g, '-')
 
         return `
           <a name="${escapedText}" rel="noreferrer noopener" class="anchor" href="#${escapedText}">
@@ -446,18 +476,18 @@ export function MarkDown({ markdown = '', className = '', breaks = false, ...pro
               <span class="header-link"></span>
               ${text}
               </h${level}>
-            </a>`;
-    };
+            </a>`
+    }
 
     marked.setOptions({
         renderer,
         gfm: true,
         smartLists: true,
-        ...(breaks && { breaks: true })
-    });
+        ...(breaks && { breaks: true }),
+    })
 
     function createMarkup() {
-        return { __html: marked(markdown) };
+        return { __html: marked(markdown) }
     }
     return (
         <article
@@ -465,7 +495,7 @@ export function MarkDown({ markdown = '', className = '', breaks = false, ...pro
             className={`deploy-chart__readme-markdown ${className}`}
             dangerouslySetInnerHTML={createMarkup()}
         />
-    );
+    )
 }
 
-export default DiscoverChartDetails;
+export default DiscoverChartDetails

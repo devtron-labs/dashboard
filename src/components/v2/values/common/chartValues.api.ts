@@ -82,28 +82,36 @@ export async function getChartRelatedReadMe(
 }
 
 export async function getGeneratedHelManifest(
-    installedConfig: any,
+    environmentId: number,
+    clusterId: number,
+    namespace: string,
+    appName: string,
     appStoreApplicationVersionId: number,
     valuesYaml: string,
     setGeneratingManifest: React.Dispatch<React.SetStateAction<boolean>>,
     setGeneratedManifest: React.Dispatch<React.SetStateAction<string>>,
+    setValuesEditorError: React.Dispatch<React.SetStateAction<string>>,
 ) {
     try {
         setGeneratingManifest(true)
         const { result } = await generateHelmManifest({
-            environmentId: installedConfig.environmentId,
-            clusterId: installedConfig.clusterId,
-            namespace: installedConfig.namespace,
-            releaseName: installedConfig.appName,
-            appStoreApplicationVersionId: appStoreApplicationVersionId,
+            environmentId,
+            clusterId,
+            namespace,
+            releaseName: appName,
+            appStoreApplicationVersionId,
             valuesYaml,
         })
 
         setGeneratedManifest(result.manifest)
         setGeneratingManifest(false)
-    } catch (e) {
+    } catch (e: any) {
+        if (Array.isArray(e.errors) && e.errors.length > 0) {
+            setValuesEditorError(e.errors[0].userMessage)
+        } else {
+            setValuesEditorError(e.message)
+        }
         setGeneratingManifest(false)
-        showError(e)
     }
 }
 
@@ -123,8 +131,14 @@ export async function fetchEnvironments(
     if (serverMode === SERVER_MODE.FULL) {
         const { result } = await getEnvironmentListMin()
         let envList = result ? result : []
+        console.log(result)
         envList = envList.map((env) => {
-            return { value: env.id, label: env.environment_name, active: env.active }
+            return {
+                value: env.id,
+                label: env.environment_name,
+                active: env.active,
+                namespace: env.namespace,
+            }
         })
         envList = envList.sort((a, b) => sortCallback('label', a, b, true))
         setEnvironments(envList)
