@@ -46,12 +46,12 @@
         column-gap: 12px;
         .resource-row {
             display: grid;
-            grid-template-columns: 20px 200px 100px 100px 100px 100px;
+            grid-template-columns: 20px minmax(auto 200px) 100px 100px 100px 100px;
             column-gap: 12px;
         }
         .pods-row {
             display: grid;
-            grid-template-columns: 200px auto 100px 100px 100px 100px 50px;
+            grid-template-columns: minmax(100px 200px) auto 100px 100px 100px 100px 50px;
             column-gap: 12px;
         }
     }
