@@ -296,8 +296,8 @@ function Header({ appStoreApplicationName }) {
                 ':chartId': { component: appStoreApplicationName || null, linked: true },
                 chart: null,
                 ':chartValueId?': null,
-                'chart-value': null,
                 'chart-store': null,
+                'chart-value': { component: 'Create Custom Values', linked: false },
             },
         },
         [],
@@ -306,15 +306,9 @@ function Header({ appStoreApplicationName }) {
     const renderChartValueBreadcrumbs = () => {
         return (
             <div className="flex left">
-                <BreadCrumb breadcrumbs={breadcrumbs} />/ Create Custom Values
+                <BreadCrumb breadcrumbs={breadcrumbs} sep={'/'} />
             </div>
         )
     }
-    return (
-        <PageHeader isBreadcrumbs={true} breadCrumbs={renderChartValueBreadcrumbs} />
-        // <div className="page-header">
-
-        //     <div className="page-header__cta-container" />
-        // </div>
-    )
+    return <PageHeader isBreadcrumbs={true} breadCrumbs={renderChartValueBreadcrumbs} />
 }
