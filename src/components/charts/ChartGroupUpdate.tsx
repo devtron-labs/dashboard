@@ -69,6 +69,7 @@ export default function ChartGroupUpdate({}) {
                     ),
                     linked: false,
                 },
+                edit: { component: 'Edit group', linked: false },
             },
         },
         [state.name],
