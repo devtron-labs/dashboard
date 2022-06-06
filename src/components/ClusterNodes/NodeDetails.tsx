@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import './clusterNodes.scss'
-import { BreadCrumb, Progressing, useBreadcrumb } from '../common'
+import { BreadCrumb, ButtonWithLoader, copyToClipboard, Progressing, useBreadcrumb } from '../common'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as Cpu } from '../../assets/icons/ic-cpu.svg'
@@ -9,11 +9,20 @@ import { ReactComponent as Storage } from '../../assets/icons/ic-storage.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import PageHeader from '../common/header/PageHeader'
 import { useParams } from 'react-router'
+import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
+import Tippy from '@tippyjs/react'
+import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
+import CodeEditor from '../CodeEditor/CodeEditor'
+import YAML from 'yaml'
 
 export default function NodeDetails() {
     const [loader, setLoader] = useState(false)
+    const [apiInProgress, setApiInProgress] = useState(false)
+    const [isReviewState, setIsReviewStates] = useState(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
+    const [selectedSubTabIndex, setSelectedSubTabIndex] = useState(0)
     const { clusterId, nodeName } = useParams<{ clusterId: string; nodeName: string }>()
+    const [copied, setCopied] = useState(false)
 
     const renderNodeDetailsTabs = (): JSX.Element => {
         return (
@@ -74,6 +83,173 @@ export default function NodeDetails() {
 
     const renderBreadcrumbs = (): JSX.Element => {
         return <BreadCrumb breadcrumbs={breadcrumbs} />
+    }
+
+    const noDataInSubTab = (tabName: string): JSX.Element => {
+        return (
+            <div className="text-center no-data-tab">
+                <Info className="no-data-icon" />
+                <div className="cn-7 fs-13 fw-4">No {tabName}</div>
+            </div>
+        )
+    }
+
+    const renderKeyValueLabel = (key: string, value?: string): JSX.Element => {
+        return (
+            <div className="flexbox mb-8 hover-trigger">
+                <div
+                    className={`cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
+                        !value ? ' br-4' : ' left-radius-4 no-right-border'
+                    }`}
+                >
+                    {key}
+                </div>
+                {value && (
+                    <div className="bcn-7 cn-0 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 right-radius-4 no-left-border">
+                        {value}
+                    </div>
+                )}
+
+                <Tippy
+                    className="default-tt"
+                    arrow={false}
+                    placement="bottom"
+                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
+                    trigger="mouseenter click"
+                    onShow={(instance) => {
+                        setCopied(false)
+                    }}
+                >
+                    <Clipboard
+                        className="ml-8 mt-3 pointer hover-only"
+                        onClick={() => {
+                            copyToClipboard(`${key}=${value || ''}`, () => {
+                                setCopied(true)
+                            })
+                        }}
+                    />
+                </Tippy>
+            </div>
+        )
+    }
+
+    const renderLabelTab = (): JSX.Element => {
+        if (false) {
+            return noDataInSubTab('Labels')
+        } else {
+            return (
+                <div>
+                    {renderKeyValueLabel('beta.kubernetes.io/arch', 'amd64')}
+                    {renderKeyValueLabel('node-role.kubernetes.io/node')}
+                    {renderKeyValueLabel('kubernetes.io/hostname', 'ip-172-31-177-100.us-east-2.compute.internal')}
+                </div>
+            )
+        }
+    }
+
+    const renderAnnotationTab = (): JSX.Element => {
+        if (true) {
+            return noDataInSubTab('Annotations')
+        } else {
+            return <div>Annotation</div>
+        }
+    }
+
+    const renderWithCopy = (key: string): JSX.Element => {
+        return (
+            <div className="flexbox mb-8 hover-trigger">
+                <div>{key}</div>
+                <Tippy
+                    className="default-tt"
+                    arrow={false}
+                    placement="bottom"
+                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
+                    trigger="mouseenter click"
+                    onShow={(instance) => {
+                        setCopied(false)
+                    }}
+                >
+                    <Clipboard
+                        className="ml-8 mt-3 pointer hover-only"
+                        onClick={() => {
+                            copyToClipboard(key, () => {
+                                setCopied(true)
+                            })
+                        }}
+                    />
+                </Tippy>
+            </div>
+        )
+    }
+
+    const renderTaintTab = (): JSX.Element => {
+        if (false) {
+            return noDataInSubTab('Taints')
+        } else {
+            return (
+                <div>
+                    <div className="subtab-grid mb-8 cn-7 fw-6 fs-13">
+                        <div>Key|Value</div>
+                        <div>Effect</div>
+                    </div>
+                    <div className="subtab-grid">
+                        {renderKeyValueLabel('node-role.kubernetes.io/master')}
+                        {renderWithCopy('NoSchedule')}
+                    </div>
+                    <div className="subtab-grid">
+                        {renderKeyValueLabel('node-role.kubernetes.io/etcd', 'true')}
+                        {renderWithCopy('NoExecute')}
+                    </div>
+                </div>
+            )
+        }
+    }
+
+    const renderLabelAnnotationTaint = (): JSX.Element => {
+        return (
+            <div className="en-2 bw-1 br-4 bcn-0 mt-12">
+                <ul role="tablist" className="tab-list border-bottom pr-20 pl-20 pt-12">
+                    <li
+                        className="tab-list__tab pointer"
+                        onClick={() => {
+                            setSelectedSubTabIndex(0)
+                        }}
+                    >
+                        <div className={`mb-6 fs-13${selectedSubTabIndex == 0 ? ' fw-6 cb-5' : ' fw-4'}`}>
+                            Labels(3)
+                        </div>
+                        {selectedSubTabIndex == 0 && <div className="node-details__active-tab" />}
+                    </li>
+                    <li
+                        className="tab-list__tab pointer"
+                        onClick={() => {
+                            setSelectedSubTabIndex(1)
+                        }}
+                    >
+                        <div className={`mb-6 fs-13${selectedSubTabIndex == 1 ? ' fw-6 cb-5' : ' fw-4'}`}>
+                            Annotation(0)
+                        </div>
+                        {selectedSubTabIndex == 1 && <div className="node-details__active-tab" />}
+                    </li>
+                    <li
+                        className="tab-list__tab pointer"
+                        onClick={() => {
+                            setSelectedSubTabIndex(2)
+                        }}
+                    >
+                        <div className={`mb-6 fs-13${selectedSubTabIndex == 2 ? ' fw-6 cb-5' : ' fw-4'}`}>
+                            Taints(2)
+                        </div>
+                        {selectedSubTabIndex == 2 && <div className="node-details__active-tab" />}
+                    </li>
+                </ul>
+                <div className=" pr-20 pl-20 pt-12 pb-12">
+                    {selectedSubTabIndex == 0 && renderLabelTab()}
+                    {selectedSubTabIndex == 1 && renderAnnotationTab()}
+                    {selectedSubTabIndex == 2 && renderTaintTab()}
+                </div>
+            </div>
+        )
     }
 
     const renderSummary = (): JSX.Element => {
@@ -202,17 +378,7 @@ export default function NodeDetails() {
                                 <div>0</div>
                             </div>
                         </div>
-                        <div className="en-2 bw-1 br-4 bcn-0 mt-12">
-                            <div className="flexbox pt-12 pb-12 pr-10 pl-20 top-radius-4">
-                                <span className="fw-6 fs-14 cn-9">Node overview</span>
-                            </div>
-                            <div className="pr-20 pl-20">
-                                <div>
-                                    <div className="fw-6 fs-13 cn-9">External IP</div>
-                                    <p className="fw-4 fs-13 cn-7 mb-12">3.135.185.157</p>
-                                </div>
-                            </div>
-                        </div>
+                        {renderLabelAnnotationTaint()}
                         <div className="en-2 bw-1 br-4 bcn-0 mt-12">
                             <div className="fw-6 fs-14 cn-9 pr-20 pl-20 pt-12">Pods</div>
                             <div className="pods-row border-bottom pt-12 pb-12 pr-20 pl-20 fw-6 fs-13 cn-7">
@@ -249,12 +415,85 @@ export default function NodeDetails() {
         )
     }
 
+    const cancelYAMLEdit = () => {
+        setIsReviewStates(false)
+    }
+    const saveYAML = () => {
+        if (isReviewState) {
+            //API call
+        } else {
+            setIsReviewStates(true)
+        }
+    }
+
     const renderYAMLEditor = (): JSX.Element => {
-        return <div className="node-details-container">YAML EDITOR</div>
+        return (
+            <div className="node-details-container">
+                <CodeEditor
+                    value={''}
+                    // defaultValue={
+                    //     currentConfiguration?.codeEditorValue?.value &&
+                    //     YAML.stringify(JSON.parse(currentConfiguration.codeEditorValue.value))
+                    // }
+                    height="calc( 100vh - 137px)"
+                    diffView={isReviewState}
+                    noParsing
+                ></CodeEditor>
+                <div className="bcn-0 border-top p-12 text-right" style={{ height: '60px' }}>
+                    {isReviewState && (
+                        <button type="button" className="cta cta--workflow cancel mr-12" onClick={cancelYAMLEdit}>
+                            Cancel
+                        </button>
+                    )}
+                    <ButtonWithLoader
+                        rootClassName="cta cta--workflow"
+                        onClick={saveYAML}
+                        isLoading={apiInProgress}
+                        loaderColor="white"
+                    >
+                        {isReviewState ? 'Update node??' : 'Review changes'}
+                    </ButtonWithLoader>
+                </div>
+            </div>
+        )
     }
 
     const renderConditions = (): JSX.Element => {
-        return <div className="node-details-container">Conditions</div>
+        return (
+            <div className="node-details-container">
+                <div className="ml-20 mr-20 mb-12 mt-16 bcn-0 br-8 en-2 bw-1">
+                    <div className="condition-grid cn-7 fw-6 fs-13 border-bottom pt-8 pl-20 pb-8 pr-20">
+                        <div>Type</div>
+                        <div>Status</div>
+                        <div>Message</div>
+                    </div>
+                    <div className="condition-grid cn-9 fw-4 fs-13 border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
+                        <div>OutOfDisk</div>
+                        <div className="flexbox">
+                            <Info className="error-icon-red mt-2 mb-2 mr-8 icon-dim-18" />
+                            KubeletHasInsufficientDisk
+                        </div>
+                        <div>kubelet has insufficient disk space available</div>
+                    </div>
+                    <div className="condition-grid cn-9 fw-4 fs-13 border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
+                        <div>MemoryPressure</div>
+                        <div className="flexbox">
+                            <Success className="mt-2 mb-2 mr-8 icon-dim-18" />
+                            KubeletHasSufficientMemory
+                        </div>
+                        <div>kubelet has sufficient memory available</div>
+                    </div>
+                    <div className="condition-grid cn-9 fw-4 fs-13 border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
+                        <div>DiskPressure</div>
+                        <div className="flexbox">
+                            <Success className="mt-2 mb-2 mr-8 icon-dim-18" />
+                            KubeletHasNoDiskPressure
+                        </div>
+                        <div>kubelet has sufficient PID available</div>
+                    </div>
+                </div>
+            </div>
+        )
     }
 
     const renderTabs = () => {

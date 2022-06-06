@@ -40,6 +40,29 @@
             fill: var(--y500);
         }
     }
+    .no-data-icon {
+        path[fill='#06C'] {
+            fill: var(--N600);
+        }
+    }
+    .no-data-tab {
+        padding-top: 105px;
+        padding-bottom: 105px;
+    }
+
+    .hover-only {
+        display: none;
+    }
+
+    .hover-trigger:hover {
+        .hover-only {
+            display: block;
+        }
+    }
+    .subtab-grid {
+        display: grid;
+        grid-template-columns: 50% 50%;
+    }
     .node-details-grid {
         display: grid;
         grid-template-columns: 300px auto;
@@ -53,6 +76,17 @@
             display: grid;
             grid-template-columns: minmax(100px, 200px) auto 100px 100px 100px 100px 50px;
             column-gap: 12px;
+        }
+    }
+    .condition-grid {
+        display: grid;
+        grid-template-columns: 200px 280px auto;
+        column-gap: 16px;
+    }
+
+    .error-icon-red {
+        path[fill='#06C'] {
+            fill: var(--R500);
         }
     }
 }
