@@ -54,16 +54,6 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         this.validationRules = new ValidationRules()
     }
 
-    // componentDidMount() {
-    //     getAppListMin()
-    //         .then((response) => {
-    //             this.setState({ apps: response.result, view: ViewType.FORM })
-    //         })
-    //         .catch((errors: ServerErrors) => {
-    //             showError(errors)
-    //         })
-    // }
-
     selectApp({ value }): void {
         let { form, isValid } = { ...this.state }
         form.parentAppId = value //[0].id
