@@ -259,7 +259,6 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                                             showCloseButton={true}
                                             onClose={goBackToDiscoverChart}
                                         />
-                                        )
                                         <ChartValuesView
                                             isDeployChartView={true}
                                             installedConfigFromParent={chartInformation}
@@ -270,13 +269,6 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                                         />
                                     </>
                                 )}
-                                {/* <DeployChart
-                                    chartValuesFromParent={chartValues}
-                                    {...chartInformation}
-                                    appStoreVersion={selectedVersion}
-                                    versions={availableVersions}
-                                    onHide={goBackToDiscoverChart}
-                                /> */}
                             </OpaqueModal>
                         )
                     }}
