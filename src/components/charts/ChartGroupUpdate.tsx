@@ -59,7 +59,7 @@ export default function ChartGroupUpdate({}) {
                 group: 'Chart Groups',
                 ':groupId': {
                     component: state.name,
-                    linked: false,
+                    linked: true,
                 },
                 edit: { component: 'Edit group', linked: false },
             },

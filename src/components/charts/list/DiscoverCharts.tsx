@@ -233,19 +233,15 @@ function DiscoverChartList() {
         )
     }
 
-    const handleRedirectToModule = () => {
-        history.push(URLS.CHARTS_DISCOVER)
-    }
-
     const renderBreadcrumbs = () => {
         return (
             <div className="m-0 flex left ">
                 {state.charts.length > 0 && (
                     <>
-                        <div onClick={() => handleRedirectToModule()} className="devtron-breadcrumb__item">
+                        <NavLink to={match.url} className="devtron-breadcrumb__item">
                             <span className="cb-5 fs-16 cursor">Discover </span>
-                        </div>
-                        <span className="fs-16 cn-9 ml-4 mr-4"> / </span>
+                        </NavLink>
+                        <span className="fs-16 cn-5 ml-4 mr-4"> / </span>
                     </>
                 )}
                 <span className="fs-16 cn-9">
