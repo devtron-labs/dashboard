@@ -2,7 +2,7 @@ import React from 'react'
 import { components } from 'react-select'
 import { ReactComponent as DropDownIcon } from '../../assets/icons/ic-chevron-down.svg'
 import { ServerErrors } from '../../modals/commonTypes'
-import { getAppList } from '../app/service'
+import { getAppListMin } from '../../services/service'
 import { showError } from '../common'
 
 let timeoutId
@@ -93,18 +93,13 @@ export const appListOptions = (inputValue: string): Promise<[]> =>
                 resolve([])
                 return
             }
-            getAppList({
-                appNameSearch: inputValue,
-                sortBy: 'appNameSort',
-                sortOrder: 'ASC',
-                size: 50,
-            })
+            getAppListMin(null, null, inputValue)
                 .then((response) => {
                     let appList = []
-                    if (response.result && response.result.appContainers) {
-                        appList = response.result.appContainers.map((res) => ({
-                            value: res['appId'],
-                            label: res['appName'],
+                    if (response.result) {
+                        appList = response.result.map((res) => ({
+                            value: res['id'],
+                            label: res['name'],
                             ...res,
                         }))
                     }

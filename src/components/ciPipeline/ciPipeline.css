@@ -3,6 +3,11 @@
     margin-top: 24px;
 }
 
+.modal__body--ci-mt-0 {
+    width: 800px;
+    margin-top: 0;
+}
+
 .ci-button-container {
     border-top: solid 1px var(--N100);
 }
