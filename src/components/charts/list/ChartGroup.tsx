@@ -17,7 +17,7 @@ function ChartGroupList() {
         {
             alias: {
                 'chart-store': null,
-                group: { component: 'Chart group', linked: false },
+                group: { component: 'Chart Groups', linked: false },
             },
         },
         [],
