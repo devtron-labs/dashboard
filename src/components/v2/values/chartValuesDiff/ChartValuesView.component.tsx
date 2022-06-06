@@ -346,7 +346,7 @@ export const ChartRepoSelector = ({
                     <AsyncSelect
                         cacheOptions
                         defaultOptions={repoChartOptions}
-                        isSearchable={true}
+                        isSearchable={false}
                         formatOptionLabel={repoChartSelectOptionLabel}
                         value={repoChartValue}
                         loadOptions={repoChartLoadOptions}
@@ -766,9 +766,7 @@ export const ChartValuesEditor = ({
                 loadingValuesForDiff: true,
             })
             const selectedVersionForDiff = valuesForDiffState.selectedVersionForDiff
-            const _version = manifestView
-                ? deploymentHistoryList[0].version
-                : selectedVersionForDiff.appStoreVersionId || selectedVersionForDiff.value
+            const _version = manifestView ? deploymentHistoryList[0].version : selectedVersionForDiff.value
             const _currentValues = valuesForDiffState.valuesForDiff.get(_version)
             if (!_currentValues) {
                 if (selectedVersionForDiff.kind === 'DEPLOYED') {

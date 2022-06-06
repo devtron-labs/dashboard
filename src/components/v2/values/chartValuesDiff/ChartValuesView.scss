@@ -122,6 +122,10 @@
                 width: 100%;
             }
 
+            .empty-state .subtitle {
+                overflow-wrap: break-word;
+            }
+
             .empty-state svg {
                 width: 20px;
                 height: 20px;

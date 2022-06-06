@@ -1,14 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useContext } from 'react'
 import { useHistory, useRouteMatch } from 'react-router'
 import { toast } from 'react-toastify'
-import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    sortCallback,
-    RadioGroup,
-    useJsonYaml,
-} from '../../../common'
+import { showError, Progressing, ErrorScreenManager, sortCallback, RadioGroup, useJsonYaml } from '../../../common'
 import {
     getReleaseInfo,
     ReleaseInfoResponse,
@@ -796,7 +789,7 @@ function ChartValuesView({
                     {(activeTab === 'yaml' || (activeTab === 'manifest' && isExternalApp)) && (
                         <>
                             {tabOptionsAvailable.isComparisonAvailable ? (
-                                renderComparisonOption()
+                                renderComparisonOption(activeTab === 'manifest' && !!valuesEditorError)
                             ) : (
                                 <Tippy
                                     className="default-tt fixed-width-200"
@@ -937,7 +930,7 @@ function ChartValuesView({
                             openReadMe || openComparison ? 'chart-values-view__full-mode' : ''
                         }`}
                     >
-                        {valuesEditorError ? (
+                        {activeTab === 'manifest' && valuesEditorError ? (
                             <ErrorScreenWithInfo info={valuesEditorError} />
                         ) : (
                             <ChartValuesEditor
