@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ReactGA from 'react-ga';
 import { DropdownIcon, Page, Progressing } from '../../../common';
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails';

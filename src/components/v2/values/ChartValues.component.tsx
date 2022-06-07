@@ -4,19 +4,11 @@ import { getChartVersionDetails2 } from '../../charts/charts.service'
 import { DetailsProgressing } from '../../common'
 import IndexStore from '../appDetails/index.store'
 import ChartValuesView from './chartValuesDiff/ChartValuesView'
-import DeployChart from './DeployChart'
 // TODO: appDetails from useSharedState
 
 function ValuesComponent({ appId }: { appId: string }) {
     const [installedConfig, setInstalledConfig] = useState(null)
     const appDetails = IndexStore.getAppDetails()
-
-    function mapById(arr) {
-        if (!Array.isArray(arr)) {
-            throw 'parameter is not an array'
-        }
-        return arr.reduce((agg, curr) => agg.set(curr.id || curr.Id, curr), new Map())
-    }
 
     useEffect(() => {
         getChartVersionDetails2(appDetails.appStoreInstalledAppVersionId)
@@ -38,35 +30,6 @@ function ValuesComponent({ appId }: { appId: string }) {
                 <DetailsProgressing loadingText="Please wait…" size={24} />
             ) : (
                 <ChartValuesView appId={appId} installedConfigFromParent={installedConfig} appDetails={appDetails} />
-                // <DeployChart
-                    // versions={mapById([
-                    //     {
-                    //         id: installedConfig.appStoreVersion,
-                    //         version: appDetails.appStoreAppVersion,
-                    //     },
-                    // ])}
-                //     // {...installedConfig}
-                //     installedAppId={installedConfig.installedAppId}
-                //     appStoreVersion={installedConfig.appStoreVersion}
-                //     appName={installedConfig.appName}
-                //     environmentId={installedConfig.environmentId}
-                //     teamId={installedConfig.teamId}
-                //     readme={installedConfig.readme}
-                //     deprecated={installedConfig.deprecated}
-                //     appStoreId={installedConfig.appStoreId}
-                //     installedAppVersionId={installedConfig.id}
-                //     valuesYaml={JSON.stringify(installedConfig.valuesOverrideYaml)}
-                //     rawValues={installedConfig.valuesOverrideYaml}
-                //     installedAppVersion={installedConfig.id}
-                //     chartIdFromDeploymentDetail={appDetails.appStoreChartId}
-                //     chartValuesFromParent={{
-                //         id: appDetails.appStoreInstalledAppVersionId,
-                //         kind: 'DEPLOYED',
-                //     }}
-                //     chartName={appDetails.appStoreChartName}
-                //     name={appDetails.appStoreAppName}
-                //     onHide={''}
-                // />
             )}
         </div>
     )

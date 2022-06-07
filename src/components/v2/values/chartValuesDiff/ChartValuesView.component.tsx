@@ -13,19 +13,17 @@ import { ConfirmationDialog, DeleteDialog, DetailsProgressing, Progressing, Sele
 import {
     ChartEnvironmentSelectorType,
     ChartRepoSelectorType,
-    ChartDeprecatedType,
     ChartVersionSelectorType,
     ChartValuesSelectorType,
     ChartVersionValuesSelectorType,
     ChartValuesEditorType,
     ChartRepoDetailsType,
     ChartProjectSelectorType,
-    ChartValuesOptionType,
     ChartGroupOptionType,
     ChartValuesDiffOptionType,
+    ChartRepoOtions,
 } from './ChartValuesView.type'
 import { getChartsByKeyword, getChartValues } from '../../../charts/charts.service'
-import { ChartRepoOtions } from '../DeployChart'
 import CodeEditor from '../../../CodeEditor/CodeEditor'
 import { NavLink } from 'react-router-dom'
 import { Moment12HourFormat, URLS } from '../../../../config'

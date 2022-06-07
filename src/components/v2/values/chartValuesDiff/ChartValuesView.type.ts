@@ -2,7 +2,6 @@ import { OptionType } from '../../../app/types'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import { InstalledAppInfo, ReleaseInfo } from '../../../external-apps/ExternalAppService'
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
-import { ChartRepoOtions } from '../DeployChart'
 
 export interface ChartValuesViewType {
     appId?: string
@@ -80,6 +79,14 @@ export interface ChartRepoDetailsType {
     version: string
 }
 
+export interface ChartRepoOtions {
+    appStoreApplicationVersionId: number;
+    chartRepoName: string;
+    chartId: number;
+    chartName: string;
+    version: string;
+    deprecated: boolean;
+}
 export interface ChartRepoSelectorType extends ChartSelectorType {
     repoChartValue?: ChartRepoOtions
     repoChartSelectOptionLabel?: (chartRepoDetails: ChartRepoDetailsType) => JSX.Element

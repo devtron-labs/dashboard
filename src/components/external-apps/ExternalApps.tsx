@@ -4,7 +4,6 @@ import { useRouteMatch, useParams } from 'react-router'
 import EAHeaderComponent from '../v2/headers/EAHeader.component'
 import { Progressing } from '../common'
 import { URLS } from '../../config'
-import ExternalAppValues from '../v2/values/ea/EAValues.component'
 import ExternalAppDetail from '../v2/appDetails/ea/EAAppDetail.component'
 import ChartDeploymentHistory from '../v2/chartDeploymentHistory/ChartDeploymentHistory.component'
 import ChartValuesView from '../v2/values/chartValuesDiff/ChartValuesView'
@@ -22,7 +21,6 @@ export default function ExternalApps() {
                         <ExternalAppDetail appId={params.appId} appName={params.appName} />
                     </Route>
                     <Route path={`${path}/${URLS.APP_VALUES}`}>
-                        {/* <ExternalAppValues appId={params.appId} /> */}
                         <ChartValuesView appId={params.appId} isExternalApp={true} />
                     </Route>
                     <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}>
