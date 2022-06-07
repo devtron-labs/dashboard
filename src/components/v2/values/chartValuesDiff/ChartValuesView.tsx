@@ -44,7 +44,7 @@ import {
     fetchProjectsAndEnvironments,
     getChartRelatedReadMe,
     getChartValuesList,
-    getGeneratedHelManifest,
+    getGeneratedHelmManifest,
 } from '../common/chartValues.api'
 import { getChartValuesURL } from '../../../charts/charts.helper'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
@@ -224,36 +224,11 @@ function ChartValuesView({
                             },
                         })
 
-                        if (
-                            commonState.activeTab === 'manifest' &&
-                            (!isExternalApp || (isExternalApp && commonState.installedAppInfo)) &&
-                            commonState.installedConfig
-                        ) {
-                            if (isDeployChartView) {
-                                getGeneratedHelManifest(
-                                    commonState.selectedEnvironment.value,
-                                    commonState.selectedEnvironment.clusterId || commonState.installedConfig.clusterId,
-                                    commonState.selectedEnvironment.namespace,
-                                    appName,
-                                    commonState.chartValues?.appStoreVersionId ||
-                                        commonState.chartValues?.id ||
-                                        commonState.installedConfig.appStoreVersion,
-                                    response.result.values || commonState.modifiedValuesYaml,
-                                    dispatch,
-                                )
-                            } else {
-                                getGeneratedHelManifest(
-                                    commonState.installedConfig.environmentId,
-                                    commonState.installedConfig.clusterId,
-                                    commonState.installedConfig.namespace,
-                                    commonState.installedConfig.appName,
-                                    commonState.chartValues?.appStoreVersionId ||
-                                        commonState.chartValues?.id ||
-                                        commonState.installedConfig.appStoreVersion,
-                                    response.result.values || commonState.modifiedValuesYaml,
-                                    dispatch,
-                                )
-                            }
+                        if (!isDeployChartView || commonState.selectedEnvironment) {
+                            updateGeneratedManifest(
+                                commonState.chartValues.appStoreVersionId || commonState.chartValues.id,
+                                response.result.values,
+                            )
                         }
                     })
                     .catch((error) => {
@@ -317,40 +292,22 @@ function ChartValuesView({
     useEffect(() => {
         if (
             commonState.activeTab === 'manifest' &&
-            commonState.installedConfig &&
-            (!commonState.generatedManifest ||
-                (commonState.generatedManifest &&
-                    (hasChartChanged() || commonState.chartValues.id !== commonState.installedConfig.id)))
+            (isExternalApp ||
+                (commonState.selectedEnvironment &&
+                    !commonState.manifestGenerationKey.startsWith(commonState.selectedEnvironment?.value))) &&
+            !commonState.manifestGenerationKey.endsWith(commonState.selectedVersionUpdatePage?.id) &&
+            !commonState.generatingManifest
         ) {
-            if (isDeployChartView) {
-                getGeneratedHelManifest(
-                    commonState.selectedEnvironment.value,
-                    commonState.selectedEnvironment.clusterId || commonState.installedConfig.clusterId,
-                    commonState.selectedEnvironment.namespace,
-                    appName,
-                    commonState.chartValues?.appStoreVersionId ||
-                        commonState.chartValues?.id ||
-                        commonState.installedConfig.appStoreVersion,
-                    commonState.installedConfig.valuesYaml,
-                    dispatch,
-                )
-            } else {
-                getGeneratedHelManifest(
-                    commonState.installedConfig.environmentId,
-                    commonState.installedConfig.clusterId,
-                    commonState.installedConfig.namespace,
-                    commonState.installedConfig.appName,
-                    commonState.chartValues?.appStoreVersionId ||
-                        commonState.chartValues?.id ||
-                        commonState.installedConfig.appStoreVersion,
-                    isExternalApp
-                        ? commonState.releaseInfo.mergedValues
-                        : commonState.installedConfig.valuesOverrideYaml,
-                    dispatch,
-                )
-            }
+            updateGeneratedManifest(
+                commonState.manifestGenerationKey &&
+                    commonState.selectedVersionUpdatePage &&
+                    !commonState.manifestGenerationKey.endsWith(commonState.selectedVersionUpdatePage.id)
+                    ? commonState.selectedVersionUpdatePage.id
+                    : commonState.chartValues?.appStoreVersionId || commonState.chartValues?.id,
+                commonState.modifiedValuesYaml,
+            )
         }
-    }, [commonState.activeTab, commonState.installedConfig])
+    }, [commonState.activeTab, commonState.selectedEnvironment, commonState.selectedVersionUpdatePage])
 
     useEffect(() => {
         if (chartValuesList.length > 0 || commonState.deploymentHistoryArr.length > 0) {
@@ -361,6 +318,51 @@ function ChartValuesView({
             dispatch({ type: 'isComparisonAvailable', payload: isVersionAvailableForDiff })
         }
     }, [chartValuesList, commonState.deploymentHistoryArr])
+
+    const generateManifestGenerationKey = () => {
+        return isExternalApp
+            ? `${commonState.releaseInfo.deployedAppDetail.environmentDetail.namespace}_${commonState.releaseInfo.deployedAppDetail.appName}_${commonState.chartValues?.id}_${commonState.selectedVersionUpdatePage?.id}`
+            : `${commonState.selectedEnvironment.value}_${appName}_${commonState.chartValues?.id}_${commonState.selectedEnvironment.namespace}_${commonState.selectedVersionUpdatePage?.id}`
+    }
+
+    const updateGeneratedManifest = (appStoreApplicationVersionId: number, valuesYaml: string) => {
+        const _manifestGenerationKey = generateManifestGenerationKey()
+
+        if (commonState.manifestGenerationKey === _manifestGenerationKey && !commonState.valuesYamlUpdated) {
+            return
+        }
+
+        dispatch({
+            type: 'multipleOptions',
+            payload: {
+                generatingManifest: true,
+                manifestGenerationKey: _manifestGenerationKey,
+                valuesEditorError: '',
+            },
+        })
+
+        if (isDeployChartView) {
+            getGeneratedHelmManifest(
+                commonState.selectedEnvironment.value,
+                commonState.selectedEnvironment.clusterId || commonState.installedConfig.clusterId,
+                commonState.selectedEnvironment.namespace,
+                appName,
+                appStoreApplicationVersionId,
+                valuesYaml,
+                dispatch,
+            )
+        } else {
+            getGeneratedHelmManifest(
+                commonState.installedConfig.environmentId,
+                commonState.installedConfig.clusterId,
+                commonState.installedConfig.namespace,
+                commonState.installedConfig.appName,
+                appStoreApplicationVersionId,
+                valuesYaml,
+                dispatch,
+            )
+        }
+    }
 
     const initData = async (_installedAppInfo: InstalledAppInfo, _releaseInfo: ReleaseInfo) => {
         try {
@@ -642,7 +644,13 @@ function ChartValuesView({
 
     const OnEditorValueChange = (codeEditorData: string) => {
         if (commonState.activeTab !== 'manifest') {
-            dispatch({ type: 'modifiedValuesYaml', payload: codeEditorData })
+            dispatch({
+                type: 'multipleOptions',
+                payload: {
+                    modifiedValuesYaml: codeEditorData,
+                    valuesYamlUpdated: commonState.modifiedValuesYaml !== codeEditorData,
+                },
+            })
         }
     }
 
@@ -909,6 +917,15 @@ function ChartValuesView({
         setAppName(newAppName)
     }
 
+    const handleAppNameOnBlur = () => {
+        if (commonState.activeTab === 'manifest') {
+            updateGeneratedManifest(
+                commonState.chartValues.appStoreVersionId || commonState.chartValues.id,
+                commonState.modifiedValuesYaml,
+            )
+        }
+    }
+
     const renderData = () => {
         return (
             <div
@@ -926,6 +943,7 @@ function ChartValuesView({
                             <AppNameInput
                                 appName={appName}
                                 handleAppNameChange={handleAppNameChange}
+                                handleAppNameOnBlur={handleAppNameOnBlur}
                                 invalidAppName={commonState.invalidAppName}
                                 invalidAppNameMessage={commonState.invalidAppNameMessage}
                             />

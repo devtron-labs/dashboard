@@ -19,7 +19,9 @@ export interface ChartValuesViewState {
     repoChartValue: ChartRepoOtions
     fetchingValuesYaml: boolean
     modifiedValuesYaml: string
+    valuesYamlUpdated: boolean
     generatingManifest: boolean
+    manifestGenerationKey: string
     generatedManifest: string
     valuesEditorError: string
     installedConfig: any
@@ -72,7 +74,9 @@ export const initState = (
         repoChartValue: null,
         fetchingValuesYaml: false,
         modifiedValuesYaml: '',
+        valuesYamlUpdated: true,
         generatingManifest: false,
+        manifestGenerationKey: '',
         generatedManifest: '',
         valuesEditorError: '',
         installedConfig: installedConfigFromParent,
@@ -132,8 +136,12 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
             return { ...state, fetchingValuesYaml: action.payload }
         case 'modifiedValuesYaml':
             return { ...state, modifiedValuesYaml: action.payload }
+        case 'valuesYamlUpdated':
+            return { ...state, valuesYamlUpdated: action.payload }
         case 'generatingManifest':
             return { ...state, generatingManifest: action.payload }
+        case 'manifestGenerationKey':
+            return { ...state, manifestGenerationKey: action.payload }
         case 'generatedManifest':
             return { ...state, generatedManifest: action.payload }
         case 'valuesEditorError':

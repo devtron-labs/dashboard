@@ -721,7 +721,7 @@ export const ChartValuesEditor = ({
             (isDeployChartView || (!isDeployChartView && deploymentHistoryList.length > 0))
         ) {
             const filteredChartValues = chartValuesList
-                .filter((_chartValue) => _chartValue.kind === 'DEPLOYED' && _chartValue.name !== appName)
+                .filter((_chartValue) => _chartValue.kind === 'DEPLOYED')
                 .map((_chartValue) => {
                     return {
                         label: _chartValue.name,
@@ -1006,11 +1006,13 @@ const renderValidationErrorLabel = (message?: string): JSX.Element => {
 export const AppNameInput = ({
     appName,
     handleAppNameChange,
+    handleAppNameOnBlur,
     invalidAppName,
     invalidAppNameMessage,
 }: {
     appName: string
     handleAppNameChange: (newAppName: string) => void
+    handleAppNameOnBlur: () => void
     invalidAppName: boolean
     invalidAppNameMessage: string
 }) => {
@@ -1024,6 +1026,7 @@ export const AppNameInput = ({
                 className="form__input"
                 value={appName}
                 onChange={(e) => handleAppNameChange(e.target.value)}
+                onBlur={() => handleAppNameOnBlur()}
             />
             {invalidAppName && renderValidationErrorLabel(invalidAppNameMessage)}
         </label>

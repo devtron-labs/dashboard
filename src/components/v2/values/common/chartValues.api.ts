@@ -91,7 +91,7 @@ export async function getChartRelatedReadMe(
     }
 }
 
-export async function getGeneratedHelManifest(
+export async function getGeneratedHelmManifest(
     environmentId: number,
     clusterId: number,
     namespace: string,
@@ -101,14 +101,6 @@ export async function getGeneratedHelManifest(
     dispatch: (action: ChartValuesViewAction) => void,
 ) {
     try {
-        dispatch({
-            type: 'multipleOptions',
-            payload: {
-                generatingManifest: true,
-                valuesEditorError: '',
-            },
-        })
-
         const { result } = await generateHelmManifest({
             environmentId,
             clusterId,
@@ -123,6 +115,7 @@ export async function getGeneratedHelManifest(
             payload: {
                 generatingManifest: false,
                 generatedManifest: result.manifest,
+                valuesYamlUpdated: false,
                 valuesEditorError: '',
             },
         })
