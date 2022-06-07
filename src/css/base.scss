@@ -1187,6 +1187,7 @@ button.anchor {
     color: inherit;
     text-transform: capitalize;
     font-weight: 400;
+    color: var(--B500);
 }
 
 .devtron-breadcrumb__item:hover {
@@ -1200,7 +1201,7 @@ button.anchor {
     font-weight: 400;
 
     &:hover {
-        color: inherit;
+        color: var(--B500);
     }
 }
 
