@@ -101,7 +101,7 @@
 
 .deploy-and-details-view {
     display: flex;
-    height: calc(100vh - 80px);
+    height: calc(100vh - 48px);
 }
 
 .deploy-and-details-view--details {

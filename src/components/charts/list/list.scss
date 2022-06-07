@@ -335,7 +335,7 @@
 .chart-group--details-page,
 .discover-charts {
     display: grid;
-    grid-template-rows: 80px 1fr;
+    grid-template-rows: 48px 1fr;
     overflow: hidden;
     height: 100%;
 
@@ -352,6 +352,9 @@
             flex-basis: 100%;
         }
     }
+}
+.chart-store-header {
+    grid-template-rows: 48px;
 }
 
 .discover-charts.summary-show,
@@ -487,7 +490,7 @@
 .chart-group-list-page {
     height: 100%;
     display: grid;
-    grid-template-rows: 80px 1fr;
+    grid-template-rows: 48px 1fr;
     overflow: hidden;
 
     .chart-group-list-page__body {
@@ -499,7 +502,7 @@
 .chart-group-details-page {
     height: 100%;
     display: grid;
-    grid-template-rows: 80px 1fr;
+    grid-template-rows: 48px 1fr;
     overflow: hidden;
 
     .chart-group-details-page__body {
@@ -511,7 +514,7 @@
 .chart-group-advance-deploy-page {
     height: 100%;
     display: grid;
-    grid-template-rows: 80px 1fr;
+    grid-template-rows: 48px 1fr;
     overflow: hidden;
 
     .chart-group-advance-deploy-page__body {

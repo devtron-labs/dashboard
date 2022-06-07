@@ -193,6 +193,13 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         if (chartValues) setChartValues(chartValues)
     }, [selectedVersion, chartValuesList])
 
+    const renderBreadcrumbs = () => {
+        return (
+            <div className="flex left">
+                <BreadCrumb breadcrumbs={breadcrumbs} />
+            </div>
+        )
+    }
     return (
         <DiscoverDetailsContext.Provider
             value={{
@@ -208,15 +215,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
             }}
         >
             <div className="chart-detail-container">
-                <div className="page-header">
-                    <div className="flex column left fs-12 cn-7">
-                        <div className="flex left">
-                            <BreadCrumb breadcrumbs={breadcrumbs} />
-                        </div>
-                        <div className="page-header__title">{chartInformation?.appStoreApplicationName}</div>
-                    </div>
-                    <div className="page-header__cta-container" />
-                </div>
+                <PageHeader isBreadcrumbs={true} breadCrumbs={renderBreadcrumbs} />
                 {loading ? (
                     <Progressing pageLoader />
                 ) : (
