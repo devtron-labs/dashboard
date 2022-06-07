@@ -50,7 +50,13 @@ function PageHeader({
     const renderLogoutHelpSection = () => {
         return (
             <>
-                <div className="flex left cursor mr-16" onClick={() => setShowHelpCard(!showHelpCard)}>
+                <div
+                    className="flex left cursor mr-16"
+                    onClick={() => {
+                        setShowHelpCard(!showHelpCard)
+                        showLogOutCard && setShowLogOutCard(false)
+                    }}
+                >
                     <span className="icon-dim-20 mr-8 ml-16">
                         <Question />
                     </span>
@@ -58,7 +64,10 @@ function PageHeader({
                 </div>
                 <div
                     className="logout-card__initial cursor fs-13 icon-dim-20 flex"
-                    onClick={() => setShowLogOutCard(!showLogOutCard)}
+                    onClick={() => {
+                        setShowLogOutCard(!showLogOutCard)
+                        showHelpCard && setShowHelpCard(false)
+                    }}
                     style={{ backgroundColor: getRandomColor(email) }}
                 >
                     {email[0]}
