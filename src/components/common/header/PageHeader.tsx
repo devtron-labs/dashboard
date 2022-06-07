@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Tippy from '@tippyjs/react'
+import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-
+import HelpNav from '../HelpNav'
+import './pageHeader.css'
 export interface PageHeaderType {
     headerName?: string
     isTippyShown?: boolean
@@ -33,6 +35,23 @@ function PageHeader({
     showCloseButton = false,
     onClose,
 }: PageHeaderType) {
+    const [showHelpCard, setShowHelpCard] = useState(false)
+
+    const toggleHelpButton = () => {
+        setShowHelpCard(!showHelpCard)
+    }
+
+    const renderLoginHelpSection = () => {
+        return (
+            <div className="flex left cursor" onClick={toggleHelpButton}>
+                <span className="icon-dim-20 mr-4 ml-16">
+                    <Question />
+                </span>
+                <span className="fs-13 cn-6">Help</span>
+            </div>
+        )
+    }
+
     return (
         <div
             className={`page-header content-space cn-9 bcn-0 pl-20 pr-20 ${
@@ -66,7 +85,11 @@ function PageHeader({
                 )}
             </h1>
             {showTabs && renderHeaderTabs()}
-            {typeof renderActionButtons === 'function' && renderActionButtons()}
+            <div className="flex left">
+                {typeof renderActionButtons === 'function' && renderActionButtons()}
+                {renderLoginHelpSection()}
+            </div>
+            {showHelpCard && <HelpNav className={'help-card__more-option'} />}
         </div>
     )
 }

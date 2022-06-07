@@ -186,7 +186,7 @@ export default class Navigation extends Component<
         return ReactDOM.createPortal(
             <div className="transparent-div" onClick={this.toggleHelpCard}>
                 <div
-                    className={`help-card pt-4 ${
+                    className={`help-card pt-4 help-card-position ${
                         this.props.serverInfo?.installationType !== InstallationType.OSS_HELM ? 'pb-4' : ''
                     } ${window._env_?.HIDE_DISCORD ? 'sticky__bottom-option' : ''}`}
                 >
