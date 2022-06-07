@@ -77,7 +77,7 @@ export async function getChartRelatedReadMe(
             type: 'multipleOptions',
             payload: {
                 fetchingReadMe: false,
-                isReadMeAvailable: false
+                isReadMeAvailable: false,
             },
         })
     }
@@ -138,7 +138,7 @@ export async function getGeneratedHelManifest(
 
 export async function fetchProjectsAndEnvironments(
     serverMode: SERVER_MODE,
-    setProjectsAndEnvironment: React.Dispatch<React.SetStateAction<ChartProjectAndEnvironmentType>>,
+    dispatch: (value: { type: string; payload: any }) => void,
 ): Promise<void> {
     Promise.allSettled([
         getTeamListMin(),
@@ -182,9 +182,12 @@ export async function fetchProjectsAndEnvironments(
             })
             .sort((a, b) => sortCallback('label', a, b, true))
 
-        setProjectsAndEnvironment({
-            environments: envList,
-            projects: projectList,
+        dispatch({
+            type: 'multipleOptions',
+            payload: {
+                environments: envList,
+                projects: projectList,
+            },
         })
     })
 }

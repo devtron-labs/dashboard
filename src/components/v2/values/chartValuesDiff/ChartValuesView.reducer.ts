@@ -26,6 +26,10 @@ export const initState = (
         activeTab: 'yaml',
         isComparisonAvailable: true,
         isReadMeAvailable: true,
+        releaseInfo: null,
+        installedAppInfo: null,
+        projects: [],
+        environments: [],
     }
 }
 
@@ -71,6 +75,14 @@ export const chartValuesReducer = (state, action) => {
             return { ...state, isComparisonAvailable: action.payload }
         case 'isReadMeAvailable':
             return { ...state, isReadMeAvailable: action.payload }
+        case 'releaseInfo':
+            return { ...state, releaseInfo: action.payload }
+        case 'installedAppInfo':
+            return { ...state, installedAppInfo: action.payload }
+        case 'projects':
+            return { ...state, projects: action.payload }
+        case 'environments':
+            return { ...state, environments: action.payload }
         case 'multipleOptions':
             return { ...state, ...action.payload }
         default:
