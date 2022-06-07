@@ -12,8 +12,9 @@ import PageHeader from '../common/header/PageHeader'
 export default function ClusterList() {
     const match = useRouteMatch()
     const [loader, setLoader] = useState(false)
-    const [searchApplied, setSearchApplied] = useState(false)
+    const [noResults, setNoResults] = useState(false)
     const [searchText, setSearchText] = useState('')
+    const [filteredClusterList, setFilteredClusterList] = useState<ClusterDetail[]>([])
     const [clusterList, setClusterList] = useState<ClusterDetail[]>([])
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
@@ -25,6 +26,8 @@ export default function ClusterList() {
                 setLastDataSync(!lastDataSync)
                 if (response.result) {
                     setClusterList(response.result)
+                    setFilteredClusterList(response.result)
+                    setNoResults(response.result.length === 0)
                 }
                 setLoader(false)
             })
@@ -49,14 +52,16 @@ export default function ClusterList() {
         }
     }, [lastDataSync])
 
-    const handleFilterChanges = (selected, key): void => {}
+    const handleFilterChanges = (_searchText: string): void => {
+        const _filteredData = clusterList.filter((cluster) => cluster.name.indexOf(_searchText) >= 0)
+        setFilteredClusterList(_filteredData)
+        setNoResults(_filteredData.length === 0)
+        setSearchText(_searchText)
+    }
 
     const renderSearch = (): JSX.Element => {
         return (
-            <form
-                onSubmit={(e) => handleFilterChanges(e, 'search')}
-                className="search position-rel margin-right-0 en-2 bw-1 br-4"
-            >
+            <form className="search position-rel margin-right-0 en-2 bw-1 br-4">
                 <Search className="search__icon icon-dim-18" />
                 <input
                     type="text"
@@ -64,18 +69,14 @@ export default function ClusterList() {
                     value={searchText}
                     className="search__input bcn-0"
                     onChange={(event) => {
-                        setSearchText(event.target.value)
+                        handleFilterChanges(event.target.value)
                     }}
                 />
-                {searchApplied ? (
-                    <button
-                        className="search__clear-button"
-                        type="button"
-                        onClick={(e) => handleFilterChanges(e, 'clear')}
-                    >
+                {searchText.length > 0 && (
+                    <button className="search__clear-button" type="button" onClick={(e) => handleFilterChanges('')}>
                         <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                     </button>
-                ) : null}
+                )}
             </form>
         )
     }
@@ -112,9 +113,10 @@ export default function ClusterList() {
                         <div>CPU Capacity</div>
                         <div>Memory Capacity</div>
                     </div>
-                    {clusterList
-                        ?.filter((cluster) => cluster.name.indexOf(searchText) >= 0)
-                        .map((clusterData) => (
+                    {noResults ? (
+                        <div>No results found</div>
+                    ) : (
+                        filteredClusterList?.map((clusterData) => (
                             <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
                                 <div className="cb-5 ellipsis-right">
                                     <NavLink to={`${match.url}/${clusterData.id}`}>{clusterData.name}</NavLink>
@@ -126,7 +128,8 @@ export default function ClusterList() {
                                 <div>{clusterData.cpu?.capacity}</div>
                                 <div>{clusterData.memory?.capacity}</div>
                             </div>
-                        ))}
+                        ))
+                    )}
                 </div>
             </div>
         </>
