@@ -1897,3 +1897,27 @@ textarea {
 .no-text-transform {
     text-transform: none !important;
 }
+.split-header {
+    display: flex;
+    background-color: var(--N100);
+    border-bottom: 1px solid #d6dbdf;
+    height: 40px;
+    color: var(--N700);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 40px;
+    width: 100%;
+    .left-pane {
+        width: 49%;
+        border-right: 1px solid #d6dbdf;
+        padding-left: 10px;
+    }
+    .right-pane {
+        width: 51%;
+        padding-left: 25px;
+        .apply-change {
+            float: right;
+            margin-top: 9px;
+        }
+    }
+}

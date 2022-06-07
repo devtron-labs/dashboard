@@ -6,13 +6,15 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getClusterCapacity, getNodeList, getClusterList } from './clusterNodes.service'
 import { BreadCrumb, handleUTCTime, Progressing, showError, useBreadcrumb } from '../common'
-import { ClusterCapacityType, ClusterListResponse, NodeDetail } from './types'
+import { ClusterCapacityType, ClusterListResponse, NodeRowDetail } from './types'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import PageHeader from '../common/header/PageHeader'
 import ReactSelect from 'react-select'
 import { DropdownIndicator, appSelectorStyle } from '../AppSelector/AppSelectorUtil'
 import { OptionType } from '../app/types'
+import { Option } from '../v2/common/ReactSelect.utils'
+import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
 
 export default function NodeList() {
     const match = useRouteMatch()
@@ -20,7 +22,7 @@ export default function NodeList() {
     const [loader, setLoader] = useState(false)
     const [searchApplied, setSearchApplied] = useState(false)
     const [searchText, setSearchText] = useState('')
-    const [nodeList, setNodeList] = useState<NodeDetail[]>([])
+    const [nodeList, setNodeList] = useState<NodeRowDetail[]>([])
     const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
@@ -32,9 +34,11 @@ export default function NodeList() {
         value: '',
     })
 
+    const columnMetadata = [{ '': '' }]
+
     const getNodeListData = () => {
         setLoader(true)
-        Promise.all([getNodeList(), getClusterCapacity()])
+        Promise.all([getNodeList(clusterId), getClusterCapacity(clusterId)])
             .then((response) => {
                 setLastDataSync(!lastDataSync)
                 if (response[0].result) {
@@ -98,30 +102,55 @@ export default function NodeList() {
 
     const renderSearch = (): JSX.Element => {
         return (
-            <form
-                onSubmit={(e) => handleFilterChanges(e, 'search')}
-                className="search position-rel margin-right-0 en-2 bw-1 br-4"
-            >
-                <Search className="search__icon icon-dim-18" />
-                <input
-                    type="text"
-                    placeholder="Search charts"
-                    value={searchText}
-                    className="search__input bcn-0"
-                    onChange={(event) => {
-                        setSearchText(event.target.value)
+            <div className="flexbox content-space">
+                <div className="flexbox">
+                    <div className="position-rel en-2 bw-1 br-4 w-250 h-32 mr-12">
+                        <Search className="search__icon icon-dim-18" />
+                        <input
+                            type="text"
+                            placeholder="Search charts"
+                            value={searchText}
+                            className="search__input"
+                            onChange={(event) => {
+                                setSearchText(event.target.value)
+                            }}
+                        />
+                        {searchApplied ? (
+                            <button
+                                className="search__clear-button"
+                                type="button"
+                                onClick={(e) => handleFilterChanges(e, 'clear')}
+                            >
+                                <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                            </button>
+                        ) : null}
+                    </div>
+                    <ReactSelect
+                        className="w-250"
+                        options={clusterList}
+                        onChange={onClusterChange}
+                        components={{
+                            IndicatorSeparator: null,
+                            DropdownIndicator,
+                            Option,
+                        }}
+                        value={selectedCluster}
+                        styles={containerImageSelectStyles}
+                    />
+                </div>
+                <ReactSelect
+                    className="w-250"
+                    options={clusterList}
+                    onChange={onClusterChange}
+                    components={{
+                        IndicatorSeparator: null,
+                        DropdownIndicator,
+                        Option,
                     }}
+                    value={selectedCluster}
+                    styles={containerImageSelectStyles}
                 />
-                {searchApplied ? (
-                    <button
-                        className="search__clear-button"
-                        type="button"
-                        onClick={(e) => handleFilterChanges(e, 'clear')}
-                    >
-                        <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
-                    </button>
-                ) : null}
-            </form>
+            </div>
         )
     }
 
@@ -188,7 +217,7 @@ export default function NodeList() {
                         <div className="mr-16 width-25">
                             <div className="align-center fs-13 fw-4 cn-7">CPU Usage</div>
                             <div className="align-center fs-24 fw-4 cn-9">
-                                {clusterCapacityData?.cpu?.usagePercentage}%
+                                {clusterCapacityData?.cpu?.usagePercentage}
                             </div>
                         </div>
                         <div className="mr-16 width-25">
@@ -198,13 +227,13 @@ export default function NodeList() {
                         <div className="mr-16 width-25">
                             <div className="align-center fs-13 fw-4 cn-7">CPU Requests</div>
                             <div className="align-center fs-24 fw-4 cn-9">
-                                {clusterCapacityData?.cpu?.requestPercentage}%
+                                {clusterCapacityData?.cpu?.requestPercentage}
                             </div>
                         </div>
                         <div className="width-25">
                             <div className="align-center fs-13 fw-4 cn-7">CPU Limits</div>
                             <div className="align-center fs-24 fw-4 cn-9">
-                                {clusterCapacityData?.cpu?.limitPercentage}%
+                                {clusterCapacityData?.cpu?.limitPercentage}
                             </div>
                         </div>
                     </div>
@@ -213,7 +242,7 @@ export default function NodeList() {
                         <div className="mr-16 width-25">
                             <div className="align-center fs-13 fw-4 cn-7">Memory Usage</div>
                             <div className="align-center fs-24 fw-4 cn-9">
-                                {clusterCapacityData?.memory?.usagePercentage}%
+                                {clusterCapacityData?.memory?.usagePercentage}
                             </div>
                         </div>
                         <div className="mr-16 width-25">
@@ -223,13 +252,13 @@ export default function NodeList() {
                         <div className="mr-16 width-25">
                             <div className="align-center fs-13 fw-4 cn-7">Memory Requests</div>
                             <div className="align-center fs-24 fw-4 cn-9">
-                                {clusterCapacityData?.memory?.requestPercentage}%
+                                {clusterCapacityData?.memory?.requestPercentage}
                             </div>
                         </div>
                         <div className="width-25">
                             <div className="align-center fs-13 fw-4 cn-7">Memory Limits</div>
                             <div className="align-center fs-24 fw-4 cn-9">
-                                {clusterCapacityData?.memory?.limitPercentage}%
+                                {clusterCapacityData?.memory?.limitPercentage}
                             </div>
                         </div>
                     </div>
@@ -292,8 +321,8 @@ export default function NodeList() {
                                 <div>{nodeData.k8sVersion || '-'}</div>
                                 <div>{nodeData.podCount || '-'}</div>
                                 <div>{nodeData.taintCount || '-'}</div>
-                                <div>{nodeData.cpu?.usage ? nodeData.cpu.usage + '%' : '-'}</div>
-                                <div>{nodeData.memory?.usage ? nodeData.memory.usage + '%' : '-'}</div>
+                                <div>{nodeData.cpu?.usage ? nodeData.cpu.usage : '-'}</div>
+                                <div>{nodeData.memory?.usage ? nodeData.memory.usage : '-'}</div>
                                 <div>{nodeData.age || '-'}</div>
                             </div>
                         ))}

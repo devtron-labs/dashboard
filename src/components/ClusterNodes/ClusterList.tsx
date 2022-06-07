@@ -75,7 +75,7 @@ export default function ClusterList() {
                     type="text"
                     placeholder="Search charts"
                     value={searchText}
-                    className="search__input bcn-0"
+                    className="search__input"
                     onChange={(event) => {
                         handleFilterChanges(event.target.value)
                     }}
