@@ -256,6 +256,11 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                                     <>
                                         <PageHeader
                                             headerName={`Deploy chart: ${chartInformation.chartName}/${chartInformation.name}`}
+                                            additionalHeaderInfo={() =>
+                                                chartInformation.deprecated && (
+                                                    <span style={{ color: 'var(--R500)' }}>&nbsp;(Deprecated)</span>
+                                                )
+                                            }
                                             showCloseButton={true}
                                             onClose={goBackToDiscoverChart}
                                         />

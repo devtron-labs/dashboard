@@ -643,33 +643,29 @@ const CompareWithDropdown = ({
                         backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
                     }
                 },
-                container: (base) => {
-                    return {
-                        ...base,
-                        width: '100%',
-                        maxWidth: '240px',
-                    }
-                },
                 menu: (base) => {
                     return {
                         ...base,
                         marginTop: '2px',
+                        minWidth: '240px',
                     }
                 },
                 menuList: (base) => {
                     return {
                         ...base,
                         position: 'relative',
-                        paddingBottom: '0',
-                        paddingTop: '0',
+                        paddingBottom: 0,
+                        paddingTop: 0,
                         maxHeight: '250px',
                     }
                 },
-                dropdownIndicator: (base) => {
+                dropdownIndicator: (base, state) => {
                     return {
                         ...base,
-                        padding: '0 8px',
-                        color: 'var(--N600)',
+                        padding: 0,
+                        color: 'var(--N400)',
+                        transition: 'all .2s ease',
+                        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                     }
                 },
                 noOptionsMessage: (base) => {
@@ -743,7 +739,6 @@ export const ChartValuesEditor = ({
                     info: '',
                 }
             })
-            deploymentHistoryOptionsList.splice(0, 1)
 
             setValuesForDiffState({
                 ...valuesForDiffState,
@@ -1000,7 +995,7 @@ export const AppNotLinkedDialog = ({
 
 const renderValidationErrorLabel = (): JSX.Element => {
     return (
-        <div className="error-label flex left align-start fs-11 mt-6">
+        <div className="error-label flex left align-start fs-11 fw-4 mt-6">
             <div className="error-label-icon">
                 <Error className="icon-dim-16" />
             </div>
@@ -1024,7 +1019,7 @@ export const AppNameInput = ({
             <input
                 autoComplete="off"
                 tabIndex={1}
-                placeholder="Eg. kube-prometheus"
+                placeholder="Eg. app-name"
                 className="form__input"
                 value={appName}
                 onChange={(e) => setAppName(e.target.value)}

@@ -109,11 +109,17 @@
     margin-bottom: -8px;
     box-shadow: 0 -1px 0 0 var(--N200);
     background-color: inherit;
-    padding: 10px 12px;
+    padding: 11px 12px;
     width: 100%;
     display: flex;
     align-items: center;
     cursor: pointer;
+    color: var(--B500);
+    font-size: 13px;
+}
+
+.select__sticky-bottom svg path {
+    fill: var(--B500);
 }
 
 .select__all {

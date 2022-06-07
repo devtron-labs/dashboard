@@ -54,18 +54,32 @@ export async function getChartValuesList(
 
 export async function getChartRelatedReadMe(
     id: number,
-    setFetchingReadMe: React.Dispatch<React.SetStateAction<boolean>>,
-    handleFetchedReadMe: (id: number, readme: string) => void,
+    currentFetchedReadMe: Map<number, string>,
+    dispatch: (value: { type: string; payload: any }) => void,
 ) {
     try {
-        setFetchingReadMe(true)
+        dispatch({ type: 'fetchingReadMe', payload: true })
         const { result } = await getReadme(id)
-        handleFetchedReadMe(id, result.readme)
-        setFetchingReadMe(false)
+        const _fetchedReadMe = currentFetchedReadMe
+        _fetchedReadMe.set(id, result.readme)
+
+        dispatch({
+            type: 'multipleOptions',
+            payload: {
+                fetchingReadMe: false,
+                fetchedReadMe: _fetchedReadMe,
+                isReadMeAvailable: !!result.readme?.trim(),
+            },
+        })
     } catch (err) {
         showError(err)
-    } finally {
-        setFetchingReadMe(false)
+        dispatch({
+            type: 'multipleOptions',
+            payload: {
+                fetchingReadMe: false,
+                isReadMeAvailable: false
+            },
+        })
     }
 }
 

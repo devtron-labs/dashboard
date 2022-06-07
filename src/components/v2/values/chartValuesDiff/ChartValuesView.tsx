@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useContext, useReducer } from 'react'
+import React, { useState, useEffect, useContext, useReducer } from 'react'
 import { useHistory, useRouteMatch } from 'react-router'
 import { toast } from 'react-toastify'
 import { showError, Progressing, ErrorScreenManager, RadioGroup, useJsonYaml } from '../../../common'
@@ -39,7 +39,6 @@ import {
     AppNameInput,
     ErrorScreenWithInfo,
 } from './ChartValuesView.component'
-import { ChartRepoOtions } from '../DeployChart'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import {
     fetchChartVersionsData,
@@ -66,16 +65,10 @@ import {
     ChartProjectAndEnvironmentType,
     ChartValuesOptionType,
     ChartValuesViewType,
-    ChartValuesYamlDataType,
     ForceDeleteDataType,
 } from './ChartValuesView.type'
 import './ChartValuesView.scss'
-import {
-    initSelectedOptionsData,
-    initValuesAndManifestYamlData,
-    selectedOptionsDataReducer,
-    valuesAndManifestYamlDataReducer,
-} from './ChartValuesView.utils'
+import { chartValuesReducer, initState } from './ChartValuesView.reducer'
 
 function ChartValuesView({
     appId,
@@ -90,13 +83,9 @@ function ChartValuesView({
 }: ChartValuesViewType) {
     const history = useHistory()
     const { url } = useRouteMatch()
-    const [isLoading, setIsLoading] = useState(true)
     const [isUpdateInProgress, setUpdateInProgress] = useState(false)
     const [isDeleteInProgress, setDeleteInProgress] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState(undefined)
-    const [openComparison, setOpenComparison] = useState(false)
-    const [openReadMe, setOpenReadMe] = useState(false)
-    const [fetchedReadMe, setFetchedReadMe] = useState<Map<number, string>>(new Map<number, string>())
     const [releaseAndInstalledAppInfo, setReleaseAndInstalledAppInfo] = useState<ReleaseAndInstalledAppInfo>({
         releaseInfo: null,
         installedAppInfo: null,
@@ -109,9 +98,6 @@ function ChartValuesView({
     })
     const [chartVersionsData, setChartVersionsData] = useState<ChartVersionType[]>(chartVersionsDataFromParent || [])
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
-    const [installedConfig, setInstalledConfig] = useState(installedConfigFromParent)
-    const [activeTab, setActiveTab] = useState('yaml')
-    const [fetchingReadMe, setFetchingReadMe] = useState<boolean>(false)
     const [deploymentHistoryArr, setDeploymentHistoryArr] = useState<ChartDeploymentDetail[]>([])
     const [forceDeleteData, setForceDeleteData] = useState<ForceDeleteDataType>({
         forceDelete: false,
@@ -119,13 +105,6 @@ function ChartValuesView({
         message: '',
     })
     const [appName, setAppName] = useState('')
-    const [tabOptionsAvailable, setTabOptionsAvailable] = useState<{
-        isComparisonAvailable: boolean
-        isReadMeAvailable: boolean
-    }>({
-        isComparisonAvailable: true,
-        isReadMeAvailable: true,
-    })
     const [chartValidations, setChartValidations] = useState<{
         invalidAppName: boolean
         invalidaEnvironment: boolean
@@ -135,53 +114,56 @@ function ChartValuesView({
         invalidaEnvironment: false,
         invalidProject: false,
     })
-    const isUpdate = isExternalApp || (installedConfig?.environmentId && installedConfig.teamId)
+    const [commonState, dispatch] = useReducer(
+        chartValuesReducer,
+        initState(selectedVersionFromParent, chartValuesFromParent, installedConfigFromParent),
+    )
+    const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const { serverMode } = useContext(mainContext)
-    const [selectedOptionsData, dispatchSelectedOption] = useReducer(
-        selectedOptionsDataReducer,
-        initSelectedOptionsData(selectedVersionFromParent, chartValuesFromParent),
-    )
-    const [valuesAndManifestYamlData, dispatchYamlData] = useReducer(
-        valuesAndManifestYamlDataReducer,
-        initValuesAndManifestYamlData,
-    )
-
-    const [obj] = useJsonYaml(valuesAndManifestYamlData.modifiedValuesYaml, 4, 'yaml', true)
+    const [obj] = useJsonYaml(commonState.modifiedValuesYaml, 4, 'yaml', true)
 
     useEffect(() => {
         if (isDeployChartView) {
             fetchProjectsAndEnvironments(serverMode, setProjectsAndEnvironment)
-            const _fetchedReadMe = fetchedReadMe
-            _fetchedReadMe.set(0, installedConfig.readme)
-            setFetchedReadMe(_fetchedReadMe)
-            setIsLoading(false)
+            const _fetchedReadMe = commonState.fetchedReadMe
+            _fetchedReadMe.set(0, commonState.installedConfig.readme)
+
+            dispatch({
+                type: 'multipleOptions',
+                payload: {
+                    isLoading: false,
+                    fetchedReadMe: _fetchedReadMe,
+                },
+            })
         } else if (!isExternalApp && !isDeployChartView) {
             fetchProjectsAndEnvironments(serverMode, setProjectsAndEnvironment)
-            dispatchYamlData({ type: 'modifiedValuesYaml', payload: installedConfig.valuesOverrideYaml })
+            dispatch({ type: 'modifiedValuesYaml', payload: commonState.installedConfig.valuesOverrideYaml })
 
             const payload = {
                 repoChartValue: {
-                    appStoreApplicationVersionId: installedConfig.appStoreVersion,
+                    appStoreApplicationVersionId: commonState.installedConfig.appStoreVersion,
                     chartRepoName: appDetails.appStoreChartName,
-                    chartId: installedConfig.appStoreId,
+                    chartId: commonState.installedConfig.appStoreId,
                     chartName: appDetails.appStoreAppName,
                     version: appDetails.appStoreAppVersion,
-                    deprecated: installedConfig.deprecated,
+                    deprecated: commonState.installedConfig.deprecated,
                 },
                 chartValues: {
                     id: appDetails.appStoreInstalledAppVersionId,
-                    appStoreVersionId: installedConfig.appStoreVersion,
+                    appStoreVersionId: commonState.installedConfig.appStoreVersion,
                     kind: 'DEPLOYED',
                 },
             }
+            getChartValuesList(appDetails.appStoreChartId, setChartValuesList)
             fetchChartVersionsData(
                 appDetails.appStoreChartId,
                 setChartVersionsData,
                 (selectedVersion: number, selectedVersionUpdatePage: ChartVersionType) => {
-                    dispatchSelectedOption({
+                    dispatch({
                         type: 'multipleOptions',
                         payload: {
                             ...payload,
+                            isLoading: false,
                             selectedVersion,
                             selectedVersionUpdatePage,
                         },
@@ -189,8 +171,6 @@ function ChartValuesView({
                 },
                 appDetails.appStoreAppVersion,
             )
-            getChartValuesList(appDetails.appStoreChartId, setChartValuesList)
-            setIsLoading(false)
         } else if (isExternalApp) {
             getReleaseInfo(appId)
                 .then((releaseInfoResponse: ReleaseInfoResponse) => {
@@ -201,9 +181,13 @@ function ChartValuesView({
                         installedAppInfo: _installedAppInfo,
                     })
 
-                    const _fetchedReadMe = fetchedReadMe
+                    const _fetchedReadMe = commonState.fetchedReadMe
                     _fetchedReadMe.set(0, _releaseInfo.readme)
-                    setFetchedReadMe(_fetchedReadMe)
+
+                    dispatch({
+                        type: 'fetchedReadMe',
+                        payload: _fetchedReadMe,
+                    })
 
                     if (_installedAppInfo) {
                         initData(_installedAppInfo, _releaseInfo)
@@ -219,9 +203,10 @@ function ChartValuesView({
                         }
                         setChartVersionsData([_chartVersionData])
                         setChartValuesList([_chartValues])
-                        dispatchSelectedOption({
+                        dispatch({
                             type: 'multipleOptions',
                             payload: {
+                                isLoading: false,
                                 repoChartValue: {
                                     appStoreApplicationVersionId: 0,
                                     chartRepoName: '',
@@ -232,19 +217,18 @@ function ChartValuesView({
                                 },
                                 selectedVersionUpdatePage: _chartVersionData,
                                 chartValues: _chartValues,
+                                modifiedValuesYaml: YAML.stringify(JSON.parse(_releaseInfo.mergedValues)),
                             },
                         })
-                        dispatchYamlData({
-                            type: 'modifiedValuesYaml',
-                            payload: YAML.stringify(JSON.parse(_releaseInfo.mergedValues)),
-                        })
-                        setIsLoading(false)
                     }
                 })
                 .catch((errors: ServerErrors) => {
                     showError(errors)
                     setErrorResponseCode(errors.code)
-                    setIsLoading(false)
+                    dispatch({
+                        type: 'isLoading',
+                        payload: false,
+                    })
                 })
         }
 
@@ -263,15 +247,15 @@ function ChartValuesView({
 
     useEffect(() => {
         if (
-            selectedOptionsData.chartValues &&
-            ((selectedOptionsData.chartValues.id && selectedOptionsData.chartValues.chartVersion) ||
+            commonState.chartValues &&
+            ((commonState.chartValues.id && commonState.chartValues.chartVersion) ||
                 (isExternalApp && releaseAndInstalledAppInfo.releaseInfo))
         ) {
-            dispatchYamlData({ type: 'fetchingValuesYaml', payload: true })
-            if (selectedOptionsData.chartValues.id && selectedOptionsData.chartValues.chartVersion) {
-                getChartValues(selectedOptionsData.chartValues.id, selectedOptionsData.chartValues.kind)
+            dispatch({ type: 'fetchingValuesYaml', payload: true })
+            if (commonState.chartValues.id && commonState.chartValues.chartVersion) {
+                getChartValues(commonState.chartValues.id, commonState.chartValues.kind)
                     .then((response) => {
-                        dispatchYamlData({
+                        dispatch({
                             type: 'multipleOptions',
                             payload: {
                                 fetchingValuesYaml: false,
@@ -280,40 +264,40 @@ function ChartValuesView({
                         })
 
                         if (
-                            activeTab === 'manifest' &&
+                            commonState.activeTab === 'manifest' &&
                             (!isExternalApp || (isExternalApp && releaseAndInstalledAppInfo.installedAppInfo)) &&
-                            installedConfig
+                            commonState.installedConfig
                         ) {
                             if (isDeployChartView) {
                                 getGeneratedHelManifest(
-                                    selectedOptionsData.selectedEnvironment.value,
-                                    selectedOptionsData.selectedEnvironment.clusterId || installedConfig.clusterId,
-                                    selectedOptionsData.selectedEnvironment.namespace,
+                                    commonState.selectedEnvironment.value,
+                                    commonState.selectedEnvironment.clusterId || commonState.installedConfig.clusterId,
+                                    commonState.selectedEnvironment.namespace,
                                     appName,
-                                    selectedOptionsData.chartValues?.appStoreVersionId ||
-                                        selectedOptionsData.chartValues?.id ||
-                                        installedConfig.appStoreVersion,
-                                    response.result.values || valuesAndManifestYamlData.modifiedValuesYaml,
-                                    dispatchYamlData,
+                                    commonState.chartValues?.appStoreVersionId ||
+                                        commonState.chartValues?.id ||
+                                        commonState.installedConfig.appStoreVersion,
+                                    response.result.values || commonState.modifiedValuesYaml,
+                                    dispatch,
                                 )
                             } else {
                                 getGeneratedHelManifest(
-                                    installedConfig.environmentId,
-                                    installedConfig.clusterId,
-                                    installedConfig.namespace,
-                                    installedConfig.appName,
-                                    selectedOptionsData.chartValues?.appStoreVersionId ||
-                                        selectedOptionsData.chartValues?.id ||
-                                        installedConfig.appStoreVersion,
-                                    response.result.values || valuesAndManifestYamlData.modifiedValuesYaml,
-                                    dispatchYamlData,
+                                    commonState.installedConfig.environmentId,
+                                    commonState.installedConfig.clusterId,
+                                    commonState.installedConfig.namespace,
+                                    commonState.installedConfig.appName,
+                                    commonState.chartValues?.appStoreVersionId ||
+                                        commonState.chartValues?.id ||
+                                        commonState.installedConfig.appStoreVersion,
+                                    response.result.values || commonState.modifiedValuesYaml,
+                                    dispatch,
                                 )
                             }
                         }
                     })
                     .catch((error) => {
                         showError(error)
-                        dispatchYamlData({
+                        dispatch({
                             type: 'fetchingValuesYaml',
                             payload: false,
                         })
@@ -321,10 +305,9 @@ function ChartValuesView({
             } else if (
                 isExternalApp &&
                 releaseAndInstalledAppInfo.releaseInfo.mergedValues &&
-                releaseAndInstalledAppInfo.releaseInfo.deployedAppDetail.appName ===
-                    selectedOptionsData.chartValues.name
+                releaseAndInstalledAppInfo.releaseInfo.deployedAppDetail.appName === commonState.chartValues.name
             ) {
-                dispatchYamlData({
+                dispatch({
                     type: 'multipleOptions',
                     payload: {
                         fetchingValuesYaml: false,
@@ -335,49 +318,34 @@ function ChartValuesView({
                 })
             }
         }
-    }, [selectedOptionsData.chartValues])
-
-    const handleFetchedReadMe = useCallback(
-        (id: number, readme: string) => {
-            const currentFetchedReadMe = fetchedReadMe
-            if (!currentFetchedReadMe.has(id)) {
-                currentFetchedReadMe.set(id, readme)
-                setFetchedReadMe(currentFetchedReadMe)
-            }
-        },
-        [fetchedReadMe],
-    )
+    }, [commonState.chartValues])
 
     useEffect(() => {
         if (
-            selectedOptionsData.selectedVersionUpdatePage &&
-            selectedOptionsData.selectedVersionUpdatePage.id &&
-            !fetchedReadMe.has(selectedOptionsData.selectedVersionUpdatePage.id) &&
-            activeTab !== 'manifest'
+            commonState.selectedVersionUpdatePage &&
+            commonState.selectedVersionUpdatePage.id &&
+            !commonState.fetchedReadMe.has(commonState.selectedVersionUpdatePage.id) &&
+            commonState.activeTab !== 'manifest'
         ) {
-            getChartRelatedReadMe(
-                selectedOptionsData.selectedVersionUpdatePage.id,
-                setFetchingReadMe,
-                handleFetchedReadMe,
-            )
+            getChartRelatedReadMe(commonState.selectedVersionUpdatePage.id, commonState.fetchedReadMe, dispatch)
         }
-    }, [selectedOptionsData.selectedVersionUpdatePage])
+    }, [commonState.selectedVersionUpdatePage, commonState.isReadMeAvailable])
 
     useEffect(() => {
         if (
-            installedConfig &&
-            installedConfig.environmentId &&
-            installedConfig.teamId &&
+            commonState.installedConfig &&
+            commonState.installedConfig.environmentId &&
+            commonState.installedConfig.teamId &&
             projectsAndEnvironments.environments.length > 0 &&
             projectsAndEnvironments.projects.length > 0
         ) {
             const project = projectsAndEnvironments.projects.find(
-                (e) => e.value.toString() === installedConfig.teamId.toString(),
+                (e) => e.value.toString() === commonState.installedConfig.teamId.toString(),
             )
             const environment = (projectsAndEnvironments.environments as ChartValuesOptionType[]).find(
-                (e) => e.value.toString() === installedConfig.environmentId.toString(),
+                (e) => e.value.toString() === commonState.installedConfig.environmentId.toString(),
             )
-            dispatchSelectedOption({
+            dispatch({
                 type: 'multipleOptions',
                 payload: {
                     selectedProject: project,
@@ -385,56 +353,53 @@ function ChartValuesView({
                 },
             })
         }
-    }, [installedConfig, projectsAndEnvironments])
+    }, [commonState.installedConfig, projectsAndEnvironments])
 
     useEffect(() => {
         if (
-            activeTab === 'manifest' &&
-            installedConfig &&
-            (!valuesAndManifestYamlData.generatedManifest ||
-                (valuesAndManifestYamlData.generatedManifest &&
-                    (hasChartChanged() || selectedOptionsData.chartValues.id !== installedConfig.id)))
+            commonState.activeTab === 'manifest' &&
+            commonState.installedConfig &&
+            (!commonState.generatedManifest ||
+                (commonState.generatedManifest &&
+                    (hasChartChanged() || commonState.chartValues.id !== commonState.installedConfig.id)))
         ) {
             if (isDeployChartView) {
                 getGeneratedHelManifest(
-                    selectedOptionsData.selectedEnvironment.value,
-                    selectedOptionsData.selectedEnvironment.clusterId || installedConfig.clusterId,
-                    selectedOptionsData.selectedEnvironment.namespace,
+                    commonState.selectedEnvironment.value,
+                    commonState.selectedEnvironment.clusterId || commonState.installedConfig.clusterId,
+                    commonState.selectedEnvironment.namespace,
                     appName,
-                    selectedOptionsData.chartValues?.appStoreVersionId ||
-                        selectedOptionsData.chartValues?.id ||
-                        installedConfig.appStoreVersion,
-                    installedConfig.valuesYaml,
-                    dispatchYamlData,
+                    commonState.chartValues?.appStoreVersionId ||
+                        commonState.chartValues?.id ||
+                        commonState.installedConfig.appStoreVersion,
+                    commonState.installedConfig.valuesYaml,
+                    dispatch,
                 )
             } else {
                 getGeneratedHelManifest(
-                    installedConfig.environmentId,
-                    installedConfig.clusterId,
-                    installedConfig.namespace,
-                    installedConfig.appName,
-                    selectedOptionsData.chartValues?.appStoreVersionId ||
-                        selectedOptionsData.chartValues?.id ||
-                        installedConfig.appStoreVersion,
+                    commonState.installedConfig.environmentId,
+                    commonState.installedConfig.clusterId,
+                    commonState.installedConfig.namespace,
+                    commonState.installedConfig.appName,
+                    commonState.chartValues?.appStoreVersionId ||
+                        commonState.chartValues?.id ||
+                        commonState.installedConfig.appStoreVersion,
                     isExternalApp
                         ? releaseAndInstalledAppInfo.releaseInfo?.mergedValues
-                        : installedConfig.valuesOverrideYaml,
-                    dispatchYamlData,
+                        : commonState.installedConfig.valuesOverrideYaml,
+                    dispatch,
                 )
             }
         }
-    }, [activeTab, installedConfig])
+    }, [commonState.activeTab, commonState.installedConfig])
 
     useEffect(() => {
-        if (chartValuesList.length > 0 && deploymentHistoryArr.length > 0) {
+        if (chartValuesList.length > 0 || deploymentHistoryArr.length > 0) {
             const isVersionAvailableForDiff =
                 chartValuesList.some((_chartValues) => _chartValues.kind === 'DEPLOYED') ||
-                deploymentHistoryArr.length > 1
+                deploymentHistoryArr.length > 0
 
-            setTabOptionsAvailable({
-                ...tabOptionsAvailable,
-                isComparisonAvailable: isVersionAvailableForDiff,
-            })
+            dispatch({ type: 'isComparisonAvailable', payload: isVersionAvailableForDiff })
         }
     }, [chartValuesList, deploymentHistoryArr])
 
@@ -450,11 +415,12 @@ function ChartValuesView({
                 deprecated: result?.deprecated,
             }
 
+            getChartValuesList(_repoChartValue.chartId, setChartValuesList)
             fetchChartVersionsData(
                 _repoChartValue.chartId,
                 setChartVersionsData,
                 (selectedVersion: number, selectedVersionUpdatePage: ChartVersionType) => {
-                    dispatchSelectedOption({
+                    dispatch({
                         type: 'multipleOptions',
                         payload: {
                             repoChartValue: _repoChartValue,
@@ -471,13 +437,17 @@ function ChartValuesView({
                 },
                 _releaseInfo.deployedAppDetail.chartVersion,
             )
-            getChartValuesList(_repoChartValue.chartId, setChartValuesList)
 
-            setInstalledConfig(result)
-            dispatchYamlData({ type: 'modifiedValuesYaml', payload: result?.valuesOverrideYaml })
-            setIsLoading(false)
+            dispatch({
+                type: 'multipleOptions',
+                payload: {
+                    isLoading: false,
+                    installedConfig: result,
+                    modifiedValuesYaml: result?.valuesOverrideYaml,
+                },
+            })
         } catch (e) {
-            setIsLoading(false)
+            dispatch({ type: 'isLoading', payload: false })
         }
     }
 
@@ -511,7 +481,7 @@ function ChartValuesView({
                 setChartValuesList,
                 handleChartValuesSelection,
                 appDetails.appStoreInstalledAppVersionId,
-                installedConfig.id,
+                commonState.installedConfig.id,
             )
         }
     }
@@ -557,19 +527,19 @@ function ChartValuesView({
         if (isExternalApp && !releaseAndInstalledAppInfo.installedAppInfo) {
             return deleteApplicationRelease(appId)
         } else {
-            return deleteInstalledChart(installedConfig.installedAppId, force)
+            return deleteInstalledChart(commonState.installedConfig.installedAppId, force)
         }
     }
 
     const hasChartChanged = () => {
         return (
-            selectedOptionsData.repoChartValue &&
+            commonState.repoChartValue &&
             ((isExternalApp &&
-                ((!releaseAndInstalledAppInfo.installedAppInfo && !!selectedOptionsData.repoChartValue.chartRepoName) ||
+                ((!releaseAndInstalledAppInfo.installedAppInfo && !!commonState.repoChartValue.chartRepoName) ||
                     (releaseAndInstalledAppInfo.installedAppInfo &&
                         releaseAndInstalledAppInfo.installedAppInfo.appStoreChartRepoName !==
-                            selectedOptionsData.repoChartValue.chartRepoName))) ||
-                (!isExternalApp && installedConfig.appStoreId !== selectedOptionsData.repoChartValue.chartId))
+                            commonState.repoChartValue.chartRepoName))) ||
+                (!isExternalApp && commonState.installedConfig.appStoreId !== commonState.repoChartValue.chartId))
         )
     }
 
@@ -577,8 +547,8 @@ function ChartValuesView({
         if (
             isDeployChartView &&
             (!appName.trim() ||
-                !selectedOptionsData.selectedEnvironment ||
-                (serverMode === SERVER_MODE.FULL && !selectedOptionsData.selectedProject))
+                !commonState.selectedEnvironment ||
+                (serverMode === SERVER_MODE.FULL && !commonState.selectedProject))
         ) {
             return false
         }
@@ -594,8 +564,8 @@ function ChartValuesView({
         if (!isValidData()) {
             setChartValidations({
                 invalidAppName: !appName.trim(),
-                invalidaEnvironment: !selectedOptionsData.selectedEnvironment,
-                invalidProject: !selectedOptionsData.selectedProject,
+                invalidaEnvironment: !commonState.selectedEnvironment,
+                invalidProject: !commonState.selectedProject,
             })
             return
         }
@@ -604,7 +574,7 @@ function ChartValuesView({
             isExternalApp &&
             !forceUpdate &&
             !releaseAndInstalledAppInfo.installedAppInfo &&
-            !selectedOptionsData.repoChartValue?.chartRepoName
+            !commonState.repoChartValue?.chartRepoName
         ) {
             setShowAppNotLinkedDialog(true)
             return
@@ -612,7 +582,7 @@ function ChartValuesView({
 
         // validate data
         try {
-            JSON.stringify(YAML.parse(valuesAndManifestYamlData.modifiedValuesYaml))
+            JSON.stringify(YAML.parse(commonState.modifiedValuesYaml))
         } catch (err) {
             toast.error(`Encountered data validation error while updating. “${err}”`)
             return
@@ -632,41 +602,41 @@ function ChartValuesView({
                 if (!forceUpdate) {
                     const payload: LinkToChartStoreRequest = {
                         appId: appId,
-                        valuesYaml: valuesAndManifestYamlData.modifiedValuesYaml,
-                        appStoreApplicationVersionId: selectedOptionsData.selectedVersionUpdatePage.id,
-                        referenceValueId: selectedOptionsData.selectedVersionUpdatePage.id,
-                        referenceValueKind: selectedOptionsData.chartValues.kind,
+                        valuesYaml: commonState.modifiedValuesYaml,
+                        appStoreApplicationVersionId: commonState.selectedVersionUpdatePage.id,
+                        referenceValueId: commonState.selectedVersionUpdatePage.id,
+                        referenceValueKind: commonState.chartValues.kind,
                     }
                     res = await linkToChartStore(payload)
                 } else {
                     const payload: UpdateAppReleaseWithoutLinkingRequest = {
                         appId: appId,
-                        valuesYaml: valuesAndManifestYamlData.modifiedValuesYaml,
+                        valuesYaml: commonState.modifiedValuesYaml,
                     }
                     res = await updateAppReleaseWithoutLinking(payload)
                 }
             } else if (isDeployChartView) {
                 const payload = {
-                    teamId: serverMode == SERVER_MODE.FULL ? selectedOptionsData.selectedProject.value : 0,
-                    referenceValueId: selectedOptionsData.chartValues.id,
-                    referenceValueKind: selectedOptionsData.chartValues.kind,
-                    environmentId: serverMode == SERVER_MODE.FULL ? selectedOptionsData.selectedEnvironment.value : 0,
-                    clusterId: selectedOptionsData.selectedEnvironment.clusterId,
-                    namespace: selectedOptionsData.selectedEnvironment.namespace,
-                    appStoreVersion: selectedOptionsData.selectedVersion,
+                    teamId: serverMode == SERVER_MODE.FULL ? commonState.selectedProject.value : 0,
+                    referenceValueId: commonState.chartValues.id,
+                    referenceValueKind: commonState.chartValues.kind,
+                    environmentId: serverMode == SERVER_MODE.FULL ? commonState.selectedEnvironment.value : 0,
+                    clusterId: commonState.selectedEnvironment.clusterId,
+                    namespace: commonState.selectedEnvironment.namespace,
+                    appStoreVersion: commonState.selectedVersion,
                     valuesOverride: obj,
-                    valuesOverrideYaml: valuesAndManifestYamlData.modifiedValuesYaml,
+                    valuesOverrideYaml: commonState.modifiedValuesYaml,
                     appName: appName.trim(),
                 }
                 res = await installChart(payload)
             } else {
                 const payload: UpdateAppReleaseRequest = {
-                    id: hasChartChanged() ? 0 : installedConfig.id,
-                    referenceValueId: selectedOptionsData.chartValues.id,
-                    referenceValueKind: selectedOptionsData.chartValues.kind,
-                    valuesOverrideYaml: valuesAndManifestYamlData.modifiedValuesYaml,
-                    installedAppId: installedConfig.installedAppId,
-                    appStoreVersion: selectedOptionsData.selectedVersionUpdatePage.id,
+                    id: hasChartChanged() ? 0 : commonState.installedConfig.id,
+                    referenceValueId: commonState.chartValues.id,
+                    referenceValueKind: commonState.chartValues.kind,
+                    valuesOverrideYaml: commonState.modifiedValuesYaml,
+                    installedAppId: commonState.installedConfig.installedAppId,
+                    appStoreVersion: commonState.selectedVersionUpdatePage.id,
                 }
                 res = await updateAppRelease(payload)
             }
@@ -694,26 +664,28 @@ function ChartValuesView({
     }
 
     const OnEditorValueChange = (codeEditorData: string) => {
-        if (activeTab !== 'manifest') {
-            dispatchYamlData({ type: 'modifiedValuesYaml', payload: codeEditorData })
+        if (commonState.activeTab !== 'manifest') {
+            dispatch({ type: 'modifiedValuesYaml', payload: codeEditorData })
         }
     }
 
     const redirectToChartValues = async () => {
-        if (selectedOptionsData.repoChartValue?.chartId) {
-            history.push(getChartValuesURL(selectedOptionsData.repoChartValue.chartId))
+        const _chartId = commonState.repoChartValue?.chartId || commonState.installedConfig?.appStoreId
+        if (_chartId) {
+            history.push(getChartValuesURL(_chartId))
         }
     }
 
     const handleTabSwitch = (e) => {
-        if (e?.target && e.target.value !== activeTab) {
+        if (e?.target && e.target.value !== commonState.activeTab) {
             if (e.target.value === 'manifest') {
                 if (!isValidData()) {
                     setChartValidations({
                         invalidAppName: !appName.trim(),
-                        invalidaEnvironment: !selectedOptionsData.selectedEnvironment,
-                        invalidProject: !selectedOptionsData.selectedProject,
+                        invalidaEnvironment: !commonState.selectedEnvironment,
+                        invalidProject: !commonState.selectedProject,
                     })
+                    dispatch({ type: 'openReadMe', payload: false })
                     toast.error('Please provide the required inputs to view generated manifest')
                     return
                 } else if (Object.values(chartValidations).some((isInvalid) => isInvalid)) {
@@ -724,28 +696,35 @@ function ChartValuesView({
                     })
                 }
             }
-            setActiveTab(e.target.value)
-            setOpenComparison(false)
-            setOpenReadMe(false)
+            dispatch({
+                type: 'multipleOptions',
+                payload: {
+                    activeTab: e.target.value,
+                    openReadMe: false,
+                    openComparison: false,
+                },
+            })
         }
     }
 
     const renderReadMeOption = (disabled?: boolean) => {
         return (
             <span
-                className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 ${disabled ? 'disabled' : ''}`}
+                className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 ${
+                    commonState.openReadMe ? 'opened' : ''
+                } ${disabled ? 'disabled' : ''}`}
                 onClick={() => {
-                    if (fetchingReadMe || disabled) {
+                    if (commonState.fetchingReadMe || disabled) {
                         return
                     }
 
-                    setOpenReadMe(!openReadMe)
-                    if (openComparison) {
-                        setOpenComparison(false)
+                    dispatch({ type: 'openReadMe', payload: !commonState.openReadMe })
+                    if (commonState.openComparison) {
+                        dispatch({ type: 'openComparison', payload: false })
                     }
                 }}
             >
-                {openReadMe ? (
+                {commonState.openReadMe ? (
                     <>
                         <Close className="option-close__icon icon-dim-16 mr-8" />
                         Hide README
@@ -763,26 +742,28 @@ function ChartValuesView({
     const renderComparisonOption = (disabled?: boolean) => {
         return (
             <span
-                className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 mr-8 ${disabled ? 'disabled' : ''}`}
+                className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 mr-8 ${
+                    commonState.openComparison ? 'opened' : ''
+                } ${disabled ? 'disabled' : ''}`}
                 onClick={() => {
                     if (disabled) {
                         return
                     }
 
-                    setOpenComparison(!openComparison)
-                    if (openReadMe) {
-                        setOpenReadMe(false)
+                    dispatch({ type: 'openComparison', payload: !commonState.openComparison })
+                    if (commonState.openReadMe) {
+                        dispatch({ type: 'openReadMe', payload: false })
                     }
                 }}
             >
-                {openComparison ? (
+                {commonState.openComparison ? (
                     <Close className="option-close__icon icon-dim-16 mr-8" />
                 ) : (
                     <Arrows className="option-open__icon icon-dim-16 mr-8" />
                 )}
-                {activeTab === 'manifest'
+                {commonState.activeTab === 'manifest'
                     ? 'Compare with deployed'
-                    : openComparison
+                    : commonState.openComparison
                     ? 'Hide comparison'
                     : 'Compare values'}
             </span>
@@ -822,11 +803,11 @@ function ChartValuesView({
             <div className="chart-values-view__tabs-container flex content-space">
                 {renderValuesTabs()}
                 <div className="flex">
-                    {(activeTab === 'yaml' || (activeTab === 'manifest' && isExternalApp)) && (
+                    {(commonState.activeTab === 'yaml' || (commonState.activeTab === 'manifest' && isExternalApp)) && (
                         <>
-                            {tabOptionsAvailable.isComparisonAvailable ? (
+                            {commonState.isComparisonAvailable ? (
                                 renderComparisonOption(
-                                    activeTab === 'manifest' && !!valuesAndManifestYamlData.valuesEditorError,
+                                    commonState.activeTab === 'manifest' && !!commonState.valuesEditorError,
                                 )
                             ) : (
                                 <Tippy
@@ -842,21 +823,26 @@ function ChartValuesView({
                                         </>
                                     }
                                 >
-                                    {renderComparisonOption(activeTab === 'yaml')}
+                                    {renderComparisonOption(commonState.activeTab === 'yaml')}
                                 </Tippy>
                             )}
                         </>
                     )}
-                    {activeTab !== 'manifest' && (
+                    {commonState.activeTab !== 'manifest' && (
                         <>
-                            {!openReadMe &&
-                            (fetchingReadMe ||
-                                !fetchedReadMe.get(selectedOptionsData.selectedVersionUpdatePage?.id || 0)) ? (
+                            {!commonState.openReadMe &&
+                            (commonState.fetchingReadMe ||
+                                !commonState.isReadMeAvailable ||
+                                !commonState.fetchedReadMe.get(commonState.selectedVersionUpdatePage?.id || 0)) ? (
                                 <Tippy
                                     className="default-tt"
                                     arrow={false}
                                     placement="bottom"
-                                    content={fetchingReadMe ? 'Fetching...' : 'Readme is not available for this chart'}
+                                    content={
+                                        commonState.fetchingReadMe
+                                            ? 'Fetching...'
+                                            : 'Readme is not available for this chart'
+                                    }
                                 >
                                     {renderReadMeOption(true)}
                                 </Tippy>
@@ -871,15 +857,15 @@ function ChartValuesView({
     }
 
     const handleProjectSelection = (selected: ChartValuesOptionType) => {
-        dispatchSelectedOption({ type: 'selectedProject', payload: selected })
+        dispatch({ type: 'selectedProject', payload: selected })
     }
 
     const handleEnvironmentSelection = (selected: ChartEnvironmentOptionType) => {
-        dispatchSelectedOption({ type: 'selectedEnvironment', payload: selected })
+        dispatch({ type: 'selectedEnvironment', payload: selected })
     }
 
     const handleVersionSelection = (selectedVersion: number, selectedVersionUpdatePage: ChartVersionType) => {
-        dispatchSelectedOption({
+        dispatch({
             type: 'multipleOptions',
             payload: {
                 selectedVersion,
@@ -889,7 +875,7 @@ function ChartValuesView({
     }
 
     const handleChartValuesSelection = (chartValues: ChartValuesType) => {
-        dispatchSelectedOption({ type: 'chartValues', payload: chartValues })
+        dispatch({ type: 'chartValues', payload: chartValues })
     }
 
     const renderData = () => {
@@ -897,7 +883,9 @@ function ChartValuesView({
             <div
                 className={`chart-values-view__container bcn-0 ${
                     isDeployChartView ? 'chart-values-view__deploy-chart' : ''
-                } ${openReadMe ? 'readmeOpened' : ''} ${openComparison ? 'comparisonOpened' : ''}`}
+                } ${commonState.openReadMe ? 'readmeOpened' : ''} ${
+                    commonState.openComparison ? 'comparisonOpened' : ''
+                }`}
             >
                 {renderValuesTabsContainer()}
                 <div className="chart-values-view__hr-divider bcn-2" />
@@ -911,12 +899,12 @@ function ChartValuesView({
                             />
                         )}
                         {!isExternalApp &&
-                            ((!isDeployChartView && selectedOptionsData.selectedProject) ||
+                            ((!isDeployChartView && commonState.selectedProject) ||
                                 (isDeployChartView && serverMode === SERVER_MODE.FULL)) && (
                                 <>
                                     <ChartProjectSelector
                                         isDeployChartView={isDeployChartView}
-                                        selectedProject={selectedOptionsData.selectedProject}
+                                        selectedProject={commonState.selectedProject}
                                         handleProjectSelection={handleProjectSelection}
                                         projects={projectsAndEnvironments.projects}
                                         invalidProject={chartValidations.invalidProject}
@@ -924,7 +912,7 @@ function ChartValuesView({
                                 </>
                             )}
                         {(isDeployChartView ||
-                            (!isDeployChartView && (isExternalApp || selectedOptionsData.selectedEnvironment))) && (
+                            (!isDeployChartView && (isExternalApp || commonState.selectedEnvironment))) && (
                             <>
                                 <ChartEnvironmentSelector
                                     isExternal={isExternalApp}
@@ -932,7 +920,7 @@ function ChartValuesView({
                                     installedAppInfo={releaseAndInstalledAppInfo.installedAppInfo}
                                     releaseInfo={releaseAndInstalledAppInfo.releaseInfo}
                                     isUpdate={!!isUpdate}
-                                    selectedEnvironment={selectedOptionsData.selectedEnvironment}
+                                    selectedEnvironment={commonState.selectedEnvironment}
                                     handleEnvironmentSelection={handleEnvironmentSelection}
                                     environments={projectsAndEnvironments.environments}
                                     invalidaEnvironment={chartValidations.invalidaEnvironment}
@@ -946,8 +934,8 @@ function ChartValuesView({
                                 isUpdate={!!isUpdate}
                                 installedAppInfo={releaseAndInstalledAppInfo.installedAppInfo}
                                 handleRepoChartValueChange={handleRepoChartValueChange}
-                                repoChartValue={selectedOptionsData.repoChartValue}
-                                chartDetails={selectedOptionsData.repoChartValue}
+                                repoChartValue={commonState.repoChartValue}
+                                chartDetails={commonState.repoChartValue}
                             />
                         )}
                         {(isDeployChartView ||
@@ -955,23 +943,23 @@ function ChartValuesView({
                             (isExternalApp &&
                                 (releaseAndInstalledAppInfo.installedAppInfo ||
                                     (!releaseAndInstalledAppInfo.installedAppInfo &&
-                                        selectedOptionsData.repoChartValue?.chartRepoName)))) && (
+                                        commonState.repoChartValue?.chartRepoName)))) && (
                             <ChartVersionValuesSelector
                                 isUpdate={isUpdate}
-                                selectedVersion={selectedOptionsData.selectedVersion}
-                                selectedVersionUpdatePage={selectedOptionsData.selectedVersionUpdatePage}
+                                selectedVersion={commonState.selectedVersion}
+                                selectedVersionUpdatePage={commonState.selectedVersionUpdatePage}
                                 handleVersionSelection={handleVersionSelection}
                                 chartVersionsData={chartVersionsData}
                                 chartVersionObj={chartVersionsData.find(
-                                    (_chartVersion) => _chartVersion.id === selectedOptionsData.selectedVersion,
+                                    (_chartVersion) => _chartVersion.id === commonState.selectedVersion,
                                 )}
                                 chartValuesList={chartValuesList}
-                                chartValues={selectedOptionsData.chartValues}
+                                chartValues={commonState.chartValues}
                                 redirectToChartValues={redirectToChartValues}
                                 handleChartValuesSelection={handleChartValuesSelection}
                                 hideVersionFromLabel={
                                     !releaseAndInstalledAppInfo.installedAppInfo &&
-                                    selectedOptionsData.chartValues.kind === 'EXISTING'
+                                    commonState.chartValues.kind === 'EXISTING'
                                 }
                             />
                         )}
@@ -983,25 +971,25 @@ function ChartValuesView({
                             />
                         )}
                     </div>
-                    {openReadMe && (
+                    {commonState.openReadMe && (
                         <ActiveReadmeColumn
-                            fetchingReadMe={fetchingReadMe}
-                            activeReadMe={fetchedReadMe.get(selectedOptionsData.selectedVersionUpdatePage?.id || 0)}
+                            fetchingReadMe={commonState.fetchingReadMe}
+                            activeReadMe={commonState.fetchedReadMe.get(commonState.selectedVersionUpdatePage?.id || 0)}
                         />
                     )}
-                    {!openComparison && <div className="chart-values-view__vr-divider bcn-2" />}
+                    {!commonState.openComparison && <div className="chart-values-view__vr-divider bcn-2" />}
                     <div
                         className={`chart-values-view__editor ${
-                            openReadMe || openComparison ? 'chart-values-view__full-mode' : ''
+                            commonState.openReadMe || commonState.openComparison ? 'chart-values-view__full-mode' : ''
                         }`}
                     >
-                        {activeTab === 'manifest' && valuesAndManifestYamlData.valuesEditorError ? (
-                            <ErrorScreenWithInfo info={valuesAndManifestYamlData.valuesEditorError} />
+                        {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
+                            <ErrorScreenWithInfo info={commonState.valuesEditorError} />
                         ) : (
                             <ChartValuesEditor
                                 loading={
-                                    (activeTab === 'yaml' && valuesAndManifestYamlData.fetchingValuesYaml) ||
-                                    (activeTab === 'manifest' && valuesAndManifestYamlData.generatingManifest)
+                                    (commonState.activeTab === 'yaml' && commonState.fetchingValuesYaml) ||
+                                    (commonState.activeTab === 'manifest' && commonState.generatingManifest)
                                 }
                                 isExternalApp={isExternalApp}
                                 isDeployChartView={isDeployChartView}
@@ -1009,29 +997,29 @@ function ChartValuesView({
                                 appName={
                                     isExternalApp
                                         ? releaseAndInstalledAppInfo.releaseInfo.deployedAppDetail.appName
-                                        : installedConfig.appName
+                                        : commonState.installedConfig.appName
                                 }
-                                valuesText={valuesAndManifestYamlData.modifiedValuesYaml}
+                                valuesText={commonState.modifiedValuesYaml}
                                 defaultValuesText={
                                     isExternalApp
                                         ? YAML.stringify(
                                               JSON.parse(releaseAndInstalledAppInfo.releaseInfo.mergedValues),
                                           )
-                                        : installedConfig?.valuesOverrideYaml
+                                        : commonState.installedConfig?.valuesOverrideYaml
                                 }
                                 onChange={OnEditorValueChange}
-                                repoChartValue={selectedOptionsData.repoChartValue}
-                                showEditorHeader={openReadMe}
+                                repoChartValue={commonState.repoChartValue}
+                                showEditorHeader={commonState.openReadMe}
                                 hasChartChanged={hasChartChanged()}
-                                showInfoText={!openReadMe && !openComparison}
-                                manifestView={activeTab === 'manifest'}
-                                generatedManifest={valuesAndManifestYamlData.generatedManifest}
-                                comparisonView={openComparison}
+                                showInfoText={!commonState.openReadMe && !commonState.openComparison}
+                                manifestView={commonState.activeTab === 'manifest'}
+                                generatedManifest={commonState.generatedManifest}
+                                comparisonView={commonState.openComparison}
                                 chartValuesList={chartValuesList}
                                 deploymentHistoryList={deploymentHistoryArr}
                             />
                         )}
-                        {!openComparison && !openReadMe && (
+                        {!commonState.openComparison && !commonState.openReadMe && (
                             <UpdateApplicationButton
                                 isUpdateInProgress={isUpdateInProgress}
                                 isDeleteInProgress={isDeleteInProgress}
@@ -1073,7 +1061,7 @@ function ChartValuesView({
         )
     }
 
-    if (isLoading) {
+    if (commonState.isLoading) {
         return (
             <div className="loading-wrapper">
                 <Progressing pageLoader />
@@ -1087,8 +1075,7 @@ function ChartValuesView({
         )
     }
 
-    return !isExternalApp ||
-        (isExternalApp && releaseAndInstalledAppInfo.releaseInfo && selectedOptionsData.repoChartValue) ? (
+    return !isExternalApp || (isExternalApp && releaseAndInstalledAppInfo.releaseInfo && commonState.repoChartValue) ? (
         renderData()
     ) : (
         <></>

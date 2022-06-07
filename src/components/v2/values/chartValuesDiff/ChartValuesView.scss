@@ -76,6 +76,7 @@
                 cursor: not-allowed;
             }
 
+            &.opened,
             &:hover {
                 background-color: var(--N100);
                 border-radius: 4px;
@@ -137,6 +138,8 @@
             }
 
             .form__row {
+                margin-bottom: 12px;
+
                 .form__input {
                     height: 32px;
                     background-color: var(--N50);
@@ -397,10 +400,26 @@ button.chart-values-selector {
         background-color: var(--N100);
         color: var(--N900);
         border: 1px solid var(--N200);
+
+        svg path {
+            stroke: var(--N900);
+        }
     }
 
     .radio {
         color: var(--N500);
+
+        svg path {
+            stroke: var(--N500);
+        }
+
+        &:hover {
+            color: var(--N900);
+
+            svg path {
+                stroke: var(--N900);
+            }
+        }
 
         &:first-child input + .radio__item-label {
             border-right: unset;

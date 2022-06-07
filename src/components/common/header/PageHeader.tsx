@@ -4,6 +4,7 @@ import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 
 export interface PageHeaderType {
     headerName?: string
+    additionalHeaderInfo?: () => JSX.Element
     isTippyShown?: boolean
     tippyRedirectLink?: string
     showTabs?: boolean
@@ -20,6 +21,7 @@ export interface PageHeaderType {
 
 function PageHeader({
     headerName,
+    additionalHeaderInfo,
     isTippyShown = false,
     tippyRedirectLink,
     showTabs = false,
@@ -46,6 +48,7 @@ function PageHeader({
                     </button>
                 )}
                 <span className="fw-6">{headerName}</span>
+                {additionalHeaderInfo && additionalHeaderInfo()}
                 {isBreadcrumbs && breadCrumbs()}
                 {isTippyShown && (
                     <a
