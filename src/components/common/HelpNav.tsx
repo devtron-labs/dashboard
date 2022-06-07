@@ -8,9 +8,11 @@ import { ReactComponent as Chat } from '../../assets/icons/ic-chat-circle-dots.s
 
 export interface HelpNavType {
     className: string
+    showHelpCard: boolean
+    setShowHelpCard: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function HelpNav({ className }: HelpNavType) {
+function HelpNav({ className, showHelpCard, setShowHelpCard }: HelpNavType) {
     const HelpOptions = [
         {
             name: 'View documentation',
@@ -37,7 +39,7 @@ function HelpNav({ className }: HelpNavType) {
     ]
 
     return (
-        <div className="transparent-div">
+        <div className="transparent-div" onClick={() => setShowHelpCard(!showHelpCard)}>
             <div className={`help-card  pt-4 ${className}`}>
                 {HelpOptions.map((option) => {
                     return (

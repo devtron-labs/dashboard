@@ -5,7 +5,8 @@ import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import HelpNav from '../HelpNav'
 import './pageHeader.css'
 import LogoutCard from '../LogoutCard'
-import { getRandomColor } from '..'
+import { getLoginInfo, getRandomColor } from '../helpers/Helpers'
+
 export interface PageHeaderType {
     headerName?: string
     isTippyShown?: boolean
@@ -39,9 +40,14 @@ function PageHeader({
 }: PageHeaderType) {
     const [showHelpCard, setShowHelpCard] = useState(false)
     const [showLogOutCard, setShowLogOutCard] = useState(false)
-    const [loginInfo] = useState(undefined)
+    const [loginInfo, setLoginInfo] = useState(undefined)
+    const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : ''
 
-    const renderHelpSection = () => {
+    useEffect(() => {
+        setLoginInfo(getLoginInfo())
+    }, [])
+
+    const renderLogoutHelpSection = () => {
         return (
             <>
                 <div className="flex left cursor mr-16" onClick={() => setShowHelpCard(!showHelpCard)}>
@@ -60,8 +66,6 @@ function PageHeader({
             </>
         )
     }
-
-    const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : ''
 
     return (
         <div
@@ -96,11 +100,24 @@ function PageHeader({
                 )}
             </h1>
             {showTabs && renderHeaderTabs()}
-            {showHelpCard && <HelpNav className={'help-card__more-option'} />}
-            {showLogOutCard && <LogoutCard className={'logout-card__more-option'} />}
+            {showHelpCard && (
+                <HelpNav
+                    className={'help-card__more-option'}
+                    showHelpCard={showHelpCard}
+                    setShowHelpCard={setShowHelpCard}
+                />
+            )}
+            {showLogOutCard && (
+                <LogoutCard
+                    className={'logout-card__more-option'}
+                    userFirstLetter={email}
+                    setShowLogOutCard={setShowLogOutCard}
+                    showLogOutCard={showLogOutCard}
+                />
+            )}
             <div className="flex left">
                 {typeof renderActionButtons === 'function' && renderActionButtons()}
-                {renderHelpSection()}
+                {renderLogoutHelpSection()}
             </div>
         </div>
     )
