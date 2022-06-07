@@ -82,30 +82,38 @@ function PageHeader({
                 showTabs ? 'page-header-tabs__height' : 'page-header__height flex'
             }`}
         >
-            <h1 className={`page-header__title flex left fs-16 fw-6 lh-20`}>
-                {showCloseButton && (
-                    <button className="transparent flex mr-8" onClick={onClose}>
-                        <Close className="icon-dim-24 cursor" />
-                    </button>
-                )}
-                <span className="fw-6">{headerName}</span>
-                {isBreadcrumbs && breadCrumbs()}
-                {isTippyShown && (
-                    <a
-                        className="learn-more__href flex"
-                        target="_blank"
-                        href={tippyRedirectLink}
-                        onClick={onClickTippybutton}
-                    >
-                        <Tippy
-                            className="default-tt "
-                            arrow={false}
-                            placement="top"
-                            content={<span style={{ display: 'block', width: '66px' }}> {tippyMessage} </span>}
+            <h1 className={`page-header__title content-space  flex fs-16 fw-6 lh-20`}>
+                <div className="flex left">
+                    {showCloseButton && (
+                        <button className="transparent flex mr-8" onClick={onClose}>
+                            <Close className="icon-dim-24 cursor" />
+                        </button>
+                    )}
+                    <span className="fw-6">{headerName}</span>
+                    {isBreadcrumbs && breadCrumbs()}
+                    {isTippyShown && (
+                        <a
+                            className="learn-more__href flex"
+                            target="_blank"
+                            href={tippyRedirectLink}
+                            onClick={onClickTippybutton}
                         >
-                            <TippyIcon className="icon-dim-20 ml-16 cursor fcn-5" />
-                        </Tippy>
-                    </a>
+                            <Tippy
+                                className="default-tt "
+                                arrow={false}
+                                placement="top"
+                                content={<span style={{ display: 'block', width: '66px' }}> {tippyMessage} </span>}
+                            >
+                                <TippyIcon className="icon-dim-20 ml-16 cursor fcn-5" />
+                            </Tippy>
+                        </a>
+                    )}
+                </div>
+                {showTabs && (
+                    <div className="flex left">
+                        {typeof renderActionButtons === 'function' && renderActionButtons()}
+                        {renderLogoutHelpSection()}
+                    </div>
                 )}
             </h1>
             {showTabs && renderHeaderTabs()}
@@ -124,10 +132,12 @@ function PageHeader({
                     showLogOutCard={showLogOutCard}
                 />
             )}
-            <div className="flex left">
-                {typeof renderActionButtons === 'function' && renderActionButtons()}
-                {renderLogoutHelpSection()}
-            </div>
+            {!showTabs && (
+                <div className="flex left">
+                    {typeof renderActionButtons === 'function' && renderActionButtons()}
+                    {renderLogoutHelpSection()}
+                </div>
+            )}
         </div>
     )
 }
