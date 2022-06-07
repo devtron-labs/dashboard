@@ -14,6 +14,7 @@ export const getClusterList = (): Promise<ClusterListResponse> => {
                 nodeCount: 6,
                 nodeErrors: ['string', 'string'],
                 nodeK8sVersions: ['1.12.6_1546'],
+                errorInNodeListing: 'Error in nodes try again',
                 cpu: {
                     name: 'string',
                     capacity: '6,503 GHz',
@@ -43,6 +44,7 @@ export const getClusterList = (): Promise<ClusterListResponse> => {
                 nodeCount: 8,
                 nodeErrors: [],
                 nodeK8sVersions: ['1.12.6', '1.12.3', '1.12.8'],
+                errorInNodeListing: null,
                 cpu: {
                     name: 'string',
                     capacity: '6,503 GHz',
@@ -72,6 +74,7 @@ export const getClusterList = (): Promise<ClusterListResponse> => {
                 nodeCount: 14,
                 nodeErrors: ['string'],
                 nodeK8sVersions: ['1.12.9'],
+                errorInNodeListing: 'Error in cluster try again',
                 cpu: {
                     name: 'string',
                     capacity: '6,503 GHz',
@@ -101,6 +104,7 @@ export const getClusterList = (): Promise<ClusterListResponse> => {
                 nodeCount: 26,
                 nodeErrors: ['string'],
                 nodeK8sVersions: ['1.11.6_1532'],
+                errorInNodeListing: 'Error in fetch try again',
                 cpu: {
                     name: 'string',
                     capacity: '6,503 GHz',

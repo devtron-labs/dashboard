@@ -8,6 +8,7 @@ import { getClusterList } from './clusterNodes.service'
 import { handleUTCTime, Progressing, showError } from '../common'
 import { ClusterDetail, ClusterListResponse } from './types'
 import PageHeader from '../common/header/PageHeader'
+import { toast } from 'react-toastify'
 
 export default function ClusterList() {
     const match = useRouteMatch()
@@ -57,6 +58,13 @@ export default function ClusterList() {
         setFilteredClusterList(_filteredData)
         setNoResults(_filteredData.length === 0)
         setSearchText(_searchText)
+    }
+
+    const handleClusterClick = (ev, error: string): void => {
+        if (error) {
+            ev.preventDefault()
+            toast.error(error)
+        }
     }
 
     const renderSearch = (): JSX.Element => {
@@ -119,9 +127,22 @@ export default function ClusterList() {
                         filteredClusterList?.map((clusterData) => (
                             <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
                                 <div className="cb-5 ellipsis-right">
-                                    <NavLink to={`${match.url}/${clusterData.id}`}>{clusterData.name}</NavLink>
+                                    <NavLink
+                                        to={`${match.url}/${clusterData.id}`}
+                                        onClick={(e) => {
+                                            handleClusterClick(e, clusterData.errorInNodeListing)
+                                        }}
+                                    >
+                                        {clusterData.name}
+                                    </NavLink>
                                 </div>
-                                <div>{clusterData['status']}</div>
+                                <div className="">
+                                    <div
+                                        className={`cluster-status br-2 mb-4 mt-4 ${
+                                            clusterData.errorInNodeListing ? 'error' : 'success'
+                                        }`}
+                                    ></div>
+                                </div>
                                 <div>{clusterData.nodeErrors?.length > 0 ? clusterData.nodeErrors.length : ''}</div>
                                 <div>{clusterData.nodeCount}</div>
                                 <div>{clusterData.nodeK8sVersions[0]}</div>

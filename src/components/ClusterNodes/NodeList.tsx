@@ -6,12 +6,12 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getClusterCapacity, getNodeList, getClusterList } from './clusterNodes.service'
 import { BreadCrumb, handleUTCTime, Progressing, showError, useBreadcrumb } from '../common'
-import { ClusterCapacityType, ClusterDetail, ClusterListResponse, NodeDetail } from './types'
+import { ClusterCapacityType, ClusterListResponse, NodeDetail } from './types'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import PageHeader from '../common/header/PageHeader'
 import ReactSelect from 'react-select'
-import { noOptionsMessage, DropdownIndicator, appSelectorStyle } from '../AppSelector/AppSelectorUtil'
+import { DropdownIndicator, appSelectorStyle } from '../AppSelector/AppSelectorUtil'
 import { OptionType } from '../app/types'
 
 export default function NodeList() {
@@ -60,19 +60,21 @@ export default function NodeList() {
             .then((response: ClusterListResponse) => {
                 setLastDataSync(!lastDataSync)
                 if (response.result) {
-                    const optionList = response.result.map((cluster) => {
-                        const _clusterId = cluster.id.toString()
-                        if (_clusterId === clusterId) {
-                            setSelectedCluster({
+                    const optionList = response.result
+                        .filter((cluster) => !cluster.errorInNodeListing)
+                        .map((cluster) => {
+                            const _clusterId = cluster.id.toString()
+                            if (_clusterId === clusterId) {
+                                setSelectedCluster({
+                                    label: cluster.name,
+                                    value: _clusterId,
+                                })
+                            }
+                            return {
                                 label: cluster.name,
                                 value: _clusterId,
-                            })
-                        }
-                        return {
-                            label: cluster.name,
-                            value: _clusterId,
-                        }
-                    })
+                            }
+                        })
                     setClusterList(optionList)
                 }
             })

@@ -3,6 +3,16 @@
         display: grid;
         grid-template-columns: auto 60px 50px 50px 100px 100px 120px;
         column-gap: 16px;
+        .cluster-status {
+            height: 12px;
+            width: 12px;
+            &.error {
+                background-color: var(--R500);
+            }
+            &.success {
+                background-color: var(--G500);
+            }
+        }
     }
 }
 .node-list {

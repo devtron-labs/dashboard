@@ -19,6 +19,7 @@ export interface ClusterDetail {
     name: string
     nodeCount: number
     nodeErrors: string[]
+    errorInNodeListing: string
     nodeK8sVersions: string[]
     cpu: ResourceDetail
     memory: ResourceDetail
