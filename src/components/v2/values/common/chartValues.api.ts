@@ -2,32 +2,40 @@ import React from 'react'
 import { SERVER_MODE } from '../../../../config'
 import { getEnvironmentListHelmApps, getEnvironmentListMin, getTeamListMin } from '../../../../services/service'
 import { EnvironmentListHelmResult, Teams } from '../../../../services/service.types'
-import { OptionType } from '../../../app/types'
 import {
     generateHelmManifest,
     getChartValuesCategorizedListParsed,
     getChartVersionsMin,
     getReadme,
 } from '../../../charts/charts.service'
-import { ChartVersionType } from '../../../charts/charts.types'
 import { showError, sortCallback, sortObjectArrayAlphabetically } from '../../../common'
-import { ChartProjectAndEnvironmentType } from '../chartValuesDiff/ChartValuesView.type'
+import { ChartValuesViewAction } from '../chartValuesDiff/ChartValuesView.reducer'
 
 export async function fetchChartVersionsData(
     id: number,
-    setChartVersionsData: React.Dispatch<React.SetStateAction<ChartVersionType[]>>,
-    handleVersionSelection: (selectedVersion: number, selectedVersionUpdatePage: ChartVersionType) => void,
+    dispatch: (action: ChartValuesViewAction) => void,
     currentChartVersion?: string,
 ) {
     try {
         const { result } = await getChartVersionsMin(id)
-        setChartVersionsData(result)
-
         const _currentVersion =
             (currentChartVersion && result.find((e) => e.version === currentChartVersion)) || result[0]
-        handleVersionSelection(_currentVersion.id, _currentVersion)
+
+        dispatch({
+            type: 'multipleOptions',
+            payload: {
+                isLoading: false,
+                chartVersionsData: result,
+                selectedVersion: _currentVersion.id,
+                selectedVersionUpdatePage: _currentVersion,
+            },
+        })
     } catch (err) {
         showError(err)
+        dispatch({
+            type: 'isLoading',
+            payload: false,
+        })
     }
 }
 
@@ -55,7 +63,7 @@ export async function getChartValuesList(
 export async function getChartRelatedReadMe(
     id: number,
     currentFetchedReadMe: Map<number, string>,
-    dispatch: (value: { type: string; payload: any }) => void,
+    dispatch: (action: ChartValuesViewAction) => void,
 ) {
     try {
         dispatch({ type: 'fetchingReadMe', payload: true })
@@ -90,10 +98,10 @@ export async function getGeneratedHelManifest(
     appName: string,
     appStoreApplicationVersionId: number,
     valuesYaml: string,
-    dispatchYamlData: (action: { type: string; payload: any }) => void,
+    dispatch: (action: ChartValuesViewAction) => void,
 ) {
     try {
-        dispatchYamlData({
+        dispatch({
             type: 'multipleOptions',
             payload: {
                 generatingManifest: true,
@@ -110,7 +118,7 @@ export async function getGeneratedHelManifest(
             valuesYaml,
         })
 
-        dispatchYamlData({
+        dispatch({
             type: 'multipleOptions',
             payload: {
                 generatingManifest: false,
@@ -126,7 +134,7 @@ export async function getGeneratedHelManifest(
             errorMessage = e.message
         }
 
-        dispatchYamlData({
+        dispatch({
             type: 'multipleOptions',
             payload: {
                 generatingManifest: false,
@@ -138,7 +146,7 @@ export async function getGeneratedHelManifest(
 
 export async function fetchProjectsAndEnvironments(
     serverMode: SERVER_MODE,
-    dispatch: (value: { type: string; payload: any }) => void,
+    dispatch: (action: ChartValuesViewAction) => void,
 ): Promise<void> {
     Promise.allSettled([
         getTeamListMin(),

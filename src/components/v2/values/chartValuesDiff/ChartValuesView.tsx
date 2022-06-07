@@ -53,22 +53,15 @@ import { ReactComponent as File } from '../../../../assets/icons/ic-file-text.sv
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
 import {
-    ChartDeploymentDetail,
     ChartDeploymentHistoryResponse,
     getDeploymentHistory,
 } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import { mainContext } from '../../../common/navigation/NavigationRoutes'
 import ForceDeleteDialog from '../../../common/dialogs/ForceDeleteDialog'
-import {
-    ChartEnvironmentOptionType,
-    ChartProjectAndEnvironmentType,
-    ChartValuesOptionType,
-    ChartValuesViewType,
-    ForceDeleteDataType,
-} from './ChartValuesView.type'
-import './ChartValuesView.scss'
+import { ChartEnvironmentOptionType, ChartValuesOptionType, ChartValuesViewType } from './ChartValuesView.type'
 import { chartValuesReducer, initState } from './ChartValuesView.reducer'
 import { ValidationRules } from '../../../app/create/validationRules'
+import './ChartValuesView.scss'
 
 function ChartValuesView({
     appId,
@@ -83,38 +76,20 @@ function ChartValuesView({
 }: ChartValuesViewType) {
     const history = useHistory()
     const { url } = useRouteMatch()
-    const [isUpdateInProgress, setUpdateInProgress] = useState(false)
-    const [isDeleteInProgress, setDeleteInProgress] = useState(false)
-    const [errorResponseCode, setErrorResponseCode] = useState(undefined)
-    const [showDeleteAppConfirmationDialog, setShowDeleteAppConfirmationDialog] = useState(false)
-    const [showAppNotLinkedDialog, setShowAppNotLinkedDialog] = useState(false)
-    const [chartVersionsData, setChartVersionsData] = useState<ChartVersionType[]>(chartVersionsDataFromParent || [])
+    const { serverMode } = useContext(mainContext)
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
-    const [deploymentHistoryArr, setDeploymentHistoryArr] = useState<ChartDeploymentDetail[]>([])
-    const [forceDeleteData, setForceDeleteData] = useState<ForceDeleteDataType>({
-        forceDelete: false,
-        title: '',
-        message: '',
-    })
     const [appName, setAppName] = useState('')
-    const [chartValidations, setChartValidations] = useState<{
-        invalidAppName: boolean
-        invalidAppNameMessage: string
-        invalidaEnvironment: boolean
-        invalidProject: boolean
-    }>({
-        invalidAppName: false,
-        invalidAppNameMessage: '',
-        invalidaEnvironment: false,
-        invalidProject: false,
-    })
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
-        initState(selectedVersionFromParent, chartValuesFromParent, installedConfigFromParent),
+        initState(
+            selectedVersionFromParent,
+            chartValuesFromParent,
+            installedConfigFromParent,
+            chartVersionsDataFromParent,
+        ),
     )
-    const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
-    const { serverMode } = useContext(mainContext)
     const [obj] = useJsonYaml(commonState.modifiedValuesYaml, 4, 'yaml', true)
+    const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
 
     useEffect(() => {
@@ -132,40 +107,27 @@ function ChartValuesView({
             })
         } else if (!isExternalApp && !isDeployChartView) {
             fetchProjectsAndEnvironments(serverMode, dispatch)
-            dispatch({ type: 'modifiedValuesYaml', payload: commonState.installedConfig.valuesOverrideYaml })
-
-            const payload = {
-                repoChartValue: {
-                    appStoreApplicationVersionId: commonState.installedConfig.appStoreVersion,
-                    chartRepoName: appDetails.appStoreChartName,
-                    chartId: commonState.installedConfig.appStoreId,
-                    chartName: appDetails.appStoreAppName,
-                    version: appDetails.appStoreAppVersion,
-                    deprecated: commonState.installedConfig.deprecated,
+            dispatch({
+                type: 'multipleOptions',
+                payload: {
+                    modifiedValuesYaml: commonState.installedConfig.valuesOverrideYaml,
+                    repoChartValue: {
+                        appStoreApplicationVersionId: commonState.installedConfig.appStoreVersion,
+                        chartRepoName: appDetails.appStoreChartName,
+                        chartId: commonState.installedConfig.appStoreId,
+                        chartName: appDetails.appStoreAppName,
+                        version: appDetails.appStoreAppVersion,
+                        deprecated: commonState.installedConfig.deprecated,
+                    },
+                    chartValues: {
+                        id: appDetails.appStoreInstalledAppVersionId,
+                        appStoreVersionId: commonState.installedConfig.appStoreVersion,
+                        kind: 'DEPLOYED',
+                    },
                 },
-                chartValues: {
-                    id: appDetails.appStoreInstalledAppVersionId,
-                    appStoreVersionId: commonState.installedConfig.appStoreVersion,
-                    kind: 'DEPLOYED',
-                },
-            }
+            })
             getChartValuesList(appDetails.appStoreChartId, setChartValuesList)
-            fetchChartVersionsData(
-                appDetails.appStoreChartId,
-                setChartVersionsData,
-                (selectedVersion: number, selectedVersionUpdatePage: ChartVersionType) => {
-                    dispatch({
-                        type: 'multipleOptions',
-                        payload: {
-                            ...payload,
-                            isLoading: false,
-                            selectedVersion,
-                            selectedVersionUpdatePage,
-                        },
-                    })
-                },
-                appDetails.appStoreAppVersion,
-            )
+            fetchChartVersionsData(appDetails.appStoreChartId, dispatch, appDetails.appStoreAppVersion)
         } else if (isExternalApp) {
             getReleaseInfo(appId)
                 .then((releaseInfoResponse: ReleaseInfoResponse) => {
@@ -195,7 +157,6 @@ function ChartValuesView({
                             kind: 'EXISTING',
                             name: _releaseInfo.deployedAppDetail.appName,
                         }
-                        setChartVersionsData([_chartVersionData])
                         setChartValuesList([_chartValues])
                         dispatch({
                             type: 'multipleOptions',
@@ -210,6 +171,7 @@ function ChartValuesView({
                                     deprecated: false,
                                 },
                                 selectedVersionUpdatePage: _chartVersionData,
+                                chartVersionsData: [_chartVersionData],
                                 chartValues: _chartValues,
                                 modifiedValuesYaml: YAML.stringify(JSON.parse(_releaseInfo.mergedValues)),
                             },
@@ -218,10 +180,12 @@ function ChartValuesView({
                 })
                 .catch((errors: ServerErrors) => {
                     showError(errors)
-                    setErrorResponseCode(errors.code)
                     dispatch({
-                        type: 'isLoading',
-                        payload: false,
+                        type: 'multipleOptions',
+                        payload: {
+                            isLoading: false,
+                            errorResponseCode: errors.code,
+                        },
                     })
                 })
         }
@@ -233,7 +197,10 @@ function ChartValuesView({
                         deploymentHistoryResponse.result?.deploymentHistory?.sort(
                             (a, b) => b.deployedAt.seconds - a.deployedAt.seconds,
                         ) || []
-                    setDeploymentHistoryArr(_deploymentHistoryArr)
+                    dispatch({
+                        type: 'deploymentHistoryArr',
+                        payload: _deploymentHistoryArr,
+                    })
                 })
                 .catch((e) => {})
         }
@@ -386,14 +353,14 @@ function ChartValuesView({
     }, [commonState.activeTab, commonState.installedConfig])
 
     useEffect(() => {
-        if (chartValuesList.length > 0 || deploymentHistoryArr.length > 0) {
+        if (chartValuesList.length > 0 || commonState.deploymentHistoryArr.length > 0) {
             const isVersionAvailableForDiff =
                 chartValuesList.some((_chartValues) => _chartValues.kind === 'DEPLOYED') ||
-                deploymentHistoryArr.length > 0
+                commonState.deploymentHistoryArr.length > 0
 
             dispatch({ type: 'isComparisonAvailable', payload: isVersionAvailableForDiff })
         }
-    }, [chartValuesList, deploymentHistoryArr])
+    }, [chartValuesList, commonState.deploymentHistoryArr])
 
     const initData = async (_installedAppInfo: InstalledAppInfo, _releaseInfo: ReleaseInfo) => {
         try {
@@ -408,32 +375,19 @@ function ChartValuesView({
             }
 
             getChartValuesList(_repoChartValue.chartId, setChartValuesList)
-            fetchChartVersionsData(
-                _repoChartValue.chartId,
-                setChartVersionsData,
-                (selectedVersion: number, selectedVersionUpdatePage: ChartVersionType) => {
-                    dispatch({
-                        type: 'multipleOptions',
-                        payload: {
-                            repoChartValue: _repoChartValue,
-                            chartValues: {
-                                id: _installedAppInfo.installedAppVersionId,
-                                appStoreVersionId: result?.appStoreVersion,
-                                kind: 'DEPLOYED',
-                                name: _releaseInfo.deployedAppDetail.appName,
-                            },
-                            selectedVersion,
-                            selectedVersionUpdatePage,
-                        },
-                    })
-                },
-                _releaseInfo.deployedAppDetail.chartVersion,
-            )
+            fetchChartVersionsData(_repoChartValue.chartId, dispatch, _releaseInfo.deployedAppDetail.chartVersion)
 
             dispatch({
                 type: 'multipleOptions',
                 payload: {
                     isLoading: false,
+                    repoChartValue: _repoChartValue,
+                    chartValues: {
+                        id: _installedAppInfo.installedAppVersionId,
+                        appStoreVersionId: result?.appStoreVersion,
+                        kind: 'DEPLOYED',
+                        name: _releaseInfo.deployedAppDetail.appName,
+                    },
                     installedConfig: result,
                     modifiedValuesYaml: result?.valuesOverrideYaml,
                 },
@@ -447,12 +401,6 @@ function ChartValuesView({
         dispatch({ type: 'repoChartValue', payload: event })
 
         if (isExternalApp) {
-            fetchChartVersionsData(
-                event.chartId,
-                setChartVersionsData,
-                handleVersionSelection,
-                commonState.releaseInfo.deployedAppDetail.chartVersion,
-            )
             getChartValuesList(event.chartId, (_chartValuesList: ChartValuesType[]) => {
                 if (!commonState.installedAppInfo) {
                     const _defaultChartValues: ChartValuesType = {
@@ -466,8 +414,8 @@ function ChartValuesView({
                 }
                 setChartValuesList(_chartValuesList)
             })
+            fetchChartVersionsData(event.chartId, dispatch, commonState.releaseInfo.deployedAppDetail.chartVersion)
         } else {
-            fetchChartVersionsData(event.chartId, setChartVersionsData, handleVersionSelection)
             getChartValuesList(
                 event.chartId,
                 setChartValuesList,
@@ -475,18 +423,28 @@ function ChartValuesView({
                 appDetails.appStoreInstalledAppVersionId,
                 commonState.installedConfig.id,
             )
+            fetchChartVersionsData(event.chartId, dispatch)
         }
     }
 
     const deleteApplication = (force?: boolean) => {
-        if (isDeleteInProgress) {
+        if (commonState.isDeleteInProgress) {
             return
         }
-        setDeleteInProgress(true)
-        setShowDeleteAppConfirmationDialog(false)
+
+        dispatch({
+            type: 'multipleOptions',
+            payload: {
+                isDeleteInProgress: true,
+                showDeleteAppConfirmationDialog: false,
+            },
+        })
         getDeleteApplicationApi(force)
             .then(() => {
-                setDeleteInProgress(false)
+                dispatch({
+                    type: 'isDeleteInProgress',
+                    payload: false,
+                })
                 toast.success('Successfully deleted.')
                 history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`)
             })
@@ -501,17 +459,22 @@ function ChartValuesView({
                         })
                     }
 
-                    setForceDeleteData({
-                        forceDelete: true,
-                        title: forceDeleteTitle,
-                        message: forceDeleteMessage,
+                    dispatch({
+                        type: 'forceDeleteData',
+                        payload: {
+                            forceDelete: true,
+                            title: forceDeleteTitle,
+                            message: forceDeleteMessage,
+                        },
                     })
                 } else {
                     showError(error)
                 }
-            })
-            .finally(() => {
-                setDeleteInProgress(false)
+
+                dispatch({
+                    type: 'isDeleteInProgress',
+                    payload: false,
+                })
             })
     }
 
@@ -551,18 +514,21 @@ function ChartValuesView({
     }
 
     const deployOrUpdateApplication = async (forceUpdate?: boolean) => {
-        if (isUpdateInProgress) {
+        if (commonState.isUpdateInProgress) {
             return
         }
 
         const validatedAppName = validationRules.appName(appName)
 
         if (!isValidData(validatedAppName)) {
-            setChartValidations({
-                invalidAppName: !validatedAppName.isValid,
-                invalidAppNameMessage: validatedAppName.message,
-                invalidaEnvironment: !commonState.selectedEnvironment,
-                invalidProject: !commonState.selectedProject,
+            dispatch({
+                type: 'multipleOptions',
+                payload: {
+                    invalidAppName: !validatedAppName.isValid,
+                    invalidAppNameMessage: validatedAppName.message,
+                    invalidaEnvironment: !commonState.selectedEnvironment,
+                    invalidProject: !commonState.selectedProject,
+                },
             })
             toast.error('Some required fields are missing')
             return
@@ -574,7 +540,10 @@ function ChartValuesView({
             !commonState.installedAppInfo &&
             !commonState.repoChartValue?.chartRepoName
         ) {
-            setShowAppNotLinkedDialog(true)
+            dispatch({
+                type: 'showAppNotLinkedDialog',
+                payload: true,
+            })
             return
         }
 
@@ -586,12 +555,15 @@ function ChartValuesView({
             return
         }
 
-        setUpdateInProgress(true)
-        setChartValidations({
-            invalidAppName: false,
-            invalidAppNameMessage: '',
-            invalidaEnvironment: false,
-            invalidProject: false,
+        dispatch({
+            type: 'multipleOptions',
+            payload: {
+                isUpdateInProgress: true,
+                invalidAppName: false,
+                invalidAppNameMessage: '',
+                invalidaEnvironment: false,
+                invalidProject: false,
+            },
         })
 
         try {
@@ -640,7 +612,10 @@ function ChartValuesView({
                 res = await updateAppRelease(payload)
             }
 
-            setUpdateInProgress(false)
+            dispatch({
+                type: 'isUpdateInProgress',
+                payload: false,
+            })
 
             if (isDeployChartView && res?.result) {
                 const {
@@ -658,7 +633,10 @@ function ChartValuesView({
             }
         } catch (err) {
             showError(err)
-            setUpdateInProgress(false)
+            dispatch({
+                type: 'isUpdateInProgress',
+                payload: false,
+            })
         }
     }
 
@@ -680,36 +658,45 @@ function ChartValuesView({
             if (e.target.value === 'manifest') {
                 const validatedAppName = validationRules.appName(appName)
                 if (!isValidData(validatedAppName)) {
-                    setChartValidations({
-                        invalidAppName: !validatedAppName.isValid,
-                        invalidAppNameMessage: validatedAppName.message,
-                        invalidaEnvironment: !commonState.selectedEnvironment,
-                        invalidProject: !commonState.selectedProject,
-                    })
                     dispatch({
                         type: 'multipleOptions',
                         payload: {
                             openReadMe: false,
                             openComparison: false,
+                            invalidAppName: !validatedAppName.isValid,
+                            invalidAppNameMessage: validatedAppName.message,
+                            invalidaEnvironment: !commonState.selectedEnvironment,
+                            invalidProject: !commonState.selectedProject,
                         },
                     })
                     toast.error('Please provide the required inputs to view generated manifest')
                     return
-                } else if (Object.values(chartValidations).some((isInvalid) => isInvalid)) {
-                    setChartValidations({
-                        invalidAppName: false,
-                        invalidAppNameMessage: '',
-                        invalidaEnvironment: false,
-                        invalidProject: false,
-                    })
                 }
             }
+
+            let chartValidationsPayload = {}
+
+            if (
+                commonState.invalidAppName ||
+                commonState.invalidAppNameMessage ||
+                commonState.invalidaEnvironment ||
+                commonState.invalidProject
+            ) {
+                chartValidationsPayload = {
+                    invalidAppName: false,
+                    invalidAppNameMessage: '',
+                    invalidaEnvironment: false,
+                    invalidProject: false,
+                }
+            }
+
             dispatch({
                 type: 'multipleOptions',
                 payload: {
                     activeTab: e.target.value,
                     openReadMe: false,
                     openComparison: false,
+                    ...chartValidationsPayload,
                 },
             })
         }
@@ -867,10 +854,10 @@ function ChartValuesView({
     const handleProjectSelection = (selected: ChartValuesOptionType) => {
         dispatch({ type: 'selectedProject', payload: selected })
 
-        if (chartValidations.invalidProject) {
-            setChartValidations({
-                ...chartValidations,
-                invalidProject: false,
+        if (commonState.invalidProject) {
+            dispatch({
+                type: 'invalidProject',
+                payload: false,
             })
         }
     }
@@ -878,10 +865,10 @@ function ChartValuesView({
     const handleEnvironmentSelection = (selected: ChartEnvironmentOptionType) => {
         dispatch({ type: 'selectedEnvironment', payload: selected })
 
-        if (chartValidations.invalidaEnvironment) {
-            setChartValidations({
-                ...chartValidations,
-                invalidaEnvironment: false,
+        if (commonState.invalidaEnvironment) {
+            dispatch({
+                type: 'invalidaEnvironment',
+                payload: false,
             })
         }
     }
@@ -902,17 +889,21 @@ function ChartValuesView({
 
     const handleAppNameChange = (newAppName: string) => {
         const validatedAppName = validationRules.appName(newAppName)
-        if (!validatedAppName.isValid && chartValidations.invalidAppNameMessage !== validatedAppName.message) {
-            setChartValidations({
-                ...chartValidations,
-                invalidAppName: true,
-                invalidAppNameMessage: validatedAppName.message,
+        if (!validatedAppName.isValid && commonState.invalidAppNameMessage !== validatedAppName.message) {
+            dispatch({
+                type: 'multipleOptions',
+                payload: {
+                    invalidAppName: true,
+                    invalidAppNameMessage: validatedAppName.message,
+                },
             })
         } else if (validatedAppName.isValid) {
-            setChartValidations({
-                ...chartValidations,
-                invalidAppName: false,
-                invalidAppNameMessage: '',
+            dispatch({
+                type: 'multipleOptions',
+                payload: {
+                    invalidAppName: false,
+                    invalidAppNameMessage: '',
+                },
             })
         }
         setAppName(newAppName)
@@ -935,8 +926,8 @@ function ChartValuesView({
                             <AppNameInput
                                 appName={appName}
                                 handleAppNameChange={handleAppNameChange}
-                                invalidAppName={chartValidations.invalidAppName}
-                                invalidAppNameMessage={chartValidations.invalidAppNameMessage}
+                                invalidAppName={commonState.invalidAppName}
+                                invalidAppNameMessage={commonState.invalidAppNameMessage}
                             />
                         )}
                         {!isExternalApp &&
@@ -948,7 +939,7 @@ function ChartValuesView({
                                         selectedProject={commonState.selectedProject}
                                         handleProjectSelection={handleProjectSelection}
                                         projects={commonState.projects}
-                                        invalidProject={chartValidations.invalidProject}
+                                        invalidProject={commonState.invalidProject}
                                     />
                                 </>
                             )}
@@ -964,7 +955,7 @@ function ChartValuesView({
                                     selectedEnvironment={commonState.selectedEnvironment}
                                     handleEnvironmentSelection={handleEnvironmentSelection}
                                     environments={commonState.environments}
-                                    invalidaEnvironment={chartValidations.invalidaEnvironment}
+                                    invalidaEnvironment={commonState.invalidaEnvironment}
                                 />
                             </>
                         )}
@@ -989,8 +980,8 @@ function ChartValuesView({
                                 selectedVersion={commonState.selectedVersion}
                                 selectedVersionUpdatePage={commonState.selectedVersionUpdatePage}
                                 handleVersionSelection={handleVersionSelection}
-                                chartVersionsData={chartVersionsData}
-                                chartVersionObj={chartVersionsData.find(
+                                chartVersionsData={commonState.chartVersionsData}
+                                chartVersionObj={commonState.chartVersionsData.find(
                                     (_chartVersion) => _chartVersion.id === commonState.selectedVersion,
                                 )}
                                 chartValuesList={chartValuesList}
@@ -1006,9 +997,9 @@ function ChartValuesView({
                         )}
                         {!isDeployChartView && (
                             <DeleteApplicationButton
-                                isUpdateInProgress={isUpdateInProgress}
-                                isDeleteInProgress={isDeleteInProgress}
-                                setShowDeleteAppConfirmationDialog={setShowDeleteAppConfirmationDialog}
+                                isUpdateInProgress={commonState.isUpdateInProgress}
+                                isDeleteInProgress={commonState.isDeleteInProgress}
+                                dispatch={dispatch}
                             />
                         )}
                     </div>
@@ -1055,47 +1046,57 @@ function ChartValuesView({
                                 generatedManifest={commonState.generatedManifest}
                                 comparisonView={commonState.openComparison}
                                 chartValuesList={chartValuesList}
-                                deploymentHistoryList={deploymentHistoryArr}
+                                deploymentHistoryList={commonState.deploymentHistoryArr}
                             />
                         )}
                         {!commonState.openComparison && !commonState.openReadMe && (
                             <UpdateApplicationButton
-                                isUpdateInProgress={isUpdateInProgress}
-                                isDeleteInProgress={isDeleteInProgress}
+                                isUpdateInProgress={commonState.isUpdateInProgress}
+                                isDeleteInProgress={commonState.isDeleteInProgress}
                                 isDeployChartView={isDeployChartView}
                                 deployOrUpdateApplication={deployOrUpdateApplication}
                             />
                         )}
                     </div>
                 </div>
-                {showDeleteAppConfirmationDialog && (
+                {commonState.showDeleteAppConfirmationDialog && (
                     <DeleteChartDialog
                         appName={
                             (isExternalApp && commonState.releaseInfo.deployedAppDetail.appName) ||
                             commonState.installedConfig?.appName
                         }
                         handleDelete={deleteApplication}
-                        toggleConfirmation={setShowDeleteAppConfirmationDialog}
+                        toggleConfirmation={commonState.setShowDeleteAppConfirmationDialog}
                     />
                 )}
-                {forceDeleteData.forceDelete && (
+                {commonState.forceDeleteData.forceDelete && (
                     <ForceDeleteDialog
-                        forceDeleteDialogTitle={forceDeleteData.title}
-                        forceDeleteDialogMessage={forceDeleteData.message}
+                        forceDeleteDialogTitle={commonState.forceDeleteData.title}
+                        forceDeleteDialogMessage={commonState.forceDeleteData.message}
                         onClickDelete={() => deleteApplication(true)}
                         closeDeleteModal={() => {
-                            setShowDeleteAppConfirmationDialog(false)
-                            setForceDeleteData({
-                                forceDelete: false,
-                                title: '',
-                                message: '',
+                            dispatch({
+                                type: 'multipleOptions',
+                                payload: {
+                                    showDeleteAppConfirmationDialog: false,
+                                    forceDeleteData: {
+                                        forceDelete: false,
+                                        title: '',
+                                        message: '',
+                                    },
+                                },
                             })
                         }}
                     />
                 )}
-                {showAppNotLinkedDialog && (
+                {commonState.showAppNotLinkedDialog && (
                     <AppNotLinkedDialog
-                        close={() => setShowAppNotLinkedDialog(false)}
+                        close={() =>
+                            dispatch({
+                                type: 'showAppNotLinkedDialog',
+                                payload: false,
+                            })
+                        }
                         update={deployOrUpdateApplication}
                     />
                 )}
@@ -1109,10 +1110,10 @@ function ChartValuesView({
                 <Progressing pageLoader />
             </div>
         )
-    } else if (errorResponseCode) {
+    } else if (commonState.errorResponseCode) {
         return (
             <div className="loading-wrapper">
-                <ErrorScreenManager code={errorResponseCode} />
+                <ErrorScreenManager code={commonState.errorResponseCode} />
             </div>
         )
     }

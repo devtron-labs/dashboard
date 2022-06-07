@@ -33,6 +33,7 @@ import moment from 'moment'
 import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
 import EmptyState from '../../../EmptyState/EmptyState'
+import { ChartValuesViewAction } from './ChartValuesView.reducer'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -1032,17 +1033,22 @@ export const AppNameInput = ({
 export const DeleteApplicationButton = ({
     isUpdateInProgress,
     isDeleteInProgress,
-    setShowDeleteAppConfirmationDialog,
+    dispatch,
 }: {
     isUpdateInProgress: boolean
     isDeleteInProgress: boolean
-    setShowDeleteAppConfirmationDialog: React.Dispatch<React.SetStateAction<boolean>>
+    dispatch: (action: ChartValuesViewAction) => void
 }) => {
     return (
         <button
             className="chart-values-view__delete-cta cta delete"
             disabled={isUpdateInProgress || isDeleteInProgress}
-            onClick={(e) => setShowDeleteAppConfirmationDialog(true)}
+            onClick={(e) =>
+                dispatch({
+                    type: 'showDeleteAppConfirmationDialog',
+                    payload: true,
+                })
+            }
         >
             {isDeleteInProgress ? (
                 <div className="flex">
