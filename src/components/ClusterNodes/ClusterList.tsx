@@ -112,19 +112,21 @@ export default function ClusterList() {
                         <div>CPU Capacity</div>
                         <div>Memory Capacity</div>
                     </div>
-                    {clusterList?.map((clusterData) => (
-                        <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
-                            <div className="cb-5 ellipsis-right">
-                                <NavLink to={`${match.url}/${clusterData.id}`}>{clusterData.name}</NavLink>
+                    {clusterList
+                        ?.filter((cluster) => cluster.name.indexOf(searchText) >= 0)
+                        .map((clusterData) => (
+                            <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
+                                <div className="cb-5 ellipsis-right">
+                                    <NavLink to={`${match.url}/${clusterData.id}`}>{clusterData.name}</NavLink>
+                                </div>
+                                <div>{clusterData['status']}</div>
+                                <div>{clusterData.nodeErrors?.length > 0 ? clusterData.nodeErrors.length : ''}</div>
+                                <div>{clusterData.nodeCount}</div>
+                                <div>{clusterData.nodeK8sVersions[0]}</div>
+                                <div>{clusterData.cpu?.capacity}</div>
+                                <div>{clusterData.memory?.capacity}</div>
                             </div>
-                            <div>{clusterData['status']}</div>
-                            <div>{clusterData.nodeErrors?.length > 0 ? clusterData.nodeErrors.length : ''}</div>
-                            <div>{clusterData.nodeCount}</div>
-                            <div>{clusterData.nodeK8sVersions[0]}</div>
-                            <div>{clusterData.cpu?.capacity}</div>
-                            <div>{clusterData.memory?.capacity}</div>
-                        </div>
-                    ))}
+                        ))}
                 </div>
             </div>
         </>

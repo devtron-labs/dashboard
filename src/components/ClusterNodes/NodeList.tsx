@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
-import { useRouteMatch, useParams } from 'react-router'
+import { useRouteMatch, useParams, useHistory } from 'react-router'
 import './clusterNodes.scss'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
-import { getClusterCapacity, getNodeList } from './clusterNodes.service'
+import { getClusterCapacity, getNodeList, getClusterList } from './clusterNodes.service'
 import { BreadCrumb, handleUTCTime, Progressing, showError, useBreadcrumb } from '../common'
-import { ClusterCapacityType, NodeDetail } from './types'
+import { ClusterCapacityType, ClusterDetail, ClusterListResponse, NodeDetail } from './types'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import PageHeader from '../common/header/PageHeader'
+import ReactSelect from 'react-select'
+import { noOptionsMessage, DropdownIndicator, appSelectorStyle } from '../AppSelector/AppSelectorUtil'
+import { OptionType } from '../app/types'
 
 export default function NodeList() {
     const match = useRouteMatch()
+    const history = useHistory()
     const [loader, setLoader] = useState(false)
     const [searchApplied, setSearchApplied] = useState(false)
     const [searchText, setSearchText] = useState('')
@@ -21,12 +25,15 @@ export default function NodeList() {
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
     const [collapsedErrorSection, setCollapsedErrorSection] = useState<boolean>(true)
-    const { clusterId, nodeName } = useParams<{ clusterId: string; nodeName: string }>()
+    const { clusterId } = useParams<{ clusterId: string }>()
+    const [clusterList, setClusterList] = useState<OptionType[]>([])
+    const [selectedCluster, setSelectedCluster] = useState<OptionType>({
+        label: '',
+        value: '',
+    })
 
-    const getData = () => {
+    const getNodeListData = () => {
         setLoader(true)
-        getNodeList()
-
         Promise.all([getNodeList(), getClusterCapacity()])
             .then((response) => {
                 setLastDataSync(!lastDataSync)
@@ -45,7 +52,33 @@ export default function NodeList() {
     }
 
     useEffect(() => {
-        getData()
+        getNodeListData()
+    }, [clusterId])
+
+    useEffect(() => {
+        getClusterList()
+            .then((response: ClusterListResponse) => {
+                setLastDataSync(!lastDataSync)
+                if (response.result) {
+                    const optionList = response.result.map((cluster) => {
+                        const _clusterId = cluster.id.toString()
+                        if (_clusterId === clusterId) {
+                            setSelectedCluster({
+                                label: cluster.name,
+                                value: _clusterId,
+                            })
+                        }
+                        return {
+                            label: cluster.name,
+                            value: _clusterId,
+                        }
+                    })
+                    setClusterList(optionList)
+                }
+            })
+            .catch((error) => {
+                showError(error)
+            })
     }, [])
 
     useEffect(() => {
@@ -90,6 +123,12 @@ export default function NodeList() {
         )
     }
 
+    const onClusterChange = (selectedValue: OptionType): void => {
+        setSelectedCluster(selectedValue)
+        const currentUrl = match.url.replace(clusterId, selectedValue.value)
+        history.push(currentUrl)
+    }
+
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
@@ -98,12 +137,23 @@ export default function NodeList() {
                     linked: true,
                 },
                 ':clusterId': {
-                    component: <span className="cb-5 fs-13">{clusterId}</span>,
-                    linked: true,
+                    component: (
+                        <ReactSelect
+                            options={clusterList}
+                            onChange={onClusterChange}
+                            components={{
+                                IndicatorSeparator: null,
+                                DropdownIndicator,
+                            }}
+                            value={selectedCluster}
+                            styles={appSelectorStyle}
+                        />
+                    ),
+                    linked: false,
                 },
             },
         },
-        [clusterId],
+        [clusterId, clusterList],
     )
 
     const renderBreadcrumbs = (): JSX.Element => {
@@ -124,7 +174,7 @@ export default function NodeList() {
                         {lastDataSyncTimeString && (
                             <span>
                                 {lastDataSyncTimeString}{' '}
-                                <button className="btn btn-link p-0 fw-6 cb-5" onClick={getData}>
+                                <button className="btn btn-link p-0 fw-6 cb-5" onClick={getNodeListData}>
                                     Refresh
                                 </button>
                             </span>
