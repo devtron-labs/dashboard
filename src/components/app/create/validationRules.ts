@@ -7,7 +7,7 @@ export class ValidationRules {
         let test = regExp.test(value);
         if (value.length === 0) return { isValid: false, message: 'Please provide app name' };
         if (value.length < 3) return { isValid: false, message: 'Atleast 3 characters required' };
-        if (value.length > 30) return { isValid: false, message: 'max 30 characters allowed' };
+        if (value.length > 30) return { isValid: false, message: 'Max 30 characters allowed' };
         else if (!test)
             return {
                 isValid: false,

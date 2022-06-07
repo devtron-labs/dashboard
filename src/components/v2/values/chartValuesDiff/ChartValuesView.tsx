@@ -69,6 +69,7 @@ import {
 } from './ChartValuesView.type'
 import './ChartValuesView.scss'
 import { chartValuesReducer, initState } from './ChartValuesView.reducer'
+import { ValidationRules } from '../../../app/create/validationRules'
 
 function ChartValuesView({
     appId,
@@ -107,10 +108,12 @@ function ChartValuesView({
     const [appName, setAppName] = useState('')
     const [chartValidations, setChartValidations] = useState<{
         invalidAppName: boolean
+        invalidAppNameMessage: string
         invalidaEnvironment: boolean
         invalidProject: boolean
     }>({
         invalidAppName: false,
+        invalidAppNameMessage: '',
         invalidaEnvironment: false,
         invalidProject: false,
     })
@@ -121,6 +124,7 @@ function ChartValuesView({
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const { serverMode } = useContext(mainContext)
     const [obj] = useJsonYaml(commonState.modifiedValuesYaml, 4, 'yaml', true)
+    const validationRules = new ValidationRules()
 
     useEffect(() => {
         if (isDeployChartView) {
@@ -543,10 +547,12 @@ function ChartValuesView({
         )
     }
 
-    const isValidData = () => {
+    const isValidData = (validatedAppName?: { isValid: boolean; message: string }) => {
+        const _validatedAppName = validatedAppName || validationRules.appName(appName)
+
         if (
             isDeployChartView &&
-            (!appName.trim() ||
+            (!_validatedAppName.isValid ||
                 !commonState.selectedEnvironment ||
                 (serverMode === SERVER_MODE.FULL && !commonState.selectedProject))
         ) {
@@ -561,12 +567,16 @@ function ChartValuesView({
             return
         }
 
-        if (!isValidData()) {
+        const validatedAppName = validationRules.appName(appName)
+
+        if (!isValidData(validatedAppName)) {
             setChartValidations({
-                invalidAppName: !appName.trim(),
+                invalidAppName: !validatedAppName.isValid,
+                invalidAppNameMessage: validatedAppName.message,
                 invalidaEnvironment: !commonState.selectedEnvironment,
                 invalidProject: !commonState.selectedProject,
             })
+            toast.error('Please provide the required inputs to view generated manifest')
             return
         }
 
@@ -591,6 +601,7 @@ function ChartValuesView({
         setUpdateInProgress(true)
         setChartValidations({
             invalidAppName: false,
+            invalidAppNameMessage: '',
             invalidaEnvironment: false,
             invalidProject: false,
         })
@@ -679,9 +690,11 @@ function ChartValuesView({
     const handleTabSwitch = (e) => {
         if (e?.target && e.target.value !== commonState.activeTab) {
             if (e.target.value === 'manifest') {
-                if (!isValidData()) {
+                const validatedAppName = validationRules.appName(appName)
+                if (!isValidData(validatedAppName)) {
                     setChartValidations({
-                        invalidAppName: !appName.trim(),
+                        invalidAppName: !validatedAppName.isValid,
+                        invalidAppNameMessage: validatedAppName.message,
                         invalidaEnvironment: !commonState.selectedEnvironment,
                         invalidProject: !commonState.selectedProject,
                     })
@@ -697,6 +710,7 @@ function ChartValuesView({
                 } else if (Object.values(chartValidations).some((isInvalid) => isInvalid)) {
                     setChartValidations({
                         invalidAppName: false,
+                        invalidAppNameMessage: '',
                         invalidaEnvironment: false,
                         invalidProject: false,
                     })
@@ -864,10 +878,24 @@ function ChartValuesView({
 
     const handleProjectSelection = (selected: ChartValuesOptionType) => {
         dispatch({ type: 'selectedProject', payload: selected })
+
+        if (chartValidations.invalidProject) {
+            setChartValidations({
+                ...chartValidations,
+                invalidProject: false,
+            })
+        }
     }
 
     const handleEnvironmentSelection = (selected: ChartEnvironmentOptionType) => {
         dispatch({ type: 'selectedEnvironment', payload: selected })
+
+        if (chartValidations.invalidaEnvironment) {
+            setChartValidations({
+                ...chartValidations,
+                invalidaEnvironment: false,
+            })
+        }
     }
 
     const handleVersionSelection = (selectedVersion: number, selectedVersionUpdatePage: ChartVersionType) => {
@@ -882,6 +910,24 @@ function ChartValuesView({
 
     const handleChartValuesSelection = (chartValues: ChartValuesType) => {
         dispatch({ type: 'chartValues', payload: chartValues })
+    }
+
+    const handleAppNameChange = (newAppName: string) => {
+        const validatedAppName = validationRules.appName(newAppName)
+        if (!validatedAppName.isValid && chartValidations.invalidAppNameMessage !== validatedAppName.message) {
+            setChartValidations({
+                ...chartValidations,
+                invalidAppName: true,
+                invalidAppNameMessage: validatedAppName.message,
+            })
+        } else if (validatedAppName.isValid) {
+            setChartValidations({
+                ...chartValidations,
+                invalidAppName: false,
+                invalidAppNameMessage: '',
+            })
+        }
+        setAppName(newAppName)
     }
 
     const renderData = () => {
@@ -900,8 +946,9 @@ function ChartValuesView({
                         {isDeployChartView && (
                             <AppNameInput
                                 appName={appName}
-                                setAppName={setAppName}
+                                handleAppNameChange={handleAppNameChange}
                                 invalidAppName={chartValidations.invalidAppName}
+                                invalidAppNameMessage={chartValidations.invalidAppNameMessage}
                             />
                         )}
                         {!isExternalApp &&

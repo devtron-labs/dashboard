@@ -991,25 +991,27 @@ export const AppNotLinkedDialog = ({
     )
 }
 
-const renderValidationErrorLabel = (): JSX.Element => {
+const renderValidationErrorLabel = (message?: string): JSX.Element => {
     return (
         <div className="error-label flex left align-start fs-11 fw-4 mt-6">
             <div className="error-label-icon">
                 <Error className="icon-dim-16" />
             </div>
-            <div className="ml-4 cr-5">This is a required field</div>
+            <div className="ml-4 cr-5">{message ? message : 'This is a required field'}</div>
         </div>
     )
 }
 
 export const AppNameInput = ({
     appName,
-    setAppName,
+    handleAppNameChange,
     invalidAppName,
+    invalidAppNameMessage,
 }: {
     appName: string
-    setAppName: React.Dispatch<React.SetStateAction<string>>
+    handleAppNameChange: (newAppName: string) => void
     invalidAppName: boolean
+    invalidAppNameMessage: string
 }) => {
     return (
         <label className="form__row form__row--w-100">
@@ -1020,9 +1022,9 @@ export const AppNameInput = ({
                 placeholder="Eg. app-name"
                 className="form__input"
                 value={appName}
-                onChange={(e) => setAppName(e.target.value)}
+                onChange={(e) => handleAppNameChange(e.target.value)}
             />
-            {invalidAppName && renderValidationErrorLabel()}
+            {invalidAppName && renderValidationErrorLabel(invalidAppNameMessage)}
         </label>
     )
 }

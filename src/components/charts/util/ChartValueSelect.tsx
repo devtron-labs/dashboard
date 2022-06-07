@@ -23,9 +23,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
     }
 
     onChange(event) {
-        let chartValue = event.target.value;
-        console.log(chartValue)
-        this.props.onChange(chartValue);
+        this.props.onChange(event.target.value);
     }
 
     selectionComparator(value: ChartValuesType): boolean {
