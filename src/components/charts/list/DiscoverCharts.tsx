@@ -37,6 +37,7 @@ import ChartHeaderFilter from '../ChartHeaderFilters'
 import { QueryParams } from '../charts.util'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
+import PageHeader from '../../common/header/PageHeader'
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -61,7 +62,6 @@ function DiscoverChartList() {
     const history = useHistory()
     const match = useRouteMatch()
     const { url } = match
-    const { breadcrumbs, setCrumb } = useBreadcrumb({})
     const {
         state,
         configureChart,
@@ -216,40 +216,52 @@ function DiscoverChartList() {
         setSelectedChartRepo(appliedChartRepoFilter)
     }
 
+    function renderCreateGroupButton() {
+        return (
+            <div className="page-header__cta-container flex">
+                {chartList.length > 0 && serverMode == SERVER_MODE.FULL && state.charts.length === 0 && (
+                    <button
+                        type="button"
+                        className="cta flex h-32 lh-n"
+                        onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}
+                    >
+                        <Add className="icon-dim-18 mr-5" />
+                        Create Group
+                    </button>
+                )}
+            </div>
+        )
+    }
+
+    const renderBreadcrumbs = () => {
+        return (
+            <div className="m-0 flex left ">
+                {state.charts.length > 0 && (
+                    <>
+                        <NavLink to={match.url} className="devtron-breadcrumb__item">
+                            <span className="cb-5 fs-16 cursor">Discover </span>
+                        </NavLink>
+                        <span className="fs-16 cn-5 ml-4 mr-4"> / </span>
+                    </>
+                )}
+                <span className="fs-16 cn-9">
+                    {state.charts.length === 0 ? 'Chart Store' : 'Deploy multiple charts'}
+                </span>
+            </div>
+        )
+    }
+
     return (
         <>
-            <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''}`}>
-                <div className={`page-header ${state.charts.length === 0 ? 'page-header--tabs' : ''}`}>
-                    <ConditionalWrap
-                        condition={state.charts.length > 0}
-                        wrap={(children) => <div className="flex left column">{children}</div>}
-                    >
-                        <>
-                            {state.charts.length > 0 && (
-                                <div className="flex left">
-                                    <BreadCrumb breadcrumbs={breadcrumbs.slice(1)} />
-                                </div>
-                            )}
-                            <div className="page-header__title flex left">
-                                {state.charts.length === 0 ? 'Chart Store' : 'Deploy multiple charts'}
-                            </div>
-                            {state.charts.length === 0 && <ChartDetailNavigator />}
-                        </>
-                    </ConditionalWrap>
+            <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''} chart-store-header`}>
+                <ConditionalWrap condition={state.charts.length > 0} wrap={(children) => <div>{children}</div>}>
+                    <PageHeader
+                        isBreadcrumbs={true}
+                        breadCrumbs={renderBreadcrumbs}
+                        renderActionButtons={renderCreateGroupButton}
+                    />
+                </ConditionalWrap>
 
-                    <div className="page-header__cta-container flex">
-                        {chartList.length > 0 && serverMode == SERVER_MODE.FULL && state.charts.length === 0 && (
-                            <button
-                                type="button"
-                                className="cta flex"
-                                onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}
-                            >
-                                <Add className="icon-dim-18 mr-5" />
-                                Create Group
-                            </button>
-                        )}
-                    </div>
-                </div>
                 <Prompt
                     when={isLeavingPageNotAllowed.current}
                     message={'Your changes will be lost. Do you want to leave without deploying?'}
