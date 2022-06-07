@@ -385,7 +385,7 @@ function ChartValuesView({
                         commonState.chartValues?.id ||
                         commonState.installedConfig.appStoreVersion,
                     isExternalApp
-                        ? releaseAndInstalledAppInfo.releaseInfo?.mergedValues
+                        ? releaseAndInstalledAppInfo.releaseInfo.mergedValues
                         : commonState.installedConfig.valuesOverrideYaml,
                     dispatch,
                 )
@@ -492,7 +492,7 @@ function ChartValuesView({
         }
         setDeleteInProgress(true)
         setShowDeleteAppConfirmationDialog(false)
-        getDeleteApplicationApi()
+        getDeleteApplicationApi(force)
             .then(() => {
                 setDeleteInProgress(false)
                 toast.success('Successfully deleted.')
@@ -685,7 +685,13 @@ function ChartValuesView({
                         invalidaEnvironment: !commonState.selectedEnvironment,
                         invalidProject: !commonState.selectedProject,
                     })
-                    dispatch({ type: 'openReadMe', payload: false })
+                    dispatch({
+                        type: 'multipleOptions',
+                        payload: {
+                            openReadMe: false,
+                            openComparison: false,
+                        },
+                    })
                     toast.error('Please provide the required inputs to view generated manifest')
                     return
                 } else if (Object.values(chartValidations).some((isInvalid) => isInvalid)) {
@@ -958,6 +964,7 @@ function ChartValuesView({
                                 redirectToChartValues={redirectToChartValues}
                                 handleChartValuesSelection={handleChartValuesSelection}
                                 hideVersionFromLabel={
+                                    isExternalApp &&
                                     !releaseAndInstalledAppInfo.installedAppInfo &&
                                     commonState.chartValues.kind === 'EXISTING'
                                 }
@@ -1031,7 +1038,10 @@ function ChartValuesView({
                 </div>
                 {showDeleteAppConfirmationDialog && (
                     <DeleteChartDialog
-                        appName={releaseAndInstalledAppInfo.releaseInfo.deployedAppDetail.appName}
+                        appName={
+                            (isExternalApp && releaseAndInstalledAppInfo.releaseInfo.deployedAppDetail.appName) ||
+                            commonState.installedConfig?.appName
+                        }
                         handleDelete={deleteApplication}
                         toggleConfirmation={setShowDeleteAppConfirmationDialog}
                     />
