@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import HelpNav from '../HelpNav'
 import './pageHeader.css'
+import LogoutCard from '../LogoutCard'
+import { getRandomColor } from '..'
 export interface PageHeaderType {
     headerName?: string
     isTippyShown?: boolean
@@ -36,21 +38,30 @@ function PageHeader({
     onClose,
 }: PageHeaderType) {
     const [showHelpCard, setShowHelpCard] = useState(false)
+    const [showLogOutCard, setShowLogOutCard] = useState(false)
+    const [loginInfo] = useState(undefined)
 
-    const toggleHelpButton = () => {
-        setShowHelpCard(!showHelpCard)
-    }
-
-    const renderLoginHelpSection = () => {
+    const renderHelpSection = () => {
         return (
-            <div className="flex left cursor" onClick={toggleHelpButton}>
-                <span className="icon-dim-20 mr-4 ml-16">
-                    <Question />
-                </span>
-                <span className="fs-13 cn-6">Help</span>
-            </div>
+            <>
+                <div className="flex left cursor mr-16" onClick={() => setShowHelpCard(!showHelpCard)}>
+                    <span className="icon-dim-20 mr-8 ml-16">
+                        <Question />
+                    </span>
+                    <span className="fs-13 cn-6">Help</span>
+                </div>
+                <div
+                    className="logout-card__initial cursor fs-13 icon-dim-20 flex"
+                    onClick={() => setShowLogOutCard(!showLogOutCard)}
+                    style={{ backgroundColor: getRandomColor(email) }}
+                >
+                    {email[0]}
+                </div>
+            </>
         )
     }
+
+    const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : ''
 
     return (
         <div
@@ -85,11 +96,12 @@ function PageHeader({
                 )}
             </h1>
             {showTabs && renderHeaderTabs()}
+            {showHelpCard && <HelpNav className={'help-card__more-option'} />}
+            {showLogOutCard && <LogoutCard className={'logout-card__more-option'} />}
             <div className="flex left">
                 {typeof renderActionButtons === 'function' && renderActionButtons()}
-                {renderLoginHelpSection()}
+                {renderHelpSection()}
             </div>
-            {showHelpCard && <HelpNav className={'help-card__more-option'} />}
         </div>
     )
 }

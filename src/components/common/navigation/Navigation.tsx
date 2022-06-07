@@ -160,7 +160,11 @@ export default class Navigation extends Component<
         let email: string = this.state.loginInfo ? this.state.loginInfo['email'] || this.state.loginInfo['sub'] : ''
         return ReactDOM.createPortal(
             <div className="transparent-div" onClick={this.toggleLogoutCard}>
-                <div className={`logout-card ${window._env_?.HIDE_DISCORD ? 'sticky__bottom-option' : ''}`}>
+                <div
+                    className={`logout-card ${
+                        window._env_?.HIDE_DISCORD ? 'sticky__bottom-option' : ''
+                    } logout-card__position`}
+                >
                     <div className="flexbox flex-justify p-16">
                         <div className="logout-card-user ">
                             <p className="logout-card__name ellipsis-right">{email}</p>

@@ -5,7 +5,6 @@ import { ReactComponent as File } from '../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Discord } from '../../assets/icons/ic-discord-fill.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Chat } from '../../assets/icons/ic-chat-circle-dots.svg'
-import ReactDOM from 'react-dom'
 
 export interface HelpNavType {
     className: string
@@ -37,8 +36,8 @@ function HelpNav({ className }: HelpNavType) {
         },
     ]
 
-    function renderHelpCard() {
-        return (
+    return (
+        <div className="transparent-div">
             <div className={`help-card  pt-4 ${className}`}>
                 {HelpOptions.map((option) => {
                     return (
@@ -66,10 +65,8 @@ function HelpNav({ className }: HelpNavType) {
                     )
                 })}
             </div>
-        )
-    }
-
-    return <div className="transparent-div">{renderHelpCard()}</div>
+        </div>
+    )
 }
 
 export default HelpNav
