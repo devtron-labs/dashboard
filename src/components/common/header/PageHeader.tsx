@@ -60,7 +60,7 @@ function PageHeader({
                     <span className="icon-dim-20 mr-8 ml-16">
                         <Question />
                     </span>
-                    <span className="fs-13 cn-6">Help</span>
+                    <span className="fs-13 cn-6 fw-6">Help</span>
                 </div>
                 <div
                     className="logout-card__initial cursor fs-13 icon-dim-20 flex"

@@ -349,46 +349,7 @@ export default class Navigation extends Component<
                                         action: `Help Clicked`,
                                     })
                                 }}
-                            >
-                                <div
-                                    className="short-nav--flex"
-                                    onClick={() => {
-                                        if (this.props.serverInfo?.installationType === InstallationType.OSS_HELM) {
-                                            this.props.getCurrentServerInfo('navigation')
-                                        }
-                                        this.toggleHelpCard()
-                                    }}
-                                >
-                                    <div className="short-nav__icon-container icon-dim-40 flex">
-                                        <Help className="help-option-icon icon-dim-24" />
-                                    </div>
-                                    <div className="expandable-active-nav">
-                                        <div className="title-container flex left">Help</div>
-                                    </div>
-                                </div>
-                            </div>
-                            {this.state.showHelpCard && this.renderHelpCard()}
-                            <div className="short-nav--flex">
-                                <div className="short-nav__icon-container icon-dim-40 flex">
-                                    <div
-                                        className="logout-card__initial icon-dim-24 fs-12 logout-card__initial--nav"
-                                        onClick={this.toggleLogoutCard}
-                                        style={{ backgroundColor: getRandomColor(email) }}
-                                    >
-                                        {email[0]}
-                                    </div>
-                                </div>
-                                <div>
-                                    <button
-                                        type="button"
-                                        className="transparent ellipsis-right expandable-active-nav title-container"
-                                        onClick={this.toggleLogoutCard}
-                                    >
-                                        {email}
-                                    </button>
-                                </div>
-                            </div>
-                            {this.state.showLogoutCard && this.renderLogout()}
+                            ></div>
                         </div>
                     </aside>
                 </nav>
