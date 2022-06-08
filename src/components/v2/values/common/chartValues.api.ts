@@ -9,7 +9,7 @@ import {
     getReadme,
 } from '../../../charts/charts.service'
 import { showError, sortCallback, sortObjectArrayAlphabetically } from '../../../common'
-import { ChartValuesViewAction } from '../chartValuesDiff/ChartValuesView.reducer'
+import { ChartKind, ChartValuesViewAction, ChartValuesViewActionTypes } from '../chartValuesDiff/ChartValuesView.type'
 
 export async function fetchChartVersionsData(
     id: number,
@@ -22,7 +22,7 @@ export async function fetchChartVersionsData(
             (currentChartVersion && result.find((e) => e.version === currentChartVersion)) || result[0]
 
         dispatch({
-            type: 'multipleOptions',
+            type: ChartValuesViewActionTypes.multipleOptions,
             payload: {
                 isLoading: false,
                 chartVersionsData: result,
@@ -33,7 +33,7 @@ export async function fetchChartVersionsData(
     } catch (err) {
         showError(err)
         dispatch({
-            type: 'isLoading',
+            type: ChartValuesViewActionTypes.isLoading,
             payload: false,
         })
     }
@@ -52,7 +52,7 @@ export async function getChartValuesList(
         if (installedAppVersionId && handleChartValuesSelection) {
             handleChartValuesSelection({
                 id: initId,
-                kind: 'EXISTING',
+                kind: ChartKind.EXISTING
             })
         }
     } catch (err) {
@@ -66,13 +66,13 @@ export async function getChartRelatedReadMe(
     dispatch: (action: ChartValuesViewAction) => void,
 ) {
     try {
-        dispatch({ type: 'fetchingReadMe', payload: true })
+        dispatch({ type: ChartValuesViewActionTypes.fetchingReadMe, payload: true })
         const { result } = await getReadme(id)
         const _fetchedReadMe = currentFetchedReadMe
         _fetchedReadMe.set(id, result.readme)
 
         dispatch({
-            type: 'multipleOptions',
+            type: ChartValuesViewActionTypes.multipleOptions,
             payload: {
                 fetchingReadMe: false,
                 fetchedReadMe: _fetchedReadMe,
@@ -82,7 +82,7 @@ export async function getChartRelatedReadMe(
     } catch (err) {
         showError(err)
         dispatch({
-            type: 'multipleOptions',
+            type: ChartValuesViewActionTypes.multipleOptions,
             payload: {
                 fetchingReadMe: false,
                 isReadMeAvailable: false,
@@ -111,7 +111,7 @@ export async function getGeneratedHelmManifest(
         })
 
         dispatch({
-            type: 'multipleOptions',
+            type: ChartValuesViewActionTypes.multipleOptions,
             payload: {
                 generatingManifest: false,
                 generatedManifest: result.manifest,
@@ -128,7 +128,7 @@ export async function getGeneratedHelmManifest(
         }
 
         dispatch({
-            type: 'multipleOptions',
+            type: ChartValuesViewActionTypes.multipleOptions,
             payload: {
                 generatingManifest: false,
                 valuesEditorError: errorMessage,
@@ -184,7 +184,7 @@ export async function fetchProjectsAndEnvironments(
             .sort((a, b) => sortCallback('label', a, b, true))
 
         dispatch({
-            type: 'multipleOptions',
+            type: ChartValuesViewActionTypes.multipleOptions,
             payload: {
                 environments: envList,
                 projects: projectList,

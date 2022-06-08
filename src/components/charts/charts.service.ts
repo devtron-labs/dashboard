@@ -16,7 +16,7 @@ export function getChartVersionDetails(versionId) {
     return get(`app-store/discover/application/${versionId}`)
 }
 
-export function getChartVersionDetails2(versionId) {
+export function getChartVersionDetailsV2(versionId) {
     return get(`app-store/deployment/application/version/${versionId}`)
 }
 

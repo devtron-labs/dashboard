@@ -21,7 +21,10 @@ import {
     ChartProjectSelectorType,
     ChartGroupOptionType,
     ChartValuesDiffOptionType,
-    ChartRepoOtions,
+    ChartRepoOptions,
+    ChartKind,
+    ChartValuesViewActionTypes,
+    ChartValuesViewAction,
 } from './ChartValuesView.type'
 import { getChartsByKeyword, getChartValues } from '../../../charts/charts.service'
 import CodeEditor from '../../../CodeEditor/CodeEditor'
@@ -33,7 +36,7 @@ import moment from 'moment'
 import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
 import EmptyState from '../../../EmptyState/EmptyState'
-import { ChartValuesViewAction } from './ChartValuesView.reducer'
+import { getCommonSelectStyle } from './ChartValuesView.utils'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -70,60 +73,10 @@ export const ChartEnvironmentSelector = ({
                     DropdownIndicator,
                     Option,
                 }}
-                isDisabled={!!isUpdate}
                 classNamePrefix="values-environment-select"
                 placeholder="Select Environment"
                 value={selectedEnvironment}
-                styles={{
-                    menuList: (base) => ({
-                        ...base,
-                        paddingTop: 0,
-                        paddingBottom: 0,
-                    }),
-                    control: (base, state) => ({
-                        ...base,
-                        minHeight: '32px',
-                        boxShadow: 'none',
-                        backgroundColor: 'var(--N50)',
-                        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                        cursor: 'pointer',
-                    }),
-                    option: (base, state) => {
-                        return {
-                            ...base,
-                            color: 'var(--N900)',
-                            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                            padding: '10px 12px',
-                        }
-                    },
-                    dropdownIndicator: (base, state) => {
-                        return {
-                            ...base,
-                            color: 'var(--N400)',
-                            padding: '0 8px',
-                            transition: 'all .2s ease',
-                            transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                        }
-                    },
-                    valueContainer: (base, state) => {
-                        return {
-                            ...base,
-                            padding: '0 8px',
-                        }
-                    },
-                    loadingMessage: (base) => {
-                        return {
-                            ...base,
-                            color: 'var(--N600)',
-                        }
-                    },
-                    noOptionsMessage: (base) => {
-                        return {
-                            ...base,
-                            color: 'var(--N600)',
-                        }
-                    },
-                }}
+                styles={getCommonSelectStyle()}
                 onChange={handleEnvironmentSelection}
                 options={environments}
             />
@@ -155,56 +108,7 @@ export const ChartProjectSelector = ({
                 }}
                 placeholder="Select Project"
                 value={selectedProject}
-                styles={{
-                    menuList: (base) => ({
-                        ...base,
-                        paddingTop: 0,
-                        paddingBottom: 0,
-                    }),
-                    control: (base, state) => ({
-                        ...base,
-                        minHeight: '32px',
-                        boxShadow: 'none',
-                        backgroundColor: 'var(--N50)',
-                        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                        cursor: 'pointer',
-                    }),
-                    option: (base, state) => {
-                        return {
-                            ...base,
-                            color: 'var(--N900)',
-                            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                            padding: '10px 12px',
-                        }
-                    },
-                    dropdownIndicator: (base, state) => {
-                        return {
-                            ...base,
-                            color: 'var(--N400)',
-                            padding: '0 8px',
-                            transition: 'all .2s ease',
-                            transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                        }
-                    },
-                    valueContainer: (base, state) => {
-                        return {
-                            ...base,
-                            padding: '0 8px',
-                        }
-                    },
-                    loadingMessage: (base) => {
-                        return {
-                            ...base,
-                            color: 'var(--N600)',
-                        }
-                    },
-                    noOptionsMessage: (base) => {
-                        return {
-                            ...base,
-                            color: 'var(--N600)',
-                        }
-                    },
-                }}
+                styles={getCommonSelectStyle()}
                 onChange={handleProjectSelection}
                 options={projects}
             />
@@ -222,7 +126,7 @@ export const ChartRepoSelector = ({
     chartDetails,
 }: ChartRepoSelectorType) => {
     const [repoChartAPIMade, setRepoChartAPIMade] = useState(false)
-    const [repoChartOptions, setRepoChartOptions] = useState<ChartRepoOtions[] | null>(
+    const [repoChartOptions, setRepoChartOptions] = useState<ChartRepoOptions[] | null>(
         isExternal && !installedAppInfo ? [] : [chartDetails],
     )
     const [refetchingCharts, setRefetchingCharts] = useState(false)
@@ -360,56 +264,7 @@ export const ChartRepoSelector = ({
                             Option: repoChartOptionLabel,
                             MenuList: customMenuListItem,
                         }}
-                        styles={{
-                            menuList: (base) => ({
-                                ...base,
-                                paddingTop: 0,
-                                paddingBottom: 0,
-                            }),
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: '32px',
-                                boxShadow: 'none',
-                                backgroundColor: 'var(--N50)',
-                                border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                                cursor: 'pointer',
-                            }),
-                            option: (base, state) => {
-                                return {
-                                    ...base,
-                                    color: 'var(--N900)',
-                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                    padding: '10px 12px',
-                                }
-                            },
-                            dropdownIndicator: (base, state) => {
-                                return {
-                                    ...base,
-                                    color: 'var(--N400)',
-                                    padding: '0 8px',
-                                    transition: 'all .2s ease',
-                                    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                                }
-                            },
-                            valueContainer: (base, state) => {
-                                return {
-                                    ...base,
-                                    padding: '0 8px',
-                                }
-                            },
-                            loadingMessage: (base) => {
-                                return {
-                                    ...base,
-                                    color: 'var(--N600)',
-                                }
-                            },
-                            noOptionsMessage: (base) => {
-                                return {
-                                    ...base,
-                                    color: 'var(--N600)',
-                                }
-                            },
-                        }}
+                        styles={getCommonSelectStyle()}
                     />
                 </div>
                 {repoChartValue.deprecated && (
@@ -620,7 +475,7 @@ const CompareWithDropdown = ({
             isSearchable={false}
             value={selectedVersionForDiff}
             classNamePrefix="compare-values-select"
-            isOptionDisabled={(option) => option.label === 'No options'}
+            isOptionDisabled={(option) => option.value === 0}
             formatOptionLabel={formatOptionLabel}
             components={{
                 IndicatorSeparator: null,
@@ -628,51 +483,41 @@ const CompareWithDropdown = ({
                 Option,
             }}
             styles={{
-                control: (base, state) => ({
+                control: (base) => ({
                     ...base,
                     backgroundColor: 'var(--N100)',
                     border: 'none',
                     boxShadow: 'none',
                     minHeight: '32px',
                 }),
-                option: (base, state) => {
-                    return {
-                        ...base,
-                        color: 'var(--N900)',
-                        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                    }
-                },
-                menu: (base) => {
-                    return {
-                        ...base,
-                        marginTop: '2px',
-                        minWidth: '240px',
-                    }
-                },
-                menuList: (base) => {
-                    return {
-                        ...base,
-                        position: 'relative',
-                        paddingBottom: 0,
-                        paddingTop: 0,
-                        maxHeight: '250px',
-                    }
-                },
-                dropdownIndicator: (base, state) => {
-                    return {
-                        ...base,
-                        padding: 0,
-                        color: 'var(--N400)',
-                        transition: 'all .2s ease',
-                        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                    }
-                },
-                noOptionsMessage: (base) => {
-                    return {
-                        ...base,
-                        color: 'var(--N600)',
-                    }
-                },
+                option: (base, state) => ({
+                    ...base,
+                    color: 'var(--N900)',
+                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                }),
+                menu: (base) => ({
+                    ...base,
+                    marginTop: '2px',
+                    minWidth: '240px',
+                }),
+                menuList: (base) => ({
+                    ...base,
+                    position: 'relative',
+                    paddingBottom: 0,
+                    paddingTop: 0,
+                    maxHeight: '250px',
+                }),
+                dropdownIndicator: (base, state) => ({
+                    ...base,
+                    padding: 0,
+                    color: 'var(--N400)',
+                    transition: 'all .2s ease',
+                    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                }),
+                noOptionsMessage: (base) => ({
+                    ...base,
+                    color: 'var(--N600)',
+                }),
             }}
             onChange={handleSelectedVersionForDiff}
         />
@@ -715,13 +560,9 @@ export const ChartValuesEditor = ({
     })
 
     useEffect(() => {
-        if (
-            !manifestView &&
-            chartValuesList.length > 0 &&
-            (isDeployChartView || (!isDeployChartView && deploymentHistoryList.length > 0))
-        ) {
+        if (!manifestView && chartValuesList.length > 0 && (isDeployChartView || deploymentHistoryList.length > 0)) {
             const filteredChartValues = chartValuesList
-                .filter((_chartValue) => _chartValue.kind === 'DEPLOYED')
+                .filter((_chartValue) => _chartValue.kind === ChartKind.DEPLOYED)
                 .map((_chartValue) => {
                     return {
                         label: _chartValue.name,
@@ -759,7 +600,7 @@ export const ChartValuesEditor = ({
             const _version = manifestView ? deploymentHistoryList[0].version : selectedVersionForDiff.value
             const _currentValues = valuesForDiffState.valuesForDiff.get(_version)
             if (!_currentValues) {
-                if (selectedVersionForDiff.kind === 'DEPLOYED') {
+                if (selectedVersionForDiff.kind === ChartKind.DEPLOYED) {
                     getChartValues(_version, selectedVersionForDiff.kind)
                         .then((res) => {
                             const _valuesForDiff = valuesForDiffState.valuesForDiff
@@ -940,13 +781,13 @@ export const DeleteChartDialog = ({
 }: {
     appName: string
     handleDelete: (force?: boolean) => void
-    toggleConfirmation: React.Dispatch<React.SetStateAction<boolean>>
+    toggleConfirmation: () => void
 }) => {
     return (
         <DeleteDialog
             title={`Delete '${appName}' ?`}
             delete={() => handleDelete(false)}
-            closeDelete={() => toggleConfirmation(false)}
+            closeDelete={toggleConfirmation}
         >
             <DeleteDialog.Description>
                 <p>This will delete all resources associated with this application.</p>
@@ -1048,7 +889,7 @@ export const DeleteApplicationButton = ({
             disabled={isUpdateInProgress || isDeleteInProgress}
             onClick={(e) =>
                 dispatch({
-                    type: 'showDeleteAppConfirmationDialog',
+                    type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
                     payload: true,
                 })
             }

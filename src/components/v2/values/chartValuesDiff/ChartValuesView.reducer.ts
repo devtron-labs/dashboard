@@ -1,56 +1,5 @@
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
-import { InstalledAppInfo, ReleaseInfo } from '../../../external-apps/ExternalAppService'
-import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
-import { ChartEnvironmentOptionType, ChartRepoOtions, ChartValuesOptionType } from './ChartValuesView.type'
-
-export interface ChartValuesViewState {
-    isLoading: boolean
-    openReadMe: boolean
-    openComparison: boolean
-    isUpdateInProgress: boolean
-    isDeleteInProgress: boolean
-    showDeleteAppConfirmationDialog: boolean
-    showAppNotLinkedDialog: boolean
-    selectedProject: ChartValuesOptionType
-    selectedEnvironment: ChartEnvironmentOptionType
-    selectedVersion: number
-    selectedVersionUpdatePage: ChartVersionType
-    chartValues: ChartValuesType
-    repoChartValue: ChartRepoOtions
-    fetchingValuesYaml: boolean
-    modifiedValuesYaml: string
-    valuesYamlUpdated: boolean
-    generatingManifest: boolean
-    manifestGenerationKey: string
-    generatedManifest: string
-    valuesEditorError: string
-    installedConfig: any
-    fetchingReadMe: boolean
-    fetchedReadMe: Map<number, string>
-    activeTab: string
-    isComparisonAvailable: boolean
-    isReadMeAvailable: boolean
-    releaseInfo: ReleaseInfo
-    installedAppInfo: InstalledAppInfo
-    chartVersionsData: ChartVersionType[]
-    projects: ChartValuesOptionType[]
-    environments: ChartEnvironmentOptionType[]
-    deploymentHistoryArr: ChartDeploymentDetail[]
-    forceDeleteData: {
-        forceDelete: boolean
-        title: string
-        message: string
-    }
-    errorResponseCode: number
-    invalidAppName: boolean
-    invalidAppNameMessage: string
-    invalidaEnvironment: boolean
-    invalidProject: boolean
-}
-export interface ChartValuesViewAction {
-    type: string
-    payload: any
-}
+import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
 
 export const initState = (
     selectedVersionFromParent: number,
@@ -106,83 +55,83 @@ export const initState = (
 
 export const chartValuesReducer = (state: ChartValuesViewState, action: ChartValuesViewAction) => {
     switch (action.type) {
-        case 'isLoading':
+        case ChartValuesViewActionTypes.isLoading:
             return { ...state, isLoading: action.payload }
-        case 'openReadMe':
+        case ChartValuesViewActionTypes.openReadMe:
             return { ...state, openReadMe: action.payload }
-        case 'openComparison':
+        case ChartValuesViewActionTypes.openComparison:
             return { ...state, openComparison: action.payload }
-        case 'isUpdateInProgress':
+        case ChartValuesViewActionTypes.isUpdateInProgress:
             return { ...state, isUpdateInProgress: action.payload }
-        case 'isDeleteInProgress':
+        case ChartValuesViewActionTypes.isDeleteInProgress:
             return { ...state, isDeleteInProgress: action.payload }
-        case 'showDeleteAppConfirmationDialog':
+        case ChartValuesViewActionTypes.showDeleteAppConfirmationDialog:
             return { ...state, showDeleteAppConfirmationDialog: action.payload }
-        case 'showAppNotLinkedDialog':
+        case ChartValuesViewActionTypes.showAppNotLinkedDialog:
             return { ...state, showAppNotLinkedDialog: action.payload }
-        case 'selectedProject':
+        case ChartValuesViewActionTypes.selectedProject:
             return { ...state, selectedProject: action.payload }
-        case 'selectedEnvironment':
+        case ChartValuesViewActionTypes.selectedEnvironment:
             return { ...state, selectedEnvironment: action.payload }
-        case 'selectedVersion':
+        case ChartValuesViewActionTypes.selectedVersion:
             return { ...state, selectedVersion: action.payload }
-        case 'selectedVersionUpdatePage':
+        case ChartValuesViewActionTypes.selectedVersionUpdatePage:
             return { ...state, selectedVersionUpdatePage: action.payload }
-        case 'chartValues':
+        case ChartValuesViewActionTypes.chartValues:
             return { ...state, chartValues: action.payload }
-        case 'repoChartValue':
+        case ChartValuesViewActionTypes.repoChartValue:
             return { ...state, repoChartValue: action.payload }
-        case 'fetchingValuesYaml':
+        case ChartValuesViewActionTypes.fetchingValuesYaml:
             return { ...state, fetchingValuesYaml: action.payload }
-        case 'modifiedValuesYaml':
+        case ChartValuesViewActionTypes.modifiedValuesYaml:
             return { ...state, modifiedValuesYaml: action.payload }
-        case 'valuesYamlUpdated':
+        case ChartValuesViewActionTypes.valuesYamlUpdated:
             return { ...state, valuesYamlUpdated: action.payload }
-        case 'generatingManifest':
+        case ChartValuesViewActionTypes.generatingManifest:
             return { ...state, generatingManifest: action.payload }
-        case 'manifestGenerationKey':
+        case ChartValuesViewActionTypes.manifestGenerationKey:
             return { ...state, manifestGenerationKey: action.payload }
-        case 'generatedManifest':
+        case ChartValuesViewActionTypes.generatedManifest:
             return { ...state, generatedManifest: action.payload }
-        case 'valuesEditorError':
+        case ChartValuesViewActionTypes.valuesEditorError:
             return { ...state, valuesEditorError: action.payload }
-        case 'installedConfig':
+        case ChartValuesViewActionTypes.installedConfig:
             return { ...state, installedConfig: action.payload }
-        case 'fetchingReadMe':
+        case ChartValuesViewActionTypes.fetchingReadMe:
             return { ...state, fetchingReadMe: action.payload }
-        case 'fetchedReadMe':
+        case ChartValuesViewActionTypes.fetchedReadMe:
             return { ...state, fetchedReadMe: action.payload }
-        case 'activeTab':
+        case ChartValuesViewActionTypes.activeTab:
             return { ...state, activeTab: action.payload }
-        case 'isComparisonAvailable':
+        case ChartValuesViewActionTypes.isComparisonAvailable:
             return { ...state, isComparisonAvailable: action.payload }
-        case 'isReadMeAvailable':
+        case ChartValuesViewActionTypes.isReadMeAvailable:
             return { ...state, isReadMeAvailable: action.payload }
-        case 'releaseInfo':
+        case ChartValuesViewActionTypes.releaseInfo:
             return { ...state, releaseInfo: action.payload }
-        case 'installedAppInfo':
+        case ChartValuesViewActionTypes.installedAppInfo:
             return { ...state, installedAppInfo: action.payload }
-        case 'chartVersionsData':
+        case ChartValuesViewActionTypes.chartVersionsData:
             return { ...state, chartVersionsData: action.payload }
-        case 'projects':
+        case ChartValuesViewActionTypes.projects:
             return { ...state, projects: action.payload }
-        case 'environments':
+        case ChartValuesViewActionTypes.environments:
             return { ...state, environments: action.payload }
-        case 'forceDeleteData':
+        case ChartValuesViewActionTypes.forceDeleteData:
             return { ...state, forceDeleteData: action.payload }
-        case 'errorResponseCode':
+        case ChartValuesViewActionTypes.errorResponseCode:
             return { ...state, errorResponseCode: action.payload }
-        case 'invalidAppName':
+        case ChartValuesViewActionTypes.invalidAppName:
             return { ...state, invalidAppName: action.payload }
-        case 'invalidAppNameMessage':
+        case ChartValuesViewActionTypes.invalidAppNameMessage:
             return { ...state, invalidAppNameMessage: action.payload }
-        case 'invalidaEnvironment':
+        case ChartValuesViewActionTypes.invalidaEnvironment:
             return { ...state, invalidaEnvironment: action.payload }
-        case 'invalidProject':
+        case ChartValuesViewActionTypes.invalidProject:
             return { ...state, invalidProject: action.payload }
-        case 'deploymentHistoryArr':
+        case ChartValuesViewActionTypes.deploymentHistoryArr:
             return { ...state, deploymentHistoryArr: action.payload }
-        case 'multipleOptions':
+        case ChartValuesViewActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:
             return state

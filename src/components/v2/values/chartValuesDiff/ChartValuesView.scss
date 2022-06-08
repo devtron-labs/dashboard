@@ -45,7 +45,7 @@
 
     &.readmeOpened {
         .chart-values-view__wrapper {
-            grid-template-columns: 50% auto 50%;
+            grid-template-columns: 49.9% 0.2% 49.9%;
 
             .chart-values-view__details {
                 display: none;
@@ -151,14 +151,12 @@
                 color: var(--R500);
             }
 
-            .error-label {
-                .error-label-icon {
-                    width: 16px;
-                    height: 16px;
+            .error-label .error-label-icon {
+                width: 16px;
+                height: 16px;
 
-                    svg g path:nth-of-type(2) {
-                        fill: var(--R500);
-                    }
+                svg g path:nth-of-type(2) {
+                    fill: var(--R500);
                 }
             }
         }
@@ -339,7 +337,6 @@
     }
     .select__check-icon {
         position: absolute;
-        // top: 10px;
         left: 20px;
     }
 }

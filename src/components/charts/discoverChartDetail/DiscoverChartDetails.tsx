@@ -34,6 +34,7 @@ import warn from '../../../assets/icons/ic-warning.svg'
 import './DiscoverChartDetails.scss'
 import PageHeader from '../../common/header/PageHeader'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
+import { ChartInstalledConfig } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
 
 const DiscoverDetailsContext = React.createContext(null)
 
@@ -118,9 +119,8 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         [chartId],
     )
 
-    function goBackToDiscoverChart(isReload = false) {
-        const url = `${URLS.CHARTS}/discover/chart/${chartId}`
-        history.push(url)
+    function goBackToDiscoverChart() {
+        history.push(`${URLS.CHARTS}/discover/chart/${chartId}`)
     }
 
     async function fetchVersions() {
@@ -265,7 +265,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                                         />
                                         <ChartValuesView
                                             isDeployChartView={true}
-                                            installedConfigFromParent={chartInformation}
+                                            installedConfigFromParent={chartInformation as ChartInstalledConfig}
                                             chartValuesListFromParent={chartValuesList}
                                             chartVersionsDataFromParent={availableVersions}
                                             chartValuesFromParent={chartValues}

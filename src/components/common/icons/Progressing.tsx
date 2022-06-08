@@ -6,7 +6,7 @@ interface ProgressingProps {
     size?: number;
     fullHeight?: boolean;
     theme?: 'white' | 'default';
-    children?: any
+    children?: React.ReactNode
 }
 
 export function Progressing({ pageLoader, size, theme }: ProgressingProps): JSX.Element {

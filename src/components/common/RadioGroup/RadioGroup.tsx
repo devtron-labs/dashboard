@@ -1,5 +1,6 @@
 import Tippy from '@tippyjs/react'
 import React, { useState, useEffect } from 'react'
+import { ConditionalWrap } from '../helpers/Helpers'
 import './radioGroup.scss'
 
 const RadioContext = React.createContext(null)
@@ -50,8 +51,15 @@ const RadioGroup: React.FC<RadioGroupInterface> & RadioGroupComposition = React.
 
 function Radio({ value, children, className = '', showTippy = false, tippyContent = '', canSelect = true }) {
     const { name, selected, select, disabled, onChange } = useRadioContext()
-    return showTippy ? (
-        <Tippy className="default-tt fixed-width-250" arrow={false} placement="bottom" content={tippyContent}>
+    return (
+        <ConditionalWrap
+            condition={showTippy}
+            wrap={(children) => (
+                <Tippy className="default-tt w-250" arrow={false} placement="bottom" content={tippyContent}>
+                    {children}
+                </Tippy>
+            )}
+        >
             <label className={`${className} radio`}>
                 <input
                     type="checkbox"
@@ -69,25 +77,7 @@ function Radio({ value, children, className = '', showTippy = false, tippyConten
                 />
                 <span className="radio__item-label">{children}</span>
             </label>
-        </Tippy>
-    ) : (
-        <label className={`${className} radio`}>
-            <input
-                type="checkbox"
-                value={value}
-                name={name}
-                checked={value === selected}
-                onChange={(e) => {
-                    e.persist()
-                    if (canSelect) {
-                        select(e.target.value)
-                    }
-                    onChange(e)
-                }}
-                disabled={disabled}
-            />
-            <span className="radio__item-label">{children}</span>
-        </label>
+        </ConditionalWrap>
     )
 }
 
