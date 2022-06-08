@@ -782,6 +782,21 @@ function ChartValuesView({
         )
     }
 
+    const getComparisonTippyContent = () => {
+        if (commonState.isComparisonAvailable) {
+            return isDeployChartView
+                ? 'Compare values with other deployments of this chart'
+                : 'Compare values with previous deployments of this app or other deployments of this chart'
+        }
+
+        return (
+            <>
+                <h2 className="fs-12 fw-6 lh-18 m-0">Nothing to compare with</h2>
+                <p className="fs-12 fw-4 lh-18 m-0">No applications found using this chart</p>
+            </>
+        )
+    }
+
     const renderValuesTabsContainer = () => {
         return (
             <div className="chart-values-view__tabs-container flex content-space">
@@ -789,25 +804,16 @@ function ChartValuesView({
                 <div className="flex">
                     {(commonState.activeTab === 'yaml' || (commonState.activeTab === 'manifest' && isExternalApp)) && (
                         <ConditionalWrap
-                            condition={commonState.isComparisonAvailable}
-                            wrap={() =>
-                                renderComparisonOption(
-                                    commonState.activeTab === 'manifest' && !!commonState.valuesEditorError,
-                                )
-                            }
+                            condition={commonState.activeTab === 'manifest'}
+                            wrap={() => renderComparisonOption()}
                         >
                             <Tippy
                                 className="default-tt w-200"
                                 arrow={false}
                                 placement="bottom"
-                                content={
-                                    <>
-                                        <h2 className="fs-12 fw-6 lh-18 m-0">Nothing to compare with</h2>
-                                        <p className="fs-12 fw-4 lh-18 m-0">No applications found using this chart</p>
-                                    </>
-                                }
+                                content={getComparisonTippyContent()}
                             >
-                                {renderComparisonOption(commonState.activeTab === 'yaml')}
+                                {renderComparisonOption(!commonState.isComparisonAvailable)}
                             </Tippy>
                         </ConditionalWrap>
                     )}

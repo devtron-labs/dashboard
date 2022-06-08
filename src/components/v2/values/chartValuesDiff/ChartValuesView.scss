@@ -182,20 +182,30 @@
                         height: calc(100vh - 162px) !important;
                     }
                 }
+
+                .empty-state {
+                    height: calc(100vh - 130px) !important;
+                    border-bottom: none;
+                }
             }
 
             .details-loader {
                 width: 100%;
             }
 
-            .empty-state .subtitle {
-                overflow-wrap: break-word;
-            }
+            .empty-state {
+                height: calc(100vh - 192px) !important;
+                border-bottom: 1px solid var(--N100);
 
-            .empty-state svg {
-                width: 20px;
-                height: 20px;
-                max-height: none;
+                .subtitle {
+                    overflow-wrap: break-word;
+                }
+
+                svg {
+                    width: 20px;
+                    height: 20px;
+                    max-height: none;
+                }
             }
 
             .code-editor-container {

@@ -58,7 +58,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
 
     const [selectedVersion, selectVersion] = React.useState(null)
     const [availableVersions, setChartVersions] = React.useState([])
-    const [chartInformation, setInformation] = React.useState({
+    const [chartInformation, setChartInformation] = React.useState({
         appStoreApplicationName: '',
         deprecated: false,
         chartName: '',
@@ -140,7 +140,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         setLoading(true)
         try {
             const { result } = await getChartVersionDetails(selectedVersion)
-            setInformation(result)
+            setChartInformation(result)
             try {
                 setChartYaml(JSON.parse(result.chartYaml))
             } catch (err) {}
