@@ -1,5 +1,6 @@
 .chart-values-view__container {
     position: relative;
+    min-width: 920px;
     height: calc(100vh - 81px);
 
     &.chart-values-view__deploy-chart {
@@ -45,7 +46,7 @@
 
     &.readmeOpened {
         .chart-values-view__wrapper {
-            grid-template-columns: 49.9% 0.2% 49.9%;
+            grid-template-columns: 49.95% 0.1% 49.95%;
 
             .chart-values-view__details {
                 display: none;

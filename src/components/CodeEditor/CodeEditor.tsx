@@ -36,9 +36,7 @@ window.MonacoEnvironment = {
 const { yaml } = monaco.languages || {};
 
 
-interface WarningProps { text: string; className?: string }
-interface ErrorBarProps { text: string; className?: string }
-interface InformationProps { text: string; className?: string }
+interface InformationBarProps { text: string; className?: string; children?: React.ReactNode }
 
 interface CodeEditorInterface {
     value?: string;
@@ -77,9 +75,9 @@ interface CodeEditorComposition {
     ThemeChanger?: React.FC<any>;
     ValidationError?: React.FC<any>;
     Clipboard?: React.FC<any>;
-    Warning?: React.FC<WarningProps>;
-    ErrorBar?: React.FC<ErrorBarProps>;
-    Information?: React.FC<InformationProps>
+    Warning?: React.FC<InformationBarProps>;
+    ErrorBar?: React.FC<InformationBarProps>;
+    Information?: React.FC<InformationBarProps>
 }
 interface CodeEditorHeaderComposition {
     LanguageChanger?: React.FC<any>;
@@ -364,26 +362,29 @@ function ValidationError() {
     )
 }
 
-const Warning: React.FC<WarningProps> = function (props) {
+const Warning: React.FC<InformationBarProps> = function (props) {
     return <div className={`code-editor__warning ${props.className || ''}`}>
         <WarningIcon className="code-editor__information-info-icon" />
         {props.text}
+        {props.children && props.children}
     </div>
 }
 
-const ErrorBar: React.FC<ErrorBarProps> = function (props) {
+const ErrorBar: React.FC<InformationBarProps> = function (props) {
     return (
         <div className={`code-editor__error ${props.className || ''}`}>
             <ErrorIcon className="code-editor__information-info-icon" />
             {props.text}
+            {props.children && props.children}
         </div>
     );
 };
 
-const Information: React.FC<InformationProps> = function (props) {
+const Information: React.FC<InformationBarProps> = function (props) {
     return <div className={`code-editor__information ${props.className || ''}`}>
         <Info className="code-editor__information-info-icon" />
         {props.text}
+        {props.children && props.children}
     </div>
 }
 
