@@ -224,7 +224,10 @@ function ChartValuesView({
                             },
                         })
 
-                        if (!isDeployChartView || commonState.selectedEnvironment) {
+                        if (
+                            ((isExternalApp || !isDeployChartView) && commonState.installedConfig) ||
+                            (isDeployChartView && commonState.selectedEnvironment)
+                        ) {
                             updateGeneratedManifest(
                                 commonState.chartValues.appStoreVersionId || commonState.chartValues.id,
                                 response.result.values,
@@ -258,8 +261,7 @@ function ChartValuesView({
         if (
             commonState.selectedVersionUpdatePage &&
             commonState.selectedVersionUpdatePage.id &&
-            !commonState.fetchedReadMe.has(commonState.selectedVersionUpdatePage.id) &&
-            commonState.activeTab !== 'manifest'
+            !commonState.fetchedReadMe.has(commonState.selectedVersionUpdatePage.id)
         ) {
             getChartRelatedReadMe(commonState.selectedVersionUpdatePage.id, commonState.fetchedReadMe, dispatch)
         }
@@ -292,10 +294,12 @@ function ChartValuesView({
     useEffect(() => {
         if (
             commonState.activeTab === 'manifest' &&
-            (isExternalApp ||
+            (commonState.valuesYamlUpdated ||
+                (isExternalApp &&
+                    !commonState.manifestGenerationKey.endsWith(commonState.selectedVersionUpdatePage?.id)) ||
                 (commonState.selectedEnvironment &&
-                    !commonState.manifestGenerationKey.startsWith(commonState.selectedEnvironment?.value))) &&
-            !commonState.manifestGenerationKey.endsWith(commonState.selectedVersionUpdatePage?.id) &&
+                    !commonState.manifestGenerationKey.startsWith(commonState.selectedEnvironment.value)) ||
+                !commonState.manifestGenerationKey.endsWith(commonState.selectedVersionUpdatePage?.id)) &&
             !commonState.generatingManifest
         ) {
             updateGeneratedManifest(
@@ -1038,7 +1042,7 @@ function ChartValuesView({
                         ) : (
                             <ChartValuesEditor
                                 loading={
-                                    (commonState.activeTab === 'yaml' && commonState.fetchingValuesYaml) ||
+                                    commonState.fetchingValuesYaml ||
                                     (commonState.activeTab === 'manifest' && commonState.generatingManifest)
                                 }
                                 isExternalApp={isExternalApp}
