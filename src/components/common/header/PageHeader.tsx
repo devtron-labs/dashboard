@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
@@ -6,6 +6,8 @@ import HelpNav from '../HelpNav'
 import './pageHeader.css'
 import LogoutCard from '../LogoutCard'
 import { getLoginInfo, getRandomColor } from '../helpers/Helpers'
+import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 
 export interface PageHeaderType {
     headerName?: string
@@ -42,6 +44,31 @@ function PageHeader({
     const [showLogOutCard, setShowLogOutCard] = useState(false)
     const [loginInfo, setLoginInfo] = useState(undefined)
     const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : ''
+    const [currentServerInfo, setCurrentServerInfo] = useState<{ serverInfo: ServerInfo; fetchingServerInfo: boolean }>(
+        {
+            serverInfo: undefined,
+            fetchingServerInfo: false,
+        },
+    )
+
+    const getCurrentServerInfo = async () => {
+        try {
+            const { result } = await getServerInfo()
+            setCurrentServerInfo({
+                serverInfo: result,
+                fetchingServerInfo: false,
+            })
+        } catch (err) {
+            setCurrentServerInfo({
+                serverInfo: currentServerInfo.serverInfo,
+                fetchingServerInfo: false,
+            })
+            console.error('Error in fetching server info')
+        }
+    }
+    useEffect(() => {
+        getCurrentServerInfo()
+    }, [])
 
     useEffect(() => {
         setLoginInfo(getLoginInfo())
@@ -122,6 +149,8 @@ function PageHeader({
                     className={'help-card__more-option'}
                     showHelpCard={showHelpCard}
                     setShowHelpCard={setShowHelpCard}
+                    serverInfo={currentServerInfo.serverInfo}
+                    fetchingServerInfo={currentServerInfo.fetchingServerInfo}
                 />
             )}
             {showLogOutCard && (
