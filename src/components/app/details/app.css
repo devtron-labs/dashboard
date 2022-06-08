@@ -12,3 +12,7 @@
     top: 40px;
     margin-left: 140px;
 }
+
+.app-details-page .tab-list__tab-link {
+    padding: 0 0 8px 0;
+}
