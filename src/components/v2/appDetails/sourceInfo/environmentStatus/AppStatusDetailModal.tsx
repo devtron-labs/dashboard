@@ -35,7 +35,7 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: { 
     const [showSeeMore, setShowSeeMore] = useState(true)
 
     useEffect(() => {
-        const stats = appStreamData?.result?.application?.status.operationState.syncResult.resources.reduce(
+        const stats = appStreamData?.result?.application?.status.operationState.syncResult?.resources.reduce(
             (agg, curr) => {
                 agg.set(`${curr.kind}/${curr.name}`, curr)
                 return agg
