@@ -562,7 +562,7 @@ export const ChartValuesEditor = ({
     useEffect(() => {
         if (!manifestView && chartValuesList.length > 0 && (isDeployChartView || deploymentHistoryList.length > 0)) {
             const filteredChartValues = chartValuesList
-                .filter((_chartValue) => _chartValue.kind === ChartKind.DEPLOYED)
+                .filter((_chartValue) => _chartValue.kind === ChartKind.DEPLOYED && _chartValue.name !== appName)
                 .map((_chartValue) => {
                     return {
                         label: _chartValue.name,

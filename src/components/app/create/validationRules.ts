@@ -11,7 +11,7 @@ export class ValidationRules {
         else if (!test)
             return {
                 isValid: false,
-                message: "Min 3 characters; Start with lowercase; Use (a-z), (0-9), (-), (.); Do not use 'spaces'",
+                message: "Min 3 characters; Start and end with lowercase; Use (a-z), (0-9), (-), (.); Do not use 'spaces'",
             };
         else return { isValid: true, message: '' };
     };

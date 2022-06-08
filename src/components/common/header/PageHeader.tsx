@@ -115,7 +115,7 @@ function PageHeader({
                 <div className="flex left">
                     {showCloseButton && (
                         <button className="transparent flex mr-8" onClick={onClose}>
-                            <Close className="icon-dim-24 cursor" />
+                            <Close className="page-header__close-icon icon-dim-24 cursor" />
                         </button>
                     )}
                     <span className="fw-6">{headerName}</span>
