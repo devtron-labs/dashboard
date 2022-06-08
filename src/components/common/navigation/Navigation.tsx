@@ -254,11 +254,6 @@ export default class Navigation extends Component<
                         })}
                         <div className="short-nav__divider" />
                         {this.renderNavLink(NavigationStack, 'short-nav__stack-manager')}
-                        <div
-                            className={`short-nav__bottom-options ${
-                                window._env_?.HIDE_DISCORD ? 'sticky__bottom-options' : ''
-                            }`}
-                        ></div>
                     </aside>
                 </nav>
                 <CommandErrorBoundary toggleCommandBar={this.toggleCommandBar}>
