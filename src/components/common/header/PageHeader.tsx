@@ -8,7 +8,7 @@ import LogoutCard from '../LogoutCard'
 import { getLoginInfo, getRandomColor } from '../helpers/Helpers'
 import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-
+import ReactGA from 'react-ga'
 export interface PageHeaderType {
     headerName?: string
     isTippyShown?: boolean
@@ -82,6 +82,10 @@ function PageHeader({
                     onClick={() => {
                         setShowHelpCard(!showHelpCard)
                         showLogOutCard && setShowLogOutCard(false)
+                        ReactGA.event({
+                            category: 'Main Navigation',
+                            action: `Help Clicked`,
+                        })
                     }}
                 >
                     <span className="icon-dim-24 fcn-9 mr-4 ml-16">

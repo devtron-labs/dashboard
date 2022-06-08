@@ -7,7 +7,6 @@ import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Discord } from '../../../assets/icons/ic-discord-fill.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
-import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-nav-search.svg'
 import { ReactComponent as ApplicationsIcon } from '../../../assets/icons/ic-nav-applications.svg'
 import { ReactComponent as ChartStoreIcon } from '../../../assets/icons/ic-nav-helm.svg'
 import { ReactComponent as DeploymentGroupIcon } from '../../../assets/icons/ic-nav-rocket.svg'
@@ -219,7 +218,6 @@ export default class Navigation extends Component<
     }
 
     render() {
-        let email: string = this.state.loginInfo ? this.state.loginInfo['email'] || this.state.loginInfo['sub'] : ''
         return (
             <>
                 <nav>
@@ -260,17 +258,7 @@ export default class Navigation extends Component<
                             className={`short-nav__bottom-options ${
                                 window._env_?.HIDE_DISCORD ? 'sticky__bottom-options' : ''
                             }`}
-                        >
-                            <div
-                                className="nav-short-help cursor"
-                                onClick={(event) => {
-                                    ReactGA.event({
-                                        category: 'Main Navigation',
-                                        action: `Help Clicked`,
-                                    })
-                                }}
-                            ></div>
-                        </div>
+                        ></div>
                     </aside>
                 </nav>
                 <CommandErrorBoundary toggleCommandBar={this.toggleCommandBar}>
