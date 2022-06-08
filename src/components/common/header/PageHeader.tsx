@@ -84,13 +84,13 @@ function PageHeader({
                         showLogOutCard && setShowLogOutCard(false)
                     }}
                 >
-                    <span className="icon-dim-20 mr-8 ml-16">
+                    <span className="icon-dim-24 fcn-9 mr-4 ml-16">
                         <Question />
                     </span>
-                    <span className="fs-13 cn-9 fw-6">Help</span>
+                    <span className="fs-13 cn-9">Help</span>
                 </div>
                 <div
-                    className="logout-card__initial cursor fs-13 icon-dim-20 flex logout-card__initial--nav"
+                    className="logout-card__initial cursor fs-13 icon-dim-24 flex logout-card__initial--nav"
                     onClick={() => {
                         setShowLogOutCard(!showLogOutCard)
                         showHelpCard && setShowHelpCard(false)

@@ -18,7 +18,7 @@ function LogoutCard({ className, userFirstLetter, setShowLogOutCard, showLogOutC
     }
 
     return (
-        <div onClick={() => setShowLogOutCard(!showLogOutCard)}>
+        <div className="transparent-div" onClick={() => setShowLogOutCard(!showLogOutCard)}>
             <div className={`logout-card ${className}`}>
                 <div className="flexbox flex-justify p-16">
                     <div className="logout-card-user ">
