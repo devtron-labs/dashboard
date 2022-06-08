@@ -42,7 +42,7 @@ function PageHeader({
 }: PageHeaderType) {
     const [showHelpCard, setShowHelpCard] = useState(false)
     const [showLogOutCard, setShowLogOutCard] = useState(false)
-    const [loginInfo, setLoginInfo] = useState(undefined)
+    const loginInfo = getLoginInfo()
     const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : ''
     const [currentServerInfo, setCurrentServerInfo] = useState<{ serverInfo: ServerInfo; fetchingServerInfo: boolean }>(
         {
@@ -68,10 +68,6 @@ function PageHeader({
     }
     useEffect(() => {
         getCurrentServerInfo()
-    }, [])
-
-    useEffect(() => {
-        setLoginInfo(getLoginInfo())
     }, [])
 
     const renderLogoutHelpSection = () => {

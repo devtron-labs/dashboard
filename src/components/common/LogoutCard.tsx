@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { getLoginInfo, getRandomColor } from './helpers/Helpers'
+import React from 'react'
+import { getRandomColor } from './helpers/Helpers'
 import { useHistory } from 'react-router-dom'
 
 interface LogoutCardType {

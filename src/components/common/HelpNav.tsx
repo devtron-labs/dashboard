@@ -47,29 +47,27 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
             <div className={`help-card pt-4 pb-4 ${className}`}>
                 {HelpOptions.map((option) => {
                     return (
-                        serverInfo?.installationType !== InstallationType.OSS_HELM && (
-                            <Fragment key={option.name}>
-                                <div className="help-card__option">
-                                    <a
-                                        key={option.name}
-                                        className="help-card__link flex left cn-9"
-                                        href={option.link}
-                                        target="_blank"
-                                        rel="noreferrer noopener"
-                                        onClick={(event) => {
-                                            ReactGA.event({
-                                                category: 'Main Navigation',
-                                                action: `${option.name} Clicked`,
-                                            })
-                                        }}
-                                    >
-                                        <option.icon />
-                                        <div className="help-card__option-name ml-12 cn-9 fs-14">{option.name}</div>
-                                    </a>
-                                </div>
-                                {option.showSeparator && <div className="help-card__option-separator" />}
-                            </Fragment>
-                        )
+                        <Fragment key={option.name}>
+                            <div className="help-card__option">
+                                <a
+                                    key={option.name}
+                                    className="help-card__link flex left cn-9"
+                                    href={option.link}
+                                    target="_blank"
+                                    rel="noreferrer noopener"
+                                    onClick={(event) => {
+                                        ReactGA.event({
+                                            category: 'Main Navigation',
+                                            action: `${option.name} Clicked`,
+                                        })
+                                    }}
+                                >
+                                    <option.icon />
+                                    <div className="help-card__option-name ml-12 cn-9 fs-14">{option.name}</div>
+                                </a>
+                            </div>
+                            {option.showSeparator && <div className="help-card__option-separator" />}
+                        </Fragment>
                     )
                 })}
                 {serverInfo?.installationType === InstallationType.OSS_HELM && (
