@@ -366,7 +366,7 @@ const Warning: React.FC<InformationBarProps> = function (props) {
     return <div className={`code-editor__warning ${props.className || ''}`}>
         <WarningIcon className="code-editor__information-info-icon" />
         {props.text}
-        {props.children && props.children}
+        {props.children}
     </div>
 }
 
@@ -375,7 +375,7 @@ const ErrorBar: React.FC<InformationBarProps> = function (props) {
         <div className={`code-editor__error ${props.className || ''}`}>
             <ErrorIcon className="code-editor__information-info-icon" />
             {props.text}
-            {props.children && props.children}
+            {props.children}
         </div>
     );
 };
@@ -384,7 +384,7 @@ const Information: React.FC<InformationBarProps> = function (props) {
     return <div className={`code-editor__information ${props.className || ''}`}>
         <Info className="code-editor__information-info-icon" />
         {props.text}
-        {props.children && props.children}
+        {props.children}
     </div>
 }
 

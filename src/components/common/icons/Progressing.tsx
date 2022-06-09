@@ -45,8 +45,8 @@ export function DetailsProgressing({ loadingText, size = 24, fullHeight = false,
             <span style={{ width: `${size}px`, height: `${size}px` }}>
                 <Progressing size={size} />
             </span>
-            {children && children}
             {loadingText && <span className="mt-10">{loadingText}</span>}
+            {children}
         </div>
     );
 }
