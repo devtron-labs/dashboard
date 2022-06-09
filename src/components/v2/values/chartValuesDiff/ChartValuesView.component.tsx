@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import ReactSelect, { components } from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { DropdownIndicator, Option } from '../../common/ReactSelect.utils'
@@ -548,6 +548,7 @@ export const ChartValuesEditor = ({
         filteredChartValues: ChartValuesDiffOptionType[]
         deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
         selectedVersionForDiff: ChartValuesDiffOptionType
+        deployedManifest: string
         valuesForDiff: Map<number, string>
         selectedValuesForDiff: string
     }>({
@@ -555,6 +556,7 @@ export const ChartValuesEditor = ({
         filteredChartValues: [],
         deploymentHistoryOptionsList: [],
         selectedValuesForDiff: defaultValuesText,
+        deployedManifest: '',
         valuesForDiff: new Map<number, string>(),
         selectedVersionForDiff: null,
     })
@@ -598,7 +600,9 @@ export const ChartValuesEditor = ({
             })
             const selectedVersionForDiff = valuesForDiffState.selectedVersionForDiff
             const _version = manifestView ? deploymentHistoryList[0].version : selectedVersionForDiff.value
-            const _currentValues = valuesForDiffState.valuesForDiff.get(_version)
+            const _currentValues = manifestView
+                ? valuesForDiffState.deployedManifest
+                : valuesForDiffState.valuesForDiff.get(_version)
             if (!_currentValues) {
                 if (selectedVersionForDiff.kind === ChartKind.DEPLOYED) {
                     getChartValues(_version, selectedVersionForDiff.kind)
@@ -624,19 +628,23 @@ export const ChartValuesEditor = ({
                     getDeploymentManifestDetails(appId, _version, isExternalApp)
                         .then((res) => {
                             const _valuesForDiff = valuesForDiffState.valuesForDiff
-                            const _selectedValues = manifestView
-                                ? res.result.manifest
-                                : isExternalApp
+                            const _selectedValues = isExternalApp
                                 ? YAML.stringify(JSON.parse(res.result.valuesYaml))
                                 : res.result.valuesYaml
                             _valuesForDiff.set(_version, _selectedValues)
 
-                            setValuesForDiffState({
+                            const _valuesForDiffState = {
                                 ...valuesForDiffState,
                                 loadingValuesForDiff: false,
                                 valuesForDiff: _valuesForDiff,
                                 selectedValuesForDiff: _selectedValues,
-                            })
+                            }
+
+                            if (_version === deploymentHistoryList[0].version) {
+                                _valuesForDiffState.deployedManifest = res.result.manifest
+                            }
+
+                            setValuesForDiffState(_valuesForDiffState)
                         })
                         .catch((e) => {
                             showError(e)
@@ -672,17 +680,14 @@ export const ChartValuesEditor = ({
         }
     }, [comparisonView])
 
-    const handleSelectedVersionForDiff = useCallback(
-        (selected: ChartValuesDiffOptionType) => {
-            if (selected.value !== valuesForDiffState.selectedVersionForDiff.value) {
-                setValuesForDiffState({
-                    ...valuesForDiffState,
-                    selectedVersionForDiff: selected,
-                })
-            }
-        },
-        [valuesForDiffState.selectedVersionForDiff],
-    )
+    const handleSelectedVersionForDiff = (selected: ChartValuesDiffOptionType) => {
+        if (selected.value !== valuesForDiffState.selectedVersionForDiff.value) {
+            setValuesForDiffState({
+                ...valuesForDiffState,
+                selectedVersionForDiff: selected,
+            })
+        }
+    }
 
     const getDynamicHeight = () => {
         if (isDeployChartView && (!showInfoText || showEditorHeader)) {
@@ -730,7 +735,13 @@ export const ChartValuesEditor = ({
                 </div>
             )}
             <CodeEditor
-                defaultValue={comparisonView ? valuesForDiffState.selectedValuesForDiff : ''}
+                defaultValue={
+                    comparisonView
+                        ? manifestView
+                            ? valuesForDiffState.deployedManifest
+                            : valuesForDiffState.selectedValuesForDiff
+                        : ''
+                }
                 value={manifestView ? generatedManifest : valuesText}
                 diffView={comparisonView}
                 noParsing

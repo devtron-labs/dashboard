@@ -68,6 +68,7 @@ import { chartValuesReducer, initState } from './ChartValuesView.reducer'
 import { ValidationRules } from '../../../app/create/validationRules'
 import './ChartValuesView.scss'
 import { updateGeneratedManifest } from './ChartValuesView.utils'
+import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
 function ChartValuesView({
     appId,
@@ -493,6 +494,18 @@ function ChartValuesView({
         return true
     }
 
+    const _buildAppDetailUrl = (newInstalledAppId: number, newEnvironmentId: number) => {
+        if (serverMode === SERVER_MODE.EA_ONLY) {
+            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId(
+                commonState.selectedEnvironment.clusterId,
+                commonState.selectedEnvironment.namespace,
+                appName,
+            )}/${appName}`
+        }
+
+        return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}`
+    }
+
     const deployOrUpdateApplication = async (forceUpdate?: boolean) => {
         if (commonState.isUpdateInProgress) {
             return
@@ -602,11 +615,9 @@ function ChartValuesView({
                     result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId },
                 } = res
                 toast.success('Deployment initiated')
-                history.push(
-                    `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}?refetchData=true`,
-                )
+                history.push(_buildAppDetailUrl(newInstalledAppId, newEnvironmentId))
             } else if (res?.result && (res.result.success || res.result.appName)) {
-                toast.success('Update and deployment initiated.')
+                toast.success('Update and deployment initiated')
                 history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
             } else {
                 toast.error('Some error occurred')
