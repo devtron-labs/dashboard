@@ -23,13 +23,27 @@
         width: 25%;
     }
 
+    .search-wrapper {
+        display: grid;
+        grid-template-columns: auto 160px 1px 180px;
+        column-gap: 8px;
+    }
+
     .error-icon path[fill='#06C'] {
         fill: var(--R500);
+    }
+
+    .setting-icon path {
+        stroke: var(--N600);
     }
     .node-list-row {
         display: grid;
         grid-template-columns: auto 100px 60px 50px 100px 50px 60px 100px 100px 60px;
         column-gap: 16px;
+    }
+
+    .left-65 {
+        left: 65px;
     }
 }
 
@@ -86,6 +100,11 @@
             display: grid;
             grid-template-columns: minmax(100px, 200px) auto 100px 100px 100px 100px 50px;
             column-gap: 12px;
+            .clipboard-icon {
+                position: absolute;
+                right: 0;
+                top: 0;
+            }
         }
     }
     .condition-grid {

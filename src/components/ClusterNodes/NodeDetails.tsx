@@ -15,7 +15,7 @@ import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
-import { NodeDetail, NodeDetailResponse, UpdateNodeRequestBody } from './types'
+import { NodeDetail, NodeDetailResponse, ResourceDetail, UpdateNodeRequestBody } from './types'
 import { toast } from 'react-toastify'
 
 export default function NodeDetails() {
@@ -29,6 +29,8 @@ export default function NodeDetails() {
     const [copied, setCopied] = useState(false)
     const [manifest, setManifest] = useState('')
     const [modifiedManifest, setModifiedManifest] = useState('')
+    const [cpuData, setCpuData] = useState<ResourceDetail>(null)
+    const [memoryData, setMemoryData] = useState<ResourceDetail>(null)
 
     useEffect(() => {
         setLoader(true)
@@ -36,6 +38,18 @@ export default function NodeDetails() {
             .then((response: NodeDetailResponse) => {
                 if (response.result) {
                     setNodeDetail(response.result)
+                    const resourceList = response.result.resources
+                    for (let index = 0; index < resourceList.length; ) {
+                        if (resourceList[index].name === 'cpu') {
+                            setCpuData(resourceList[index])
+                            resourceList.splice(index, 1)
+                        } else if (resourceList[index].name === 'memory') {
+                            setMemoryData(resourceList[index])
+                            resourceList.splice(index, 1)
+                        } else {
+                            index++
+                        }
+                    }
                     setModifiedManifest(YAML.stringify(response.result.manifest))
                 }
                 setLoader(false)
@@ -87,20 +101,20 @@ export default function NodeDetails() {
         {
             alias: {
                 clusters: {
-                    component: <span className="cb-5 fs-13">Clusters</span>,
+                    component: 'Clusters',
                     linked: true,
                 },
                 ':clusterId': {
-                    component: <span className="cb-5 fs-13">{clusterId}</span>,
+                    component: nodeDetail?.clusterName,
                     linked: true,
                 },
                 ':nodeName': {
-                    component: <span className="fs-13">{nodeName}</span>,
+                    component: nodeName,
                     linked: false,
                 },
             },
         },
-        [clusterId, nodeName],
+        [clusterId, nodeName, nodeDetail],
     )
 
     const renderBreadcrumbs = (): JSX.Element => {
@@ -279,50 +293,70 @@ export default function NodeDetails() {
         )
     }
     const renderErrorOverviewCard = (): JSX.Element => {
+        const nodeErrorKeys = Object.keys(nodeDetail.errors)
+        if (!nodeErrorKeys.length) return null
         return (
-            <div className=" en-2 bw-1 br-4 bcn-0">
+            <div className="mb-12 en-2 bw-1 br-4 bcn-0">
                 <div className="flexbox bcr-5 pt-12 pb-12 pr-10 pl-20 top-radius-4">
                     <Info className="error-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
-                    <span className="fw-6 fs-14 cn-9">2 Errors</span>
+                    <span className="fw-6 fs-14 cn-9">
+                        {nodeErrorKeys.length === 1 ? '1 Error' : nodeErrorKeys.length + ' Errors'}
+                    </span>
                 </div>
                 <div className="pt-12 pr-20 pl-20">
-                    <div>
-                        <div className="fw-6 fs-13 cn-9">OutOfDisk</div>
-                        <p className="fw-4 fs-13 cn-7 mb-12">kubelet has insufficient disk space available</p>
-                    </div>
+                    {nodeErrorKeys.map((key) => (
+                        <>
+                            <div className="fw-6 fs-13 cn-9">{key}</div>
+                            <p className="fw-4 fs-13 cn-7 mb-12">{nodeDetail.errors[key]}</p>
+                        </>
+                    ))}
                 </div>
             </div>
         )
     }
     const renderProbableIssuesOverviewCard = (): JSX.Element => {
+        const isCPUOverCommitted = Number(cpuData.usagePercentage.slice(0, -1)) > 100
+        const issueCount =
+            (isCPUOverCommitted ? 1 : 0) + (nodeDetail.unschedulable ? 1 : 0) + (nodeDetail.taintCount > 0 ? 1 : 0)
+        if (!issueCount) return null
         return (
-            <div className="mt-12 en-2 bw-1 br-4 bcn-0">
+            <div className="mb-12 en-2 bw-1 br-4 bcn-0">
                 <div className="flexbox bcy-5 pt-12 pb-12 pr-10 pl-20 top-radius-4">
                     <AlertTriangle className="alert-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
-                    <span className="fw-6 fs-14 cn-9">3 probable issues</span>
+                    <span className="fw-6 fs-14 cn-9">
+                        {issueCount === 1 ? '1 Probable issue' : issueCount + ' Probable issues'}
+                    </span>
                 </div>
                 <div className="pt-12 pr-20 pl-20">
-                    <div>
-                        <div className="fw-6 fs-13 cn-9">Resource overcommitted</div>
-                        <p className="fw-4 fs-13 cn-7 mb-12">Limits for “cpu” is over 100%</p>
-                    </div>
-                    <div>
-                        <div className="fw-6 fs-13 cn-9">2 taints applied</div>
-                        <p className="fw-4 fs-13 cn-7 mb-12">
-                            Taints may be restricting pods from being scheduled on this node
-                        </p>
-                    </div>
-                    <div>
-                        <div className="fw-6 fs-13 cn-9">Unschedulable: true</div>
-                        <p className="fw-4 fs-13 cn-7 mb-12">This restricts pods from being scheduled on this node</p>
-                    </div>
+                    {isCPUOverCommitted && (
+                        <div>
+                            <div className="fw-6 fs-13 cn-9">Resource overcommitted</div>
+                            <p className="fw-4 fs-13 cn-7 mb-12">Limits for “cpu” is over 100%</p>
+                        </div>
+                    )}
+                    {nodeDetail.taintCount && (
+                        <div>
+                            <div className="fw-6 fs-13 cn-9">2 taints applied</div>
+                            <p className="fw-4 fs-13 cn-7 mb-12">
+                                Taints may be restricting pods from being scheduled on this node
+                            </p>
+                        </div>
+                    )}
+                    {nodeDetail.unschedulable && (
+                        <div>
+                            <div className="fw-6 fs-13 cn-9">Unschedulable: true</div>
+                            <p className="fw-4 fs-13 cn-7 mb-12">
+                                This restricts pods from being scheduled on this node
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
         )
     }
     const renderNodeOverviewCard = (): JSX.Element => {
         return (
-            <div className="mt-12 en-2 bw-1 br-4 bcn-0">
+            <div className="en-2 bw-1 br-4 bcn-0">
                 <div className="flexbox pt-12 pb-12 pr-10 pl-20 top-radius-4">
                     <span className="fw-6 fs-14 cn-9">Node overview</span>
                 </div>
@@ -371,20 +405,34 @@ export default function NodeDetails() {
                     <div>Capacity</div>
                     <div>Usage</div>
                 </div>
+                {cpuData && (
+                    <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-12 pb-12 pr-20 pl-20 cn-9">
+                        <Cpu className="mt-2 mb-2 icon-dim-18" />
+                        <div>{cpuData.name || '-'}</div>
+                        <div>{cpuData.requestPercentage || '-'}</div>
+                        <div>{cpuData.limitPercentage || '-'}</div>
+                        <div>{cpuData.capacity || '-'}</div>
+                        <div>{cpuData.usagePercentage || '-'}</div>
+                    </div>
+                )}
+                {memoryData && (
+                    <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-12 pb-12 pr-20 pl-20 cn-9">
+                        <Memory className="mt-2 mb-2 icon-dim-18" />
+                        <div>{memoryData.name || '-'}</div>
+                        <div>{memoryData.requestPercentage || '-'}</div>
+                        <div>{memoryData.limitPercentage || '-'}</div>
+                        <div>{memoryData.capacity || '-'}</div>
+                        <div>{memoryData.usagePercentage || '-'}</div>
+                    </div>
+                )}
                 {nodeDetail.resources.map((resource) => (
                     <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-12 pb-12 pr-20 pl-20 cn-9">
-                        {resource.name === 'cpu' ? (
-                            <Cpu className="mt-2 mb-2 icon-dim-18" />
-                        ) : resource.name === 'memory' ? (
-                            <Memory className="mt-2 mb-2 icon-dim-18" />
-                        ) : (
-                            <Storage className="mt-2 mb-2 icon-dim-18" />
-                        )}
-                        <div>{resource.name}</div>
-                        <div>{resource.requestPercentage}</div>
-                        <div>{resource.limitPercentage}</div>
-                        <div>{resource.capacity}</div>
-                        <div>{resource.usagePercentage}</div>
+                        <Storage className="mt-2 mb-2 icon-dim-18" />
+                        <div>{resource.name || '-'}</div>
+                        <div>{resource.requestPercentage || '-'}</div>
+                        <div>{resource.limitPercentage || '-'}</div>
+                        <div>{resource.capacity || '-'}</div>
+                        <div>{resource.usagePercentage || '-'}</div>
                     </div>
                 ))}
             </div>
@@ -407,32 +455,34 @@ export default function NodeDetails() {
                 {nodeDetail.pods.map((pod) => (
                     <div className="pods-row border-bottom-n1 pt-12 pb-12 pr-20 pl-20 fw-4 fs-13 cn-9">
                         <div>{pod.namespace}</div>
-                        <div className="hover-trigger flexbox">
-                            {pod.name}
-                            <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="bottom"
-                                content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                                trigger="mouseenter click"
-                                onShow={(instance) => {
-                                    setCopied(false)
-                                }}
-                            >
-                                <Clipboard
-                                    className="ml-8 mt-5 pointer hover-only icon-dim-16"
-                                    onClick={() => {
-                                        copyToClipboard(pod.name, () => {
-                                            setCopied(true)
-                                        })
+                        <Tippy className="default-tt" arrow={false} placement="bottom" content={pod.name}>
+                            <div className="hover-trigger position-rel ellipsis-right pr-10">
+                                {pod.name}
+                                <Tippy
+                                    className="default-tt"
+                                    arrow={false}
+                                    placement="bottom"
+                                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
+                                    trigger="mouseenter click"
+                                    onShow={(instance) => {
+                                        setCopied(false)
                                     }}
-                                />
-                            </Tippy>
-                        </div>
-                        <div>{pod.cpu.requestPercentage}</div>
-                        <div>{pod.cpu.limitPercentage}</div>
-                        <div>{pod.memory.requestPercentage}</div>
-                        <div>{pod.memory.limitPercentage}</div>
+                                >
+                                    <Clipboard
+                                        className="clipboard-icon ml-8 mt-5 pointer hover-only icon-dim-16"
+                                        onClick={() => {
+                                            copyToClipboard(pod.name, () => {
+                                                setCopied(true)
+                                            })
+                                        }}
+                                    />
+                                </Tippy>
+                            </div>
+                        </Tippy>
+                        <div>{pod.cpu.requestPercentage || '-'}</div>
+                        <div>{pod.cpu.limitPercentage || '-'}</div>
+                        <div>{pod.memory.requestPercentage || '-'}</div>
+                        <div>{pod.memory.limitPercentage || '-'}</div>
                         <div>{pod.age}</div>
                     </div>
                 ))}
@@ -446,7 +496,7 @@ export default function NodeDetails() {
             <div className="node-details-container">
                 <div className="ml-20 mr-20 mb-12 mt-16 pl-20 pr-20 pt-16 pb-16 bcn-0 br-4">
                     <div className="fw-6 fs-16 cn-9">{nodeDetail.name}</div>
-                    <div className="fw-6 fs-13 cr-5">NOT RUNNING</div>
+                    <div className="fw-6 fs-13 cr-5">{nodeDetail.status}</div>
                 </div>
                 <div className="ml-20 mr-20 mt-12 node-details-grid">
                     <div className="fw-6 fs-16 cn-9">
@@ -506,7 +556,7 @@ export default function NodeDetails() {
                 <CodeEditor
                     value={modifiedManifest}
                     defaultValue={nodeDetail?.manifest && YAML.stringify(nodeDetail?.manifest)}
-                    height="calc( 100vh - 137px)"
+                    height={isReviewState ? 'calc( 100vh - 177px)' : 'calc( 100vh - 137px)'}
                     diffView={isReviewState}
                     onChange={handleEditorValueChange}
                     noParsing
@@ -551,6 +601,20 @@ export default function NodeDetails() {
                         <div>Status</div>
                         <div>Message</div>
                     </div>
+                    {nodeDetail.conditions.map((condition) => (
+                        <div className="condition-grid cn-9 fw-4 fs-13 border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
+                            <div>{condition.type}</div>
+                            <div className="flexbox">
+                                {condition.haveIssue ? (
+                                    <Info className="error-icon-red mt-2 mb-2 mr-8 icon-dim-18" />
+                                ) : (
+                                    <Success className="mt-2 mb-2 mr-8 icon-dim-18" />
+                                )}
+                                {condition.reason}
+                            </div>
+                            <div>{condition.message}</div>
+                        </div>
+                    ))}
                     <div className="condition-grid cn-9 fw-4 fs-13 border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
                         <div>OutOfDisk</div>
                         <div className="flexbox">
