@@ -601,7 +601,7 @@ export default function AppList() {
         return (
             serverMode === SERVER_MODE.FULL && (
                 <button type="button" className="flex cta h-32 lh-n" onClick={() => handleCreateButton()}>
-                    Create New
+                    Create
                     <DropDown className="icon-dim-20" />
                 </button>
             )

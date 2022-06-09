@@ -7,7 +7,6 @@ import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Discord } from '../../../assets/icons/ic-discord-fill.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
-import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-nav-search.svg'
 import { ReactComponent as ApplicationsIcon } from '../../../assets/icons/ic-nav-applications.svg'
 import { ReactComponent as ChartStoreIcon } from '../../../assets/icons/ic-nav-helm.svg'
 import { ReactComponent as DeploymentGroupIcon } from '../../../assets/icons/ic-nav-rocket.svg'
@@ -165,82 +164,6 @@ export default class Navigation extends Component<
         this.props.history.push('/login')
     }
 
-    renderLogout() {
-        let email: string = this.state.loginInfo ? this.state.loginInfo['email'] || this.state.loginInfo['sub'] : ''
-        return ReactDOM.createPortal(
-            <div className="transparent-div" onClick={this.toggleLogoutCard}>
-                <div className={`logout-card ${window._env_?.HIDE_DISCORD ? 'sticky__bottom-option' : ''}`}>
-                    <div className="flexbox flex-justify p-16">
-                        <div className="logout-card-user ">
-                            <p className="logout-card__name ellipsis-right">{email}</p>
-                            <p className="logout-card__email ellipsis-right">{email}</p>
-                        </div>
-                        <p
-                            className="logout-card__initial fs-16 icon-dim-32 mb-0"
-                            style={{ backgroundColor: getRandomColor(email) }}
-                        >
-                            {email[0]}
-                        </p>
-                    </div>
-                    <div className="logout-card__logout cursor" onClick={this.onLogout}>
-                        Logout
-                    </div>
-                </div>
-            </div>,
-            document.getElementById('root'),
-        )
-    }
-
-    renderHelpCard() {
-        return ReactDOM.createPortal(
-            <div className="transparent-div" onClick={this.toggleHelpCard}>
-                <div
-                    className={`help-card pt-4 ${
-                        this.props.serverInfo?.installationType !== InstallationType.OSS_HELM ? 'pb-4' : ''
-                    } ${window._env_?.HIDE_DISCORD ? 'sticky__bottom-option' : ''}`}
-                >
-                    {HelpOptions.map((option) => {
-                        return (
-                            <Fragment key={option.name}>
-                                <div className="help-card__option">
-                                    <a
-                                        key={option.name}
-                                        className="help-card__link flex left cn-9"
-                                        href={option.link}
-                                        target="_blank"
-                                        rel="noreferrer noopener"
-                                        onClick={(event) => {
-                                            ReactGA.event({
-                                                category: 'Main Navigation',
-                                                action: `${option.name} Clicked`,
-                                            })
-                                        }}
-                                    >
-                                        <option.icon className="help-card__icon icon-dim-20" />
-                                        <div className="help-card__option-name ml-12 cn-9 fs-14">{option.name}</div>
-                                    </a>
-                                </div>
-                                {option.showSeparator && <div className="help-card__option-separator" />}
-                            </Fragment>
-                        )
-                    })}
-                    {this.props.serverInfo?.installationType === InstallationType.OSS_HELM && (
-                        <div className="help-card__update-option fs-11 fw-6 mt-4">
-                            {this.props.fetchingServerInfo ? (
-                                <span className="loading-dots">Checking current version</span>
-                            ) : (
-                                <span>Devtron {this.props.serverInfo?.currentVersion || ''}</span>
-                            )}
-                            <br />
-                            <NavLink to={URLS.STACK_MANAGER_ABOUT}>Check for Updates</NavLink>
-                        </div>
-                    )}
-                </div>
-            </div>,
-            document.getElementById('root'),
-        )
-    }
-
     renderNavButton(item) {
         return (
             <button
@@ -304,7 +227,6 @@ export default class Navigation extends Component<
     }
 
     render() {
-        let email: string = this.state.loginInfo ? this.state.loginInfo['email'] || this.state.loginInfo['sub'] : ''
         return (
             <>
                 <nav>
@@ -341,60 +263,6 @@ export default class Navigation extends Component<
                         })}
                         <div className="short-nav__divider" />
                         {this.renderNavLink(NavigationStack, 'short-nav__stack-manager')}
-                        <div
-                            className={`short-nav__bottom-options ${
-                                window._env_?.HIDE_DISCORD ? 'sticky__bottom-options' : ''
-                            }`}
-                        >
-                            <div
-                                className="nav-short-help cursor"
-                                onClick={(event) => {
-                                    ReactGA.event({
-                                        category: 'Main Navigation',
-                                        action: `Help Clicked`,
-                                    })
-                                }}
-                            >
-                                <div
-                                    className="short-nav--flex"
-                                    onClick={() => {
-                                        if (this.props.serverInfo?.installationType === InstallationType.OSS_HELM) {
-                                            this.props.getCurrentServerInfo('navigation')
-                                        }
-                                        this.toggleHelpCard()
-                                    }}
-                                >
-                                    <div className="short-nav__icon-container icon-dim-40 flex">
-                                        <Help className="help-option-icon icon-dim-24" />
-                                    </div>
-                                    <div className="expandable-active-nav">
-                                        <div className="title-container flex left">Help</div>
-                                    </div>
-                                </div>
-                            </div>
-                            {this.state.showHelpCard && this.renderHelpCard()}
-                            <div className="short-nav--flex">
-                                <div className="short-nav__icon-container icon-dim-40 flex">
-                                    <div
-                                        className="logout-card__initial icon-dim-24 fs-12 logout-card__initial--nav"
-                                        onClick={this.toggleLogoutCard}
-                                        style={{ backgroundColor: getRandomColor(email) }}
-                                    >
-                                        {email[0]}
-                                    </div>
-                                </div>
-                                <div>
-                                    <button
-                                        type="button"
-                                        className="transparent ellipsis-right expandable-active-nav title-container"
-                                        onClick={this.toggleLogoutCard}
-                                    >
-                                        {email}
-                                    </button>
-                                </div>
-                            </div>
-                            {this.state.showLogoutCard && this.renderLogout()}
-                        </div>
                     </aside>
                 </nav>
                 <CommandErrorBoundary toggleCommandBar={this.toggleCommandBar}>
