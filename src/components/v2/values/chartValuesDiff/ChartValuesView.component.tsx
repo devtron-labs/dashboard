@@ -230,7 +230,7 @@ export const ChartRepoSelector = ({
         (isExternal || isUpdate) && (
             <div className="form__row form__row--w-100">
                 <div className="flex content-space">
-                    <span className="form__label fs-13 fw-4 lh-20 cn-7">{isExternal ? 'Chart' : 'Repo/Chart'}</span>
+                    <span className="form__label fs-13 fw-4 lh-20 cn-7">Chart</span>
                     <Tippy
                         className="default-tt "
                         arrow={false}
