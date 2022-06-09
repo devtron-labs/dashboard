@@ -259,8 +259,8 @@ export const ChartRepoSelector = ({
                         noOptionsMessage={() => 'No matching results'}
                         isLoading={!repoChartAPIMade || refetchingCharts}
                         components={{
-                            IndicatorSeparator: () => null,
-                            LoadingIndicator: () => null,
+                            IndicatorSeparator: null,
+                            LoadingIndicator: null,
                             Option: repoChartOptionLabel,
                             MenuList: customMenuListItem,
                         }}

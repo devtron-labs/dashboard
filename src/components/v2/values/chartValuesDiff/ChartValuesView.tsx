@@ -620,7 +620,7 @@ function ChartValuesView({
         }
     }
 
-    const OnEditorValueChange = (codeEditorData: string) => {
+    const onEditorValueChange = (codeEditorData: string) => {
         if (commonState.activeTab !== 'manifest') {
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
@@ -1047,7 +1047,7 @@ function ChartValuesView({
                                         ? YAML.stringify(JSON.parse(commonState.releaseInfo.mergedValues))
                                         : commonState.installedConfig?.valuesOverrideYaml
                                 }
-                                onChange={OnEditorValueChange}
+                                onChange={onEditorValueChange}
                                 repoChartValue={commonState.repoChartValue}
                                 showEditorHeader={commonState.openReadMe}
                                 hasChartChanged={hasChartChanged()}
