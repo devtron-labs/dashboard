@@ -1,18 +1,19 @@
-import React from 'react';
-import { NavLink, Link } from 'react-router-dom';
-import { URLS, AppListConstants } from '../../../config';
-import ReactGA from 'react-ga';
-import { useParams, useRouteMatch, useHistory } from 'react-router';
-import './header.css';
+import React from 'react'
+import { NavLink, Link } from 'react-router-dom'
+import { URLS, AppListConstants } from '../../../config'
+import ReactGA from 'react-ga'
+import { useParams, useRouteMatch, useHistory } from 'react-router'
+import './header.css'
+import PageHeader from '../../common/header/PageHeader'
 
 function EAHeaderComponent() {
-    const match = useRouteMatch();
-    const history = useHistory();
-    const params = useParams<{ appId: string; appName: string }>();
-    const { path } = useRouteMatch();
+    const match = useRouteMatch()
+    const history = useHistory()
+    const params = useParams<{ appId: string; appName: string }>()
+    const { path } = useRouteMatch()
 
-    return (
-        <div className="app-page-header" style={{ gridTemplateColumns: 'unset' }}>
+    const renderBreadcrumbs = () => {
+        return (
             <div className="m-0 flex left fs-12 cn-9fw-4 fs-16">
                 <Link
                     to={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
@@ -23,6 +24,10 @@ function EAHeaderComponent() {
                 <span className="ml-4 mr-4">/</span>
                 <span>{params.appName}</span>
             </div>
+        )
+    }
+    const renderExternalHelmApp = () => {
+        return (
             <ul role="tablist" className="tab-list">
                 <li className="tab-list__tab">
                     <NavLink
@@ -33,7 +38,7 @@ function EAHeaderComponent() {
                             ReactGA.event({
                                 category: 'External App',
                                 action: 'External App Details Clicked',
-                            });
+                            })
                         }}
                     >
                         App details
@@ -48,7 +53,7 @@ function EAHeaderComponent() {
                             ReactGA.event({
                                 category: 'External App',
                                 action: 'External App Values Clicked',
-                            });
+                            })
                         }}
                     >
                         Values
@@ -63,15 +68,25 @@ function EAHeaderComponent() {
                             ReactGA.event({
                                 category: 'External App',
                                 action: 'External App Deployment history Clicked',
-                            });
+                            })
                         }}
                     >
                         Deployment history
                     </NavLink>
                 </li>
             </ul>
+        )
+    }
+    return (
+        <div className="helm-app-page-header" style={{ gridTemplateColumns: 'unset' }}>
+            <PageHeader
+                isBreadcrumbs={true}
+                showTabs={true}
+                renderHeaderTabs={renderExternalHelmApp}
+                breadCrumbs={renderBreadcrumbs}
+            />
         </div>
-    );
+    )
 }
 
-export default EAHeaderComponent;
+export default EAHeaderComponent
