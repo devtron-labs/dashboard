@@ -1,10 +1,12 @@
 import { RouteComponentProps } from 'react-router';
+import { ResponseType } from '../../services/service.types';
 
 export interface ChartValuesType {
     kind: 'DEFAULT' | 'TEMPLATE' | 'DEPLOYED' | 'EXISTING' | null;
     chartVersion?: string;
     name?: string;
     id: number;
+    appStoreVersionId?: number;
     environmentName?: string;
 };
 
@@ -281,4 +283,19 @@ export interface ChartGroupExports extends ChartGroupHelpers {
     reloadState: () => void;
     applyFilterOnCharts: (qs: string) => Promise<void>;
     setCharts: (charts: ChartGroupEntry[]) => void;
+}
+
+export interface HelmTemplateChartRequest {
+    environmentId: number
+    clusterId: number
+    namespace: string
+    releaseName: string
+    appStoreApplicationVersionId: number
+    valuesYaml: string
+}
+
+export interface HelmTemplateChartResponse extends ResponseType {
+    result: {
+        manifest: string
+    }
 }
