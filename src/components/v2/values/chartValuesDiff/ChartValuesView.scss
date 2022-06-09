@@ -154,11 +154,6 @@
                 border-top-right-radius: 4px;
                 margin: 0;
             }
-
-            .compare-values-select__option,
-            .values-environment-select__option {
-                margin: 4px 0;
-            }
         }
 
         .chart-values-view__details {
@@ -207,6 +202,7 @@
             .chart-deprecated-wrapper {
                 padding: 10px 12px;
                 line-height: 18px;
+                border: 1px solid var(--Y200);
 
                 .chart-deprecated-icon path:nth-child(2) {
                     fill: var(--Y700);

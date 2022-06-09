@@ -773,7 +773,7 @@ export const ChartValuesEditor = ({
                             arrow={false}
                             placement="bottom"
                             content={
-                                'Manifest is generated locally from the YAML. Server-side testing of chart validity (e.g. API support) is NOT done. K8s version based templating may differ depending on cluster version.'
+                                'This manifest is generated locally from the YAML. Server-side testing of chart validity (e.g. whether an API is supported) is NOT done. K8s version based templating may be different depending on cluster version.'
                             }
                         >
                             <span className="cursor cb-5 fw-6">&nbsp;Know more</span>
