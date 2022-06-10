@@ -631,12 +631,11 @@ export function EmptyChartGroup({
                         target="_blank"
                         className="learn-more__href"
                     >
-                        {' '}
                         Learn more about chart groups
                     </a>
                 )}
-                {onClickViewChartButton ? (
-                    <button type="button" onClick={onClickViewChartButton} className="cta ghosted mb-24 mt-24">
+                {typeof onClickViewChartButton === 'function' ? (
+                    <button type="button" onClick={onClickViewChartButton} className="cta ghosted flex mb-24 mt-24">
                         {buttonText || 'View all charts'}
                     </button>
                 ) : (
