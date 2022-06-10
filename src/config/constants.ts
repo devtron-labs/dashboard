@@ -148,6 +148,7 @@ export const Routes = {
     CUSTOM_CHART_LIST: 'deployment/template/fetch',
     VALIDATE_CUSTOM_CHART: 'deployment/template/validate',
     UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
+    HELM_APP_TEMPLATE_CHART: 'application/template-chart',
 }
 
 export const ViewType = {

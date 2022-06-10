@@ -102,6 +102,7 @@
             display: flex;
             flex-wrap: wrap;
             background-color: var(--window-bg);
+            z-index: 0;
 
             .saved-filter {
                 display: flex;

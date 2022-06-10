@@ -11,6 +11,7 @@ import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.
 import ReactGA from 'react-ga'
 export interface PageHeaderType {
     headerName?: string
+    additionalHeaderInfo?: () => JSX.Element
     isTippyShown?: boolean
     tippyRedirectLink?: string
     showTabs?: boolean
@@ -27,6 +28,7 @@ export interface PageHeaderType {
 
 function PageHeader({
     headerName,
+    additionalHeaderInfo,
     isTippyShown = false,
     tippyRedirectLink,
     showTabs = false,
@@ -113,10 +115,11 @@ function PageHeader({
                 <div className="flex left">
                     {showCloseButton && (
                         <button className="transparent flex mr-8" onClick={onClose}>
-                            <Close className="icon-dim-24 cursor" />
+                            <Close className="page-header__close-icon icon-dim-24 cursor" />
                         </button>
                     )}
                     <span className="fw-6">{headerName}</span>
+                    {additionalHeaderInfo && additionalHeaderInfo()}
                     {isBreadcrumbs && breadCrumbs()}
                     {isTippyShown && (
                         <a

@@ -33,6 +33,8 @@ import { mainContext } from '../../common/navigation/NavigationRoutes'
 import warn from '../../../assets/icons/ic-warning.svg'
 import './DiscoverChartDetails.scss'
 import PageHeader from '../../common/header/PageHeader'
+import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
+import { ChartInstalledConfig } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
 
 const DiscoverDetailsContext = React.createContext(null)
 
@@ -55,8 +57,13 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     const { serverMode } = useContext(mainContext)
 
     const [selectedVersion, selectVersion] = React.useState(null)
-    const [availableVersions, setChartVersions] = React.useState(new Map())
-    const [chartInformation, setInformation] = React.useState({ appStoreApplicationName: '', deprecated: false })
+    const [availableVersions, setChartVersions] = React.useState([])
+    const [chartInformation, setChartInformation] = React.useState({
+        appStoreApplicationName: '',
+        deprecated: false,
+        chartName: '',
+        name: '',
+    })
     const [chartYaml, setChartYaml] = React.useState(null)
     const [loading, setLoading] = React.useState(false)
     const [chartValuesList, setChartValuesList] = useState([])
@@ -112,16 +119,15 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         [chartId],
     )
 
-    function goBackToDiscoverChart(isReload) {
-        const url = `${URLS.CHARTS}/discover/chart/${chartId}`
-        history.push(url)
+    function goBackToDiscoverChart() {
+        history.push(`${URLS.CHARTS}/discover/chart/${chartId}`)
     }
 
     async function fetchVersions() {
         setLoading(true)
         try {
             const { result } = await getChartVersionsMin(chartId)
-            setChartVersions(mapById(result))
+            setChartVersions(result)
             selectVersion(result[0].id)
         } catch (err) {
             showError(err)
@@ -134,7 +140,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         setLoading(true)
         try {
             const { result } = await getChartVersionDetails(selectedVersion)
-            setInformation(result)
+            setChartInformation(result)
             try {
                 setChartYaml(JSON.parse(result.chartYaml))
             } catch (err) {}
@@ -224,7 +230,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                                 <Deployment
                                     chartId={chartId}
                                     {...chartInformation}
-                                    availableVersions={availableVersions}
+                                    availableVersions={mapById(availableVersions)}
                                     isGitOpsConfigAvailable={isGitOpsConfigAvailable}
                                     showGitOpsWarningModal={showGitOpsWarningModal}
                                     toggleGitOpsWarningModal={toggleGitOpsWarningModal}
@@ -239,15 +245,35 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                     path={`${URLS.CHARTS}/discover/chart/:chartId/deploy-chart`}
                     render={(props) => {
                         return (
-                            <OpaqueModal onHide={goBackToDiscoverChart}>
-                                <DeployChart
-                                    chartValuesFromParent={chartValues}
-                                    {...chartInformation}
-                                    appStoreVersion={selectedVersion}
-                                    versions={availableVersions}
-                                    onHide={goBackToDiscoverChart}
-                                />
-                            </OpaqueModal>
+                            <div className="deploy-chart__container">
+                                {!chartInformation.chartName ||
+                                !selectedVersion ||
+                                chartValuesList.length <= 0 ||
+                                availableVersions.length <= 0 ? (
+                                    <Progressing pageLoader />
+                                ) : (
+                                    <>
+                                        <PageHeader
+                                            headerName={`Deploy chart: ${chartInformation.chartName}/${chartInformation.name}`}
+                                            additionalHeaderInfo={() =>
+                                                chartInformation.deprecated && (
+                                                    <span style={{ color: 'var(--R500)' }}>&nbsp;(Deprecated)</span>
+                                                )
+                                            }
+                                            showCloseButton={true}
+                                            onClose={goBackToDiscoverChart}
+                                        />
+                                        <ChartValuesView
+                                            isDeployChartView={true}
+                                            installedConfigFromParent={chartInformation as ChartInstalledConfig}
+                                            chartValuesListFromParent={chartValuesList}
+                                            chartVersionsDataFromParent={availableVersions}
+                                            chartValuesFromParent={chartValues}
+                                            selectedVersionFromParent={selectedVersion}
+                                        />
+                                    </>
+                                )}
+                            </div>
                         )
                     }}
                 />
