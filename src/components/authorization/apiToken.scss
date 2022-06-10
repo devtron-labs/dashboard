@@ -1,5 +1,5 @@
 .api-token__container {
-    padding: 20px 95px;
+    margin: 20px 95px;
 
     .api-list-row {
         display: grid;
@@ -19,5 +19,18 @@
                 display: flex;
             }
         }
+    }
+
+    .form__label {
+        margin-bottom: 6px;
+    }
+
+    .form__row {
+        margin-bottom: 16px;
+    }
+
+    .form__permission {
+        display: grid;
+        grid-template-columns: 50% 50%;
     }
 }

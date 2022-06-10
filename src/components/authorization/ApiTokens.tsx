@@ -144,7 +144,7 @@ function ApiTokens() {
                         </div>
                     </div>
                 )}
-                {showGenerateTokenModal && <GenerateToken />}
+                {showGenerateTokenModal && <GenerateToken setShowGenerateToken={setShowGenerateToken} />}
             </Fragment>
         )
     }
