@@ -78,6 +78,7 @@ export const Routes = {
 
     REFRESH_MATERIAL: 'app/ci-pipeline/refresh-material',
     APPLICATIONS: 'api/v1/applications',
+    API_TOKEN: 'api-token',
     USER_CREATE: 'user/create',
     USER_UPDATE: 'user/update',
     USER_LIST: 'user/all',
