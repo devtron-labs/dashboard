@@ -14,6 +14,7 @@ import { appSelectorStyle, DropdownIndicator } from '../AppSelector/AppSelectorU
 import { OptionType } from '../app/types'
 import NodeListSearchFilter from './NodeListSearchFliter'
 import { OrderBy } from '../app/list/types'
+import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 
 export default function NodeList() {
     const match = useRouteMatch()
@@ -41,6 +42,7 @@ export default function NodeList() {
     const [selectedSearchTextType, setSelectedSearchTextType] = useState<string>('')
     const [sortByColumnName, setSortByColumnName] = useState<string>('name')
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
+    const [noResults, setNoResults] = useState(false)
 
     const flattenObject = (ob: Object): Object => {
         var toReturn = {}
@@ -182,6 +184,13 @@ export default function NodeList() {
             _flattenNodeList.push(element)
         }
         setFilteredFlattenNodeList(_flattenNodeList)
+        setNoResults(_flattenNodeList.length === 0)
+    }
+
+    const clearFilter = (): void => {
+        setSearchText('')
+        setSelectedSearchTextType('')
+        setSearchedLabelMap(new Map())
     }
 
     useEffect(() => {
@@ -338,7 +347,7 @@ export default function NodeList() {
                         )}
                     </div>
                 )}
-                <div className="bcn-0 pt-16">
+                <div className={`bcn-0 pt-16 ${noResults ? 'no-result-container' : ''}`}>
                     <div className="pl-20 pr-20">
                         <NodeListSearchFilter
                             defaultVersion={defaultVersion}
@@ -354,60 +363,64 @@ export default function NodeList() {
                             setSearchedLabelMap={setSearchedLabelMap}
                         />
                     </div>
-                    <div
-                        className="mt-16 en-2 bw-1"
-                        style={{ minHeight: 'calc(100vh - 125px)', width: '100%', overflow: 'auto' }}
-                    >
+                    {noResults ? (
+                        <ClusterNodeEmptyState actionHandler={clearFilter} />
+                    ) : (
                         <div
-                            className=" fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 text-uppercase"
-                            style={{ width: 'max-content', minWidth: '100%' }}
+                            className="mt-16 en-2 bw-1"
+                            style={{ minHeight: 'calc(100vh - 125px)', width: '100%', overflow: 'auto' }}
                         >
-                            {appliedColumns.map((column) => (
+                            <div
+                                className=" fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 text-uppercase"
+                                style={{ width: 'max-content', minWidth: '100%' }}
+                            >
+                                {appliedColumns.map((column) => (
+                                    <div
+                                        className={`list-title inline-block ellipsis-right mr-16 ${
+                                            column.label === 'Node'
+                                                ? 'w-280 pl-20 bcn-0 position-sticky sticky-column'
+                                                : 'w-100-px'
+                                        } ${sortByColumnName === column['value'] ? 'sort-by' : ''} ${
+                                            sortOrder === OrderBy.DESC ? 'desc' : ''
+                                        }`}
+                                    >
+                                        {column.label}
+                                        {column['isSortingAllowed'] && (
+                                            <Sort
+                                                className="pointer icon-dim-14 position-rel sort-icon"
+                                                onClick={(event) => {
+                                                    handleSortClick(column.value)
+                                                }}
+                                            />
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                            {filteredFlattenNodeList?.map((nodeData) => (
                                 <div
-                                    className={`list-title inline-block ellipsis-right mr-16 ${
-                                        column.label === 'Node'
-                                            ? 'w-280 pl-20 bcn-0 position-sticky sticky-column'
-                                            : 'w-100-px'
-                                    } ${sortByColumnName === column['value'] ? 'sort-by' : ''} ${
-                                        sortOrder === OrderBy.DESC ? 'desc' : ''
-                                    }`}
+                                    className="fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20"
+                                    style={{ width: 'max-content', minWidth: '100%' }}
                                 >
-                                    {column.label}
-                                    {column['isSortingAllowed'] && (
-                                        <Sort
-                                            className="pointer icon-dim-14 position-rel sort-icon"
-                                            onClick={(event) => {
-                                                handleSortClick(column.value)
-                                            }}
-                                        />
-                                    )}
+                                    {appliedColumns.map((column) => {
+                                        return column.label === 'Node' ? (
+                                            <div className="w-280 inline-block ellipsis-right mr-16 pl-20 bcn-0 position-sticky sticky-column">
+                                                <NavLink to={`${match.url}/${nodeData[column.value]}`}>
+                                                    {nodeData[column.value]}
+                                                </NavLink>
+                                            </div>
+                                        ) : (
+                                            <div className="w-100-px inline-block ellipsis-right mr-16">
+                                                {column.value === 'errorCount' && nodeData[column.value] && (
+                                                    <Info className="error-icon-red mr-3 icon-dim-16 position-rel top-3" />
+                                                )}
+                                                {nodeData[column.value] || '-'}
+                                            </div>
+                                        )
+                                    })}
                                 </div>
                             ))}
                         </div>
-                        {filteredFlattenNodeList?.map((nodeData) => (
-                            <div
-                                className="fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20"
-                                style={{ width: 'max-content', minWidth: '100%' }}
-                            >
-                                {appliedColumns.map((column) => {
-                                    return column.label === 'Node' ? (
-                                        <div className="w-280 inline-block ellipsis-right mr-16 pl-20 bcn-0 position-sticky sticky-column">
-                                            <NavLink to={`${match.url}/${nodeData[column.value]}`}>
-                                                {nodeData[column.value]}
-                                            </NavLink>
-                                        </div>
-                                    ) : (
-                                        <div className="w-100-px inline-block ellipsis-right mr-16">
-                                            {column.value === 'errorCount' && nodeData[column.value] && (
-                                                <Info className="error-icon-red mr-3 icon-dim-16 position-rel top-3" />
-                                            )}
-                                            {nodeData[column.value] || '-'}
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                        ))}
-                    </div>
+                    )}
                 </div>
             </div>
         </>

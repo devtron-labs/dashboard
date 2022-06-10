@@ -10,6 +10,7 @@ import { ClusterDetail, ClusterListResponse } from './types'
 import PageHeader from '../common/header/PageHeader'
 import { toast } from 'react-toastify'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 
 export default function ClusterList() {
     const match = useRouteMatch()
@@ -29,7 +30,6 @@ export default function ClusterList() {
                 if (response.result) {
                     setClusterList(response.result)
                     setFilteredClusterList(response.result)
-                    setNoResults(response.result.length === 0)
                 }
                 setLoader(false)
             })
@@ -68,7 +68,7 @@ export default function ClusterList() {
         }
     }
 
-    const renderSearch = (): JSX.Element => {
+    const RenderSearch = (): JSX.Element => {
         return (
             <form className="search position-rel margin-right-0 en-2 bw-1 br-4">
                 <Search className="search__icon icon-dim-18" />
@@ -97,9 +97,9 @@ export default function ClusterList() {
     return (
         <>
             <PageHeader headerName="Clusters" />
-            <div className="cluster-list bcn-0">
+            <div className={`cluster-list bcn-0 ${noResults ? 'no-result-container' : ''}`}>
                 <div className="flexbox content-space pl-20 pr-20 pt-16 pb-20">
-                    {renderSearch()}
+                    <RenderSearch />
                     <div className="app-tabs-sync">
                         {lastDataSyncTimeString && (
                             <span>
@@ -111,21 +111,20 @@ export default function ClusterList() {
                         )}
                     </div>
                 </div>
-
-                <div className="" style={{ minHeight: 'calc(100vh - 125px)' }}>
-                    <div className="cluster-list-row fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 pl-20 text-uppercase">
-                        <div>Cluster</div>
-                        <div>Status</div>
-                        <div>Errors</div>
-                        <div>Nodes</div>
-                        <div>K8s version</div>
-                        <div>CPU Capacity</div>
-                        <div>Memory Capacity</div>
-                    </div>
-                    {noResults ? (
-                        <div>No results found</div>
-                    ) : (
-                        filteredClusterList?.map((clusterData) => {
+                {noResults ? (
+                    <ClusterNodeEmptyState actionHandler={() => handleFilterChanges('')} />
+                ) : (
+                    <div className="" style={{ minHeight: 'calc(100vh - 125px)' }}>
+                        <div className="cluster-list-row fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 pl-20 text-uppercase">
+                            <div>Cluster</div>
+                            <div>Status</div>
+                            <div>Errors</div>
+                            <div>Nodes</div>
+                            <div>K8s version</div>
+                            <div>CPU Capacity</div>
+                            <div>Memory Capacity</div>
+                        </div>
+                        {filteredClusterList?.map((clusterData) => {
                             const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
                             return (
                                 <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
@@ -162,9 +161,9 @@ export default function ClusterList() {
                                     <div>{clusterData.memory?.capacity}</div>
                                 </div>
                             )
-                        })
-                    )}
-                </div>
+                        })}
+                    </div>
+                )}
             </div>
         </>
     )

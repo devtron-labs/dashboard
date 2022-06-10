@@ -1,4 +1,8 @@
 .cluster-list {
+    &.no-result-container {
+        height: calc(100vh - 48px);
+        overflow: hidden;
+    }
     .cluster-list-row {
         display: grid;
         grid-template-columns: auto 60px 50px 50px 100px 100px 120px;
@@ -23,6 +27,10 @@
         width: 25%;
     }
 
+    .no-result-container {
+        height: calc(100vh - 280px);
+        overflow: hidden;
+    }
     .search-wrapper {
         display: grid;
         grid-template-columns: auto 160px 1px 180px;
