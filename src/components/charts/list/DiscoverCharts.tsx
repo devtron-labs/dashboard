@@ -265,11 +265,10 @@ function DiscoverChartList() {
 
     const clearSearch = () => {
         const searchParams = new URLSearchParams(location.search)
-        const deprecate = searchParams.get(QueryParams.IncludeDeprecated)
+        const includeDeprecate = searchParams.get(QueryParams.IncludeDeprecated)
         const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
-        let qs: string = ''
-        if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
-        if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+        let qs = includeDeprecate ? `&${QueryParams.IncludeDeprecated}=${includeDeprecate}` : ''
+        qs += chartRepoId ? `&${QueryParams.ChartRepoId}=${chartRepoId}` : ''
         history.push(`${url}?${qs}`)
     }
 
