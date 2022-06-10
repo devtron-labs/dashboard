@@ -177,7 +177,7 @@ export default function CustomChartList() {
         )
     }
     if (loader) {
-        return <Progressing />
+        return <Progressing pageLoader />
     }
     if (errorStatusCode > 0) {
         return (

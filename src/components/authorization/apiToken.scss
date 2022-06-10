@@ -6,7 +6,18 @@
         grid-template-columns: 30px 40% auto 15% 15% 24px 24px;
         grid-column-gap: 16px;
     }
-    .api__row__trash {
+
+    .api__row-actions {
         display: none;
+    }
+
+    .api-list-row {
+        &:hover {
+            background-color: var(--N50);
+
+            .api__row-actions {
+                display: flex;
+            }
+        }
     }
 }

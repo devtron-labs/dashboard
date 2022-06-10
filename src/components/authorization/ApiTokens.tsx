@@ -104,14 +104,13 @@ function ApiTokens() {
                                 <div>Ip address</div>
                                 <div>Expires on</div>
                                 <div></div>
-                                <div></div>
                             </div>
                             {tokenList?.map((list, index) => (
                                 <div
                                     key={`api_${index}`}
                                     className="api-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
                                 >
-                                    <button type="button" className="project__row__trash transparent  ">
+                                    <button type="button" className=" transparent  ">
                                         <Bulb className="scn-5 icon-dim-20" />
                                     </button>
                                     <div className="flexbox">{list.name}</div>
@@ -120,24 +119,26 @@ function ApiTokens() {
                                     </div>
                                     <div>{list.lastUsedByIp}</div>
                                     <div>{list.expireAtInMs}</div>
-                                    <button
-                                        type="button"
-                                        className="project__row__trash transparent  "
-                                        onClick={() => {
-                                            setShowEditToken(true)
-                                        }}
-                                    >
-                                        <Edit className=" icon-dim-20" />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="project__row__trash transparent  "
-                                        onClick={() => {
-                                            setDeleteConfirmation(false)
-                                        }}
-                                    >
-                                        <Trash className="scn-5 icon-dim-20" />
-                                    </button>
+                                    <div className="api__row-actions flex">
+                                        <button
+                                            type="button"
+                                            className="transparent mr-16"
+                                            onClick={() => {
+                                                setShowEditToken(true)
+                                            }}
+                                        >
+                                            <Edit className="icon-dim-20" />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="transparent"
+                                            onClick={() => {
+                                                setDeleteConfirmation(false)
+                                            }}
+                                        >
+                                            <Trash className="scn-5 icon-dim-20" />
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -148,7 +149,7 @@ function ApiTokens() {
         )
     }
     if (loader) {
-        return <Progressing />
+        return <Progressing pageLoader />
     }
     if (errorStatusCode > 0) {
         return (
