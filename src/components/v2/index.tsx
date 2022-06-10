@@ -17,6 +17,7 @@ import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHist
 import { ExternalLink, ExternalLinksAndToolsType, OptionTypeWithIcon } from '../externalLinks/ExternalLinks.type';
 import { getExternalLinks, getMonitoringTools } from '../externalLinks/ExternalLinks.service';
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils';
+import ChartValuesView from './values/chartValuesDiff/ChartValuesView';
 
 let initTimer = null;
 
@@ -153,7 +154,9 @@ function RouterComponent({ envType }) {
                                     monitoringTools={externalLinksAndTools.monitoringTools}
                                 />
                             </Route>
-                            <Route path={`${path}/${URLS.APP_VALUES}`} component={ValuesComponent} />
+                            <Route path={`${path}/${URLS.APP_VALUES}`}>
+                                <ValuesComponent appId={params.appId} />
+                            </Route>
                             <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}>
                                 <ChartDeploymentHistory appId={params.appId} isExternal={false} />
                             </Route>

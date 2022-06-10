@@ -75,12 +75,12 @@ export class Security extends Component<SecurityProps> {
 
     render() {
         return (
-            <>
+            <div className="security-scan">
                 {this.renderPageheader()}
                 {this.props.serverMode === SERVER_MODE.EA_ONLY
                     ? this.renderEmptyStateForEAOnlyMode()
                     : this.renderRouter()}
-            </>
+            </div>
         )
     }
 }

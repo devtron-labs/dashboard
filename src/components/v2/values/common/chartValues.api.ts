@@ -1,79 +1,194 @@
-import React from 'react';
-import { getChartValuesCategorizedListParsed, getChartVersionsMin, getReadme } from '../../../charts/charts.service';
-import { ChartVersionType } from '../../../charts/charts.types';
-import { showError } from '../../../common';
+import React from 'react'
+import { SERVER_MODE } from '../../../../config'
+import { getEnvironmentListHelmApps, getEnvironmentListMin, getTeamListMin } from '../../../../services/service'
+import { EnvironmentListHelmResult, Teams } from '../../../../services/service.types'
+import {
+    generateHelmManifest,
+    getChartValuesCategorizedListParsed,
+    getChartVersionsMin,
+    getReadme,
+} from '../../../charts/charts.service'
+import { showError, sortCallback, sortObjectArrayAlphabetically } from '../../../common'
+import { ChartKind, ChartValuesViewAction, ChartValuesViewActionTypes } from '../chartValuesDiff/ChartValuesView.type'
 
 export async function fetchChartVersionsData(
     id: number,
-    isExternal: boolean,
-    valueUpdateRequired: boolean,
-    setSelectedVersionUpdatePage: React.Dispatch<React.SetStateAction<ChartVersionType>>,
-    setChartVersionsData: React.Dispatch<React.SetStateAction<ChartVersionType[]>>,
-    setLoading?: React.Dispatch<React.SetStateAction<boolean>>,
+    dispatch: (action: ChartValuesViewAction) => void,
     currentChartVersion?: string,
-    selectVersion?: React.Dispatch<React.SetStateAction<number>>,
 ) {
     try {
-        setLoading && setLoading(true);
-        const { result } = await getChartVersionsMin(id);
-        setChartVersionsData(result);
+        const { result } = await getChartVersionsMin(id)
+        const _currentVersion =
+            (currentChartVersion && result.find((e) => e.version === currentChartVersion)) || result[0]
 
-        if (isExternal) {
-            const specificVersion = result.find((e) => e.version === currentChartVersion);
-            if (specificVersion) {
-                selectVersion && selectVersion(specificVersion.id);
-                setSelectedVersionUpdatePage(specificVersion);
-            } else {
-                setSelectedVersionUpdatePage(result[0]);
-            }
-        } else if (valueUpdateRequired) {
-            setSelectedVersionUpdatePage(result[0]);
-        }
+        dispatch({
+            type: ChartValuesViewActionTypes.multipleOptions,
+            payload: {
+                isLoading: false,
+                chartVersionsData: result,
+                selectedVersion: _currentVersion.id,
+                selectedVersionUpdatePage: _currentVersion,
+            },
+        })
     } catch (err) {
-        showError(err);
-    } finally {
-        setLoading && setLoading(false);
+        showError(err)
+        dispatch({
+            type: ChartValuesViewActionTypes.isLoading,
+            payload: false,
+        })
     }
 }
 
 export async function getChartValuesList(
     id: number,
     setChartValuesList: React.Dispatch<React.SetStateAction<any>>,
-    setChartValues: React.Dispatch<React.SetStateAction<any>>,
-    setLoading?: React.Dispatch<React.SetStateAction<boolean>>,
+    handleChartValuesSelection?: (chartValues) => void,
     initId?: number,
     installedAppVersionId = null,
 ) {
-    setLoading && setLoading(true);
     try {
-        const { result } = await getChartValuesCategorizedListParsed(id, installedAppVersionId);
-        setChartValuesList(result);
-        if (installedAppVersionId) {
-            setChartValues({
+        const { result } = await getChartValuesCategorizedListParsed(id, installedAppVersionId)
+        setChartValuesList(result)
+        if (installedAppVersionId && handleChartValuesSelection) {
+            handleChartValuesSelection({
                 id: initId,
-                kind: 'EXISTING',
-            });
+                kind: ChartKind.EXISTING
+            })
         }
     } catch (err) {
-        showError(err);
-    } finally {
-        setLoading && setLoading(false);
+        showError(err)
     }
 }
 
 export async function getChartRelatedReadMe(
     id: number,
-    setFetchingReadMe: React.Dispatch<React.SetStateAction<boolean>>,
-    setActiveReadMe: React.Dispatch<React.SetStateAction<string>>,
+    currentFetchedReadMe: Map<number, string>,
+    dispatch: (action: ChartValuesViewAction) => void,
 ) {
     try {
-        setFetchingReadMe(true);
-        const { result } = await getReadme(id);
-        setActiveReadMe(result.readme);
-        setFetchingReadMe(false);
+        dispatch({ type: ChartValuesViewActionTypes.fetchingReadMe, payload: true })
+        const { result } = await getReadme(id)
+        const _fetchedReadMe = currentFetchedReadMe
+        _fetchedReadMe.set(id, result.readme)
+
+        dispatch({
+            type: ChartValuesViewActionTypes.multipleOptions,
+            payload: {
+                fetchingReadMe: false,
+                fetchedReadMe: _fetchedReadMe,
+                isReadMeAvailable: !!result.readme?.trim(),
+            },
+        })
     } catch (err) {
-        showError(err);
-    } finally {
-        setFetchingReadMe(false);
+        showError(err)
+        dispatch({
+            type: ChartValuesViewActionTypes.multipleOptions,
+            payload: {
+                fetchingReadMe: false,
+                isReadMeAvailable: false,
+            },
+        })
     }
+}
+
+export async function getGeneratedHelmManifest(
+    environmentId: number,
+    clusterId: number,
+    namespace: string,
+    appName: string,
+    appStoreApplicationVersionId: number,
+    valuesYaml: string,
+    dispatch: (action: ChartValuesViewAction) => void,
+) {
+    try {
+        const { result } = await generateHelmManifest({
+            environmentId,
+            clusterId,
+            namespace,
+            releaseName: appName,
+            appStoreApplicationVersionId,
+            valuesYaml,
+        })
+
+        dispatch({
+            type: ChartValuesViewActionTypes.multipleOptions,
+            payload: {
+                generatingManifest: false,
+                generatedManifest: result.manifest,
+                valuesYamlUpdated: false,
+                valuesEditorError: '',
+            },
+        })
+    } catch (e: any) {
+        let errorMessage = ''
+        if (Array.isArray(e.errors) && e.errors.length > 0) {
+            errorMessage = e.errors[0].userMessage
+        } else {
+            errorMessage = e.message
+        }
+
+        dispatch({
+            type: ChartValuesViewActionTypes.multipleOptions,
+            payload: {
+                generatingManifest: false,
+                valuesEditorError: errorMessage,
+            },
+        })
+    }
+}
+
+export async function fetchProjectsAndEnvironments(
+    serverMode: SERVER_MODE,
+    dispatch: (action: ChartValuesViewAction) => void,
+): Promise<void> {
+    Promise.allSettled([
+        getTeamListMin(),
+        serverMode === SERVER_MODE.FULL ? getEnvironmentListMin() : getEnvironmentListHelmApps(),
+    ]).then((responses: { status: string; value?: any; reason?: any }[]) => {
+        const projectListRes: Teams[] = responses[0].value?.result || []
+        const environmentListRes: any[] = responses[1].value?.result || []
+        let envList = []
+
+        if (serverMode === SERVER_MODE.FULL) {
+            envList = environmentListRes.map((env) => {
+                return {
+                    value: env.id,
+                    label: env.environment_name,
+                    active: env.active,
+                    namespace: env.namespace,
+                }
+            })
+            envList = envList.sort((a, b) => sortCallback('label', a, b, true))
+        } else {
+            const _sortedResult = (
+                environmentListRes ? sortObjectArrayAlphabetically(environmentListRes, 'clusterName') : []
+            ) as EnvironmentListHelmResult[]
+            envList = _sortedResult.map((cluster) => ({
+                label: cluster.clusterName,
+                options: [
+                    ...cluster.environments?.map((env) => ({
+                        label: env.environmentName,
+                        value: env.environmentId,
+                        namespace: env.namespace,
+                        clusterName: cluster.clusterName,
+                        clusterId: cluster.clusterId,
+                    })),
+                ],
+            }))
+        }
+
+        const projectList = projectListRes
+            .map((p) => {
+                return { value: p.id, label: p.name }
+            })
+            .sort((a, b) => sortCallback('label', a, b, true))
+
+        dispatch({
+            type: ChartValuesViewActionTypes.multipleOptions,
+            payload: {
+                environments: envList,
+                projects: projectList,
+            },
+        })
+    })
 }
