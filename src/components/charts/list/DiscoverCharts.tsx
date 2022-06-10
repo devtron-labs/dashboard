@@ -40,6 +40,17 @@ import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
 import PageHeader from '../../common/header/PageHeader'
 import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 
+
+interface EmptyCharts {
+    title?: string
+    removeLearnMore?: boolean
+    image?: any
+    onClickViewChartButton?: () => void
+    buttonText?: string
+    subTitle?: string
+    styles?: {}
+}
+
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
     return charts
@@ -254,7 +265,6 @@ function DiscoverChartList() {
 
     const clearSearch = () => {
         const searchParams = new URLSearchParams(location.search)
-        const app = searchParams.get(QueryParams.AppStoreName)
         const deprecate = searchParams.get(QueryParams.IncludeDeprecated)
         const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
         let qs: string = ''
@@ -606,23 +616,15 @@ export function EmptyChartGroup({
     buttonText,
     subTitle,
     styles,
-}: {
-    title?: string
-    removeLearnMore?: boolean
-    image?: any
-    onClickViewChartButton?: () => void
-    buttonText?: string
-    subTitle?: string
-    styles?: {}
-}) {
+}: EmptyCharts) {
     const { url } = useRouteMatch()
     return (
-        <div className={`bcn-0 flex left br-8 mt-20 ml-20 mr-20`} style={{ gridColumn: '1 / span 4', ...styles }}>
-            <img src={image || empty} className="" style={{ width: '200px', margin: '20px 42px' }} />
+        <div className="bcn-0 flex left br-8 mt-20 ml-20 mr-20" style={{ gridColumn: '1 / span 4', ...styles }}>
+            <img src={image || empty} style={{ width: '200px', margin: '20px 42px' }} />
             <div>
-                <div className="fs-16 fw-6">{title || `Chart group`}</div>
+                <div className="fs-16 fw-6">{title || "Chart group"}</div>
                 <div className="cn-7">
-                    {subTitle || `Use chart groups to preconfigure and deploy frequently used charts together.`}
+                    {subTitle || "Use chart groups to preconfigure and deploy frequently used charts together."}
                 </div>
                 {!removeLearnMore && (
                     <a
