@@ -4,11 +4,11 @@ import { useRouteMatch, useParams, useHistory } from 'react-router'
 import './clusterNodes.scss'
 import { getClusterCapacity, getNodeList, getClusterList } from './clusterNodes.service'
 import { BreadCrumb, handleUTCTime, Progressing, showError, useBreadcrumb } from '../common'
-import { ClusterCapacityType, ClusterListResponse, NodeRowDetail } from './types'
+import { ClusterCapacityType, ClusterListResponse } from './types'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import PageHeader from '../common/header/PageHeader'
-import ReactSelect, { components, MultiValue } from 'react-select'
+import ReactSelect, { MultiValue } from 'react-select'
 import { appSelectorStyle, DropdownIndicator } from '../AppSelector/AppSelectorUtil'
 import { OptionType } from '../app/types'
 import NodeListSearchFilter from './NodeListSearchFliter'
@@ -17,7 +17,6 @@ export default function NodeList() {
     const match = useRouteMatch()
     const history = useHistory()
     const [loader, setLoader] = useState(false)
-    const [searchApplied, setSearchApplied] = useState(false)
     const [searchText, setSearchText] = useState('')
     const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
@@ -30,17 +29,7 @@ export default function NodeList() {
         value: '',
     })
     const defaultVersion = { label: 'K8s version: Any', value: 'K8s version: Any' }
-    const [appliedColumns, setAppliedColumns] = useState<MultiValue<OptionType>>([
-        { label: 'Node', value: 'name' },
-        { label: 'Status', value: 'status' },
-        { label: 'Roles', value: 'roles' },
-        { label: 'Errors', value: 'errors' },
-        { label: 'K8S Version', value: 'k8sVersion' },
-        { label: 'Pods', value: 'podCount' },
-        { label: 'Taints', value: 'taintCount' },
-        { label: 'CPU Usage', value: 'cpu.usagePercentage' },
-        { label: 'Mem Usage', value: 'memory.usagePercentage' },
-    ])
+    const [appliedColumns, setAppliedColumns] = useState<MultiValue<OptionType>>([])
     const [clusterErrorTitle, setClusterErrorTitle] = useState('')
     const [clusterErrorList, setClusterErrorList] = useState<string[]>([])
     const [flattenNodeList, setFlattenNodeList] = useState<object[]>([])
@@ -183,7 +172,6 @@ export default function NodeList() {
             _flattenNodeList.push(element)
         }
         setFilteredFlattenNodeList(_flattenNodeList)
-        setSearchApplied(true)
     }
 
     useEffect(() => {
@@ -350,7 +338,6 @@ export default function NodeList() {
                             setSearchText={setSearchText}
                             searchedLabelMap={searchedLabelMap}
                             setSearchedLabelMap={setSearchedLabelMap}
-                            searchApplied={searchApplied}
                         />
                     </div>
                     <div
@@ -361,72 +348,36 @@ export default function NodeList() {
                             className=" fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 text-uppercase"
                             style={{ width: 'max-content', minWidth: '100%' }}
                         >
-                            <div style={{ paddingLeft: '296px' }}>
-                                {appliedColumns.map((columnName) => (
-                                    <div
-                                        className={` inline-block ellipsis-right mr-16 ${
-                                            columnName.label === 'Node'
-                                                ? 'w-280 pl-20 bcn-0 position-abs left-65'
-                                                : 'w-100-px'
-                                        }`}
-                                    >
-                                        {columnName.label}
-                                    </div>
-                                ))}
-                            </div>
-                            {/* <div>Node</div>
-                            <div>Status</div>
-                            <div>Role</div>
-                            <div>Errors</div>
-                            <div>K8s version</div>
-                            <div>Pods</div>
-                            <div>Taints</div>
-                            <div>CPU Usage</div>
-                            <div>Mem Usage</div>
-                            <div>Age</div> */}
+                            {appliedColumns.map((columnName) => (
+                                <div
+                                    className={` inline-block ellipsis-right mr-16 ${
+                                        columnName.label === 'Node'
+                                            ? 'w-280 pl-20 bcn-0 position-sticky left-0'
+                                            : 'w-100-px'
+                                    }`}
+                                >
+                                    {columnName.label}
+                                </div>
+                            ))}
                         </div>
                         {filteredFlattenNodeList?.map((nodeData) => (
                             <div
                                 className="fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20"
                                 style={{ width: 'max-content', minWidth: '100%' }}
                             >
-                                {/* <div className="cb-5 ellipsis-right">
-                                    <NavLink to={`${match.url}/${nodeData.name}`}>{nodeData.name}</NavLink>
-                                </div>
-                                <div>{nodeData.status || '-'}</div>
-                                <div>{nodeData.roles || '-'}</div>
-                                <div>{nodeData.errors?.length > 0 ? nodeData.errors.length : ''}</div>
-                                <div>{nodeData.k8sVersion || '-'}</div>
-                                <div>{nodeData.podCount || '-'}</div>
-                                <div>{nodeData.taintCount || '-'}</div>
-                                <div>
-                                    <div>{nodeData.cpu?.usagePercentage || '-'}</div>
-                                    {nodeData.cpu?.allocatable && (
-                                        <div>{nodeData.cpu.allocatable + '/' + nodeData.cpu.usage}</div>
-                                    )}
-                                </div>
-                                <div>
-                                    <div>{nodeData.memory?.usagePercentage || '-'}</div>
-                                    {nodeData.memory?.allocatable && (
-                                        <div>{nodeData.memory.allocatable + '/' + nodeData.memory.usage}</div>
-                                    )}
-                                </div>
-                                <div>{nodeData.age || '-'}</div> */}
-                                <div style={{ paddingLeft: '296px' }}>
-                                    {appliedColumns.map((columnName) => {
-                                        return columnName.label === 'Node' ? (
-                                            <div className="cb-5 ellipsis-right w-280 inline-block pl-20 bcn-0 position-abs left-65">
-                                                <NavLink to={`${match.url}/${nodeData[columnName.value]}`}>
-                                                    {nodeData[columnName.value]}
-                                                </NavLink>
-                                            </div>
-                                        ) : (
-                                            <div className="w-100-px inline-block ellipsis-right mr-16">
-                                                {nodeData[columnName.value] || '-'}
-                                            </div>
-                                        )
-                                    })}
-                                </div>
+                                {appliedColumns.map((columnName) => {
+                                    return columnName.label === 'Node' ? (
+                                        <div className="w-280 inline-block ellipsis-right mr-16 pl-20 bcn-0 position-sticky left-0">
+                                            <NavLink to={`${match.url}/${nodeData[columnName.value]}`}>
+                                                {nodeData[columnName.value]}
+                                            </NavLink>
+                                        </div>
+                                    ) : (
+                                        <div className="w-100-px inline-block ellipsis-right mr-16">
+                                            {nodeData[columnName.value] || '-'}
+                                        </div>
+                                    )
+                                })}
                             </div>
                         ))}
                     </div>

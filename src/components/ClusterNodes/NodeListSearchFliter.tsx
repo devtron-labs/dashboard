@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { Option, DropdownIndicator } from '../v2/common/ReactSelect.utils'
@@ -20,7 +20,6 @@ interface NodeListSearchFliterType {
     setSearchText: React.Dispatch<React.SetStateAction<string>>
     searchedLabelMap: Map<string, string>
     setSearchedLabelMap: React.Dispatch<React.SetStateAction<Map<string, string>>>
-    searchApplied: boolean
 }
 
 export default function NodeListSearchFliter({
@@ -34,26 +33,16 @@ export default function NodeListSearchFliter({
     setSelectedSearchTextType,
     setSearchText,
     setSearchedLabelMap,
-    searchApplied,
 }: NodeListSearchFliterType) {
-    const [selectedColumns, setSelectedColumns] = useState<MultiValue<OptionType>>([
-        { label: 'Node', value: 'name' },
-        { label: 'Status', value: 'status' },
-        { label: 'Roles', value: 'roles' },
-        { label: 'Errors', value: 'errors' },
-        { label: 'K8S Version', value: 'k8sVersion' },
-        { label: 'Pods', value: 'podCount' },
-        { label: 'Taints', value: 'taintCount' },
-        { label: 'CPU Usage', value: 'cpu.usagePercentage' },
-        { label: 'Mem Usage', value: 'memory.usagePercentage' },
-    ])
+    const [searchApplied, setSearchApplied] = useState(false)
+    const [selectedColumns, setSelectedColumns] = useState<MultiValue<OptionType>>([])
     const [isMenuOpen, setMenuOpen] = useState(false)
     const [openFilterPopup, setOpenFilterPopup] = useState(false)
     const columnMetadata = [
-        { label: 'Node', value: 'name', disabled: true },
-        { label: 'Status', value: 'status' },
+        { label: 'Node', value: 'name', isDefault: true, disabled: true },
+        { label: 'Status', value: 'status', isDefault: true },
         { label: 'Roles', value: 'roles' },
-        { label: 'Errors', value: 'errors' },
+        { label: 'Errors', value: 'errors', isDefault: true },
         { label: 'K8S Version', value: 'k8sVersion' },
         { label: 'Pods', value: 'podCount' },
         { label: 'Taints', value: 'taintCount' },
@@ -66,6 +55,12 @@ export default function NodeListSearchFliter({
 
     const [searchInputText, setSearchInputText] = useState('')
 
+    useEffect(() => {
+        const _defaultColumns = columnMetadata.filter((columnData) => columnData.isDefault)
+        setSelectedColumns(_defaultColumns)
+        setAppliedColumns(_defaultColumns)
+    }, [])
+
     const onVersionChange = (selectedValue: OptionType): void => {
         setSelectedVersion(selectedValue)
     }
@@ -74,6 +69,8 @@ export default function NodeListSearchFliter({
         setSearchInputText('')
         setSearchText('')
         setSelectedSearchTextType('')
+        setSearchedLabelMap(new Map())
+        setSearchApplied(false)
     }
 
     const handleFilterInput = (event): void => {
@@ -82,7 +79,6 @@ export default function NodeListSearchFliter({
 
     const handleFilterTag = (event): void => {
         let theKeyCode = event.key
-        //const _appliedFilters = appliedFilters
         if (theKeyCode === 'Enter') {
             if (selectedSearchTextType === 'label') {
                 const _searchedLabelMap = new Map()
@@ -100,32 +96,26 @@ export default function NodeListSearchFliter({
             } else {
                 setSearchText(event.target.value)
             }
+            setSearchApplied(true)
         } else if (theKeyCode === 'Backspace') {
             if (searchInputText.length === 0 && selectedSearchTextType) {
                 setSelectedSearchTextType('')
                 setSearchText('')
                 setOpenFilterPopup(false)
+                setSearchApplied(false)
             }
         }
     }
 
-    const toggleSelectPipeline = () => {
-        // let _appliedFilters = appliedFilters
-        // if (openFilterPopup) {
-        //     _appliedFilters = appliedFilters.filter((e) => e.value)
-        // }
+    const toggleSelectPopup = () => {
         setOpenFilterPopup(!openFilterPopup)
     }
 
     const selectFilterType = (filter: { label: string; value: string | number; type: string }): void => {
-        // const _appliedFilters = appliedFilters
-        // _appliedFilters.push({ type: filter.label, value: undefined, label: undefined })
-        // setAppliedFilter(_appliedFilters)
         setSelectedSearchTextType(filter.label)
         setOpenFilterPopup(false)
     }
     const renderTextFilter = (): JSX.Element => {
-        // let unsavedFilter = appliedFilters.find((e) => e.type && !e.value)
         return (
             <div className="position-rel">
                 <div
@@ -139,7 +129,7 @@ export default function NodeListSearchFliter({
                             <input
                                 autoComplete="off"
                                 type="text"
-                                className="pipeline-filter__search transparent flex-1"
+                                className="transparent flex-1"
                                 autoFocus
                                 placeholder={
                                     selectedSearchTextType === 'name'
@@ -157,7 +147,7 @@ export default function NodeListSearchFliter({
                 </div>
                 {openFilterPopup && (
                     <>
-                        <div className="transparent-div" onClick={toggleSelectPipeline}></div>{' '}
+                        <div className="transparent-div" onClick={toggleSelectPopup}></div>{' '}
                         {!selectedSearchTextType && (
                             <div className="search-popup w-100 bcn-0 position-abs br-4 en-2 bw-1">
                                 <div className="search-title pt-4 pb-4 pl-10 pr-10">Search by</div>
