@@ -3,6 +3,10 @@
 
     .api-list-row {
         display: grid;
-        grid-template-columns: 56px 40% 20% 20% 20% 20px 20px;
+        grid-template-columns: 30px 40% auto 15% 15% 24px 24px;
+        grid-column-gap: 16px;
+    }
+    .api__row__trash {
+        display: none;
     }
 }

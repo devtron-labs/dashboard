@@ -4,11 +4,14 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import GenerateToken from './GenerateToken'
 import { getGeneratedAPITokenList } from './service'
-import { showError, Progressing, ErrorScreenManager } from '../common'
+import { showError, Progressing, ErrorScreenManager, ConfirmationDialog } from '../common'
 import EmptyState from '../EmptyState/EmptyState'
 import emptyGeneratToken from '../../assets/img/ic-empty-generate-token.png'
 import moment from 'moment'
 import { Moment12HourFormat } from '../../config'
+import { ReactComponent as Bulb } from '../../assets/icons/ic-slant-bulb.svg'
+import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
+import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 
 function ApiTokens() {
     const [showGenerateTokenModal, setShowGenerateToken] = useState(false)
@@ -17,6 +20,8 @@ function ApiTokens() {
     const [loader, setLoader] = useState(false)
     const [tokenList, setTokenlist] = useState([])
     const [errorStatusCode, setErrorStatusCode] = useState(0)
+    const [deleteConfirmation, setDeleteConfirmation] = useState(false)
+    const [showEditToken, setShowEditToken] = useState(false)
 
     useEffect(() => {
         getData()
@@ -98,16 +103,41 @@ function ApiTokens() {
                                 <div>Last Used On</div>
                                 <div>Ip address</div>
                                 <div>Expires on</div>
+                                <div></div>
+                                <div></div>
                             </div>
-                            {tokenList?.map((list) => (
-                                <div className="api-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-14 pb-14 pr-20 pl-20">
-                                    <div></div>
+                            {tokenList?.map((list, index) => (
+                                <div
+                                    key={`api_${index}`}
+                                    className="api-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
+                                >
+                                    <button type="button" className="project__row__trash transparent  ">
+                                        <Bulb className="scn-5 icon-dim-20" />
+                                    </button>
                                     <div className="flexbox">{list.name}</div>
                                     <div className="ellipsis-right">
                                         {moment(list.lastUsedAt).format(Moment12HourFormat)}
                                     </div>
-                                    <div>{list.userIdentifier}</div>
+                                    <div>{list.lastUsedByIp}</div>
                                     <div>{list.expireAtInMs}</div>
+                                    <button
+                                        type="button"
+                                        className="project__row__trash transparent  "
+                                        onClick={() => {
+                                            setShowEditToken(true)
+                                        }}
+                                    >
+                                        <Edit className=" icon-dim-20" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="project__row__trash transparent  "
+                                        onClick={() => {
+                                            setDeleteConfirmation(false)
+                                        }}
+                                    >
+                                        <Trash className="scn-5 icon-dim-20" />
+                                    </button>
                                 </div>
                             ))}
                         </div>
