@@ -27,6 +27,12 @@
         display: grid;
         grid-template-columns: auto 160px 1px 180px;
         column-gap: 8px;
+        .search-popup {
+            z-index: 6;
+            .search-title {
+                background: var(--window-bg);
+            }
+        }
     }
 
     .error-icon path[fill='#06C'] {

@@ -2,27 +2,16 @@ import React, { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory } from 'react-router'
 import './clusterNodes.scss'
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getClusterCapacity, getNodeList, getClusterList } from './clusterNodes.service'
-import {
-    BreadCrumb,
-    handleUTCTime,
-    Progressing,
-    showError,
-    useBreadcrumb,
-    Option as OptionWithCheckbox,
-} from '../common'
+import { BreadCrumb, handleUTCTime, Progressing, showError, useBreadcrumb } from '../common'
 import { ClusterCapacityType, ClusterListResponse, NodeRowDetail } from './types'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import PageHeader from '../common/header/PageHeader'
 import ReactSelect, { components, MultiValue } from 'react-select'
-import { DropdownIndicator, appSelectorStyle } from '../AppSelector/AppSelectorUtil'
+import { appSelectorStyle, DropdownIndicator } from '../AppSelector/AppSelectorUtil'
 import { OptionType } from '../app/types'
-import { Option } from '../v2/common/ReactSelect.utils'
-import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
-import { ReactComponent as Setting } from '../../assets/icons/ic-nav-gear.svg'
+import NodeListSearchFilter from './NodeListSearchFliter'
 
 export default function NodeList() {
     const match = useRouteMatch()
@@ -30,7 +19,6 @@ export default function NodeList() {
     const [loader, setLoader] = useState(false)
     const [searchApplied, setSearchApplied] = useState(false)
     const [searchText, setSearchText] = useState('')
-    //const [nodeList, setNodeList] = useState<NodeRowDetail[]>([])
     const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
@@ -42,18 +30,6 @@ export default function NodeList() {
         value: '',
     })
     const defaultVersion = { label: 'K8s version: Any', value: 'K8s version: Any' }
-    const [selectedVersion, setSelectedVersion] = useState<OptionType>(defaultVersion)
-    const [selectedColumns, setSelectedColumns] = useState<MultiValue<OptionType>>([
-        { label: 'Node', value: 'name' },
-        { label: 'Status', value: 'status' },
-        { label: 'Roles', value: 'roles' },
-        { label: 'Errors', value: 'errors' },
-        { label: 'K8S Version', value: 'k8sVersion' },
-        { label: 'Pods', value: 'podCount' },
-        { label: 'Taints', value: 'taintCount' },
-        { label: 'CPU Usage', value: 'cpu.usagePercentage' },
-        { label: 'Mem Usage', value: 'memory.usagePercentage' },
-    ])
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<OptionType>>([
         { label: 'Node', value: 'name' },
         { label: 'Status', value: 'status' },
@@ -65,25 +41,13 @@ export default function NodeList() {
         { label: 'CPU Usage', value: 'cpu.usagePercentage' },
         { label: 'Mem Usage', value: 'memory.usagePercentage' },
     ])
-    const [isMenuOpen, setMenuOpen] = useState(false)
     const [clusterErrorTitle, setClusterErrorTitle] = useState('')
     const [clusterErrorList, setClusterErrorList] = useState<string[]>([])
     const [flattenNodeList, setFlattenNodeList] = useState<object[]>([])
-
-    const columnMetadata = [
-        { label: 'Node', value: 'name', disabled: true },
-        { label: 'Status', value: 'status' },
-        { label: 'Roles', value: 'roles' },
-        { label: 'Errors', value: 'errors' },
-        { label: 'K8S Version', value: 'k8sVersion' },
-        { label: 'Pods', value: 'podCount' },
-        { label: 'Taints', value: 'taintCount' },
-        { label: 'CPU Usage', value: 'cpu.usagePercentage' },
-        { label: 'Mem Usage', value: 'memory.usagePercentage' },
-        { label: 'External IP', value: 'externalIp' },
-        { label: 'Internal IP', value: 'internalIp' },
-        { label: 'Unschedulable', value: 'unschedulable' },
-    ]
+    const [filteredFlattenNodeList, setFilteredFlattenNodeList] = useState<object[]>([])
+    const [searchedLabelMap, setSearchedLabelMap] = useState<Map<string, string>>(new Map())
+    const [selectedVersion, setSelectedVersion] = useState<OptionType>(defaultVersion)
+    const [selectedSearchTextType, setSelectedSearchTextType] = useState<string>('')
 
     const flattenObject = (ob: Object): Object => {
         var toReturn = {}
@@ -111,9 +75,8 @@ export default function NodeList() {
             .then((response) => {
                 setLastDataSync(!lastDataSync)
                 if (response[0].result) {
-                    //setNodeList(response[0].result)
-                    setFlattenNodeList(response[0].result.map((data) => flattenObject(data)))
-                    //console.log(response[0].result.map((data) => flattenObject(data)))
+                    const _flattenNodeList = response[0].result.map((data) => flattenObject(data))
+                    setFlattenNodeList(_flattenNodeList)
                 }
                 if (response[1].result) {
                     setClusterCapacityData(response[1].result)
@@ -194,173 +157,38 @@ export default function NodeList() {
         }
     }, [lastDataSync])
 
-    const handleFilterChanges = (selected, key): void => {}
-
-    const onVersionChange = (selectedValue: OptionType): void => {
-        setSelectedVersion(selectedValue)
-    }
-
-    const renderSearch = (): JSX.Element => {
-        return (
-            <div className="search-wrapper ">
-                <div className="position-rel en-2 bw-1 br-4 h-32">
-                    <Search className="search__icon icon-dim-18" />
-                    <input
-                        type="text"
-                        placeholder="Search charts"
-                        value={searchText}
-                        className="search__input"
-                        onChange={(event) => {
-                            setSearchText(event.target.value)
-                        }}
-                    />
-                    {searchApplied ? (
-                        <button
-                            className="search__clear-button"
-                            type="button"
-                            onClick={(e) => handleFilterChanges(e, 'clear')}
-                        >
-                            <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
-                        </button>
-                    ) : null}
-                </div>
-                <ReactSelect
-                    options={[
-                        defaultVersion,
-                        ...(clusterCapacityData?.nodeK8sVersions?.map((version) => ({
-                            label: 'K8s version: ' + version,
-                            value: version,
-                        })) || []),
-                    ]}
-                    onChange={onVersionChange}
-                    components={{
-                        IndicatorSeparator: null,
-                        DropdownIndicator,
-                        Option,
-                    }}
-                    value={selectedVersion}
-                    styles={containerImageSelectStyles}
-                />
-                <div className="border-left h-20 mt-6"></div>
-                <ReactSelect
-                    menuIsOpen={isMenuOpen}
-                    name="columns"
-                    value={selectedColumns}
-                    options={columnMetadata}
-                    onChange={setSelectedColumns}
-                    isMulti={true}
-                    isSearchable={false}
-                    closeMenuOnSelect={false}
-                    hideSelectedOptions={false}
-                    onMenuOpen={() => handleMenuState(true)}
-                    onMenuClose={handleCloseFilter}
-                    isOptionDisabled={(option) => option['disabled']}
-                    components={{
-                        Option: OptionWithCheckbox,
-                        ValueContainer,
-                        IndicatorSeparator: null,
-                        ClearIndicator: null,
-                        MenuList: (props) => <MenuList {...props} />,
-                    }}
-                    styles={{
-                        ...containerImageSelectStyles,
-                        menuList: (base, state) => ({
-                            ...base,
-                            borderRadius: '4px',
-                            paddingTop: 0,
-                            paddingBottom: 0,
-                        }),
-                        option: (base, state) => ({
-                            ...base,
-                            padding: '10px 12px',
-                            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                            color: 'var(--N900)',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            cursor: 'pointer',
-                        }),
-                        dropdownIndicator: (base, state) => ({
-                            ...base,
-                            color: 'var(--N400)',
-                            transition: 'all .2s ease',
-                            transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                            padding: '0 8px',
-                        }),
-                    }}
-                />
-            </div>
-        )
-    }
-
-    const handleApplySelectedColumns = () => {
-        setMenuOpen(false)
-        setAppliedColumns(selectedColumns)
-    }
-
-    const handleMenuState = (menuOpenState: boolean): void => {
-        if (menuOpenState) {
-            setSelectedColumns(appliedColumns)
+    const handleFilterChanges = (): void => {
+        const _flattenNodeList = []
+        for (let index = 0; index < flattenNodeList.length; index++) {
+            const element = flattenNodeList[index]
+            if (selectedVersion.value !== defaultVersion.value && element['k8sVersion'] !== selectedVersion.value) {
+                continue
+            }
+            if (selectedSearchTextType === 'name' && element['name'].indexOf(searchText) === -1) {
+                continue
+            } else if (selectedSearchTextType === 'label') {
+                let matchedLabelCount = 0
+                for (let i = 0; i < element['labels']?.length; i++) {
+                    const currentLabel = element['labels'][i]
+                    const matchedLabel = searchedLabelMap.get(currentLabel.key)
+                    if (matchedLabel === undefined || (matchedLabel !== null && currentLabel.value !== matchedLabel)) {
+                        continue
+                    }
+                    matchedLabelCount++
+                }
+                if (searchedLabelMap.size !== matchedLabelCount) {
+                    continue
+                }
+            }
+            _flattenNodeList.push(element)
         }
-        setMenuOpen(menuOpenState)
+        setFilteredFlattenNodeList(_flattenNodeList)
+        setSearchApplied(true)
     }
 
-    const handleCloseFilter = (): void => {
-        handleMenuState(false)
-        setSelectedColumns(appliedColumns)
-    }
-
-    const MenuList = (props: any): JSX.Element => {
-        return (
-            <components.MenuList {...props}>
-                {props.children}
-                <div className="flex react-select__bottom bcn-0 p-8">
-                    <button className="flex cta apply-filter" onClick={handleApplySelectedColumns}>
-                        Apply
-                    </button>
-                </div>
-            </components.MenuList>
-        )
-    }
-
-    const ValueContainer = (props: any): JSX.Element => {
-        const length = props.getValue().length
-
-        return (
-            <components.ValueContainer {...props}>
-                {length > 0 ? (
-                    <>
-                        {!props.selectProps.menuIsOpen && (
-                            <>
-                                <Setting className="icon-dim-16 setting-icon mr-5" />
-                                Columns &nbsp;
-                                {length === props.options.length ? 'All' : <span className="badge">{length}</span>}
-                            </>
-                        )}
-                        {React.cloneElement(props.children[1])}
-                    </>
-                ) : (
-                    <>{props.children}</>
-                )}
-            </components.ValueContainer>
-        )
-    }
-
-    // const ValueContainer = (props: any): JSX.Element => {
-    //     const length = props.getValue().length
-
-    //     return (
-    //         <components.ValueContainer {...props}>
-    //             {!props.selectProps.menuIsOpen && (
-    //                 <>
-    //                     <Setting className="icon-dim-16 setting-icon mr-5" />
-    //                     Columns {length === props.options.length ? 'All' : <span className="badge">{length}</span>}
-    //                     {React.cloneElement(props.children[1])}
-    //                 </>
-    //             )}
-    //         </components.ValueContainer>
-    //     )
-    // }
+    useEffect(() => {
+        handleFilterChanges()
+    }, [searchedLabelMap, searchText, flattenNodeList])
 
     const onClusterChange = (selectedValue: OptionType): void => {
         setSelectedCluster(selectedValue)
@@ -509,7 +337,22 @@ export default function NodeList() {
                     </div>
                 )}
                 <div className="bcn-0 pt-16">
-                    <div className="pl-20 pr-20">{renderSearch()}</div>
+                    <div className="pl-20 pr-20">
+                        <NodeListSearchFilter
+                            defaultVersion={defaultVersion}
+                            nodeK8sVersions={clusterCapacityData?.nodeK8sVersions}
+                            selectedVersion={selectedVersion}
+                            setSelectedVersion={setSelectedVersion}
+                            appliedColumns={appliedColumns}
+                            setAppliedColumns={setAppliedColumns}
+                            selectedSearchTextType={selectedSearchTextType}
+                            setSelectedSearchTextType={setSelectedSearchTextType}
+                            setSearchText={setSearchText}
+                            searchedLabelMap={searchedLabelMap}
+                            setSearchedLabelMap={setSearchedLabelMap}
+                            searchApplied={searchApplied}
+                        />
+                    </div>
                     <div
                         className="mt-16 en-2 bw-1"
                         style={{ minHeight: 'calc(100vh - 125px)', width: '100%', overflow: 'auto' }}
@@ -542,7 +385,7 @@ export default function NodeList() {
                             <div>Mem Usage</div>
                             <div>Age</div> */}
                         </div>
-                        {flattenNodeList?.map((nodeData) => (
+                        {filteredFlattenNodeList?.map((nodeData) => (
                             <div
                                 className="fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20"
                                 style={{ width: 'max-content', minWidth: '100%' }}
