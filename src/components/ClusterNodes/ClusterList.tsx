@@ -9,6 +9,7 @@ import { handleUTCTime, Progressing, showError } from '../common'
 import { ClusterDetail, ClusterListResponse } from './types'
 import PageHeader from '../common/header/PageHeader'
 import { toast } from 'react-toastify'
+import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 
 export default function ClusterList() {
     const match = useRouteMatch()
@@ -124,32 +125,44 @@ export default function ClusterList() {
                     {noResults ? (
                         <div>No results found</div>
                     ) : (
-                        filteredClusterList?.map((clusterData) => (
-                            <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
-                                <div className="cb-5 ellipsis-right">
-                                    <NavLink
-                                        to={`${match.url}/${clusterData.id}`}
-                                        onClick={(e) => {
-                                            handleClusterClick(e, clusterData.errorInNodeListing)
-                                        }}
-                                    >
-                                        {clusterData.name}
-                                    </NavLink>
+                        filteredClusterList?.map((clusterData) => {
+                            const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
+                            return (
+                                <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
+                                    <div className="cb-5 ellipsis-right">
+                                        <NavLink
+                                            to={`${match.url}/${clusterData.id}`}
+                                            onClick={(e) => {
+                                                handleClusterClick(e, clusterData.errorInNodeListing)
+                                            }}
+                                        >
+                                            {clusterData.name}
+                                        </NavLink>
+                                    </div>
+                                    <div className="">
+                                        <div
+                                            className={`cluster-status br-2 mb-4 mt-4 ${
+                                                clusterData.errorInNodeListing ? 'error' : 'success'
+                                            }`}
+                                        ></div>
+                                    </div>
+                                    <div>
+                                        {errorCount > 0 ? (
+                                            <>
+                                                <Info className="error-icon-red mr-3 icon-dim-16 position-rel top-3" />
+                                                {errorCount}
+                                            </>
+                                        ) : (
+                                            ''
+                                        )}
+                                    </div>
+                                    <div>{clusterData.nodeCount}</div>
+                                    <div>{clusterData.nodeK8sVersions[0]}</div>
+                                    <div>{clusterData.cpu?.capacity}</div>
+                                    <div>{clusterData.memory?.capacity}</div>
                                 </div>
-                                <div className="">
-                                    <div
-                                        className={`cluster-status br-2 mb-4 mt-4 ${
-                                            clusterData.errorInNodeListing ? 'error' : 'success'
-                                        }`}
-                                    ></div>
-                                </div>
-                                <div>{clusterData.nodeErrors?.length > 0 ? clusterData.nodeErrors.length : ''}</div>
-                                <div>{clusterData.nodeCount}</div>
-                                <div>{clusterData.nodeK8sVersions[0]}</div>
-                                <div>{clusterData.cpu?.capacity}</div>
-                                <div>{clusterData.memory?.capacity}</div>
-                            </div>
-                        ))
+                            )
+                        })
                     )}
                 </div>
             </div>

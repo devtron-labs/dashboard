@@ -39,18 +39,33 @@ export default function NodeListSearchFliter({
     const [isMenuOpen, setMenuOpen] = useState(false)
     const [openFilterPopup, setOpenFilterPopup] = useState(false)
     const columnMetadata = [
-        { label: 'Node', value: 'name', isDefault: true, disabled: true },
-        { label: 'Status', value: 'status', isDefault: true },
-        { label: 'Roles', value: 'roles' },
-        { label: 'Errors', value: 'errors', isDefault: true },
-        { label: 'K8S Version', value: 'k8sVersion' },
-        { label: 'Pods', value: 'podCount' },
-        { label: 'Taints', value: 'taintCount' },
-        { label: 'CPU Usage', value: 'cpu.usagePercentage' },
-        { label: 'Mem Usage', value: 'memory.usagePercentage' },
-        { label: 'External IP', value: 'externalIp' },
-        { label: 'Internal IP', value: 'internalIp' },
-        { label: 'Unschedulable', value: 'unschedulable' },
+        { columnIndex: 0, label: 'Node', value: 'name', isDefault: true, isSortingAllowed: true, disabled: true },
+        { columnIndex: 1, label: 'Status', value: 'status', isDefault: true, isSortingAllowed: true },
+        { columnIndex: 2, label: 'Roles', value: 'roles', isDefault: true, disabled: true },
+        { columnIndex: 3, label: 'Errors', value: 'errorCount', isDefault: true, disabled: true },
+        { columnIndex: 4, label: 'K8S Version', value: 'k8sVersion', isDefault: true },
+        { columnIndex: 5, label: 'No.of pods', value: 'podCount', isDefault: true, isSortingAllowed: true },
+        { columnIndex: 6, label: 'Taints', value: 'taintCount', isDefault: true, isSortingAllowed: true },
+        {
+            columnIndex: 7,
+            label: 'CPU Usage (%)',
+            value: 'cpu.usagePercentage',
+            isDefault: true,
+            isSortingAllowed: true,
+        },
+        { columnIndex: 8, label: 'CPU Usage (Absolute)', value: 'cpu.usage', isSortingAllowed: true },
+        { columnIndex: 9, label: 'CPU Capacity', value: 'cpu.capacity', isSortingAllowed: true },
+        {
+            columnIndex: 10,
+            label: 'Mem Usage (%)',
+            value: 'memory.usagePercentage',
+            isDefault: true,
+            isSortingAllowed: true,
+        },
+        { columnIndex: 11, label: 'Mem Usage (Absolute)', value: 'memory.usage', isSortingAllowed: true },
+        { columnIndex: 12, label: 'Mem Capacity', value: 'memory.capacity', isSortingAllowed: true },
+        { columnIndex: 13, label: 'Age', value: 'age', isDefault: true, isSortingAllowed: true },
+        { columnIndex: 14, label: 'Unschedulable', value: 'unschedulable' },
     ]
 
     const [searchInputText, setSearchInputText] = useState('')
@@ -182,7 +197,7 @@ export default function NodeListSearchFliter({
 
     const handleApplySelectedColumns = () => {
         setMenuOpen(false)
-        setAppliedColumns(selectedColumns)
+        setAppliedColumns([...selectedColumns].sort((a, b) => a['columnIndex'] - b['columnIndex']))
     }
 
     const handleMenuState = (menuOpenState: boolean): void => {

@@ -7,11 +7,13 @@ import { BreadCrumb, handleUTCTime, Progressing, showError, useBreadcrumb } from
 import { ClusterCapacityType, ClusterListResponse } from './types'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as Sort } from '../../assets/icons/ic-sort-arrow.svg'
 import PageHeader from '../common/header/PageHeader'
 import ReactSelect, { MultiValue } from 'react-select'
 import { appSelectorStyle, DropdownIndicator } from '../AppSelector/AppSelectorUtil'
 import { OptionType } from '../app/types'
 import NodeListSearchFilter from './NodeListSearchFliter'
+import { OrderBy } from '../app/list/types'
 
 export default function NodeList() {
     const match = useRouteMatch()
@@ -37,6 +39,8 @@ export default function NodeList() {
     const [searchedLabelMap, setSearchedLabelMap] = useState<Map<string, string>>(new Map())
     const [selectedVersion, setSelectedVersion] = useState<OptionType>(defaultVersion)
     const [selectedSearchTextType, setSelectedSearchTextType] = useState<string>('')
+    const [sortByColumnName, setSortByColumnName] = useState<string>('name')
+    const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
 
     const flattenObject = (ob: Object): Object => {
         var toReturn = {}
@@ -64,7 +68,13 @@ export default function NodeList() {
             .then((response) => {
                 setLastDataSync(!lastDataSync)
                 if (response[0].result) {
-                    const _flattenNodeList = response[0].result.map((data) => flattenObject(data))
+                    const _flattenNodeList = response[0].result.map((data) => {
+                        const _flattenNodeData = flattenObject(data)
+                        if (data['errors']) {
+                            _flattenNodeData['errorCount'] = Object.keys(data['errors']).length
+                        }
+                        return _flattenNodeData
+                    })
                     setFlattenNodeList(_flattenNodeList)
                 }
                 if (response[1].result) {
@@ -77,12 +87,12 @@ export default function NodeList() {
                         _errorTitle = 'Version diff'
                         _errorList.push(
                             'Major version diff identified among nodes. Current versions ' +
-                                response[1].result.nodeK8sVersions,
+                                response[1].result.nodeK8sVersions.join(', '),
                         )
                     }
 
                     if (_nodeErrors.length > 0) {
-                        _errorTitle = _errorTitle ? ', ' : '' + _nodeErrors
+                        _errorTitle = _errorTitle ? ', ' : '' + _nodeErrors.join(', ')
                         for (let i = 0; i < _nodeErrors.length; i++) {
                             const _errorLength = response[1].result.nodeErrors[_nodeErrors[i]].length
                             _errorList.push(
@@ -215,6 +225,15 @@ export default function NodeList() {
         return <BreadCrumb breadcrumbs={breadcrumbs} />
     }
 
+    const handleSortClick = (columnName: string): void => {
+        if (sortByColumnName === columnName) {
+            setSortOrder(sortOrder === OrderBy.ASC ? OrderBy.DESC : OrderBy.ASC)
+        } else {
+            setSortByColumnName(columnName)
+            setSortOrder(OrderBy.ASC)
+        }
+    }
+
     if (loader) {
         return <Progressing />
     }
@@ -296,7 +315,7 @@ export default function NodeList() {
                                     setCollapsedErrorSection(!collapsedErrorSection)
                                 }}
                             >
-                                <Info className="error-icon mt-2 mb-2 mr-8 icon-dim-18" />
+                                <Info className="error-icon-red mt-2 mb-2 mr-8 icon-dim-18" />
                                 <span className="fw-6 fs-14 cn-9 mr-16">
                                     {clusterErrorList.length === 1 ? '1 Error' : clusterErrorList.length + ' Errors'}
                                 </span>
@@ -315,11 +334,6 @@ export default function NodeList() {
                                 {clusterErrorList.map((error) => (
                                     <div className="fw-4 fs-13 cn-9 mb-16">{error}</div>
                                 ))}
-                                {/* <div className="fw-4 fs-13 cn-9 mb-16">
-                                    Major version diff identified among nodes. Current versions{' '}
-                                    {clusterCapacityData?.nodeK8sVersions}
-                                </div>
-                                <div className="fw-4 fs-13 cn-9">Memory pressure on 2 nodes.</div> */}
                             </>
                         )}
                     </div>
@@ -348,15 +362,25 @@ export default function NodeList() {
                             className=" fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 text-uppercase"
                             style={{ width: 'max-content', minWidth: '100%' }}
                         >
-                            {appliedColumns.map((columnName) => (
+                            {appliedColumns.map((column) => (
                                 <div
-                                    className={` inline-block ellipsis-right mr-16 ${
-                                        columnName.label === 'Node'
-                                            ? 'w-280 pl-20 bcn-0 position-sticky left-0'
+                                    className={`list-title inline-block ellipsis-right mr-16 ${
+                                        column.label === 'Node'
+                                            ? 'w-280 pl-20 bcn-0 position-sticky sticky-column'
                                             : 'w-100-px'
+                                    } ${sortByColumnName === column['value'] ? 'sort-by' : ''} ${
+                                        sortOrder === OrderBy.DESC ? 'desc' : ''
                                     }`}
                                 >
-                                    {columnName.label}
+                                    {column.label}
+                                    {column['isSortingAllowed'] && (
+                                        <Sort
+                                            className="pointer icon-dim-14 position-rel sort-icon"
+                                            onClick={(event) => {
+                                                handleSortClick(column.value)
+                                            }}
+                                        />
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -365,16 +389,19 @@ export default function NodeList() {
                                 className="fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20"
                                 style={{ width: 'max-content', minWidth: '100%' }}
                             >
-                                {appliedColumns.map((columnName) => {
-                                    return columnName.label === 'Node' ? (
-                                        <div className="w-280 inline-block ellipsis-right mr-16 pl-20 bcn-0 position-sticky left-0">
-                                            <NavLink to={`${match.url}/${nodeData[columnName.value]}`}>
-                                                {nodeData[columnName.value]}
+                                {appliedColumns.map((column) => {
+                                    return column.label === 'Node' ? (
+                                        <div className="w-280 inline-block ellipsis-right mr-16 pl-20 bcn-0 position-sticky sticky-column">
+                                            <NavLink to={`${match.url}/${nodeData[column.value]}`}>
+                                                {nodeData[column.value]}
                                             </NavLink>
                                         </div>
                                     ) : (
                                         <div className="w-100-px inline-block ellipsis-right mr-16">
-                                            {nodeData[columnName.value] || '-'}
+                                            {column.value === 'errorCount' && nodeData[column.value] && (
+                                                <Info className="error-icon-red mr-3 icon-dim-16 position-rel top-3" />
+                                            )}
+                                            {nodeData[column.value] || '-'}
                                         </div>
                                     )
                                 })}
