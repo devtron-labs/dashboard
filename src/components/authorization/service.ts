@@ -5,3 +5,7 @@ import { Routes } from '../../config'
 export function getGeneratedAPITokenList(): Promise<ResponseType> {
     return get(Routes.API_TOKEN)
 }
+
+export function createGeneratedAPIToken(payload): Promise<ResponseType> {
+    return post(Routes.API_TOKEN, payload)
+}

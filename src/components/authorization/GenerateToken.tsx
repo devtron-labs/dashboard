@@ -1,19 +1,22 @@
 import React, { useState } from 'react'
 import ReactSelect from 'react-select'
-import { ConfirmationDialog, multiSelectStyles, Progressing } from '../common'
+import { ConfirmationDialog, multiSelectStyles, Progressing, showError, VisibleModal } from '../common'
 import { DropdownIndicator } from '../security/security.util'
 import AppPermissions from '../userGroups/AppPermissions'
 import ApiTokens from './ApiTokens'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { FormType, GenerateTokenType } from './authorization.type'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import { createGeneratedAPIToken } from './service'
+import { toast } from 'react-toastify'
+import RegeneratedModal from './RegeneratedModal'
 
 function GenerateToken({ setShowGenerateToken }: GenerateTokenType) {
-    const [expirationDate, setExpirationDate] = useState([])
-    const [selectedExpirationDate, setSelectedExpirationDate] = useState(undefined)
-    const [tokenName, setTokenName] = useState('')
+    const [selectedExpirationDate, setSelectedExpirationDate] = useState({ label: '30 days', value: '30Days' })
     const [loader, setLoader] = useState(false)
     const [adminPermission, setAdminPermission] = useState('SUPERADMIN')
+    const [tokenGeneratedModal, setTokenGeneratedModal] = useState(false)
+
     const [formData, setFormData] = useState<FormType>({
         name: '',
         description: '',
@@ -31,7 +34,7 @@ function GenerateToken({ setShowGenerateToken }: GenerateTokenType) {
         { value: '60Days', label: '60 days' },
         { value: '90Days', label: '90 days' },
         { value: 'Custom', label: 'Custom...' },
-        { value: 'No expiration', label: 'NO expiration' },
+        { value: 'NoExpiration', label: 'NO expiration' },
     ]
 
     const saveToken = (): void => {}
@@ -40,7 +43,31 @@ function GenerateToken({ setShowGenerateToken }: GenerateTokenType) {
         let str = event.target.value || ''
         str = str.toLowerCase()
 
-        setFormData(formData)
+        setFormData({
+            ...formData,
+        })
+    }
+
+    const handleGenerateAPIToken = () => {
+        setLoader(true)
+        let payload = {
+            name: formData.name,
+            description: formData.description,
+            expireAtInMs: formData.expireAtInMs,
+        }
+
+        createGeneratedAPIToken(payload)
+            .then((response) => {
+                toast.success('Changes saved')
+            })
+            .catch((error) => {
+                showError(error)
+            })
+            .finally(() => {
+                setLoader(false)
+            })
+
+        setTokenGeneratedModal(true)
     }
 
     return (
@@ -94,20 +121,22 @@ function GenerateToken({ setShowGenerateToken }: GenerateTokenType) {
                             <span className="form__label">
                                 Expiration <span className="cr-5"> *</span>
                             </span>
-                            <ReactSelect
-                                value={selectedExpirationDate}
-                                options={options}
-                                className="select-width"
-                                placeholder="Update Deployment Template"
-                                onChange={() => setSelectedExpirationDate(selectedExpirationDate)}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    DropdownIndicator,
-                                }}
-                                styles={{
-                                    ...multiSelectStyles,
-                                }}
-                            />
+                            <div className="flex left">
+                                <ReactSelect
+                                    value={selectedExpirationDate}
+                                    options={options}
+                                    className="select-width w-200"
+                                    onChange={() => setSelectedExpirationDate(selectedExpirationDate)}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        DropdownIndicator,
+                                    }}
+                                    styles={{
+                                        ...multiSelectStyles,
+                                    }}
+                                />
+                                <span className="ml-16">This token will expire on </span>
+                            </div>
                         </label>
                         <div className="mb-20">
                             <InfoColourBar
@@ -156,9 +185,13 @@ function GenerateToken({ setShowGenerateToken }: GenerateTokenType) {
                     <button className="cta cancel mr-16" type="button" onClick={(e) => setShowGenerateToken(false)}>
                         Cancel
                     </button>
-                    <button className="cta">{loader ? <Progressing /> : 'Generate token'}</button>
+                    <button className="cta" onClick={handleGenerateAPIToken}>
+                        {loader ? <Progressing /> : 'Generate token'}
+                    </button>
                 </div>
             </div>
+
+            {tokenGeneratedModal && <RegeneratedModal />}
         </div>
     )
 }
