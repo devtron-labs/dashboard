@@ -84,6 +84,7 @@
     .sticky-column {
         left: 0;
         z-index: 1;
+        background-color: var(--N0);
     }
 }
 
@@ -166,11 +167,15 @@
     }
 }
 
-.error-icon-red {
-    path[fill='#06C'] {
-        fill: var(--R500);
-    }
-}
 .top-3 {
     top: 3px;
+}
+
+.hover-class {
+    &:hover {
+        background-color: var(--N50);
+        .sticky-column {
+            background-color: var(--N50);
+        }
+    }
 }

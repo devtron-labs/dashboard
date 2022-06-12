@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import './clusterNodes.scss'
 import { BreadCrumb, ButtonWithLoader, copyToClipboard, Progressing, showError, useBreadcrumb } from '../common'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as Cpu } from '../../assets/icons/ic-cpu.svg'
 import { ReactComponent as Memory } from '../../assets/icons/ic-memory.svg'
@@ -150,7 +151,7 @@ export default function NodeDetails() {
                     className="default-tt"
                     arrow={false}
                     placement="bottom"
-                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
+                    content={copied ? 'Copied!' : 'Copy'}
                     trigger="mouseenter click"
                     onShow={(instance) => {
                         setCopied(false)
@@ -204,7 +205,7 @@ export default function NodeDetails() {
                     className="default-tt"
                     arrow={false}
                     placement="bottom"
-                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
+                    content={copied ? 'Copied!' : 'Copy'}
                     trigger="mouseenter click"
                     onShow={(instance) => {
                         setCopied(false)
@@ -257,7 +258,7 @@ export default function NodeDetails() {
                         }}
                     >
                         <div className={`mb-6 fs-13${selectedSubTabIndex == 0 ? ' fw-6 cb-5' : ' fw-4'}`}>
-                            Labels({nodeDetail.labels.length})
+                            Labels ({nodeDetail.labels.length})
                         </div>
                         {selectedSubTabIndex == 0 && <div className="node-details__active-tab" />}
                     </li>
@@ -268,7 +269,7 @@ export default function NodeDetails() {
                         }}
                     >
                         <div className={`mb-6 fs-13${selectedSubTabIndex == 1 ? ' fw-6 cb-5' : ' fw-4'}`}>
-                            Annotation({nodeDetail.annotations.length})
+                            Annotation ({nodeDetail.annotations.length})
                         </div>
                         {selectedSubTabIndex == 1 && <div className="node-details__active-tab" />}
                     </li>
@@ -279,7 +280,7 @@ export default function NodeDetails() {
                         }}
                     >
                         <div className={`mb-6 fs-13${selectedSubTabIndex == 2 ? ' fw-6 cb-5' : ' fw-4'}`}>
-                            Taints({nodeDetail.taints?.length || 0})
+                            Taints ({nodeDetail.taints?.length || 0})
                         </div>
                         {selectedSubTabIndex == 2 && <div className="node-details__active-tab" />}
                     </li>
@@ -298,7 +299,7 @@ export default function NodeDetails() {
         return (
             <div className="mb-12 en-2 bw-1 br-4 bcn-0">
                 <div className="flexbox bcr-5 pt-12 pb-12 pr-10 pl-20 top-radius-4">
-                    <Info className="error-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
+                    <Error className="error-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
                     <span className="fw-6 fs-14 cn-9">
                         {nodeErrorKeys.length === 1 ? '1 Error' : nodeErrorKeys.length + ' Errors'}
                     </span>
@@ -336,7 +337,7 @@ export default function NodeDetails() {
                     )}
                     {nodeDetail.taintCount && (
                         <div>
-                            <div className="fw-6 fs-13 cn-9">2 taints applied</div>
+                            <div className="fw-6 fs-13 cn-9">{nodeDetail.taintCount} taints applied</div>
                             <p className="fw-4 fs-13 cn-7 mb-12">
                                 Taints may be restricting pods from being scheduled on this node
                             </p>
@@ -397,7 +398,7 @@ export default function NodeDetails() {
     const renderResourceList = (): JSX.Element => {
         return (
             <div className="en-2 bw-1 br-4 bcn-0">
-                <div className="resource-row border-bottom fw-6 fs-13 pt-12 pb-12 pr-20 pl-20 cn-7">
+                <div className="resource-row border-bottom fw-6 fs-13 pt-8 pb-8 pr-20 pl-20 cn-7">
                     <div></div>
                     <div>Resource</div>
                     <div>Requests</div>
@@ -441,9 +442,9 @@ export default function NodeDetails() {
 
     const renderPodList = (): JSX.Element => {
         return (
-            <div className="en-2 bw-1 br-4 bcn-0 mt-12">
+            <div className="en-2 bw-1 br-4 bcn-0 mt-12 mb-20">
                 <div className="fw-6 fs-14 cn-9 pr-20 pl-20 pt-12">Pods</div>
-                <div className="pods-row border-bottom pt-12 pb-12 pr-20 pl-20 fw-6 fs-13 cn-7">
+                <div className="pods-row border-bottom pt-8 pb-8 pr-20 pl-20 fw-6 fs-13 cn-7">
                     <div>Namespace</div>
                     <div>Pod</div>
                     <div>CPU Requests</div>
@@ -462,7 +463,7 @@ export default function NodeDetails() {
                                     className="default-tt"
                                     arrow={false}
                                     placement="bottom"
-                                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
+                                    content={copied ? 'Copied!' : 'Copy'}
                                     trigger="mouseenter click"
                                     onShow={(instance) => {
                                         setCopied(false)
@@ -494,7 +495,7 @@ export default function NodeDetails() {
         if (!nodeDetail) return null
         return (
             <div className="node-details-container">
-                <div className="ml-20 mr-20 mb-12 mt-16 pl-20 pr-20 pt-16 pb-16 bcn-0 br-4">
+                <div className="ml-20 mr-20 mb-12 mt-16 pl-20 pr-20 pt-16 pb-16 bcn-0 br-4 en-2 bw-1">
                     <div className="fw-6 fs-16 cn-9">{nodeDetail.name}</div>
                     <div className="fw-6 fs-13 cr-5">{nodeDetail.status}</div>
                 </div>
@@ -606,7 +607,7 @@ export default function NodeDetails() {
                             <div>{condition.type}</div>
                             <div className="flexbox">
                                 {condition.haveIssue ? (
-                                    <Info className="error-icon-red mt-2 mb-2 mr-8 icon-dim-18" />
+                                    <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
                                 ) : (
                                     <Success className="mt-2 mb-2 mr-8 icon-dim-18" />
                                 )}
@@ -618,7 +619,7 @@ export default function NodeDetails() {
                     <div className="condition-grid cn-9 fw-4 fs-13 border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
                         <div>OutOfDisk</div>
                         <div className="flexbox">
-                            <Info className="error-icon-red mt-2 mb-2 mr-8 icon-dim-18" />
+                            <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
                             KubeletHasInsufficientDisk
                         </div>
                         <div>kubelet has insufficient disk space available</div>
@@ -655,7 +656,7 @@ export default function NodeDetails() {
     }
 
     if (loader) {
-        return <Progressing />
+        return <Progressing pageLoader />
     }
 
     return (

@@ -5,7 +5,7 @@ import './clusterNodes.scss'
 import { getClusterCapacity, getNodeList, getClusterList } from './clusterNodes.service'
 import { BreadCrumb, handleUTCTime, Progressing, showError, useBreadcrumb } from '../common'
 import { ClusterCapacityType, ClusterListResponse, columnMetadataType } from './types'
-import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Sort } from '../../assets/icons/ic-sort-arrow.svg'
 import PageHeader from '../common/header/PageHeader'
@@ -286,7 +286,7 @@ export default function NodeList() {
     }
 
     if (loader) {
-        return <Progressing />
+        return <Progressing pageLoader />
     }
 
     return (
@@ -366,7 +366,7 @@ export default function NodeList() {
                                     setCollapsedErrorSection(!collapsedErrorSection)
                                 }}
                             >
-                                <Info className="error-icon-red mt-2 mb-2 mr-8 icon-dim-18" />
+                                <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
                                 <span className="fw-6 fs-14 cn-9 mr-16">
                                     {clusterErrorList.length === 1
                                         ? '1 Error'
@@ -408,11 +408,11 @@ export default function NodeList() {
                         />
                     </div>
                     {noResults ? (
-                        <ClusterNodeEmptyState actionHandler={clearFilter} />
+                        <ClusterNodeEmptyState title="No matching nodes" actionHandler={clearFilter} />
                     ) : (
                         <div className="mt-16" style={{ width: '100%', overflow: 'auto' }}>
                             <div
-                                className=" fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 text-uppercase"
+                                className=" fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 text-uppercase h-36"
                                 style={{ width: 'max-content', minWidth: '100%' }}
                             >
                                 {appliedColumns.map((column) => (
@@ -439,7 +439,7 @@ export default function NodeList() {
                             </div>
                             {filteredFlattenNodeList?.map((nodeData) => (
                                 <div
-                                    className="fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20"
+                                    className="fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 hover-class"
                                     style={{ width: 'max-content', minWidth: '100%' }}
                                 >
                                     {appliedColumns.map((column) => {
@@ -451,12 +451,18 @@ export default function NodeList() {
                                             </div>
                                         ) : (
                                             <div className="w-100-px inline-block ellipsis-right mr-16">
-                                                {column.value === 'errorCount' && nodeData['errorCount'] > 0 && (
-                                                    <Info className="error-icon-red mr-3 icon-dim-16 position-rel top-3" />
-                                                )}
-                                                {(column.sortType === 'boolean'
-                                                    ? nodeData[column.value] + ''
-                                                    : nodeData[column.value]) || '-'}
+                                                {column.value === 'errorCount'
+                                                    ? nodeData['errorCount'] > 0 && (
+                                                          <>
+                                                              <Error className="mr-3 icon-dim-16 position-rel top-3" />
+                                                              <span className="cr-5">
+                                                                  {nodeData['errorCount'] || '-'}
+                                                              </span>{' '}
+                                                          </>
+                                                      )
+                                                    : (column.sortType === 'boolean'
+                                                          ? nodeData[column.value] + ''
+                                                          : nodeData[column.value]) || '-'}
                                             </div>
                                         )
                                     })}

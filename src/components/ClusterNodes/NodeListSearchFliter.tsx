@@ -243,7 +243,7 @@ export default function NodeListSearchFliter({
                                 ].map((o) => {
                                     return (
                                         <div
-                                            className="pt-8 pb-8 pl-10 pr-10"
+                                            className="pt-8 pb-8 pl-10 pr-10 hover-class pointer"
                                             key={o.label}
                                             onClick={() => {
                                                 selectFilterType(o)

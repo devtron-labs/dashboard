@@ -9,7 +9,7 @@ import { handleUTCTime, Progressing, showError } from '../common'
 import { ClusterDetail, ClusterListResponse } from './types'
 import PageHeader from '../common/header/PageHeader'
 import { toast } from 'react-toastify'
-import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 
 export default function ClusterList() {
@@ -91,7 +91,7 @@ export default function ClusterList() {
     }
 
     if (loader) {
-        return <Progressing />
+        return <Progressing pageLoader />
     }
 
     return (
@@ -127,7 +127,7 @@ export default function ClusterList() {
                         {filteredClusterList?.map((clusterData) => {
                             const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
                             return (
-                                <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
+                                <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class">
                                     <div className="cb-5 ellipsis-right">
                                         <NavLink
                                             to={`${match.url}/${clusterData.id}`}
@@ -148,15 +148,15 @@ export default function ClusterList() {
                                     <div>
                                         {errorCount > 0 ? (
                                             <>
-                                                <Info className="error-icon-red mr-3 icon-dim-16 position-rel top-3" />
-                                                {errorCount}
+                                                <Error className="mr-3 icon-dim-16 position-rel top-3" />
+                                                <span className="cr-5">{errorCount}</span>
                                             </>
                                         ) : (
                                             ''
                                         )}
                                     </div>
                                     <div>{clusterData.nodeCount}</div>
-                                    <div>{clusterData.nodeK8sVersions[0]}</div>
+                                    <div>{clusterData.nodeK8sVersions?.[0]}</div>
                                     <div>{clusterData.cpu?.capacity}</div>
                                     <div>{clusterData.memory?.capacity}</div>
                                 </div>
