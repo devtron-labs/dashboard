@@ -7,14 +7,15 @@ import { ReactComponent as Setting } from '../../assets/icons/ic-nav-gear.svg'
 import ReactSelect, { components, MultiValue } from 'react-select'
 import { Option as OptionWithCheckbox } from '../common'
 import { OptionType } from '../app/types'
+import { columnMetadataType } from './types'
 
 interface NodeListSearchFliterType {
     defaultVersion: OptionType
     nodeK8sVersions: string[]
     selectedVersion: OptionType
     setSelectedVersion: React.Dispatch<React.SetStateAction<OptionType>>
-    appliedColumns: MultiValue<OptionType>
-    setAppliedColumns: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
+    appliedColumns: MultiValue<columnMetadataType>
+    setAppliedColumns: React.Dispatch<React.SetStateAction<MultiValue<columnMetadataType>>>
     selectedSearchTextType: string
     setSelectedSearchTextType: React.Dispatch<React.SetStateAction<string>>
     setSearchText: React.Dispatch<React.SetStateAction<string>>
@@ -35,37 +36,107 @@ export default function NodeListSearchFliter({
     setSearchedLabelMap,
 }: NodeListSearchFliterType) {
     const [searchApplied, setSearchApplied] = useState(false)
-    const [selectedColumns, setSelectedColumns] = useState<MultiValue<OptionType>>([])
+    const [selectedColumns, setSelectedColumns] = useState<MultiValue<columnMetadataType>>([])
     const [isMenuOpen, setMenuOpen] = useState(false)
     const [openFilterPopup, setOpenFilterPopup] = useState(false)
-    const columnMetadata = [
-        { columnIndex: 0, label: 'Node', value: 'name', isDefault: true, isSortingAllowed: true, disabled: true },
-        { columnIndex: 1, label: 'Status', value: 'status', isDefault: true, isSortingAllowed: true },
-        { columnIndex: 2, label: 'Roles', value: 'roles', isDefault: true, disabled: true },
-        { columnIndex: 3, label: 'Errors', value: 'errorCount', isDefault: true, disabled: true },
-        { columnIndex: 4, label: 'K8S Version', value: 'k8sVersion', isDefault: true },
-        { columnIndex: 5, label: 'No.of pods', value: 'podCount', isDefault: true, isSortingAllowed: true },
-        { columnIndex: 6, label: 'Taints', value: 'taintCount', isDefault: true, isSortingAllowed: true },
+    const columnMetadata: columnMetadataType[] = [
         {
+            sortType: 'string',
+            columnIndex: 0,
+            label: 'Node',
+            value: 'name',
+            isDefault: true,
+            isSortingAllowed: true,
+            isDisabled: true,
+        },
+        { sortType: 'string', columnIndex: 1, label: 'Status', value: 'status', isDefault: true },
+        { sortType: 'string', columnIndex: 2, label: 'Roles', value: 'roles', isDefault: true, isDisabled: true },
+        {
+            sortType: 'number',
+            columnIndex: 3,
+            label: 'Errors',
+            value: 'errorCount',
+            isDefault: true,
+            isDisabled: true,
+            isSortingAllowed: true,
+        },
+        { sortType: 'string', columnIndex: 4, label: 'K8S Version', value: 'k8sVersion', isDefault: true },
+        {
+            sortType: 'number',
+            columnIndex: 5,
+            label: 'No.of pods',
+            value: 'podCount',
+            isDefault: true,
+            isSortingAllowed: true,
+        },
+        {
+            sortType: 'number',
+            columnIndex: 6,
+            label: 'Taints',
+            value: 'taintCount',
+            isDefault: true,
+            isSortingAllowed: true,
+        },
+        {
+            sortType: 'number',
             columnIndex: 7,
             label: 'CPU Usage (%)',
             value: 'cpu.usagePercentage',
             isDefault: true,
             isSortingAllowed: true,
+            suffixToRemove: '%',
         },
-        { columnIndex: 8, label: 'CPU Usage (Absolute)', value: 'cpu.usage', isSortingAllowed: true },
-        { columnIndex: 9, label: 'CPU Capacity', value: 'cpu.capacity', isSortingAllowed: true },
         {
+            sortType: 'number',
+            columnIndex: 8,
+            label: 'CPU Usage (Absolute)',
+            value: 'cpu.usage',
+            isSortingAllowed: true,
+            suffixToRemove: 'n',
+        },
+        {
+            sortType: 'number',
+            columnIndex: 9,
+            label: 'CPU Capacity',
+            value: 'cpu.capacity',
+            isSortingAllowed: true,
+            suffixToRemove: 'n',
+        },
+        {
+            sortType: 'number',
             columnIndex: 10,
             label: 'Mem Usage (%)',
             value: 'memory.usagePercentage',
             isDefault: true,
             isSortingAllowed: true,
+            suffixToRemove: '%',
         },
-        { columnIndex: 11, label: 'Mem Usage (Absolute)', value: 'memory.usage', isSortingAllowed: true },
-        { columnIndex: 12, label: 'Mem Capacity', value: 'memory.capacity', isSortingAllowed: true },
-        { columnIndex: 13, label: 'Age', value: 'age', isDefault: true, isSortingAllowed: true },
-        { columnIndex: 14, label: 'Unschedulable', value: 'unschedulable' },
+        {
+            sortType: 'number',
+            columnIndex: 11,
+            label: 'Mem Usage (Absolute)',
+            value: 'memory.usage',
+            isSortingAllowed: true,
+            suffixToRemove: 'ki',
+        },
+        {
+            sortType: 'number',
+            columnIndex: 12,
+            label: 'Mem Capacity',
+            value: 'memory.capacity',
+            isSortingAllowed: true,
+            suffixToRemove: 'ki',
+        },
+        {
+            sortType: 'number',
+            columnIndex: 13,
+            label: 'Age',
+            value: 'age',
+            isDefault: true,
+            isSortingAllowed: true,
+            suffixToRemove: 'd',
+        },
+        { sortType: 'boolean', columnIndex: 14, label: 'Unschedulable', value: 'unschedulable' },
     ]
 
     const [searchInputText, setSearchInputText] = useState('')
@@ -217,7 +288,7 @@ export default function NodeListSearchFliter({
             <components.MenuList {...props}>
                 {props.children}
                 <div className="flex react-select__bottom bcn-0 p-8">
-                    <button className="flex cta apply-filter" onClick={handleApplySelectedColumns}>
+                    <button className="flex cta apply-filter h-32 w-100" onClick={handleApplySelectedColumns}>
                         Apply
                     </button>
                 </div>
@@ -280,7 +351,7 @@ export default function NodeListSearchFliter({
                 hideSelectedOptions={false}
                 onMenuOpen={() => handleMenuState(true)}
                 onMenuClose={handleCloseFilter}
-                isOptionDisabled={(option) => option['disabled']}
+                isOptionDisabled={(option) => option['isDisabled']}
                 components={{
                     Option: OptionWithCheckbox,
                     ValueContainer,

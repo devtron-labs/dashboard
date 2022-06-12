@@ -85,3 +85,14 @@ export interface UpdateNodeRequestBody {
     version: string
     kind: string
 }
+
+export interface columnMetadataType {
+    sortType: string
+    columnIndex: number
+    label: string
+    value: string
+    isDefault?: boolean
+    isSortingAllowed?: boolean
+    suffixToRemove?: string
+    isDisabled?: boolean
+}

@@ -26,10 +26,11 @@
     .width-25 {
         width: 25%;
     }
-
-    .no-result-container {
+    .list-min-height {
         height: calc(100vh - 280px);
-        overflow: hidden;
+        &.no-result-container {
+            overflow: hidden;
+        }
     }
     .search-wrapper {
         display: grid;

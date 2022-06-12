@@ -100,7 +100,7 @@ export default function ClusterList() {
             <div className={`cluster-list bcn-0 ${noResults ? 'no-result-container' : ''}`}>
                 <div className="flexbox content-space pl-20 pr-20 pt-16 pb-20">
                     <RenderSearch />
-                    <div className="app-tabs-sync">
+                    <div className="fs-13">
                         {lastDataSyncTimeString && (
                             <span>
                                 {lastDataSyncTimeString}{' '}

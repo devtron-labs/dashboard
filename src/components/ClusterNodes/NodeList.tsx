@@ -4,7 +4,7 @@ import { useRouteMatch, useParams, useHistory } from 'react-router'
 import './clusterNodes.scss'
 import { getClusterCapacity, getNodeList, getClusterList } from './clusterNodes.service'
 import { BreadCrumb, handleUTCTime, Progressing, showError, useBreadcrumb } from '../common'
-import { ClusterCapacityType, ClusterListResponse } from './types'
+import { ClusterCapacityType, ClusterListResponse, columnMetadataType } from './types'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Sort } from '../../assets/icons/ic-sort-arrow.svg'
@@ -32,7 +32,7 @@ export default function NodeList() {
         value: '',
     })
     const defaultVersion = { label: 'K8s version: Any', value: 'K8s version: Any' }
-    const [appliedColumns, setAppliedColumns] = useState<MultiValue<OptionType>>([])
+    const [appliedColumns, setAppliedColumns] = useState<MultiValue<columnMetadataType>>([])
     const [clusterErrorTitle, setClusterErrorTitle] = useState('')
     const [clusterErrorList, setClusterErrorList] = useState<string[]>([])
     const [flattenNodeList, setFlattenNodeList] = useState<object[]>([])
@@ -40,8 +40,17 @@ export default function NodeList() {
     const [searchedLabelMap, setSearchedLabelMap] = useState<Map<string, string>>(new Map())
     const [selectedVersion, setSelectedVersion] = useState<OptionType>(defaultVersion)
     const [selectedSearchTextType, setSelectedSearchTextType] = useState<string>('')
-    const [sortByColumnName, setSortByColumnName] = useState<string>('name')
+    const [sortByColumn, setSortByColumn] = useState<columnMetadataType>({
+        sortType: 'string',
+        columnIndex: 0,
+        label: 'Node',
+        value: 'name',
+        isDefault: true,
+        isSortingAllowed: true,
+        isDisabled: true,
+    })
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
+
     const [noResults, setNoResults] = useState(false)
 
     const flattenObject = (ob: Object): Object => {
@@ -127,7 +136,7 @@ export default function NodeList() {
                     const optionList = response.result
                         .filter((cluster) => !cluster.errorInNodeListing)
                         .map((cluster) => {
-                            const _clusterId = cluster.id.toString()
+                            const _clusterId = cluster.id?.toString()
                             if (_clusterId === clusterId) {
                                 setSelectedCluster({
                                     label: cluster.name,
@@ -159,7 +168,7 @@ export default function NodeList() {
     }, [lastDataSync])
 
     const handleFilterChanges = (): void => {
-        const _flattenNodeList = []
+        let _flattenNodeList = []
         for (let index = 0; index < flattenNodeList.length; index++) {
             const element = flattenNodeList[index]
             if (selectedVersion.value !== defaultVersion.value && element['k8sVersion'] !== selectedVersion.value) {
@@ -183,8 +192,41 @@ export default function NodeList() {
             }
             _flattenNodeList.push(element)
         }
+        _flattenNodeList = sortNodeList(_flattenNodeList)
         setFilteredFlattenNodeList(_flattenNodeList)
         setNoResults(_flattenNodeList.length === 0)
+    }
+
+    const sortNodeList = (_flattenNodeList: Object[]): Object[] => {
+        const comparatorMethod =
+            sortByColumn.sortType === 'number' ? numericComparatorMethod : alphabeticalComparatorMethod
+        return _flattenNodeList.sort(comparatorMethod)
+    }
+
+    const numericComparatorMethod = (a, b) => {
+        let firstValue = Number(
+            sortByColumn.suffixToRemove
+                ? a[sortByColumn.value].replace(sortByColumn.suffixToRemove, '')
+                : a[sortByColumn.value],
+        )
+        let secondValue = Number(
+            sortByColumn.suffixToRemove
+                ? b[sortByColumn.value].replace(sortByColumn.suffixToRemove, '')
+                : b[sortByColumn.value],
+        )
+        if (sortOrder === OrderBy.ASC) {
+            return (firstValue > secondValue && 1) || -1
+        } else {
+            return (secondValue > firstValue && 1) || -1
+        }
+    }
+
+    const alphabeticalComparatorMethod = (a, b) => {
+        if (sortOrder === OrderBy.ASC) {
+            return a[sortByColumn.value].localeCompare(b[sortByColumn.value])
+        } else {
+            return b[sortByColumn.value].localeCompare(a[sortByColumn.value])
+        }
     }
 
     const clearFilter = (): void => {
@@ -195,7 +237,7 @@ export default function NodeList() {
 
     useEffect(() => {
         handleFilterChanges()
-    }, [searchedLabelMap, searchText, flattenNodeList])
+    }, [searchedLabelMap, searchText, flattenNodeList, sortByColumn, sortOrder])
 
     const onClusterChange = (selectedValue: OptionType): void => {
         setSelectedCluster(selectedValue)
@@ -234,11 +276,11 @@ export default function NodeList() {
         return <BreadCrumb breadcrumbs={breadcrumbs} />
     }
 
-    const handleSortClick = (columnName: string): void => {
-        if (sortByColumnName === columnName) {
+    const handleSortClick = (column: columnMetadataType): void => {
+        if (sortByColumn.label === column.label) {
             setSortOrder(sortOrder === OrderBy.ASC ? OrderBy.DESC : OrderBy.ASC)
         } else {
-            setSortByColumnName(columnName)
+            setSortByColumn(column)
             setSortOrder(OrderBy.ASC)
         }
     }
@@ -253,10 +295,10 @@ export default function NodeList() {
             <div className="node-list">
                 <div className="flexbox content-space pl-20 pr-20 pt-16 pb-16">
                     <div className="fw-6 fs-14 cn-9">Resource allocation and usage</div>
-                    <div className="app-tabs-sync">
+                    <div className="fs-13">
                         {lastDataSyncTimeString && (
                             <span>
-                                {lastDataSyncTimeString}{' '}
+                                {lastDataSyncTimeString}
                                 <button className="btn btn-link p-0 fw-6 cb-5" onClick={getNodeListData}>
                                     Refresh
                                 </button>
@@ -326,7 +368,9 @@ export default function NodeList() {
                             >
                                 <Info className="error-icon-red mt-2 mb-2 mr-8 icon-dim-18" />
                                 <span className="fw-6 fs-14 cn-9 mr-16">
-                                    {clusterErrorList.length === 1 ? '1 Error' : clusterErrorList.length + ' Errors'}
+                                    {clusterErrorList.length === 1
+                                        ? '1 Error'
+                                        : clusterErrorList.length + ' Errors in cluster'}
                                 </span>
                                 {collapsedErrorSection && <span className="fw-4 fs-14 cn-9">{clusterErrorTitle}</span>}
                             </span>
@@ -347,7 +391,7 @@ export default function NodeList() {
                         )}
                     </div>
                 )}
-                <div className={`bcn-0 pt-16 ${noResults ? 'no-result-container' : ''}`}>
+                <div className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''}`}>
                     <div className="pl-20 pr-20">
                         <NodeListSearchFilter
                             defaultVersion={defaultVersion}
@@ -366,10 +410,7 @@ export default function NodeList() {
                     {noResults ? (
                         <ClusterNodeEmptyState actionHandler={clearFilter} />
                     ) : (
-                        <div
-                            className="mt-16 en-2 bw-1"
-                            style={{ minHeight: 'calc(100vh - 125px)', width: '100%', overflow: 'auto' }}
-                        >
+                        <div className="mt-16" style={{ width: '100%', overflow: 'auto' }}>
                             <div
                                 className=" fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 text-uppercase"
                                 style={{ width: 'max-content', minWidth: '100%' }}
@@ -380,16 +421,16 @@ export default function NodeList() {
                                             column.label === 'Node'
                                                 ? 'w-280 pl-20 bcn-0 position-sticky sticky-column'
                                                 : 'w-100-px'
-                                        } ${sortByColumnName === column['value'] ? 'sort-by' : ''} ${
+                                        } ${sortByColumn.value === column.value ? 'sort-by' : ''} ${
                                             sortOrder === OrderBy.DESC ? 'desc' : ''
                                         }`}
                                     >
                                         {column.label}
-                                        {column['isSortingAllowed'] && (
+                                        {column.isSortingAllowed && (
                                             <Sort
                                                 className="pointer icon-dim-14 position-rel sort-icon"
                                                 onClick={(event) => {
-                                                    handleSortClick(column.value)
+                                                    handleSortClick(column)
                                                 }}
                                             />
                                         )}
@@ -410,10 +451,12 @@ export default function NodeList() {
                                             </div>
                                         ) : (
                                             <div className="w-100-px inline-block ellipsis-right mr-16">
-                                                {column.value === 'errorCount' && nodeData[column.value] && (
+                                                {column.value === 'errorCount' && nodeData['errorCount'] > 0 && (
                                                     <Info className="error-icon-red mr-3 icon-dim-16 position-rel top-3" />
                                                 )}
-                                                {nodeData[column.value] || '-'}
+                                                {(column.sortType === 'boolean'
+                                                    ? nodeData[column.value] + ''
+                                                    : nodeData[column.value]) || '-'}
                                             </div>
                                         )
                                     })}
