@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Progressing, useBreadcrumb, BreadCrumb, OpaqueModal } from '../../common';
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg';
-import { getInstalledAppDetail, getChartVersionDetails2, getInstalledCharts } from '../charts.service';
+import { getInstalledAppDetail, getChartVersionDetailsV2, getInstalledCharts } from '../charts.service';
 import { Details } from '../../app/details/appDetails/AppDetails';
 import { toast } from 'react-toastify';
 import { useParams, useHistory, useRouteMatch, Route, generatePath } from 'react-router';
@@ -64,7 +64,7 @@ export default function AppDetail() {
     async function fetchChartVersionDetails(event) {
         try {
             setLoading(true);
-            const { result } = await getChartVersionDetails2(appDetails.appStoreInstalledAppVersionId);
+            const { result } = await getChartVersionDetailsV2(appDetails.appStoreInstalledAppVersionId);
             setInstalledConfig(result);
             setPollingRequired(false);
             history.push(`${url}/update-chart`);

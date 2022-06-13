@@ -42,13 +42,13 @@ export interface InstalledAppInfo {
     appId: number
     installedAppId: number
     installedAppVersionId: number
+    environmentId: number
     environmentName: string
     appOfferingMode: string
     appStoreChartId: number
     appStoreChartName: string
     appStoreChartRepoName: string
     clusterId: number
-    environmentId: number
 }
 
 export interface HelmAppDetail {

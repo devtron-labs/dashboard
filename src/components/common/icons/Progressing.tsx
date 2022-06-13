@@ -6,6 +6,7 @@ interface ProgressingProps {
     size?: number;
     fullHeight?: boolean;
     theme?: 'white' | 'default';
+    children?: React.ReactNode
 }
 
 export function Progressing({ pageLoader, size, theme }: ProgressingProps): JSX.Element {
@@ -36,7 +37,7 @@ export function Progressing({ pageLoader, size, theme }: ProgressingProps): JSX.
     );
 }
 
-export function DetailsProgressing({ loadingText, size = 24, fullHeight = false }: ProgressingProps): JSX.Element {
+export function DetailsProgressing({ loadingText, size = 24, fullHeight = false, children }: ProgressingProps): JSX.Element {
     return (
         <div
             className={`details-loader bcn-0 flex column fs-14 fw-6 ${fullHeight ? 'h-100' : 'details-loader-height'}`}
@@ -45,6 +46,7 @@ export function DetailsProgressing({ loadingText, size = 24, fullHeight = false 
                 <Progressing size={size} />
             </span>
             {loadingText && <span className="mt-10">{loadingText}</span>}
+            {children}
         </div>
     );
 }
