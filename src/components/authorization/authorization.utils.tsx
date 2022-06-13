@@ -6,3 +6,8 @@ export const options = [
     { value: 'Custom', label: 'Custom...' },
     { value: 'NoExpiration', label: 'NO expiration' },
 ]
+
+export const PermissionType = [
+    { value: 'SPECIFIC', label: 'Specific permissions' },
+    { value: 'SUPERADMIN', label: 'Superadmin permission' },
+]

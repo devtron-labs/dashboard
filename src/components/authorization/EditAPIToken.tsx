@@ -2,6 +2,14 @@ import React from 'react'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import RegeneratedModal from './RegenerateModal'
+import { EditTokenType } from './authorization.type'
+import ReactSelect from 'react-select'
+import { options, PermissionType } from './authorization.utils'
+import { multiSelectStyles } from '../common'
+import { DropdownIndicator } from '../security/security.util'
+import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
+import GenerateActionButton from './GenerateActionButton'
+import { useHistory, useRouteMatch } from 'react-router-dom'
 
 function EditAPIToken({
     setShowRegeneratedModal,
@@ -9,7 +17,12 @@ function EditAPIToken({
     handleRegenerateActionButton,
     selectedExpirationDate,
     setSelectedExpirationDate,
-}) {
+    formData,
+    setFormData,
+}: EditTokenType) {
+    const history = useHistory()
+    const match = useRouteMatch()
+
     const renderActionButton = () => {
         return (
             <span className="cr-5 cursor" onClick={() => setShowRegeneratedModal(true)}>
@@ -17,6 +30,8 @@ function EditAPIToken({
             </span>
         )
     }
+
+    const handleCopyToClipboard = () => {}
 
     const renderRegenrateInfoBar = () => {
         return (
@@ -30,6 +45,14 @@ function EditAPIToken({
                 renderActionButton={renderActionButton}
             />
         )
+    }
+    const redirectToTokenList = () => {
+        let url = match.path.split('edit')[0]
+        history.push(`${url}list`)
+    }
+
+    const handleEditDeleteButton = () => {
+        return
     }
     return (
         <div className="api-token__container" style={{ minHeight: 'calc(100vh - 235px)' }}>
@@ -51,16 +74,14 @@ function EditAPIToken({
                 >
                     <div>
                         <label className="form__row">
-                            <span className="form__label">
-                                Name <span className="cr-5">*</span>
-                            </span>
-                            {/*  <input
-                        tabIndex={1}
-                        placeholder="Name"
-                        className="form__input"
-                        value={formData.name}
-                        onChange={(e) => onChangeFormData(e, 'name')}
-                    /> */}
+                            <span className="form__label">Name</span>
+                            <input
+                                tabIndex={1}
+                                placeholder="Name"
+                                className="form__input"
+                                value={formData.name}
+                                disabled={!!formData.name}
+                            />
                             {/* {this.state.showError && !this.state.isValid.name ? (
                         <span className="form__error">
                             <Error className="form__icon form__icon--error" />
@@ -68,48 +89,52 @@ function EditAPIToken({
                         </span>
                     ) : null} */}
                         </label>
-                        {/* <label className="form__row">
-                    <span className="form__label">Description</span>
-                    <input
-                        tabIndex={1}
-                        placeholder="Enter a description to remember where you have used this token"
-                        className="form__input"
-                        value={formData.name}
-                        onChange={(e) => onChangeFormData(e, 'name')}
-                    />
-                </label> */}
-
                         <label className="form__row">
-                            <span className="form__label">
-                                Expiration <span className="cr-5"> *</span>
-                            </span>
-                            {/* <div className="flex left">
-                        <ReactSelect
-                            value={selectedExpirationDate}
-                            options={options}
-                            className="select-width w-200"
-                            onChange={() => setSelectedExpirationDate(selectedExpirationDate)}
-                            components={{
-                                IndicatorSeparator: null,
-                                DropdownIndicator,
-                            }}
-                            styles={{
-                                ...multiSelectStyles,
-                            }}
-                        />
-                        <span className="ml-16">This token will expire on </span>
-                    </div> */}
+                            <span className="form__label">Description</span>
+                            <input
+                                tabIndex={1}
+                                placeholder="Enter a description to remember where you have used this token"
+                                className="form__input"
+                                value={formData.description}
+                                // onChange={(e) => onChangeFormData(e, 'name')}
+                            />
                         </label>
-                        {/* <div className="mb-20">
-                    <InfoColourBar
-                        classname={'warn ey-2'}
-                        Icon={Warn}
-                        message={
-                            'Devtron strongly recommends that you set an expiration date for your token to help keep your information secure.'
-                        }
-                        iconClass="scy-9"
-                    />
-                </div> */}
+                        <label className="form__row">
+                            <span className="form__label">Token</span>
+                            <div className="flex content-space">
+                                {formData.description} description
+                                <Clipboard className="icon-dim-16 ml-8" />
+                            </div>
+                        </label>
+                        <label className="form__row">
+                            <span className="form__label">Expiration</span>
+                            <div className="flex left">
+                                This token expires on Sat, 11 Jun 2022.
+                                <span className=" fw-4"> To set a new expiration date you must </span>
+                                <span className="cb-5 ml-4" onClick={() => setShowRegeneratedModal(true)}>
+                                    regenerate the token.
+                                </span>
+                            </div>
+                        </label>
+                        <div className="pointer flex form__permission">
+                            {PermissionType.map(({ label: Lable, value }, index) => (
+                                <div
+                                    className="flex left"
+                                    key={`generate_token_${index}`}
+                                    // onChange={() => setAdminPermission(value)}
+                                >
+                                    <label key={value} className=" flex left">
+                                        <input
+                                            type="radio"
+                                            name="auth"
+                                            value={value}
+                                            // checked={value === adminPermission}
+                                        />
+                                        <span className="ml-8 mt-4">{Lable}</span>
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
 
                         {/* {adminPermission === 'SUPERADMIN' && ( */}
                         {/* <div> */}
@@ -125,19 +150,14 @@ function EditAPIToken({
                     </div>
                 </form>
                 <hr className="modal__divider mt-20 mb-0" />
-                <div className="modal__buttons m-16 flex right">
-                    <button
-                        className="cta cancel mr-16"
-                        type="button"
-                        //  onClick={(e) => setShowGenerateToken(false)}
-                    >
-                        Cancel
-                    </button>
-                    {/* <GenerateActionButton handleGenerateRowActionButton={handleGenerateAPIToken} /> */}
-                    {/* <button className="cta" onClick={handleGenerateAPIToken}>
-                {loader ? <Progressing /> : 'Generate token'}
-            </button> */}
-                </div>
+                <GenerateActionButton
+                    loader={false}
+                    onCancel={redirectToTokenList}
+                    onSave={undefined}
+                    buttonText={'Update token'}
+                    showDelete={true}
+                    onDelete={handleEditDeleteButton}
+                />
             </div>
             {showRegeneratedModal && (
                 <RegeneratedModal

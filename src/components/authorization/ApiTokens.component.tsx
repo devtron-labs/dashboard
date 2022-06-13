@@ -10,6 +10,7 @@ import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
 import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
+import { FormType } from './authorization.type'
 
 function ApiTokens() {
     const history = useHistory()
@@ -24,6 +25,11 @@ function ApiTokens() {
     const [showGenerateModal, setShowGenerateModal] = useState(false)
     const [showRegenerateTokenModal, setShowRegenerateTokenModal] = useState(false)
     const [selectedExpirationDate, setSelectedExpirationDate] = useState({ label: '30 days', value: '30Days' })
+    const [formData, setFormData] = useState<FormType>({
+        name: '',
+        description: '',
+        expireAtInMs: '',
+    })
 
     useEffect(() => {
         getData()
@@ -113,6 +119,8 @@ function ApiTokens() {
                                     handleRegenerateActionButton={handleRegenerateActionButton}
                                     setSelectedExpirationDate={setSelectedExpirationDate}
                                     selectedExpirationDate={selectedExpirationDate}
+                                    formData={formData}
+                                    setFormData={setFormData}
                                 />
                             )}
                         />
@@ -125,6 +133,8 @@ function ApiTokens() {
                                     showRegeneratedModal={showRegenerateTokenModal}
                                     setSelectedExpirationDate={setSelectedExpirationDate}
                                     selectedExpirationDate={selectedExpirationDate}
+                                    formData={formData}
+                                    setFormData={setFormData}
                                 />
                             )}
                         />

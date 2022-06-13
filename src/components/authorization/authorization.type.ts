@@ -12,6 +12,18 @@ export interface GenerateTokenType {
     handleRegenerateActionButton: () => void
     setSelectedExpirationDate
     selectedExpirationDate
+    formData: FormType
+    setFormData: React.Dispatch<React.SetStateAction<FormType>>
+}
+
+export interface EditTokenType {
+    setShowRegeneratedModal: React.Dispatch<React.SetStateAction<boolean>>
+    showRegeneratedModal: boolean
+    handleRegenerateActionButton: () => void
+    setSelectedExpirationDate
+    selectedExpirationDate
+    formData: FormType
+    setFormData: React.Dispatch<React.SetStateAction<FormType>>
 }
 
 export interface GenerateActionButtonType {
@@ -19,4 +31,6 @@ export interface GenerateActionButtonType {
     onCancel: () => void
     onSave
     buttonText: string
+    showDelete?: boolean
+    onDelete: () => void
 }

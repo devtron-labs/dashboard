@@ -9,7 +9,7 @@ import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { createGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
 import GenerateModal from './GenerateModal'
-import { options } from './authorization.utils'
+import { options, PermissionType } from './authorization.utils'
 
 function CreateAPIToken({
     setShowGenerateModal,
@@ -17,20 +17,11 @@ function CreateAPIToken({
     handleRegenerateActionButton,
     setSelectedExpirationDate,
     selectedExpirationDate,
+    formData,
+    setFormData,
 }: GenerateTokenType) {
     const [loader, setLoader] = useState(false)
     const [adminPermission, setAdminPermission] = useState('SUPERADMIN')
-
-    const [formData, setFormData] = useState<FormType>({
-        name: '',
-        description: '',
-        expireAtInMs: '',
-    })
-
-    const PermissionType = [
-        { value: 'SPECIFIC', label: 'Specific permissions' },
-        { value: 'SUPERADMIN', label: 'Superadmin permission' },
-    ]
 
     const saveToken = (): void => {}
 
