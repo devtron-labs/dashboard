@@ -49,8 +49,8 @@ export default function NodeListSearchFliter({
             isSortingAllowed: true,
             isDisabled: true,
         },
-        { sortType: 'string', columnIndex: 1, label: 'Status', value: 'status', isDefault: true },
-        { sortType: 'string', columnIndex: 2, label: 'Roles', value: 'roles', isDefault: true, isDisabled: true },
+        { sortType: 'string', columnIndex: 1, label: 'Status', value: 'status', isDefault: true, isDisabled: true },
+        { sortType: 'string', columnIndex: 2, label: 'Roles', value: 'roles', isDefault: true },
         {
             sortType: 'number',
             columnIndex: 3,

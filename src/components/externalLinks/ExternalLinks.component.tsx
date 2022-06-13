@@ -103,13 +103,22 @@ export const ClusterFilter = ({
                 name="cluster"
                 value={selectedCluster}
                 options={clusters}
-                onChange={setSelectedCluster}
+                onChange={handleSelectedFilters}
                 isMulti={true}
-                isSearchable={false}
+                isSearchable={true}
                 closeMenuOnSelect={false}
                 hideSelectedOptions={false}
                 onMenuOpen={() => handleMenuState(true)}
                 onMenuClose={handleCloseFilter}
+                inputValue={clusterSearchInput}
+                onBlur={() => {
+                    setClusterSearchInput('')
+                }}
+                onInputChange={(value: string, actionMeta: InputActionMeta) => {
+                    if (actionMeta.action === 'input-change') {
+                        setClusterSearchInput(value)
+                    }
+                }}
                 components={{
                     Option,
                     ValueContainer,

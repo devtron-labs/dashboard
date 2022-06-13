@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import './clusterNodes.scss'
-import { BreadCrumb, ButtonWithLoader, copyToClipboard, Progressing, showError, useBreadcrumb } from '../common'
+import {
+    BreadCrumb,
+    ButtonWithLoader,
+    copyToClipboard,
+    Pagination,
+    Progressing,
+    showError,
+    useBreadcrumb,
+} from '../common'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -32,6 +40,8 @@ export default function NodeDetails() {
     const [modifiedManifest, setModifiedManifest] = useState('')
     const [cpuData, setCpuData] = useState<ResourceDetail>(null)
     const [memoryData, setMemoryData] = useState<ResourceDetail>(null)
+    const [podListOffset, setPodListOffset] = useState(0)
+    const pageSize = 15
 
     useEffect(() => {
         setLoader(true)
@@ -300,7 +310,7 @@ export default function NodeDetails() {
             <div className="mb-12 en-2 bw-1 br-4 bcn-0">
                 <div className="flexbox bcr-5 pt-12 pb-12 pr-10 pl-20 top-radius-4">
                     <Error className="error-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
-                    <span className="fw-6 fs-14 cn-9">
+                    <span className="fw-6 fs-14 cn-0">
                         {nodeErrorKeys.length === 1 ? '1 Error' : nodeErrorKeys.length + ' Errors'}
                     </span>
                 </div>
@@ -444,9 +454,23 @@ export default function NodeDetails() {
         )
     }
 
+    const renderPagination = (): JSX.Element => {
+        return (
+            nodeDetail.pods.length > pageSize && (
+                <Pagination
+                    size={nodeDetail.pods.length}
+                    pageSize={pageSize}
+                    offset={podListOffset}
+                    changePage={(pageNo: number) => setPodListOffset(pageSize * (pageNo - 1))}
+                    isPageSizeFix={true}
+                />
+            )
+        )
+    }
+
     const renderPodList = (): JSX.Element => {
         return (
-            <div className="en-2 bw-1 br-4 bcn-0 mt-12 mb-20">
+            <div className="en-2 bw-1 br-4 bcn-0 mt-12 mb-20 pod-container">
                 <div className="fw-6 fs-14 cn-9 pr-20 pl-20 pt-12">Pods</div>
                 <div className="pods-row border-bottom pt-8 pb-8 pr-20 pl-20 fw-6 fs-13 cn-7">
                     <div>Namespace</div>
@@ -457,40 +481,43 @@ export default function NodeDetails() {
                     <div>Memory Limits</div>
                     <div>Age</div>
                 </div>
-                {nodeDetail.pods.map((pod) => (
-                    <div className="pods-row border-bottom-n1 pt-12 pb-12 pr-20 pl-20 fw-4 fs-13 cn-9">
-                        <div>{pod.namespace}</div>
-                        <Tippy className="default-tt" arrow={false} placement="bottom" content={pod.name}>
-                            <div className="hover-trigger position-rel ellipsis-right pr-10">
-                                {pod.name}
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="bottom"
-                                    content={copied ? 'Copied!' : 'Copy'}
-                                    trigger="mouseenter click"
-                                    onShow={(instance) => {
-                                        setCopied(false)
-                                    }}
-                                >
-                                    <Clipboard
-                                        className="clipboard-icon ml-8 mt-5 pointer hover-only icon-dim-16"
-                                        onClick={() => {
-                                            copyToClipboard(pod.name, () => {
-                                                setCopied(true)
-                                            })
+                <div className="scrollable-pod-list">
+                    {nodeDetail.pods.slice(podListOffset, podListOffset + pageSize).map((pod) => (
+                        <div className="pods-row border-bottom-n1 pt-12 pb-12 pr-20 pl-20 fw-4 fs-13 cn-9">
+                            <div>{pod.namespace}</div>
+                            <Tippy className="default-tt" arrow={false} placement="bottom" content={pod.name}>
+                                <div className="hover-trigger position-rel ellipsis-right pr-10">
+                                    {pod.name}
+                                    <Tippy
+                                        className="default-tt"
+                                        arrow={false}
+                                        placement="bottom"
+                                        content={copied ? 'Copied!' : 'Copy'}
+                                        trigger="mouseenter click"
+                                        onShow={(instance) => {
+                                            setCopied(false)
                                         }}
-                                    />
-                                </Tippy>
-                            </div>
-                        </Tippy>
-                        <div>{pod.cpu.requestPercentage || '-'}</div>
-                        <div>{pod.cpu.limitPercentage || '-'}</div>
-                        <div>{pod.memory.requestPercentage || '-'}</div>
-                        <div>{pod.memory.limitPercentage || '-'}</div>
-                        <div>{pod.age}</div>
-                    </div>
-                ))}
+                                    >
+                                        <Clipboard
+                                            className="clipboard-icon ml-8 mt-5 pointer hover-only icon-dim-16"
+                                            onClick={() => {
+                                                copyToClipboard(pod.name, () => {
+                                                    setCopied(true)
+                                                })
+                                            }}
+                                        />
+                                    </Tippy>
+                                </div>
+                            </Tippy>
+                            <div>{pod.cpu.requestPercentage || '-'}</div>
+                            <div>{pod.cpu.limitPercentage || '-'}</div>
+                            <div>{pod.memory.requestPercentage || '-'}</div>
+                            <div>{pod.memory.limitPercentage || '-'}</div>
+                            <div>{pod.age}</div>
+                        </div>
+                    ))}
+                </div>
+                {renderPagination()}
             </div>
         )
     }
@@ -568,10 +595,10 @@ export default function NodeDetails() {
                 >
                     {isReviewState && (
                         <CodeEditor.Header hideDefaultSplitHeader={true}>
-                            <div className="split-header">
-                                <div className="left-pane">Current node YAML </div>
-                                <div className="right-pane flexbox">
-                                    <Edit className="icon-dim-16 mt-11 mr-5" />
+                            <div className="h-32 lh-32 fs-12 fw-6 bcn-1 border-bottom flexbox w-100 cn-7">
+                                <div className="border-right pl-10 w-49-per">Current node YAML </div>
+                                <div className="pl-25 w-51-per flexbox">
+                                    <Edit className="icon-dim-16 mt-7 mr-5" />
                                     YAML (Editing)
                                 </div>
                             </div>
