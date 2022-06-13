@@ -1,13 +1,12 @@
-import React from 'react'
-import { VisibleModal } from '../common'
+import React, { useState } from 'react'
+import { copyToClipboard, VisibleModal } from '../common'
 import { ReactComponent as Success } from '../../assets/icons/ic-success-outline.svg'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { GenerateTokenModalType } from './authorization.type'
 
-function GenerateModal({ close }) {
-    const handleCopyToClipboard = () => {
-        return
-    }
+function GenerateModal({ close, token }: GenerateTokenModalType) {
+    const [copied, setCopied] = useState(false)
 
     return (
         <VisibleModal className={undefined}>
@@ -18,16 +17,23 @@ function GenerateModal({ close }) {
                 <Success className="vertical-align-middle mb-16" />
 
                 <div className="modal__header ">
-                    <h1 className="modal__title fs-16 mb-20">API token regenerated</h1>
+                    <h1 className="modal__title fs-16">API token regenerated</h1>
                 </div>
                 <div
                     className="bcg-1 br-4 eg-2 bw-1 pl-16 pr-16 pt-10 pb-10"
                     style={{ width: '560px', wordWrap: 'break-word' }}
                 >
-                    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MTYyMzkwMjIsImp0aSI6InNvbWVSYW5kb21JZCJ9.TFArT1SLnV-XyZ19p6exiQoFNurXt9nKTpwykwXRXooeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MTYyMzkwMjIsImp0aSI6InNvbWVSYW5kb21JZCJ9.TFArT1SLnV-XyZ19p6exiQoFNurXt9nKTpwykwXRXoo
+                    {token}
                 </div>
-                <button className="flex cta mt-20 mb-20" onClick={handleCopyToClipboard}>
-                    <Clipboard className="icon-dim-16 ml-8" /> Copy token
+                <button
+                    className="flex cta mt-20 mb-20"
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        copyToClipboard(token, () => setCopied(true))
+                    }}
+                >
+                    <Clipboard className="icon-dim-16 ml-8" />
+                    Copy token
                 </button>
             </div>
         </VisibleModal>

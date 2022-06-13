@@ -10,7 +10,7 @@ import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
 import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
-import { FormType } from './authorization.type'
+import { FormType, TokenResponseType } from './authorization.type'
 
 function ApiTokens() {
     const history = useHistory()
@@ -24,11 +24,21 @@ function ApiTokens() {
     const [showEditToken, setShowEditToken] = useState(false)
     const [showGenerateModal, setShowGenerateModal] = useState(false)
     const [showRegenerateTokenModal, setShowRegenerateTokenModal] = useState(false)
-    const [selectedExpirationDate, setSelectedExpirationDate] = useState({ label: '30 days', value: '30Days' })
+    const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: number }>({
+        label: '',
+        value: 0,
+    })
     const [formData, setFormData] = useState<FormType>({
         name: '',
         description: '',
-        expireAtInMs: '',
+        expireAtInMs: undefined,
+    })
+
+    const [tokenResponse, setTokenResponse] = useState<TokenResponseType>({
+        success: false,
+        token: '',
+        userId: 0,
+        userIdentifier: 'API-TOKEN:test',
     })
 
     useEffect(() => {
@@ -88,8 +98,9 @@ function ApiTokens() {
         )
     }
 
-    const handleRegenerateActionButton = () => {
+    const handleActionButton = () => {
         setShowGenerateModal(false)
+        setShowRegenerateTokenModal(false)
     }
 
     const renderAPITokenRoutes = (): JSX.Element => {
@@ -116,11 +127,13 @@ function ApiTokens() {
                                 <CreateAPIToken
                                     setShowGenerateModal={setShowGenerateModal}
                                     showGenerateModal={showGenerateModal}
-                                    handleRegenerateActionButton={handleRegenerateActionButton}
+                                    handleGenerateTokenActionButton={handleActionButton}
                                     setSelectedExpirationDate={setSelectedExpirationDate}
                                     selectedExpirationDate={selectedExpirationDate}
                                     formData={formData}
                                     setFormData={setFormData}
+                                    tokenResponse={tokenResponse}
+                                    setTokenResponse={setTokenResponse}
                                 />
                             )}
                         />
@@ -128,7 +141,7 @@ function ApiTokens() {
                             path={`${path}/edit`}
                             render={(props) => (
                                 <EditAPIToken
-                                    handleRegenerateActionButton={handleRegenerateActionButton}
+                                    handleRegenerateActionButton={handleActionButton}
                                     setShowRegeneratedModal={setShowRegenerateTokenModal}
                                     showRegeneratedModal={showRegenerateTokenModal}
                                     setSelectedExpirationDate={setSelectedExpirationDate}

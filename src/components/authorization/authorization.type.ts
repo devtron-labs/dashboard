@@ -3,17 +3,25 @@ import React from 'react'
 export interface FormType {
     name: string
     description: string
-    expireAtInMs: string
+    expireAtInMs: number
+}
+export interface TokenResponseType {
+    success: boolean
+    token: string
+    userId: number
+    userIdentifier: string
 }
 
 export interface GenerateTokenType {
     showGenerateModal: boolean
     setShowGenerateModal: React.Dispatch<React.SetStateAction<boolean>>
-    handleRegenerateActionButton: () => void
+    handleGenerateTokenActionButton: () => void
     setSelectedExpirationDate
     selectedExpirationDate
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
+    tokenResponse: TokenResponseType
+    setTokenResponse: React.Dispatch<React.SetStateAction<TokenResponseType>>
 }
 
 export interface EditTokenType {
@@ -32,5 +40,10 @@ export interface GenerateActionButtonType {
     onSave
     buttonText: string
     showDelete?: boolean
-    onDelete: () => void
+    onDelete?: () => void
+}
+
+export interface GenerateTokenModalType {
+    close: () => void
+    token: string
 }

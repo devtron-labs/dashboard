@@ -10,30 +10,36 @@ import { createGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
 import GenerateModal from './GenerateModal'
 import { options, PermissionType } from './authorization.utils'
+import GenerateActionButton from './GenerateActionButton'
 
 function CreateAPIToken({
     setShowGenerateModal,
     showGenerateModal,
-    handleRegenerateActionButton,
+    handleGenerateTokenActionButton,
     setSelectedExpirationDate,
     selectedExpirationDate,
     formData,
     setFormData,
+    tokenResponse,
+    setTokenResponse,
 }: GenerateTokenType) {
     const [loader, setLoader] = useState(false)
     const [adminPermission, setAdminPermission] = useState('SUPERADMIN')
 
-    const saveToken = (): void => {}
+    const onCreateToken = (): void => {}
 
     const onChangeFormData = (event: React.ChangeEvent<HTMLInputElement>, key): void => {
-        let str = event.target.value || ''
-        str = str.toLowerCase()
-
-        setFormData({
-            ...formData,
-        })
+        const _formData = { ...formData }
+        _formData[key] = event.target.value || ''
+        setFormData(_formData)
     }
 
+    const onChangeSelectFormData = (selectedOption: { label: string; value: number }) => {
+        const _formData = { ...formData }
+        setSelectedExpirationDate(selectedOption)
+        _formData['expireAtInMs'] = selectedOption.value
+        setFormData(_formData)
+    }
     const handleGenerateAPIToken = () => {
         setLoader(true)
         let payload = {
@@ -45,6 +51,8 @@ function CreateAPIToken({
         createGeneratedAPIToken(payload)
             .then((response) => {
                 toast.success('Changes saved')
+                setTokenResponse(response.result)
+                setShowGenerateModal(true)
             })
             .catch((error) => {
                 showError(error)
@@ -52,8 +60,6 @@ function CreateAPIToken({
             .finally(() => {
                 setLoader(false)
             })
-
-        setShowGenerateModal(true)
     }
 
     return (
@@ -69,7 +75,7 @@ function CreateAPIToken({
             <div className="bcn-0 br-8 en-2 bw-1">
                 <form
                     onSubmit={(e) => {
-                        saveToken()
+                        onCreateToken()
                     }}
                     className="p-20"
                 >
@@ -98,8 +104,8 @@ function CreateAPIToken({
                                 tabIndex={1}
                                 placeholder="Enter a description to remember where you have used this token"
                                 className="form__input"
-                                value={formData.name}
-                                onChange={(e) => onChangeFormData(e, 'name')}
+                                value={formData.description}
+                                onChange={(e) => onChangeFormData(e, 'description')}
                             />
                         </label>
 
@@ -112,7 +118,7 @@ function CreateAPIToken({
                                     value={selectedExpirationDate}
                                     options={options}
                                     className="select-width w-200"
-                                    onChange={() => setSelectedExpirationDate(selectedExpirationDate)}
+                                    onChange={(e) => onChangeSelectFormData(e)}
                                     components={{
                                         IndicatorSeparator: null,
                                         DropdownIndicator,
@@ -167,18 +173,15 @@ function CreateAPIToken({
                     </div>
                 </form>
                 <hr className="modal__divider mt-20 mb-0" />
-                <div className="modal__buttons m-16 flex right">
-                    <button className="cta cancel mr-16" type="button" onClick={(e) => setShowGenerateModal(false)}>
-                        Cancel
-                    </button>
-                    {/* <GenerateActionButton handleGenerateRowActionButton={handleGenerateAPIToken} /> */}
-                    <button className="cta" onClick={handleGenerateAPIToken}>
-                        {loader ? <Progressing /> : 'Generate token'}
-                    </button>
-                </div>
+                <GenerateActionButton
+                    loader={false}
+                    onCancel={() => setShowGenerateModal(false)}
+                    onSave={handleGenerateAPIToken}
+                    buttonText="Generate token"
+                />
             </div>
 
-            {showGenerateModal && <GenerateModal close={handleRegenerateActionButton} />}
+            {showGenerateModal && <GenerateModal close={handleGenerateTokenActionButton} token={tokenResponse.token} />}
         </div>
     )
 }

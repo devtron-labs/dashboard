@@ -12,14 +12,12 @@ function GenerateActionButton({
 }: GenerateActionButtonType) {
     return (
         <div>
-            <div className="modal__buttons w-100 p-16 flex content-space border-top">
-                <div>
-                    {showDelete && (
-                        <button className="cta delete cancel mr-16" type="button" onClick={onDelete}>
-                            Delete
-                        </button>
-                    )}
-                </div>
+            <div className={`modal__buttons w-100 p-16 flex ${showDelete ? 'content-space ' : 'right'} border-top`}>
+                {showDelete && (
+                    <button className="cta delete cancel mr-16" type="button" onClick={onDelete}>
+                        Delete
+                    </button>
+                )}
                 <div>
                     <button className="cta cancel mr-16" type="button" onClick={onCancel}>
                         Cancel
