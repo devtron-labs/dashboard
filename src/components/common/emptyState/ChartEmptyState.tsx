@@ -24,7 +24,7 @@ function ChartEmptyState({ title, subTitle, onClickViewChartButton, buttonText, 
                     <h4>{title || 'No matching charts'}</h4>
                 </EmptyState.Title>
                 <EmptyState.Subtitle>{subTitle || "We couldn't find any matching results"}</EmptyState.Subtitle>
-                <button type="button" onClick={onClickViewChartButton} className="cta ghosted mb-24 mt-10">
+                <button type="button" onClick={onClickViewChartButton} className="cta ghosted flex mb-24 mt-10">
                     {buttonText || 'View all charts'}
                 </button>
             </EmptyState>

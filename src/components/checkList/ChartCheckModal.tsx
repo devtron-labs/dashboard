@@ -8,6 +8,8 @@ import { AllCheckModal } from './AllCheckModal';
 import { showError } from '../common';
 import { getAppCheckList } from '../../services/service';
 import './checklist.css';
+import SampleAppDeploy from './SampleAppDeploy';
+import CustomAppDeploy from './CustomAppDeploy';
 
 export class ChartCheckListModal extends Component<ChartCheckListModalProps, ChartCheckListModalState> {
 
@@ -65,7 +67,7 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
     }
 
     renderChartChecklist() {
-        if (this.state.appStageCompleted < 6 && this.state.chartStageCompleted < 3) {
+        if (this.state.appStageCompleted < 5 && this.state.chartStageCompleted < 3) {
             //(app + chart) incomplete
             return <div>
                 <img src={Checklist} className="applist__checklist-img" />
@@ -77,7 +79,7 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
                     chartStageCompleted={this.state.chartStageCompleted}
                     toggleChartChecklist={this.toggleChartChecklist}
                 />
-                <hr className="checklist__divider mt-0 mb-0" />
+                <hr className="checklist__divider mt-16 mb-0" />
                 <AppCheckList appChecklist={this.state.appChecklist}
                     showDivider={false}
                     isAppCollapsed={this.state.isAppCollapsed}
@@ -85,9 +87,22 @@ export class ChartCheckListModal extends Component<ChartCheckListModalProps, Cha
                     toggleAppChecklist={this.toggleAppChecklist} />
             </div>
         }
-        else if (this.state.appStageCompleted >= 6 && this.state.chartStageCompleted >= 3) {
+        else if (this.state.appStageCompleted >= 5 && this.state.chartStageCompleted >= 3) {
             //(app + chart) complete
             return <AllCheckModal />
+        }
+        else if (this.state.appStageCompleted >= 5 && this.state.chartStageCompleted < 3){
+            return <div>
+                <img src={Checklist} className="applist__checklist-img" />
+                <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Get started!</div>
+                <div className="cn-9 mb-16 fs-13"> You’re all set to get started with Devtron.</div>
+                <SampleAppDeploy parentClassName="bcg-1 flexbox" />
+                <CustomAppDeploy parentClassName="bcg-1 flexbox" />
+                <div className="mb-8">
+                    <AllChartsCheck />
+                </div>
+            </div>
+
         }
         else {
             //app incomplete, chart complete 

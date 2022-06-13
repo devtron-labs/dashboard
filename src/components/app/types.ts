@@ -1,4 +1,5 @@
 import { RouteComponentProps } from 'react-router';
+import { DeploymentAppType } from '../v2/appDetails/appDetails.type';
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: () => void;
@@ -53,6 +54,7 @@ export interface AppDetails {
     resourceTree: ResourceTree;
     projectName?: string;
     clusterId?: number;
+    deploymentAppType?: DeploymentAppType
 }
 
 export interface LabelTag {
