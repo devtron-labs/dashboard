@@ -199,6 +199,7 @@ export default function NodeListSearchFliter({
 
     const selectFilterType = (filter: { label: string; value: string | number; type: string }): void => {
         setSelectedSearchTextType(filter.label)
+        setSearchInputText('')
         setOpenFilterPopup(false)
     }
     const renderTextFilter = (): JSX.Element => {
@@ -211,11 +212,11 @@ export default function NodeListSearchFliter({
                     <Search className="mr-5 ml-10 icon-dim-18" />
                     {selectedSearchTextType ? (
                         <>
-                            <span>{selectedSearchTextType}:</span>
+                            <span className="position-rel bottom-2px">{selectedSearchTextType}:</span>
                             <input
                                 autoComplete="off"
                                 type="text"
-                                className="transparent flex-1"
+                                className="transparent flex-1 outline-none"
                                 autoFocus
                                 placeholder={
                                     selectedSearchTextType === 'name'
@@ -336,7 +337,13 @@ export default function NodeListSearchFliter({
                     Option,
                 }}
                 value={selectedVersion}
-                styles={containerImageSelectStyles}
+                styles={{
+                    ...containerImageSelectStyles,
+                    singleValue: (base, state) => ({
+                        ...base,
+                        padding: '5px 0',
+                    }),
+                }}
             />
             <div className="border-left h-20 mt-6"></div>
             <ReactSelect

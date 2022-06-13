@@ -30,6 +30,13 @@
         display: grid;
         grid-template-columns: auto 160px 1px 180px;
         column-gap: 8px;
+
+        .outline-none {
+            outline: none !important;
+        }
+        .bottom-2px {
+            bottom: 3px;
+        }
         .search-popup {
             z-index: 6;
             .search-title {
