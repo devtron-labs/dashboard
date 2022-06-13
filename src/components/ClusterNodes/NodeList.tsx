@@ -427,7 +427,7 @@ export default function NodeList({
                             >
                                 {appliedColumns.map((column) => (
                                     <div
-                                        className={`list-title inline-block ellipsis-right mr-16 ${
+                                        className={`list-title inline-block mr-16 ${
                                             column.label === 'Node'
                                                 ? 'w-280 pl-20 bcn-0 position-sticky sticky-column'
                                                 : 'w-100-px'
@@ -435,7 +435,7 @@ export default function NodeList({
                                             sortOrder === OrderBy.DESC ? 'desc' : ''
                                         }`}
                                     >
-                                        {column.label}
+                                        <span className="inline-block ellipsis-right mw-85px ">{column.label}</span>
                                         {column.isSortingAllowed && (
                                             <Sort
                                                 className="pointer icon-dim-14 position-rel sort-icon"

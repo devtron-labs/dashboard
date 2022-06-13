@@ -117,7 +117,7 @@ export default function NodeListSearchFliter({
             label: 'Mem Usage (Absolute)',
             value: 'memory.usage',
             isSortingAllowed: true,
-            suffixToRemove: 'mi',
+            suffixToRemove: 'Mi',
         },
         {
             sortType: 'number',
@@ -125,7 +125,7 @@ export default function NodeListSearchFliter({
             label: 'Allocatable Mem',
             value: 'memory.allocatable',
             isSortingAllowed: true,
-            suffixToRemove: 'mi',
+            suffixToRemove: 'Mi',
         },
         {
             sortType: 'number',

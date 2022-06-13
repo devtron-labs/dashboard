@@ -54,10 +54,13 @@
         column-gap: 16px;
     }
     .list-title {
+        .mw-85px {
+            max-width: 85px;
+        }
         .sort-icon {
             display: none;
             transform: rotate(0);
-            top: 2px;
+            top: -2px;
         }
         &.sort-by {
             .sort-icon {
