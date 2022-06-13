@@ -16,7 +16,13 @@ import NodeListSearchFilter from './NodeListSearchFliter'
 import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 
-export default function NodeList() {
+export default function NodeList({
+    appliedColumns,
+    setAppliedColumns,
+}: {
+    appliedColumns: MultiValue<columnMetadataType>
+    setAppliedColumns: React.Dispatch<React.SetStateAction<MultiValue<columnMetadataType>>>
+}) {
     const match = useRouteMatch()
     const history = useHistory()
     const [loader, setLoader] = useState(false)
@@ -32,7 +38,6 @@ export default function NodeList() {
         value: '',
     })
     const defaultVersion = { label: 'K8s version: Any', value: 'K8s version: Any' }
-    const [appliedColumns, setAppliedColumns] = useState<MultiValue<columnMetadataType>>([])
     const [clusterErrorTitle, setClusterErrorTitle] = useState('')
     const [clusterErrorList, setClusterErrorList] = useState<string[]>([])
     const [flattenNodeList, setFlattenNodeList] = useState<object[]>([])

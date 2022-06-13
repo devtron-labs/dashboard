@@ -305,9 +305,6 @@
 .short-nav--flex {
     display: flex;
     margin-left: 12px;
-    .nav-short-clusters g[fill='#06C'] {
-        fill: var(--window-bg);
-    }
 
     &:hover {
         .svg-container,

@@ -211,6 +211,10 @@
     border-style: dashed;
 }
 
+.cluster-icon path {
+    stroke: #06c;
+}
+
 .collapsed-list {
     &.collapsed-list--chart {
         border: 1px solid #d6dbdf;

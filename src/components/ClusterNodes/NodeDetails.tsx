@@ -357,7 +357,7 @@ export default function NodeDetails() {
     }
     const renderNodeOverviewCard = (): JSX.Element => {
         return (
-            <div className="en-2 bw-1 br-4 bcn-0">
+            <div className="en-2 bw-1 br-4 bcn-0 position-sticky top-88">
                 <div className="flexbox pt-12 pb-12 pr-10 pl-20 top-radius-4">
                     <span className="fw-6 fs-14 cn-9">Node overview</span>
                 </div>
@@ -505,7 +505,7 @@ export default function NodeDetails() {
                         {renderProbableIssuesOverviewCard()}
                         {renderNodeOverviewCard()}
                     </div>
-                    <div className="ml-12">
+                    <div>
                         {renderResourceList()}
                         {renderLabelAnnotationTaint()}
                         {renderPodList()}

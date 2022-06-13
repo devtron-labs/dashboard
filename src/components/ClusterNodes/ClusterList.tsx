@@ -5,7 +5,7 @@ import './clusterNodes.scss'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getClusterList } from './clusterNodes.service'
-import { handleUTCTime, Progressing, showError } from '../common'
+import { handleUTCTime, Progressing, showError, sortObjectArrayAlphabetically } from '../common'
 import { ClusterDetail, ClusterListResponse } from './types'
 import PageHeader from '../common/header/PageHeader'
 import { toast } from 'react-toastify'
@@ -28,8 +28,9 @@ export default function ClusterList() {
             .then((response: ClusterListResponse) => {
                 setLastDataSync(!lastDataSync)
                 if (response.result) {
-                    setClusterList(response.result)
-                    setFilteredClusterList(response.result)
+                    const sortedResult = response.result.sort((a, b) => a['name'].localeCompare(b['name']))
+                    setClusterList(sortedResult)
+                    setFilteredClusterList(sortedResult)
                 }
                 setLoader(false)
             })
