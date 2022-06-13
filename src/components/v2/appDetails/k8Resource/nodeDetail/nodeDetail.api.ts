@@ -1,14 +1,14 @@
 import { Routes } from '../../../../../config';
 import { get, post, put } from '../../../../../services/api';
-import { AppDetails, AppType } from '../../appDetails.type';
+import { AppDetails, AppType, DeploymentAppType } from '../../appDetails.type';
 
 export const getAppId = (clusterId: number, namespace: string, appName: string) => {
     return `${clusterId}|${namespace}|${appName}`;
 };
 
 export const getManifestResource = (ad: AppDetails, podName: string, nodeType: string) => {
-    if (ad.appType === AppType.EXTERNAL_HELM_CHART) {
-        return getManifestResourceHelmApps(ad, podName, nodeType);
+    if (ad.appType === AppType.EXTERNAL_HELM_CHART || ad.deploymentAppType === DeploymentAppType.helm) {
+        return getManifestResourceHelmApps(ad, podName, nodeType)
     }
     const cn = ad.resourceTree.nodes.filter((node) => node.name === podName && node.kind.toLowerCase() === nodeType)[0];
 
@@ -37,8 +37,8 @@ export const getDesiredManifestResource = (appDetails: AppDetails, podName: stri
 };
 
 export const getEvent = (ad: AppDetails, nodeName: string, nodeType: string) => {
-    if (ad.appType === AppType.EXTERNAL_HELM_CHART) {
-        return getEventHelmApps(ad, nodeName, nodeType);
+    if (ad.appType === AppType.EXTERNAL_HELM_CHART || ad.deploymentAppType === DeploymentAppType.helm) {
+        return getEventHelmApps(ad, nodeName, nodeType)
     }
     const cn = ad.resourceTree.nodes.filter(
         (node) => node.name === nodeName && node.kind.toLowerCase() === nodeType,
@@ -53,7 +53,13 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
         (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
     )[0];
     let requestBody = {
-        appId: getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName),
+        appId: getAppId(
+            appDetails.clusterId,
+            appDetails.namespace,
+            appDetails.deploymentAppType === DeploymentAppType.helm
+                ? `${appDetails.appName}-${appDetails.environmentName}`
+                : appDetails.appName,
+        ),
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
@@ -65,7 +71,7 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
                 name: selectedResource.name,
             },
         },
-    };
+    }
     if (updatedManifest) {
         requestBody.k8sRequest['patch'] = updatedManifest;
     }
@@ -100,12 +106,12 @@ export const getLogsURL = (ad, nodeName, Host, container) => {
     } else {
         prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
     }
-    if (ad.appType === AppType.EXTERNAL_HELM_CHART) {
+    if (ad.appType === AppType.EXTERNAL_HELM_CHART || ad.deploymentAppType === DeploymentAppType.helm) {
         return `${prefix}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}&appId=${getAppId(
             ad.clusterId,
             ad.namespace,
-            ad.appName
-        )}&follow=true&tailLines=500`;
+            ad.deploymentAppType === DeploymentAppType.helm ? `${ad.appName}-${ad.environmentName}` : ad.appName,
+        )}&follow=true&tailLines=500`
     }
     return `${prefix}${Host}/api/v1/applications/${ad.appName}-${ad.environmentName}/pods/${nodeName}/logs?container=${container}&follow=true&namespace=${ad.namespace}&tailLines=500`;
 };

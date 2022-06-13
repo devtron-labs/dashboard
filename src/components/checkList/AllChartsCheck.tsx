@@ -7,7 +7,7 @@ import './checklist.css';
 export class AllChartsCheck extends Component<{}, {}> {
     render() {
         return (
-            <div className="bcg-1 flexbox mt-16">
+            <div className="bcg-1 flexbox">
                 <img className="img-width pt-12 pb-12 pl-16 " src={img} />
                 <div className="pl-20 fs-13">
                     <div className="pt-16 cn-9"> Deploy charts using Devtron.</div>
