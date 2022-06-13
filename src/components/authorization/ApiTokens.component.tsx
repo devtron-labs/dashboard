@@ -6,7 +6,7 @@ import { getGeneratedAPITokenList } from './service'
 import { showError, Progressing, ErrorScreenManager, ConfirmationDialog } from '../common'
 import EmptyState from '../EmptyState/EmptyState'
 import emptyGeneratToken from '../../assets/img/ic-empty-generate-token.png'
-import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
+import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
 import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
@@ -21,7 +21,6 @@ function ApiTokens() {
     const [tokenList, setTokenlist] = useState([])
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [deleteConfirmation, setDeleteConfirmation] = useState(false)
-    const [showEditToken, setShowEditToken] = useState(false)
     const [showGenerateModal, setShowGenerateModal] = useState(false)
     const [showRegenerateTokenModal, setShowRegenerateTokenModal] = useState(false)
     const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: number }>({
@@ -62,7 +61,8 @@ function ApiTokens() {
     }
 
     const handleGenerateRowActionButton = (key: 'create' | 'edit') => {
-        history.push(key)
+        let url = tokenResponse.userId ? `${key}/${tokenResponse.userId}` : key
+        history.push(url)
     }
 
     const handleFilterChanges = (selected, key): void => {}
@@ -108,13 +108,11 @@ function ApiTokens() {
             <Fragment>
                 <div className="api-token__container">
                     <Switch>
-                        {/* <Redirect to={`${path}/api/list`} /> */}
                         <Route
                             path={`${path}/list`}
                             render={(props) => (
                                 <APITokenList
                                     tokenList={tokenList}
-                                    setShowEditToken={setShowEditToken}
                                     setDeleteConfirmation={setDeleteConfirmation}
                                     renderSearchToken={renderSearchToken}
                                     handleGenerateRowActionButton={handleGenerateRowActionButton}
@@ -138,7 +136,7 @@ function ApiTokens() {
                             )}
                         />
                         <Route
-                            path={`${path}/edit`}
+                            path={`${path}/edit/:id`}
                             render={(props) => (
                                 <EditAPIToken
                                     handleRegenerateActionButton={handleActionButton}
@@ -148,9 +146,11 @@ function ApiTokens() {
                                     selectedExpirationDate={selectedExpirationDate}
                                     formData={formData}
                                     setFormData={setFormData}
+                                    tokenResponse={tokenResponse}
                                 />
                             )}
                         />
+                        <Redirect to={`${path}/list`} />
                     </Switch>
                 </div>
             </Fragment>

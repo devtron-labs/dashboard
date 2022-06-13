@@ -63,7 +63,7 @@ function CreateAPIToken({
     }
 
     return (
-        <div className="api-token__container" style={{ minHeight: 'calc(100vh - 235px)' }}>
+        <>
             <div className="cn-9 fw-6 fs-16">
                 <span className="cb-5">API tokens</span> / New API token
             </div>
@@ -167,7 +167,7 @@ function CreateAPIToken({
                         setDirectPermission={setDirectPermission}
                         chartPermission={chartPermission}
                         setChartPermission={setChartPermission}
-                    /> */}
+                    />  */}
                             </div>
                         )}
                     </div>
@@ -182,7 +182,7 @@ function CreateAPIToken({
             </div>
 
             {showGenerateModal && <GenerateModal close={handleGenerateTokenActionButton} token={tokenResponse.token} />}
-        </div>
+        </>
     )
 }
 

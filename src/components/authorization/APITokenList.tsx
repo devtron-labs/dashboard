@@ -6,19 +6,15 @@ import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import './apiToken.scss'
 
-function APITokenList({
-    tokenList,
-    setShowEditToken,
-    setDeleteConfirmation,
-    renderSearchToken,
-    handleGenerateRowActionButton,
-}) {
+function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, handleGenerateRowActionButton }) {
     return (
         <div>
             <div className="cn-9 fw-6 fs-16">API tokens</div>
             <p className="fs-13 fw-4">Tokens you have generated that can be used to access the Devtron API.</p>
             <div className="flex content-space">
-                {handleGenerateRowActionButton('create')}
+                <button className="cta" onClick={() => handleGenerateRowActionButton('create')}>
+                    Generate new token
+                </button>
                 {renderSearchToken()}
             </div>
             <div className="mt-16 en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 235px)' }}>
@@ -46,9 +42,7 @@ function APITokenList({
                             <button
                                 type="button"
                                 className="transparent mr-16"
-                                onClick={() => {
-                                    setShowEditToken(true)
-                                }}
+                                onClick={() => handleGenerateRowActionButton('edit')}
                             >
                                 <Edit className="icon-dim-20" />
                             </button>

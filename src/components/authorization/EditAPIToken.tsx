@@ -31,8 +31,6 @@ function EditAPIToken({
         )
     }
 
-    const handleCopyToClipboard = () => {}
-
     const renderRegenrateInfoBar = () => {
         return (
             <InfoColourBar
@@ -56,6 +54,7 @@ function EditAPIToken({
     }
     return (
         <div className="api-token__container" style={{ minHeight: 'calc(100vh - 235px)' }}>
+            {console.log(formData)}
             <div className="cn-9 fw-6 fs-16">
                 <span className="cb-5">API tokens</span> / Edit API token
             </div>
@@ -70,14 +69,14 @@ function EditAPIToken({
                     onSubmit={(e) => {
                         // saveToken()
                     }}
-                    className="p-20"
+                    className="pl-20 pr-20 pb-20 "
                 >
                     <div>
                         <label className="form__row">
                             <span className="form__label">Name</span>
                             <input
                                 tabIndex={1}
-                                placeholder="Name"
+                                placeholder={formData.name}
                                 className="form__input"
                                 value={formData.name}
                                 disabled={!!formData.name}

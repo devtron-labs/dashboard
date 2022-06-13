@@ -32,6 +32,7 @@ export interface EditTokenType {
     selectedExpirationDate
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
+    tokenResponse: TokenResponseType
 }
 
 export interface GenerateActionButtonType {
