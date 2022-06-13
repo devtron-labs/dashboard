@@ -83,6 +83,7 @@ export default function ClusterList() {
                     onChange={(event) => {
                         handleFilterChanges(event.target.value)
                     }}
+                    autoFocus
                 />
                 {searchText.length > 0 && (
                     <button className="search__clear-button" type="button" onClick={(e) => handleFilterChanges('')}>

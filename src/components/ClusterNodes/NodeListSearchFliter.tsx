@@ -143,8 +143,20 @@ export default function NodeListSearchFliter({
 
     useEffect(() => {
         const _defaultColumns = columnMetadata.filter((columnData) => columnData.isDefault)
-        setSelectedColumns(_defaultColumns)
-        setAppliedColumns(_defaultColumns)
+        if (typeof Storage !== 'undefined') {
+            if (!localStorage.appliedColumns) {
+                localStorage.appliedColumns = JSON.stringify(_defaultColumns)
+            } else {
+                try {
+                    const appliedColumnsFromLocalStorage = JSON.parse(localStorage.appliedColumns)
+                    setAppliedColumns(appliedColumnsFromLocalStorage)
+                    setSelectedColumns(appliedColumnsFromLocalStorage)
+                } catch (error) {
+                    setAppliedColumns(_defaultColumns)
+                    setSelectedColumns(_defaultColumns)
+                }
+            }
+        }
     }, [])
 
     const onVersionChange = (selectedValue: OptionType): void => {
@@ -269,7 +281,11 @@ export default function NodeListSearchFliter({
 
     const handleApplySelectedColumns = () => {
         setMenuOpen(false)
-        setAppliedColumns([...selectedColumns].sort((a, b) => a['columnIndex'] - b['columnIndex']))
+        const _appliedColumns = [...selectedColumns].sort((a, b) => a['columnIndex'] - b['columnIndex'])
+        if (typeof Storage !== 'undefined') {
+            localStorage.appliedColumns = JSON.stringify(_appliedColumns)
+        }
+        setAppliedColumns(_appliedColumns)
     }
 
     const handleMenuState = (menuOpenState: boolean): void => {
