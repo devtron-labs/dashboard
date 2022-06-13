@@ -408,40 +408,31 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                     )}
                 </div>
                 <div className="form__row form__row--code-editor-container">
-                    {!tempFormData ? (
-                        <Progressing
-                            pageLoader
-                            styles={{
-                                height: 'inherit',
-                            }}
-                        />
-                    ) : (
-                        <CodeEditor
-                            value={tempFormData}
-                            onChange={(resp) => {
-                                setTempFormData(resp)
-                            }}
-                            mode={MODES.YAML}
-                            validatorSchema={schemas}
-                            loading={chartConfigLoading}
-                        >
-                            <div className="readme-container">
-                                <CodeEditor.Header>
-                                    <h5>{MODES.YAML.toUpperCase()}</h5>
-                                    <CodeEditor.ValidationError />
-                                </CodeEditor.Header>
-                                {readme && (
-                                    <div
-                                        className="cb-5 fw-6 fs-13 flexbox pr-16 pt-10 cursor border-bottom-1px "
-                                        onClick={(e) => setShowReadme(true)}
-                                    >
-                                        README
-                                        <ArrowSquareOut className="icon-dim-18 scb-5 rotateBy--90 ml-5" />
-                                    </div>
-                                )}
-                            </div>
-                        </CodeEditor>
-                    )}
+                    <CodeEditor
+                        value={tempFormData}
+                        onChange={(resp) => {
+                            setTempFormData(resp)
+                        }}
+                        mode={MODES.YAML}
+                        validatorSchema={schemas}
+                        loading={chartConfigLoading}
+                    >
+                        <div className="readme-container">
+                            <CodeEditor.Header>
+                                <h5>{MODES.YAML.toUpperCase()}</h5>
+                                <CodeEditor.ValidationError />
+                            </CodeEditor.Header>
+                            {readme && (
+                                <div
+                                    className="cb-5 fw-6 fs-13 flexbox pr-16 pt-10 cursor border-bottom-1px "
+                                    onClick={(e) => setShowReadme(true)}
+                                >
+                                    README
+                                    <ArrowSquareOut className="icon-dim-18 scb-5 rotateBy--90 ml-5" />
+                                </div>
+                            )}
+                        </div>
+                    </CodeEditor>
                 </div>
                 <div className="form__buttons">
                     <button className="cta" type="submit">
