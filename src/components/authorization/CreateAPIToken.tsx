@@ -3,7 +3,6 @@ import ReactSelect from 'react-select'
 import { ConfirmationDialog, multiSelectStyles, Progressing, showError, VisibleModal } from '../common'
 import { DropdownIndicator } from '../security/security.util'
 import AppPermissions from '../userGroups/AppPermissions'
-import ApiTokens from './ApiTokens'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { FormType, GenerateTokenType } from './authorization.type'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
@@ -11,7 +10,7 @@ import { createGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
 import RegeneratedModal from './RegeneratedModal'
 
-function GenerateToken({ setShowGenerateToken }: GenerateTokenType) {
+function CreateAPIToken({ setShowGenerateToken }: GenerateTokenType) {
     const [selectedExpirationDate, setSelectedExpirationDate] = useState({ label: '30 days', value: '30Days' })
     const [loader, setLoader] = useState(false)
     const [adminPermission, setAdminPermission] = useState('SUPERADMIN')
@@ -185,6 +184,7 @@ function GenerateToken({ setShowGenerateToken }: GenerateTokenType) {
                     <button className="cta cancel mr-16" type="button" onClick={(e) => setShowGenerateToken(false)}>
                         Cancel
                     </button>
+                    {/* <GenerateActionButton handleGenerateRowActionButton={handleGenerateAPIToken} /> */}
                     <button className="cta" onClick={handleGenerateAPIToken}>
                         {loader ? <Progressing /> : 'Generate token'}
                     </button>
@@ -196,4 +196,4 @@ function GenerateToken({ setShowGenerateToken }: GenerateTokenType) {
     )
 }
 
-export default GenerateToken
+export default CreateAPIToken
