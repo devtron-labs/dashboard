@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import ReactSelect from 'react-select'
-import { ConfirmationDialog, multiSelectStyles, Progressing, showError, VisibleModal } from '../common'
+import { multiSelectStyles, Progressing, showError, VisibleModal } from '../common'
 import { DropdownIndicator } from '../security/security.util'
 import AppPermissions from '../userGroups/AppPermissions'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
@@ -8,13 +8,18 @@ import { FormType, GenerateTokenType } from './authorization.type'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { createGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
-import RegeneratedModal from './RegeneratedModal'
+import GenerateModal from './GenerateModal'
+import { options } from './authorization.utils'
 
-function CreateAPIToken({ setShowGenerateToken }: GenerateTokenType) {
-    const [selectedExpirationDate, setSelectedExpirationDate] = useState({ label: '30 days', value: '30Days' })
+function CreateAPIToken({
+    setShowGenerateModal,
+    showGenerateModal,
+    handleRegenerateActionButton,
+    setSelectedExpirationDate,
+    selectedExpirationDate,
+}: GenerateTokenType) {
     const [loader, setLoader] = useState(false)
     const [adminPermission, setAdminPermission] = useState('SUPERADMIN')
-    const [tokenGeneratedModal, setTokenGeneratedModal] = useState(false)
 
     const [formData, setFormData] = useState<FormType>({
         name: '',
@@ -25,15 +30,6 @@ function CreateAPIToken({ setShowGenerateToken }: GenerateTokenType) {
     const PermissionType = [
         { value: 'SPECIFIC', label: 'Specific permissions' },
         { value: 'SUPERADMIN', label: 'Superadmin permission' },
-    ]
-
-    const options = [
-        { value: '7Days', label: '7 days' },
-        { value: '30Days', label: '30 days' },
-        { value: '60Days', label: '60 days' },
-        { value: '90Days', label: '90 days' },
-        { value: 'Custom', label: 'Custom...' },
-        { value: 'NoExpiration', label: 'NO expiration' },
     ]
 
     const saveToken = (): void => {}
@@ -66,13 +62,13 @@ function CreateAPIToken({ setShowGenerateToken }: GenerateTokenType) {
                 setLoader(false)
             })
 
-        setTokenGeneratedModal(true)
+        setShowGenerateModal(true)
     }
 
     return (
         <div className="api-token__container" style={{ minHeight: 'calc(100vh - 235px)' }}>
             <div className="cn-9 fw-6 fs-16">
-                <span className="cb-5">API tokens</span> / New API oken
+                <span className="cb-5">API tokens</span> / New API token
             </div>
             <p className="fs-13 fw-4">
                 API tokens function like ordinary OAuth access tokens. They can be used instead of a password for Git
@@ -139,7 +135,7 @@ function CreateAPIToken({ setShowGenerateToken }: GenerateTokenType) {
                         </label>
                         <div className="mb-20">
                             <InfoColourBar
-                                classname={'warn ey-2'}
+                                classname={'warn'}
                                 Icon={Warn}
                                 message={
                                     'Devtron strongly recommends that you set an expiration date for your token to help keep your information secure.'
@@ -181,7 +177,7 @@ function CreateAPIToken({ setShowGenerateToken }: GenerateTokenType) {
                 </form>
                 <hr className="modal__divider mt-20 mb-0" />
                 <div className="modal__buttons m-16 flex right">
-                    <button className="cta cancel mr-16" type="button" onClick={(e) => setShowGenerateToken(false)}>
+                    <button className="cta cancel mr-16" type="button" onClick={(e) => setShowGenerateModal(false)}>
                         Cancel
                     </button>
                     {/* <GenerateActionButton handleGenerateRowActionButton={handleGenerateAPIToken} /> */}
@@ -191,7 +187,7 @@ function CreateAPIToken({ setShowGenerateToken }: GenerateTokenType) {
                 </div>
             </div>
 
-            {tokenGeneratedModal && <RegeneratedModal />}
+            {showGenerateModal && <GenerateModal close={handleRegenerateActionButton} />}
         </div>
     )
 }

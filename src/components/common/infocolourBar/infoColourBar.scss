@@ -3,10 +3,12 @@
 }
 .warn {
     background: var(--Y100);
+    border: solid var(--Y200);
 }
 .failed {
     background-color: var(--R100);
 }
 .info {
     background-color: var(--B100);
+    border: 1px solid var(--B200);
 }

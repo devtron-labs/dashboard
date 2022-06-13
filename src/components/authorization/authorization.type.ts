@@ -7,5 +7,16 @@ export interface FormType {
 }
 
 export interface GenerateTokenType {
-    setShowGenerateToken: React.Dispatch<React.SetStateAction<boolean>>
+    showGenerateModal: boolean
+    setShowGenerateModal: React.Dispatch<React.SetStateAction<boolean>>
+    handleRegenerateActionButton: () => void
+    setSelectedExpirationDate
+    selectedExpirationDate
+}
+
+export interface GenerateActionButtonType {
+    loader: boolean
+    onCancel: () => void
+    onSave
+    buttonText: string
 }

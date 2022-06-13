@@ -6,9 +6,7 @@ import { getGeneratedAPITokenList } from './service'
 import { showError, Progressing, ErrorScreenManager, ConfirmationDialog } from '../common'
 import EmptyState from '../EmptyState/EmptyState'
 import emptyGeneratToken from '../../assets/img/ic-empty-generate-token.png'
-import moment from 'moment'
-
-import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
+import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
 import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
@@ -16,8 +14,6 @@ import EditAPIToken from './EditAPIToken'
 function ApiTokens() {
     const history = useHistory()
     const { url, path } = useRouteMatch()
-
-    const [showGenerateTokenModal, setShowGenerateToken] = useState(false)
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const [loader, setLoader] = useState(false)
@@ -25,6 +21,9 @@ function ApiTokens() {
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [deleteConfirmation, setDeleteConfirmation] = useState(false)
     const [showEditToken, setShowEditToken] = useState(false)
+    const [showGenerateModal, setShowGenerateModal] = useState(false)
+    const [showRegenerateTokenModal, setShowRegenerateTokenModal] = useState(false)
+    const [selectedExpirationDate, setSelectedExpirationDate] = useState({ label: '30 days', value: '30Days' })
 
     useEffect(() => {
         getData()
@@ -83,6 +82,10 @@ function ApiTokens() {
         )
     }
 
+    const handleRegenerateActionButton = () => {
+        setShowGenerateModal(false)
+    }
+
     const renderAPITokenRoutes = (): JSX.Element => {
         return (
             <Fragment>
@@ -103,12 +106,30 @@ function ApiTokens() {
                         />
                         <Route
                             path={`${path}/create`}
-                            render={(props) => <CreateAPIToken setShowGenerateToken={setShowGenerateToken} />}
+                            render={(props) => (
+                                <CreateAPIToken
+                                    setShowGenerateModal={setShowGenerateModal}
+                                    showGenerateModal={showGenerateModal}
+                                    handleRegenerateActionButton={handleRegenerateActionButton}
+                                    setSelectedExpirationDate={setSelectedExpirationDate}
+                                    selectedExpirationDate={selectedExpirationDate}
+                                />
+                            )}
                         />
-                        <Route path={`${path}/edit`} render={(props) => <EditAPIToken />} />
+                        <Route
+                            path={`${path}/edit`}
+                            render={(props) => (
+                                <EditAPIToken
+                                    handleRegenerateActionButton={handleRegenerateActionButton}
+                                    setShowRegeneratedModal={setShowRegenerateTokenModal}
+                                    showRegeneratedModal={showRegenerateTokenModal}
+                                    setSelectedExpirationDate={setSelectedExpirationDate}
+                                    selectedExpirationDate={selectedExpirationDate}
+                                />
+                            )}
+                        />
                     </Switch>
                 </div>
-                {/* {showGenerateTokenModal && <GenerateToken setShowGenerateToken={setShowGenerateToken} />} */}
             </Fragment>
         )
     }
