@@ -38,6 +38,18 @@ import { QueryParams } from '../charts.util'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
 import PageHeader from '../../common/header/PageHeader'
+import emptyImage from '../../../assets/img/empty-noresult@2x.png';
+
+
+interface EmptyCharts {
+    title?: string
+    removeLearnMore?: boolean
+    image?: any
+    onClickViewChartButton?: () => void
+    buttonText?: string
+    subTitle?: string
+    styles?: {}
+}
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -251,6 +263,15 @@ function DiscoverChartList() {
         )
     }
 
+    const clearSearch = () => {
+        const searchParams = new URLSearchParams(location.search)
+        const includeDeprecate = searchParams.get(QueryParams.IncludeDeprecated)
+        const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
+        let qs = includeDeprecate ? `&${QueryParams.IncludeDeprecated}=${includeDeprecate}` : ''
+        qs += chartRepoId ? `&${QueryParams.ChartRepoId}=${chartRepoId}` : ''
+        history.push(`${url}?${qs}`)
+    }
+
     return (
         <>
             <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''} chart-store-header`}>
@@ -270,7 +291,7 @@ function DiscoverChartList() {
 
                 {!state.loading && !chartListLoading ? (
                     <div className="discover-charts__body">
-                        {!chartList.length ? (
+                        {!chartList.length && !searchApplied ? (
                             <div className="w-100" style={{ overflow: 'auto' }}>
                                 {typeof state.configureChartIndex === 'number' ? (
                                     <AdvancedConfig
@@ -329,25 +350,36 @@ function DiscoverChartList() {
                                             setAppStoreName={setAppStoreName}
                                             handleCloseFilter={handleCloseFilter}
                                         />
-                                        <div className="chart-grid">
-                                            {chartList
-                                                .slice(0, showDeployModal ? 12 : chartList.length)
-                                                .map((chart) => (
-                                                    <ChartSelect
-                                                        key={chart.id}
-                                                        chart={chart}
-                                                        selectedCount={state.selectedInstances[chart.id]?.length}
-                                                        showCheckBoxOnHoverOnly={state.charts.length === 0}
-                                                        addChart={addChart}
-                                                        subtractChart={subtractChart}
-                                                        onClick={(chartId) =>
-                                                            state.charts.length === 0
-                                                                ? history.push(`${url}/chart/${chart.id}`)
-                                                                : selectChart(chartId)
-                                                        }
-                                                    />
-                                                ))}
-                                        </div>
+                                        {chartList.length ? (
+                                            <div className="chart-grid">
+                                                {chartList
+                                                    .slice(0, showDeployModal ? 12 : chartList.length)
+                                                    .map((chart) => (
+                                                        <ChartSelect
+                                                            key={chart.id}
+                                                            chart={chart}
+                                                            selectedCount={state.selectedInstances[chart.id]?.length}
+                                                            showCheckBoxOnHoverOnly={state.charts.length === 0}
+                                                            addChart={addChart}
+                                                            subtractChart={subtractChart}
+                                                            onClick={(chartId) =>
+                                                                state.charts.length === 0
+                                                                    ? history.push(`${url}/chart/${chart.id}`)
+                                                                    : selectChart(chartId)
+                                                            }
+                                                        />
+                                                    ))}
+                                            </div>
+                                        ) : (
+                                            <EmptyChartGroup
+                                                title={'No matching charts'}
+                                                removeLearnMore={true}
+                                                image={emptyImage}
+                                                onClickViewChartButton={clearSearch}
+                                                subTitle={`We couldn't find any matching results`}
+                                                styles={{ height: '300px', justifyContent: 'center' }}
+                                            />
+                                        )}
                                     </>
                                 )}
                             </div>
@@ -575,30 +607,47 @@ function ChartListHeader({
     )
 }
 
-export function EmptyChartGroup() {
+export function EmptyChartGroup({
+    title,
+    removeLearnMore = false,
+    image,
+    onClickViewChartButton,
+    buttonText,
+    subTitle,
+    styles,
+}: EmptyCharts) {
     const { url } = useRouteMatch()
     return (
-        <div className="bcn-0 flex left br-8 mt-20 ml-20 mr-20" style={{ gridColumn: '1 / span 4' }}>
-            <img src={empty} className="" style={{ width: '200px', margin: '20px 42px' }} />
+        <div className="bcn-0 flex left br-8 mt-20 ml-20 mr-20" style={{ gridColumn: '1 / span 4', ...styles }}>
+            <img src={image || empty} style={{ width: '200px', margin: '20px 42px' }} />
             <div>
-                <div className="fs-16 fw-6">Chart group</div>
-                <div className="cn-7">Use chart groups to preconfigure and deploy frequently used charts together.</div>
-                <a
-                    href={DOCUMENTATION.CHART_DEPLOY}
-                    rel="noreferrer noopener"
-                    target="_blank"
-                    className="learn-more__href"
-                >
-                    {' '}
-                    Learn more about chart groups
-                </a>
-                <NavLink
-                    to={`${url}/group/create`}
-                    className="en-2 br-4 bw-1 mt-16 cursor flex no-decor"
-                    style={{ width: '100px' }}
-                >
-                    <div className="fw-6 cn-7 p-6">Create group</div>
-                </NavLink>
+                <div className="fs-16 fw-6">{title || "Chart group"}</div>
+                <div className="cn-7">
+                    {subTitle || "Use chart groups to preconfigure and deploy frequently used charts together."}
+                </div>
+                {!removeLearnMore && (
+                    <a
+                        href={DOCUMENTATION.CHART_DEPLOY}
+                        rel="noreferrer noopener"
+                        target="_blank"
+                        className="learn-more__href"
+                    >
+                        Learn more about chart groups
+                    </a>
+                )}
+                {typeof onClickViewChartButton === 'function' ? (
+                    <button type="button" onClick={onClickViewChartButton} className="cta ghosted flex mb-24 mt-24">
+                        {buttonText || 'View all charts'}
+                    </button>
+                ) : (
+                    <NavLink
+                        to={`${url}/group/create`}
+                        className="en-2 br-4 bw-1 mt-16 cursor flex no-decor"
+                        style={{ width: '100px' }}
+                    >
+                        <div className="fw-6 cn-7 p-6">Create group</div>
+                    </NavLink>
+                )}
             </div>
         </div>
     )
