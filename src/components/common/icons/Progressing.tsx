@@ -1,18 +1,19 @@
-import React from 'react';
+import React from 'react'
 
 interface ProgressingProps {
-    pageLoader?: boolean;
-    loadingText?: string;
-    size?: number;
-    fullHeight?: boolean;
-    theme?: 'white' | 'default';
+    pageLoader?: boolean
+    loadingText?: string
+    size?: number
+    fullHeight?: boolean
+    theme?: 'white' | 'default'
+    styles?: React.CSSProperties
     children?: React.ReactNode
 }
 
-export function Progressing({ pageLoader, size, theme }: ProgressingProps): JSX.Element {
-    const loaderSize = size ? `${size}px` : pageLoader ? '48px' : '20px';
+export function Progressing({ pageLoader, size, theme, styles }: ProgressingProps): JSX.Element {
+    const loaderSize = size ? `${size}px` : pageLoader ? '48px' : '20px'
     return (
-        <div className={`loader ${theme || 'default'}-background`}>
+        <div className={`loader ${theme || 'default'}-background`} style={styles}>
             <div style={{ width: loaderSize, height: loaderSize }}>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="loader__svg">
                     <g fill="none" fillRule="evenodd" strokeLinecap="round">
@@ -34,13 +35,20 @@ export function Progressing({ pageLoader, size, theme }: ProgressingProps): JSX.
                 </svg>
             </div>
         </div>
-    );
+    )
 }
 
-export function DetailsProgressing({ loadingText, size = 24, fullHeight = false, children }: ProgressingProps): JSX.Element {
+export function DetailsProgressing({
+    loadingText,
+    size = 24,
+    fullHeight = false,
+    children,
+    styles,
+}: ProgressingProps): JSX.Element {
     return (
         <div
             className={`details-loader bcn-0 flex column fs-14 fw-6 ${fullHeight ? 'h-100' : 'details-loader-height'}`}
+            style={styles}
         >
             <span style={{ width: `${size}px`, height: `${size}px` }}>
                 <Progressing size={size} />
@@ -48,5 +56,5 @@ export function DetailsProgressing({ loadingText, size = 24, fullHeight = false,
             {loadingText && <span className="mt-10">{loadingText}</span>}
             {children}
         </div>
-    );
+    )
 }
