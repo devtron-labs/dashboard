@@ -5,12 +5,14 @@ import './clusterNodes.scss'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getClusterList } from './clusterNodes.service'
-import { handleUTCTime, Progressing, showError, sortObjectArrayAlphabetically } from '../common'
+import { handleUTCTime, Progressing, showError } from '../common'
 import { ClusterDetail, ClusterListResponse } from './types'
 import PageHeader from '../common/header/PageHeader'
 import { toast } from 'react-toastify'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
+import Tippy from '@tippyjs/react'
 
 export default function ClusterList() {
     const match = useRouteMatch()
@@ -118,10 +120,10 @@ export default function ClusterList() {
                     <div className="" style={{ minHeight: 'calc(100vh - 125px)' }}>
                         <div className="cluster-list-row fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 pl-20 text-uppercase">
                             <div>Cluster</div>
-                            <div>Status</div>
-                            <div>Errors</div>
+                            <div>Connection status</div>
                             <div>Nodes</div>
-                            <div>K8s version</div>
+                            <div>NODE Errors</div>
+                            <div>API Server version</div>
                             <div>CPU Capacity</div>
                             <div>Memory Capacity</div>
                         </div>
@@ -139,13 +141,26 @@ export default function ClusterList() {
                                             {clusterData.name}
                                         </NavLink>
                                     </div>
-                                    <div className="">
-                                        <div
-                                            className={`cluster-status br-2 mb-4 mt-4 ${
-                                                clusterData.errorInNodeListing ? 'error' : 'success'
-                                            }`}
-                                        ></div>
+                                    <div>
+                                        {clusterData.errorInNodeListing ? (
+                                            <Tippy
+                                                className="default-tt w-200"
+                                                arrow={false}
+                                                content={clusterData.errorInNodeListing}
+                                            >
+                                                <div className="flexbox">
+                                                    <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
+                                                    Failed
+                                                </div>
+                                            </Tippy>
+                                        ) : (
+                                            <div className="flexbox">
+                                                <Success className="mt-2 mb-2 mr-8 icon-dim-18" />
+                                                Successful
+                                            </div>
+                                        )}
                                     </div>
+                                    <div>{clusterData.nodeCount}</div>
                                     <div>
                                         {errorCount > 0 ? (
                                             <>
@@ -156,7 +171,6 @@ export default function ClusterList() {
                                             ''
                                         )}
                                     </div>
-                                    <div>{clusterData.nodeCount}</div>
                                     <div>{clusterData.nodeK8sVersions?.[0]}</div>
                                     <div>{clusterData.cpu?.capacity}</div>
                                     <div>{clusterData.memory?.capacity}</div>

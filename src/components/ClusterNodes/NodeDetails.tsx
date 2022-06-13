@@ -403,8 +403,9 @@ export default function NodeDetails() {
                     <div>Resource</div>
                     <div>Requests</div>
                     <div>Limits</div>
-                    <div>Capacity</div>
                     <div>Usage</div>
+                    <div>Allocatable</div>
+                    <div>Capacity</div>
                 </div>
                 {cpuData && (
                     <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-12 pb-12 pr-20 pl-20 cn-9">
@@ -412,8 +413,9 @@ export default function NodeDetails() {
                         <div>{cpuData.name || '-'}</div>
                         <div>{cpuData.requestPercentage || '-'}</div>
                         <div>{cpuData.limitPercentage || '-'}</div>
-                        <div>{cpuData.capacity || '-'}</div>
                         <div>{cpuData.usagePercentage || '-'}</div>
+                        <div>{cpuData.allocatable || '-'}</div>
+                        <div>{cpuData.capacity || '-'}</div>
                     </div>
                 )}
                 {memoryData && (
@@ -422,8 +424,9 @@ export default function NodeDetails() {
                         <div>{memoryData.name || '-'}</div>
                         <div>{memoryData.requestPercentage || '-'}</div>
                         <div>{memoryData.limitPercentage || '-'}</div>
-                        <div>{memoryData.capacity || '-'}</div>
                         <div>{memoryData.usagePercentage || '-'}</div>
+                        <div>{memoryData.allocatable || '-'}</div>
+                        <div>{memoryData.capacity || '-'}</div>
                     </div>
                 )}
                 {nodeDetail.resources.map((resource) => (
@@ -432,8 +435,9 @@ export default function NodeDetails() {
                         <div>{resource.name || '-'}</div>
                         <div>{resource.requestPercentage || '-'}</div>
                         <div>{resource.limitPercentage || '-'}</div>
-                        <div>{resource.capacity || '-'}</div>
                         <div>{resource.usagePercentage || '-'}</div>
+                        <div>{resource.allocatable || '-'}</div>
+                        <div>{resource.capacity || '-'}</div>
                     </div>
                 ))}
             </div>
@@ -616,30 +620,6 @@ export default function NodeDetails() {
                             <div>{condition.message}</div>
                         </div>
                     ))}
-                    <div className="condition-grid cn-9 fw-4 fs-13 border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
-                        <div>OutOfDisk</div>
-                        <div className="flexbox">
-                            <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
-                            KubeletHasInsufficientDisk
-                        </div>
-                        <div>kubelet has insufficient disk space available</div>
-                    </div>
-                    <div className="condition-grid cn-9 fw-4 fs-13 border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
-                        <div>MemoryPressure</div>
-                        <div className="flexbox">
-                            <Success className="mt-2 mb-2 mr-8 icon-dim-18" />
-                            KubeletHasSufficientMemory
-                        </div>
-                        <div>kubelet has sufficient memory available</div>
-                    </div>
-                    <div className="condition-grid cn-9 fw-4 fs-13 border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
-                        <div>DiskPressure</div>
-                        <div className="flexbox">
-                            <Success className="mt-2 mb-2 mr-8 icon-dim-18" />
-                            KubeletHasNoDiskPressure
-                        </div>
-                        <div>kubelet has sufficient PID available</div>
-                    </div>
                 </div>
             </div>
         )

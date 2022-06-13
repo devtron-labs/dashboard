@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory } from 'react-router'
 import './clusterNodes.scss'
 import { getClusterCapacity, getNodeList, getClusterList } from './clusterNodes.service'
-import { BreadCrumb, handleUTCTime, Progressing, showError, useBreadcrumb } from '../common'
+import { BreadCrumb, ConditionalWrap, handleUTCTime, Progressing, showError, useBreadcrumb } from '../common'
 import { ClusterCapacityType, ClusterListResponse, columnMetadataType } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -15,6 +15,7 @@ import { OptionType } from '../app/types'
 import NodeListSearchFilter from './NodeListSearchFliter'
 import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
+import Tippy from '@tippyjs/react'
 
 export default function NodeList({
     appliedColumns,
@@ -363,7 +364,11 @@ export default function NodeList({
                     </div>
                 </div>
                 {clusterErrorList.length > 0 && (
-                    <div className="pl-20 pr-20 pt-18 pb-18 bcr-1 border-top border-bottom">
+                    <div
+                        className={`pl-20 pr-20 pt-12 bcr-1 border-top border-bottom ${
+                            collapsedErrorSection ? ' pb-12 ' : ' pb-8'
+                        }`}
+                    >
                         <div className={`flexbox content-space ${collapsedErrorSection ? '' : ' mb-16'}`}>
                             <span
                                 className="flexbox pointer"
@@ -390,7 +395,7 @@ export default function NodeList({
                         {!collapsedErrorSection && (
                             <>
                                 {clusterErrorList.map((error) => (
-                                    <div className="fw-4 fs-13 cn-9 mb-16">{error}</div>
+                                    <div className="fw-4 fs-13 cn-9 mb-8">{error}</div>
                                 ))}
                             </>
                         )}
@@ -456,18 +461,49 @@ export default function NodeList({
                                             </div>
                                         ) : (
                                             <div className="w-100-px inline-block ellipsis-right mr-16">
-                                                {column.value === 'errorCount'
-                                                    ? nodeData['errorCount'] > 0 && (
-                                                          <>
-                                                              <Error className="mr-3 icon-dim-16 position-rel top-3" />
-                                                              <span className="cr-5">
-                                                                  {nodeData['errorCount'] || '-'}
-                                                              </span>{' '}
-                                                          </>
-                                                      )
-                                                    : (column.sortType === 'boolean'
-                                                          ? nodeData[column.value] + ''
-                                                          : nodeData[column.value]) || '-'}
+                                                {column.value === 'errorCount' ? (
+                                                    nodeData['errorCount'] > 0 && (
+                                                        <>
+                                                            <Error className="mr-3 icon-dim-16 position-rel top-3" />
+                                                            <span className="cr-5">
+                                                                {nodeData['errorCount'] || '-'}
+                                                            </span>{' '}
+                                                        </>
+                                                    )
+                                                ) : column.sortType === 'boolean' ? (
+                                                    nodeData[column.value] + ''
+                                                ) : nodeData[column.value] !== undefined ? (
+                                                    <ConditionalWrap
+                                                        condition={column.value.indexOf('.usagePercentage') > 0}
+                                                        wrap={(children) => (
+                                                            <Tippy
+                                                                className="default-tt"
+                                                                arrow={false}
+                                                                placement="top"
+                                                                content={
+                                                                    <>
+                                                                        <span style={{ display: 'block' }}>
+                                                                            {column.value === 'cpu.usagePercentage'
+                                                                                ? `CPU Usage: ${nodeData['cpu.usage']}`
+                                                                                : `Memory Usage: ${nodeData['memory.usage']}`}
+                                                                        </span>
+                                                                        <span style={{ display: 'block' }}>
+                                                                            {column.value === 'cpu.usagePercentage'
+                                                                                ? `Allocatable CPU: ${nodeData['cpu.allocatable']}`
+                                                                                : `Allocatable Memory: ${nodeData['memory.allocatable']}`}
+                                                                        </span>
+                                                                    </>
+                                                                }
+                                                            >
+                                                                <div>{children}</div>
+                                                            </Tippy>
+                                                        )}
+                                                    >
+                                                        {nodeData[column.value]}
+                                                    </ConditionalWrap>
+                                                ) : (
+                                                    '-'
+                                                )}
                                             </div>
                                         )
                                     })}

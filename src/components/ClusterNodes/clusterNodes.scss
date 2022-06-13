@@ -5,17 +5,11 @@
     }
     .cluster-list-row {
         display: grid;
-        grid-template-columns: auto 60px 50px 50px 100px 100px 120px;
+        grid-template-columns: auto 150px 50px 90px 120px 100px 120px;
         column-gap: 16px;
         .cluster-status {
             height: 12px;
             width: 12px;
-            &.error {
-                background-color: var(--R500);
-            }
-            &.success {
-                background-color: var(--G500);
-            }
         }
     }
 }
@@ -134,7 +128,7 @@
         column-gap: 12px;
         .resource-row {
             display: grid;
-            grid-template-columns: 20px minmax(auto, 200px) 100px 100px 100px 100px;
+            grid-template-columns: 20px minmax(auto, 200px) 100px 100px 100px 100px 100px;
             column-gap: 12px;
         }
         .pods-row {
