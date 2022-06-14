@@ -96,7 +96,7 @@ export default function NodeListSearchFliter({
     }
     const renderTextFilter = (): JSX.Element => {
         return (
-            <div className="position-rel">
+            <div className="position-rel" style={{ background: 'var(--N50)' }}>
                 <div
                     className=" h-32 br-4 en-2 bw-1 w-100 fw-4 pt-6 pb-6 pr-10 flexbox"
                     onClick={() => setOpenFilterPopup(true)}
