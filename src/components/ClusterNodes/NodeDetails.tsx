@@ -24,7 +24,7 @@ import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
-import { NodeDetail, NodeDetailResponse, ResourceDetail, UpdateNodeRequestBody } from './types'
+import { NodeDetail, NodeDetailResponse, ResourceDetail, TEXT_COLOR_CLASS, UpdateNodeRequestBody } from './types'
 import { toast } from 'react-toastify'
 
 export default function NodeDetails() {
@@ -476,16 +476,67 @@ export default function NodeDetails() {
         return (
             <div className="en-2 bw-1 br-4 bcn-0 mt-12 mb-20 pod-container">
                 <div className="fw-6 fs-14 cn-9 pr-20 pl-20 pt-12">Pods</div>
-                <div className="pods-row border-bottom pt-8 pb-8 pr-20 pl-20 fw-6 fs-13 cn-7">
-                    <div>Namespace</div>
-                    <div>Pod</div>
-                    <div>CPU Requests</div>
-                    <div>CPU Limits</div>
-                    <div className="ellipsis-right">Memory Requests</div>
-                    <div>Memory Limits</div>
-                    <div>Age</div>
+                <div className="pods-row">
+                    <div className="border-bottom pt-8 pr-8 pb-8 pl-20 fw-6 fs-13 cn-7 ellipsis-right">Namespace</div>
+                    <div className="border-bottom p-8 fw-6 fs-13 cn-7 ellipsis-right">Pod</div>
+                    <div className="border-bottom p-8 fw-6 fs-13 cn-7 ellipsis-right">CPU Requests</div>
+                    <div className="border-bottom p-8 fw-6 fs-13 cn-7 ellipsis-right">CPU Limits</div>
+                    <div className="border-bottom pt-8 pr-20 pb-8 pl-8 fw-6 fs-13 cn-7 ellipsis-right">
+                        Memory Requests
+                    </div>
+                    <div className="border-bottom p-8 fw-6 fs-13 cn-7 ellipsis-right">Memory Limits</div>
+                    <div className="border-bottom pt-8 pr-20 pb-8 pl-8 fw-6 fs-13 cn-7">Age</div>
+                    {nodeDetail.pods.slice(podListOffset, podListOffset + pageSize).map((pod) => (
+                        <>
+                            <div className="border-bottom-n1 pt-12 pr-8 pb-12 pl-20 fw-4 fs-13 cn-9">
+                                {pod.namespace}
+                            </div>
+                            <Tippy className="default-tt" arrow={false} placement="bottom" content={pod.name}>
+                                <div className="hover-trigger position-rel flexbox border-bottom-n1 pt-12 pr-8 pb-12 pl-8 fw-4 fs-13 cn-9">
+                                    <span
+                                        className="inline-block ellipsis-right"
+                                        style={{ maxWidth: 'calc(100% - 20px)' }}
+                                    >
+                                        {pod.name}
+                                    </span>
+                                    <Tippy
+                                        className="default-tt"
+                                        arrow={false}
+                                        placement="bottom"
+                                        content={copied ? 'Copied!' : 'Copy'}
+                                        trigger="mouseenter click"
+                                        onShow={(instance) => {
+                                            setCopied(false)
+                                        }}
+                                    >
+                                        <Clipboard
+                                            className="ml-5 mt-5 pointer hover-only icon-dim-14"
+                                            onClick={() => {
+                                                copyToClipboard(pod.name, () => {
+                                                    setCopied(true)
+                                                })
+                                            }}
+                                        />
+                                    </Tippy>
+                                </div>
+                            </Tippy>
+                            <div className="border-bottom-n1 pt-12 pr-8 pb-12 pl-8 fw-4 fs-13 cn-9">
+                                {pod.cpu.requestPercentage || '-'}
+                            </div>
+                            <div className="border-bottom-n1 pt-12 pr-8 pb-12 pl-8 fw-4 fs-13 cn-9">
+                                {pod.cpu.limitPercentage || '-'}
+                            </div>
+                            <div className="border-bottom-n1 pt-12 pr-8 pb-12 pl-8 fw-4 fs-13 cn-9">
+                                {pod.memory.requestPercentage || '-'}
+                            </div>
+                            <div className="border-bottom-n1 pt-12 pr-8 pb-12 pl-8 fw-4 fs-13 cn-9">
+                                {pod.memory.limitPercentage || '-'}
+                            </div>
+                            <div className="border-bottom-n1 pt-12 pr-20 pb-12 pl-8 fw-4 fs-13 cn-9">{pod.age}</div>
+                        </>
+                    ))}
                 </div>
-                <div className="scrollable-pod-list">
+                {/* <div className="scrollable-pod-list">
                     {nodeDetail.pods.slice(podListOffset, podListOffset + pageSize).map((pod) => (
                         <div className="pods-row border-bottom-n1 pt-12 pb-12 pr-20 pl-20 fw-4 fs-13 cn-9">
                             <div>{pod.namespace}</div>
@@ -522,7 +573,7 @@ export default function NodeDetails() {
                             <div>{pod.age}</div>
                         </div>
                     ))}
-                </div>
+                </div> */}
                 {renderPagination()}
             </div>
         )
@@ -534,7 +585,9 @@ export default function NodeDetails() {
             <div className="node-details-container">
                 <div className="ml-20 mr-20 mb-12 mt-16 pl-20 pr-20 pt-16 pb-16 bcn-0 br-4 en-2 bw-1">
                     <div className="fw-6 fs-16 cn-9">{nodeDetail.name}</div>
-                    <div className="fw-6 fs-13 cr-5">{nodeDetail.status}</div>
+                    <div className={`fw-6 fs-13 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>
+                        {nodeDetail.status}
+                    </div>
                 </div>
                 <div className="ml-20 mr-20 mt-12 node-details-grid">
                     <div className="fw-6 fs-16 cn-9">

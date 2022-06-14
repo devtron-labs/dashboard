@@ -4,7 +4,7 @@ import { useRouteMatch, useParams, useHistory } from 'react-router'
 import './clusterNodes.scss'
 import { getClusterCapacity, getNodeList, getClusterList } from './clusterNodes.service'
 import { BreadCrumb, ConditionalWrap, handleUTCTime, Progressing, showError, useBreadcrumb } from '../common'
-import { ClusterCapacityType, ClusterListResponse, columnMetadataType } from './types'
+import { ClusterCapacityType, ClusterListResponse, columnMetadataType, TEXT_COLOR_CLASS } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Sort } from '../../assets/icons/ic-sort-arrow.svg'
@@ -305,7 +305,7 @@ export default function NodeList({
                         {lastDataSyncTimeString && (
                             <span>
                                 {lastDataSyncTimeString}
-                                <button className="btn btn-link p-0 fw-6 cb-5" onClick={getNodeListData}>
+                                <button className="btn btn-link p-0 fw-6 cb-5 ml-5" onClick={getNodeListData}>
                                     Refresh
                                 </button>
                             </span>
@@ -377,12 +377,12 @@ export default function NodeList({
                                 }}
                             >
                                 <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
-                                <span className="fw-6 fs-14 cn-9 mr-16">
+                                <span className="fw-6 fs-13 cn-9 mr-16">
                                     {clusterErrorList.length === 1
                                         ? '1 Error'
                                         : clusterErrorList.length + ' Errors in cluster'}
                                 </span>
-                                {collapsedErrorSection && <span className="fw-4 fs-14 cn-9">{clusterErrorTitle}</span>}
+                                {collapsedErrorSection && <span className="fw-4 fs-13 cn-9">{clusterErrorTitle}</span>}
                             </span>
                             <Dropdown
                                 className="pointer"
@@ -458,7 +458,13 @@ export default function NodeList({
                                                 </NavLink>
                                             </div>
                                         ) : (
-                                            <div className="w-100-px inline-block ellipsis-right mr-16">
+                                            <div
+                                                className={`w-100-px inline-block ellipsis-right mr-16 ${
+                                                    column.value === 'status'
+                                                        ? TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7'
+                                                        : ''
+                                                }`}
+                                            >
                                                 {column.value === 'errorCount' ? (
                                                     nodeData['errorCount'] > 0 && (
                                                         <>

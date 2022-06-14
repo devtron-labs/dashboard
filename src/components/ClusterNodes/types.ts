@@ -96,3 +96,8 @@ export interface columnMetadataType {
     suffixToRemove?: string
     isDisabled?: boolean
 }
+
+export const TEXT_COLOR_CLASS = {
+    Ready: 'cg-5',
+    'Not ready': 'cr-5',
+}

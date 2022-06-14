@@ -97,7 +97,7 @@ export default function NodeListSearchFliter({
         {
             sortType: 'number',
             columnIndex: 9,
-            label: 'Allocatable CPU',
+            label: 'CPU Allocatable',
             value: 'cpu.allocatable',
             isSortingAllowed: true,
             suffixToRemove: 'm',
@@ -122,7 +122,7 @@ export default function NodeListSearchFliter({
         {
             sortType: 'number',
             columnIndex: 12,
-            label: 'Allocatable Mem',
+            label: 'Mem Allocatable',
             value: 'memory.allocatable',
             isSortingAllowed: true,
             suffixToRemove: 'Mi',

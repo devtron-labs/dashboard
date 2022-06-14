@@ -61,7 +61,6 @@ export default function ClusterList() {
         const _filteredData = clusterList.filter((cluster) => cluster.name.indexOf(_searchText) >= 0)
         setFilteredClusterList(_filteredData)
         setNoResults(_filteredData.length === 0)
-        setSearchText(_searchText)
     }
 
     const handleClusterClick = (ev, error: string): void => {
@@ -71,9 +70,18 @@ export default function ClusterList() {
         }
     }
 
+    const handleFilterKeyPress = (event): void => {
+        let theKeyCode = event.key
+        if (theKeyCode === 'Enter') {
+            handleFilterChanges(event.target.value)
+        } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
+            handleFilterChanges('')
+        }
+    }
+
     const RenderSearch = (): JSX.Element => {
         return (
-            <form className="search position-rel margin-right-0 en-2 bw-1 br-4">
+            <div className="search position-rel margin-right-0 en-2 bw-1 br-4">
                 <Search className="search__icon icon-dim-18" />
                 <input
                     type="text"
@@ -81,16 +89,17 @@ export default function ClusterList() {
                     value={searchText}
                     className="search__input"
                     onChange={(event) => {
-                        handleFilterChanges(event.target.value)
+                        setSearchText(event.target.value)
                     }}
                     autoFocus
+                    onKeyDown={handleFilterKeyPress}
                 />
                 {searchText.length > 0 && (
                     <button className="search__clear-button" type="button" onClick={(e) => handleFilterChanges('')}>
                         <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                     </button>
                 )}
-            </form>
+            </div>
         )
     }
 
@@ -108,7 +117,7 @@ export default function ClusterList() {
                         {lastDataSyncTimeString && (
                             <span>
                                 {lastDataSyncTimeString}{' '}
-                                <button className="btn btn-link p-0 fw-6 cb-5" onClick={getData}>
+                                <button className="btn btn-link p-0 fw-6 cb-5 ml-5" onClick={getData}>
                                     Refresh
                                 </button>
                             </span>
@@ -124,7 +133,7 @@ export default function ClusterList() {
                             <div>Connection status</div>
                             <div>Nodes</div>
                             <div>NODE Errors</div>
-                            <div>API Server version</div>
+                            <div>K8S version</div>
                             <div>CPU Capacity</div>
                             <div>Memory Capacity</div>
                         </div>

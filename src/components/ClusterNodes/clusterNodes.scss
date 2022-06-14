@@ -5,7 +5,7 @@
     }
     .cluster-list-row {
         display: grid;
-        grid-template-columns: auto 150px 50px 90px 120px 100px 120px;
+        grid-template-columns: auto 150px 50px 90px 100px 100px 120px;
         column-gap: 16px;
         .cluster-status {
             height: 12px;
@@ -168,7 +168,7 @@
     }
     .node-details-grid {
         display: grid;
-        grid-template-columns: 300px auto;
+        grid-template-columns: 300px calc(100vw - 415px);
         column-gap: 12px;
         .resource-row {
             display: grid;
@@ -178,8 +178,7 @@
         .pod-container {
             .pods-row {
                 display: grid;
-                grid-template-columns: 150px minmax(auto, 400px) 100px 100px 100px 100px 50px;
-                column-gap: 12px;
+                grid-template-columns: minmax(150px, 300px) minmax(100px, auto) 100px 100px 100px 100px 75px;
             }
             .scrollable-pod-list {
                 max-height: 700px;
