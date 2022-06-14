@@ -94,7 +94,7 @@ export default function NodeDetails() {
                         setSelectedTabIndex(0)
                     }}
                 >
-                    <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 0 ? ' fw-6 cb-5' : ' fw-4'}`}>
+                    <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 0 ? ' fw-6 active' : ' fw-4'}`}>
                         Summary
                     </div>
                     {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
@@ -105,7 +105,7 @@ export default function NodeDetails() {
                         setSelectedTabIndex(1)
                     }}
                 >
-                    <div className={`mb-6 flexbox fs-13 tab-hover${selectedTabIndex == 1 ? ' fw-6 cb-5' : ' fw-4'}`}>
+                    <div className={`mb-6 flexbox fs-13 tab-hover${selectedTabIndex == 1 ? ' fw-6 active' : ' fw-4'}`}>
                         <Edit className="icon-dim-16 mt-2 mr-5 edit-yaml-icon" />
                         YAML
                     </div>
@@ -117,7 +117,7 @@ export default function NodeDetails() {
                         setSelectedTabIndex(2)
                     }}
                 >
-                    <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 2 ? ' fw-6 cb-5' : ' fw-4'}`}>
+                    <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 2 ? ' fw-6 active' : ' fw-4'}`}>
                         Node conditions
                     </div>
                     {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
