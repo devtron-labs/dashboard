@@ -157,7 +157,7 @@ function NavItem({ hostURLConfig, serverMode }) {
             name: 'Custom charts',
             href: URLS.GLOBAL_CONFIG_CUSTOM_CHARTS,
             component: CustomChartList,
-            isAvailableInEA: true,
+            isAvailableInEA: false,
         },
         { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin, isAvailableInEA: true },
         { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup, isAvailableInEA: true },

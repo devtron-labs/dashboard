@@ -542,6 +542,6 @@
     align-items: flex-start;
 }
 
-.tab-list__tab-link {
+.security-scan .tab-list__tab-link {
     padding: 0 0 8px 0;
 }

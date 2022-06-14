@@ -253,7 +253,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                 <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
                 <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
             </div>
-            <div className="form__label">Authentication type*</div>
+            {/* <div className="form__label">Authentication type*</div>
             <div className="form__row form__row--auth-type pl-12 pointer">
                 {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' },]
                     .map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
@@ -267,7 +267,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             </div>}
             {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
                 <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
-            </div>}
+            </div>} */}
             <div className="form__row form__buttons">
                    {
                        id &&

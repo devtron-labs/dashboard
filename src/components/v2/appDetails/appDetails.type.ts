@@ -116,6 +116,11 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
     }
 }
 
+export enum DeploymentAppType {
+    helm = 'helm',
+    argo_cd = 'argo_cd',
+}
+
 export interface AppDetails {
     appId: number
     appName: string
@@ -145,6 +150,7 @@ export interface AppDetails {
     additionalData?: any;
     clusterId?: number;
     notes?: string;
+    deploymentAppType?: DeploymentAppType
 }
 
 interface MaterialInfo {
