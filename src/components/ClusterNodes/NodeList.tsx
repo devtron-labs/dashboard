@@ -444,7 +444,7 @@ export default function NodeList({
                             </div>
                             {filteredFlattenNodeList?.map((nodeData) => (
                                 <div
-                                    className="fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 hover-class"
+                                    className="fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 hover-class h-44"
                                     style={{ width: 'max-content', minWidth: '100%' }}
                                 >
                                     {appliedColumns.map((column) => {
