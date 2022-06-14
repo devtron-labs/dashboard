@@ -490,8 +490,10 @@ export default function NodeDetails() {
                         <div className="pods-row border-bottom-n1 pt-12 pb-12 pr-20 pl-20 fw-4 fs-13 cn-9">
                             <div>{pod.namespace}</div>
                             <Tippy className="default-tt" arrow={false} placement="bottom" content={pod.name}>
-                                <div className="hover-trigger position-rel ellipsis-right pr-10">
-                                    {pod.name}
+                                <div className="hover-trigger position-rel pr-10 flexbox">
+                                    <span className="inline-block ellipsis-right" style={{ maxWidth: '90%' }}>
+                                        {pod.name}
+                                    </span>
                                     <Tippy
                                         className="default-tt"
                                         arrow={false}
@@ -503,7 +505,7 @@ export default function NodeDetails() {
                                         }}
                                     >
                                         <Clipboard
-                                            className="clipboard-icon ml-8 mt-5 pointer hover-only icon-dim-16"
+                                            className="ml-8 mt-5 pointer hover-only icon-dim-16"
                                             onClick={() => {
                                                 copyToClipboard(pod.name, () => {
                                                     setCopied(true)
@@ -573,8 +575,9 @@ export default function NodeDetails() {
                 .then((response: NodeDetailResponse) => {
                     setApiInProgress(false)
                     if (response.result) {
-                        toast.success('YAML updated successfully')
+                        toast.success('Node updated')
                         setNodeDetail(response.result)
+                        setIsReviewStates(false)
                     }
                 })
                 .catch((error) => {
@@ -621,7 +624,7 @@ export default function NodeDetails() {
                         isLoading={apiInProgress}
                         loaderColor="white"
                     >
-                        {isReviewState ? 'Update node??' : 'Review changes'}
+                        {isReviewState ? 'Update node' : 'Review changes'}
                     </ButtonWithLoader>
                 </div>
             </div>

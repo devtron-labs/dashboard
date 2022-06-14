@@ -433,16 +433,14 @@ export default function NodeList({
                                                 : 'w-100-px'
                                         } ${sortByColumn.value === column.value ? 'sort-by' : ''} ${
                                             sortOrder === OrderBy.DESC ? 'desc' : ''
-                                        }`}
+                                        } ${column.isSortingAllowed ? ' pointer' : ''}`}
+                                        onClick={(event) => {
+                                            column.isSortingAllowed && handleSortClick(column)
+                                        }}
                                     >
                                         <span className="inline-block ellipsis-right mw-85px ">{column.label}</span>
                                         {column.isSortingAllowed && (
-                                            <Sort
-                                                className="pointer icon-dim-14 position-rel sort-icon"
-                                                onClick={(event) => {
-                                                    handleSortClick(column)
-                                                }}
-                                            />
+                                            <Sort className="pointer icon-dim-14 position-rel sort-icon" />
                                         )}
                                     </div>
                                 ))}

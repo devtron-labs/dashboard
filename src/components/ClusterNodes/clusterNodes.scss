@@ -159,7 +159,7 @@
 
     .hover-trigger:hover {
         .hover-only {
-            display: block;
+            display: inline-block;
         }
     }
     .subtab-grid {
@@ -178,13 +178,8 @@
         .pod-container {
             .pods-row {
                 display: grid;
-                grid-template-columns: minmax(100px, 200px) auto 100px 100px 100px 100px 50px;
+                grid-template-columns: 150px minmax(auto, 400px) 100px 100px 100px 100px 50px;
                 column-gap: 12px;
-                .clipboard-icon {
-                    position: absolute;
-                    right: 0;
-                    top: 0;
-                }
             }
             .scrollable-pod-list {
                 max-height: 700px;

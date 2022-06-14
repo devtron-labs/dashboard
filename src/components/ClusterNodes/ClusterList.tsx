@@ -77,7 +77,7 @@ export default function ClusterList() {
                 <Search className="search__icon icon-dim-18" />
                 <input
                     type="text"
-                    placeholder="Search charts"
+                    placeholder="Search clusters"
                     value={searchText}
                     className="search__input"
                     onChange={(event) => {
