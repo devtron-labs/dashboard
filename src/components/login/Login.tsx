@@ -5,7 +5,7 @@ import { Switch, Redirect, NavLink } from 'react-router-dom'
 import { Route } from 'react-router'
 import { toast } from 'react-toastify'
 import { ServerErrors } from '../../modals/commonTypes'
-import { URLS, Host } from '../../config'
+import { URLS, Host, DOCUMENTATION } from '../../config'
 import { Progressing, showError } from '../common'
 import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
@@ -169,7 +169,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             className="login__know-password--link fs-12 cb-5"
                             rel="noreferrer noopener"
                             target="_blank"
-                            href="https://github.com/devtron-labs/devtron#key-access-devtron-dashboard"
+                            href={DOCUMENTATION.ADMIN_PASSWORD}
                         >
                             What is my admin password?
                         </a>

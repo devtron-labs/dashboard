@@ -242,6 +242,7 @@ export const DOCUMENTATION = {
     CUSTOM_CHART: 'https://docs.devtron.ai/devtron/setup/global-configurations/custom-charts',
     CUSTOM_CHART_PRE_REQUISITES:
         'https://docs.devtron.ai/devtron/setup/global-configurations/custom-charts#prerequisites',
+    ADMIN_PASSWORD: 'https://docs.devtron.ai/devtron/setup/install/install-devtron-with-cicd#devtron-admin-credentials',
 }
 
 // APP LIST STARTS
