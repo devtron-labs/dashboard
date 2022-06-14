@@ -5,10 +5,25 @@ import { ReactComponent as Rollback } from '../../../../../../assets/icons/misc/
 import { TriggerViewContext } from '../../TriggerView';
 import { DEFAULT_STATUS } from '../../../../../../config';
 import Tippy from '@tippyjs/react';
+import { Link } from 'react-router-dom';
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps>{
+    constructor(props) {
+        super(props);
+        this.redirectToCDDetails = this.redirectToCDDetails.bind(this);
+    }
+
+    getCDNodeDetailsURL(): string{
+        return `${this.props.match.url.substring(0,this.props.match.url.indexOf('/trigger'))}/details/${this.props.environmentId}/k8s-resources`;
+    }
+
+    redirectToCDDetails() {
+        const LINK = this.getCDNodeDetailsURL();
+        this.props.history.push(LINK);
+    }
 
     renderStatus() {
+        let url = this.getCDNodeDetailsURL();
         let status = this.props.status ? this.props.status.toLowerCase() : "";
         let hideDetails = status === DEFAULT_STATUS.toLowerCase() || status === "not triggered" || status === "not deployed";
         if (hideDetails)
@@ -18,6 +33,8 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps>{
         else return <div className="cd-trigger-status" style={{ color: statusColor[status] }}>
             <span className={`cd-trigger-status__icon ${statusIcon[status]}`}></span>
             <span>{this.props.status}</span>
+            <span className="mr-5 ml-5">/</span>
+            <Link to={url} className="workflow-node__details-link">Details</Link>
         </div>
     }
 

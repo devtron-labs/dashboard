@@ -62,7 +62,7 @@ export class CIMaterial extends Component<CIMaterialProps> {
     return <div className="trigger-modal__trigger">
       <Checkbox isChecked={context.invalidateCache}
         onClick={(e) => { e.stopPropagation() }}
-        rootClassName="form__checkbox-label--ignore-cache"
+        rootClassName="form__checkbox-label--ignore-cache mb-0"
         value={"CHECKED"}
         onChange={context.toggleInvalidateCache} >
         <span className="mr-5">Ignore Cache</span>
