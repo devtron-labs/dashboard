@@ -520,7 +520,7 @@ export default function NodeDetails() {
                         className={`border-bottom pt-8 pr-8 pb-8 pl-20 fw-6 fs-13 cn-7 list-title h-36 pointer ${
                             sortByColumnName === 'namespace' ? 'sort-by' : ''
                         } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
-                        onClick={(event) => {
+                        onClick={() => {
                             handleSortClick('namespace', 'string')
                         }}
                     >
@@ -533,7 +533,7 @@ export default function NodeDetails() {
                         className={`border-bottom p-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
                             sortByColumnName === 'name' ? 'sort-by' : ''
                         } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
-                        onClick={(event) => {
+                        onClick={() => {
                             handleSortClick('name', 'string')
                         }}
                     >
@@ -546,7 +546,7 @@ export default function NodeDetails() {
                         className={`border-bottom p-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
                             sortByColumnName === 'cpu.requestPercentage' ? 'sort-by' : ''
                         } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
-                        onClick={(event) => {
+                        onClick={() => {
                             handleSortClick('cpu.requestPercentage', 'number')
                         }}
                     >
@@ -559,7 +559,7 @@ export default function NodeDetails() {
                         className={`border-bottom p-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
                             sortByColumnName === 'cpu.limitPercentage' ? 'sort-by' : ''
                         } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
-                        onClick={(event) => {
+                        onClick={() => {
                             handleSortClick('cpu.limitPercentage', 'number')
                         }}
                     >
@@ -572,7 +572,7 @@ export default function NodeDetails() {
                         className={`border-bottom pt-8 pr-20 pb-8 pl-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
                             sortByColumnName === 'memory.requestPercentage' ? 'sort-by' : ''
                         } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
-                        onClick={(event) => {
+                        onClick={() => {
                             handleSortClick('memory.requestPercentage', 'number')
                         }}
                     >
@@ -585,7 +585,7 @@ export default function NodeDetails() {
                         className={`border-bottom p-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
                             sortByColumnName === 'memory.limitPercentage' ? 'sort-by' : ''
                         } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
-                        onClick={(event) => {
+                        onClick={() => {
                             handleSortClick('memory.limitPercentage', 'number')
                         }}
                     >
@@ -598,7 +598,7 @@ export default function NodeDetails() {
                         className={`border-bottom pt-8 pr-20 pb-8 pl-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
                             sortByColumnName === 'createdAt' ? 'sort-by' : ''
                         } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
-                        onClick={(event) => {
+                        onClick={() => {
                             handleSortClick('createdAt', 'string')
                         }}
                     >

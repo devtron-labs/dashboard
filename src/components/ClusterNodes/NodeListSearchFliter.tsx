@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { Option, DropdownIndicator } from '../v2/common/ReactSelect.utils'
 import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
-import { ReactComponent as Setting } from '../../assets/icons/ic-nav-gear.svg'
-import ReactSelect, { components, MultiValue } from 'react-select'
-import { Option as OptionWithCheckbox } from '../common'
+import ReactSelect, { MultiValue } from 'react-select'
 import { OptionType } from '../app/types'
 import { columnMetadataType } from './types'
+import ColumnSelector from './ColumnSelector'
 
 interface NodeListSearchFliterType {
     defaultVersion: OptionType
@@ -36,132 +35,9 @@ export default function NodeListSearchFliter({
     setSearchedLabelMap,
 }: NodeListSearchFliterType) {
     const [searchApplied, setSearchApplied] = useState(false)
-    const [selectedColumns, setSelectedColumns] = useState<MultiValue<columnMetadataType>>([])
     const [isMenuOpen, setMenuOpen] = useState(false)
     const [openFilterPopup, setOpenFilterPopup] = useState(false)
-    const columnMetadata: columnMetadataType[] = [
-        {
-            sortType: 'string',
-            columnIndex: 0,
-            label: 'Node',
-            value: 'name',
-            isDefault: true,
-            isSortingAllowed: true,
-            isDisabled: true,
-            sortingFieldName: 'name',
-        },
-        { sortType: 'string', columnIndex: 1, label: 'Status', value: 'status', isDefault: true, isDisabled: true },
-        { sortType: 'string', columnIndex: 2, label: 'Roles', value: 'roles', isDefault: true },
-        {
-            sortType: 'number',
-            columnIndex: 3,
-            label: 'Errors',
-            value: 'errorCount',
-            isDefault: true,
-            isDisabled: true,
-            isSortingAllowed: true,
-            sortingFieldName: 'errorCount',
-        },
-        { sortType: 'string', columnIndex: 4, label: 'K8S Version', value: 'k8sVersion', isDefault: true },
-        {
-            sortType: 'number',
-            columnIndex: 5,
-            label: 'No.of pods',
-            value: 'podCount',
-            isDefault: true,
-            isSortingAllowed: true,
-            sortingFieldName: 'podCount',
-        },
-        {
-            sortType: 'number',
-            columnIndex: 6,
-            label: 'Taints',
-            value: 'taintCount',
-            isDefault: true,
-            isSortingAllowed: true,
-            sortingFieldName: 'taintCount',
-        },
-        {
-            sortType: 'number',
-            columnIndex: 7,
-            label: 'CPU Usage (%)',
-            value: 'cpu.usagePercentage',
-            isDefault: true,
-            isSortingAllowed: true,
-            sortingFieldName: 'cpu.usagePercentage',
-        },
-        {
-            sortType: 'number',
-            columnIndex: 8,
-            label: 'CPU Usage (Absolute)',
-            value: 'cpu.usage',
-            isSortingAllowed: true,
-            sortingFieldName: 'cpu.usage',
-        },
-        {
-            sortType: 'number',
-            columnIndex: 9,
-            label: 'CPU Allocatable',
-            value: 'cpu.allocatable',
-            isSortingAllowed: true,
-            sortingFieldName: 'cpu.allocatableInBytes',
-        },
-        {
-            sortType: 'number',
-            columnIndex: 10,
-            label: 'Mem Usage (%)',
-            value: 'memory.usagePercentage',
-            isDefault: true,
-            isSortingAllowed: true,
-            sortingFieldName: 'name',
-        },
-        {
-            sortType: 'number',
-            columnIndex: 11,
-            label: 'Mem Usage (Absolute)',
-            value: 'memory.usage',
-            isSortingAllowed: true,
-            sortingFieldName: 'name',
-        },
-        {
-            sortType: 'number',
-            columnIndex: 12,
-            label: 'Mem Allocatable',
-            value: 'memory.allocatable',
-            isSortingAllowed: true,
-            sortingFieldName: 'memory.allocatableInBytes',
-        },
-        {
-            sortType: 'string',
-            columnIndex: 13,
-            label: 'Age',
-            value: 'age',
-            isDefault: true,
-            isSortingAllowed: true,
-            sortingFieldName: 'createdAt',
-        },
-        { sortType: 'boolean', columnIndex: 14, label: 'Unschedulable', value: 'unschedulable' },
-    ]
-
     const [searchInputText, setSearchInputText] = useState('')
-
-    useEffect(() => {
-        const _defaultColumns = columnMetadata.filter((columnData) => columnData.isDefault)
-        if (typeof Storage !== 'undefined') {
-            if (!localStorage.appliedColumns) {
-                localStorage.appliedColumns = JSON.stringify(_defaultColumns)
-            } else {
-                try {
-                    const appliedColumnsFromLocalStorage = JSON.parse(localStorage.appliedColumns)
-                    setAppliedColumns(appliedColumnsFromLocalStorage)
-                    setSelectedColumns(appliedColumnsFromLocalStorage)
-                } catch (error) {
-                    setAppliedColumns(_defaultColumns)
-                    setSelectedColumns(_defaultColumns)
-                }
-            }
-        }
-    }, [])
 
     const onVersionChange = (selectedValue: OptionType): void => {
         setSelectedVersion(selectedValue)
@@ -282,62 +158,6 @@ export default function NodeListSearchFliter({
             </div>
         )
     }
-
-    const handleApplySelectedColumns = () => {
-        setMenuOpen(false)
-        const _appliedColumns = [...selectedColumns].sort((a, b) => a['columnIndex'] - b['columnIndex'])
-        if (typeof Storage !== 'undefined') {
-            localStorage.appliedColumns = JSON.stringify(_appliedColumns)
-        }
-        setAppliedColumns(_appliedColumns)
-    }
-
-    const handleMenuState = (menuOpenState: boolean): void => {
-        if (menuOpenState) {
-            setSelectedColumns(appliedColumns)
-        }
-        setMenuOpen(menuOpenState)
-    }
-
-    const handleCloseFilter = (): void => {
-        handleMenuState(false)
-        setSelectedColumns(appliedColumns)
-    }
-
-    const MenuList = (props: any): JSX.Element => {
-        return (
-            <components.MenuList {...props}>
-                {props.children}
-                <div className="flex react-select__bottom bcn-0 p-8">
-                    <button className="flex cta apply-filter h-32 w-100" onClick={handleApplySelectedColumns}>
-                        Apply
-                    </button>
-                </div>
-            </components.MenuList>
-        )
-    }
-
-    const ValueContainer = (props: any): JSX.Element => {
-        const length = props.getValue().length
-
-        return (
-            <components.ValueContainer {...props}>
-                {length > 0 ? (
-                    <>
-                        {!props.selectProps.menuIsOpen && (
-                            <>
-                                <Setting className="icon-dim-16 setting-icon mr-5" />
-                                Columns
-                            </>
-                        )}
-                        {React.cloneElement(props.children[1])}
-                    </>
-                ) : (
-                    <>{props.children}</>
-                )}
-            </components.ValueContainer>
-        )
-    }
     return (
         <div className="search-wrapper ">
             {renderTextFilter()}
@@ -365,52 +185,7 @@ export default function NodeListSearchFliter({
                 }}
             />
             <div className="border-left h-20 mt-6"></div>
-            <ReactSelect
-                menuIsOpen={isMenuOpen}
-                name="columns"
-                value={selectedColumns}
-                options={columnMetadata.filter((columnMetaData) => !columnMetaData.isDisabled)}
-                onChange={setSelectedColumns}
-                isMulti={true}
-                isSearchable={false}
-                closeMenuOnSelect={false}
-                hideSelectedOptions={false}
-                onMenuOpen={() => handleMenuState(true)}
-                onMenuClose={handleCloseFilter}
-                components={{
-                    Option: OptionWithCheckbox,
-                    ValueContainer,
-                    IndicatorSeparator: null,
-                    ClearIndicator: null,
-                    MenuList: (props) => <MenuList {...props} />,
-                }}
-                styles={{
-                    ...containerImageSelectStyles,
-                    menuList: (base, state) => ({
-                        ...base,
-                        borderRadius: '4px',
-                        paddingTop: 0,
-                        paddingBottom: 0,
-                    }),
-                    option: (base, state) => ({
-                        ...base,
-                        padding: '10px 12px',
-                        backgroundColor: state.isFocused ? 'var(--N100) !important' : 'var(--N0) !important',
-                        color: 'var(--N900)',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        cursor: 'pointer',
-                    }),
-                    dropdownIndicator: (base, state) => ({
-                        ...base,
-                        color: 'var(--N400)',
-                        transition: 'all .2s ease',
-                        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                        padding: '0 8px',
-                    }),
-                }}
-            />
+            <ColumnSelector appliedColumns={appliedColumns} setAppliedColumns={setAppliedColumns} />
         </div>
     )
 }

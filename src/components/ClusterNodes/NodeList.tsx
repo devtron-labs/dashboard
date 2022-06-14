@@ -4,7 +4,7 @@ import { useRouteMatch, useParams, useHistory } from 'react-router'
 import './clusterNodes.scss'
 import { getClusterCapacity, getNodeList, getClusterList } from './clusterNodes.service'
 import { BreadCrumb, ConditionalWrap, handleUTCTime, Progressing, showError, useBreadcrumb } from '../common'
-import { ClusterCapacityType, ClusterListResponse, columnMetadataType, TEXT_COLOR_CLASS } from './types'
+import { ClusterCapacityType, ClusterListResponse, columnMetadata, columnMetadataType, TEXT_COLOR_CLASS } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Sort } from '../../assets/icons/ic-sort-arrow.svg'
@@ -17,13 +17,7 @@ import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 
-export default function NodeList({
-    appliedColumns,
-    setAppliedColumns,
-}: {
-    appliedColumns: MultiValue<columnMetadataType>
-    setAppliedColumns: React.Dispatch<React.SetStateAction<MultiValue<columnMetadataType>>>
-}) {
+export default function NodeList() {
     const match = useRouteMatch()
     const history = useHistory()
     const [loader, setLoader] = useState(false)
@@ -57,8 +51,24 @@ export default function NodeList({
         sortingFieldName: 'name',
     })
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
-
     const [noResults, setNoResults] = useState(false)
+    const [appliedColumns, setAppliedColumns] = useState<MultiValue<columnMetadataType>>([])
+
+    useEffect(() => {
+        const _defaultColumns = columnMetadata.filter((columnData) => columnData.isDefault)
+        if (typeof Storage !== 'undefined') {
+            if (!localStorage.appliedColumns) {
+                localStorage.appliedColumns = JSON.stringify(_defaultColumns)
+            } else {
+                try {
+                    const appliedColumnsFromLocalStorage = JSON.parse(localStorage.appliedColumns)
+                    setAppliedColumns(appliedColumnsFromLocalStorage)
+                } catch (error) {
+                    setAppliedColumns(_defaultColumns)
+                }
+            }
+        }
+    }, [])
 
     const flattenObject = (ob: Object): Object => {
         var toReturn = {}
@@ -213,7 +223,7 @@ export default function NodeList({
     const numericComparatorMethod = (a, b) => {
         let firstValue = a[sortByColumn.sortingFieldName]
         let secondValue = b[sortByColumn.sortingFieldName]
-        if (firstValue.endsWith === '%') {
+        if (firstValue?.endsWith === '%') {
             firstValue = firstValue.slice(0, -1)
             secondValue = secondValue.slice(0, -1)
         }
@@ -444,6 +454,7 @@ export default function NodeList({
                             </div>
                             {filteredFlattenNodeList?.map((nodeData) => (
                                 <div
+                                    key={nodeData['name']}
                                     className="fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 hover-class h-44"
                                     style={{ width: 'max-content', minWidth: '100%' }}
                                 >
