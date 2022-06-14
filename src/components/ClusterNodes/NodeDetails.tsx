@@ -24,8 +24,17 @@ import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
-import { NodeDetail, NodeDetailResponse, ResourceDetail, TEXT_COLOR_CLASS, UpdateNodeRequestBody } from './types'
+import {
+    NodeDetail,
+    NodeDetailResponse,
+    PodType,
+    ResourceDetail,
+    TEXT_COLOR_CLASS,
+    UpdateNodeRequestBody,
+} from './types'
 import { toast } from 'react-toastify'
+import { ReactComponent as Sort } from '../../assets/icons/ic-sort-arrow.svg'
+import { OrderBy } from '../app/list/types'
 
 export default function NodeDetails() {
     const [loader, setLoader] = useState(false)
@@ -40,7 +49,10 @@ export default function NodeDetails() {
     const [modifiedManifest, setModifiedManifest] = useState('')
     const [cpuData, setCpuData] = useState<ResourceDetail>(null)
     const [memoryData, setMemoryData] = useState<ResourceDetail>(null)
+    const [sortedPodList, setSortedPodList] = useState<PodType[]>(null)
     const [podListOffset, setPodListOffset] = useState(0)
+    const [sortByColumnName, setSortByColumnName] = useState<string>('name')
+    const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
     const pageSize = 10
 
     useEffect(() => {
@@ -48,6 +60,8 @@ export default function NodeDetails() {
         getNodeCapacity(clusterId, nodeName)
             .then((response: NodeDetailResponse) => {
                 if (response.result) {
+                    response.result.pods.sort((a, b) => a['name'].localeCompare(b['name']))
+                    setSortedPodList(response.result.pods.sort((a, b) => a['name'].localeCompare(b['name'])))
                     setNodeDetail(response.result)
                     const resourceList = response.result.resources
                     for (let index = 0; index < resourceList.length; ) {
@@ -188,14 +202,7 @@ export default function NodeDetails() {
         if (nodeDetail.labels.length === 0) {
             return noDataInSubTab('Labels')
         } else {
-            return (
-                <div>
-                    {nodeDetail.labels.map((label) => renderKeyValueLabel(label.key, label.value))}
-                    {/* {renderKeyValueLabel('beta.kubernetes.io/arch', 'amd64')}
-                    {renderKeyValueLabel('node-role.kubernetes.io/node')}
-                    {renderKeyValueLabel('kubernetes.io/hostname', 'ip-172-31-177-100.us-east-2.compute.internal')} */}
-                </div>
-            )
+            return <div>{nodeDetail.labels.map((label) => renderKeyValueLabel(label.key, label.value))}</div>
         }
     }
 
@@ -472,27 +479,143 @@ export default function NodeDetails() {
         )
     }
 
+    const handleSortClick = (columnName: string, sortType: string): void => {
+        let _sortOrder = OrderBy.ASC
+        if (sortByColumnName === columnName) {
+            _sortOrder = sortOrder === OrderBy.ASC ? OrderBy.DESC : OrderBy.ASC
+        } else {
+            setSortByColumnName(columnName)
+        }
+        setSortOrder(_sortOrder)
+        const comparatorMethod =
+            sortType === 'number'
+                ? (a, b) => {
+                      const sortByColumnArr = columnName.split('.')
+                      let firstValue = a[sortByColumnArr[0]][sortByColumnArr[1]]
+                      let secondValue = b[sortByColumnArr[0]][sortByColumnArr[1]]
+                      firstValue = Number(firstValue.slice(0, -1))
+                      secondValue = Number(secondValue.slice(0, -1))
+                      if (_sortOrder === OrderBy.ASC) {
+                          return (firstValue > secondValue && 1) || -1
+                      } else {
+                          return (secondValue > firstValue && 1) || -1
+                      }
+                  }
+                : (a, b) => {
+                      if (_sortOrder === OrderBy.ASC) {
+                          return a[columnName].localeCompare(b[columnName])
+                      } else {
+                          return b[columnName].localeCompare(a[columnName])
+                      }
+                  }
+        setSortedPodList([...nodeDetail.pods].sort(comparatorMethod))
+        setPodListOffset(0)
+    }
+
     const renderPodList = (): JSX.Element => {
+        if (!sortedPodList) return null
         return (
             <div className="en-2 bw-1 br-4 bcn-0 mt-12 mb-20 pod-container">
                 <div className="fw-6 fs-14 cn-9 pr-20 pl-20 pt-12">Pods</div>
-                <div className="pods-row">
-                    <div className="border-bottom pt-8 pr-8 pb-8 pl-20 fw-6 fs-13 cn-7 ellipsis-right">Namespace</div>
-                    <div className="border-bottom p-8 fw-6 fs-13 cn-7 ellipsis-right">Pod</div>
-                    <div className="border-bottom p-8 fw-6 fs-13 cn-7 ellipsis-right">CPU Requests</div>
-                    <div className="border-bottom p-8 fw-6 fs-13 cn-7 ellipsis-right">CPU Limits</div>
-                    <div className="border-bottom pt-8 pr-20 pb-8 pl-8 fw-6 fs-13 cn-7 ellipsis-right">
-                        Memory Requests
+                <div className="pods-grid">
+                    <div
+                        className={`border-bottom pt-8 pr-8 pb-8 pl-20 fw-6 fs-13 cn-7 list-title h-36 pointer ${
+                            sortByColumnName === 'namespace' ? 'sort-by' : ''
+                        } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
+                        onClick={(event) => {
+                            handleSortClick('namespace', 'string')
+                        }}
+                    >
+                        <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
+                            Namespace
+                        </span>
+                        <Sort className="pointer icon-dim-14 position-rel sort-icon" />
                     </div>
-                    <div className="border-bottom p-8 fw-6 fs-13 cn-7 ellipsis-right">Memory Limits</div>
-                    <div className="border-bottom pt-8 pr-20 pb-8 pl-8 fw-6 fs-13 cn-7">Age</div>
-                    {nodeDetail.pods.slice(podListOffset, podListOffset + pageSize).map((pod) => (
+                    <div
+                        className={`border-bottom p-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
+                            sortByColumnName === 'name' ? 'sort-by' : ''
+                        } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
+                        onClick={(event) => {
+                            handleSortClick('name', 'string')
+                        }}
+                    >
+                        <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
+                            Pod
+                        </span>
+                        <Sort className="pointer icon-dim-14 position-rel sort-icon" />
+                    </div>
+                    <div
+                        className={`border-bottom p-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
+                            sortByColumnName === 'cpu.requestPercentage' ? 'sort-by' : ''
+                        } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
+                        onClick={(event) => {
+                            handleSortClick('cpu.requestPercentage', 'number')
+                        }}
+                    >
+                        <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
+                            CPU Requests
+                        </span>
+                        <Sort className="pointer icon-dim-14 position-rel sort-icon" />
+                    </div>
+                    <div
+                        className={`border-bottom p-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
+                            sortByColumnName === 'cpu.limitPercentage' ? 'sort-by' : ''
+                        } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
+                        onClick={(event) => {
+                            handleSortClick('cpu.limitPercentage', 'number')
+                        }}
+                    >
+                        <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
+                            CPU Limits
+                        </span>
+                        <Sort className="pointer icon-dim-14 position-rel sort-icon" />
+                    </div>
+                    <div
+                        className={`border-bottom pt-8 pr-20 pb-8 pl-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
+                            sortByColumnName === 'memory.requestPercentage' ? 'sort-by' : ''
+                        } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
+                        onClick={(event) => {
+                            handleSortClick('memory.requestPercentage', 'number')
+                        }}
+                    >
+                        <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
+                            Memory Requests
+                        </span>
+                        <Sort className="pointer icon-dim-14 position-rel sort-icon" />
+                    </div>
+                    <div
+                        className={`border-bottom p-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
+                            sortByColumnName === 'memory.limitPercentage' ? 'sort-by' : ''
+                        } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
+                        onClick={(event) => {
+                            handleSortClick('memory.limitPercentage', 'number')
+                        }}
+                    >
+                        <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
+                            Memory Limits
+                        </span>
+                        <Sort className="pointer icon-dim-14 position-rel sort-icon" />
+                    </div>
+                    <div
+                        className={`border-bottom pt-8 pr-20 pb-8 pl-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
+                            sortByColumnName === 'createdAt' ? 'sort-by' : ''
+                        } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
+                        onClick={(event) => {
+                            handleSortClick('createdAt', 'string')
+                        }}
+                    >
+                        <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
+                            Age
+                        </span>
+                        <Sort className="pointer icon-dim-14 position-rel sort-icon" />
+                    </div>
+                    {sortedPodList.slice(podListOffset, podListOffset + pageSize).map((pod) => (
                         <>
                             <div className="border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9">{pod.namespace}</div>
                             <Tippy className="default-tt" arrow={false} placement="bottom" content={pod.name}>
                                 <div className="hover-trigger position-rel flexbox border-bottom-n1 p-8 fw-4 fs-13 cn-9">
                                     <span
-                                        className="inline-block ellipsis-right"
+                                        className="inline-block ellipsis-right lh-20"
                                         style={{ maxWidth: 'calc(100% - 20px)' }}
                                     >
                                         {pod.name}
@@ -532,44 +655,6 @@ export default function NodeDetails() {
                         </>
                     ))}
                 </div>
-                {/* <div className="scrollable-pod-list">
-                    {nodeDetail.pods.slice(podListOffset, podListOffset + pageSize).map((pod) => (
-                        <div className="pods-row border-bottom-n1 pt-12 pb-12 pr-20 pl-20 fw-4 fs-13 cn-9">
-                            <div>{pod.namespace}</div>
-                            <Tippy className="default-tt" arrow={false} placement="bottom" content={pod.name}>
-                                <div className="hover-trigger position-rel pr-10 flexbox">
-                                    <span className="inline-block ellipsis-right" style={{ maxWidth: '90%' }}>
-                                        {pod.name}
-                                    </span>
-                                    <Tippy
-                                        className="default-tt"
-                                        arrow={false}
-                                        placement="bottom"
-                                        content={copied ? 'Copied!' : 'Copy'}
-                                        trigger="mouseenter click"
-                                        onShow={(instance) => {
-                                            setCopied(false)
-                                        }}
-                                    >
-                                        <Clipboard
-                                            className="ml-8 mt-5 pointer hover-only icon-dim-16"
-                                            onClick={() => {
-                                                copyToClipboard(pod.name, () => {
-                                                    setCopied(true)
-                                                })
-                                            }}
-                                        />
-                                    </Tippy>
-                                </div>
-                            </Tippy>
-                            <div>{pod.cpu.requestPercentage || '-'}</div>
-                            <div>{pod.cpu.limitPercentage || '-'}</div>
-                            <div>{pod.memory.requestPercentage || '-'}</div>
-                            <div>{pod.memory.limitPercentage || '-'}</div>
-                            <div>{pod.age}</div>
-                        </div>
-                    ))}
-                </div> */}
                 {renderPagination()}
             </div>
         )

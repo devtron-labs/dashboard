@@ -48,6 +48,7 @@ export default function NodeListSearchFliter({
             isDefault: true,
             isSortingAllowed: true,
             isDisabled: true,
+            sortingFieldName: 'name',
         },
         { sortType: 'string', columnIndex: 1, label: 'Status', value: 'status', isDefault: true, isDisabled: true },
         { sortType: 'string', columnIndex: 2, label: 'Roles', value: 'roles', isDefault: true },
@@ -59,6 +60,7 @@ export default function NodeListSearchFliter({
             isDefault: true,
             isDisabled: true,
             isSortingAllowed: true,
+            sortingFieldName: 'errorCount',
         },
         { sortType: 'string', columnIndex: 4, label: 'K8S Version', value: 'k8sVersion', isDefault: true },
         {
@@ -68,6 +70,7 @@ export default function NodeListSearchFliter({
             value: 'podCount',
             isDefault: true,
             isSortingAllowed: true,
+            sortingFieldName: 'podCount',
         },
         {
             sortType: 'number',
@@ -76,6 +79,7 @@ export default function NodeListSearchFliter({
             value: 'taintCount',
             isDefault: true,
             isSortingAllowed: true,
+            sortingFieldName: 'taintCount',
         },
         {
             sortType: 'number',
@@ -84,7 +88,7 @@ export default function NodeListSearchFliter({
             value: 'cpu.usagePercentage',
             isDefault: true,
             isSortingAllowed: true,
-            suffixToRemove: '%',
+            sortingFieldName: 'cpu.usagePercentage',
         },
         {
             sortType: 'number',
@@ -92,7 +96,7 @@ export default function NodeListSearchFliter({
             label: 'CPU Usage (Absolute)',
             value: 'cpu.usage',
             isSortingAllowed: true,
-            suffixToRemove: 'm',
+            sortingFieldName: 'cpu.usage',
         },
         {
             sortType: 'number',
@@ -100,7 +104,7 @@ export default function NodeListSearchFliter({
             label: 'CPU Allocatable',
             value: 'cpu.allocatable',
             isSortingAllowed: true,
-            suffixToRemove: 'm',
+            sortingFieldName: 'cpu.allocatableInBytes',
         },
         {
             sortType: 'number',
@@ -109,7 +113,7 @@ export default function NodeListSearchFliter({
             value: 'memory.usagePercentage',
             isDefault: true,
             isSortingAllowed: true,
-            suffixToRemove: '%',
+            sortingFieldName: 'name',
         },
         {
             sortType: 'number',
@@ -117,7 +121,7 @@ export default function NodeListSearchFliter({
             label: 'Mem Usage (Absolute)',
             value: 'memory.usage',
             isSortingAllowed: true,
-            suffixToRemove: 'Mi',
+            sortingFieldName: 'name',
         },
         {
             sortType: 'number',
@@ -125,16 +129,16 @@ export default function NodeListSearchFliter({
             label: 'Mem Allocatable',
             value: 'memory.allocatable',
             isSortingAllowed: true,
-            suffixToRemove: 'Mi',
+            sortingFieldName: 'memory.allocatableInBytes',
         },
         {
-            sortType: 'number',
+            sortType: 'string',
             columnIndex: 13,
             label: 'Age',
             value: 'age',
             isDefault: true,
             isSortingAllowed: true,
-            suffixToRemove: 'd',
+            sortingFieldName: 'createdAt',
         },
         { sortType: 'boolean', columnIndex: 14, label: 'Unschedulable', value: 'unschedulable' },
     ]

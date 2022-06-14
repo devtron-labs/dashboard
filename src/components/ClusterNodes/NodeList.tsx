@@ -54,6 +54,7 @@ export default function NodeList({
         isDefault: true,
         isSortingAllowed: true,
         isDisabled: true,
+        sortingFieldName: 'name',
     })
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
 
@@ -210,16 +211,12 @@ export default function NodeList({
     }
 
     const numericComparatorMethod = (a, b) => {
-        let firstValue = Number(
-            sortByColumn.suffixToRemove
-                ? a[sortByColumn.value].replace(sortByColumn.suffixToRemove, '')
-                : a[sortByColumn.value],
-        )
-        let secondValue = Number(
-            sortByColumn.suffixToRemove
-                ? b[sortByColumn.value].replace(sortByColumn.suffixToRemove, '')
-                : b[sortByColumn.value],
-        )
+        let firstValue = a[sortByColumn.sortingFieldName]
+        let secondValue = b[sortByColumn.sortingFieldName]
+        if (firstValue.endsWith === '%') {
+            firstValue = firstValue.slice(0, -1)
+            secondValue = secondValue.slice(0, -1)
+        }
         if (sortOrder === OrderBy.ASC) {
             return (firstValue > secondValue && 1) || -1
         } else {
@@ -229,9 +226,9 @@ export default function NodeList({
 
     const alphabeticalComparatorMethod = (a, b) => {
         if (sortOrder === OrderBy.ASC) {
-            return a[sortByColumn.value].localeCompare(b[sortByColumn.value])
+            return a[sortByColumn.sortingFieldName].localeCompare(b[sortByColumn.sortingFieldName])
         } else {
-            return b[sortByColumn.value].localeCompare(a[sortByColumn.value])
+            return b[sortByColumn.sortingFieldName].localeCompare(a[sortByColumn.sortingFieldName])
         }
     }
 

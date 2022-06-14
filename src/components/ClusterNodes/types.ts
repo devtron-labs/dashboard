@@ -52,6 +52,13 @@ export interface NodeListResponse extends ResponseType {
     result?: NodeRowDetail[]
 }
 
+export interface PodType {
+    name: string
+    namespace: string
+    cpu: ResourceDetail
+    memory: ResourceDetail
+    age: string
+}
 export interface NodeDetail {
     name: string
     clusterName: string
@@ -69,7 +76,7 @@ export interface NodeDetail {
     annotations: LabelTag[]
     taints: LabelTag[]
     resources: ResourceDetail[]
-    pods: { name: string; namespace: string; cpu: ResourceDetail; memory: ResourceDetail; age: string }[]
+    pods: PodType[]
     manifest: object
     conditions: { haveIssue: boolean; message: string; reason: string; type: string }[]
     taintCount: number
@@ -93,7 +100,7 @@ export interface columnMetadataType {
     value: string
     isDefault?: boolean
     isSortingAllowed?: boolean
-    suffixToRemove?: string
+    sortingFieldName?: string
     isDisabled?: boolean
 }
 

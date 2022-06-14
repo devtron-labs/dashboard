@@ -53,37 +53,6 @@
         grid-template-columns: auto 100px 60px 50px 100px 50px 60px 100px 100px 60px;
         column-gap: 16px;
     }
-    .list-title {
-        .mw-85px {
-            max-width: 85px;
-        }
-        .sort-icon {
-            display: none;
-            transform: rotate(0);
-            top: -2px;
-        }
-        &.sort-by {
-            .sort-icon {
-                display: inline;
-                path {
-                    fill: var(--N700) !important;
-                }
-            }
-            &.desc {
-                .sort-icon {
-                    transform: rotate(180deg);
-                }
-            }
-        }
-        &:hover {
-            .sort-icon {
-                display: inline;
-                path {
-                    fill: var(--N400);
-                }
-            }
-        }
-    }
 
     .sticky-column {
         left: 0;
@@ -151,7 +120,7 @@
             column-gap: 12px;
         }
         .pod-container {
-            .pods-row {
+            .pods-grid {
                 display: grid;
                 grid-template-columns: minmax(150px, 300px) minmax(100px, auto) 100px 100px 100px 100px 75px;
             }
@@ -205,6 +174,39 @@
                 path {
                     stroke: var(--B500);
                 }
+            }
+        }
+    }
+}
+
+.node-list .list-title,
+.node-details-container .pods-grid .list-title {
+    .mw-85px {
+        max-width: 85px;
+    }
+    .sort-icon {
+        display: none;
+        transform: rotate(0);
+        top: -2px;
+    }
+    &.sort-by {
+        .sort-icon {
+            display: inline;
+            path {
+                fill: var(--N700) !important;
+            }
+        }
+        &.desc {
+            .sort-icon {
+                transform: rotate(180deg);
+            }
+        }
+    }
+    &:hover {
+        .sort-icon {
+            display: inline;
+            path {
+                fill: var(--N400);
             }
         }
     }
