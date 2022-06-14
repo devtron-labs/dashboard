@@ -370,7 +370,7 @@ export default function NodeListSearchFliter({
                 menuIsOpen={isMenuOpen}
                 name="columns"
                 value={selectedColumns}
-                options={columnMetadata}
+                options={columnMetadata.filter((columnMetaData) => !columnMetaData.isDisabled)}
                 onChange={setSelectedColumns}
                 isMulti={true}
                 isSearchable={false}
@@ -378,7 +378,6 @@ export default function NodeListSearchFliter({
                 hideSelectedOptions={false}
                 onMenuOpen={() => handleMenuState(true)}
                 onMenuClose={handleCloseFilter}
-                isOptionDisabled={(option) => option['isDisabled']}
                 components={{
                     Option: OptionWithCheckbox,
                     ValueContainer,

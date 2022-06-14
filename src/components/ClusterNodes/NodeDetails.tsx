@@ -255,14 +255,12 @@ export default function NodeDetails() {
                         <div>Key|Value</div>
                         <div>Effect</div>
                     </div>
-                    <div className="subtab-grid">
-                        {renderKeyValueLabel('node-role.kubernetes.io/master')}
-                        {renderWithCopy('NoSchedule')}
-                    </div>
-                    <div className="subtab-grid">
-                        {renderKeyValueLabel('node-role.kubernetes.io/etcd', 'true')}
-                        {renderWithCopy('NoExecute')}
-                    </div>
+                    {nodeDetail.taints.map((taint) => (
+                        <div className="subtab-grid">
+                            {renderKeyValueLabel(taint.key, taint.value)}
+                            {renderWithCopy(taint['effect'])}
+                        </div>
+                    ))}
                 </div>
             )
         }

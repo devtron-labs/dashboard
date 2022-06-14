@@ -302,7 +302,7 @@ export default function NodeList({
                         {lastDataSyncTimeString && (
                             <span>
                                 {lastDataSyncTimeString}
-                                <button className="btn btn-link p-0 fw-6 cb-5 ml-5" onClick={getNodeListData}>
+                                <button className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13" onClick={getNodeListData}>
                                     Refresh
                                 </button>
                             </span>

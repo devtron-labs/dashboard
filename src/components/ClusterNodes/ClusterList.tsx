@@ -23,6 +23,7 @@ export default function ClusterList() {
     const [clusterList, setClusterList] = useState<ClusterDetail[]>([])
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
+    const [searchApplied, setSearchApplied] = useState(false)
 
     const getData = () => {
         setLoader(true)
@@ -70,16 +71,25 @@ export default function ClusterList() {
         }
     }
 
+    const clearSearch = () => {
+        if (searchApplied) {
+            handleFilterChanges('')
+            setSearchApplied(false)
+        }
+        setSearchText('')
+    }
+
     const handleFilterKeyPress = (event): void => {
         let theKeyCode = event.key
         if (theKeyCode === 'Enter') {
             handleFilterChanges(event.target.value)
+            setSearchApplied(true)
         } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
-            handleFilterChanges('')
+            clearSearch()
         }
     }
 
-    const RenderSearch = (): JSX.Element => {
+    const renderSearch = (): JSX.Element => {
         return (
             <div className="search position-rel margin-right-0 en-2 bw-1 br-4">
                 <Search className="search__icon icon-dim-18" />
@@ -91,11 +101,10 @@ export default function ClusterList() {
                     onChange={(event) => {
                         setSearchText(event.target.value)
                     }}
-                    autoFocus
                     onKeyDown={handleFilterKeyPress}
                 />
-                {searchText.length > 0 && (
-                    <button className="search__clear-button" type="button" onClick={(e) => handleFilterChanges('')}>
+                {searchApplied && (
+                    <button className="search__clear-button" type="button" onClick={clearSearch}>
                         <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                     </button>
                 )}
@@ -112,12 +121,12 @@ export default function ClusterList() {
             <PageHeader headerName="Clusters" />
             <div className={`cluster-list bcn-0 ${noResults ? 'no-result-container' : ''}`}>
                 <div className="flexbox content-space pl-20 pr-20 pt-16 pb-20">
-                    <RenderSearch />
+                    {renderSearch()}
                     <div className="fs-13">
                         {lastDataSyncTimeString && (
                             <span>
                                 {lastDataSyncTimeString}{' '}
-                                <button className="btn btn-link p-0 fw-6 cb-5 ml-5" onClick={getData}>
+                                <button className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-24" onClick={getData}>
                                     Refresh
                                 </button>
                             </span>
@@ -125,7 +134,7 @@ export default function ClusterList() {
                     </div>
                 </div>
                 {noResults ? (
-                    <ClusterNodeEmptyState actionHandler={() => handleFilterChanges('')} />
+                    <ClusterNodeEmptyState actionHandler={clearSearch} />
                 ) : (
                     <div className="" style={{ minHeight: 'calc(100vh - 125px)' }}>
                         <div className="cluster-list-row fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 pl-20 text-uppercase">
