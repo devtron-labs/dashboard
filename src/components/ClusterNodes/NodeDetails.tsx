@@ -710,7 +710,7 @@ export default function NodeDetails() {
                     setApiInProgress(false)
                     if (response.result) {
                         toast.success('Node updated')
-                        setNodeDetail(response.result)
+                        nodeDetail.manifest = response.result
                         setIsReviewStates(false)
                     }
                 })
