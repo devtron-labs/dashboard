@@ -136,73 +136,75 @@
         column-gap: 16px;
     }
 }
+.cluster-list,
+.node-list,
+.node-details-container {
+    .top-3 {
+        top: 3px;
+    }
+    .top-88 {
+        top: 88px;
+    }
 
-.top-3 {
-    top: 3px;
-}
-.top-88 {
-    top: 88px;
-}
-
-.hover-class {
-    &:hover {
-        background-color: var(--N50);
-        .sticky-column {
+    .hover-class {
+        &:hover {
             background-color: var(--N50);
+            .sticky-column {
+                background-color: var(--N50);
+            }
         }
     }
-}
 
-.tab-list {
-    .tab-list__tab {
-        .tab-hover {
-            &:hover,
-            &.active {
-                color: var(--B500);
-                .edit-yaml-icon {
-                    path {
-                        stroke: var(--B500);
+    .tab-list {
+        .tab-list__tab {
+            .tab-hover {
+                &:hover,
+                &.active {
+                    color: var(--B500);
+                    .edit-yaml-icon {
+                        path {
+                            stroke: var(--B500);
+                        }
                     }
                 }
             }
-        }
-        .node-details__active-tab {
-            height: 2px;
-            background-color: var(--B500);
-            border-radius: 2px 2px 0px 0px;
-            margin-top: -1px;
+            .node-details__active-tab {
+                height: 2px;
+                background-color: var(--B500);
+                border-radius: 2px 2px 0px 0px;
+                margin-top: -1px;
+            }
         }
     }
-}
 
-.node-list .list-title,
-.node-details-container .pods-grid .list-title {
-    .mw-85px {
-        max-width: 85px;
-    }
-    .sort-icon {
-        display: none;
-        transform: rotate(0);
-        top: -2px;
-    }
-    &.sort-by {
-        .sort-icon {
-            display: inline;
-            path {
-                fill: var(--N700) !important;
-            }
+    .list-title {
+        .mw-85px {
+            max-width: 85px;
         }
-        &.desc {
+        .sort-icon {
+            display: none;
+            transform: rotate(0);
+            top: -2px;
+        }
+        &.sort-by {
             .sort-icon {
-                transform: rotate(180deg);
+                display: inline;
+                path {
+                    fill: var(--N700) !important;
+                }
+            }
+            &.desc {
+                .sort-icon {
+                    transform: rotate(180deg);
+                }
             }
         }
-    }
-    &:hover {
-        .sort-icon {
-            display: inline;
-            path {
-                fill: var(--N400);
+        &:hover {
+            .sort-icon {
+                display: inline;
+                path {
+                    fill: var(--N400);
+                }
             }
         }
     }

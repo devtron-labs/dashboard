@@ -71,7 +71,7 @@ export default function ClusterList() {
         }
     }
 
-    const clearSearch = () => {
+    const clearSearch = (): void => {
         if (searchApplied) {
             handleFilterChanges('')
             setSearchApplied(false)

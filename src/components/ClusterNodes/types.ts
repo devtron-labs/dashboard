@@ -67,7 +67,7 @@ export interface NodeDetail {
     kind: string
     roles: string[]
     k8sVersion: string
-    errors: { Ready: 'KubeletReady - kubelet is posting ready status. AppArmor enabled' }
+    errors: Record<string, string>
     internalIp: string
     externalIp: string
     unschedulable: boolean

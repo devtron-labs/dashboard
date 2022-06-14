@@ -43,7 +43,7 @@ export default function NodeListSearchFliter({
         setSelectedVersion(selectedValue)
     }
 
-    const clearTextFilter = () => {
+    const clearTextFilter = (): void => {
         setSearchInputText('')
         setSearchText('')
         setSelectedSearchTextType('')
@@ -85,7 +85,7 @@ export default function NodeListSearchFliter({
         }
     }
 
-    const toggleSelectPopup = () => {
+    const toggleSelectPopup = (): void => {
         setOpenFilterPopup(!openFilterPopup)
     }
 
@@ -126,7 +126,7 @@ export default function NodeListSearchFliter({
                 </div>
                 {openFilterPopup && (
                     <>
-                        <div className="transparent-div" onClick={toggleSelectPopup}></div>{' '}
+                        <div className="transparent-div" onClick={toggleSelectPopup}></div>
                         {!selectedSearchTextType && (
                             <div className="search-popup w-100 bcn-0 position-abs br-4 en-2 bw-1">
                                 <div className="search-title pt-4 pb-4 pl-10 pr-10">Search by</div>

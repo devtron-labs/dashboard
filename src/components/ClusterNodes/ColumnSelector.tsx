@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-
 import ReactSelect, { components, MultiValue } from 'react-select'
 import { Option } from '../common'
 import { columnMetadata, columnMetadataType } from './types'
@@ -22,7 +21,7 @@ export default function ColumnSelector({
         setSelectedColumns(appliedColumns)
     }, [])
 
-    const handleApplySelectedColumns = () => {
+    const handleApplySelectedColumns = (): void => {
         setMenuOpen(false)
         const _appliedColumns = [...selectedColumns].sort((a, b) => a['columnIndex'] - b['columnIndex'])
         if (typeof Storage !== 'undefined') {

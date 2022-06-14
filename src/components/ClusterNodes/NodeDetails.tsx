@@ -493,21 +493,38 @@ export default function NodeDetails() {
                       let secondValue = b[sortByColumnArr[0]][sortByColumnArr[1]]
                       firstValue = Number(firstValue.slice(0, -1))
                       secondValue = Number(secondValue.slice(0, -1))
-                      if (_sortOrder === OrderBy.ASC) {
-                          return (firstValue > secondValue && 1) || -1
-                      } else {
-                          return (secondValue > firstValue && 1) || -1
-                      }
+                      return _sortOrder === OrderBy.ASC ? firstValue - secondValue : secondValue - firstValue
                   }
                 : (a, b) => {
-                      if (_sortOrder === OrderBy.ASC) {
-                          return a[columnName].localeCompare(b[columnName])
-                      } else {
-                          return b[columnName].localeCompare(a[columnName])
-                      }
+                      return _sortOrder === OrderBy.ASC
+                          ? a[columnName].localeCompare(b[columnName])
+                          : b[columnName].localeCompare(a[columnName])
                   }
         setSortedPodList([...nodeDetail.pods].sort(comparatorMethod))
         setPodListOffset(0)
+    }
+
+    const renderPodHeaderCell = (
+        columnName: string,
+        sortingFieldName: string,
+        columnType: string,
+        className: string,
+    ): JSX.Element => {
+        return (
+            <div
+                className={`border-bottom fw-6 fs-13 cn-7 list-title h-36 pointer ${className} ${
+                    sortByColumnName === sortingFieldName ? 'sort-by' : ''
+                } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
+                onClick={() => {
+                    handleSortClick(sortingFieldName, columnType)
+                }}
+            >
+                <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
+                    {columnName}
+                </span>
+                <Sort className="pointer icon-dim-14 position-rel sort-icon" />
+            </div>
+        )
     }
 
     const renderPodList = (): JSX.Element => {
@@ -516,97 +533,13 @@ export default function NodeDetails() {
             <div className="en-2 bw-1 br-4 bcn-0 mt-12 mb-20 pod-container">
                 <div className="fw-6 fs-14 cn-9 pr-20 pl-20 pt-12">Pods</div>
                 <div className="pods-grid">
-                    <div
-                        className={`border-bottom pt-8 pr-8 pb-8 pl-20 fw-6 fs-13 cn-7 list-title h-36 pointer ${
-                            sortByColumnName === 'namespace' ? 'sort-by' : ''
-                        } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
-                        onClick={() => {
-                            handleSortClick('namespace', 'string')
-                        }}
-                    >
-                        <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
-                            Namespace
-                        </span>
-                        <Sort className="pointer icon-dim-14 position-rel sort-icon" />
-                    </div>
-                    <div
-                        className={`border-bottom p-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
-                            sortByColumnName === 'name' ? 'sort-by' : ''
-                        } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
-                        onClick={() => {
-                            handleSortClick('name', 'string')
-                        }}
-                    >
-                        <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
-                            Pod
-                        </span>
-                        <Sort className="pointer icon-dim-14 position-rel sort-icon" />
-                    </div>
-                    <div
-                        className={`border-bottom p-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
-                            sortByColumnName === 'cpu.requestPercentage' ? 'sort-by' : ''
-                        } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
-                        onClick={() => {
-                            handleSortClick('cpu.requestPercentage', 'number')
-                        }}
-                    >
-                        <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
-                            CPU Requests
-                        </span>
-                        <Sort className="pointer icon-dim-14 position-rel sort-icon" />
-                    </div>
-                    <div
-                        className={`border-bottom p-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
-                            sortByColumnName === 'cpu.limitPercentage' ? 'sort-by' : ''
-                        } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
-                        onClick={() => {
-                            handleSortClick('cpu.limitPercentage', 'number')
-                        }}
-                    >
-                        <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
-                            CPU Limits
-                        </span>
-                        <Sort className="pointer icon-dim-14 position-rel sort-icon" />
-                    </div>
-                    <div
-                        className={`border-bottom pt-8 pr-20 pb-8 pl-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
-                            sortByColumnName === 'memory.requestPercentage' ? 'sort-by' : ''
-                        } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
-                        onClick={() => {
-                            handleSortClick('memory.requestPercentage', 'number')
-                        }}
-                    >
-                        <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
-                            Memory Requests
-                        </span>
-                        <Sort className="pointer icon-dim-14 position-rel sort-icon" />
-                    </div>
-                    <div
-                        className={`border-bottom p-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
-                            sortByColumnName === 'memory.limitPercentage' ? 'sort-by' : ''
-                        } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
-                        onClick={() => {
-                            handleSortClick('memory.limitPercentage', 'number')
-                        }}
-                    >
-                        <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
-                            Memory Limits
-                        </span>
-                        <Sort className="pointer icon-dim-14 position-rel sort-icon" />
-                    </div>
-                    <div
-                        className={`border-bottom pt-8 pr-20 pb-8 pl-8 fw-6 fs-13 cn-7 list-title h-36 pointer ${
-                            sortByColumnName === 'createdAt' ? 'sort-by' : ''
-                        } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
-                        onClick={() => {
-                            handleSortClick('createdAt', 'string')
-                        }}
-                    >
-                        <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
-                            Age
-                        </span>
-                        <Sort className="pointer icon-dim-14 position-rel sort-icon" />
-                    </div>
+                    {renderPodHeaderCell('Namespace', 'namespace', 'string', 'pt-8 pr-8 pb-8 pl-20')}
+                    {renderPodHeaderCell('Pod', 'name', 'string', 'p-8')}
+                    {renderPodHeaderCell('CPU Requests', 'cpu.requestPercentage', 'number', 'p-8')}
+                    {renderPodHeaderCell('CPU Requests', 'cpu.limitPercentage', 'number', 'p-8')}
+                    {renderPodHeaderCell('Memory Requests', 'memory.requestPercentage', 'number', 'p-8')}
+                    {renderPodHeaderCell('Memory Requests', 'memory.limitPercentage', 'number', 'p-8')}
+                    {renderPodHeaderCell('Age', 'Age', 'string', 'pt-8 pr-20 pb-8 pl-8')}
                     {sortedPodList.slice(podListOffset, podListOffset + pageSize).map((pod) => (
                         <>
                             <div className="border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9">{pod.namespace}</div>
@@ -684,16 +617,16 @@ export default function NodeDetails() {
         )
     }
 
-    const cancelYAMLEdit = () => {
+    const cancelYAMLEdit = (): void => {
         setIsReviewStates(false)
         setModifiedManifest(YAML.stringify(nodeDetail.manifest))
     }
 
-    const handleEditorValueChange = (codeEditorData: string) => {
+    const handleEditorValueChange = (codeEditorData: string): void => {
         setModifiedManifest(codeEditorData)
     }
 
-    const saveYAML = () => {
+    const saveYAML = (): void => {
         if (isReviewState) {
             const requestData: UpdateNodeRequestBody = {
                 clusterId: +clusterId,
@@ -791,7 +724,7 @@ export default function NodeDetails() {
         )
     }
 
-    const renderTabs = () => {
+    const renderTabs = (): JSX.Element => {
         if (selectedTabIndex === 1) {
             return renderYAMLEditor()
         } else if (selectedTabIndex === 2) {

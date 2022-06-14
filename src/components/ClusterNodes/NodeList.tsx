@@ -40,16 +40,7 @@ export default function NodeList() {
     const [searchedLabelMap, setSearchedLabelMap] = useState<Map<string, string>>(new Map())
     const [selectedVersion, setSelectedVersion] = useState<OptionType>(defaultVersion)
     const [selectedSearchTextType, setSelectedSearchTextType] = useState<string>('')
-    const [sortByColumn, setSortByColumn] = useState<columnMetadataType>({
-        sortType: 'string',
-        columnIndex: 0,
-        label: 'Node',
-        value: 'name',
-        isDefault: true,
-        isSortingAllowed: true,
-        isDisabled: true,
-        sortingFieldName: 'name',
-    })
+    const [sortByColumn, setSortByColumn] = useState<columnMetadataType>(columnMetadata[0])
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
     const [noResults, setNoResults] = useState(false)
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<columnMetadataType>>([])
@@ -90,7 +81,7 @@ export default function NodeList() {
         return toReturn
     }
 
-    const getNodeListData = () => {
+    const getNodeListData = (): void => {
         setLoader(true)
         Promise.all([getNodeList(clusterId), getClusterCapacity(clusterId)])
             .then((response) => {
@@ -209,15 +200,11 @@ export default function NodeList() {
             }
             _flattenNodeList.push(element)
         }
-        _flattenNodeList = sortNodeList(_flattenNodeList)
-        setFilteredFlattenNodeList(_flattenNodeList)
-        setNoResults(_flattenNodeList.length === 0)
-    }
-
-    const sortNodeList = (_flattenNodeList: Object[]): Object[] => {
         const comparatorMethod =
             sortByColumn.sortType === 'number' ? numericComparatorMethod : alphabeticalComparatorMethod
-        return _flattenNodeList.sort(comparatorMethod)
+        _flattenNodeList.sort(comparatorMethod)
+        setFilteredFlattenNodeList(_flattenNodeList)
+        setNoResults(_flattenNodeList.length === 0)
     }
 
     const numericComparatorMethod = (a, b) => {
@@ -227,19 +214,13 @@ export default function NodeList() {
             firstValue = firstValue.slice(0, -1)
             secondValue = secondValue.slice(0, -1)
         }
-        if (sortOrder === OrderBy.ASC) {
-            return (firstValue > secondValue && 1) || -1
-        } else {
-            return (secondValue > firstValue && 1) || -1
-        }
+        return sortOrder === OrderBy.ASC ? firstValue - secondValue : secondValue - firstValue
     }
 
     const alphabeticalComparatorMethod = (a, b) => {
-        if (sortOrder === OrderBy.ASC) {
-            return a[sortByColumn.sortingFieldName].localeCompare(b[sortByColumn.sortingFieldName])
-        } else {
-            return b[sortByColumn.sortingFieldName].localeCompare(a[sortByColumn.sortingFieldName])
-        }
+        return sortOrder === OrderBy.ASC
+            ? a[sortByColumn.sortingFieldName].localeCompare(b[sortByColumn.sortingFieldName])
+            : b[sortByColumn.sortingFieldName].localeCompare(a[sortByColumn.sortingFieldName])
     }
 
     const clearFilter = (): void => {
@@ -298,14 +279,49 @@ export default function NodeList() {
         }
     }
 
-    if (loader) {
-        return <Progressing pageLoader />
+    const renderClusterError = (): JSX.Element => {
+        if (clusterErrorList.length === 0) return
+        return (
+            <div
+                className={`pl-20 pr-20 pt-12 bcr-1 border-top border-bottom ${
+                    collapsedErrorSection ? ' pb-12 ' : ' pb-8'
+                }`}
+            >
+                <div className={`flexbox content-space ${collapsedErrorSection ? '' : ' mb-16'}`}>
+                    <span
+                        className="flexbox pointer"
+                        onClick={(event) => {
+                            setCollapsedErrorSection(!collapsedErrorSection)
+                        }}
+                    >
+                        <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
+                        <span className="fw-6 fs-13 cn-9 mr-16">
+                            {clusterErrorList.length === 1 ? '1 Error' : clusterErrorList.length + ' Errors in cluster'}
+                        </span>
+                        {collapsedErrorSection && <span className="fw-4 fs-13 cn-9">{clusterErrorTitle}</span>}
+                    </span>
+                    <Dropdown
+                        className="pointer"
+                        style={{ transform: collapsedErrorSection ? 'rotate(0)' : 'rotate(180deg)' }}
+                        onClick={(event) => {
+                            setCollapsedErrorSection(!collapsedErrorSection)
+                        }}
+                    />
+                </div>
+                {!collapsedErrorSection && (
+                    <>
+                        {clusterErrorList.map((error) => (
+                            <div className="fw-4 fs-13 cn-9 mb-8">{error}</div>
+                        ))}
+                    </>
+                )}
+            </div>
+        )
     }
 
-    return (
-        <>
-            <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs={true} />
-            <div className="node-list">
+    const renderClusterSummary = (): JSX.Element => {
+        return (
+            <>
                 <div className="flexbox content-space pl-20 pr-20 pt-16 pb-16">
                     <div className="fw-6 fs-14 cn-9">Resource allocation and usage</div>
                     <div className="fs-13">
@@ -370,44 +386,108 @@ export default function NodeList() {
                         </div>
                     </div>
                 </div>
-                {clusterErrorList.length > 0 && (
-                    <div
-                        className={`pl-20 pr-20 pt-12 bcr-1 border-top border-bottom ${
-                            collapsedErrorSection ? ' pb-12 ' : ' pb-8'
-                        }`}
-                    >
-                        <div className={`flexbox content-space ${collapsedErrorSection ? '' : ' mb-16'}`}>
-                            <span
-                                className="flexbox pointer"
-                                onClick={(event) => {
-                                    setCollapsedErrorSection(!collapsedErrorSection)
-                                }}
-                            >
-                                <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
-                                <span className="fw-6 fs-13 cn-9 mr-16">
-                                    {clusterErrorList.length === 1
-                                        ? '1 Error'
-                                        : clusterErrorList.length + ' Errors in cluster'}
-                                </span>
-                                {collapsedErrorSection && <span className="fw-4 fs-13 cn-9">{clusterErrorTitle}</span>}
-                            </span>
-                            <Dropdown
-                                className="pointer"
-                                style={{ transform: collapsedErrorSection ? 'rotate(0)' : 'rotate(180deg)' }}
-                                onClick={(event) => {
-                                    setCollapsedErrorSection(!collapsedErrorSection)
-                                }}
-                            />
+                {renderClusterError()}
+            </>
+        )
+    }
+
+    const renderNodeListHeader = (column: columnMetadataType): JSX.Element => {
+        return (
+            <div
+                className={`list-title inline-block mr-16 ${
+                    column.label === 'Node' ? 'w-280 pl-20 bcn-0 position-sticky sticky-column' : 'w-100-px'
+                } ${sortByColumn.value === column.value ? 'sort-by' : ''} ${sortOrder === OrderBy.DESC ? 'desc' : ''} ${
+                    column.isSortingAllowed ? ' pointer' : ''
+                }`}
+                onClick={() => {
+                    column.isSortingAllowed && handleSortClick(column)
+                }}
+            >
+                <span className="inline-block ellipsis-right mw-85px ">{column.label}</span>
+                {column.isSortingAllowed && <Sort className="pointer icon-dim-14 position-rel sort-icon" />}
+            </div>
+        )
+    }
+
+    const renderPercentageTippy = (nodeData: Object, column: columnMetadataType, children: any): JSX.Element => {
+        return (
+            <Tippy
+                className="default-tt"
+                arrow={false}
+                placement="top"
+                content={
+                    <>
+                        <span style={{ display: 'block' }}>
+                            {column.value === 'cpu.usagePercentage'
+                                ? `CPU Usage: ${nodeData['cpu.usage']}`
+                                : `Memory Usage: ${nodeData['memory.usage']}`}
+                        </span>
+                        <span style={{ display: 'block' }}>
+                            {column.value === 'cpu.usagePercentage'
+                                ? `Allocatable CPU: ${nodeData['cpu.allocatable']}`
+                                : `Allocatable Memory: ${nodeData['memory.allocatable']}`}
+                        </span>
+                    </>
+                }
+            >
+                <div>{children}</div>
+            </Tippy>
+        )
+    }
+
+    const renderNodeList = (nodeData: Object): JSX.Element => {
+        return (
+            <div
+                key={nodeData['name']}
+                className="fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 hover-class h-44"
+                style={{ width: 'max-content', minWidth: '100%' }}
+            >
+                {appliedColumns.map((column) => {
+                    return column.label === 'Node' ? (
+                        <div className="w-280 inline-block ellipsis-right mr-16 pl-20 bcn-0 position-sticky sticky-column">
+                            <NavLink to={`${match.url}/${nodeData[column.value]}`}>{nodeData[column.value]}</NavLink>
                         </div>
-                        {!collapsedErrorSection && (
-                            <>
-                                {clusterErrorList.map((error) => (
-                                    <div className="fw-4 fs-13 cn-9 mb-8">{error}</div>
-                                ))}
-                            </>
-                        )}
-                    </div>
-                )}
+                    ) : (
+                        <div
+                            className={`w-100-px inline-block ellipsis-right mr-16 ${
+                                column.value === 'status' ? TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7' : ''
+                            }`}
+                        >
+                            {column.value === 'errorCount' ? (
+                                nodeData['errorCount'] > 0 && (
+                                    <>
+                                        <Error className="mr-3 icon-dim-16 position-rel top-3" />
+                                        <span className="cr-5">{nodeData['errorCount'] || '-'}</span>{' '}
+                                    </>
+                                )
+                            ) : column.sortType === 'boolean' ? (
+                                nodeData[column.value] + ''
+                            ) : nodeData[column.value] !== undefined ? (
+                                <ConditionalWrap
+                                    condition={column.value.indexOf('.usagePercentage') > 0}
+                                    wrap={(children) => renderPercentageTippy(nodeData, column, children)}
+                                >
+                                    {nodeData[column.value]}
+                                </ConditionalWrap>
+                            ) : (
+                                '-'
+                            )}
+                        </div>
+                    )
+                })}
+            </div>
+        )
+    }
+
+    if (loader) {
+        return <Progressing pageLoader />
+    }
+
+    return (
+        <>
+            <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs={true} />
+            <div className="node-list">
+                {renderClusterSummary()}
                 <div className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''}`}>
                     <div className="pl-20 pr-20">
                         <NodeListSearchFilter
@@ -432,95 +512,9 @@ export default function NodeList() {
                                 className=" fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 text-uppercase h-36"
                                 style={{ width: 'max-content', minWidth: '100%' }}
                             >
-                                {appliedColumns.map((column) => (
-                                    <div
-                                        className={`list-title inline-block mr-16 ${
-                                            column.label === 'Node'
-                                                ? 'w-280 pl-20 bcn-0 position-sticky sticky-column'
-                                                : 'w-100-px'
-                                        } ${sortByColumn.value === column.value ? 'sort-by' : ''} ${
-                                            sortOrder === OrderBy.DESC ? 'desc' : ''
-                                        } ${column.isSortingAllowed ? ' pointer' : ''}`}
-                                        onClick={(event) => {
-                                            column.isSortingAllowed && handleSortClick(column)
-                                        }}
-                                    >
-                                        <span className="inline-block ellipsis-right mw-85px ">{column.label}</span>
-                                        {column.isSortingAllowed && (
-                                            <Sort className="pointer icon-dim-14 position-rel sort-icon" />
-                                        )}
-                                    </div>
-                                ))}
+                                {appliedColumns.map((column) => renderNodeListHeader(column))}
                             </div>
-                            {filteredFlattenNodeList?.map((nodeData) => (
-                                <div
-                                    key={nodeData['name']}
-                                    className="fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 hover-class h-44"
-                                    style={{ width: 'max-content', minWidth: '100%' }}
-                                >
-                                    {appliedColumns.map((column) => {
-                                        return column.label === 'Node' ? (
-                                            <div className="w-280 inline-block ellipsis-right mr-16 pl-20 bcn-0 position-sticky sticky-column">
-                                                <NavLink to={`${match.url}/${nodeData[column.value]}`}>
-                                                    {nodeData[column.value]}
-                                                </NavLink>
-                                            </div>
-                                        ) : (
-                                            <div
-                                                className={`w-100-px inline-block ellipsis-right mr-16 ${
-                                                    column.value === 'status'
-                                                        ? TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7'
-                                                        : ''
-                                                }`}
-                                            >
-                                                {column.value === 'errorCount' ? (
-                                                    nodeData['errorCount'] > 0 && (
-                                                        <>
-                                                            <Error className="mr-3 icon-dim-16 position-rel top-3" />
-                                                            <span className="cr-5">
-                                                                {nodeData['errorCount'] || '-'}
-                                                            </span>{' '}
-                                                        </>
-                                                    )
-                                                ) : column.sortType === 'boolean' ? (
-                                                    nodeData[column.value] + ''
-                                                ) : nodeData[column.value] !== undefined ? (
-                                                    <ConditionalWrap
-                                                        condition={column.value.indexOf('.usagePercentage') > 0}
-                                                        wrap={(children) => (
-                                                            <Tippy
-                                                                className="default-tt"
-                                                                arrow={false}
-                                                                placement="top"
-                                                                content={
-                                                                    <>
-                                                                        <span style={{ display: 'block' }}>
-                                                                            {column.value === 'cpu.usagePercentage'
-                                                                                ? `CPU Usage: ${nodeData['cpu.usage']}`
-                                                                                : `Memory Usage: ${nodeData['memory.usage']}`}
-                                                                        </span>
-                                                                        <span style={{ display: 'block' }}>
-                                                                            {column.value === 'cpu.usagePercentage'
-                                                                                ? `Allocatable CPU: ${nodeData['cpu.allocatable']}`
-                                                                                : `Allocatable Memory: ${nodeData['memory.allocatable']}`}
-                                                                        </span>
-                                                                    </>
-                                                                }
-                                                            >
-                                                                <div>{children}</div>
-                                                            </Tippy>
-                                                        )}
-                                                    >
-                                                        {nodeData[column.value]}
-                                                    </ConditionalWrap>
-                                                ) : (
-                                                    '-'
-                                                )}
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            ))}
+                            {filteredFlattenNodeList?.map((nodeData) => renderNodeList(nodeData))}
                         </div>
                     )}
                 </div>

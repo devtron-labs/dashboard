@@ -1,5 +1,5 @@
 import { Routes } from '../../config'
-import { post, get, put } from '../../services/api'
+import { get, put } from '../../services/api'
 import {
     ClusterCapacityResponse,
     ClusterListResponse,
