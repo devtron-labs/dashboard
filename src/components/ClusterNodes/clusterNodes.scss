@@ -101,9 +101,17 @@
         display: none;
     }
 
-    .hover-trigger:hover {
-        .hover-only {
-            display: inline-block;
+    .hover-trigger {
+        .tippy-box.default-tt {
+            display: none !important;
+        }
+        &:hover {
+            .tippy-box.default-tt {
+                display: block !important;
+            }
+            .hover-only {
+                display: inline-block;
+            }
         }
     }
     .subtab-grid {

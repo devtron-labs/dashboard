@@ -161,7 +161,7 @@ export default function NodeDetails() {
 
     const renderKeyValueLabel = (key: string, value?: string): JSX.Element => {
         return (
-            <div className="flexbox mb-8 hover-trigger">
+            <div className="flexbox mb-8 hover-trigger position-rel">
                 <div
                     className={`cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
                         !value ? ' br-4' : ' left-radius-4 no-right-border'
@@ -184,6 +184,7 @@ export default function NodeDetails() {
                     onShow={(instance) => {
                         setCopied(false)
                     }}
+                    interactive={true}
                 >
                     <Clipboard
                         className="ml-8 mt-5 pointer hover-only icon-dim-16"
@@ -220,7 +221,7 @@ export default function NodeDetails() {
 
     const renderWithCopy = (key: string): JSX.Element => {
         return (
-            <div className="flexbox mb-8 hover-trigger">
+            <div className="flexbox mb-8 hover-trigger position-rel">
                 <div>{key}</div>
                 <Tippy
                     className="default-tt"
@@ -231,6 +232,7 @@ export default function NodeDetails() {
                     onShow={(instance) => {
                         setCopied(false)
                     }}
+                    interactive={true}
                 >
                     <Clipboard
                         className="ml-8 mt-5 pointer hover-only icon-dim-16"
@@ -560,6 +562,7 @@ export default function NodeDetails() {
                                         onShow={(instance) => {
                                             setCopied(false)
                                         }}
+                                        interactive={true}
                                     >
                                         <Clipboard
                                             className="ml-5 mt-5 pointer hover-only icon-dim-14"
