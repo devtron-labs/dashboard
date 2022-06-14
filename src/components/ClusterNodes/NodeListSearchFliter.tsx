@@ -327,8 +327,7 @@ export default function NodeListSearchFliter({
                         {!props.selectProps.menuIsOpen && (
                             <>
                                 <Setting className="icon-dim-16 setting-icon mr-5" />
-                                Columns &nbsp;
-                                {length === props.options.length ? 'All' : <span className="badge">{length}</span>}
+                                Columns
                             </>
                         )}
                         {React.cloneElement(props.children[1])}
@@ -396,7 +395,7 @@ export default function NodeListSearchFliter({
                     option: (base, state) => ({
                         ...base,
                         padding: '10px 12px',
-                        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                        backgroundColor: state.isFocused ? 'var(--N100) !important' : 'var(--N0) !important',
                         color: 'var(--N900)',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',

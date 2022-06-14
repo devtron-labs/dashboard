@@ -91,7 +91,7 @@ export default function ClusterList() {
 
     const renderSearch = (): JSX.Element => {
         return (
-            <div className="search position-rel margin-right-0 en-2 bw-1 br-4">
+            <div className="search position-rel margin-right-0 en-2 bw-1 br-4 h-32">
                 <Search className="search__icon icon-dim-18" />
                 <input
                     type="text"
@@ -120,13 +120,13 @@ export default function ClusterList() {
         <>
             <PageHeader headerName="Clusters" />
             <div className={`cluster-list bcn-0 ${noResults ? 'no-result-container' : ''}`}>
-                <div className="flexbox content-space pl-20 pr-20 pt-16 pb-20">
+                <div className="flexbox content-space pl-20 pr-20 pt-16 pb-16">
                     {renderSearch()}
                     <div className="fs-13">
                         {lastDataSyncTimeString && (
                             <span>
                                 {lastDataSyncTimeString}{' '}
-                                <button className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-24" onClick={getData}>
+                                <button className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13" onClick={getData}>
                                     Refresh
                                 </button>
                             </span>
