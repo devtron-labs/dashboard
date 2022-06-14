@@ -41,7 +41,7 @@ export default function NodeDetails() {
     const [cpuData, setCpuData] = useState<ResourceDetail>(null)
     const [memoryData, setMemoryData] = useState<ResourceDetail>(null)
     const [podListOffset, setPodListOffset] = useState(0)
-    const pageSize = 15
+    const pageSize = 10
 
     useEffect(() => {
         setLoader(true)
@@ -422,7 +422,7 @@ export default function NodeDetails() {
                     <div>Capacity</div>
                 </div>
                 {cpuData && (
-                    <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-12 pb-12 pr-20 pl-20 cn-9">
+                    <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
                         <Cpu className="mt-2 mb-2 icon-dim-18" />
                         <div>{cpuData.name || '-'}</div>
                         <div>{cpuData.requestPercentage || '-'}</div>
@@ -433,7 +433,7 @@ export default function NodeDetails() {
                     </div>
                 )}
                 {memoryData && (
-                    <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-12 pb-12 pr-20 pl-20 cn-9">
+                    <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
                         <Memory className="mt-2 mb-2 icon-dim-18" />
                         <div>{memoryData.name || '-'}</div>
                         <div>{memoryData.requestPercentage || '-'}</div>
@@ -444,7 +444,7 @@ export default function NodeDetails() {
                     </div>
                 )}
                 {nodeDetail.resources.map((resource) => (
-                    <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-12 pb-12 pr-20 pl-20 cn-9">
+                    <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
                         <Storage className="mt-2 mb-2 icon-dim-18" />
                         <div>{resource.name || '-'}</div>
                         <div>{resource.requestPercentage || '-'}</div>
@@ -488,11 +488,9 @@ export default function NodeDetails() {
                     <div className="border-bottom pt-8 pr-20 pb-8 pl-8 fw-6 fs-13 cn-7">Age</div>
                     {nodeDetail.pods.slice(podListOffset, podListOffset + pageSize).map((pod) => (
                         <>
-                            <div className="border-bottom-n1 pt-12 pr-8 pb-12 pl-20 fw-4 fs-13 cn-9">
-                                {pod.namespace}
-                            </div>
+                            <div className="border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9">{pod.namespace}</div>
                             <Tippy className="default-tt" arrow={false} placement="bottom" content={pod.name}>
-                                <div className="hover-trigger position-rel flexbox border-bottom-n1 pt-12 pr-8 pb-12 pl-8 fw-4 fs-13 cn-9">
+                                <div className="hover-trigger position-rel flexbox border-bottom-n1 p-8 fw-4 fs-13 cn-9">
                                     <span
                                         className="inline-block ellipsis-right"
                                         style={{ maxWidth: 'calc(100% - 20px)' }}
@@ -520,19 +518,17 @@ export default function NodeDetails() {
                                     </Tippy>
                                 </div>
                             </Tippy>
-                            <div className="border-bottom-n1 pt-12 pr-8 pb-12 pl-8 fw-4 fs-13 cn-9">
+                            <div className="border-bottom-n1 p-8 fw-4 fs-13 cn-9">
                                 {pod.cpu.requestPercentage || '-'}
                             </div>
-                            <div className="border-bottom-n1 pt-12 pr-8 pb-12 pl-8 fw-4 fs-13 cn-9">
-                                {pod.cpu.limitPercentage || '-'}
-                            </div>
-                            <div className="border-bottom-n1 pt-12 pr-8 pb-12 pl-8 fw-4 fs-13 cn-9">
+                            <div className="border-bottom-n1 p-8 fw-4 fs-13 cn-9">{pod.cpu.limitPercentage || '-'}</div>
+                            <div className="border-bottom-n1 p-8 fw-4 fs-13 cn-9">
                                 {pod.memory.requestPercentage || '-'}
                             </div>
-                            <div className="border-bottom-n1 pt-12 pr-8 pb-12 pl-8 fw-4 fs-13 cn-9">
+                            <div className="border-bottom-n1 p-8 fw-4 fs-13 cn-9">
                                 {pod.memory.limitPercentage || '-'}
                             </div>
-                            <div className="border-bottom-n1 pt-12 pr-20 pb-12 pl-8 fw-4 fs-13 cn-9">{pod.age}</div>
+                            <div className="border-bottom-n1 pt-8 pr-20 pb-8 pl-8 fw-4 fs-13 cn-9">{pod.age}</div>
                         </>
                     ))}
                 </div>
