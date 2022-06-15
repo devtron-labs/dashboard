@@ -304,8 +304,6 @@ export default function AppPermissions({
         const { action, option, name } = actionMeta;
         const tempPermissions = [...directPermission];
         if (name === 'entityName') {
-            console.log(option);
-            
             const { value } = option || {value: ""};
             if (value === '*') {
                 if (action === 'select-option') {

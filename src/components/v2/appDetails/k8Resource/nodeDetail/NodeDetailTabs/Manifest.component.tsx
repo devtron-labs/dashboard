@@ -95,6 +95,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                 });
         } catch (err) {
             console.log('err', err);
+            setLoading(false);
         }
     }, [params.podName, params.nodeType]);
 

@@ -25,19 +25,23 @@ function EventsComponent({ selectedTab, isDeleted }) {
     }, [params.podName]);
 
     useEffect(() => {
+        _getEvents()
+    }, [params.podName, params.nodeType]);
+
+
+    const _getEvents = async () => {
         setLoading(true);
 
-        getEvent(appDetails, params.podName, params.nodeType)
-            .then((response) => {
-                setEvents(response.result.items || (response.result.events && response.result.events.items) || []);
-                setLoading(false);
-            })
-            .catch((err) => {
-                console.log('err', err);
-                setEvents([]);
-                setLoading(false);
-            });
-    }, [params.podName, params.nodeType]);
+        try {
+            const {result} = await getEvent(appDetails, params.podName, params.nodeType)
+            setEvents(result && (result.items || (result.events && result.events.items)) || []);
+            setLoading(false);
+        } catch (err) {
+            console.log('err', err);
+            setEvents([]);
+            setLoading(false);
+        }
+    }
 
     return (
         <div style={{ minHeight: '600px', background: '#0B0F22', flex: 1 }}>
