@@ -24,13 +24,13 @@ import { cleanKubeManifest } from '../../../src/util/Util';
 // @ts-ignore
 window.MonacoEnvironment = {
     // @ts-ignore
-    getWorker(workerId, label : string) :void{
+    getWorker(workerId, label: string) {
         if (label === MODES.YAML) {
-            return new YamlWorker();
+            return new YamlWorker()
         }
-        return new EditorWorker();
+        return new EditorWorker()
     },
-};
+}
 
 // @ts-ignore
 const { yaml } = monaco.languages || {};
