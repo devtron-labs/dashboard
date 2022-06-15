@@ -1,6 +1,6 @@
 import React from 'react'
 import EmptyState from '../EmptyState/EmptyState'
-import emptyCustomChart from '../../assets/img/ic-empty-notdeployed.png'
+import emptyCustomChart from '../../assets/img/empty-noresult@2x.png'
 
 export default function ClusterNodeEmptyState({
     title,
