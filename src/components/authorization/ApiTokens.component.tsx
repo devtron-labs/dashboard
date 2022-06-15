@@ -19,10 +19,14 @@ function ApiTokens() {
     const [searchApplied, setSearchApplied] = useState(false)
     const [loader, setLoader] = useState(false)
     const [tokenList, setTokenlist] = useState<TokenListType[]>(undefined)
+    const [filteredTokenList, setFilteredTokenList] = useState<TokenListType[]>(undefined)
+    const [noResults, setNoResults] = useState(false)
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [deleteConfirmation, setDeleteConfirmation] = useState(false)
     const [showGenerateModal, setShowGenerateModal] = useState(false)
     const [showRegenerateTokenModal, setShowRegenerateTokenModal] = useState(false)
+    const [showFormError, setShowFormError] = useState<boolean>(false)
+    const [copied, setCopied] = useState(false)
     const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: number }>({
         label: '',
         value: 0,
@@ -34,16 +38,6 @@ function ApiTokens() {
         expireAtInMs: undefined,
     })
 
-    const [showFormError, setShowFormError] = useState<boolean>(false)
-    const [copied, setCopied] = useState(false)
-
-    const [tokenResponse, setTokenResponse] = useState<TokenResponseType>({
-        success: false,
-        token: '',
-        userId: 0,
-        userIdentifier: 'API-TOKEN:test',
-    })
-
     useEffect(() => {
         getData()
     }, [])
@@ -53,7 +47,9 @@ function ApiTokens() {
         getGeneratedAPITokenList()
             .then((response) => {
                 if (response.result) {
-                    setTokenlist(response.result)
+                    const sortedResult = response.result.sort((a, b) => a['name'].localeCompare(b['name']))
+                    setTokenlist(sortedResult)
+                    setFilteredTokenList(sortedResult)
                 }
                 setLoader(false)
             })
@@ -64,36 +60,59 @@ function ApiTokens() {
             })
     }
 
+    const handleFilterChanges = (_searchText: string): void => {
+        const _filteredData = tokenList.filter((token) => token.name.indexOf(_searchText) >= 0)
+        setFilteredTokenList(_filteredData)
+        setNoResults(_filteredData.length === 0)
+    }
+
+    const clearSearch = (): void => {
+        if (searchApplied) {
+            handleFilterChanges('')
+            setSearchApplied(false)
+        }
+        setSearchText('')
+    }
+
+    const handleFilterKeyPress = (event): void => {
+        let theKeyCode = event.key
+        if (theKeyCode === 'Enter') {
+            handleFilterChanges(event.target.value)
+            setSearchApplied(true)
+        } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
+            clearSearch()
+        }
+    }
+
+    const [tokenResponse, setTokenResponse] = useState<TokenResponseType>({
+        success: false,
+        token: '',
+        userId: 0,
+        userIdentifier: 'API-TOKEN:test',
+    })
+
     const handleGenerateRowActionButton = (key: 'create' | 'edit', userId) => {
         let url = userId ? `${key}/${userId}` : key
         history.push(url)
     }
 
-    const handleFilterChanges = (selected, key): void => {}
-
     const renderSearchToken = () => {
         return (
             <div className="flexbox content-space">
-                <form
-                    onSubmit={(e) => handleFilterChanges(e, 'search')}
-                    className="search position-rel margin-right-0 en-2 bw-1 br-4"
-                >
+                <form onSubmit={(e) => {}} className="search position-rel margin-right-0 en-2 bw-1 br-4">
                     <Search className="search__icon icon-dim-18" />
                     <input
                         type="text"
-                        placeholder="Search"
+                        placeholder="Search Token"
                         value={searchText}
                         className="search__input bcn-0"
                         onChange={(event) => {
                             setSearchText(event.target.value)
                         }}
+                        onKeyDown={handleFilterKeyPress}
                     />
                     {searchApplied ? (
-                        <button
-                            className="search__clear-button"
-                            type="button"
-                            onClick={(e) => handleFilterChanges(e, 'clear')}
-                        >
+                        <button className="search__clear-button" type="button" onClick={clearSearch}>
                             <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                         </button>
                     ) : null}
@@ -116,7 +135,7 @@ function ApiTokens() {
                             path={`${path}/list`}
                             render={(props) => (
                                 <APITokenList
-                                    tokenList={tokenList}
+                                    tokenList={filteredTokenList}
                                     setDeleteConfirmation={setDeleteConfirmation}
                                     renderSearchToken={renderSearchToken}
                                     handleGenerateRowActionButton={handleGenerateRowActionButton}
