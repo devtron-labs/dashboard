@@ -58,9 +58,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         const webFontAddon = new XtermWebfont()
         terminal.loadAddon(fitAddon)
         terminal.loadAddon(webFontAddon)
-        elementDidMount('#terminal-id').then((element) => {
-            terminal.loadWebfontAndOpen(element)
-        })
+        terminal.loadWebfontAndOpen(document.getElementById('terminal-id'))
         fitAddon.fit()
         terminal.reset()
         terminal.attachCustomKeyEventHandler((event) => {
@@ -282,10 +280,13 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 let sessionId = response?.result.SessionID;
 
                 if (!terminal) {
-                    createNewTerminal();
+                    elementDidMount('#terminal-id').then(() => {
+                        createNewTerminal()
+                        postInitialize(sessionId)
+                    })
+                } else {
+                    postInitialize(sessionId)
                 }
-
-                postInitialize(sessionId);
             })
             .catch((error) => {
                 console.log('error while getNewSession ', error);
