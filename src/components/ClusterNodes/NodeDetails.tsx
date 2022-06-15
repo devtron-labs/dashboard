@@ -546,14 +546,22 @@ export default function NodeDetails() {
                     {sortedPodList.slice(podListOffset, podListOffset + pageSize).map((pod) => (
                         <>
                             <div className="border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9">{pod.namespace}</div>
-                            <Tippy className="default-tt" arrow={false} placement="top" content={pod.name}>
-                                <div className="hover-trigger position-rel flexbox border-bottom-n1 p-8 fw-4 fs-13 cn-9">
-                                    <span
-                                        className="inline-block ellipsis-right lh-20"
-                                        style={{ maxWidth: 'calc(100% - 20px)' }}
+                            <div className="hover-trigger position-rel flexbox border-bottom-n1 p-8 fw-4 fs-13 cn-9">
+                                <>
+                                    <Tippy
+                                        className="default-tt"
+                                        arrow={false}
+                                        placement="top"
+                                        content={pod.name}
+                                        interactive={true}
                                     >
-                                        {pod.name}
-                                    </span>
+                                        <span
+                                            className="inline-block ellipsis-right lh-20"
+                                            style={{ maxWidth: 'calc(100% - 20px)' }}
+                                        >
+                                            {pod.name}
+                                        </span>
+                                    </Tippy>
                                     <Tippy
                                         className="default-tt"
                                         arrow={false}
@@ -574,8 +582,8 @@ export default function NodeDetails() {
                                             }}
                                         />
                                     </Tippy>
-                                </div>
-                            </Tippy>
+                                </>
+                            </div>
                             <div className="border-bottom-n1 p-8 fw-4 fs-13 cn-9">
                                 {pod.cpu.requestPercentage || '-'}
                             </div>
