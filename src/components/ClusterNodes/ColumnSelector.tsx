@@ -84,7 +84,7 @@ export default function ColumnSelector({
             options={columnOptions}
             onChange={setSelectedColumns}
             isMulti={true}
-            isSearchable={true}
+            isSearchable={false}
             closeMenuOnSelect={false}
             hideSelectedOptions={false}
             onMenuOpen={() => handleMenuState(true)}
