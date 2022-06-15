@@ -13,8 +13,7 @@ import EditAPIToken from './EditAPIToken'
 import { FormType, TokenListType, TokenResponseType } from './authorization.type'
 
 function ApiTokens() {
-    const history = useHistory()
-    const { url, path } = useRouteMatch()
+    const { path } = useRouteMatch()
     const params = useParams<{ id: string }>()
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
@@ -93,14 +92,6 @@ function ApiTokens() {
         userIdentifier: 'API-TOKEN:test',
     })
 
-    const handleGenerateRowActionButton = (key: 'create' | 'edit', userId) => {
-        let url = userId ? `${key}/${userId}` : key
-        history.push(url)
-        tokenList &&
-            tokenList.length > 0 &&
-            setSelectedList(tokenList.filter((list) => list.userId === parseInt(userId))[0])
-    }
-
     const renderSearchToken = () => {
         return (
             <div className="flexbox content-space">
@@ -143,7 +134,6 @@ function ApiTokens() {
                                     tokenList={filteredTokenList}
                                     setDeleteConfirmation={setDeleteConfirmation}
                                     renderSearchToken={renderSearchToken}
-                                    handleGenerateRowActionButton={handleGenerateRowActionButton}
                                     reload={getData}
                                 />
                             )}
@@ -178,9 +168,6 @@ function ApiTokens() {
                                     showRegeneratedModal={showRegenerateTokenModal}
                                     setSelectedExpirationDate={setSelectedExpirationDate}
                                     selectedExpirationDate={selectedExpirationDate}
-                                    formData={formData}
-                                    setFormData={setFormData}
-                                    tokenResponse={tokenResponse}
                                     customDate={customDate}
                                     setCustomDate={setCustomDate}
                                     tokenList={tokenList}
@@ -189,7 +176,6 @@ function ApiTokens() {
                                     setDeleteConfirmation={setDeleteConfirmation}
                                     deleteConfirmation={deleteConfirmation}
                                     selectedList={selectedList}
-                                    setSelectedList={setSelectedList}
                                     reload={getData}
                                 />
                             )}

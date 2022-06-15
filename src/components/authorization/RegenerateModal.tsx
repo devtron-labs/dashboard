@@ -7,8 +7,14 @@ import { multiSelectStyles, Progressing, showError, VisibleModal } from '../comm
 import { DropdownIndicator } from '../security/security.util'
 import GenerateActionButton from './GenerateActionButton'
 import { getOptions } from './authorization.utils'
+import { RegenerateModalType } from './authorization.type'
 
-function RegeneratedModal({ close, selectedExpirationDate, setSelectedExpirationDate, setShowRegeneratedModal }) {
+function RegeneratedModal({
+    close,
+    selectedExpirationDate,
+    setSelectedExpirationDate,
+    setShowRegeneratedModal,
+}: RegenerateModalType) {
     const renderModalHeader = () => {
         return (
             <div className="modal__header p-16 border-bottom w-100 mb-0">

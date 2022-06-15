@@ -20,18 +20,14 @@ function EditAPIToken({
     handleRegenerateActionButton,
     selectedExpirationDate,
     setSelectedExpirationDate,
-    formData,
-    setFormData,
     customDate,
     setCustomDate,
-    tokenResponse,
     tokenList,
     copied,
     setCopied,
     deleteConfirmation,
     setDeleteConfirmation,
     selectedList,
-    setSelectedList,
     reload,
 }: EditTokenType) {
     const history = useHistory()
@@ -39,18 +35,16 @@ function EditAPIToken({
     const params = useParams<{ id: string }>()
     const [loder, setLoader] = useState(false)
 
-    // let list = tokenList && tokenList.length > 0 && tokenList.filter((list) => list.userId === parseInt(params.id))
     useEffect(() => {
         setEditData(tokenList && tokenList.find((list) => list?.userId === parseInt(params.id)))
     }, [params.id])
-
-    // setSelectedList(list[0])
 
     const [editData, setEditData] = useState({
         name: selectedList?.name || '',
         description: selectedList?.description || '',
         expireAtInMs: selectedList?.expireAtInMs,
         token: selectedList?.token || '',
+        id: selectedList?.id,
     })
 
     const renderActionButton = () => {
@@ -79,13 +73,11 @@ function EditAPIToken({
         history.push(`${url}list`)
     }
 
-    console.log(editData)
-
     const handleDeleteButton = () => {
         setDeleteConfirmation(true)
     }
 
-    const handleUpdatedToken = async () => {
+    const handleUpdatedToken = async (tokenId) => {
         try {
             setLoader(true)
             let payload = {
@@ -93,7 +85,7 @@ function EditAPIToken({
                 expireAtInMs: getDateInMilliseconds(editData.expireAtInMs),
             }
 
-            await updateGeneratedAPIToken(payload, params?.id)
+            await updateGeneratedAPIToken(payload, tokenId)
             toast.success('Updated successfully')
         } catch (err) {
             showError(err)
@@ -253,7 +245,7 @@ function EditAPIToken({
                 <GenerateActionButton
                     loader={false}
                     onCancel={redirectToTokenList}
-                    onSave={handleUpdatedToken}
+                    onSave={() => handleUpdatedToken(editData.id)}
                     buttonText={'Update token'}
                     showDelete={true}
                     onDelete={handleDeleteButton}

@@ -1,5 +1,5 @@
 import moment from 'moment'
-import React from 'react'
+import React, { useState } from 'react'
 import { Moment12HourFormat } from '../../config'
 import { ReactComponent as Bulb } from '../../assets/icons/ic-slant-bulb.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
@@ -9,17 +9,12 @@ import { deleteGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
 import { showError } from '../common'
 import { useHistory, useRouteMatch } from 'react-router-dom'
-import { APITokenListType } from './authorization.type'
+import { APITokenListType, TokenListType } from './authorization.type'
 
-function APITokenList({
-    tokenList,
-    setDeleteConfirmation,
-    renderSearchToken,
-    handleGenerateRowActionButton,
-    reload,
-}: APITokenListType) {
+function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, reload }: APITokenListType) {
     const history = useHistory()
     const match = useRouteMatch()
+    const [selectedList, setSelectedList] = useState<TokenListType>()
 
     const deleteToken = (id) => {
         deleteGeneratedAPIToken(id)
@@ -34,6 +29,14 @@ function APITokenList({
             .catch((error) => {
                 showError(error)
             })
+    }
+
+    const handleGenerateRowActionButton = (key: 'create' | 'edit', id?) => {
+        let url = id ? `${key}/${id}` : key
+        history.push(url)
+        tokenList &&
+            tokenList.length > 0 &&
+            setSelectedList(tokenList.filter((list) => list.userId === parseInt(id))[0])
     }
 
     return (
@@ -63,7 +66,7 @@ function APITokenList({
                         <button
                             type="button"
                             className="transparent cursor"
-                            onClick={() => handleGenerateRowActionButton('edit', list.userId)}
+                            onClick={() => handleGenerateRowActionButton('edit', list.id)}
                         >
                             <Bulb className="scn-5 icon-dim-20" />
                         </button>
@@ -75,7 +78,7 @@ function APITokenList({
                             <button
                                 type="button"
                                 className="transparent mr-16 ml-16"
-                                onClick={() => handleGenerateRowActionButton('edit', list.userId)}
+                                onClick={() => handleGenerateRowActionButton('edit', list.id)}
                             >
                                 <Edit className="icon-dim-20" />
                             </button>

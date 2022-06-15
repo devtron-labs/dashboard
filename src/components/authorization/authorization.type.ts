@@ -47,9 +47,6 @@ export interface EditTokenType {
     handleRegenerateActionButton: () => void
     setSelectedExpirationDate
     selectedExpirationDate
-    formData: FormType
-    setFormData: React.Dispatch<React.SetStateAction<FormType>>
-    tokenResponse: TokenResponseType
     customDate: number
     setCustomDate: React.Dispatch<React.SetStateAction<number>>
     tokenList: TokenListType[]
@@ -58,7 +55,6 @@ export interface EditTokenType {
     setDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
     deleteConfirmation: boolean
     selectedList: TokenListType
-    setSelectedList: React.Dispatch<React.SetStateAction<TokenListType>>
     reload: () => void
 }
 
@@ -84,6 +80,12 @@ export interface APITokenListType {
     tokenList: TokenListType[]
     setDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
     renderSearchToken: () => void
-    handleGenerateRowActionButton: (key: 'create' | 'edit', id?: number) => void
     reload: () => void
+}
+
+export interface RegenerateModalType {
+    close: () => void
+    selectedExpirationDate: { value: number; label: string }
+    setSelectedExpirationDate: React.Dispatch<React.SetStateAction<{ value: number; label: string }>>
+    setShowRegeneratedModal: React.Dispatch<React.SetStateAction<boolean>>
 }
