@@ -79,8 +79,8 @@ export default function GlobalConfiguration(props) {
     function fetchCheckList(): void {
         getAppCheckList()
             .then((response) => {
-                let appChecklist = response.result.appChecklist
-                let chartChecklist = response.result.chartChecklist
+                let appChecklist = response.result.appChecklist || {}
+                let chartChecklist = response.result.chartChecklist || {}
                 let appStageArray: number[] = Object.values(appChecklist)
                 let chartStageArray: number[] = Object.values(chartChecklist)
                 let appStageCompleted: number = appStageArray.reduce((item, sum) => {
