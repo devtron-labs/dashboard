@@ -54,21 +54,21 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             },
         })
         handleSelectionChange(terminal, setPopupText)
+        fitAddon = new FitAddon()
+        const webFontAddon = new XtermWebfont()
+        terminal.loadAddon(fitAddon)
+        terminal.loadAddon(webFontAddon)
         elementDidMount('#terminal-id').then((element) => {
-            fitAddon = new FitAddon()
-            const webFontAddon = new XtermWebfont()
-            terminal.loadAddon(fitAddon)
-            terminal.loadAddon(webFontAddon)
             terminal.loadWebfontAndOpen(element)
-            fitAddon.fit()
-            terminal.reset()
-            terminal.attachCustomKeyEventHandler((event) => {
-                if ((event.metaKey && event.key === 'k') || event.key === 'K') {
-                    terminal?.clear()
-                }
+        })
+        fitAddon.fit()
+        terminal.reset()
+        terminal.attachCustomKeyEventHandler((event) => {
+            if ((event.metaKey && event.key === 'k') || event.key === 'K') {
+                terminal?.clear()
+            }
 
-                return true
-            })
+            return true
         })
     };
 
