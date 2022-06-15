@@ -4,10 +4,10 @@ import moment from 'moment';
 
 export const buildInitState = (appListPayload, appCheckListRes): Promise<any> => {
     return new Promise((resolve) => {
-        let appChecklist = appCheckListRes.result.appChecklist;
-        let chartChecklist = appCheckListRes.result.chartChecklist;
-        let appStageArray: number[] = appChecklist && Object.values(appChecklist) || [];
-        let chartStageArray: number[] = chartChecklist && Object.values(chartChecklist) || [];
+        let appChecklist = appCheckListRes.result.appChecklist || {};
+        let chartChecklist = appCheckListRes.result.chartChecklist || {};
+        let appStageArray: number[] = Object.values(appChecklist);
+        let chartStageArray: number[] = Object.values(chartChecklist);
         let appStageCompleted: number = appStageArray.reduce((item, sum) => {
             sum = sum + item;
             return sum;
