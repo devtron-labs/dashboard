@@ -5,6 +5,28 @@ import { columnMetadata, columnMetadataType } from './types'
 import { ReactComponent as Setting } from '../../assets/icons/ic-nav-gear.svg'
 import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
 
+const ValueContainer = (props: any): JSX.Element => {
+    const length = props.getValue().length
+
+    return (
+        <components.ValueContainer {...props}>
+            {length > 0 ? (
+                <>
+                    {!props.selectProps.menuIsOpen && (
+                        <>
+                            <Setting className="icon-dim-16 setting-icon mr-5" />
+                            Columns
+                        </>
+                    )}
+                    {React.cloneElement(props.children[1])}
+                </>
+            ) : (
+                <>{props.children}</>
+            )}
+        </components.ValueContainer>
+    )
+}
+
 export default function ColumnSelector({
     appliedColumns,
     setAppliedColumns,
@@ -52,28 +74,6 @@ export default function ColumnSelector({
                     </button>
                 </div>
             </components.MenuList>
-        )
-    }
-
-    const ValueContainer = (props: any): JSX.Element => {
-        const length = props.getValue().length
-
-        return (
-            <components.ValueContainer {...props}>
-                {length > 0 ? (
-                    <>
-                        {!props.selectProps.menuIsOpen && (
-                            <>
-                                <Setting className="icon-dim-16 setting-icon mr-5" />
-                                Columns
-                            </>
-                        )}
-                        {React.cloneElement(props.children[1])}
-                    </>
-                ) : (
-                    <>{props.children}</>
-                )}
-            </components.ValueContainer>
         )
     }
     return (

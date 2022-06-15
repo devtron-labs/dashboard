@@ -46,19 +46,18 @@ export default function NodeList() {
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<columnMetadataType>>([])
 
     useEffect(() => {
+        let appliedColumnsFromLocalStorage
         const _defaultColumns = columnMetadata.filter((columnData) => columnData.isDefault)
         if (typeof Storage !== 'undefined') {
             if (!localStorage.appliedColumns) {
                 localStorage.appliedColumns = JSON.stringify(_defaultColumns)
             } else {
                 try {
-                    const appliedColumnsFromLocalStorage = JSON.parse(localStorage.appliedColumns)
-                    setAppliedColumns(appliedColumnsFromLocalStorage)
-                } catch (error) {
-                    setAppliedColumns(_defaultColumns)
-                }
+                    appliedColumnsFromLocalStorage = JSON.parse(localStorage.appliedColumns)
+                } catch (error) {}
             }
         }
+        setAppliedColumns(appliedColumnsFromLocalStorage || _defaultColumns)
     }, [])
 
     const flattenObject = (ob: Object): Object => {
