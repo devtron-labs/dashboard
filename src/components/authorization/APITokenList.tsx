@@ -14,8 +14,8 @@ function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, han
     const history = useHistory()
     const match = useRouteMatch()
 
-    const deleteToken = (userId) => {
-        deleteGeneratedAPIToken(userId)
+    const deleteToken = (id) => {
+        deleteGeneratedAPIToken(id)
             .then((response) => {
                 if (response.code === 200) {
                     toast.success('Token Deleted!!!')

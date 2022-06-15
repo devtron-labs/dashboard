@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import RegeneratedModal from './RegenerateModal'
 import { EditTokenType } from './authorization.type'
-import { PermissionType } from './authorization.utils'
+import { getDateInMilliseconds, PermissionType } from './authorization.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import GenerateActionButton from './GenerateActionButton'
 import { Link, useHistory, useRouteMatch } from 'react-router-dom'
@@ -14,6 +14,7 @@ import { ConfirmationDialog, copyToClipboard, DeleteDialog, showError } from '..
 import { deleteGeneratedAPIToken, updateGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
 import warn from '../../assets/icons/ic-warning.svg'
+import { string } from 'prop-types'
 
 function EditAPIToken({
     setShowRegeneratedModal,
@@ -31,11 +32,28 @@ function EditAPIToken({
     setCopied,
     deleteConfirmation,
     setDeleteConfirmation,
+    selectedList,
+    setSelectedList,
 }: EditTokenType) {
     const history = useHistory()
     const match = useRouteMatch()
     const params = useParams<{ id: string }>()
     const [loder, setLoader] = useState(false)
+
+    // let list = tokenList && tokenList.length > 0 && tokenList.filter((list) => list.userId === parseInt(params.id))
+    useEffect(() => {
+        setEditData(tokenList && tokenList.find((list) => list?.userId === parseInt(params.id)))
+    }, [params.id])
+
+    // setSelectedList(list[0])
+
+    const [editData, setEditData] = useState({
+        name: selectedList?.name || '',
+        description: selectedList?.description || '',
+        expireAtInMs: selectedList?.expireAtInMs,
+        token: selectedList?.token || '',
+    })
+
     const renderActionButton = () => {
         return (
             <span className="cr-5 cursor" onClick={() => setShowRegeneratedModal(true)}>
@@ -62,6 +80,8 @@ function EditAPIToken({
         history.push(`${url}list`)
     }
 
+    console.log(editData)
+
     const handleDeleteButton = () => {
         setDeleteConfirmation(true)
     }
@@ -70,12 +90,11 @@ function EditAPIToken({
         try {
             setLoader(true)
             let payload = {
-                name: formData.name,
-                description: formData.description,
-                expireAtInMs: formData.expireAtInMs,
+                description: editData.description,
+                expireAtInMs: getDateInMilliseconds(editData.expireAtInMs),
             }
 
-            await updateGeneratedAPIToken(payload)
+            await updateGeneratedAPIToken(payload, params?.id)
             toast.success('Updated successfully')
         } catch (err) {
             showError(err)
@@ -113,12 +132,21 @@ function EditAPIToken({
                         Any applications or scripts using this token will no longer be able to access the Devtron API.
                     </p>
                     <p className="fs-13 cn-7 lh-1-54">
-                        {' '}
                         You cannot undo this action. Are you sure you want to delete this token?
                     </p>
                 </DeleteDialog.Description>
             </DeleteDialog>
         )
+    }
+
+    const onChangeEditData = (event: React.ChangeEvent<HTMLInputElement>, key): void => {
+        const _editData = { ...editData }
+        _editData[key] = event.target.value || ''
+        setEditData(_editData)
+
+        if (key === 'customDate') {
+            setCustomDate(parseInt(event.target.value))
+        }
     }
 
     return (
@@ -139,100 +167,89 @@ function EditAPIToken({
                     }}
                     className="pl-20 pr-20 pb-20 "
                 >
-                    {tokenList &&
-                        tokenList
-                            .filter((list) => list.userId === parseInt(params.id))
-                            .map((list) => {
-                                return (
-                                    <div>
-                                        <label className="form__row">
-                                            <span className="form__label">Name</span>
-                                            <input
-                                                tabIndex={1}
-                                                placeholder={formData.name}
-                                                className="form__input"
-                                                value={list.name}
-                                                disabled={!!list.name}
-                                            />
-                                            {/* {this.state.showError && !this.state.isValid.name ? (
+                    <div>
+                        <label className="form__row">
+                            <span className="form__label">Name</span>
+                            <input
+                                tabIndex={1}
+                                className="form__input"
+                                value={editData.name}
+                                disabled={!!editData.name}
+                            />
+                            {/* {this.state.showError && !this.state.isValid.name ? (
                                               <span className="form__error">
                                                   <Error className="form__icon form__icon--error" />
                                                   This is a required field
                                               </span>
                                               ) : null} */}
-                                        </label>
-                                        <label className="form__row">
-                                            <span className="form__label">Description</span>
-                                            <input
-                                                tabIndex={1}
-                                                placeholder="Enter a description to remember where you have used this token"
-                                                className="form__input"
-                                                value={list.description}
-                                                // onChange={(e) => onChangeFormData(e, 'name')}
-                                            />
-                                        </label>
-                                        <label className="form__row">
-                                            <span className="form__label">Token</span>
-                                            <div className="flex content-space mono top">
-                                                <span style={{ wordBreak: 'break-word' }}>{list.token}</span>
-                                                <Clipboard
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        copyToClipboard(list.token, () => setCopied(true))
-                                                    }}
-                                                    className="icon-dim-16 ml-8 cursor"
-                                                />
-                                            </div>
-                                        </label>
-                                        <label className="form__row">
-                                            <span className="form__label">Expiration</span>
-                                            <div className="flex left">
-                                                This token expires on
-                                                {moment(list.expireAtInMs).format(Moment12HourFormat)}.
-                                                <span className=" fw-4"> To set a new expiration date you must </span>
-                                                <span
-                                                    className="cb-5 ml-4 cursor"
-                                                    onClick={() => setShowRegeneratedModal(true)}
-                                                >
-                                                    regenerate the token.
-                                                </span>
-                                            </div>
-                                        </label>
-                                        <div className="pointer flex form__permission">
-                                            {PermissionType.map(({ label: Lable, value }, index) => (
-                                                <div
-                                                    className="flex left"
-                                                    key={`generate_token_${index}`}
-                                                    // onChange={() => setAdminPermission(value)}
-                                                >
-                                                    <label key={value} className=" flex left">
-                                                        <input
-                                                            type="radio"
-                                                            name="auth"
-                                                            value={value}
-                                                            // checked={value === adminPermission}
-                                                        />
-                                                        <span className="ml-8 mt-4">{Lable}</span>
-                                                    </label>
-                                                </div>
-                                            ))}
-                                        </div>
+                        </label>
+                        <label className="form__row">
+                            <span className="form__label">Description</span>
+                            <input
+                                tabIndex={1}
+                                placeholder="Enter a description to remember where you have used this token"
+                                className="form__input"
+                                value={editData.description}
+                                onChange={(e) => onChangeEditData(e, 'description')}
+                            />
+                        </label>
+                        <label className="form__row">
+                            <span className="form__label">Token</span>
+                            <div className="flex content-space mono top">
+                                <span style={{ wordBreak: 'break-word' }}>{editData.token}</span>
+                                <Clipboard
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        copyToClipboard(selectedList.token, () => setCopied(true))
+                                    }}
+                                    className="icon-dim-16 ml-8 cursor"
+                                />
+                            </div>
+                        </label>
+                        <label className="form__row">
+                            <span className="form__label">Expiration</span>
+                            <div className="flex left">
+                                This token expires on
+                                {moment(editData.expireAtInMs).format(Moment12HourFormat)}.
+                                <span className=" fw-4"> To set a new expiration date you must </span>
+                                <span className="cb-5 ml-4 cursor" onClick={() => setShowRegeneratedModal(true)}>
+                                    regenerate the token.
+                                </span>
+                            </div>
+                        </label>
+                        <div className="pointer flex form__permission">
+                            {PermissionType.map(({ label: Lable, value }, index) => (
+                                <div
+                                    className="flex left"
+                                    key={`generate_token_${index}`}
+                                    // onChange={() => setAdminPermission(value)}
+                                >
+                                    <label key={value} className=" flex left">
+                                        <input
+                                            type="radio"
+                                            name="auth"
+                                            value={value}
+                                            // checked={value === adminPermission}
+                                        />
+                                        <span className="ml-8 mt-4">{Lable}</span>
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
 
-                                        {/* {adminPermission === 'SUPERADMIN' && ( */}
-                                        {/* <div> */}
-                                        {/* <AppPermissions
+                        {/* {adminPermission === 'SUPERADMIN' && ( */}
+                        {/* <div> */}
+                        {/* <AppPermissions
                                           data={userData}
                                           directPermission={directPermission}
                                           setDirectPermission={setDirectPermission}
                                           chartPermission={chartPermission}
                                           setChartPermission={setChartPermission}
 /> */}
-                                        {/* </div> */}
-                                        {/* )} */}
-                                        {deleteConfirmation && renderDeleteModal(list)}
-                                    </div>
-                                )
-                            })}
+                        {/* </div> */}
+                        {/* )} */}
+                        {deleteConfirmation && renderDeleteModal(selectedList)}
+                    </div>
                 </form>
                 <hr className="modal__divider mt-20 mb-0" />
                 <GenerateActionButton
@@ -248,7 +265,7 @@ function EditAPIToken({
                 <RegeneratedModal
                     close={handleRegenerateActionButton}
                     selectedExpirationDate={selectedExpirationDate}
-                    setSelectedExpirationDate={undefined}
+                    setSelectedExpirationDate={setSelectedExpirationDate}
                     setShowRegeneratedModal={setShowRegeneratedModal}
                 />
             )}

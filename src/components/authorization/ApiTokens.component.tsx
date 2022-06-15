@@ -15,6 +15,7 @@ import { FormType, TokenListType, TokenResponseType } from './authorization.type
 function ApiTokens() {
     const history = useHistory()
     const { url, path } = useRouteMatch()
+    const params = useParams<{ id: string }>()
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const [loader, setLoader] = useState(false)
@@ -26,6 +27,7 @@ function ApiTokens() {
     const [showGenerateModal, setShowGenerateModal] = useState(false)
     const [showRegenerateTokenModal, setShowRegenerateTokenModal] = useState(false)
     const [showFormError, setShowFormError] = useState<boolean>(false)
+    const [selectedList, setSelectedList] = useState<TokenListType>()
     const [copied, setCopied] = useState(false)
     const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: number }>({
         label: '',
@@ -37,10 +39,6 @@ function ApiTokens() {
         description: '',
         expireAtInMs: undefined,
     })
-
-    useEffect(() => {
-        getData()
-    }, [])
 
     const getData = (): void => {
         setLoader(true)
@@ -59,6 +57,10 @@ function ApiTokens() {
                 setLoader(false)
             })
     }
+
+    useEffect(() => {
+        getData()
+    }, [])
 
     const handleFilterChanges = (_searchText: string): void => {
         const _filteredData = tokenList.filter((token) => token.name.indexOf(_searchText) >= 0)
@@ -94,6 +96,9 @@ function ApiTokens() {
     const handleGenerateRowActionButton = (key: 'create' | 'edit', userId) => {
         let url = userId ? `${key}/${userId}` : key
         history.push(url)
+        tokenList &&
+            tokenList.length > 0 &&
+            setSelectedList(tokenList.filter((list) => list.userId === parseInt(userId))[0])
     }
 
     const renderSearchToken = () => {
@@ -129,6 +134,7 @@ function ApiTokens() {
     const renderAPITokenRoutes = (): JSX.Element => {
         return (
             <Fragment>
+                {console.log(selectedList)}
                 <div className="api-token__container">
                     <Switch>
                         <Route
@@ -181,6 +187,8 @@ function ApiTokens() {
                                     copied={copied}
                                     setDeleteConfirmation={setDeleteConfirmation}
                                     deleteConfirmation={deleteConfirmation}
+                                    selectedList={selectedList}
+                                    setSelectedList={setSelectedList}
                                 />
                             )}
                         />

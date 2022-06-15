@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
-import { multiSelectStyles, Progressing, showError, VisibleModal } from '../common'
+import { multiSelectStyles, showError } from '../common'
 import { DropdownIndicator } from '../security/security.util'
 import AppPermissions from '../userGroups/AppPermissions'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'

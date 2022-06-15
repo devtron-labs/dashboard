@@ -10,11 +10,11 @@ export function createGeneratedAPIToken(payload): Promise<ResponseType> {
     return post(Routes.API_TOKEN, payload)
 }
 
-export function updateGeneratedAPIToken(request) {
-    return put(Routes.API_TOKEN, request)
+export function updateGeneratedAPIToken(request, userId) {
+    return put(`${Routes.API_TOKEN}/${userId}`, request)
 }
 
 export function deleteGeneratedAPIToken(userId: string) {
-    const URL = `${Routes.APP}/${userId}`
+    const URL = `${Routes.API_TOKEN}/${userId}`
     return trash(URL)
 }

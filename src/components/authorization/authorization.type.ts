@@ -54,6 +54,8 @@ export interface EditTokenType {
     copied: boolean
     setDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
     deleteConfirmation: boolean
+    selectedList: TokenListType
+    setSelectedList: React.Dispatch<React.SetStateAction<TokenListType>>
 }
 
 export interface GenerateActionButtonType {
