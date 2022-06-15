@@ -21,9 +21,11 @@
         width: 25%;
     }
     .list-min-height {
-        min-height: calc(100vh - 280px);
+        min-height: calc(100vh - 290px);
         &.no-result-container {
             overflow: hidden;
+            display: grid;
+            grid-template-rows: 32px;
         }
     }
     .search-wrapper {
