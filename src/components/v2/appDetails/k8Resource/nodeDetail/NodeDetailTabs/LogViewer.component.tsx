@@ -9,7 +9,6 @@ import '../../../../../../../node_modules/xterm/css/xterm.css';
 import './nodeDetailTab.scss';
 import { Subject } from '../../../../../../util/Subject';
 import { Scroller } from '../../../../../app/details/cIDetails/CIDetails';
-import { elementDidMount } from '../../../../../common';
 
 interface logViewerInterface {
     rootClassName?: string;
@@ -98,9 +97,7 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
         searchAddon.current = new SearchAddon();
         terminal.current.loadAddon(searchAddon.current);
         searchAddon.current.activate(terminal.current);
-        elementDidMount('#xterm-logs').then((element) => {
-            (terminal.current as any).loadWebfontAndOpen(element)
-        })
+        (terminal.current as any).loadWebfontAndOpen(document.getElementById('xterm-logs'));
         fitAddon.current.fit();
         terminal.current.reset();
         if (unsubscribe !== null) {
