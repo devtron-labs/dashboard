@@ -5,9 +5,7 @@ import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { GenerateTokenModalType } from './authorization.type'
 
-function GenerateModal({ close, token }: GenerateTokenModalType) {
-    const [copied, setCopied] = useState(false)
-
+function GenerateModal({ close, token, copied, setCopied }: GenerateTokenModalType) {
     return (
         <VisibleModal className={undefined}>
             <div className={`modal__body w-600 pl-20 pr-20 pt-20 pb-20 flex column`}>

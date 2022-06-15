@@ -26,6 +26,8 @@ function CreateAPIToken({
     setTokenResponse,
     customDate,
     setCustomDate,
+    setCopied,
+    copied,
 }: GenerateTokenType) {
     const [loader, setLoader] = useState(false)
     const [adminPermission, setAdminPermission] = useState('SUPERADMIN')
@@ -203,7 +205,14 @@ function CreateAPIToken({
                     buttonText="Generate token"
                 />
             </div>
-            {showGenerateModal && <GenerateModal close={handleGenerateTokenActionButton} token={tokenResponse.token} />}
+            {showGenerateModal && (
+                <GenerateModal
+                    close={handleGenerateTokenActionButton}
+                    token={tokenResponse.token}
+                    copied={copied}
+                    setCopied={setCopied}
+                />
+            )}
         </>
     )
 }

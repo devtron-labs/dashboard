@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import RegeneratedModal from './RegenerateModal'
@@ -6,10 +6,14 @@ import { EditTokenType } from './authorization.type'
 import { PermissionType } from './authorization.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import GenerateActionButton from './GenerateActionButton'
-import { useHistory, useRouteMatch } from 'react-router-dom'
+import { Link, useHistory, useRouteMatch } from 'react-router-dom'
 import { useParams } from 'react-router'
 import moment from 'moment'
 import { Moment12HourFormat } from '../../config'
+import { ConfirmationDialog, copyToClipboard, DeleteDialog, showError } from '../common'
+import { deleteGeneratedAPIToken, updateGeneratedAPIToken } from './service'
+import { toast } from 'react-toastify'
+import warn from '../../assets/icons/ic-warning.svg'
 
 function EditAPIToken({
     setShowRegeneratedModal,
@@ -23,11 +27,15 @@ function EditAPIToken({
     setCustomDate,
     tokenResponse,
     tokenList,
+    copied,
+    setCopied,
+    deleteConfirmation,
+    setDeleteConfirmation,
 }: EditTokenType) {
     const history = useHistory()
     const match = useRouteMatch()
     const params = useParams<{ id: string }>()
-
+    const [loder, setLoader] = useState(false)
     const renderActionButton = () => {
         return (
             <span className="cr-5 cursor" onClick={() => setShowRegeneratedModal(true)}>
@@ -54,11 +62,67 @@ function EditAPIToken({
         history.push(`${url}list`)
     }
 
-    const handleEditDeleteButton = () => {
-        return
+    const handleDeleteButton = () => {
+        setDeleteConfirmation(true)
     }
+
+    const handleUpdatedToken = async () => {
+        try {
+            setLoader(true)
+            let payload = {
+                name: formData.name,
+                description: formData.description,
+                expireAtInMs: formData.expireAtInMs,
+            }
+
+            await updateGeneratedAPIToken(payload)
+            toast.success('Updated successfully')
+        } catch (err) {
+            showError(err)
+        } finally {
+            setLoader(false)
+        }
+    }
+
+    const deleteToken = (userId) => {
+        deleteGeneratedAPIToken(userId)
+            .then((response) => {
+                if (response.code === 200) {
+                    toast.success('Token Deleted!!!')
+                    let url = match.path.split('edit')[0]
+                    history.push(`${url}list`)
+                }
+            })
+            .catch((error) => {
+                showError(error)
+            })
+    }
+
+    const renderDeleteModal = (token) => {
+        return (
+            <DeleteDialog
+                title={`Delete API token '${token.name}'?`}
+                delete={() => deleteToken(token.userId)}
+                closeDelete={() => {
+                    setDeleteConfirmation(false)
+                }}
+            >
+                <DeleteDialog.Description>
+                    <p className="fs-13 cn-7 lh-1-54">{token.description && token.desription}</p>
+                    <p className="fs-13 cn-7 lh-1-54">
+                        Any applications or scripts using this token will no longer be able to access the Devtron API.
+                    </p>
+                    <p className="fs-13 cn-7 lh-1-54">
+                        {' '}
+                        You cannot undo this action. Are you sure you want to delete this token?
+                    </p>
+                </DeleteDialog.Description>
+            </DeleteDialog>
+        )
+    }
+
     return (
-        <div className="api-token__container" style={{ minHeight: 'calc(100vh - 235px)' }}>
+        <div className="api-token__container fs-13 fw-4" style={{ minHeight: 'calc(100vh - 235px)' }}>
             <div className="cn-9 fw-6 fs-16">
                 <span className="cb-5">API tokens</span> / Edit API token
             </div>
@@ -109,15 +173,21 @@ function EditAPIToken({
                                         </label>
                                         <label className="form__row">
                                             <span className="form__label">Token</span>
-                                            <div className="flex content-space">
-                                                {list.token}
-                                                <Clipboard className="icon-dim-16 ml-8" />
+                                            <div className="flex content-space mono top">
+                                                <span style={{ wordBreak: 'break-word' }}>{list.token}</span>
+                                                <Clipboard
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        copyToClipboard(list.token, () => setCopied(true))
+                                                    }}
+                                                    className="icon-dim-16 ml-8 cursor"
+                                                />
                                             </div>
                                         </label>
                                         <label className="form__row">
                                             <span className="form__label">Expiration</span>
                                             <div className="flex left">
-                                                This token expires on{' '}
+                                                This token expires on
                                                 {moment(list.expireAtInMs).format(Moment12HourFormat)}.
                                                 <span className=" fw-4"> To set a new expiration date you must </span>
                                                 <span
@@ -159,6 +229,7 @@ function EditAPIToken({
 /> */}
                                         {/* </div> */}
                                         {/* )} */}
+                                        {deleteConfirmation && renderDeleteModal(list)}
                                     </div>
                                 )
                             })}
@@ -167,10 +238,10 @@ function EditAPIToken({
                 <GenerateActionButton
                     loader={false}
                     onCancel={redirectToTokenList}
-                    onSave={undefined}
+                    onSave={handleUpdatedToken}
                     buttonText={'Update token'}
                     showDelete={true}
-                    onDelete={handleEditDeleteButton}
+                    onDelete={handleDeleteButton}
                 />
             </div>
             {showRegeneratedModal && (

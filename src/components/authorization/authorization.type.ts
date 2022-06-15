@@ -24,6 +24,8 @@ export interface GenerateTokenType {
     setTokenResponse: React.Dispatch<React.SetStateAction<TokenResponseType>>
     customDate: number
     setCustomDate: React.Dispatch<React.SetStateAction<number>>
+    setCopied: React.Dispatch<React.SetStateAction<boolean>>
+    copied: boolean
 }
 
 export interface TokenListType {
@@ -48,6 +50,10 @@ export interface EditTokenType {
     customDate: number
     setCustomDate: React.Dispatch<React.SetStateAction<number>>
     tokenList: TokenListType[]
+    setCopied: React.Dispatch<React.SetStateAction<boolean>>
+    copied: boolean
+    setDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
+    deleteConfirmation: boolean
 }
 
 export interface GenerateActionButtonType {
@@ -62,4 +68,6 @@ export interface GenerateActionButtonType {
 export interface GenerateTokenModalType {
     close: () => void
     token: string
+    setCopied: React.Dispatch<React.SetStateAction<boolean>>
+    copied: boolean
 }

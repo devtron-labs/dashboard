@@ -34,6 +34,9 @@ function ApiTokens() {
         expireAtInMs: undefined,
     })
 
+    const [showFormError, setShowFormError] = useState<boolean>(false)
+    const [copied, setCopied] = useState(false)
+
     const [tokenResponse, setTokenResponse] = useState<TokenResponseType>({
         success: false,
         token: '',
@@ -135,6 +138,8 @@ function ApiTokens() {
                                     setTokenResponse={setTokenResponse}
                                     customDate={customDate}
                                     setCustomDate={setCustomDate}
+                                    setCopied={setCopied}
+                                    copied={copied}
                                 />
                             )}
                         />
@@ -153,6 +158,10 @@ function ApiTokens() {
                                     customDate={customDate}
                                     setCustomDate={setCustomDate}
                                     tokenList={tokenList}
+                                    setCopied={setCopied}
+                                    copied={copied}
+                                    setDeleteConfirmation={setDeleteConfirmation}
+                                    deleteConfirmation={deleteConfirmation}
                                 />
                             )}
                         />

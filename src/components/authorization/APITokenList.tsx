@@ -5,8 +5,29 @@ import { ReactComponent as Bulb } from '../../assets/icons/ic-slant-bulb.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import './apiToken.scss'
+import { deleteGeneratedAPIToken } from './service'
+import { toast } from 'react-toastify'
+import { showError } from '../common'
+import { useHistory, useRouteMatch } from 'react-router-dom'
 
 function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, handleGenerateRowActionButton }) {
+    const history = useHistory()
+    const match = useRouteMatch()
+
+    const deleteToken = (userId) => {
+        deleteGeneratedAPIToken(userId)
+            .then((response) => {
+                if (response.code === 200) {
+                    toast.success('Token Deleted!!!')
+                    let url = match.path.split('edit')[0]
+                    history.push(`${url}list`)
+                }
+            })
+            .catch((error) => {
+                showError(error)
+            })
+    }
+
     return (
         <div>
             <div className="cn-9 fw-6 fs-16">API tokens</div>
@@ -53,7 +74,7 @@ function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, han
                                     setDeleteConfirmation(false)
                                 }}
                             >
-                                <Trash className="scn-5 icon-dim-20" />
+                                <Trash className="scn-5 icon-dim-20" onClick={() => deleteToken(list.userId)} />
                             </button>
                         </div>
                     </div>
