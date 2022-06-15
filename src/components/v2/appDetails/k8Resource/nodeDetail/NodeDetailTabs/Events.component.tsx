@@ -38,7 +38,6 @@ function EventsComponent({ selectedTab, isDeleted }) {
                 setLoading(false);
             });
         } catch (err) {
-            console.log('err', err);
             setEvents([]);
             setLoading(false);
         }
