@@ -77,18 +77,18 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 id: null,
                 environmentId: 0,
                 ciPipelineId: +this.props.match.params.ciPipelineId,
-                triggerType: TriggerType.Auto,
+                triggerType: TriggerType.Manual,
                 name: '',
                 strategies: [],
                 namespace: '',
                 preStage: {
                     config: '',
-                    triggerType: TriggerType.Auto,
+                    triggerType: TriggerType.Manual,
                     switch: SwitchItemValues.Config,
                 },
                 postStage: {
                     config: '',
-                    triggerType: TriggerType.Auto,
+                    triggerType: TriggerType.Manual,
                     switch: SwitchItemValues.Config,
                 },
                 preStageConfigMapSecretNames: {
@@ -245,14 +245,14 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             preStage: {
                 ...pipelineConfigFromRes.preStage,
                 config: pipelineConfigFromRes.preStage.config || '',
-                triggerType: pipelineConfigFromRes.preStage.triggerType || TriggerType.Auto,
+                triggerType: pipelineConfigFromRes.preStage.triggerType || TriggerType.Manual,
                 switch: SwitchItemValues.Config,
                 isCollapse: isEmpty(pipelineConfigFromRes.preStage.config),
             },
             postStage: {
                 ...pipelineConfigFromRes.postStage,
                 config: pipelineConfigFromRes.postStage.config || '',
-                triggerType: pipelineConfigFromRes.postStage.triggerType || TriggerType.Auto,
+                triggerType: pipelineConfigFromRes.postStage.triggerType || TriggerType.Manual,
                 switch: SwitchItemValues.Config,
                 isCollapse: isEmpty(pipelineConfigFromRes.postStage.config),
             },

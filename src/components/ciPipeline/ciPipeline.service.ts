@@ -35,7 +35,7 @@ export function getInitData(appId: string | number, includeWebhookData: boolean 
                     webhookEvents: pipelineMetaConfig.result.webhookEvents,
                     ciPipelineSourceTypeOptions: pipelineMetaConfig.result.ciPipelineSourceTypeOptions,
                     webhookConditionList: pipelineMetaConfig.result.webhookConditionList,
-                    triggerType: TriggerType.Auto,
+                    triggerType: TriggerType.Manual,
                     beforeDockerBuildScripts: [],
                     afterDockerBuildScripts: [],
                     preBuildStage: emptyStepsData(),
