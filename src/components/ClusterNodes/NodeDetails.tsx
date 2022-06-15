@@ -498,7 +498,8 @@ export default function NodeDetails() {
                       return _sortOrder === OrderBy.ASC ? firstValue - secondValue : secondValue - firstValue
                   }
                 : (a, b) => {
-                      return _sortOrder === OrderBy.ASC
+                      return (_sortOrder === OrderBy.ASC && columnName !== 'createdAt') ||
+                          (_sortOrder === OrderBy.DESC && columnName === 'createdAt')
                           ? a[columnName].localeCompare(b[columnName])
                           : b[columnName].localeCompare(a[columnName])
                   }
@@ -545,7 +546,7 @@ export default function NodeDetails() {
                     {sortedPodList.slice(podListOffset, podListOffset + pageSize).map((pod) => (
                         <>
                             <div className="border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9">{pod.namespace}</div>
-                            <Tippy className="default-tt" arrow={false} placement="bottom" content={pod.name}>
+                            <Tippy className="default-tt" arrow={false} placement="top" content={pod.name}>
                                 <div className="hover-trigger position-rel flexbox border-bottom-n1 p-8 fw-4 fs-13 cn-9">
                                     <span
                                         className="inline-block ellipsis-right lh-20"
@@ -653,7 +654,8 @@ export default function NodeDetails() {
                     setApiInProgress(false)
                 })
         } else {
-            setIsReviewStates(true)
+            setApiInProgress(true)
+            //setIsReviewStates(true)
         }
     }
 
@@ -663,7 +665,7 @@ export default function NodeDetails() {
                 <CodeEditor
                     value={modifiedManifest}
                     defaultValue={nodeDetail?.manifest && YAML.stringify(nodeDetail?.manifest)}
-                    height={isReviewState ? 'calc( 100vh - 177px)' : 'calc( 100vh - 137px)'}
+                    height={isReviewState ? 'calc( 100vh - 170px)' : 'calc( 100vh - 137px)'}
                     diffView={isReviewState}
                     onChange={handleEditorValueChange}
                     noParsing

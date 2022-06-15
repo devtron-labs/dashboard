@@ -219,7 +219,8 @@ export default function NodeList() {
     }
 
     const alphabeticalComparatorMethod = (a, b) => {
-        return sortOrder === OrderBy.ASC
+        return (sortOrder === OrderBy.ASC && sortByColumn.sortingFieldName !== 'createdAt') ||
+            (sortOrder === OrderBy.DESC && sortByColumn.sortingFieldName === 'createdAt')
             ? a[sortByColumn.sortingFieldName].localeCompare(b[sortByColumn.sortingFieldName])
             : b[sortByColumn.sortingFieldName].localeCompare(a[sortByColumn.sortingFieldName])
     }
