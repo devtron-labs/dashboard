@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
 import { multiSelectStyles, Progressing, showError, VisibleModal } from '../common'
 import { DropdownIndicator } from '../security/security.util'
@@ -9,8 +9,10 @@ import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { createGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
 import GenerateModal from './GenerateModal'
-import { options, PermissionType } from './authorization.utils'
+import { getDateInMilliseconds, getOptions, PermissionType } from './authorization.utils'
 import GenerateActionButton from './GenerateActionButton'
+import moment from 'moment'
+import { Moment12HourFormat } from '../../config'
 
 function CreateAPIToken({
     setShowGenerateModal,
@@ -22,6 +24,8 @@ function CreateAPIToken({
     setFormData,
     tokenResponse,
     setTokenResponse,
+    customDate,
+    setCustomDate,
 }: GenerateTokenType) {
     const [loader, setLoader] = useState(false)
     const [adminPermission, setAdminPermission] = useState('SUPERADMIN')
@@ -32,14 +36,19 @@ function CreateAPIToken({
         const _formData = { ...formData }
         _formData[key] = event.target.value || ''
         setFormData(_formData)
+
+        if (key === 'customDate') {
+            setCustomDate(parseInt(event.target.value))
+        }
     }
 
     const onChangeSelectFormData = (selectedOption: { label: string; value: number }) => {
         const _formData = { ...formData }
         setSelectedExpirationDate(selectedOption)
-        _formData['expireAtInMs'] = selectedOption.value
+        _formData['expireAtInMs'] = getDateInMilliseconds(selectedExpirationDate.value)
         setFormData(_formData)
     }
+
     const handleGenerateAPIToken = () => {
         setLoader(true)
         let payload = {
@@ -116,7 +125,7 @@ function CreateAPIToken({
                             <div className="flex left">
                                 <ReactSelect
                                     value={selectedExpirationDate}
-                                    options={options}
+                                    options={getOptions(customDate)}
                                     className="select-width w-200"
                                     onChange={(e) => onChangeSelectFormData(e)}
                                     components={{
@@ -127,7 +136,21 @@ function CreateAPIToken({
                                         ...multiSelectStyles,
                                     }}
                                 />
-                                <span className="ml-16">This token will expire on </span>
+                                <span className="ml-16 fw-4">
+                                    This token will expire on
+                                    {moment(getDateInMilliseconds(selectedExpirationDate.value)).format(
+                                        Moment12HourFormat,
+                                    )}
+                                </span>
+                                {selectedExpirationDate.label === 'Custom...' && (
+                                    <input
+                                        tabIndex={1}
+                                        placeholder="Custom Dtaer"
+                                        className="form__input"
+                                        value={customDate}
+                                        onChange={(e) => onChangeFormData(e, 'customDate')}
+                                    />
+                                )}
                             </div>
                         </label>
                         <div className="mb-20">
@@ -180,7 +203,6 @@ function CreateAPIToken({
                     buttonText="Generate token"
                 />
             </div>
-
             {showGenerateModal && <GenerateModal close={handleGenerateTokenActionButton} token={tokenResponse.token} />}
         </>
     )

@@ -6,11 +6,11 @@ import { getGeneratedAPITokenList } from './service'
 import { showError, Progressing, ErrorScreenManager, ConfirmationDialog } from '../common'
 import EmptyState from '../EmptyState/EmptyState'
 import emptyGeneratToken from '../../assets/img/ic-empty-generate-token.png'
-import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
+import { Redirect, Route, Switch, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
-import { FormType, TokenResponseType } from './authorization.type'
+import { FormType, TokenListType, TokenResponseType } from './authorization.type'
 
 function ApiTokens() {
     const history = useHistory()
@@ -18,7 +18,7 @@ function ApiTokens() {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const [loader, setLoader] = useState(false)
-    const [tokenList, setTokenlist] = useState([])
+    const [tokenList, setTokenlist] = useState<TokenListType[]>(undefined)
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [deleteConfirmation, setDeleteConfirmation] = useState(false)
     const [showGenerateModal, setShowGenerateModal] = useState(false)
@@ -27,6 +27,7 @@ function ApiTokens() {
         label: '',
         value: 0,
     })
+    const [customDate, setCustomDate] = useState<number>(undefined)
     const [formData, setFormData] = useState<FormType>({
         name: '',
         description: '',
@@ -60,8 +61,8 @@ function ApiTokens() {
             })
     }
 
-    const handleGenerateRowActionButton = (key: 'create' | 'edit') => {
-        let url = tokenResponse.userId ? `${key}/${tokenResponse.userId}` : key
+    const handleGenerateRowActionButton = (key: 'create' | 'edit', userId) => {
+        let url = userId ? `${key}/${userId}` : key
         history.push(url)
     }
 
@@ -77,7 +78,7 @@ function ApiTokens() {
                     <Search className="search__icon icon-dim-18" />
                     <input
                         type="text"
-                        placeholder="Search charts"
+                        placeholder="Search"
                         value={searchText}
                         className="search__input bcn-0"
                         onChange={(event) => {
@@ -132,6 +133,8 @@ function ApiTokens() {
                                     setFormData={setFormData}
                                     tokenResponse={tokenResponse}
                                     setTokenResponse={setTokenResponse}
+                                    customDate={customDate}
+                                    setCustomDate={setCustomDate}
                                 />
                             )}
                         />
@@ -147,6 +150,9 @@ function ApiTokens() {
                                     formData={formData}
                                     setFormData={setFormData}
                                     tokenResponse={tokenResponse}
+                                    customDate={customDate}
+                                    setCustomDate={setCustomDate}
+                                    tokenList={tokenList}
                                 />
                             )}
                         />
@@ -204,12 +210,18 @@ function ApiTokens() {
             </div>
         )
     }
-    if (tokenList.length === 0) {
+    if (tokenList && tokenList.length === 0) {
         return renderEmptyNotAuthorized()
     }
 
     return (
-        <div>{tokenList.length === 0 ? <div className="h-100">{renderEmptyState()}</div> : renderAPITokenRoutes()}</div>
+        <div>
+            {tokenList && tokenList.length === 0 ? (
+                <div className="h-100">{renderEmptyState()}</div>
+            ) : (
+                renderAPITokenRoutes()
+            )}
+        </div>
     )
 }
 

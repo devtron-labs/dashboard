@@ -22,8 +22,20 @@ export interface GenerateTokenType {
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
     tokenResponse: TokenResponseType
     setTokenResponse: React.Dispatch<React.SetStateAction<TokenResponseType>>
+    customDate: number
+    setCustomDate: React.Dispatch<React.SetStateAction<number>>
 }
 
+export interface TokenListType {
+    expireAtInMs: number
+    id: number
+    name: string
+    token: string
+    updatedAt: string
+    userId: number
+    userIdentifier: string
+    description: string
+}
 export interface EditTokenType {
     setShowRegeneratedModal: React.Dispatch<React.SetStateAction<boolean>>
     showRegeneratedModal: boolean
@@ -33,6 +45,9 @@ export interface EditTokenType {
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
     tokenResponse: TokenResponseType
+    customDate: number
+    setCustomDate: React.Dispatch<React.SetStateAction<number>>
+    tokenList: TokenListType[]
 }
 
 export interface GenerateActionButtonType {

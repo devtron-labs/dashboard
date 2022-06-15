@@ -5,8 +5,8 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import ReactSelect from 'react-select'
 import { multiSelectStyles, Progressing, showError, VisibleModal } from '../common'
 import { DropdownIndicator } from '../security/security.util'
-import { options } from './authorization.utils'
 import GenerateActionButton from './GenerateActionButton'
+import { getOptions } from './authorization.utils'
 
 function RegeneratedModal({ close, selectedExpirationDate, setSelectedExpirationDate, setShowRegeneratedModal }) {
     const renderModalHeader = () => {
@@ -31,7 +31,7 @@ function RegeneratedModal({ close, selectedExpirationDate, setSelectedExpiration
                 <div className="flex left">
                     <ReactSelect
                         value={selectedExpirationDate}
-                        options={options}
+                        options={getOptions(selectedExpirationDate.value)}
                         className="select-width w-200"
                         onChange={() => setSelectedExpirationDate(selectedExpirationDate)}
                         components={{

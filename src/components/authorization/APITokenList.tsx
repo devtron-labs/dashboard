@@ -42,7 +42,7 @@ function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, han
                             <button
                                 type="button"
                                 className="transparent mr-16"
-                                onClick={() => handleGenerateRowActionButton('edit')}
+                                onClick={() => handleGenerateRowActionButton('edit', list.userId)}
                             >
                                 <Edit className="icon-dim-20" />
                             </button>
