@@ -541,7 +541,7 @@ export default function NodeDetails() {
                     {renderPodHeaderCell('CPU Requests', 'cpu.limitPercentage', 'number', 'p-8')}
                     {renderPodHeaderCell('Memory Requests', 'memory.requestPercentage', 'number', 'p-8')}
                     {renderPodHeaderCell('Memory Requests', 'memory.limitPercentage', 'number', 'p-8')}
-                    {renderPodHeaderCell('Age', 'Age', 'string', 'pt-8 pr-20 pb-8 pl-8')}
+                    {renderPodHeaderCell('Age', 'createdAt', 'string', 'pt-8 pr-20 pb-8 pl-8')}
                     {sortedPodList.slice(podListOffset, podListOffset + pageSize).map((pod) => (
                         <>
                             <div className="border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9">{pod.namespace}</div>

@@ -166,7 +166,7 @@ export const columnMetadata: columnMetadataType[] = [
         label: 'CPU Usage (Absolute)',
         value: 'cpu.usage',
         isSortingAllowed: true,
-        sortingFieldName: 'cpu.usage',
+        sortingFieldName: 'cpu.usageInBytes',
     },
     {
         sortType: 'number',
@@ -183,7 +183,7 @@ export const columnMetadata: columnMetadataType[] = [
         value: 'memory.usagePercentage',
         isDefault: true,
         isSortingAllowed: true,
-        sortingFieldName: 'name',
+        sortingFieldName: 'memory.usagePercentage',
     },
     {
         sortType: 'number',
@@ -191,7 +191,7 @@ export const columnMetadata: columnMetadataType[] = [
         label: 'Mem Usage (Absolute)',
         value: 'memory.usage',
         isSortingAllowed: true,
-        sortingFieldName: 'name',
+        sortingFieldName: 'memory.usageInBytes',
     },
     {
         sortType: 'number',

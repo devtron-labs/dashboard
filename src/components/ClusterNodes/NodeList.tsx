@@ -199,17 +199,19 @@ export default function NodeList() {
             }
             _flattenNodeList.push(element)
         }
-        const comparatorMethod =
-            sortByColumn.sortType === 'number' ? numericComparatorMethod : alphabeticalComparatorMethod
-        _flattenNodeList.sort(comparatorMethod)
+        if (sortByColumn) {
+            const comparatorMethod =
+                sortByColumn.sortType === 'number' ? numericComparatorMethod : alphabeticalComparatorMethod
+            _flattenNodeList.sort(comparatorMethod)
+        }
         setFilteredFlattenNodeList(_flattenNodeList)
         setNoResults(_flattenNodeList.length === 0)
     }
 
     const numericComparatorMethod = (a, b) => {
-        let firstValue = a[sortByColumn.sortingFieldName]
-        let secondValue = b[sortByColumn.sortingFieldName]
-        if (firstValue?.endsWith === '%') {
+        let firstValue = a[sortByColumn.sortingFieldName] || 0
+        let secondValue = b[sortByColumn.sortingFieldName] || 0
+        if (typeof firstValue === 'string' && firstValue?.endsWith('%')) {
             firstValue = firstValue.slice(0, -1)
             secondValue = secondValue.slice(0, -1)
         }
