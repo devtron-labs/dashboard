@@ -14,7 +14,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps>{
     }
 
     getCDNodeDetailsURL(): string{
-        return `${this.props.match.url.substring(0,this.props.match.url.indexOf('/trigger'))}/details/${this.props.environmentId}/k8s-resources`;
+        return `${this.props.match.url.substring(0,this.props.match.url.indexOf('/trigger'))}/details/${this.props.environmentId}`;
     }
 
     redirectToCDDetails() {

@@ -179,7 +179,7 @@ export class CDMaterial extends Component<CDMaterialProps> {
           isLoading={this.props.isLoading}
           disabled={!selectedImage}
           loaderColor="#ffffff"
-          onClick={(e) => { e.stopPropagation(); this.props.triggerDeploy(this.props.stageType) }}>
+          onClick={(e) => { e.stopPropagation(); this.props.triggerDeploy(this.props.stageType); this.props.redirectToCD()}}>
           {this.props.stageType === 'CD' ? <img src={deploy} alt="deploy" className="trigger-btn__icon" />
             : <img src={play} alt="trigger" className="trigger-btn__icon" />}
           {buttonLabel}
