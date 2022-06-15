@@ -901,3 +901,36 @@ export const sortOptionsByValue = (optionA, optionB) => {
     }
     return 0
 }
+
+// Create instance of MutationObserver & watch for DOM changes until 
+// disconnect() is called.
+export const watchDOMForChanges = (callback: (observer: MutationObserver) => void) => {
+    const observer = new MutationObserver(() => {
+        callback(observer)
+    })
+
+    observer.observe(document.body, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+    })
+}
+
+// It'll observe/wait for the element to be mounted/present in DOM,
+// returns it when present & stop observing.
+export const elementDidMount = (identifier: string): Promise<unknown> => {
+    return new Promise((resolve) => {
+        const element = document.querySelector(identifier)
+
+        if (element) {
+            return resolve(element)
+        }
+
+        watchDOMForChanges((observer) => {
+            if (document.querySelector(identifier)) {
+                resolve(document.querySelector(identifier))
+                observer.disconnect()
+            }
+        })
+    })
+}
