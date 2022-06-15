@@ -39,7 +39,9 @@ export default class ErrorBoundary extends Component<{}, errorBoundaryState> {
     render() {
         if (this.state.hasError) {
             return this.state.isChunkLoadError ? (
-                <Reload />
+                <div style={{ height: '100vh' }}>
+                    <Reload />
+                </div>
             ) : (
                 <div className="flex column" style={{ width: '100%', height: '100%' }}>
                     <img src={bugFixing} alt="" style={{ height: '300px', width: 'auto', marginBottom: '20px' }} />

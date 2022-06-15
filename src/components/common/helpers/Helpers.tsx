@@ -180,7 +180,10 @@ export function showError(serverError, showToastOnUnknownError = true) {
             toast.error(userMessage || internalMessage);
         });
     } else {
-        Sentry.captureException(serverError);
+        if (serverError.code !== 403) {
+            Sentry.captureException(serverError);
+        }
+
         if (showToastOnUnknownError) {
             if (serverError.message) {
                 toast.error(serverError.message);
