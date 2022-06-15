@@ -6,15 +6,13 @@ import { EditTokenType } from './authorization.type'
 import { getDateInMilliseconds, PermissionType } from './authorization.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import GenerateActionButton from './GenerateActionButton'
-import { Link, useHistory, useRouteMatch } from 'react-router-dom'
+import { useHistory, useRouteMatch } from 'react-router-dom'
 import { useParams } from 'react-router'
 import moment from 'moment'
 import { Moment12HourFormat } from '../../config'
-import { ConfirmationDialog, copyToClipboard, DeleteDialog, showError } from '../common'
+import { copyToClipboard, DeleteDialog, showError } from '../common'
 import { deleteGeneratedAPIToken, updateGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
-import warn from '../../assets/icons/ic-warning.svg'
-import { string } from 'prop-types'
 
 function EditAPIToken({
     setShowRegeneratedModal,
@@ -34,6 +32,7 @@ function EditAPIToken({
     setDeleteConfirmation,
     selectedList,
     setSelectedList,
+    reload,
 }: EditTokenType) {
     const history = useHistory()
     const match = useRouteMatch()
@@ -108,8 +107,7 @@ function EditAPIToken({
             .then((response) => {
                 if (response.code === 200) {
                     toast.success('Token Deleted!!!')
-                    let url = match.path.split('edit')[0]
-                    history.push(`${url}list`)
+                    reload()
                 }
             })
             .catch((error) => {
@@ -121,7 +119,7 @@ function EditAPIToken({
         return (
             <DeleteDialog
                 title={`Delete API token '${token.name}'?`}
-                delete={() => deleteToken(token.userId)}
+                delete={() => deleteToken(token.id)}
                 closeDelete={() => {
                     setDeleteConfirmation(false)
                 }}

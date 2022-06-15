@@ -134,7 +134,6 @@ function ApiTokens() {
     const renderAPITokenRoutes = (): JSX.Element => {
         return (
             <Fragment>
-                {console.log(selectedList)}
                 <div className="api-token__container">
                     <Switch>
                         <Route
@@ -145,6 +144,7 @@ function ApiTokens() {
                                     setDeleteConfirmation={setDeleteConfirmation}
                                     renderSearchToken={renderSearchToken}
                                     handleGenerateRowActionButton={handleGenerateRowActionButton}
+                                    reload={getData}
                                 />
                             )}
                         />
@@ -165,6 +165,7 @@ function ApiTokens() {
                                     setCustomDate={setCustomDate}
                                     setCopied={setCopied}
                                     copied={copied}
+                                    reload={getData}
                                 />
                             )}
                         />
@@ -189,6 +190,7 @@ function ApiTokens() {
                                     deleteConfirmation={deleteConfirmation}
                                     selectedList={selectedList}
                                     setSelectedList={setSelectedList}
+                                    reload={getData}
                                 />
                             )}
                         />

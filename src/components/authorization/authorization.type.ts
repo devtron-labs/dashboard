@@ -26,6 +26,7 @@ export interface GenerateTokenType {
     setCustomDate: React.Dispatch<React.SetStateAction<number>>
     setCopied: React.Dispatch<React.SetStateAction<boolean>>
     copied: boolean
+    reload: () => void
 }
 
 export interface TokenListType {
@@ -37,6 +38,8 @@ export interface TokenListType {
     userId: number
     userIdentifier: string
     description: string
+    lastUsedByIp: string
+    lastUsedAt: string
 }
 export interface EditTokenType {
     setShowRegeneratedModal: React.Dispatch<React.SetStateAction<boolean>>
@@ -56,6 +59,7 @@ export interface EditTokenType {
     deleteConfirmation: boolean
     selectedList: TokenListType
     setSelectedList: React.Dispatch<React.SetStateAction<TokenListType>>
+    reload: () => void
 }
 
 export interface GenerateActionButtonType {
@@ -72,4 +76,14 @@ export interface GenerateTokenModalType {
     token: string
     setCopied: React.Dispatch<React.SetStateAction<boolean>>
     copied: boolean
+    setShowGenerateModal: React.Dispatch<React.SetStateAction<boolean>>
+    reload: () => void
+}
+
+export interface APITokenListType {
+    tokenList: TokenListType[]
+    setDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
+    renderSearchToken: () => void
+    handleGenerateRowActionButton: (key: 'create' | 'edit', id?: number) => void
+    reload: () => void
 }

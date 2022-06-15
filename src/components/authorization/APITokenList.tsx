@@ -9,8 +9,15 @@ import { deleteGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
 import { showError } from '../common'
 import { useHistory, useRouteMatch } from 'react-router-dom'
+import { APITokenListType } from './authorization.type'
 
-function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, handleGenerateRowActionButton }) {
+function APITokenList({
+    tokenList,
+    setDeleteConfirmation,
+    renderSearchToken,
+    handleGenerateRowActionButton,
+    reload,
+}: APITokenListType) {
     const history = useHistory()
     const match = useRouteMatch()
 
@@ -21,6 +28,7 @@ function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, han
                     toast.success('Token Deleted!!!')
                     let url = match.path.split('edit')[0]
                     history.push(`${url}list`)
+                    reload()
                 }
             })
             .catch((error) => {
@@ -52,17 +60,21 @@ function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, han
                         key={`api_${index}`}
                         className="api-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
                     >
-                        <button type="button" className=" transparent  ">
+                        <button
+                            type="button"
+                            className="transparent cursor"
+                            onClick={() => handleGenerateRowActionButton('edit', list.userId)}
+                        >
                             <Bulb className="scn-5 icon-dim-20" />
                         </button>
                         <div className="flexbox">{list.name}</div>
                         <div className="ellipsis-right">{moment(list.lastUsedAt).format(Moment12HourFormat)}</div>
                         <div>{list.lastUsedByIp}</div>
-                        <div>{list.expireAtInMs}</div>
+                        <div>{moment(list.expireAtInMs).format(Moment12HourFormat)}</div>
                         <div className="api__row-actions flex">
                             <button
                                 type="button"
-                                className="transparent mr-16"
+                                className="transparent mr-16 ml-16"
                                 onClick={() => handleGenerateRowActionButton('edit', list.userId)}
                             >
                                 <Edit className="icon-dim-20" />
@@ -74,7 +86,7 @@ function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, han
                                     setDeleteConfirmation(false)
                                 }}
                             >
-                                <Trash className="scn-5 icon-dim-20" onClick={() => deleteToken(list.userId)} />
+                                <Trash className="scn-5 icon-dim-20" onClick={() => deleteToken(list.id)} />
                             </button>
                         </div>
                     </div>
