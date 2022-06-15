@@ -916,12 +916,11 @@ export const watchDOMForChanges = (callback: (observer: MutationObserver) => voi
     })
 }
 
-// It'll observe/wait for the element to be mounted/present in DOM,
-// returns it when present & stop observing.
+// It'll watch DOM for changes & wait for the element to be mounted.
+// Once element is presnt, it'll return it & stop watching for DOM changes.
 export const elementDidMount = (identifier: string): Promise<unknown> => {
     return new Promise((resolve) => {
         const element = document.querySelector(identifier)
-
         if (element) {
             return resolve(element)
         }
