@@ -190,7 +190,7 @@ export default function ClusterList() {
                                     </div>
                                     <div className="ellipsis-right">
                                         <Tippy
-                                            className="default-tt w-200"
+                                            className="default-tt"
                                             arrow={false}
                                             content={clusterData.nodeK8sVersions?.[0]}
                                         >
