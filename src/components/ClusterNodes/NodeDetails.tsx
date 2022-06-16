@@ -35,6 +35,7 @@ import {
 import { toast } from 'react-toastify'
 import { ReactComponent as Sort } from '../../assets/icons/ic-sort-arrow.svg'
 import { OrderBy } from '../app/list/types'
+import { MODES } from '../../config'
 
 export default function NodeDetails() {
     const [loader, setLoader] = useState(false)
@@ -60,7 +61,6 @@ export default function NodeDetails() {
         getNodeCapacity(clusterId, nodeName)
             .then((response: NodeDetailResponse) => {
                 if (response.result) {
-                    response.result.pods.sort((a, b) => a['name'].localeCompare(b['name']))
                     setSortedPodList(response.result.pods.sort((a, b) => a['name'].localeCompare(b['name'])))
                     setNodeDetail(response.result)
                     const resourceList = response.result.resources
@@ -322,7 +322,7 @@ export default function NodeDetails() {
                 <div className="flexbox bcr-5 pt-12 pb-12 pr-10 pl-20 top-radius-4">
                     <Error className="error-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
                     <span className="fw-6 fs-14 cn-0">
-                        {nodeErrorKeys.length === 1 ? '1 Error' : nodeErrorKeys.length + ' Errors'}
+                        {`${nodeErrorKeys.length} Error${nodeErrorKeys.length > 1 ? 's' : ''}`}
                     </span>
                 </div>
                 <div className="pt-12 pr-20 pl-20">
@@ -346,7 +346,7 @@ export default function NodeDetails() {
                 <div className="flexbox bcy-5 pt-12 pb-12 pr-10 pl-20 top-radius-4">
                     <AlertTriangle className="alert-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
                     <span className="fw-6 fs-14 cn-9">
-                        {issueCount === 1 ? '1 Probable issue' : issueCount + ' Probable issues'}
+                        {`${issueCount} Probable issue${issueCount > 1 ? 's' : ''}`}
                     </span>
                 </div>
                 <div className="pt-12 pr-20 pl-20">
@@ -672,10 +672,11 @@ export default function NodeDetails() {
             <div className="node-details-container">
                 <CodeEditor
                     value={modifiedManifest}
-                    defaultValue={nodeDetail?.manifest && YAML.stringify(nodeDetail?.manifest)}
+                    defaultValue={(nodeDetail?.manifest && YAML.stringify(nodeDetail?.manifest)) || ''}
                     height={isReviewState ? 'calc( 100vh - 170px)' : 'calc( 100vh - 137px)'}
                     diffView={isReviewState}
                     onChange={handleEditorValueChange}
+                    mode={MODES.YAML}
                     noParsing
                 >
                     {isReviewState && (

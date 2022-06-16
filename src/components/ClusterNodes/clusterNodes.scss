@@ -60,9 +60,7 @@
         left: 0;
         z-index: 1;
         background-color: var(--N0);
-        &.shadow {
-            box-shadow: 5px 0px 6px -5px rgba(0, 0, 0, 0.69);
-        }
+        box-shadow: 5px 1px 5px -2px rgba(0, 0, 0, 0.28%);
     }
 }
 
@@ -129,13 +127,13 @@
         column-gap: 12px;
         .resource-row {
             display: grid;
-            grid-template-columns: 20px minmax(auto, 200px) 100px 100px 100px 100px 100px;
+            grid-template-columns: 20px minmax(auto, 200px) repeat(5, 100px);
             column-gap: 12px;
         }
         .pod-container {
             .pods-grid {
                 display: grid;
-                grid-template-columns: minmax(150px, 300px) minmax(100px, auto) 100px 100px 100px 100px 75px;
+                grid-template-columns: minmax(150px, 300px) minmax(100px, auto) repeat(4, 100px) 75px;
             }
             .scrollable-pod-list {
                 max-height: 700px;

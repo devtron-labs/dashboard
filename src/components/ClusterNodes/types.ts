@@ -93,7 +93,7 @@ export interface UpdateNodeRequestBody {
     kind: string
 }
 
-export interface columnMetadataType {
+export interface ColumnMetadataType {
     sortType: string
     columnIndex: number
     label: string
@@ -109,7 +109,7 @@ export const TEXT_COLOR_CLASS = {
     'Not ready': 'cr-5',
 }
 
-export const columnMetadata: columnMetadataType[] = [
+export const COLUMN_METADATA: ColumnMetadataType[] = [
     {
         sortType: 'string',
         columnIndex: 0,

@@ -5,7 +5,7 @@ import { Option, DropdownIndicator } from '../v2/common/ReactSelect.utils'
 import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
 import ReactSelect, { MultiValue } from 'react-select'
 import { OptionType } from '../app/types'
-import { columnMetadataType } from './types'
+import { ColumnMetadataType } from './types'
 import ColumnSelector from './ColumnSelector'
 
 interface NodeListSearchFliterType {
@@ -13,8 +13,8 @@ interface NodeListSearchFliterType {
     nodeK8sVersions: string[]
     selectedVersion: OptionType
     setSelectedVersion: React.Dispatch<React.SetStateAction<OptionType>>
-    appliedColumns: MultiValue<columnMetadataType>
-    setAppliedColumns: React.Dispatch<React.SetStateAction<MultiValue<columnMetadataType>>>
+    appliedColumns: MultiValue<ColumnMetadataType>
+    setAppliedColumns: React.Dispatch<React.SetStateAction<MultiValue<ColumnMetadataType>>>
     selectedSearchTextType: string
     setSelectedSearchTextType: React.Dispatch<React.SetStateAction<string>>
     setSearchText: React.Dispatch<React.SetStateAction<string>>
@@ -35,7 +35,6 @@ export default function NodeListSearchFliter({
     setSearchedLabelMap,
 }: NodeListSearchFliterType) {
     const [searchApplied, setSearchApplied] = useState(false)
-    const [isMenuOpen, setMenuOpen] = useState(false)
     const [openFilterPopup, setOpenFilterPopup] = useState(false)
     const [searchInputText, setSearchInputText] = useState('')
 
@@ -56,7 +55,7 @@ export default function NodeListSearchFliter({
     }
 
     const handleFilterTag = (event): void => {
-        let theKeyCode = event.key
+        const theKeyCode = event.key
         if (theKeyCode === 'Enter') {
             if (selectedSearchTextType === 'label') {
                 const _searchedLabelMap = new Map()
@@ -150,11 +149,11 @@ export default function NodeListSearchFliter({
                         )}
                     </>
                 )}
-                {searchApplied ? (
+                {searchApplied && (
                     <button className="search__clear-button" type="button" onClick={clearTextFilter}>
                         <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                     </button>
-                ) : null}
+                )}
             </div>
         )
     }

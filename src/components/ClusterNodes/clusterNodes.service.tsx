@@ -13,7 +13,7 @@ export const getClusterList = (): Promise<ClusterListResponse> => {
 }
 
 export const getClusterCapacity = (clusterId: string): Promise<ClusterCapacityResponse> => {
-    return get(Routes.CLUSTER_CAPACITY + '/' + clusterId)
+    return get(`${Routes.CLUSTER_CAPACITY}/${clusterId}`)
 }
 
 export const getNodeList = (clusterId: string): Promise<NodeListResponse> => {

@@ -4,7 +4,13 @@ import { useRouteMatch, useParams, useHistory } from 'react-router'
 import './clusterNodes.scss'
 import { getClusterCapacity, getNodeList, getClusterList } from './clusterNodes.service'
 import { BreadCrumb, ConditionalWrap, handleUTCTime, Progressing, showError, useBreadcrumb } from '../common'
-import { ClusterCapacityType, ClusterListResponse, columnMetadata, columnMetadataType, TEXT_COLOR_CLASS } from './types'
+import {
+    ClusterCapacityType,
+    ClusterListResponse,
+    COLUMN_METADATA,
+    ColumnMetadataType,
+    TEXT_COLOR_CLASS,
+} from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Sort } from '../../assets/icons/ic-sort-arrow.svg'
@@ -40,14 +46,24 @@ export default function NodeList() {
     const [searchedLabelMap, setSearchedLabelMap] = useState<Map<string, string>>(new Map())
     const [selectedVersion, setSelectedVersion] = useState<OptionType>(defaultVersion)
     const [selectedSearchTextType, setSelectedSearchTextType] = useState<string>('')
-    const [sortByColumn, setSortByColumn] = useState<columnMetadataType>(columnMetadata[0])
+    const [sortByColumn, setSortByColumn] = useState<ColumnMetadataType>(COLUMN_METADATA[0])
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
     const [noResults, setNoResults] = useState(false)
-    const [appliedColumns, setAppliedColumns] = useState<MultiValue<columnMetadataType>>([])
+    const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
+    const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
+
+    useEffect(() => {
+        if (appliedColumns.length > 0) {
+            const appliedColumnDerivedWidth = appliedColumns.length * 116 + 180 + 65
+            const windowWidth = window.innerWidth
+            let clientWidth = 0
+            setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
+        }
+    }, [appliedColumns])
 
     useEffect(() => {
         let appliedColumnsFromLocalStorage
-        const _defaultColumns = columnMetadata.filter((columnData) => columnData.isDefault)
+        const _defaultColumns = COLUMN_METADATA.filter((columnData) => columnData.isDefault)
         if (typeof Storage !== 'undefined') {
             if (!localStorage.appliedColumns) {
                 localStorage.appliedColumns = JSON.stringify(_defaultColumns)
@@ -61,20 +77,19 @@ export default function NodeList() {
     }, [])
 
     const flattenObject = (ob: Object): Object => {
-        var toReturn = {}
-
-        for (var i in ob) {
+        let toReturn = {}
+        for (let i in ob) {
             if (!ob.hasOwnProperty(i)) continue
-
-            if (typeof ob[i] == 'object' && ob[i] !== null && !Array.isArray(ob[i])) {
-                var flatObject = flattenObject(ob[i])
+            const currentElement = ob[i]
+            if (typeof currentElement == 'object' && currentElement !== null && !Array.isArray(currentElement)) {
+                var flatObject = flattenObject(currentElement)
                 for (var x in flatObject) {
                     if (!flatObject.hasOwnProperty(x)) continue
 
                     toReturn[i + '.' + x] = flatObject[x]
                 }
             } else {
-                toReturn[i] = ob[i]
+                toReturn[i] = currentElement
             }
         }
         return toReturn
@@ -178,12 +193,13 @@ export default function NodeList() {
         let _flattenNodeList = []
         for (let index = 0; index < flattenNodeList.length; index++) {
             const element = flattenNodeList[index]
-            if (selectedVersion.value !== defaultVersion.value && element['k8sVersion'] !== selectedVersion.value) {
+            if (
+                (selectedVersion.value !== defaultVersion.value && element['k8sVersion'] !== selectedVersion.value) ||
+                (selectedSearchTextType === 'name' && element['name'].indexOf(searchText) === -1)
+            ) {
                 continue
             }
-            if (selectedSearchTextType === 'name' && element['name'].indexOf(searchText) === -1) {
-                continue
-            } else if (selectedSearchTextType === 'label') {
+            if (selectedSearchTextType === 'label') {
                 let matchedLabelCount = 0
                 for (let i = 0; i < element['labels']?.length; i++) {
                     const currentLabel = element['labels'][i]
@@ -211,7 +227,7 @@ export default function NodeList() {
     const numericComparatorMethod = (a, b) => {
         let firstValue = a[sortByColumn.sortingFieldName] || 0
         let secondValue = b[sortByColumn.sortingFieldName] || 0
-        if (typeof firstValue === 'string' && firstValue?.endsWith('%')) {
+        if (typeof firstValue === 'string' && firstValue.endsWith('%')) {
             firstValue = firstValue.slice(0, -1)
             secondValue = secondValue.slice(0, -1)
         }
@@ -237,8 +253,7 @@ export default function NodeList() {
 
     const onClusterChange = (selectedValue: OptionType): void => {
         setSelectedCluster(selectedValue)
-        const currentUrl = match.url.replace(clusterId, selectedValue.value)
-        history.push(currentUrl)
+        history.push(match.url.replace(clusterId, selectedValue.value))
     }
 
     const { breadcrumbs } = useBreadcrumb(
@@ -272,7 +287,7 @@ export default function NodeList() {
         return <BreadCrumb breadcrumbs={breadcrumbs} />
     }
 
-    const handleSortClick = (column: columnMetadataType): void => {
+    const handleSortClick = (column: ColumnMetadataType): void => {
         if (sortByColumn.label === column.label) {
             setSortOrder(sortOrder === OrderBy.ASC ? OrderBy.DESC : OrderBy.ASC)
         } else {
@@ -393,11 +408,13 @@ export default function NodeList() {
         )
     }
 
-    const renderNodeListHeader = (column: columnMetadataType): JSX.Element => {
+    const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => {
         return (
             <div
-                className={`list-title inline-block mr-16 ${
-                    column.label === 'Node' ? 'w-280 pl-20 bcn-0 position-sticky sticky-column' : 'w-100-px'
+                className={`h-36 list-title inline-block mr-16 pt-8 pb-8 ${
+                    column.label === 'Node'
+                        ? `${fixedNodeNameColumn ? 'bcn-0 position-sticky sticky-column' : ''} w-280 pl-20`
+                        : 'w-100-px'
                 } ${sortByColumn.value === column.value ? 'sort-by' : ''} ${sortOrder === OrderBy.DESC ? 'desc' : ''} ${
                     column.isSortingAllowed ? ' pointer' : ''
                 }`}
@@ -411,7 +428,7 @@ export default function NodeList() {
         )
     }
 
-    const renderPercentageTippy = (nodeData: Object, column: columnMetadataType, children: any): JSX.Element => {
+    const renderPercentageTippy = (nodeData: Object, column: ColumnMetadataType, children: any): JSX.Element => {
         return (
             <Tippy
                 className="default-tt"
@@ -441,17 +458,21 @@ export default function NodeList() {
         return (
             <div
                 key={nodeData['name']}
-                className="fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 hover-class h-44"
-                style={{ width: 'max-content', minWidth: '100%' }}
+                className="fw-4 cn-9 fs-13 border-bottom-n1 pr-20 hover-class h-44"
+                style={{ width: 'max-content' }}
             >
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
-                        <div className="w-280 inline-block ellipsis-right mr-16 pl-20 bcn-0 position-sticky sticky-column">
+                        <div
+                            className={`w-280 inline-block ellipsis-right mr-16 pl-20 pt-12 pb-12${
+                                fixedNodeNameColumn ? ' bcn-0 position-sticky sticky-column' : ''
+                            }`}
+                        >
                             <NavLink to={`${match.url}/${nodeData[column.value]}`}>{nodeData[column.value]}</NavLink>
                         </div>
                     ) : (
                         <div
-                            className={`w-100-px inline-block ellipsis-right mr-16 ${
+                            className={`w-100-px inline-block ellipsis-right mr-16 pt-12 pb-12 ${
                                 column.value === 'status' ? TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7' : ''
                             }`}
                         >
@@ -511,7 +532,7 @@ export default function NodeList() {
                     ) : (
                         <div className="mt-16" style={{ width: '100%', overflow: 'auto' }}>
                             <div
-                                className=" fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 text-uppercase h-36"
+                                className=" fw-6 cn-7 fs-12 border-bottom pr-20 text-uppercase"
                                 style={{ width: 'max-content', minWidth: '100%' }}
                             >
                                 {appliedColumns.map((column) => renderNodeListHeader(column))}

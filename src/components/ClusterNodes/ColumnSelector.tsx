@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import ReactSelect, { components, MultiValue } from 'react-select'
 import { Option } from '../common'
-import { columnMetadata, columnMetadataType } from './types'
+import { COLUMN_METADATA, ColumnMetadataType } from './types'
 import { ReactComponent as Setting } from '../../assets/icons/ic-nav-gear.svg'
 import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
 
@@ -31,15 +31,15 @@ export default function ColumnSelector({
     appliedColumns,
     setAppliedColumns,
 }: {
-    appliedColumns: MultiValue<columnMetadataType>
-    setAppliedColumns: React.Dispatch<React.SetStateAction<MultiValue<columnMetadataType>>>
+    appliedColumns: MultiValue<ColumnMetadataType>
+    setAppliedColumns: React.Dispatch<React.SetStateAction<MultiValue<ColumnMetadataType>>>
 }) {
-    const [selectedColumns, setSelectedColumns] = useState<MultiValue<columnMetadataType>>([])
+    const [selectedColumns, setSelectedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const [isMenuOpen, setMenuOpen] = useState(false)
-    const [columnOptions, setColumnOptions] = useState<MultiValue<columnMetadataType>>([])
+    const [columnOptions, setColumnOptions] = useState<MultiValue<ColumnMetadataType>>([])
 
     useEffect(() => {
-        setColumnOptions(columnMetadata.filter((columnData) => !columnData.isDisabled))
+        setColumnOptions(COLUMN_METADATA.filter((columnData) => !columnData.isDisabled))
         setSelectedColumns(appliedColumns)
     }, [])
 
@@ -96,7 +96,7 @@ export default function ColumnSelector({
                 ValueContainer,
                 IndicatorSeparator: null,
                 ClearIndicator: null,
-                MenuList: (props) => <MenuList {...props} />,
+                MenuList,
             }}
             styles={{
                 ...containerImageSelectStyles,

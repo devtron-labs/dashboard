@@ -80,7 +80,7 @@ export default function ClusterList() {
     }
 
     const handleFilterKeyPress = (event): void => {
-        let theKeyCode = event.key
+        const theKeyCode = event.key
         if (theKeyCode === 'Enter') {
             handleFilterChanges(event.target.value)
             setSearchApplied(true)
@@ -136,7 +136,7 @@ export default function ClusterList() {
                 {noResults ? (
                     <ClusterNodeEmptyState actionHandler={clearSearch} />
                 ) : (
-                    <div className="" style={{ minHeight: 'calc(100vh - 125px)' }}>
+                    <div style={{ minHeight: 'calc(100vh - 125px)' }}>
                         <div className="cluster-list-row fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 pl-20 text-uppercase">
                             <div>Cluster</div>
                             <div>Connection status</div>
@@ -181,13 +181,11 @@ export default function ClusterList() {
                                     </div>
                                     <div>{clusterData.nodeCount}</div>
                                     <div>
-                                        {errorCount > 0 ? (
+                                        {errorCount > 0 && (
                                             <>
                                                 <Error className="mr-3 icon-dim-16 position-rel top-3" />
                                                 <span className="cr-5">{errorCount}</span>
                                             </>
-                                        ) : (
-                                            ''
                                         )}
                                     </div>
                                     <div>{clusterData.nodeK8sVersions?.[0]}</div>
