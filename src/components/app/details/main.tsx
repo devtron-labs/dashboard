@@ -95,7 +95,7 @@ export function AppHeader() {
 
     const getAppMetaInfoRes = () => {
         setIsLoading(true)
-        const res = getAppMetaInfo(appId).then((_result) => {
+        getAppMetaInfo(appId).then((_result) => {
             setAppName(_result?.result?.appName)
             let labelOptionRes = _result?.result?.labels?.map((_label) => {
                 return {
@@ -106,15 +106,13 @@ export function AppHeader() {
             setResult(_result)
             setIsLoading(false)
             setLabelTags({ tags: labelOptionRes || [], inputTagValue: '', tagError: '' })
+        }).catch((err) => {
+            showError(err)
         })
     }
 
     useEffect(() => {
-        try {
-            getAppMetaInfoRes()
-        } catch (err) {
-            showError(err)
-        }
+        getAppMetaInfoRes()
     }, [appId])
 
     function validateForm(): boolean {

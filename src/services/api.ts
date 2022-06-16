@@ -135,6 +135,14 @@ async function fetchAPI(
                     handleLogout()
                     return { code: 401, status: 'Unauthorized', result: [] }
                 }
+            } else if (response.status === 403) {
+                const statusText = response.statusText || responseMessages[403]
+                return Promise.reject(new ServerErrors({
+                    code: 403,
+                    errors: [
+                        { code: 403, internalMessage: statusText, userMessage: statusText },
+                    ],
+                }))
             } else if (response.status >= 300 && response.status <= 599) {
                 return await handleServerError(contentType, response)
             } else {
