@@ -14,12 +14,6 @@
     }
 }
 .node-list {
-    .width-50 {
-        width: 50%;
-    }
-    .width-25 {
-        width: 25%;
-    }
     .list-min-height {
         min-height: calc(100vh - 290px);
         &.no-result-container {
@@ -60,19 +54,12 @@
         left: 0;
         z-index: 1;
         background-color: var(--N0);
-        box-shadow: 5px 1px 5px -2px rgba(0, 0, 0, 0.28%);
     }
 }
 
 .node-details-container {
     .code-editor__header {
         height: 32px;
-    }
-    .w-49-per {
-        width: 49%;
-    }
-    .w-51-per {
-        width: 51%;
     }
     .error-icon-white {
         path[fill='#F33E3E'] {

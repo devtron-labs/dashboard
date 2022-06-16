@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory } from 'react-router'
-import './clusterNodes.scss'
 import { getClusterCapacity, getNodeList, getClusterList } from './clusterNodes.service'
 import { BreadCrumb, ConditionalWrap, handleUTCTime, Progressing, showError, useBreadcrumb } from '../common'
 import {
@@ -22,6 +21,7 @@ import NodeListSearchFilter from './NodeListSearchFliter'
 import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
+import './clusterNodes.scss'
 
 export default function NodeList() {
     const match = useRouteMatch()
@@ -353,24 +353,24 @@ export default function NodeList() {
                     </div>
                 </div>
                 <div className="flexbox content-space pl-20 pr-20 pb-20">
-                    <div className="flexbox content-space mr-16 width-50 p-16 bcn-0 br-8">
-                        <div className="mr-16 width-25">
+                    <div className="flexbox content-space mr-16 w-50 p-16 bcn-0 br-8">
+                        <div className="mr-16 w-25">
                             <div className="align-center fs-13 fw-4 cn-7">CPU Usage</div>
                             <div className="align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.cpu?.usagePercentage}
                             </div>
                         </div>
-                        <div className="mr-16 width-25">
+                        <div className="mr-16 w-25">
                             <div className="align-center fs-13 fw-4 cn-7">CPU Capacity</div>
                             <div className="align-center fs-24 fw-4 cn-9">{clusterCapacityData?.cpu?.capacity}</div>
                         </div>
-                        <div className="mr-16 width-25">
+                        <div className="mr-16 w-25">
                             <div className="align-center fs-13 fw-4 cn-7">CPU Requests</div>
                             <div className="align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.cpu?.requestPercentage}
                             </div>
                         </div>
-                        <div className="width-25">
+                        <div className="w-25">
                             <div className="align-center fs-13 fw-4 cn-7">CPU Limits</div>
                             <div className="align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.cpu?.limitPercentage}
@@ -378,24 +378,24 @@ export default function NodeList() {
                         </div>
                     </div>
 
-                    <div className="flexbox content-space width-50 p-16 bcn-0 br-8">
-                        <div className="mr-16 width-25">
+                    <div className="flexbox content-space w-50 p-16 bcn-0 br-8">
+                        <div className="mr-16 w-25">
                             <div className="align-center fs-13 fw-4 cn-7">Memory Usage</div>
                             <div className="align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.memory?.usagePercentage}
                             </div>
                         </div>
-                        <div className="mr-16 width-25">
+                        <div className="mr-16 w-25">
                             <div className="align-center fs-13 fw-4 cn-7">Memory Capacity</div>
                             <div className="align-center fs-24 fw-4 cn-9">{clusterCapacityData?.memory?.capacity}</div>
                         </div>
-                        <div className="mr-16 width-25">
+                        <div className="mr-16 w-25">
                             <div className="align-center fs-13 fw-4 cn-7">Memory Requests</div>
                             <div className="align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.memory?.requestPercentage}
                             </div>
                         </div>
-                        <div className="width-25">
+                        <div className="w-25">
                             <div className="align-center fs-13 fw-4 cn-7">Memory Limits</div>
                             <div className="align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.memory?.limitPercentage}
@@ -413,7 +413,7 @@ export default function NodeList() {
             <div
                 className={`h-36 list-title inline-block mr-16 pt-8 pb-8 ${
                     column.label === 'Node'
-                        ? `${fixedNodeNameColumn ? 'bcn-0 position-sticky sticky-column' : ''} w-280 pl-20`
+                        ? `${fixedNodeNameColumn ? 'bcn-0 position-sticky sticky-column border-right' : ''} w-280 pl-20`
                         : 'w-100-px'
                 } ${sortByColumn.value === column.value ? 'sort-by' : ''} ${sortOrder === OrderBy.DESC ? 'desc' : ''} ${
                     column.isSortingAllowed ? ' pointer' : ''
@@ -465,7 +465,7 @@ export default function NodeList() {
                     return column.label === 'Node' ? (
                         <div
                             className={`w-280 inline-block ellipsis-right mr-16 pl-20 pt-12 pb-12${
-                                fixedNodeNameColumn ? ' bcn-0 position-sticky sticky-column' : ''
+                                fixedNodeNameColumn ? ' bcn-0 position-sticky sticky-column border-right' : ''
                             }`}
                         >
                             <NavLink to={`${match.url}/${nodeData[column.value]}`}>{nodeData[column.value]}</NavLink>

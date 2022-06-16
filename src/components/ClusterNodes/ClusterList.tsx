@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
-import './clusterNodes.scss'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getClusterList } from './clusterNodes.service'
@@ -13,6 +12,7 @@ import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
+import './clusterNodes.scss'
 
 export default function ClusterList() {
     const match = useRouteMatch()

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import './clusterNodes.scss'
 import {
     BreadCrumb,
     ButtonWithLoader,
@@ -36,6 +35,7 @@ import { toast } from 'react-toastify'
 import { ReactComponent as Sort } from '../../assets/icons/ic-sort-arrow.svg'
 import { OrderBy } from '../app/list/types'
 import { MODES } from '../../config'
+import './clusterNodes.scss'
 
 export default function NodeDetails() {
     const [loader, setLoader] = useState(false)
@@ -314,7 +314,7 @@ export default function NodeDetails() {
             </div>
         )
     }
-    const renderErrorOverviewCard = (): JSX.Element => {
+    const renderErrorOverviewCard = (): JSX.Element | null => {
         const nodeErrorKeys = Object.keys(nodeDetail.errors)
         if (!nodeErrorKeys.length) return null
         return (
@@ -336,7 +336,7 @@ export default function NodeDetails() {
             </div>
         )
     }
-    const renderProbableIssuesOverviewCard = (): JSX.Element => {
+    const renderProbableIssuesOverviewCard = (): JSX.Element | null => {
         const isCPUOverCommitted = Number(cpuData.usagePercentage.slice(0, -1)) > 100
         const issueCount =
             (isCPUOverCommitted ? 1 : 0) + (nodeDetail.unschedulable ? 1 : 0) + (nodeDetail.taintCount > 0 ? 1 : 0)
@@ -530,7 +530,7 @@ export default function NodeDetails() {
         )
     }
 
-    const renderPodList = (): JSX.Element => {
+    const renderPodList = (): JSX.Element | null => {
         if (!sortedPodList) return null
         return (
             <div className="en-2 bw-1 br-4 bcn-0 mt-12 mb-20 pod-container">
@@ -603,7 +603,7 @@ export default function NodeDetails() {
         )
     }
 
-    const renderSummary = (): JSX.Element => {
+    const renderSummary = (): JSX.Element | null => {
         if (!nodeDetail) return null
         return (
             <div className="node-details-container">
@@ -682,8 +682,8 @@ export default function NodeDetails() {
                     {isReviewState && (
                         <CodeEditor.Header hideDefaultSplitHeader={true}>
                             <div className="h-32 lh-32 fs-12 fw-6 bcn-1 border-bottom flexbox w-100 cn-7">
-                                <div className="border-right pl-10 w-49-per">Current node YAML </div>
-                                <div className="pl-25 w-51-per flexbox">
+                                <div className="border-right pl-10 w-49">Current node YAML </div>
+                                <div className="pl-25 w-51 flexbox">
                                     <Edit className="icon-dim-16 mt-7 mr-5" />
                                     YAML (Editing)
                                 </div>

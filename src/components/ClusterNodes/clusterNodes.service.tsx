@@ -1,5 +1,6 @@
 import { Routes } from '../../config'
 import { get, put } from '../../services/api'
+import { ResponseType } from '../../services/service.types'
 import {
     ClusterCapacityResponse,
     ClusterListResponse,
@@ -28,6 +29,6 @@ export const updateNodeManifest = (
     clusterId: string,
     nodeName: string,
     nodeData: UpdateNodeRequestBody,
-): Promise<any> => {
+): Promise<ResponseType> => {
     return put(`${Routes.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`, nodeData)
 }
