@@ -662,8 +662,7 @@ export default function NodeDetails() {
                     setApiInProgress(false)
                 })
         } else {
-            setApiInProgress(true)
-            //setIsReviewStates(true)
+            setIsReviewStates(true)
         }
     }
 
