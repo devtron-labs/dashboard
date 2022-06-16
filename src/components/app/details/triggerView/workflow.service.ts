@@ -213,7 +213,7 @@ export function processWorkflow(workflow: WorkflowResult, ciResponse: CiPipeline
 
     //populate workflows with CI and CD nodes, sourceNodes are inside CI nodes and PreCD and PostCD nodes are inside CD nodes
     workflow.workflows
-    .sort((a,b) => a.id - b.id)
+    ?.sort((a,b) => a.id - b.id)
     .forEach(workflow => {
         let wf = toWorkflowType(workflow);
         workflows.push(wf);
