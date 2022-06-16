@@ -649,7 +649,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             let material = node[this.state.materialType] || [];
 
             const redirectToCDDetails = () => {
-                this.props.history.push(`${this.props.match.url.substring(0,this.props.match.url.indexOf('/trigger'))}/details/${node.environmentId}`);
+                this.props.history.push(`${this.props.match.url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}/${node.environmentId}`);
             }
 
             return <CDMaterial

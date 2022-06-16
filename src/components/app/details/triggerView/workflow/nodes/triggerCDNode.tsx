@@ -3,7 +3,7 @@ import { TriggerCDNodeProps } from '../../types';
 import { statusColor, statusIcon } from '../../../../config';
 import { ReactComponent as Rollback } from '../../../../../../assets/icons/misc/rollback.svg';
 import { TriggerViewContext } from '../../TriggerView';
-import { DEFAULT_STATUS } from '../../../../../../config';
+import { URLS, DEFAULT_STATUS } from '../../../../../../config';
 import Tippy from '@tippyjs/react';
 import { Link } from 'react-router-dom';
 
@@ -14,16 +14,15 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps>{
     }
 
     getCDNodeDetailsURL(): string{
-        return `${this.props.match.url.substring(0,this.props.match.url.indexOf('/trigger'))}/details/${this.props.environmentId}`;
+        return `${this.props.match.url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}/${this.props.environmentId}`;
     }
 
     redirectToCDDetails() {
-        const LINK = this.getCDNodeDetailsURL();
-        this.props.history.push(LINK);
+        this.props.history.push(this.getCDNodeDetailsURL());
     }
 
     renderStatus() {
-        let url = this.getCDNodeDetailsURL();
+        const url = this.getCDNodeDetailsURL();
         let status = this.props.status ? this.props.status.toLowerCase() : "";
         let hideDetails = status === DEFAULT_STATUS.toLowerCase() || status === "not triggered" || status === "not deployed";
         if (hideDetails)

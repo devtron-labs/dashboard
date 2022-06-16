@@ -164,7 +164,6 @@ export class CDMaterial extends Component<CDMaterialProps> {
   deployTrigger(e) {
     e.stopPropagation()
     this.props.triggerDeploy(this.props.stageType)
-    // this.props.redirectToCD()
   }
 
   renderCDModal() {
