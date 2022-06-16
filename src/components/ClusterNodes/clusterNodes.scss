@@ -213,12 +213,12 @@
                     }
                 }
             }
-            .node-details__active-tab {
-                height: 2px;
-                background-color: var(--B500);
-                border-radius: 2px 2px 0px 0px;
-                margin-top: -1px;
-            }
+        }
+        .node-details__active-tab {
+            height: 2px;
+            background-color: var(--B500);
+            border-radius: 2px 2px 0px 0px;
+            margin-top: -1px;
         }
     }
 }
