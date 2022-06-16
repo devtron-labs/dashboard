@@ -62,7 +62,7 @@ function ReadmeConfig({ readme, value, handleClose, loading, onChange, schema, r
                         validatorSchema={schema}
                         onChange={setTempForm}
                         mode={MODES.YAML}
-                        loading={loading}
+                        loading={loading || !value}
                     >
                         <CodeEditor.Header>
                             <h5>{MODES.YAML.toUpperCase()}</h5>

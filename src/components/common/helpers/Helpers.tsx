@@ -180,7 +180,10 @@ export function showError(serverError, showToastOnUnknownError = true) {
             toast.error(userMessage || internalMessage);
         });
     } else {
-        Sentry.captureException(serverError);
+        if (serverError.code !== 403 && serverError.code !== 408) {
+            Sentry.captureException(serverError)
+        }
+
         if (showToastOnUnknownError) {
             if (serverError.message) {
                 toast.error(serverError.message);
@@ -897,4 +900,36 @@ export const sortOptionsByValue = (optionA, optionB) => {
         return 1
     }
     return 0
+}
+
+// Create instance of MutationObserver & watch for DOM changes until 
+// disconnect() is called.
+export const watchDOMForChanges = (callback: (observer: MutationObserver) => void) => {
+    const observer = new MutationObserver(() => {
+        callback(observer)
+    })
+
+    observer.observe(document.body, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+    })
+}
+
+// It'll watch DOM for changes & wait for the element to be mounted.
+// Once element is presnt, it'll return it & stop watching for DOM changes.
+export const elementDidMount = (identifier: string): Promise<unknown> => {
+    return new Promise((resolve) => {
+        const element = document.querySelector(identifier)
+        if (element) {
+            return resolve(element)
+        }
+
+        watchDOMForChanges((observer) => {
+            if (document.querySelector(identifier)) {
+                resolve(document.querySelector(identifier))
+                observer.disconnect()
+            }
+        })
+    })
 }

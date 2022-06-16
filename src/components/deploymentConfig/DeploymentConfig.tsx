@@ -415,7 +415,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                         }}
                         mode={MODES.YAML}
                         validatorSchema={schemas}
-                        loading={chartConfigLoading}
+                        loading={chartConfigLoading || !tempFormData}
                     >
                         <div className="readme-container">
                             <CodeEditor.Header>

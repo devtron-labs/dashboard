@@ -13,7 +13,7 @@ import './css/base.scss';
 import './css/formulae.scss';
 import './css/forms.scss';
 import 'tippy.js/dist/tippy.css';
-import { useOnline, BreadcrumbStore, ToastBody, ToastBody3 as UpdateToast, Progressing, showError, getLoginInfo } from './components/common';
+import { useOnline, BreadcrumbStore, ToastBody, ToastBody3 as UpdateToast, Progressing, showError, getLoginInfo, ErrorBoundary } from './components/common';
 import * as serviceWorker from './serviceWorker';
 import Hotjar from './components/Hotjar/Hotjar';
 import { validateToken } from './services/service';
@@ -186,34 +186,36 @@ export default function App() {
 	}, [bgUpdated])
 
 	return (
-		<Suspense fallback={null}>
-			{validating ? (
-				<div style={{ height: '100vh', width: '100vw' }}>
-					<Progressing pageLoader />
-				</div>
-			) : (
-				<>
-					{errorPage ? (
-						<div style={{ height: '100vh', width: '100vw' }}>
-							<Reload />
-						</div>
-					) : (
-						<BreadcrumbStore>
-							<Switch>
-								<Route path={`/login`} component={Login} />
-								<Route path="/" render={() => <NavigationRoutes />} />
-								<Redirect to={`${URLS.LOGIN_SSO}${location.search}`} />
-							</Switch>
-							<div id="full-screen-modal"></div>
-							<div id="visible-modal"></div>
-							<div id="visible-modal-2"></div>
-							{process.env.NODE_ENV === 'production' && window._env_ && window._env_.HOTJAR_ENABLED && (
-								<Hotjar />
-							)}
-						</BreadcrumbStore>
-					)}
-				</>
-			)}
-		</Suspense>
-	);
+        <Suspense fallback={null}>
+            {validating ? (
+                <div style={{ height: '100vh', width: '100vw' }}>
+                    <Progressing pageLoader />
+                </div>
+            ) : (
+                <>
+                    {errorPage ? (
+                        <div style={{ height: '100vh', width: '100vw' }}>
+                            <Reload />
+                        </div>
+                    ) : (
+                        <ErrorBoundary>
+                            <BreadcrumbStore>
+                                <Switch>
+                                    <Route path={`/login`} component={Login} />
+                                    <Route path="/" render={() => <NavigationRoutes />} />
+                                    <Redirect to={`${URLS.LOGIN_SSO}${location.search}`} />
+                                </Switch>
+                                <div id="full-screen-modal"></div>
+                                <div id="visible-modal"></div>
+                                <div id="visible-modal-2"></div>
+                                {process.env.NODE_ENV === 'production' &&
+                                    window._env_ &&
+                                    window._env_.HOTJAR_ENABLED && <Hotjar />}
+                            </BreadcrumbStore>
+                        </ErrorBoundary>
+                    )}
+                </>
+            )}
+        </Suspense>
+    )
 }

@@ -422,7 +422,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <div>
                     #Message: <br />
                     <br />
-                    {this.state.outputResult.deploymentTemplate?.message.map((elm) => {
+                    {this.state.outputResult.deploymentTemplate?.message?.map((elm) => {
                         return (
                             <>
                                 {elm}
@@ -478,7 +478,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <div>
                     #Message: <br />
                     <br />
-                    {this.state.outputResult.secret?.message.map((elm) => {
+                    {this.state.outputResult.secret?.message?.map((elm) => {
                         return (
                             <>
                                 {elm}
