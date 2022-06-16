@@ -8,6 +8,7 @@ export interface CDMaterialProps {
   isLoading: boolean;
   materialType: string;
   envName: string;
+  redirectToCD?: () => void;
   stageType: string;
   changeTab?: (materrialId: string | number, artifactId: number, tab: CDMdalTabType) => void;
   triggerDeploy: (stageType: string) => void;
