@@ -14,7 +14,7 @@ interface EmptyStateCIMaterialProps {
   isMaterialLoading: boolean;
   onRetry: (...args) => void;
   anyCommit: boolean;
-  isWebHook?:boolean;
+  isWebHook?: boolean;
   toggleWebHookModal?: () => void;
 }
 
@@ -62,16 +62,21 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
       </EmptyState>
     }
     else {
-      return <EmptyState >
-        <EmptyState.Image>{img}</EmptyState.Image>
-        <EmptyState.Title>{title}</EmptyState.Title>
-        <EmptyState.Subtitle className='mb-0'>{subtitle}</EmptyState.Subtitle>
-        <EmptyState.Button>{cta}</EmptyState.Button>
-        <EmptyState.Subtitle>{this.props.isWebHook ?
-          <span className="learn-more__href cursor" onClick={this.props.toggleWebHookModal}>
-              View all incoming webhook payloads
-          </span>: null}</EmptyState.Subtitle>
-      </EmptyState>
+      return (
+          <EmptyState>
+              <EmptyState.Image>{img}</EmptyState.Image>
+              <EmptyState.Title>{title}</EmptyState.Title>
+              <EmptyState.Subtitle className="mb-0">{subtitle}</EmptyState.Subtitle>
+              <EmptyState.Button>{cta}</EmptyState.Button>
+              <EmptyState.Subtitle>
+                  {this.props.isWebHook ? (
+                      <span className="learn-more__href cursor" onClick={this.props.toggleWebHookModal}>
+                          View all incoming webhook payloads
+                      </span>
+                  ) : null}
+              </EmptyState.Subtitle>
+          </EmptyState>
+      )
     }
   }
 }
