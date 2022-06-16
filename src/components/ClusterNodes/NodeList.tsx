@@ -533,7 +533,7 @@ export default function NodeList() {
                         <div className="mt-16" style={{ width: '100%', overflow: 'auto' }}>
                             <div
                                 className=" fw-6 cn-7 fs-12 border-bottom pr-20 text-uppercase"
-                                style={{ width: 'max-content', minWidth: '100%', minWidth: '100%' }}
+                                style={{ width: 'max-content', minWidth: '100%' }}
                             >
                                 {appliedColumns.map((column) => renderNodeListHeader(column))}
                             </div>
