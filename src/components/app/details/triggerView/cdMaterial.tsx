@@ -164,7 +164,7 @@ export class CDMaterial extends Component<CDMaterialProps> {
   deployTrigger(e) {
     e.stopPropagation()
     this.props.triggerDeploy(this.props.stageType)
-    this.props.redirectToCD()
+    // this.props.redirectToCD()
   }
 
   renderCDModal() {
@@ -195,7 +195,7 @@ export class CDMaterial extends Component<CDMaterialProps> {
   }
 
   render() {
-    let header = getCDModalHeader(this.props.stageType, this.props.envName);
+    let header = getCDModalHeader(this.props.stageType, this.props.envName);    
     return <VisibleModal className="" close={this.props.closeCDModal}>
       <div className="modal-body--cd-material" onClick={(e) => e.stopPropagation()}>
         {this.props.material.length > 0 ? this.renderCDModal()
