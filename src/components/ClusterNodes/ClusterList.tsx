@@ -188,7 +188,15 @@ export default function ClusterList() {
                                             </>
                                         )}
                                     </div>
-                                    <div>{clusterData.nodeK8sVersions?.[0]}</div>
+                                    <div className="ellipsis-right">
+                                        <Tippy
+                                            className="default-tt w-200"
+                                            arrow={false}
+                                            content={clusterData.nodeK8sVersions?.[0]}
+                                        >
+                                            <span>{clusterData.nodeK8sVersions?.[0]}</span>
+                                        </Tippy>
+                                    </div>
                                     <div>{clusterData.cpu?.capacity}</div>
                                     <div>{clusterData.memory?.capacity}</div>
                                 </div>
