@@ -95,7 +95,7 @@ const ConfigMap = ({ respondOnSuccess, ...props }) => {
                         {...{ ...cm, title: cm.name ? '' : 'Add ConfigMap' }}
                         appChartRef={appChartRef}
                         appId={appId}
-                        id={configmap.id}
+                        id={configmap?.id}
                         update={reload}
                         index={idx}
                     />

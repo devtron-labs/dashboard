@@ -11,6 +11,7 @@ import ReactGA from 'react-ga';
 import './terminal.css';
 import IndexStore from '../../../../index.store';
 import { AppType } from '../../../../appDetails.type';
+import { elementDidMount } from '../../../../../../common';
 
 interface TerminalViewProps {
     nodeName: string;
@@ -51,22 +52,22 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 background: '#0B0F22',
                 foreground: '#FFFFFF',
             },
-        });
-        handleSelectionChange(terminal,setPopupText);
-        fitAddon = new FitAddon();
-        const webFontAddon = new XtermWebfont();
-        terminal.loadAddon(fitAddon);
-        terminal.loadAddon(webFontAddon);
-        terminal.loadWebfontAndOpen(document.getElementById('terminal-id'));
-        fitAddon.fit();
-        terminal.reset();
+        })
+        handleSelectionChange(terminal, setPopupText)
+        fitAddon = new FitAddon()
+        const webFontAddon = new XtermWebfont()
+        terminal.loadAddon(fitAddon)
+        terminal.loadAddon(webFontAddon)
+        terminal.loadWebfontAndOpen(document.getElementById('terminal-id'))
+        fitAddon.fit()
+        terminal.reset()
         terminal.attachCustomKeyEventHandler((event) => {
             if ((event.metaKey && event.key === 'k') || event.key === 'K') {
-                terminal?.clear();
+                terminal?.clear()
             }
 
-            return true;
-        });
+            return true
+        })
     };
 
     const postInitialize = (sessionId: string) => {
@@ -279,10 +280,13 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 let sessionId = response?.result.SessionID;
 
                 if (!terminal) {
-                    createNewTerminal();
+                    elementDidMount('#terminal-id').then(() => {
+                        createNewTerminal()
+                        postInitialize(sessionId)
+                    })
+                } else {
+                    postInitialize(sessionId)
                 }
-
-                postInitialize(sessionId);
             })
             .catch((error) => {
                 console.log('error while getNewSession ', error);

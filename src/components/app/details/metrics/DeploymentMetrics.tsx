@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { getDeploymentMetrics } from './deploymentMetrics.service';
-import { DatePicker, Progressing, showError } from '../../../common';
+import { DatePicker, ErrorScreenManager, Progressing, showError } from '../../../common';
 import { ViewType } from '../../../../config';
 import { RouteComponentProps, generatePath } from 'react-router';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts';
@@ -486,9 +486,11 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
             </div>
         }
         else if (this.state.view === ViewType.ERROR) {
-            return <div>
-                {this.state.code}
-            </div>
+            return (
+                <div className="loading-wrapper">
+                    <ErrorScreenManager code={this.state.code} />
+                </div>
+            )
         }
         else if (this.state.view === ViewType.FORM && this.state.environments.length === 0) {
             return this.renderNoEnvironmentView();
