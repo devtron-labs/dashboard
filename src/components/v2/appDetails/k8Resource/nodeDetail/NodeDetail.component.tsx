@@ -12,12 +12,14 @@ import { getNodeDetailTabs } from './nodeDetail.util';
 import { LogSearchTermType, NodeType } from '../../appDetails.type';
 import AppDetailsStore from '../../appDetails.store';
 import { useSharedState } from '../../../utils/useSharedState';
+import IndexStore from '../../index.store';
 
 function NodeDetailComponent({ logSearchTerms, setLogSearchTerms }: LogSearchTermType) {
     const [applicationObjectTabs] = useSharedState(
         AppDetailsStore.getAppDetailsTabs(),
         AppDetailsStore.getAppDetailsTabsObservable(),
     );
+    const appDetails = IndexStore.getAppDetails()
     const params = useParams<{ actionName: string; podName: string; nodeType: string }>();
     const [tabs, setTabs] = useState([]);
     const [selectedTabName, setSelectedTabName] = useState('');
@@ -54,8 +56,9 @@ function NodeDetailComponent({ logSearchTerms, setLogSearchTerms }: LogSearchTer
     const currentTab = applicationObjectTabs.filter((tab) => {
         return tab.name.toLowerCase() === params.nodeType + '/...' + params.podName.slice(-6);
     });
-    const isDeleted = currentTab && currentTab[0] ? currentTab[0].isDeleted : false;
-
+    const isDeleted = (currentTab && currentTab[0] ? currentTab[0].isDeleted : false)
+    || appDetails.resourceTree.nodes.findIndex((node) => node.name === params.podName && node.kind.toLowerCase() === params.nodeType) >= 0 ? false : true
+    
     return (
         <React.Fragment>
             <div className="pl-20 bcn-0 flex left top w-100 pr-20 ">
