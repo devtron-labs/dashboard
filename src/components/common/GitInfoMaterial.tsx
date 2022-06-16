@@ -86,23 +86,20 @@ export default function GitInfoMaterial({
                         <EmptyStateCIMaterial
                             isRepoError={material.isRepoError}
                             isBranchError={material.isBranchError}
+                            isWebHook={material.type === SourceTypeMap.WEBHOOK}
                             gitMaterialName={material.gitMaterialName}
                             sourceValue={material.value}
                             repoErrorMsg={material.repoErrorMsg}
                             branchErrorMsg={material.branchErrorMsg}
                             repoUrl={material.gitURL}
                             isMaterialLoading={material.isMaterialLoading}
+                            toggleWebHookModal={()=> toggleWebhookModal(material.id)}
                             onRetry={(e) => {
                                 e.stopPropagation();
                                 context.onClickCIMaterial(pipelineId, pipelineName);
                             }}
                             anyCommit={anyCommit}
                         />
-                        {material.type === SourceTypeMap.WEBHOOK ? (
-                            <span className="learn-more__href cursor" onClick={() => toggleWebhookModal(material.id)}>
-                                View all incoming webhook payloads
-                            </span>
-                        ) : null}
                     </div>
                 </div>
             );
