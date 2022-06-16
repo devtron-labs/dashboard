@@ -33,11 +33,6 @@ function ApiTokens() {
         value: 0,
     })
     const [customDate, setCustomDate] = useState<number>(undefined)
-    const [formData, setFormData] = useState<FormType>({
-        name: '',
-        description: '',
-        expireAtInMs: undefined,
-    })
 
     const getData = (): void => {
         setLoader(true)
@@ -147,8 +142,6 @@ function ApiTokens() {
                                     handleGenerateTokenActionButton={handleActionButton}
                                     setSelectedExpirationDate={setSelectedExpirationDate}
                                     selectedExpirationDate={selectedExpirationDate}
-                                    formData={formData}
-                                    setFormData={setFormData}
                                     tokenResponse={tokenResponse}
                                     setTokenResponse={setTokenResponse}
                                     customDate={customDate}

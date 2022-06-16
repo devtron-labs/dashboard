@@ -13,6 +13,8 @@ import { getDateInMilliseconds, getOptions, PermissionType } from './authorizati
 import GenerateActionButton from './GenerateActionButton'
 import moment from 'moment'
 import { Moment12HourFormat } from '../../config'
+import { ValidationRules } from './validationRules'
+import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 
 function CreateAPIToken({
     setShowGenerateModal,
@@ -20,8 +22,6 @@ function CreateAPIToken({
     handleGenerateTokenActionButton,
     setSelectedExpirationDate,
     selectedExpirationDate,
-    formData,
-    setFormData,
     tokenResponse,
     setTokenResponse,
     customDate,
@@ -32,27 +32,51 @@ function CreateAPIToken({
 }: GenerateTokenType) {
     const [loader, setLoader] = useState(false)
     const [adminPermission, setAdminPermission] = useState('SUPERADMIN')
+    const [formData, setFormData] = useState<FormType>({
+        name: '',
+        description: '',
+        expireAtInMs: undefined,
+    })
+    const [showErrors, setshowErrors] = useState(false)
+    const [formDataErrorObj, setFormDataErrorObj] = useState<FormType>({
+        name: '',
+        description: '',
+        expireAtInMs: undefined,
+    })
 
-    const onCreateToken = (): void => {}
+    const validationRules = new ValidationRules()
 
     const onChangeFormData = (event: React.ChangeEvent<HTMLInputElement>, key): void => {
         const _formData = { ...formData }
         _formData[key] = event.target.value || ''
+
         setFormData(_formData)
+
+        const _formErrorObject = { ...formDataErrorObj }
+        _formErrorObject[key] = validationRules.requiredField(event.target.value).isValid
+        setFormDataErrorObj(_formErrorObject)
 
         if (key === 'customDate') {
             setCustomDate(parseInt(event.target.value))
         }
     }
 
+    const validateToken = (): boolean => {
+        return
+    }
+
     const onChangeSelectFormData = (selectedOption: { label: string; value: number }) => {
         const _formData = { ...formData }
         setSelectedExpirationDate(selectedOption)
+        const _formErrorObject = { ...formDataErrorObj }
+        // _formErrorObject = validationRules.requiredField(selectedOption.value.toString())
+
         _formData['expireAtInMs'] = getDateInMilliseconds(selectedExpirationDate.value)
         setFormData(_formData)
     }
 
     const handleGenerateAPIToken = () => {
+        setshowErrors(true)
         setLoader(true)
         let payload = {
             name: formData.name,
@@ -65,6 +89,7 @@ function CreateAPIToken({
                 toast.success('Changes saved')
                 setTokenResponse(response.result)
                 setShowGenerateModal(true)
+                setshowErrors(false)
             })
             .catch((error) => {
                 showError(error)
@@ -74,6 +99,7 @@ function CreateAPIToken({
             })
     }
 
+    const errorObject = [validationRules.name(formData.name)]
     return (
         <>
             <div className="cn-9 fw-6 fs-16">
@@ -85,14 +111,9 @@ function CreateAPIToken({
             </p>
 
             <div className="bcn-0 br-8 en-2 bw-1">
-                <form
-                    onSubmit={(e) => {
-                        onCreateToken()
-                    }}
-                    className="p-20"
-                >
+                <div className="p-20">
                     <div>
-                        <label className="form__row">
+                        <label className="form__row w-400">
                             <span className="form__label">
                                 Name <span className="cr-5">*</span>
                             </span>
@@ -103,12 +124,14 @@ function CreateAPIToken({
                                 value={formData.name}
                                 onChange={(e) => onChangeFormData(e, 'name')}
                             />
-                            {/* {this.state.showError && !this.state.isValid.name ? (
-                                <span className="form__error">
-                                    <Error className="form__icon form__icon--error" />
-                                    This is a required field
-                                </span>
-                            ) : null} */}
+                            <span className="form__error">
+                                {showErrors && !formDataErrorObj.name ? (
+                                    <>
+                                        <Error className="form__icon form__icon--error" />
+                                        {errorObject[0].message} <br />
+                                    </>
+                                ) : null}
+                            </span>
                         </label>
                         <label className="form__row">
                             <span className="form__label">Description</span>
@@ -156,16 +179,19 @@ function CreateAPIToken({
                                 )}
                             </div>
                         </label>
-                        <div className="mb-20">
-                            <InfoColourBar
-                                classname={'warn'}
-                                Icon={Warn}
-                                message={
-                                    'Devtron strongly recommends that you set an expiration date for your token to help keep your information secure.'
-                                }
-                                iconClass="scy-9"
-                            />
-                        </div>
+                        {selectedExpirationDate.label === 'No expiration' && (
+                            <div className="mb-20">
+                                <InfoColourBar
+                                    classname={'warn'}
+                                    Icon={Warn}
+                                    message={
+                                        'Devtron strongly recommends that you set an expiration date for your token to help keep your information secure.'
+                                    }
+                                    iconClass="scy-9"
+                                />
+                            </div>
+                        )}
+
                         <div className="pointer flex form__permission">
                             {PermissionType.map(({ label: Lable, value }, index) => (
                                 <div
@@ -197,7 +223,7 @@ function CreateAPIToken({
                             </div>
                         )}
                     </div>
-                </form>
+                </div>
                 <hr className="modal__divider mt-20 mb-0" />
                 <GenerateActionButton
                     loader={false}

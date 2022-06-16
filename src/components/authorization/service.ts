@@ -10,8 +10,8 @@ export function createGeneratedAPIToken(payload): Promise<ResponseType> {
     return post(Routes.API_TOKEN, payload)
 }
 
-export function updateGeneratedAPIToken(request, userId) {
-    return put(`${Routes.API_TOKEN}/${userId}`, request)
+export function updateGeneratedAPIToken(request, id) {
+    return put(`${Routes.API_TOKEN}/${id}`, request)
 }
 
 export function deleteGeneratedAPIToken(userId: string) {

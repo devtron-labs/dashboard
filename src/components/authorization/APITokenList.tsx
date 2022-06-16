@@ -70,14 +70,14 @@ function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, rel
                         >
                             <Bulb className="scn-5 icon-dim-20" />
                         </button>
-                        <div className="flexbox">{list.name}</div>
+                        <div className="flexbox cb-5">{list.name}</div>
                         <div className="ellipsis-right">{moment(list.lastUsedAt).format(Moment12HourFormat)}</div>
                         <div>{list.lastUsedByIp}</div>
                         <div>{moment(list.expireAtInMs).format(Moment12HourFormat)}</div>
                         <div className="api__row-actions flex">
                             <button
                                 type="button"
-                                className="transparent mr-16 ml-16"
+                                className="transparent mr-8 ml-8"
                                 onClick={() => handleGenerateRowActionButton('edit', list.id)}
                             >
                                 <Edit className="icon-dim-20" />

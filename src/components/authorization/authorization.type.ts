@@ -18,8 +18,6 @@ export interface GenerateTokenType {
     handleGenerateTokenActionButton: () => void
     setSelectedExpirationDate
     selectedExpirationDate
-    formData: FormType
-    setFormData: React.Dispatch<React.SetStateAction<FormType>>
     tokenResponse: TokenResponseType
     setTokenResponse: React.Dispatch<React.SetStateAction<TokenResponseType>>
     customDate: number
@@ -73,7 +71,7 @@ export interface GenerateTokenModalType {
     setCopied: React.Dispatch<React.SetStateAction<boolean>>
     copied: boolean
     setShowGenerateModal: React.Dispatch<React.SetStateAction<boolean>>
-    reload: () => void
+    reload?: () => void
 }
 
 export interface APITokenListType {
@@ -83,9 +81,17 @@ export interface APITokenListType {
     reload: () => void
 }
 
+export interface EditDataType {
+    name: string
+    description: string
+    expireAtInMs: any
+    token: string
+    id: number
+}
 export interface RegenerateModalType {
     close: () => void
-    selectedExpirationDate: { value: number; label: string }
-    setSelectedExpirationDate: React.Dispatch<React.SetStateAction<{ value: number; label: string }>>
     setShowRegeneratedModal: React.Dispatch<React.SetStateAction<boolean>>
+    editData: EditDataType
+    setEditData: React.Dispatch<React.SetStateAction<EditDataType>>
+    selectedList: TokenListType
 }
