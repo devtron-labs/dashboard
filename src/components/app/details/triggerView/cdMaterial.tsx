@@ -161,6 +161,12 @@ export class CDMaterial extends Component<CDMaterialProps> {
     })
   }
 
+  deployTrigger(e) {
+    e.stopPropagation()
+    this.props.triggerDeploy(this.props.stageType)
+    this.props.redirectToCD()
+  }
+
   renderCDModal() {
     let header = getCDModalHeader(this.props.stageType, this.props.envName);
     let buttonLabel = CDButtonLabelMap[this.props.stageType];
@@ -179,7 +185,7 @@ export class CDMaterial extends Component<CDMaterialProps> {
           isLoading={this.props.isLoading}
           disabled={!selectedImage}
           loaderColor="#ffffff"
-          onClick={(e) => { e.stopPropagation(); this.props.triggerDeploy(this.props.stageType); this.props.redirectToCD()}}>
+          onClick={(e) => this.deployTrigger(e)}>
           {this.props.stageType === 'CD' ? <img src={deploy} alt="deploy" className="trigger-btn__icon" />
             : <img src={play} alt="trigger" className="trigger-btn__icon" />}
           {buttonLabel}
