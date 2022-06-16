@@ -112,6 +112,55 @@ export default function ClusterList() {
         )
     }
 
+    const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
+        const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
+        return (
+            <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class">
+                <div className="cb-5 ellipsis-right">
+                    <NavLink
+                        to={`${match.url}/${clusterData.id}`}
+                        onClick={(e) => {
+                            handleClusterClick(e, clusterData.errorInNodeListing)
+                        }}
+                    >
+                        {clusterData.name}
+                    </NavLink>
+                </div>
+                <div>
+                    {clusterData.errorInNodeListing ? (
+                        <Tippy className="default-tt w-200" arrow={false} content={clusterData.errorInNodeListing}>
+                            <div className="flexbox">
+                                <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
+                                Failed
+                            </div>
+                        </Tippy>
+                    ) : (
+                        <div className="flexbox">
+                            <Success className="mt-2 mb-2 mr-8 icon-dim-18" />
+                            Successful
+                        </div>
+                    )}
+                </div>
+                <div>{clusterData.nodeCount}</div>
+                <div>
+                    {errorCount > 0 && (
+                        <>
+                            <Error className="mr-3 icon-dim-16 position-rel top-3" />
+                            <span className="cr-5">{errorCount}</span>
+                        </>
+                    )}
+                </div>
+                <div className="ellipsis-right">
+                    <Tippy className="default-tt" arrow={false} content={clusterData.nodeK8sVersions?.[0]}>
+                        <span>{clusterData.nodeK8sVersions?.[0]}</span>
+                    </Tippy>
+                </div>
+                <div>{clusterData.cpu?.capacity}</div>
+                <div>{clusterData.memory?.capacity}</div>
+            </div>
+        )
+    }
+
     if (loader) {
         return <Progressing pageLoader />
     }
@@ -146,62 +195,7 @@ export default function ClusterList() {
                             <div>CPU Capacity</div>
                             <div>Memory Capacity</div>
                         </div>
-                        {filteredClusterList?.map((clusterData) => {
-                            const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
-                            return (
-                                <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class">
-                                    <div className="cb-5 ellipsis-right">
-                                        <NavLink
-                                            to={`${match.url}/${clusterData.id}`}
-                                            onClick={(e) => {
-                                                handleClusterClick(e, clusterData.errorInNodeListing)
-                                            }}
-                                        >
-                                            {clusterData.name}
-                                        </NavLink>
-                                    </div>
-                                    <div>
-                                        {clusterData.errorInNodeListing ? (
-                                            <Tippy
-                                                className="default-tt w-200"
-                                                arrow={false}
-                                                content={clusterData.errorInNodeListing}
-                                            >
-                                                <div className="flexbox">
-                                                    <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
-                                                    Failed
-                                                </div>
-                                            </Tippy>
-                                        ) : (
-                                            <div className="flexbox">
-                                                <Success className="mt-2 mb-2 mr-8 icon-dim-18" />
-                                                Successful
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div>{clusterData.nodeCount}</div>
-                                    <div>
-                                        {errorCount > 0 && (
-                                            <>
-                                                <Error className="mr-3 icon-dim-16 position-rel top-3" />
-                                                <span className="cr-5">{errorCount}</span>
-                                            </>
-                                        )}
-                                    </div>
-                                    <div className="ellipsis-right">
-                                        <Tippy
-                                            className="default-tt"
-                                            arrow={false}
-                                            content={clusterData.nodeK8sVersions?.[0]}
-                                        >
-                                            <span>{clusterData.nodeK8sVersions?.[0]}</span>
-                                        </Tippy>
-                                    </div>
-                                    <div>{clusterData.cpu?.capacity}</div>
-                                    <div>{clusterData.memory?.capacity}</div>
-                                </div>
-                            )
-                        })}
+                        {filteredClusterList?.map((clusterData) => renderClusterRow(clusterData))}
                     </div>
                 )}
             </div>
