@@ -60,6 +60,9 @@
         left: 0;
         z-index: 1;
         background-color: var(--N0);
+        &.shadow {
+            box-shadow: 5px 0px 6px -5px rgba(0, 0, 0, 0.69);
+        }
     }
 }
 
@@ -165,28 +168,6 @@
         }
     }
 
-    .tab-list {
-        .tab-list__tab {
-            .tab-hover {
-                &:hover,
-                &.active {
-                    color: var(--B500);
-                    .edit-yaml-icon {
-                        path {
-                            stroke: var(--B500);
-                        }
-                    }
-                }
-            }
-            .node-details__active-tab {
-                height: 2px;
-                background-color: var(--B500);
-                border-radius: 2px 2px 0px 0px;
-                margin-top: -1px;
-            }
-        }
-    }
-
     .list-title {
         .mw-85px {
             max-width: 85px;
@@ -215,6 +196,28 @@
                 path {
                     fill: var(--N400);
                 }
+            }
+        }
+    }
+}
+
+.tab-list {
+    .tab-list__tab {
+        .tab-hover {
+            &:hover,
+            &.active {
+                color: var(--B500);
+                .edit-yaml-icon {
+                    path {
+                        stroke: var(--B500);
+                    }
+                }
+            }
+            .node-details__active-tab {
+                height: 2px;
+                background-color: var(--B500);
+                border-radius: 2px 2px 0px 0px;
+                margin-top: -1px;
             }
         }
     }
