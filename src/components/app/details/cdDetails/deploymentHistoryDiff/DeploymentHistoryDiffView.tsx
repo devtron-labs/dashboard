@@ -4,7 +4,7 @@ import { DeploymentHistoryParamsType, DeploymentHistorySingleValue, DeploymentTe
 import YAML from 'yaml'
 import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
 import { useParams } from 'react-router'
-import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../../config'
+import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, MODES } from '../../../../../config'
 
 export default function DeploymentHistoryDiffView({
     currentConfiguration,
@@ -35,7 +35,8 @@ export default function DeploymentHistoryDiffView({
                 diffView={previousConfigAvailable && true}
                 readOnly={true}
                 noParsing
-            ></CodeEditor>
+                mode={MODES.YAML}
+            />
         )
     }
     const renderDetailedValue = (parentClassName: string, singleValue: DeploymentHistorySingleValue) => {

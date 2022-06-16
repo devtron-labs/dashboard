@@ -29,7 +29,7 @@ function EnvironmentSelectorComponent() {
                     setEnvironments(response.result || []);
                 })
                 .catch((error) => {
-                    console.error('erroe in fetching environments');
+                    console.error('error in fetching environments');
                     setEnvironments([]);
                 });
         }
