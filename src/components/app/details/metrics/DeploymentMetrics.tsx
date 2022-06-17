@@ -148,8 +148,8 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
 
     callGetDeploymentMetricsAPI(appId, envId) {
         if (!this.state.startDate?.isValid() || !this.state.endDate?.isValid()) return;
-        let startTime = this.state.startDate.format("YYYY-MM-DDThh:mm:ss.SSS");
-        let endTime = this.state.endDate.format("YYYY-MM-DDThh:mm:ss.SSS");
+        let startTime = this.state.startDate.format("YYYY-MM-DDTHH:mm:ss.SSS");
+        let endTime = this.state.endDate.format("YYYY-MM-DDTHH:mm:ss.SSS");
         getDeploymentMetrics(startTime, endTime, appId, envId).then((metricsResponse) => {
             let selectedEnvironment = this.state.environments.find(env => String(env.value) === this.props.match.params.envId);
             this.setState({
@@ -211,7 +211,10 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     }
 
     handleDatesChange({ startDate, endDate }): void {
-        this.setState({ startDate, endDate });
+        this.setState({
+            startDate: startDate.set({ hour: 0, minute: 0, seconds: 0 }),
+            endDate: endDate.set({ hour: 23, minute: 59, seconds: 59, milliseconds: 999 }),
+        })
     }
 
     handleFocusChange(focusedInput): void {
