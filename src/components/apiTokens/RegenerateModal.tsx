@@ -111,7 +111,6 @@ function RegeneratedModal({
 
     return (
         <VisibleModal className={undefined}>
-            {console.log(regeneratedData)}
             <div className="modal__body w-600 flex column p-0">
                 {renderModalHeader()}
                 <div className="p-20 w-100">

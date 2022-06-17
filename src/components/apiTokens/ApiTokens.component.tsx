@@ -90,7 +90,7 @@ function ApiTokens() {
     const renderSearchToken = () => {
         return (
             <div className="flexbox content-space">
-                <form onSubmit={(e) => {}} className="search position-rel margin-right-0 en-2 bw-1 br-4">
+                <div className="search position-rel margin-right-0 en-2 bw-1 br-4">
                     <Search className="search__icon icon-dim-18" />
                     <input
                         type="text"
@@ -107,7 +107,7 @@ function ApiTokens() {
                             <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                         </button>
                     ) : null}
-                </form>
+                </div>
             </div>
         )
     }

@@ -28,7 +28,7 @@ const Project = lazy(() => import('../project/ProjectList'))
 const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
-const ApiTokens = lazy(() => import('../authorization/ApiTokens.component'))
+const ApiTokens = lazy(() => import('../apiTokens/ApiTokens.component'))
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
