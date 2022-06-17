@@ -28,7 +28,6 @@ const Project = lazy(() => import('../project/ProjectList'))
 const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
-const ApiTokens = lazy(() => import('../apiTokens/ApiTokens.component'))
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -133,6 +132,11 @@ export default function GlobalConfiguration(props) {
 
 function NavItem({ hostURLConfig, serverMode }) {
     const location = useLocation()
+    // Add key of NavItem if grouping is used
+    const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
+        Authorisation: location.pathname.startsWith('/global-config/auth') ? false : true,
+    })
+
     const ConfigRequired = [
         {
             name: 'Host URL',
@@ -162,9 +166,26 @@ function NavItem({ hostURLConfig, serverMode }) {
         },
         { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin, isAvailableInEA: true },
         {
-            name: 'API token',
-            href: `${URLS.GLOBAL_CONFIG_AUTH}/list`,
-            component: ApiTokens,
+            name: 'Authorisation',
+            href: URLS.GLOBAL_CONFIG_AUTH + '/users',
+            group: [
+                {
+                    name: 'User permissions',
+                    href: URLS.GLOBAL_CONFIG_AUTH + '/users',
+                    isAvailableInEA: true,
+                },
+                {
+                    name: 'Permission groups',
+                    href: URLS.GLOBAL_CONFIG_AUTH + '/groups',
+                    isAvailableInEA: true,
+                },
+                {
+                    name: 'API tokens',
+                    href: URLS.GLOBAL_CONFIG_AUTH + '/tokens/list',
+                    isAvailableInEA: true,
+                },
+            ],
+            component: UserGroup,
             isAvailableInEA: true,
         },
         // { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup, isAvailableInEA: true },
@@ -174,38 +195,57 @@ function NavItem({ hostURLConfig, serverMode }) {
         (!hostURLConfig || hostURLConfig.value !== window.location.origin) &&
         !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)
 
+    const renderNavItem = (route, className = '') => {
+        return (
+            <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route">
+                <div className={`flexbox flex-justify ${className || ''}`}>
+                    <div>{route.name}</div>
+                    {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? (
+                        <Error className="global-configuration__error-icon icon-dim-20" />
+                    ) : (
+                        ''
+                    )}
+                </div>
+            </NavLink>
+        )
+    }
     return (
         <div className="flex column left">
             {ConfigRequired.map(
-                (route) =>
-                    (serverMode !== SERVER_MODE.EA_ONLY || route.isAvailableInEA) && (
-                        <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route">
-                            <div className="flexbox flex-justify">
-                                <div>{route.name}</div>
-                                {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? (
-                                    <Error className="global-configuration__error-icon icon-dim-20" />
-                                ) : (
-                                    ''
-                                )}
-                            </div>
-                        </NavLink>
-                    ),
+                (route) => (serverMode !== SERVER_MODE.EA_ONLY || route.isAvailableInEA) && renderNavItem(route),
             )}
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
             {ConfigOptional.map(
                 (route) =>
-                    (serverMode !== SERVER_MODE.EA_ONLY || route.isAvailableInEA) && (
-                        <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route">
-                            <div className="flexbox flex-justify">
-                                <div>{route.name}</div>
-                                {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? (
-                                    <Error className="global-configuration__error-icon icon-dim-20" />
-                                ) : (
-                                    ''
-                                )}
-                            </div>
-                        </NavLink>
-                    ),
+                    (serverMode !== SERVER_MODE.EA_ONLY || route.isAvailableInEA) &&
+                    (route.group ? (
+                        <>
+                            <NavLink
+                                to={route.href}
+                                className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'}`}
+                                onClick={(e) => {
+                                    if (location.pathname.startsWith('/global-config/auth')) {
+                                        e.preventDefault()
+                                    }
+                                    setCollapsedState({
+                                        ...collapsedState,
+                                        [route.name]: !collapsedState[route.name],
+                                    })
+                                }}
+                            >
+                                {route.name}
+                            </NavLink>
+                            {!collapsedState[route.name] && (
+                                <>
+                                    {route.group.map((_route) => {
+                                        return renderNavItem(_route, 'ml-10')
+                                    })}
+                                </>
+                            )}
+                        </>
+                    ) : (
+                        renderNavItem(route)
+                    )),
             )}
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
             <NavLink
@@ -313,7 +353,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
             <Route
                 path={URLS.GLOBAL_CONFIG_AUTH}
                 render={(props) => {
-                    return <ApiTokens />
+                    return <UserGroup />
                 }}
             />
             <Route

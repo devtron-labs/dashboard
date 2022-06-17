@@ -53,7 +53,7 @@ import EmptyImage from '../../assets/img/empty-applist@2x.png';
 import EmptySearch from '../../assets/img/empty-noresult@2x.png';
 import './UserGroup.scss';
 import { mainContext } from '../common/navigation/NavigationRoutes';
-import { responseInterceptor } from 'http-proxy-middleware';
+import ApiTokens from '../apiTokens/ApiTokens.component';
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>;
@@ -278,7 +278,7 @@ export default function UserGroupRoute() {
     const [userGroups, projects, environments, chartGroups, userRole, envClustersList] = lists;
     return (
         <div className="auth-page">
-            <HeaderSection />
+            {/* <HeaderSection /> */}
             <div className="auth-page__body">
                 <UserGroupContext.Provider
                     value={{
@@ -300,6 +300,9 @@ export default function UserGroupRoute() {
                         </Route>
                         <Route path={`${path}/groups`}>
                             <UserGroupList type="group" reloadLists={reloadLists} />
+                        </Route>
+                        <Route path={`${path}/api-tokens`}>
+                            <ApiTokens/>
                         </Route>
                         <Redirect to={`${path}/users`} />
                     </Switch>
