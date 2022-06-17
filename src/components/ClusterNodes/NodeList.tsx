@@ -125,7 +125,7 @@ export default function NodeList() {
                 }
                 if (response[1].result) {
                     setClusterCapacityData(response[1].result)
-                    let _errorTitle,
+                    let _errorTitle = '',
                         _errorList = [],
                         _nodeErrors = Object.keys(response[1].result.nodeErrors || {})
 

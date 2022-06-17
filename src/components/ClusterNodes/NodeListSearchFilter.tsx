@@ -19,6 +19,7 @@ export default function NodeListSearchFliter({
     setSelectedSearchTextType,
     searchText,
     setSearchText,
+    searchedTextMap,
     setSearchedTextMap,
 }: NodeListSearchFliterType) {
     const [searchApplied, setSearchApplied] = useState(false)
@@ -26,11 +27,15 @@ export default function NodeListSearchFliter({
     const [searchInputText, setSearchInputText] = useState('')
 
     useEffect(() => {
-        setSearchInputText(searchText)
-        if (!searchText) {
-            setSearchApplied(false)
+        if (searchInputText !== searchText) {
+            setSearchInputText(searchText)
+            if (!searchText) {
+                setSearchApplied(false)
+            } else {
+                setSearchApplied(true)
+            }
         }
-    }, [searchText])
+    }, [searchText, searchedTextMap])
 
     const onVersionChange = (selectedValue: OptionType): void => {
         setSelectedVersion(selectedValue)
@@ -70,8 +75,10 @@ export default function NodeListSearchFliter({
                     _searchedTextMap.set(currentItem, true)
                 }
             }
+            setSearchText(searchInputText)
             setSearchedTextMap(_searchedTextMap)
             setSearchApplied(true)
+            setOpenFilterPopup(false)
         } else if (theKeyCode === 'Backspace') {
             if (searchInputText.length === 0 && selectedSearchTextType) {
                 setSelectedSearchTextType('')
