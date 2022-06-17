@@ -530,7 +530,7 @@ export default function NodeList() {
                     {noResults ? (
                         <ClusterNodeEmptyState title="No matching nodes" actionHandler={clearFilter} />
                     ) : (
-                        <div className="mt-16" style={{ width: '100%', overflow: 'auto' }}>
+                        <div className="mt-16" style={{ width: '100%', overflow: 'auto hidden' }}>
                             <div
                                 className=" fw-6 cn-7 fs-12 border-bottom pr-20 text-uppercase"
                                 style={{ width: 'max-content', minWidth: '100%' }}

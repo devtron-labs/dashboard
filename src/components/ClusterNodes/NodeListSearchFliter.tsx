@@ -158,7 +158,7 @@ export default function NodeListSearchFliter({
         )
     }
     return (
-        <div className="search-wrapper ">
+        <div className="search-wrapper">
             {renderTextFilter()}
             <ReactSelect
                 options={[

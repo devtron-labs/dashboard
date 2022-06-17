@@ -27,6 +27,7 @@ export interface ClusterDetail {
     nodeK8sVersions: string[]
     cpu: ResourceDetail
     memory: ResourceDetail
+    serverVersion: string
 }
 
 export interface NodeRowDetail {

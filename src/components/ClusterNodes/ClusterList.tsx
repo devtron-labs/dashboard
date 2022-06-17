@@ -151,8 +151,8 @@ export default function ClusterList() {
                     )}
                 </div>
                 <div className="ellipsis-right">
-                    <Tippy className="default-tt" arrow={false} content={clusterData.nodeK8sVersions?.[0]}>
-                        <span>{clusterData.nodeK8sVersions?.[0]}</span>
+                    <Tippy className="default-tt" arrow={false} content={clusterData.serverVersion}>
+                        <span>{clusterData.serverVersion}</span>
                     </Tippy>
                 </div>
                 <div>{clusterData.cpu?.capacity}</div>

@@ -337,7 +337,7 @@ export default function NodeDetails() {
         )
     }
     const renderProbableIssuesOverviewCard = (): JSX.Element | null => {
-        const isCPUOverCommitted = Number(cpuData.usagePercentage.slice(0, -1)) > 100
+        const isCPUOverCommitted = Number(cpuData.usagePercentage?.slice(0, -1)) > 100
         const issueCount =
             (isCPUOverCommitted ? 1 : 0) + (nodeDetail.unschedulable ? 1 : 0) + (nodeDetail.taintCount > 0 ? 1 : 0)
         if (!issueCount) return null
@@ -491,8 +491,8 @@ export default function NodeDetails() {
             sortType === 'number'
                 ? (a, b) => {
                       const sortByColumnArr = columnName.split('.')
-                      let firstValue = a[sortByColumnArr[0]][sortByColumnArr[1]]
-                      let secondValue = b[sortByColumnArr[0]][sortByColumnArr[1]]
+                      let firstValue = a[sortByColumnArr[0]][sortByColumnArr[1]] || 0
+                      let secondValue = b[sortByColumnArr[0]][sortByColumnArr[1]] || 0
                       firstValue = Number(firstValue.slice(0, -1))
                       secondValue = Number(secondValue.slice(0, -1))
                       return _sortOrder === OrderBy.ASC ? firstValue - secondValue : secondValue - firstValue
