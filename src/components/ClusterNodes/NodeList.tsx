@@ -2,13 +2,22 @@ import React, { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory } from 'react-router'
 import { getClusterCapacity, getNodeList, getClusterList } from './clusterNodes.service'
-import { BreadCrumb, ConditionalWrap, handleUTCTime, Progressing, showError, useBreadcrumb } from '../common'
+import {
+    BreadCrumb,
+    ConditionalWrap,
+    handleUTCTime,
+    Pagination,
+    Progressing,
+    showError,
+    useBreadcrumb,
+} from '../common'
 import {
     ClusterCapacityType,
     ClusterListResponse,
     COLUMN_METADATA,
     ColumnMetadataType,
     TEXT_COLOR_CLASS,
+    ERROR_TYPE,
 } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -17,7 +26,7 @@ import PageHeader from '../common/header/PageHeader'
 import ReactSelect, { MultiValue } from 'react-select'
 import { appSelectorStyle, DropdownIndicator } from '../AppSelector/AppSelectorUtil'
 import { OptionType } from '../app/types'
-import NodeListSearchFilter from './NodeListSearchFliter'
+import NodeListSearchFilter from './NodeListSearchFilter'
 import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
@@ -40,10 +49,12 @@ export default function NodeList() {
     })
     const defaultVersion = { label: 'K8s version: Any', value: 'K8s version: Any' }
     const [clusterErrorTitle, setClusterErrorTitle] = useState('')
-    const [clusterErrorList, setClusterErrorList] = useState<string[]>([])
+    const [clusterErrorList, setClusterErrorList] = useState<
+        { errorText: string; errorType: ERROR_TYPE; filterText: string[] }[]
+    >([])
     const [flattenNodeList, setFlattenNodeList] = useState<object[]>([])
     const [filteredFlattenNodeList, setFilteredFlattenNodeList] = useState<object[]>([])
-    const [searchedLabelMap, setSearchedLabelMap] = useState<Map<string, string>>(new Map())
+    const [searchedTextMap, setSearchedTextMap] = useState<Map<string, string>>(new Map())
     const [selectedVersion, setSelectedVersion] = useState<OptionType>(defaultVersion)
     const [selectedSearchTextType, setSelectedSearchTextType] = useState<string>('')
     const [sortByColumn, setSortByColumn] = useState<ColumnMetadataType>(COLUMN_METADATA[0])
@@ -51,6 +62,8 @@ export default function NodeList() {
     const [noResults, setNoResults] = useState(false)
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
+    const [nodeListOffset, setNodeListOffset] = useState(0)
+    const pageSize = 15
 
     useEffect(() => {
         if (appliedColumns.length > 0) {
@@ -118,21 +131,24 @@ export default function NodeList() {
 
                     if (response[1].result.nodeK8sVersions.length > 1) {
                         _errorTitle = 'Version diff'
-                        _errorList.push(
-                            'Major version diff identified among nodes. Current versions ' +
-                                response[1].result.nodeK8sVersions.join(', '),
-                        )
+                        _errorList.push({
+                            errorText: 'Major version diff identified among nodes. Current versions ',
+                            errorType: ERROR_TYPE.VERSION_ERROR,
+                            filterText: response[1].result.nodeK8sVersions,
+                        })
                     }
 
                     if (_nodeErrors.length > 0) {
-                        _errorTitle = _errorTitle ? ', ' : '' + _nodeErrors.join(', ')
+                        _errorTitle += (_errorTitle ? ', ' : '') + _nodeErrors.join(', ')
                         for (let i = 0; i < _nodeErrors.length; i++) {
                             const _errorLength = response[1].result.nodeErrors[_nodeErrors[i]].length
-                            _errorList.push(
-                                `${_nodeErrors[i]} on ${
+                            _errorList.push({
+                                errorText: `${_nodeErrors[i]} on ${
                                     _errorLength === 1 ? `${_errorLength} node` : `${_errorLength} nodes`
                                 }`,
-                            )
+                                errorType: ERROR_TYPE.OTHER,
+                                filterText: response[1].result.nodeErrors[_nodeErrors[i]],
+                            })
                         }
                     }
                     setClusterErrorTitle(_errorTitle)
@@ -193,23 +209,31 @@ export default function NodeList() {
         let _flattenNodeList = []
         for (let index = 0; index < flattenNodeList.length; index++) {
             const element = flattenNodeList[index]
-            if (
-                (selectedVersion.value !== defaultVersion.value && element['k8sVersion'] !== selectedVersion.value) ||
-                (selectedSearchTextType === 'name' && element['name'].indexOf(searchText) === -1)
-            ) {
+            if (selectedVersion.value !== defaultVersion.value && element['k8sVersion'] !== selectedVersion.value) {
                 continue
             }
-            if (selectedSearchTextType === 'label') {
+            if (selectedSearchTextType === 'name' && searchedTextMap.size > 0) {
+                let matchFound = false
+                for (const [key] of searchedTextMap.entries()) {
+                    if (element['name'].indexOf(key) >= 0) {
+                        matchFound = true
+                        break
+                    }
+                }
+                if (!matchFound) {
+                    continue
+                }
+            } else if (selectedSearchTextType === 'label') {
                 let matchedLabelCount = 0
                 for (let i = 0; i < element['labels']?.length; i++) {
                     const currentLabel = element['labels'][i]
-                    const matchedLabel = searchedLabelMap.get(currentLabel.key)
+                    const matchedLabel = searchedTextMap.get(currentLabel.key)
                     if (matchedLabel === undefined || (matchedLabel !== null && currentLabel.value !== matchedLabel)) {
                         continue
                     }
                     matchedLabelCount++
                 }
-                if (searchedLabelMap.size !== matchedLabelCount) {
+                if (searchedTextMap.size !== matchedLabelCount) {
                     continue
                 }
             }
@@ -244,12 +268,12 @@ export default function NodeList() {
     const clearFilter = (): void => {
         setSearchText('')
         setSelectedSearchTextType('')
-        setSearchedLabelMap(new Map())
+        setSearchedTextMap(new Map())
     }
 
     useEffect(() => {
         handleFilterChanges()
-    }, [searchedLabelMap, searchText, flattenNodeList, sortByColumn, sortOrder])
+    }, [searchedTextMap, searchText, flattenNodeList, sortByColumn, sortOrder])
 
     const onClusterChange = (selectedValue: OptionType): void => {
         setSelectedCluster(selectedValue)
@@ -296,6 +320,23 @@ export default function NodeList() {
         }
     }
 
+    const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
+        if (errorType === ERROR_TYPE.VERSION_ERROR) {
+            const selectedVersion = `K8s version: ${filterText}`
+            setSelectedVersion({ label: selectedVersion, value: selectedVersion })
+        } else {
+            const _searchedTextMap = new Map()
+            const searchedLabelArr = filterText.split(',')
+            for (let index = 0; index < searchedLabelArr.length; index++) {
+                const currentItem = searchedLabelArr[index].trim()
+                _searchedTextMap.set(currentItem, true)
+            }
+            setSelectedSearchTextType('name')
+            setSearchedTextMap(_searchedTextMap)
+            setSearchText(filterText)
+        }
+    }
+
     const renderClusterError = (): JSX.Element => {
         if (clusterErrorList.length === 0) return
         return (
@@ -328,7 +369,34 @@ export default function NodeList() {
                 {!collapsedErrorSection && (
                     <>
                         {clusterErrorList.map((error) => (
-                            <div className="fw-4 fs-13 cn-9 mb-8">{error}</div>
+                            <div className="fw-4 fs-13 cn-9 mb-8">
+                                {error.errorText}
+                                {error.errorType === ERROR_TYPE.OTHER ? (
+                                    <span
+                                        className="cb-5 pointer"
+                                        onClick={(event) => {
+                                            setCustomFilter(error.errorType, error.filterText.join(','))
+                                        }}
+                                    >
+                                        &nbsp; View nodes
+                                    </span>
+                                ) : (
+                                    error.filterText.map((filter, index) => (
+                                        <>
+                                            &nbsp;
+                                            {index > 0 && ', '}
+                                            <span
+                                                className="cb-5 pointer"
+                                                onClick={(event) => {
+                                                    setCustomFilter(error.errorType, filter)
+                                                }}
+                                            >
+                                                {filter}
+                                            </span>
+                                        </>
+                                    ))
+                                )}
+                            </div>
                         ))}
                     </>
                 )}
@@ -502,6 +570,20 @@ export default function NodeList() {
         )
     }
 
+    const renderPagination = (): JSX.Element => {
+        return (
+            filteredFlattenNodeList.length > pageSize && (
+                <Pagination
+                    size={filteredFlattenNodeList.length}
+                    pageSize={pageSize}
+                    offset={nodeListOffset}
+                    changePage={(pageNo: number) => setNodeListOffset(pageSize * (pageNo - 1))}
+                    isPageSizeFix={true}
+                />
+            )
+        )
+    }
+
     if (loader) {
         return <Progressing pageLoader />
     }
@@ -522,23 +604,29 @@ export default function NodeList() {
                             setAppliedColumns={setAppliedColumns}
                             selectedSearchTextType={selectedSearchTextType}
                             setSelectedSearchTextType={setSelectedSearchTextType}
+                            searchText={searchText}
                             setSearchText={setSearchText}
-                            searchedLabelMap={searchedLabelMap}
-                            setSearchedLabelMap={setSearchedLabelMap}
+                            searchedTextMap={searchedTextMap}
+                            setSearchedTextMap={setSearchedTextMap}
                         />
                     </div>
                     {noResults ? (
                         <ClusterNodeEmptyState title="No matching nodes" actionHandler={clearFilter} />
                     ) : (
-                        <div className="mt-16" style={{ width: '100%', overflow: 'auto hidden' }}>
-                            <div
-                                className=" fw-6 cn-7 fs-12 border-bottom pr-20 text-uppercase"
-                                style={{ width: 'max-content', minWidth: '100%' }}
-                            >
-                                {appliedColumns.map((column) => renderNodeListHeader(column))}
+                        <>
+                            <div className="mt-16" style={{ width: '100%', overflow: 'auto hidden' }}>
+                                <div
+                                    className=" fw-6 cn-7 fs-12 border-bottom pr-20 text-uppercase"
+                                    style={{ width: 'max-content', minWidth: '100%' }}
+                                >
+                                    {appliedColumns.map((column) => renderNodeListHeader(column))}
+                                </div>
+                                {filteredFlattenNodeList
+                                    .slice(nodeListOffset, nodeListOffset + pageSize)
+                                    ?.map((nodeData) => renderNodeList(nodeData))}
                             </div>
-                            {filteredFlattenNodeList?.map((nodeData) => renderNodeList(nodeData))}
-                        </div>
+                            {renderPagination()}
+                        </>
                     )}
                 </div>
             </div>

@@ -1,6 +1,25 @@
+import { MultiValue } from 'react-select'
 import { ResponseType } from '../../services/service.types'
-import { LabelTag } from '../app/types'
+import { LabelTag, OptionType } from '../app/types'
 
+export enum ERROR_TYPE {
+    VERSION_ERROR = 'VERSION_ERROR',
+    OTHER = 'OTHER',
+}
+export interface NodeListSearchFliterType {
+    defaultVersion: OptionType
+    nodeK8sVersions: string[]
+    selectedVersion: OptionType
+    setSelectedVersion: React.Dispatch<React.SetStateAction<OptionType>>
+    appliedColumns: MultiValue<ColumnMetadataType>
+    setAppliedColumns: React.Dispatch<React.SetStateAction<MultiValue<ColumnMetadataType>>>
+    selectedSearchTextType: string
+    setSelectedSearchTextType: React.Dispatch<React.SetStateAction<string>>
+    searchText: string
+    setSearchText: React.Dispatch<React.SetStateAction<string>>
+    searchedTextMap: Map<string, string>
+    setSearchedTextMap: React.Dispatch<React.SetStateAction<Map<string, string>>>
+}
 export interface ResourceDetail {
     name: string
     capacity: string

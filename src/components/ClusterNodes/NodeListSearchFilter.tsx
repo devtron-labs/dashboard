@@ -1,26 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { Option, DropdownIndicator } from '../v2/common/ReactSelect.utils'
 import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
-import ReactSelect, { MultiValue } from 'react-select'
+import ReactSelect from 'react-select'
 import { OptionType } from '../app/types'
-import { ColumnMetadataType } from './types'
+import { NodeListSearchFliterType } from './types'
 import ColumnSelector from './ColumnSelector'
-
-interface NodeListSearchFliterType {
-    defaultVersion: OptionType
-    nodeK8sVersions: string[]
-    selectedVersion: OptionType
-    setSelectedVersion: React.Dispatch<React.SetStateAction<OptionType>>
-    appliedColumns: MultiValue<ColumnMetadataType>
-    setAppliedColumns: React.Dispatch<React.SetStateAction<MultiValue<ColumnMetadataType>>>
-    selectedSearchTextType: string
-    setSelectedSearchTextType: React.Dispatch<React.SetStateAction<string>>
-    setSearchText: React.Dispatch<React.SetStateAction<string>>
-    searchedLabelMap: Map<string, string>
-    setSearchedLabelMap: React.Dispatch<React.SetStateAction<Map<string, string>>>
-}
 
 export default function NodeListSearchFliter({
     defaultVersion,
@@ -31,12 +17,20 @@ export default function NodeListSearchFliter({
     setAppliedColumns,
     selectedSearchTextType,
     setSelectedSearchTextType,
+    searchText,
     setSearchText,
-    setSearchedLabelMap,
+    setSearchedTextMap,
 }: NodeListSearchFliterType) {
     const [searchApplied, setSearchApplied] = useState(false)
     const [openFilterPopup, setOpenFilterPopup] = useState(false)
     const [searchInputText, setSearchInputText] = useState('')
+
+    useEffect(() => {
+        setSearchInputText(searchText)
+        if (!searchText) {
+            setSearchApplied(false)
+        }
+    }, [searchText])
 
     const onVersionChange = (selectedValue: OptionType): void => {
         setSelectedVersion(selectedValue)
@@ -46,7 +40,7 @@ export default function NodeListSearchFliter({
         setSearchInputText('')
         setSearchText('')
         setSelectedSearchTextType('')
-        setSearchedLabelMap(new Map())
+        setSearchedTextMap(new Map())
         setSearchApplied(false)
     }
 
@@ -57,22 +51,26 @@ export default function NodeListSearchFliter({
     const handleFilterTag = (event): void => {
         const theKeyCode = event.key
         if (theKeyCode === 'Enter') {
-            if (selectedSearchTextType === 'label') {
-                const _searchedLabelMap = new Map()
-                const searchedLabelArr = searchInputText.split(',')
-                for (let index = 0; index < searchedLabelArr.length; index++) {
-                    const element = searchedLabelArr[index].trim().split('=')
+            const _searchedTextMap = new Map()
+            const searchedLabelArr = searchInputText.split(',')
+            for (let index = 0; index < searchedLabelArr.length; index++) {
+                const currentItem = searchedLabelArr[index].trim()
+                if (!currentItem) {
+                    continue
+                }
+                if (selectedSearchTextType === 'label') {
+                    const element = currentItem.split('=')
                     const key = element[0] ? element[0].trim() : null
                     if (!key) {
                         continue
                     }
                     const value = element[1] ? element[1].trim() : null
-                    _searchedLabelMap.set(key, value)
+                    _searchedTextMap.set(key, value)
+                } else {
+                    _searchedTextMap.set(currentItem, true)
                 }
-                setSearchedLabelMap(_searchedLabelMap)
-            } else {
-                setSearchText(event.target.value)
             }
+            setSearchedTextMap(_searchedTextMap)
             setSearchApplied(true)
         } else if (theKeyCode === 'Backspace') {
             if (searchInputText.length === 0 && selectedSearchTextType) {
