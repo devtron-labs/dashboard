@@ -142,6 +142,7 @@ function EditAPIToken({
                 const { result: userPermissionResponse } = await saveUser(userPermissionPayload)
                 if (userPermissionResponse) {
                     toast.success('Updated successfully')
+                    reload()
                     history.push('/global-config/auth/api-token/list')
                 }
             }
@@ -175,11 +176,17 @@ function EditAPIToken({
                 }}
             >
                 <DeleteDialog.Description>
-                    <p className="fs-13 cn-7 lh-1-54">{tokenData?.description && tokenData.desription}</p>
-                    <p className="fs-13 cn-7 lh-1-54">
+                    {tokenData?.description && (
+                        <p className="fs-14 cn-7 lh-20 bcn-1 p-16 br-4">
+                            <span className="fw-6">Token description:</span>
+                            <br />
+                            <span>{tokenData.description}</span>
+                        </p>
+                    )}
+                    <p className="fs-14 cn-7 lh-20">
                         Any applications or scripts using this token will no longer be able to access the Devtron API.
                     </p>
-                    <p className="fs-13 cn-7 lh-1-54">
+                    <p className="fs-14 cn-7 lh-20">
                         You cannot undo this action. Are you sure you want to delete this token?
                     </p>
                 </DeleteDialog.Description>

@@ -155,6 +155,7 @@ function CreateAPIToken({
                     setTokenResponse(result)
                     setShowGenerateModal(true)
                     setshowErrors(false)
+                    reload()
                     history.push('/global-config/auth/api-token/list')
                 }
             }
