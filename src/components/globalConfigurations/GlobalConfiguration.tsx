@@ -16,6 +16,7 @@ import { Routes, SERVER_MODE } from '../../config/constants'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExternalLinks from '../externalLinks/ExternalLinks'
 import PageHeader from '../common/header/PageHeader'
+import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -219,10 +220,11 @@ function NavItem({ hostURLConfig, serverMode }) {
                 (route, index) =>
                     (serverMode !== SERVER_MODE.EA_ONLY || route.isAvailableInEA) &&
                     (route.group ? (
-                        <div key={`nav_item_${index}`}>
+                        <>
                             <NavLink
+                                key={`nav_item_${index}`}
                                 to={route.href}
-                                className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'}`}
+                                className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'} flex content-space`}
                                 onClick={(e) => {
                                     if (location.pathname.startsWith('/global-config/auth')) {
                                         e.preventDefault()
@@ -234,6 +236,10 @@ function NavItem({ hostURLConfig, serverMode }) {
                                 }}
                             >
                                 {route.name}
+                                <Dropdown
+                                    className="icon-dim-24 rotate"
+                                    style={{ ['--rotateBy' as any]: !collapsedState ? '180deg' : '0deg' }}
+                                />
                             </NavLink>
                             {!collapsedState[route.name] && (
                                 <>
@@ -242,7 +248,7 @@ function NavItem({ hostURLConfig, serverMode }) {
                                     })}
                                 </>
                             )}
-                        </div>
+                        </>
                     ) : (
                         renderNavItem(route)
                     )),

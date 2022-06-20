@@ -70,7 +70,12 @@ function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, rel
                         >
                             <Bulb className="scn-5 icon-dim-20" />
                         </button>
-                        <div className="flexbox cb-5">{list.name}</div>
+                        <div
+                            className="flexbox cb-5 cursor"
+                            onClick={() => handleGenerateRowActionButton('edit', list.id)}
+                        >
+                            {list.name}
+                        </div>
                         <div className="ellipsis-right">{moment(list.lastUsedAt).format(Moment12HourFormat)}</div>
                         <div>{list.lastUsedByIp}</div>
                         <div>{moment(list.expireAtInMs).format(Moment12HourFormat)}</div>

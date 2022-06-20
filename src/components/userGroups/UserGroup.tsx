@@ -147,7 +147,7 @@ function HeaderSection() {
     const { url, path } = useRouteMatch()
     return (
         <div className="auth-page__header">
-            <h1 className="form__title">User access</h1>
+            <h1 className="auth-page__header-title form__title">User access</h1>
             <p className="form__subtitle">
                 Manage user permissions.&nbsp;
                 <a
@@ -159,19 +159,6 @@ function HeaderSection() {
                     Learn more about User Access
                 </a>
             </p>
-
-            <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab">
-                    <NavLink to={`${url}/users`} className="tab-list__tab-link" activeClassName="active">
-                        Users
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink to={`${url}/groups`} className="tab-list__tab-link" activeClassName="active">
-                        Groups
-                    </NavLink>
-                </li>
-            </ul>
         </div>
     )
 }
@@ -278,7 +265,6 @@ export default function UserGroupRoute() {
     const [userGroups, projects, environments, chartGroups, userRole, envClustersList] = lists
     return (
         <div className="auth-page">
-            {/* <HeaderSection /> */}
             <div className="auth-page__body">
                 <UserGroupContext.Provider
                     value={{
@@ -296,10 +282,10 @@ export default function UserGroupRoute() {
                 >
                     <Switch>
                         <Route path={`${path}/users`}>
-                            <UserGroupList type="user" reloadLists={reloadLists} />
+                            <UserGroupList type="user" reloadLists={reloadLists} renderHeaders={HeaderSection} />
                         </Route>
                         <Route path={`${path}/groups`}>
-                            <UserGroupList type="group" reloadLists={reloadLists} />
+                            <UserGroupList type="group" reloadLists={reloadLists} renderHeaders={HeaderSection} />
                         </Route>
                         <Route path={`${path}/${Routes.API_TOKEN}`}>
                             <ApiTokens reloadLists={reloadLists} />
@@ -312,7 +298,11 @@ export default function UserGroupRoute() {
     )
 }
 
-const UserGroupList: React.FC<{ type: 'user' | 'group'; reloadLists: () => void }> = ({ type, reloadLists }) => {
+const UserGroupList: React.FC<{
+    type: 'user' | 'group'
+    reloadLists: () => void
+    renderHeaders: () => JSX.Element
+}> = ({ type, reloadLists, renderHeaders }) => {
     const [loading, data, error, reload, setState] = useAsync(type === 'user' ? getUserList : getGroupList, [type])
     const result = (data && data['result']) || []
     const [searchString, setSearchString] = useState('')
@@ -416,6 +406,7 @@ const UserGroupList: React.FC<{ type: 'user' | 'group'; reloadLists: () => void 
     )
     return (
         <div id="auth-page__body" className="auth-page__body-users__list-container">
+            {renderHeaders()}
             {result.length > 0 && (
                 <input
                     value={searchString}

@@ -73,6 +73,7 @@ function EditAPIToken({
             />
         )
     }
+
     const redirectToTokenList = () => {
         let url = match.path.split('edit')[0]
         history.push(`${url}list`)
@@ -148,7 +149,10 @@ function EditAPIToken({
         editData && (
             <div className="fs-13 fw-4" style={{ minHeight: 'calc(100vh - 235px)' }}>
                 <div className="cn-9 fw-6 fs-16">
-                    <span className="cb-5">API tokens</span> / Edit API token
+                    <span className="cb-5 cursor" onClick={redirectToTokenList}>
+                        API tokens
+                    </span>{' '}
+                    / Edit API token
                 </div>
                 <p className="fs-13 fw-4">
                     API tokens function like ordinary OAuth access tokens. They can be used instead of a password for

@@ -23,6 +23,7 @@ import {
     DirectPermissionsRoleFilter,
     EntityTypes,
 } from '../userGroups/userGroups.types'
+import { useHistory, useRouteMatch } from 'react-router-dom'
 
 function CreateAPIToken({
     setShowGenerateModal,
@@ -38,6 +39,8 @@ function CreateAPIToken({
     copied,
     reload,
 }: GenerateTokenType) {
+    const history = useHistory()
+    const match = useRouteMatch()
     const [loader, setLoader] = useState(false)
     const [adminPermission, setAdminPermission] = useState('SUPERADMIN')
     const [formData, setFormData] = useState<FormType>({
@@ -73,6 +76,11 @@ function CreateAPIToken({
         if (key === 'customDate') {
             setCustomDate(parseInt(event.target.value) | 0)
         }
+    }
+
+    const redirectToTokenList = () => {
+        let url = match.path.split('create')[0]
+        history.push(`${url}list`)
     }
 
     const validateToken = (): boolean => {
@@ -181,7 +189,10 @@ function CreateAPIToken({
     return (
         <>
             <div className="cn-9 fw-6 fs-16">
-                <span className="cb-5">API tokens</span> / New API token
+                <span className="cb-5 cursor" onClick={redirectToTokenList}>
+                    API tokens
+                </span>
+                / New API token
             </div>
             <p className="fs-13 fw-4">
                 API tokens function like ordinary OAuth access tokens. They can be used instead of a password for Git
@@ -309,7 +320,10 @@ function CreateAPIToken({
                 <hr className="modal__divider mt-20 mb-0" />
                 <GenerateActionButton
                     loader={false}
-                    onCancel={() => setShowGenerateModal(false)}
+                    onCancel={() => {
+                        setShowGenerateModal(false)
+                        redirectToTokenList()
+                    }}
                     onSave={handleGenerateAPIToken}
                     buttonText="Generate token"
                 />
