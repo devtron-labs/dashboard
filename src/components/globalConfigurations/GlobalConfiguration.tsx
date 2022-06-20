@@ -168,28 +168,28 @@ function NavItem({ hostURLConfig, serverMode }) {
         { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin, isAvailableInEA: true },
         {
             name: 'Authorisation',
-            href: URLS.GLOBAL_CONFIG_AUTH + '/users',
+            href: `${URLS.GLOBAL_CONFIG_AUTH}/users`,
+            preventDefaultKey: URLS.GLOBAL_CONFIG_AUTH,
             group: [
                 {
                     name: 'User permissions',
-                    href: URLS.GLOBAL_CONFIG_AUTH + '/users',
+                    href: `${URLS.GLOBAL_CONFIG_AUTH}/users`,
                     isAvailableInEA: true,
                 },
                 {
                     name: 'Permission groups',
-                    href: URLS.GLOBAL_CONFIG_AUTH + '/groups',
+                    href: `${URLS.GLOBAL_CONFIG_AUTH}/groups`,
                     isAvailableInEA: true,
                 },
                 {
                     name: 'API tokens',
-                    href: URLS.GLOBAL_CONFIG_AUTH + `/${Routes.API_TOKEN}/list`,
+                    href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}/list`,
                     isAvailableInEA: true,
                 },
             ],
             component: UserGroup,
             isAvailableInEA: true,
         },
-        // { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup, isAvailableInEA: true },
         { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier, isAvailableInEA: false },
     ]
     let showError =
@@ -198,7 +198,17 @@ function NavItem({ hostURLConfig, serverMode }) {
 
     const renderNavItem = (route, className = '') => {
         return (
-            <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route">
+            <NavLink
+                to={`${route.href}`}
+                key={route.href}
+                activeClassName="active-route"
+                className={`${
+                    route.name === 'API tokens' &&
+                    location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)
+                        ? 'active-route'
+                        : ''
+                }`}
+            >
                 <div className={`flexbox flex-justify ${className || ''}`}>
                     <div>{route.name}</div>
                     {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? (
@@ -226,13 +236,13 @@ function NavItem({ hostURLConfig, serverMode }) {
                                 to={route.href}
                                 className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'} flex content-space`}
                                 onClick={(e) => {
-                                    if (location.pathname.startsWith('/global-config/auth')) {
+                                    if (location.pathname.startsWith(route.preventDefaultKey)) {
                                         e.preventDefault()
+                                        setCollapsedState({
+                                            ...collapsedState,
+                                            [route.name]: !collapsedState[route.name],
+                                        })
                                     }
-                                    setCollapsedState({
-                                        ...collapsedState,
-                                        [route.name]: !collapsedState[route.name],
-                                    })
                                 }}
                             >
                                 {route.name}
