@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
-import { multiSelectStyles, showError } from '../common'
+import { multiSelectStyles, showError, useAsync } from '../common'
 import { DropdownIndicator } from '../security/security.util'
 import AppPermissions from '../userGroups/AppPermissions'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
@@ -12,9 +12,17 @@ import GenerateModal from './GenerateModal'
 import { getDateInMilliseconds, getOptions, PermissionType } from './authorization.utils'
 import GenerateActionButton from './GenerateActionButton'
 import moment from 'moment'
-import { Moment12HourFormat } from '../../config'
+import { Moment12HourFormat, SERVER_MODE } from '../../config'
 import { ValidationRules } from './validationRules'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
+import { getUserId } from '../userGroups/userGroup.service'
+import {
+    ActionTypes,
+    ChartGroupPermissionsFilter,
+    CreateUser,
+    DirectPermissionsRoleFilter,
+    EntityTypes,
+} from '../userGroups/userGroups.types'
 
 function CreateAPIToken({
     setShowGenerateModal,
@@ -38,13 +46,19 @@ function CreateAPIToken({
         expireAtInMs: undefined,
     })
     const [showErrors, setshowErrors] = useState(false)
-    const [formDataErrorObj, setFormDataErrorObj] = useState<FormType>({
-        name: '',
-        description: '',
-        expireAtInMs: undefined,
-    })
-
+    const [formDataErrorObj, setFormDataErrorObj] = useState<FormType>()
+    const [userId, setUserId] = useState<number>(undefined)
     const validationRules = new ValidationRules()
+    const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
+    const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({
+        entity: EntityTypes.CHART_GROUP,
+        action: ActionTypes.VIEW,
+        entityName: [],
+    })
+    const [isValid, setIsValid] = useState({
+        name: false,
+        expireAtInMs: false,
+    })
 
     const onChangeFormData = (event: React.ChangeEvent<HTMLInputElement>, key): void => {
         const _formData = { ...formData }
@@ -57,7 +71,7 @@ function CreateAPIToken({
         setFormDataErrorObj(_formErrorObject)
 
         if (key === 'customDate') {
-            setCustomDate(parseInt(event.target.value))
+            setCustomDate(parseInt(event.target.value) | 0)
         }
     }
 
@@ -65,19 +79,80 @@ function CreateAPIToken({
         return
     }
 
+    function isFormComplete(): boolean {
+        let isComplete: boolean = true
+        const tempPermissions = directPermission.reduce((agg, curr) => {
+            if (curr.team && curr.entityName.length === 0) {
+                isComplete = false
+                curr.entityNameError = 'Applications are mandatory'
+            }
+            if (curr.team && curr.environment.length === 0) {
+                isComplete = false
+                curr.environmentError = 'Environments are mandatory'
+            }
+            agg.push(curr)
+            return agg
+        }, [])
+
+        if (!isComplete) {
+            setDirectPermission(tempPermissions)
+        }
+
+        return isComplete
+    }
+
     const onChangeSelectFormData = (selectedOption: { label: string; value: number }) => {
         const _formData = { ...formData }
         setSelectedExpirationDate(selectedOption)
-        const _formErrorObject = { ...formDataErrorObj }
-        // _formErrorObject = validationRules.requiredField(selectedOption.value.toString())
 
         _formData['expireAtInMs'] = getDateInMilliseconds(selectedExpirationDate.value)
         setFormData(_formData)
     }
 
-    const handleGenerateAPIToken = () => {
+    const handleGenerateAPIToken = (e) => {
+        if (!isFormComplete()) {
+            return
+        }
+        // setIsValid({
+        //     ...isValid,
+        //     name: validationRules.name(e.target.value).isValid,
+        //     expireAtInMs: validationRules.expireAtInMs(e.target.value).isValid,
+        // })
+
         setshowErrors(true)
         setLoader(true)
+
+        //   const _payload: CreateUser = {
+        //     id: userId || 0,
+        //     email_id: emailState.emails.map((email) => email.value).join(','),
+        //     groups: userGroups.map((group) => group.value),
+        //     roleFilters: [
+        //         ...directPermission
+        //             .filter(
+        //                 (permission) =>
+        //                     permission.team?.value && permission.environment.length && permission.entityName.length,
+        //             )
+        //             .map((permission) => ({
+        //                 ...permission,
+        //                 action: permission.action.value,
+        //                 team: permission.team.value,
+        //                 environment: getSelectedEnvironments(permission),
+        //                 entityName: permission.entityName.find((entity) => entity.value === '*')
+        //                     ? ''
+        //                     : permission.entityName.map((entity) => entity.value).join(','),
+        //             })),
+        //     ],
+        //     superAdmin: localSuperAdmin,
+        // };
+        // if (serverMode !== SERVER_MODE.EA_ONLY) {
+        //     _payload.roleFilters.push({
+        //         ...chartPermission,
+        //         team: '',
+        //         environment: '',
+        //         entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
+        //     });
+        // }
+
         let payload = {
             name: formData.name,
             description: formData.description,
@@ -90,6 +165,7 @@ function CreateAPIToken({
                 setTokenResponse(response.result)
                 setShowGenerateModal(true)
                 setshowErrors(false)
+                setUserId(response.result.userId)
             })
             .catch((error) => {
                 showError(error)
@@ -98,8 +174,10 @@ function CreateAPIToken({
                 setLoader(false)
             })
     }
+    // const [dataLoading, data, dataError, reloadData, setData] = useAsync(() => getUserId(userId))
 
-    const errorObject = [validationRules.name(formData.name)]
+    const errorObject = validationRules.name(formData.name)
+
     return (
         <>
             <div className="cn-9 fw-6 fs-16">
@@ -125,10 +203,10 @@ function CreateAPIToken({
                                 onChange={(e) => onChangeFormData(e, 'name')}
                             />
                             <span className="form__error">
-                                {showErrors && !formDataErrorObj.name ? (
+                                {showError && !isValid.name ? (
                                     <>
                                         <Error className="form__icon form__icon--error" />
-                                        {errorObject[0].message} <br />
+                                        {errorObject[0]?.message} <br />
                                     </>
                                 ) : null}
                             </span>
@@ -162,20 +240,24 @@ function CreateAPIToken({
                                         ...multiSelectStyles,
                                     }}
                                 />
-                                <span className="ml-16 fw-4">
-                                    This token will expire on
-                                    {moment(getDateInMilliseconds(selectedExpirationDate.value)).format(
-                                        Moment12HourFormat,
-                                    )}
-                                </span>
+                                {selectedExpirationDate.label !== 'Custom...' && (
+                                    <span className="ml-16 fw-4">
+                                        This token will expire on
+                                        {moment(getDateInMilliseconds(selectedExpirationDate.value)).format(
+                                            Moment12HourFormat,
+                                        )}
+                                    </span>
+                                )}
                                 {selectedExpirationDate.label === 'Custom...' && (
-                                    <input
-                                        tabIndex={1}
-                                        placeholder="Custom Dtaer"
-                                        className="form__input"
-                                        value={customDate}
-                                        onChange={(e) => onChangeFormData(e, 'customDate')}
-                                    />
+                                    <div className="w-200">
+                                        <input
+                                            tabIndex={1}
+                                            placeholder="Custom Dtaer"
+                                            className="form__input"
+                                            value={customDate}
+                                            onChange={(e) => onChangeFormData(e, 'customDate')}
+                                        />
+                                    </div>
                                 )}
                             </div>
                         </label>
@@ -211,17 +293,17 @@ function CreateAPIToken({
                                 </div>
                             ))}
                         </div>
-                        {adminPermission === 'SUPERADMIN' && (
+                        {/* {adminPermission === 'SUPERADMIN' && (
                             <div>
-                                {/* <AppPermissions
-                        data={userData}
-                        directPermission={directPermission}
-                        setDirectPermission={setDirectPermission}
-                        chartPermission={chartPermission}
-                        setChartPermission={setChartPermission}
-                    />  */}
+                                <AppPermissions
+                                    data={data.result}
+                                    directPermission={null}
+                                    setDirectPermission={() => null}
+                                    chartPermission={null}
+                                    setChartPermission={() => null}
+                                />
                             </div>
-                        )}
+                        )} */}
                     </div>
                 </div>
                 <hr className="modal__divider mt-20 mb-0" />

@@ -12,7 +12,7 @@ import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
 import { FormType, TokenListType, TokenResponseType } from './authorization.type'
 
-function ApiTokens() {
+function ApiTokens({ reloadLists }) {
     const { path } = useRouteMatch()
     const params = useParams<{ id: string }>()
     const [searchText, setSearchText] = useState('')

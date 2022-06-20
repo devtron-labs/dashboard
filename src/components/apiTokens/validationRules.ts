@@ -12,6 +12,14 @@ export class ValidationRules {
         }
     }
 
+    expireAtInMs = (value: number): { isValid: boolean; message: string } => {
+        if (!value) {
+            return { message: 'This is required field', isValid: false }
+        } else {
+            return { message: null, isValid: true }
+        }
+    }
+
     requiredField = (value: string): { message: string | null; isValid: boolean } => {
         if (!value) {
             return { message: 'This is required field', isValid: false }

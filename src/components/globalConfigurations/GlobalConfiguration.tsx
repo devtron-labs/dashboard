@@ -12,7 +12,7 @@ import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList'
 import { getAppCheckList } from '../../services/service'
 import { showError } from '../common'
 import './globalConfigurations.scss'
-import { SERVER_MODE } from '../../config/constants'
+import { Routes, SERVER_MODE } from '../../config/constants'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExternalLinks from '../externalLinks/ExternalLinks'
 import PageHeader from '../common/header/PageHeader'
@@ -181,7 +181,7 @@ function NavItem({ hostURLConfig, serverMode }) {
                 },
                 {
                     name: 'API tokens',
-                    href: URLS.GLOBAL_CONFIG_AUTH + '/tokens/list',
+                    href: URLS.GLOBAL_CONFIG_AUTH + `/${Routes.API_TOKEN}/list`,
                     isAvailableInEA: true,
                 },
             ],
@@ -216,10 +216,10 @@ function NavItem({ hostURLConfig, serverMode }) {
             )}
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
             {ConfigOptional.map(
-                (route) =>
+                (route, index) =>
                     (serverMode !== SERVER_MODE.EA_ONLY || route.isAvailableInEA) &&
                     (route.group ? (
-                        <>
+                        <div key={`nav_item_${index}`}>
                             <NavLink
                                 to={route.href}
                                 className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'}`}
@@ -242,7 +242,7 @@ function NavItem({ hostURLConfig, serverMode }) {
                                     })}
                                 </>
                             )}
-                        </>
+                        </div>
                     ) : (
                         renderNavItem(route)
                     )),
