@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     ClearIndicator,
     multiSelectStyles,
@@ -7,54 +7,81 @@ import {
     removeItemsFromArray,
     Option,
     useAsync,
+    mapByKey,
 } from '../common'
 import AppPermissions from '../userGroups/AppPermissions'
-import { GroupRow } from '../userGroups/UserGroup'
+import { GroupRow, useUserGroupContext } from '../userGroups/UserGroup'
 import Select from 'react-select'
 import { OptionType } from '../app/types'
 import {
     ActionTypes,
     ChartGroupPermissionsFilter,
+    CreateUser,
     DirectPermissionsRoleFilter,
     EntityTypes,
 } from '../userGroups/userGroups.types'
 
 function GroupPermission({
-    groupPermissionsRef,
-    formatChartGroupOptionLabel,
-    id,
-    availableGroups,
-    userGroupsMap,
     userData,
+    userGroups,
+    setUserGroups,
+    directPermission,
+    setDirectPermission,
+    chartPermission,
+    setChartPermission,
+}: {
+    userData: CreateUser
+    userGroups: OptionType[]
+    setUserGroups: React.Dispatch<React.SetStateAction<OptionType[]>>
+    directPermission: DirectPermissionsRoleFilter[]
+    setDirectPermission: React.Dispatch<React.SetStateAction<DirectPermissionsRoleFilter[]>>
+    chartPermission: ChartGroupPermissionsFilter
+    setChartPermission: React.Dispatch<React.SetStateAction<ChartGroupPermissionsFilter>>
 }) {
-    //   const [dataLoading, data, dataError, reloadData, setData] = useAsync(
-    //     type === 'group' ? () => getGroupId(id) : () => getUserId(id),
-    //     [id, type],
-    //     !collapsed,
-    // );
-    const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
-    const [userGroups, setUserGroups] = useState<OptionType[]>([])
-    const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({
-        entity: EntityTypes.CHART_GROUP,
-        action: ActionTypes.VIEW,
-        entityName: [],
-    })
+    const { userGroupsList } = useUserGroupContext()
+    const userGroupsMap = mapByKey(userGroupsList, 'name')
+    const availableGroups = userGroupsList?.map((group) => ({ value: group.name, label: group.name }))
+
+    useEffect(() => {
+        if (userData) {
+            populateDataFromAPI(userData)
+        }
+    }, [userData])
+
+    function populateDataFromAPI(data: CreateUser) {
+        const { email_id, groups = [], superAdmin } = data
+        setUserGroups(groups?.map((group) => ({ label: group, value: group })) || [])
+    }
+
+    function formatChartGroupOptionLabel({ value, label }) {
+        return (
+            <div className="flex left column">
+                <span>{label}</span>
+                <small>{userGroupsMap.has(value) ? userGroupsMap.get(value).description : ''}</small>
+            </div>
+        )
+    }
 
     return (
         <>
             <div className="cn-9 fs-14 fw-6 mb-16">Group permissions</div>
-            {/* <Select
+            <Select
+                placeholder="Select permission groups"
                 value={userGroups}
-                ref={groupPermissionsRef}
                 components={{
+                    IndicatorSeparator: () => null,
                     MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={null} />,
-                    DropdownIndicator: null,
                     ClearIndicator,
                     MultiValueRemove,
                     Option,
                 }}
                 styles={{
                     ...multiSelectStyles,
+                    dropdownIndicator: (base, state) => ({
+                        ...base,
+                        transition: 'all .2s ease',
+                        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                    }),
                     multiValue: (base) => ({
                         ...base,
                         border: `1px solid var(--N200)`,
@@ -68,15 +95,14 @@ function GroupPermission({
                 formatOptionLabel={formatChartGroupOptionLabel}
                 closeMenuOnSelect={false}
                 isMulti
-                autoFocus={!id}
                 menuPortalTarget={document.body}
                 name="groups"
                 options={availableGroups}
                 hideSelectedOptions={false}
                 onChange={(selected, actionMeta) => setUserGroups((selected || []) as any)}
-                className={`basic-multi-select ${id ? 'mt-8 mb-16' : ''}`}
-            /> */}
-            {userGroups.length > 0 && id && (
+                className="basic-multi-select"
+            />
+            {/* {userGroups.length > 0 && id && (
                 <div
                     style={{
                         display: 'grid',
@@ -95,13 +121,14 @@ function GroupPermission({
                         />
                     ))}
                 </div>
-            )}
+            )} */}
             <AppPermissions
                 data={userData}
                 directPermission={directPermission}
                 setDirectPermission={setDirectPermission}
                 chartPermission={chartPermission}
                 setChartPermission={setChartPermission}
+                hideInfoLegend={true}
             />
         </>
     )

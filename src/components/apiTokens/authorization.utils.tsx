@@ -1,4 +1,11 @@
 import moment from 'moment'
+import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config'
+import {
+    ChartGroupPermissionsFilter,
+    CreateUser,
+    DirectPermissionsRoleFilter,
+    OptionType,
+} from '../userGroups/userGroups.types'
 
 export function getOptions(customDate) {
     return [
@@ -21,4 +28,68 @@ const millisecondsInDay = 86400000
 export const getDateInMilliseconds = (days) => {
     let ms = 1 + new Date().valueOf() + days * millisecondsInDay
     return ms
+}
+
+export const getSelectedEnvironments = (permission) => {
+    if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+        return permission.environment.find((env) => env.value === '*')
+            ? ''
+            : permission.environment.map((env) => env.value).join(',')
+    } else {
+        let allFutureCluster = {}
+        let envList = ''
+        permission.environment.forEach((element) => {
+            if (element.clusterName === '' && element.value.startsWith('#')) {
+                const clusterName = element.value.substring(1)
+                allFutureCluster[clusterName] = true
+                envList += (envList !== '' ? ',' : '') + clusterName + '__*'
+            } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
+                envList += (envList !== '' ? ',' : '') + element.value
+            }
+        })
+        return envList
+    }
+}
+
+export const createUserPermissionPayload = (
+    userId: number,
+    userIdentifier: string,
+    serverMode: SERVER_MODE,
+    userGroups: OptionType[],
+    directPermission: DirectPermissionsRoleFilter[],
+    chartPermission: ChartGroupPermissionsFilter,
+    isSuperAdminAccess: boolean,
+): CreateUser => {
+    const userPermissionPayload: CreateUser = {
+        id: userId,
+        email_id: userIdentifier,
+        groups: userGroups.map((group) => group.value),
+        roleFilters: [
+            ...directPermission
+                .filter(
+                    (permission) =>
+                        permission.team?.value && permission.environment.length && permission.entityName.length,
+                )
+                .map((permission) => ({
+                    ...permission,
+                    action: permission.action.value,
+                    team: permission.team.value,
+                    environment: getSelectedEnvironments(permission),
+                    entityName: permission.entityName.find((entity) => entity.value === '*')
+                        ? ''
+                        : permission.entityName.map((entity) => entity.value).join(','),
+                })),
+        ],
+        superAdmin: isSuperAdminAccess,
+    }
+    if (serverMode !== SERVER_MODE.EA_ONLY) {
+        userPermissionPayload.roleFilters.push({
+            ...chartPermission,
+            team: '',
+            environment: '',
+            entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
+        })
+    }
+
+    return userPermissionPayload
 }

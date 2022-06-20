@@ -3,18 +3,21 @@ import './apiToken.scss'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getGeneratedAPITokenList } from './service'
-import { showError, Progressing, ErrorScreenManager, ConfirmationDialog } from '../common'
+import { showError, Progressing, ErrorScreenManager, useAsync } from '../common'
 import EmptyState from '../EmptyState/EmptyState'
 import emptyGeneratToken from '../../assets/img/ic-empty-generate-token.png'
-import { Redirect, Route, Switch, useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
-import { FormType, TokenListType, TokenResponseType } from './authorization.type'
+import { TokenListType, TokenResponseType } from './authorization.type'
+import { getUserList } from '../userGroups/userGroup.service'
+import { ResponseType } from '../../services/service.types'
 
 function ApiTokens({ reloadLists }) {
     const { path } = useRouteMatch()
-    const params = useParams<{ id: string }>()
+    const history = useHistory()
+    const { pathname } = useLocation()
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const [loader, setLoader] = useState(false)
@@ -25,7 +28,6 @@ function ApiTokens({ reloadLists }) {
     const [deleteConfirmation, setDeleteConfirmation] = useState(false)
     const [showGenerateModal, setShowGenerateModal] = useState(false)
     const [showRegenerateTokenModal, setShowRegenerateTokenModal] = useState(false)
-    const [showFormError, setShowFormError] = useState<boolean>(false)
     const [selectedList, setSelectedList] = useState<TokenListType>()
     const [copied, setCopied] = useState(false)
     const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: number }>({
@@ -33,6 +35,7 @@ function ApiTokens({ reloadLists }) {
         value: 0,
     })
     const [customDate, setCustomDate] = useState<number>(undefined)
+    const [loading, data, error, reload, setState] = useAsync(getUserList, [])
 
     const getData = (): void => {
         setLoader(true)
@@ -53,6 +56,15 @@ function ApiTokens({ reloadLists }) {
     }
 
     useEffect(() => {
+        // TODO: Revisit. Temp check
+        if (
+            pathname.includes('/devtron-apps') ||
+            pathname.includes('/helm-apps') ||
+            pathname.includes('/chart-groups')
+        ) {
+            history.replace(pathname.split('/').slice(0, -1).join('/'))
+        }
+
         getData()
     }, [])
 
@@ -128,6 +140,7 @@ function ApiTokens({ reloadLists }) {
                                 <APITokenList
                                     tokenList={filteredTokenList}
                                     setDeleteConfirmation={setDeleteConfirmation}
+                                    setSelectedList={setSelectedList}
                                     renderSearchToken={renderSearchToken}
                                     reload={getData}
                                 />
@@ -169,6 +182,7 @@ function ApiTokens({ reloadLists }) {
                                     setDeleteConfirmation={setDeleteConfirmation}
                                     deleteConfirmation={deleteConfirmation}
                                     selectedList={selectedList}
+                                    usersList={data && (data as ResponseType).result}
                                     reload={getData}
                                 />
                             )}

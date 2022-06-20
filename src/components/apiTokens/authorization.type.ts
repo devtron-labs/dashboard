@@ -1,4 +1,5 @@
 import React from 'react'
+import { CreateUser } from '../userGroups/userGroups.types'
 
 export interface FormType {
     name: string
@@ -53,6 +54,7 @@ export interface EditTokenType {
     setDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
     deleteConfirmation: boolean
     selectedList: TokenListType
+    usersList: CreateUser[]
     reload: () => void
 }
 
@@ -77,6 +79,7 @@ export interface GenerateTokenModalType {
 export interface APITokenListType {
     tokenList: TokenListType[]
     setDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
+    setSelectedList: React.Dispatch<React.SetStateAction<TokenListType>>
     renderSearchToken: () => void
     reload: () => void
 }
@@ -87,6 +90,8 @@ export interface EditDataType {
     expireAtInMs: any
     token: string
     id: number
+    userId: number
+    userIdentifier: string
 }
 export interface RegenerateModalType {
     close: () => void

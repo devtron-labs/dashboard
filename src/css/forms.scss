@@ -208,7 +208,8 @@ p.sentence-case:first-letter {
     border-radius: 4px;
     background-color: var(--white);
 
-    &.ecr-authType__radio-group {
+    &.ecr-authType__radio-group,
+    &.permission-type__radio-group {
         border: none;
 
         .form__radio-item {

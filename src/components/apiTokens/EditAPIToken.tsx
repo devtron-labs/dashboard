@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import RegeneratedModal from './RegenerateModal'
 import { EditDataType, EditTokenType } from './authorization.type'
-import { getDateInMilliseconds, PermissionType } from './authorization.utils'
+import { createUserPermissionPayload, PermissionType } from './authorization.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import GenerateActionButton from './GenerateActionButton'
 import { useHistory, useRouteMatch } from 'react-router-dom'
@@ -14,6 +14,18 @@ import { copyToClipboard, DeleteDialog, showError } from '../common'
 import { deleteGeneratedAPIToken, updateGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
+import GroupPermission from './GroupPermission'
+import {
+    ActionTypes,
+    ChartGroupPermissionsFilter,
+    CreateUser,
+    DirectPermissionsRoleFilter,
+    EntityTypes,
+    OptionType,
+} from '../userGroups/userGroups.types'
+import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
+import { saveUser } from '../userGroups/userGroup.service'
+import { mainContext } from '../common/navigation/NavigationRoutes'
 
 function EditAPIToken({
     setShowRegeneratedModal,
@@ -29,24 +41,47 @@ function EditAPIToken({
     deleteConfirmation,
     setDeleteConfirmation,
     selectedList,
+    usersList,
     reload,
 }: EditTokenType) {
     const history = useHistory()
     const match = useRouteMatch()
     const params = useParams<{ id: string }>()
+    const { serverMode } = useContext(mainContext)
     const [loder, setLoader] = useState(false)
+    const [adminPermission, setAdminPermission] = useState('SUPERADMIN')
+    const [userData, setUserData] = useState<CreateUser>()
+    const [editData, setEditData] = useState<EditDataType>({
+        name: selectedList?.name,
+        description: selectedList?.description,
+        expireAtInMs: selectedList?.expireAtInMs,
+        token: selectedList?.token,
+        id: selectedList?.id,
+        userId: selectedList?.userId,
+        userIdentifier: selectedList?.userIdentifier,
+    })
+    const [userGroups, setUserGroups] = useState<OptionType[]>([])
+    const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
+    const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({
+        entity: EntityTypes.CHART_GROUP,
+        action: ActionTypes.VIEW,
+        entityName: [],
+    })
+
+    useEffect(() => {
+        if (usersList && editData?.userId) {
+            const _userData = usersList.find((_user) => _user.id === editData.userId)
+
+            if (_userData) {
+                setUserData(_userData)
+                setAdminPermission(_userData.superAdmin ? 'SUPERADMIN' : 'SPECIFIC')
+            }
+        }
+    }, [usersList, selectedList, editData])
 
     useEffect(() => {
         setEditData(tokenList && tokenList.find((list) => list?.id === parseInt(params.id)))
     }, [params.id])
-
-    const [editData, setEditData] = useState<EditDataType>({
-        name: selectedList?.name || '',
-        description: selectedList?.description || '',
-        expireAtInMs: selectedList?.expireAtInMs,
-        token: selectedList?.token || '',
-        id: selectedList?.id,
-    })
 
     const renderActionButton = () => {
         return (
@@ -86,13 +121,30 @@ function EditAPIToken({
     const handleUpdatedToken = async (tokenId) => {
         try {
             setLoader(true)
-            let payload = {
+            const payload = {
                 description: editData.description,
                 expireAtInMs: editData.expireAtInMs,
             }
 
-            await updateGeneratedAPIToken(payload, tokenId)
-            toast.success('Updated successfully')
+            const { result } = await updateGeneratedAPIToken(payload, tokenId)
+
+            if (result) {
+                const userPermissionPayload = createUserPermissionPayload(
+                    editData.userId,
+                    editData.userIdentifier,
+                    serverMode,
+                    userGroups,
+                    directPermission,
+                    chartPermission,
+                    adminPermission === 'SUPERADMIN',
+                )
+
+                const { result: userPermissionResponse } = await saveUser(userPermissionPayload)
+                if (userPermissionResponse) {
+                    toast.success('Updated successfully')
+                    history.push('/global-config/auth/api-token/list')
+                }
+            }
         } catch (err) {
             showError(err)
         } finally {
@@ -143,6 +195,10 @@ function EditAPIToken({
         if (key === 'customDate') {
             setCustomDate(parseInt(event.target.value))
         }
+    }
+
+    const handlePermissionType = (e) => {
+        setAdminPermission(e.target.value)
     }
 
     return (
@@ -224,37 +280,30 @@ function EditAPIToken({
                                     </span>
                                 </div>
                             </label>
-                            <div className="pointer flex form__permission">
-                                {PermissionType.map(({ label: Lable, value }, index) => (
-                                    <div
-                                        className="flex left"
-                                        key={`generate_token_${index}`}
-                                        // onChange={() => setAdminPermission(value)}
-                                    >
-                                        <label key={value} className=" flex left">
-                                            <input
-                                                type="radio"
-                                                name="auth"
-                                                value={value}
-                                                // checked={value === adminPermission}
-                                            />
-                                            <span className="ml-8 mt-4">{Lable}</span>
-                                        </label>
-                                    </div>
-                                ))}
+                            <div className="flex left">
+                                <RadioGroup
+                                    className="permission-type__radio-group"
+                                    value={adminPermission || 'SUPERADMIN'}
+                                    name="permission-type"
+                                    onChange={handlePermissionType}
+                                >
+                                    {PermissionType.map(({ label, value }) => (
+                                        <RadioGroupItem value={value}> {label} </RadioGroupItem>
+                                    ))}
+                                </RadioGroup>
                             </div>
 
-                            {/* {adminPermission === 'SUPERADMIN' && ( */}
-                            {/* <div> */}
-                            {/* <AppPermissions
-                                          data={userData}
-                                          directPermission={directPermission}
-                                          setDirectPermission={setDirectPermission}
-                                          chartPermission={chartPermission}
-                                          setChartPermission={setChartPermission}
-/> */}
-                            {/* </div> */}
-                            {/* )} */}
+                            {adminPermission !== 'SUPERADMIN' && (
+                                <GroupPermission
+                                    userData={userData}
+                                    userGroups={userGroups}
+                                    setUserGroups={setUserGroups}
+                                    directPermission={directPermission}
+                                    setDirectPermission={setDirectPermission}
+                                    chartPermission={chartPermission}
+                                    setChartPermission={setChartPermission}
+                                />
+                            )}
                             {deleteConfirmation && renderDeleteModal(editData)}
                         </div>
                     </div>

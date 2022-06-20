@@ -21,6 +21,7 @@ interface AppPermissionsType {
     setDirectPermission: (...rest) => void;
     chartPermission: ChartGroupPermissionsFilter;
     setChartPermission: (ChartGroupPermissionsFilter: ChartGroupPermissionsFilter) => void;
+    hideInfoLegend?: boolean
 }
 interface AppPermissionsDetailType {
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS;
@@ -28,6 +29,7 @@ interface AppPermissionsDetailType {
     removeDirectPermissionRow: (index: number) => void;
     AddNewPermissionRow: (accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS) => void;
     directPermission: DirectPermissionsRoleFilter[];
+    hideInfoLegend?: boolean
 }
 
 export default function AppPermissions({
@@ -36,6 +38,7 @@ export default function AppPermissions({
     setDirectPermission,
     chartPermission,
     setChartPermission,
+    hideInfoLegend,
 }: AppPermissionsType) {
     const { serverMode } = useContext(mainContext);
     const {
@@ -413,6 +416,7 @@ export default function AppPermissions({
                                 handleDirectPermissionChange={handleDirectPermissionChange}
                                 AddNewPermissionRow={AddNewPermissionRowLocal}
                                 directPermission={directPermission}
+                                hideInfoLegend={hideInfoLegend}
                             />
                         </Route>
                     )}
@@ -423,6 +427,7 @@ export default function AppPermissions({
                             handleDirectPermissionChange={handleDirectPermissionChange}
                             AddNewPermissionRow={AddNewPermissionRowLocal}
                             directPermission={directPermission}
+                            hideInfoLegend={hideInfoLegend}
                         />
                     </Route>
                     {serverMode !== SERVER_MODE.EA_ONLY && (
@@ -430,6 +435,7 @@ export default function AppPermissions({
                             <ChartPermission
                                 chartPermission={chartPermission}
                                 setChartPermission={setChartPermission}
+                                hideInfoLegend={hideInfoLegend}
                             />
                         </Route>
                     )}
@@ -446,14 +452,17 @@ function AppPermissionDetail({
     removeDirectPermissionRow,
     AddNewPermissionRow,
     directPermission,
+    hideInfoLegend,
 }: AppPermissionsDetailType) {
     return (
         <>
-            <legend>
-                {accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
-                    ? 'Manage permission for custom apps created using devtron'
-                    : 'Manage permission for helm apps deployed from devtron or outside devtron'}
-            </legend>
+            {!hideInfoLegend && (
+                <legend>
+                    {accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
+                        ? 'Manage permission for custom apps created using devtron'
+                        : 'Manage permission for helm apps deployed from devtron or outside devtron'}
+                </legend>
+            )}
             <div
                 className="w-100 mb-26"
                 style={{
@@ -495,5 +504,5 @@ function AppPermissionDetail({
                 <AddIcon className="add-svg mr-12" /> Add row
             </b>
         </>
-    );
+    )
 }

@@ -238,7 +238,7 @@ function NavItem({ hostURLConfig, serverMode }) {
                                 {route.name}
                                 <Dropdown
                                     className="icon-dim-24 rotate"
-                                    style={{ ['--rotateBy' as any]: !collapsedState ? '180deg' : '0deg' }}
+                                    style={{ ['--rotateBy' as any]: !collapsedState[route.name] ? '180deg' : '0deg' }}
                                 />
                             </NavLink>
                             {!collapsedState[route.name] && (
