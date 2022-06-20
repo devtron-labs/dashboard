@@ -239,6 +239,7 @@ function DeploymentTemplateOverrideForm({
     const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
     const [loading, setLoading] = useState(false)
     const { appId, envId } = useParams<{ appId; envId }>()
+    const [diffView, setDiffview] = useState(false)
 
     async function handleSubmit(e) {
         e.preventDefault()
@@ -375,10 +376,20 @@ function DeploymentTemplateOverrideForm({
                         validatorSchema={state.data.schema}
                         readOnly={!state.duplicate}
                         loading={chartRefLoading}
+                        diffView={state.duplicate && diffView}
                     >
                         <div className="readme-container ">
-                            <CodeEditor.Header>
+                            <CodeEditor.Header hideDefaultSplitHeader={true}>
                                 <h5>{MODES.YAML.toUpperCase()}</h5>
+                                {state.duplicate && (
+                                    <div
+                                        className="code-editor__split-pane flex pointer"
+                                        onClick={() => setDiffview(!diffView)}
+                                    >
+                                        <div className="diff-icon"></div>
+                                        {diffView ? 'Hide comparison' : 'Compare with default'}
+                                    </div>
+                                )}
                                 <CodeEditor.ValidationError />
                             </CodeEditor.Header>
                             {state.data.readme && (
