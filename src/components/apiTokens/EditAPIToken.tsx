@@ -187,7 +187,7 @@ function EditAPIToken({
         )
     }
 
-    const onChangeEditData = (event: React.ChangeEvent<HTMLInputElement>, key): void => {
+    const onChangeEditData = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key): void => {
         const _editData = { ...editData }
         _editData[key] = event.target.value
         setEditData(_editData)
@@ -236,10 +236,10 @@ function EditAPIToken({
                             </label>
                             <label className="form__row">
                                 <span className="form__label">Description</span>
-                                <input
+                                <textarea
                                     tabIndex={1}
                                     placeholder="Enter a description to remember where you have used this token"
-                                    className="form__input"
+                                    className="form__textarea"
                                     value={editData?.description}
                                     onChange={(e) => onChangeEditData(e, 'description')}
                                 />
@@ -271,11 +271,11 @@ function EditAPIToken({
                             </label>
                             <label className="form__row">
                                 <span className="form__label">Expiration</span>
-                                <div className="flex left">
-                                    This token expires on
-                                    {moment(selectedList?.expireAtInMs).format(Moment12HourFormat)}.
-                                    <span className=" fw-4"> To set a new expiration date you must </span>
-                                    <span className="cb-5 ml-4 cursor" onClick={() => setShowRegeneratedModal(true)}>
+                                <div className="align-left">
+                                    This token expires on&nbsp;
+                                    {moment(selectedList?.expireAtInMs).format(Moment12HourFormat)}.&nbsp;
+                                    <span className="fw-4">To set a new expiration date you must</span>&nbsp;
+                                    <span className="cb-5 cursor" onClick={() => setShowRegeneratedModal(true)}>
                                         regenerate the token.
                                     </span>
                                 </div>

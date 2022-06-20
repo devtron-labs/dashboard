@@ -89,13 +89,20 @@
     margin-bottom: 8px;
 }
 
-.form__input {
+.form__input,
+.form__textarea {
     border-radius: 4px;
     border: solid 1px var(--N200);
     padding: 8px 10px;
     display: block;
     width: 100%;
     font-weight: 500;
+}
+
+.form__textarea {
+    min-height: 36px;
+    height: 36px;
+    resize: vertical
 }
 
 .form__input--error {

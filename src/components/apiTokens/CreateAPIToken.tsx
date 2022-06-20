@@ -26,6 +26,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom'
 import GroupPermission from './GroupPermission'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { mainContext } from '../common/navigation/NavigationRoutes'
+import { Option } from '../v2/common/ReactSelect.utils'
 
 function CreateAPIToken({
     setShowGenerateModal,
@@ -66,7 +67,7 @@ function CreateAPIToken({
         entityName: [],
     })
 
-    const onChangeFormData = (event: React.ChangeEvent<HTMLInputElement>, key): void => {
+    const onChangeFormData = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key): void => {
         const _formData = { ...formData }
         _formData[key] = event.target.value || ''
 
@@ -206,10 +207,10 @@ function CreateAPIToken({
                         </label>
                         <label className="form__row">
                             <span className="form__label">Description</span>
-                            <input
+                            <textarea
                                 tabIndex={1}
                                 placeholder="Enter a description to remember where you have used this token"
-                                className="form__input"
+                                className="form__textarea"
                                 value={formData.description}
                                 onChange={(e) => onChangeFormData(e, 'description')}
                             />
@@ -228,6 +229,7 @@ function CreateAPIToken({
                                     components={{
                                         IndicatorSeparator: null,
                                         DropdownIndicator,
+                                        Option
                                     }}
                                     styles={{
                                         ...multiSelectStyles,
@@ -235,7 +237,7 @@ function CreateAPIToken({
                                 />
                                 {selectedExpirationDate.label !== 'Custom...' && (
                                     <span className="ml-16 fw-4">
-                                        This token will expire on
+                                        This token will expire on&nbsp;
                                         {moment(getDateInMilliseconds(selectedExpirationDate.value)).format(
                                             Moment12HourFormat,
                                         )}
