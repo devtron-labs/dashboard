@@ -149,6 +149,7 @@ export const Routes = {
     CUSTOM_CHART_LIST: 'deployment/template/fetch',
     VALIDATE_CUSTOM_CHART: 'deployment/template/validate',
     UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
+    HELM_APP_TEMPLATE_CHART: 'application/template-chart',
 }
 
 export const ViewType = {
@@ -238,6 +239,7 @@ export const DOCUMENTATION = {
     CUSTOM_CHART: 'https://docs.devtron.ai/devtron/setup/global-configurations/custom-charts',
     CUSTOM_CHART_PRE_REQUISITES:
         'https://docs.devtron.ai/devtron/setup/global-configurations/custom-charts#prerequisites',
+    ADMIN_PASSWORD: 'https://docs.devtron.ai/devtron/setup/install/install-devtron-with-cicd#devtron-admin-credentials',
 }
 
 // APP LIST STARTS

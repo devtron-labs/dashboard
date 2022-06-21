@@ -4,6 +4,7 @@ import { useJsonYaml, Select, RadioGroup, Progressing, useWindowSize, copyToClip
 import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg';
+import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg';
 import YAML from 'yaml'
 import './codeEditor.scss';
 import ReactGA from 'react-ga';
@@ -23,21 +24,19 @@ import { cleanKubeManifest } from '../../../src/util/Util';
 // @ts-ignore
 window.MonacoEnvironment = {
     // @ts-ignore
-    getWorker(workerId, label : string) :void{
+    getWorker(workerId, label: string) {
         if (label === MODES.YAML) {
-            return new YamlWorker();
+            return new YamlWorker()
         }
-        return new EditorWorker();
+        return new EditorWorker()
     },
-};
+}
 
 // @ts-ignore
 const { yaml } = monaco.languages || {};
 
 
-interface WarningProps { text: string }
-interface ErrorBarProps { text: string }
-interface InformationProps { text: string }
+interface InformationBarProps { text: string; className?: string; children?: React.ReactNode }
 
 interface CodeEditorInterface {
     value?: string;
@@ -76,9 +75,9 @@ interface CodeEditorComposition {
     ThemeChanger?: React.FC<any>;
     ValidationError?: React.FC<any>;
     Clipboard?: React.FC<any>;
-    Warning?: React.FC<{ text: string }>;
-    ErrorBar?: React.FC<{ text: string }>;
-    Information?: React.FC<InformationProps>
+    Warning?: React.FC<InformationBarProps>;
+    ErrorBar?: React.FC<InformationBarProps>;
+    Information?: React.FC<InformationBarProps>
 }
 interface CodeEditorHeaderComposition {
     LanguageChanger?: React.FC<any>;
@@ -363,23 +362,29 @@ function ValidationError() {
     )
 }
 
-const Warning: React.FC<WarningProps> = function (props) {
-    return <div className="code-editor__warning">{props.text}</div>
+const Warning: React.FC<InformationBarProps> = function (props) {
+    return <div className={`code-editor__warning ${props.className || ''}`}>
+        <WarningIcon className="code-editor__information-info-icon" />
+        {props.text}
+        {props.children}
+    </div>
 }
 
-const ErrorBar: React.FC<ErrorBarProps> = function (props) {
+const ErrorBar: React.FC<InformationBarProps> = function (props) {
     return (
-        <div className="code-editor__error">
+        <div className={`code-editor__error ${props.className || ''}`}>
             <ErrorIcon className="code-editor__information-info-icon" />
             {props.text}
+            {props.children}
         </div>
     );
 };
 
-const Information: React.FC<InformationProps> = function (props) {
-    return <div className="code-editor__information">
+const Information: React.FC<InformationBarProps> = function (props) {
+    return <div className={`code-editor__information ${props.className || ''}`}>
         <Info className="code-editor__information-info-icon" />
         {props.text}
+        {props.children}
     </div>
 }
 

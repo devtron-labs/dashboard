@@ -1,6 +1,16 @@
 import React from 'react';
 import './nodeType.scss';
 
+function getFilteredPodStatus(podStatusObj) {
+    const podStatusKeys = Object.keys(podStatusObj)
+
+    if (podStatusKeys.length > 2 && podStatusObj['running'] === 0) {
+        return podStatusKeys.filter((n) => n !== 'all' && n !== 'running')
+    }
+
+    return podStatusKeys.filter((n) => n !== 'all')
+}
+
 function PodTabSection({
     podTab,
     selectPodTab,
@@ -32,16 +42,14 @@ function PodTabSection({
                 {isNew ? 'New Pods' : 'Old Pods'} ({podStatus.all}){' '}
             </div>
             <div className="flex left fs-12 cn-9 pb-12">
-                {Object.keys(podStatus)
-                    .filter((n) => n !== 'all')
-                    .map((status, idx) => (
-                        <React.Fragment key={idx}>
-                            {!!idx && <span className="bullet mr-4 ml-4"></span>}
-                            <span key={idx} data-testid={isNew && `new-pod-status-${status}`}>
-                                {podStatus[status]} {status}
-                            </span>
-                        </React.Fragment>
-                    ))}
+            {getFilteredPodStatus(podStatus).map((status, idx) => (
+                    <React.Fragment key={idx}>
+                        {!!idx && <span className="bullet mr-4 ml-4"></span>}
+                        <span key={idx} data-testid={isNew && `new-pod-status-${status}`}>
+                            {podStatus[status]} {status}
+                        </span>
+                    </React.Fragment>
+                ))}
             </div>
         </div>
     )

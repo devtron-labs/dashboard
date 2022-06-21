@@ -14,7 +14,7 @@ import {
 import CodeEditor from '../../../../../CodeEditor/CodeEditor';
 import IndexStore from '../../../index.store';
 import MessageUI, { MsgUIType } from '../../../../common/message.ui';
-import { AppType, NodeType } from '../../../appDetails.type';
+import { AppType, DeploymentAppType, NodeType } from '../../../appDetails.type';
 import YAML from 'yaml';
 import { toast } from 'react-toastify';
 import { showError, ToastBody } from '../../../../../common';
@@ -72,11 +72,14 @@ function ManifestComponent({ selectedTab, isDeleted }) {
             ])
                 .then((response) => {
                     let _manifest;
-                    if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
-                        _manifest = JSON.stringify(response[0]?.result?.manifest);
-                        setDesiredManifest(response[1]?.result?.manifest || '');
+                    if (
+                        appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
+                        appDetails.deploymentAppType === DeploymentAppType.helm
+                    ) {
+                        _manifest = JSON.stringify(response[0]?.result?.manifest)
+                        setDesiredManifest(response[1]?.result?.manifest || '')
                     } else {
-                        _manifest = response[0]?.result?.manifest;
+                        _manifest = response[0]?.result?.manifest
                     }
                     if (_manifest) {
                         setManifest(_manifest);
@@ -91,7 +94,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                     setLoading(false);
                 });
         } catch (err) {
-            console.log('err', err);
+            setLoading(false);
         }
     }, [params.podName, params.nodeType]);
 

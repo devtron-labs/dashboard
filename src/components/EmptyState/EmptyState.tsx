@@ -18,8 +18,8 @@ function Title({ children }) {
     return children
 }
 
-function Subtitle({ children }) {
-    return <p className="subtitle">{children}</p>
+function Subtitle({ children, className }:{children: any, className?: string}) {
+    return <p className={`subtitle ${className}`}>{children}</p>
 }
 
 function Button({ children }) {

@@ -114,7 +114,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
         {
             (!_isWebhook) &&
             <>
-                <div className="ml-16 mr-16 flex left">
+                <div className="ml-16 mr-16 flex content-space">
                     {_commitUrl ? <a href={_commitUrl} target="_blank" rel="noopener" className="commit-hash" onClick={e => e.stopPropagation()}>
                         <div className="material-history__header"> <Commit className="commit-hash__icon" />{_lowerCaseCommitInfo.commit} </div>
                     </a> : null}
@@ -131,12 +131,12 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
         {
             _isWebhook && _webhookData.eventactiontype == "merged" &&
             <>
-                <div className="flex left pr-16 ">
+                <div className="flex content-space pr-16 ">
                     <div className="ml-16 ">
                         {_webhookData.data.title ? <div className="flex left cn-9  fs-13">{_webhookData.data.title}</div> : null}
                         {_webhookData.data["git url"] ? <a href={`${_webhookData.data["git url"]}`} target="_blank" rel="noopener noreferer" className="no-decor cb-5"> View git url</a> : null}
                     </div>
-                    {selectedCommitInfo ? <div className="material-history__select-text material-history__header" >
+                    {selectedCommitInfo ? <div className="material-history__select-text material-history__header">
                         {_lowerCaseCommitInfo.isselected ? <Check className="align-right" /> : "Select"}
                     </div> : null}
                 </div>

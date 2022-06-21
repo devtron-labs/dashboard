@@ -6,6 +6,7 @@ import { getEvent } from '../nodeDetail.api';
 import moment from 'moment';
 import { NodeType } from '../../../appDetails.type';
 import MessageUI, { MsgUIType } from '../../../../common/message.ui';
+import { showError } from '../../../../../common';
 
 function EventsComponent({ selectedTab, isDeleted }) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string }>();
@@ -25,18 +26,21 @@ function EventsComponent({ selectedTab, isDeleted }) {
     }, [params.podName]);
 
     useEffect(() => {
-        setLoading(true);
-
-        getEvent(appDetails, params.podName, params.nodeType)
+        try {
+            getEvent(appDetails, params.podName, params.nodeType)
             .then((response) => {
                 setEvents(response.result.items || (response.result.events && response.result.events.items) || []);
                 setLoading(false);
             })
             .catch((err) => {
-                console.log('err', err);
+                showError(err)
                 setEvents([]);
                 setLoading(false);
             });
+        } catch (err) {
+            setEvents([]);
+            setLoading(false);
+        }
     }, [params.podName, params.nodeType]);
 
     return (

@@ -121,6 +121,10 @@ a:focus {
     font-size: 20px;
     color: var(--N900);
     font-weight: 600;
+
+    .page-header__close-icon use {
+        fill: var(--N600);
+    }
 }
 
 .page-header__cta-container {
@@ -1379,6 +1383,14 @@ button.anchor {
     }
 }
 
+.text-underline {
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
 .tertiary-tab__radio {
     margin-bottom: 0px;
     font-size: 12px;
@@ -1723,6 +1735,10 @@ button.anchor {
 
 .lh-16 {
     line-height: 16px;
+}
+
+.lh-18 {
+    line-height: 18px;
 }
 
 .mh-28 {

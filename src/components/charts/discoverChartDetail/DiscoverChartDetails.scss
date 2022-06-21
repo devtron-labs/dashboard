@@ -361,3 +361,15 @@
 .form__label.form__label--no-margin {
     margin: 0px;
 }
+
+.deploy-chart__container {
+    position: absolute;
+    top: 0;
+    z-index: 9;
+    width: calc(100% - 64px);
+    height: 100%;
+
+    > .default-background {
+        background-color: var(--window-bg);
+    }
+}

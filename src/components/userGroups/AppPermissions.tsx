@@ -307,7 +307,7 @@ export default function AppPermissions({
         const { action, option, name } = actionMeta;
         const tempPermissions = [...directPermission];
         if (name === 'entityName') {
-            const { value } = option;
+            const { value } = option || {value: ""};
             if (value === '*') {
                 if (action === 'select-option') {
                     if (tempPermissions[index]['team'].value !== HELM_APP_UNASSIGNED_PROJECT) {

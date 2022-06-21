@@ -80,8 +80,8 @@ export default function GlobalConfiguration(props) {
     function fetchCheckList(): void {
         getAppCheckList()
             .then((response) => {
-                let appChecklist = response.result.appChecklist
-                let chartChecklist = response.result.chartChecklist
+                let appChecklist = response.result.appChecklist || {}
+                let chartChecklist = response.result.chartChecklist || {}
                 let appStageArray: number[] = Object.values(appChecklist)
                 let chartStageArray: number[] = Object.values(chartChecklist)
                 let appStageCompleted: number = appStageArray.reduce((item, sum) => {
@@ -163,7 +163,7 @@ function NavItem({ hostURLConfig, serverMode }) {
             name: 'Custom charts',
             href: URLS.GLOBAL_CONFIG_CUSTOM_CHARTS,
             component: CustomChartList,
-            isAvailableInEA: true,
+            isAvailableInEA: false,
         },
         { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin, isAvailableInEA: true },
         {

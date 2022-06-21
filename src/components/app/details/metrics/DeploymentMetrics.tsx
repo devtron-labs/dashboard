@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { getDeploymentMetrics } from './deploymentMetrics.service';
-import { DatePicker, Progressing, showError } from '../../../common';
+import { DatePicker, ErrorScreenManager, Progressing, showError } from '../../../common';
 import { ViewType } from '../../../../config';
 import { RouteComponentProps, generatePath } from 'react-router';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts';
@@ -148,8 +148,8 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
 
     callGetDeploymentMetricsAPI(appId, envId) {
         if (!this.state.startDate?.isValid() || !this.state.endDate?.isValid()) return;
-        let startTime = this.state.startDate.format("YYYY-MM-DDThh:mm:ss.SSS");
-        let endTime = this.state.endDate.format("YYYY-MM-DDThh:mm:ss.SSS");
+        let startTime = this.state.startDate.format("YYYY-MM-DDTHH:mm:ss.SSS");
+        let endTime = this.state.endDate.format("YYYY-MM-DDTHH:mm:ss.SSS");
         getDeploymentMetrics(startTime, endTime, appId, envId).then((metricsResponse) => {
             let selectedEnvironment = this.state.environments.find(env => String(env.value) === this.props.match.params.envId);
             this.setState({
@@ -211,7 +211,10 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     }
 
     handleDatesChange({ startDate, endDate }): void {
-        this.setState({ startDate, endDate });
+        this.setState({
+            startDate: startDate.set({ hour: 0, minute: 0, seconds: 0 }),
+            endDate: endDate.set({ hour: 23, minute: 59, seconds: 59, milliseconds: 999 }),
+        })
     }
 
     handleFocusChange(focusedInput): void {
@@ -486,9 +489,11 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
             </div>
         }
         else if (this.state.view === ViewType.ERROR) {
-            return <div>
-                {this.state.code}
-            </div>
+            return (
+                <div className="loading-wrapper">
+                    <ErrorScreenManager code={this.state.code} />
+                </div>
+            )
         }
         else if (this.state.view === ViewType.FORM && this.state.environments.length === 0) {
             return this.renderNoEnvironmentView();

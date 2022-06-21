@@ -19,7 +19,7 @@
         "moment": "^2.29.1",
         "monaco-editor": "^0.19.3",
         "monaco-editor-webpack-plugin": "^1.8.2",
-        "monaco-yaml": "^2.1.0",
+        "monaco-yaml": "^3.2.1",
         "object-hash": "^3.0.0",
         "patternfly-react": "^2.40.0",
         "posthog-js": "^1.17.9",
