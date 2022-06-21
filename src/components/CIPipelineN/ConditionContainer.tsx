@@ -71,7 +71,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
             }
             if (errorConditionIndexArr?.length) {
                 let derivedConditionType
-                errorConditionIndexArr.some((index: number) => {
+                for (let index = 0; index < errorConditionIndexArr.length; index++) {
                     const currentCondition =
                         formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[
                             index
@@ -85,10 +85,9 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                 currentCondition.conditionType === ConditionType.SKIP))
                     ) {
                         derivedConditionType = currentCondition.conditionType
-                        return true
+                        break
                     }
-                    return false
-                })
+                }
                 if (derivedConditionType) {
                     setConditionType(derivedConditionType)
                     if (collapsedSection) {
