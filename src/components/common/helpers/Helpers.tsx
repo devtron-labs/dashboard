@@ -810,26 +810,17 @@ export function useSize(): UseSize {
 
 export function copyToClipboard(str, callback = noop) {
     if (!str) {
-        return;
+        return
     }
-    
-    if (window.navigator.clipboard) {
-        window.navigator.clipboard
-            .writeText(str)
-            .then(() => {
-                callback()
-            })
-            .catch(() => {})
-    } else {
-        const listener = function (ev) {
-            ev.preventDefault()
-            ev.clipboardData.setData('text/plain', str)
-        }
-        document.addEventListener('copy', listener)
-        document.execCommand('copy')
-        document.removeEventListener('copy', listener)
-        callback()
+
+    const listener = function (ev) {
+        ev.preventDefault()
+        ev.clipboardData.setData('text/plain', str)
     }
+    document.addEventListener('copy', listener)
+    document.execCommand('copy')
+    document.removeEventListener('copy', listener)
+    callback()
 }
 
 export function getRandomString() {
