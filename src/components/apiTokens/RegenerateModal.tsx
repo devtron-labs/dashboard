@@ -11,6 +11,7 @@ import { RegenerateModalType, TokenResponseType } from './authorization.type'
 import { updateGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
 import GenerateModal from './GenerateModal'
+import ExpirationDate from './ExpirationDate'
 
 function RegeneratedModal({
     close,
@@ -42,6 +43,12 @@ function RegeneratedModal({
         // _regeneratedExpirationTime['expireAtInMs'] = getDateInMilliseconds(selectedExpirationDate.value)
     }
 
+    const handleDatesChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+        const _regeneratedData = { ...regeneratedData }
+        setCustomDate(parseInt(event.target.value) | 0)
+        setRegeneratedData(_regeneratedData)
+    }
+
     const renderModalHeader = () => {
         return (
             <div className="modal__header p-16 border-bottom w-100 mb-0">
@@ -52,32 +59,6 @@ function RegeneratedModal({
                     </button>
                 </h1>
             </div>
-        )
-    }
-
-    const renderExpirationLabel = () => {
-        return (
-            <label className="form__row">
-                <span className="form__label">
-                    Expiration <span className="cr-5"> *</span>
-                </span>
-                <div className="flex left">
-                    <ReactSelect
-                        value={selectedExpirationDate}
-                        options={getOptions(customDate)}
-                        className="select-width w-200"
-                        onChange={(e) => onChangeSelectFormData(e)}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                        }}
-                        styles={{
-                            ...multiSelectStyles,
-                        }}
-                    />
-                    <span className="ml-16 fw-4">This token will expire on </span>
-                </div>
-            </label>
         )
     }
 
@@ -122,7 +103,13 @@ function RegeneratedModal({
                         Icon={Warn}
                         iconClass=""
                     />
-                    <div className="mt-20 mb-20">{renderExpirationLabel()}</div>
+                    <div className="mt-20 mb-20">
+                        <ExpirationDate
+                            selectedExpirationDate={selectedExpirationDate}
+                            onChangeSelectFormData={onChangeSelectFormData}
+                            handleDatesChange={handleDatesChange}
+                        />
+                    </div>
                 </div>
                 <GenerateActionButton
                     loader={false}

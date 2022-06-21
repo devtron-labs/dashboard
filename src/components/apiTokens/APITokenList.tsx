@@ -90,7 +90,7 @@ function APITokenList({
                         <div className="ellipsis-right">{moment(list.lastUsedAt).format(Moment12HourFormat)}</div>
                         <div>{list.lastUsedByIp}</div>
                         <div className={`${isTokenExpired(list.expireAtInMs) ? 'cr-5' : ''}`}>
-                            {isTokenExpired(list.expireAtInMs) ? 'Expired on' : ''}
+                            {isTokenExpired(list.expireAtInMs) ? 'Expired on ' : ''}
                             {moment(list.expireAtInMs).format(Moment12HourFormat)}
                         </div>
                         <div className="api__row-actions flex">
