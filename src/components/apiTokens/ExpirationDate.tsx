@@ -1,7 +1,7 @@
 import moment from 'moment'
 import React, { useState } from 'react'
 import ReactSelect from 'react-select'
-import { Moment12HourFormat } from '../../config'
+import { MomentDateFormat } from '../../config'
 import { multiSelectStyles } from '../common'
 import { DropdownIndicator } from '../security/security.util'
 import { getOptions, getDateInMilliseconds } from './authorization.utils'
@@ -35,8 +35,8 @@ function ExpirationDate({ selectedExpirationDate, onChangeSelectFormData, handle
                 />
                 {selectedExpirationDate.label !== 'Custom...' && (
                     <span className="ml-16 fw-4">
-                        <span className="mr-4">This token will expire on</span>
-                        {moment(getDateInMilliseconds(selectedExpirationDate.value)).format(Moment12HourFormat)}
+                        <span>This token will expire on</span>&nbsp;
+                        {moment(getDateInMilliseconds(selectedExpirationDate.value)).format(MomentDateFormat)}
                     </span>
                 )}
                 {selectedExpirationDate.label === 'Custom...' && (

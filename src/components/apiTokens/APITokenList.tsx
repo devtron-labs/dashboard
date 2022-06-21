@@ -1,6 +1,6 @@
 import moment from 'moment'
 import React, { useState } from 'react'
-import { Moment12HourFormat } from '../../config'
+import { MomentDateFormat } from '../../config'
 import { ReactComponent as Bulb } from '../../assets/icons/ic-slant-bulb.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
@@ -12,13 +12,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom'
 import { APITokenListType } from './authorization.type'
 import { getDateInMilliseconds } from './authorization.utils'
 
-function APITokenList({
-    tokenList,
-    setDeleteConfirmation,
-    renderSearchToken,
-    reload,
-    setSelectedList,
-}: APITokenListType) {
+function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, reload }: APITokenListType) {
     const history = useHistory()
     const match = useRouteMatch()
 
@@ -38,16 +32,11 @@ function APITokenList({
     }
 
     const handleGenerateRowActionButton = (key: 'create' | 'edit', id?) => {
-        let url = id ? `${key}/${id}` : key
-        history.push(url)
-        tokenList &&
-            tokenList.length > 0 &&
-            setSelectedList(tokenList.filter((list) => list.userId === parseInt(id))[0])
+        history.push(id ? `${key}/${id}` : key)
     }
 
     const isTokenExpired = (expiredDate: number): boolean => {
-        const expired = getDateInMilliseconds(new Date().valueOf()) > getDateInMilliseconds(expiredDate)
-        return expired
+        return getDateInMilliseconds(new Date().valueOf()) > getDateInMilliseconds(expiredDate)
     }
 
     return (
@@ -60,7 +49,10 @@ function APITokenList({
                 </button>
                 {renderSearchToken()}
             </div>
-            <div className="mt-16 en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 235px)' }}>
+            <div
+                className="mt-16 en-2 bw-1 bcn-0 br-8"
+                style={{ minHeight: 'calc(100vh - 235px)', overflow: 'hidden' }}
+            >
                 <div className="api-list-row fw-6 cn-7 fs-12 border-bottom pt-10 pb-10 pr-20 pl-20 text-uppercase">
                     <div></div>
                     <div>Name</div>
@@ -72,11 +64,12 @@ function APITokenList({
                 {tokenList?.map((list, index) => (
                     <div
                         key={`api_${index}`}
-                        className="api-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
+                        className="api-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
+                        style={{ height: '45px' }}
                     >
                         <button
                             type="button"
-                            className="transparent cursor"
+                            className="transparent cursor flex"
                             onClick={() => handleGenerateRowActionButton('edit', list.id)}
                         >
                             <Bulb className={`scn-5 icon-dim-20 ${isTokenExpired(list.expireAtInMs) ? 'scr-5' : ''}`} />
@@ -87,11 +80,11 @@ function APITokenList({
                         >
                             {list.name}
                         </div>
-                        <div className="ellipsis-right">{moment(list.lastUsedAt).format(Moment12HourFormat)}</div>
+                        <div className="ellipsis-right">{moment(list.lastUsedAt).format(MomentDateFormat)}</div>
                         <div>{list.lastUsedByIp}</div>
                         <div className={`${isTokenExpired(list.expireAtInMs) ? 'cr-5' : ''}`}>
                             {isTokenExpired(list.expireAtInMs) ? 'Expired on ' : ''}
-                            {moment(list.expireAtInMs).format(Moment12HourFormat)}
+                            {moment(list.expireAtInMs).format(MomentDateFormat)}
                         </div>
                         <div className="api__row-actions flex">
                             <button

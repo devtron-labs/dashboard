@@ -205,6 +205,7 @@ export const SourceTypeMap = {
 }
 
 export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A'
+export const MomentDateFormat = 'ddd, DD MMM YYYY'
 
 export const DOCUMENTATION = {
     HOME_PAGE: 'https://docs.devtron.ai',

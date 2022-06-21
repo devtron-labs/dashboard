@@ -1,17 +1,12 @@
 import React, { useContext, useState } from 'react'
-import ReactSelect from 'react-select'
-import { multiSelectStyles, showError } from '../common'
-import { DropdownIndicator } from '../security/security.util'
+import { showError } from '../common'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { FormType, GenerateTokenType } from './authorization.type'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { createGeneratedAPIToken } from './service'
-import { toast } from 'react-toastify'
 import GenerateModal from './GenerateModal'
-import { createUserPermissionPayload, getDateInMilliseconds, getOptions, PermissionType } from './authorization.utils'
+import { createUserPermissionPayload, getDateInMilliseconds, PermissionType } from './authorization.utils'
 import GenerateActionButton from './GenerateActionButton'
-import moment from 'moment'
-import { Moment12HourFormat } from '../../config'
 import { ValidationRules } from './validationRules'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { saveUser } from '../userGroups/userGroup.service'
@@ -23,8 +18,6 @@ import {
     OptionType,
 } from '../userGroups/userGroups.types'
 import { useHistory, useRouteMatch } from 'react-router-dom'
-import { Option } from '../v2/common/ReactSelect.utils'
-import SingleDatePickerComponent from './SingleDatePicker'
 import GroupPermission from './GroupPermission'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { mainContext } from '../common/navigation/NavigationRoutes'
@@ -52,7 +45,7 @@ function CreateAPIToken({
     const [formData, setFormData] = useState<FormType>({
         name: '',
         description: '',
-        expireAtInMs: undefined,
+        expireAtInMs: selectedExpirationDate ? getDateInMilliseconds(selectedExpirationDate.value) : undefined,
     })
     const [showErrors, setshowErrors] = useState(false)
     const [formDataErrorObj, setFormDataErrorObj] = useState<FormType>()
@@ -118,7 +111,7 @@ function CreateAPIToken({
         const _formData = { ...formData }
         setSelectedExpirationDate(selectedOption)
 
-        _formData['expireAtInMs'] = getDateInMilliseconds(selectedExpirationDate.value)
+        _formData['expireAtInMs'] = selectedOption.value === 0 ? 0 : getDateInMilliseconds(selectedOption.value)
         setFormData(_formData)
     }
 
@@ -152,7 +145,6 @@ function CreateAPIToken({
 
                 const { result: userPermissionResponse } = await saveUser(userPermissionPayload)
                 if (userPermissionResponse) {
-                    toast.success('Changes saved')
                     setTokenResponse(result)
                     setShowGenerateModal(true)
                     setshowErrors(false)
@@ -172,7 +164,7 @@ function CreateAPIToken({
     }
 
     const handleDatesChange = (e) => {
-        ;(e) => onChangeFormData(e, 'customDate')
+        onChangeFormData(e, 'customDate')
     }
 
     const errorObject = validationRules.name(formData.name)
@@ -182,7 +174,7 @@ function CreateAPIToken({
             <div className="cn-9 fw-6 fs-16">
                 <span className="cb-5 cursor" onClick={redirectToTokenList}>
                     API tokens
-                </span>
+                </span>{' '}
                 / New API token
             </div>
             <p className="fs-13 fw-4">
@@ -223,48 +215,12 @@ function CreateAPIToken({
                         </label>
 
                         <label className="form__row">
-                            <span className="form__label">
-                                Expiration <span className="cr-5"> *</span>
-                            </span>
                             <div className="flex left">
                                 <ExpirationDate
                                     selectedExpirationDate={selectedExpirationDate}
                                     onChangeSelectFormData={onChangeSelectFormData}
                                     handleDatesChange={handleDatesChange}
                                 />
-                                {/* <ReactSelect
-                                    value={selectedExpirationDate}
-                                    options={getOptions(customDate)}
-                                    className="select-width w-200"
-                                    isSearchable={false}
-                                    onChange={(e) => onChangeSelectFormData(e)}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        DropdownIndicator,
-                                        Option,
-                                    }}
-                                    styles={{
-                                        ...multiSelectStyles,
-                                    }}
-                                />
-                                {selectedExpirationDate.label !== 'Custom...' && (
-                                    <span className="ml-16 fw-4">
-                                        <span className="mr-4">This token will expire on</span>
-                                        {moment(getDateInMilliseconds(selectedExpirationDate.value)).format(
-                                            Moment12HourFormat,
-                                        )}
-                                    </span>
-                                )}
-                                {selectedExpirationDate.label === 'Custom...' && (
-                                    <div className="w-200 ml-16">
-                                        <SingleDatePickerComponent
-                                            date={moment(getDateInMilliseconds(customDate))}
-                                            handleDatesChange={(e) => onChangeFormData(e, 'customDate')}
-                                            focused={focused}
-                                            handleFocusChange={() => setFocused(customDate)}
-                                        />
-                                    </div>
-                                )}*/}
                             </div>
                         </label>
                         {selectedExpirationDate.label === 'No expiration' && (
@@ -292,7 +248,7 @@ function CreateAPIToken({
                                 ))}
                             </RadioGroup>
                         </div>
-                        {adminPermission !== 'SUPERADMIN' && (
+                        {adminPermission === 'SPECIFIC' && (
                             <GroupPermission
                                 userData={null}
                                 userGroups={userGroups}
@@ -307,7 +263,7 @@ function CreateAPIToken({
                 </div>
                 <hr className="modal__divider mt-20 mb-0" />
                 <GenerateActionButton
-                    loader={false}
+                    loader={loader}
                     onCancel={() => {
                         setShowGenerateModal(false)
                         redirectToTokenList()

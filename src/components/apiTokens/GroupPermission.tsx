@@ -49,7 +49,7 @@ function GroupPermission({
     }, [userData])
 
     function populateDataFromAPI(data: CreateUser) {
-        const { email_id, groups = [], superAdmin } = data
+        const { groups, superAdmin } = data
         setUserGroups(groups?.map((group) => ({ label: group, value: group })) || [])
     }
 

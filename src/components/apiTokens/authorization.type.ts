@@ -53,8 +53,6 @@ export interface EditTokenType {
     copied: boolean
     setDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
     deleteConfirmation: boolean
-    selectedList: TokenListType
-    usersList: CreateUser[]
     reload: () => void
 }
 
@@ -79,7 +77,6 @@ export interface GenerateTokenModalType {
 export interface APITokenListType {
     tokenList: TokenListType[]
     setDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
-    setSelectedList: React.Dispatch<React.SetStateAction<TokenListType>>
     renderSearchToken: () => void
     reload: () => void
 }
@@ -97,6 +94,4 @@ export interface RegenerateModalType {
     close: () => void
     setShowRegeneratedModal: React.Dispatch<React.SetStateAction<boolean>>
     editData: EditDataType
-    setEditData: React.Dispatch<React.SetStateAction<EditDataType>>
-    selectedList: TokenListType
 }

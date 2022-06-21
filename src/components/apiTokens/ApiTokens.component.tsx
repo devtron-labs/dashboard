@@ -11,8 +11,6 @@ import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
 import { TokenListType, TokenResponseType } from './authorization.type'
-import { getUserList } from '../userGroups/userGroup.service'
-import { ResponseType } from '../../services/service.types'
 
 function ApiTokens({ reloadLists }) {
     const { path } = useRouteMatch()
@@ -28,14 +26,12 @@ function ApiTokens({ reloadLists }) {
     const [deleteConfirmation, setDeleteConfirmation] = useState(false)
     const [showGenerateModal, setShowGenerateModal] = useState(false)
     const [showRegenerateTokenModal, setShowRegenerateTokenModal] = useState(false)
-    const [selectedList, setSelectedList] = useState<TokenListType>()
     const [copied, setCopied] = useState(false)
     const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: number }>({
         value: 30,
         label: '30 days',
     })
     const [customDate, setCustomDate] = useState<number>(undefined)
-    const [loading, data, error, reload, setState] = useAsync(getUserList, [])
 
     const getData = (): void => {
         setLoader(true)
@@ -132,7 +128,7 @@ function ApiTokens({ reloadLists }) {
     const renderAPITokenRoutes = (): JSX.Element => {
         return (
             <Fragment>
-                <div className="api-token__container">
+                <div className="api-token-container">
                     <Switch>
                         <Route
                             path={`${path}/list`}
@@ -140,7 +136,6 @@ function ApiTokens({ reloadLists }) {
                                 <APITokenList
                                     tokenList={filteredTokenList}
                                     setDeleteConfirmation={setDeleteConfirmation}
-                                    setSelectedList={setSelectedList}
                                     renderSearchToken={renderSearchToken}
                                     reload={getData}
                                 />
@@ -181,8 +176,6 @@ function ApiTokens({ reloadLists }) {
                                     copied={copied}
                                     setDeleteConfirmation={setDeleteConfirmation}
                                     deleteConfirmation={deleteConfirmation}
-                                    selectedList={selectedList}
-                                    usersList={data && (data as ResponseType).result}
                                     reload={getData}
                                 />
                             )}

@@ -2,9 +2,7 @@ import React, { useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
-import ReactSelect from 'react-select'
-import { multiSelectStyles, Progressing, showError, VisibleModal } from '../common'
-import { DropdownIndicator } from '../security/security.util'
+import { Progressing, showError, VisibleModal } from '../common'
 import GenerateActionButton from './GenerateActionButton'
 import { getDateInMilliseconds, getOptions } from './authorization.utils'
 import { RegenerateModalType, TokenResponseType } from './authorization.type'
@@ -12,21 +10,16 @@ import { updateGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
 import GenerateModal from './GenerateModal'
 import ExpirationDate from './ExpirationDate'
+import moment from 'moment'
 
-function RegeneratedModal({
-    close,
-    setShowRegeneratedModal,
-    editData,
-    setEditData,
-    selectedList,
-}: RegenerateModalType) {
+function RegeneratedModal({ close, setShowRegeneratedModal, editData }: RegenerateModalType) {
     const [customDate, setCustomDate] = useState<number>(undefined)
-    const [regeneratedToken, setRegeneratedToken] = useState<string>('')
     const [loader, setLoader] = useState(false)
     const [showGenerateModal, setShowGenerateModal] = useState(false)
+    const expirationDays = editData?.expireAtInMs && moment(editData?.expireAtInMs).days()
     const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: any }>({
-        label: editData?.expireAtInMs.toString(),
-        value: editData?.expireAtInMs,
+        label: editData?.expireAtInMs === 0 ? 'No expiration' : expirationDays ? `${expirationDays} days` : null,
+        value: editData?.expireAtInMs === 0 ? 0 : expirationDays || null,
     })
     const [tokenResponse, setTokenResponse] = useState<TokenResponseType>()
     const [regeneratedData, setRegeneratedData] = useState<{ expireAtInMs: number }>({

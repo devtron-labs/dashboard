@@ -26,8 +26,7 @@ export const PermissionType = [
 const millisecondsInDay = 86400000
 
 export const getDateInMilliseconds = (days) => {
-    let ms = 1 + new Date().valueOf() + (days ?? 0) * millisecondsInDay
-    return ms
+    return 1 + new Date().valueOf() + (days ?? 0) * millisecondsInDay
 }
 
 export const getSelectedEnvironments = (permission) => {
