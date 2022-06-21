@@ -79,7 +79,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                     if (
                         (type === ConditionContainerType.PASS_FAILURE &&
                             (currentCondition.conditionType === ConditionType.PASS ||
-                                currentCondition.conditionType === ConditionType.PASS)) ||
+                                currentCondition.conditionType === ConditionType.FAIL)) ||
                         (type === ConditionContainerType.TRIGGER_SKIP &&
                             (currentCondition.conditionType === ConditionType.TRIGGER ||
                                 currentCondition.conditionType === ConditionType.SKIP))
