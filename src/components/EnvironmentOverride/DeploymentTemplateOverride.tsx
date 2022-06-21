@@ -33,6 +33,7 @@ import '../deploymentConfig/deploymentConfig.scss'
 import warningIcon from '../../assets/img/warning-medium.svg'
 import { MODES } from '../../../src/config/constants'
 import YAML from 'yaml'
+import { ReactComponent as DiffIcon } from '../../assets/icons/ic-compare.svg'
 
 export default function DeploymentTemplateOverride({ parentState, setParentState, ...props }) {
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -386,7 +387,7 @@ function DeploymentTemplateOverrideForm({
                                         className="code-editor__split-pane flex pointer"
                                         onClick={() => setDiffview(!diffView)}
                                     >
-                                        <div className="diff-icon"></div>
+                                        <DiffIcon className="icon-dim-20 mr-5" />
                                         {diffView ? 'Hide comparison' : 'Compare with default'}
                                     </div>
                                 )}
