@@ -18,7 +18,6 @@ import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { selectOperatorStyle, selectVariableStyle } from './ciPipeline.utils'
 import { OptionType } from '../app/types'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { ValidationRules } from '../ciPipeline/validationRules'
 
 export function ConditionContainer({ type }: { type: ConditionContainerType }) {
     const {
@@ -38,7 +37,6 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
         validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
     } = useContext(ciPipelineContext)
-    const validationRules = new ValidationRules()
 
     const operatorOptions: OptionType[] = [
         { value: '==', description: 'equal to' },
@@ -64,12 +62,38 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
     }, [activeStageName])
 
     useEffect(() => {
-        if (collapsedSection) {
-            const invalidCondition = formDataErrorObj[activeStageName].steps[selectedTaskIndex][
-                currentStepTypeVariable
-            ].conditionDetails?.some((conditionDetail) => !conditionDetail.isValid)
-            if (invalidCondition) {
-                setCollapsedSection(false) // expand conditions in case of error
+        const conditionDetails =
+            formDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails
+        if (conditionDetails?.length) {
+            const errorConditionIndexArr = []
+            for (let i = 0; i < conditionDetails.length; i++) {
+                if (!conditionDetails[i].isValid) errorConditionIndexArr.push(i)
+            }
+            if (errorConditionIndexArr?.length) {
+                let derivedConditionType
+                for (let index = 0; index < errorConditionIndexArr.length; index++) {
+                    const currentCondition =
+                        formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[
+                            index
+                        ]
+                    if (
+                        (type === ConditionContainerType.PASS_FAILURE &&
+                            (currentCondition.conditionType === ConditionType.PASS ||
+                                currentCondition.conditionType === ConditionType.FAIL)) ||
+                        (type === ConditionContainerType.TRIGGER_SKIP &&
+                            (currentCondition.conditionType === ConditionType.TRIGGER ||
+                                currentCondition.conditionType === ConditionType.SKIP))
+                    ) {
+                        derivedConditionType = currentCondition.conditionType
+                        break
+                    }
+                }
+                if (derivedConditionType) {
+                    setConditionType(derivedConditionType)
+                    if (collapsedSection) {
+                        setCollapsedSection(false) // expand conditions in case of error
+                    }
+                }
             }
         }
     }, [formDataErrorObj])
