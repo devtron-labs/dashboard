@@ -19,6 +19,6 @@ export const PermissionType = [
 const millisecondsInDay = 86400000
 
 export const getDateInMilliseconds = (days) => {
-    let ms = 1 + new Date().valueOf() + days * millisecondsInDay
+    let ms = 1 + new Date().valueOf() + (days ?? 0) * millisecondsInDay
     return ms
 }

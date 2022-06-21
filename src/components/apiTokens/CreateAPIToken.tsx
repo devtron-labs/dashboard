@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
-import { multiSelectStyles, showError, useAsync } from '../common'
+import { DatePicker, multiSelectStyles, showError, useAsync } from '../common'
 import { DropdownIndicator } from '../security/security.util'
 import AppPermissions from '../userGroups/AppPermissions'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
@@ -24,6 +24,8 @@ import {
     EntityTypes,
 } from '../userGroups/userGroups.types'
 import { useHistory, useRouteMatch } from 'react-router-dom'
+import { Option } from '../v2/common/ReactSelect.utils'
+import SingleDatePickerComponent from './SingleDatePicker'
 
 function CreateAPIToken({
     setShowGenerateModal,
@@ -62,6 +64,7 @@ function CreateAPIToken({
         name: false,
         expireAtInMs: false,
     })
+    const [showDatePicker, setShowDatePicker] = useState(false)
 
     const onChangeFormData = (event: React.ChangeEvent<HTMLInputElement>, key): void => {
         const _formData = { ...formData }
@@ -86,6 +89,7 @@ function CreateAPIToken({
     const validateToken = (): boolean => {
         return
     }
+    const [focused, setFocused] = useState(undefined)
 
     function isFormComplete(): boolean {
         let isComplete: boolean = true
@@ -242,10 +246,12 @@ function CreateAPIToken({
                                     value={selectedExpirationDate}
                                     options={getOptions(customDate)}
                                     className="select-width w-200"
+                                    isSearchable={false}
                                     onChange={(e) => onChangeSelectFormData(e)}
                                     components={{
                                         IndicatorSeparator: null,
                                         DropdownIndicator,
+                                        Option,
                                     }}
                                     styles={{
                                         ...multiSelectStyles,
@@ -253,20 +259,20 @@ function CreateAPIToken({
                                 />
                                 {selectedExpirationDate.label !== 'Custom...' && (
                                     <span className="ml-16 fw-4">
-                                        This token will expire on
+                                        <span className="mr-4">This token will expire on</span>
                                         {moment(getDateInMilliseconds(selectedExpirationDate.value)).format(
                                             Moment12HourFormat,
                                         )}
                                     </span>
                                 )}
+                                {console.log(customDate)}
                                 {selectedExpirationDate.label === 'Custom...' && (
-                                    <div className="w-200">
-                                        <input
-                                            tabIndex={1}
-                                            placeholder="Custom Dtaer"
-                                            className="form__input"
-                                            value={customDate}
-                                            onChange={(e) => onChangeFormData(e, 'customDate')}
+                                    <div className="w-200 ml-16">
+                                        <SingleDatePickerComponent
+                                            date={moment(getDateInMilliseconds(customDate))}
+                                            handleDatesChange={(e) => onChangeFormData(e, 'customDate')}
+                                            focused={focused}
+                                            handleFocusChange={() => setFocused(customDate)}
                                         />
                                     </div>
                                 )}

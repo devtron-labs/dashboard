@@ -29,8 +29,8 @@ function ApiTokens({ reloadLists }) {
     const [selectedList, setSelectedList] = useState<TokenListType>()
     const [copied, setCopied] = useState(false)
     const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: number }>({
-        label: '',
-        value: 0,
+        value: 30,
+        label: '30 days',
     })
     const [customDate, setCustomDate] = useState<number>(undefined)
 
