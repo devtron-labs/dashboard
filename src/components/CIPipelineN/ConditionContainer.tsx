@@ -65,8 +65,8 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         const conditionDetails =
             formDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails
         if (conditionDetails?.length) {
-            var errorConditionIndexArr = []
-            for (var i = 0; i < conditionDetails.length; i++) {
+            const errorConditionIndexArr = []
+            for (let i = 0; i < conditionDetails.length; i++) {
                 if (!conditionDetails[i].isValid) errorConditionIndexArr.push(i)
             }
             if (errorConditionIndexArr?.length) {
