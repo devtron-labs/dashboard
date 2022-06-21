@@ -28,6 +28,7 @@ import SingleDatePickerComponent from './SingleDatePicker'
 import GroupPermission from './GroupPermission'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { mainContext } from '../common/navigation/NavigationRoutes'
+import ExpirationDate from './ExpirationDate'
 
 function CreateAPIToken({
     setShowGenerateModal,
@@ -71,7 +72,6 @@ function CreateAPIToken({
     const onChangeFormData = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key): void => {
         const _formData = { ...formData }
         _formData[key] = event.target.value || ''
-
         setFormData(_formData)
 
         const _formErrorObject = { ...formDataErrorObj }
@@ -91,7 +91,6 @@ function CreateAPIToken({
     const validateToken = (): boolean => {
         return
     }
-    const [focused, setFocused] = useState(undefined)
 
     function isFormComplete(): boolean {
         let isComplete: boolean = true
@@ -172,6 +171,10 @@ function CreateAPIToken({
         setAdminPermission(e.target.value)
     }
 
+    const handleDatesChange = (e) => {
+        ;(e) => onChangeFormData(e, 'customDate')
+    }
+
     const errorObject = validationRules.name(formData.name)
 
     return (
@@ -224,7 +227,12 @@ function CreateAPIToken({
                                 Expiration <span className="cr-5"> *</span>
                             </span>
                             <div className="flex left">
-                                <ReactSelect
+                                <ExpirationDate
+                                    selectedExpirationDate={selectedExpirationDate}
+                                    onChangeSelectFormData={onChangeSelectFormData}
+                                    handleDatesChange={handleDatesChange}
+                                />
+                                {/* <ReactSelect
                                     value={selectedExpirationDate}
                                     options={getOptions(customDate)}
                                     className="select-width w-200"
@@ -256,7 +264,7 @@ function CreateAPIToken({
                                             handleFocusChange={() => setFocused(customDate)}
                                         />
                                     </div>
-                                )}
+                                )}*/}
                             </div>
                         </label>
                         {selectedExpirationDate.label === 'No expiration' && (

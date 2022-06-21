@@ -178,7 +178,7 @@ function EditAPIToken({
                 <DeleteDialog.Description>
                     {tokenData?.description && (
                         <p className="fs-14 cn-7 lh-20 bcn-1 p-16 br-4">
-                            <span className="fw-6">Token description:</span>
+                            {tokenData.description && <span className="fw-6">Token description:</span>}
                             <br />
                             <span>{tokenData.description}</span>
                         </p>
