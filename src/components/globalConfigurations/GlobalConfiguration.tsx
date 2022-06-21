@@ -220,6 +220,22 @@ function NavItem({ hostURLConfig, serverMode }) {
             </NavLink>
         )
     }
+
+    const handleGroupCollapsedState = (e, route) => {
+        if (location.pathname.startsWith(route.preventDefaultKey)) {
+            e.preventDefault()
+            setCollapsedState({
+                ...collapsedState,
+                [route.name]: !collapsedState[route.name],
+            })
+        } else if (collapsedState[route.name]) {
+            setCollapsedState({
+                ...collapsedState,
+                [route.name]: false,
+            })
+        }
+    }
+
     return (
         <div className="flex column left">
             {ConfigRequired.map(
@@ -235,15 +251,7 @@ function NavItem({ hostURLConfig, serverMode }) {
                                 key={`nav_item_${index}`}
                                 to={route.href}
                                 className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'} flex content-space`}
-                                onClick={(e) => {
-                                    if (location.pathname.startsWith(route.preventDefaultKey)) {
-                                        e.preventDefault()
-                                        setCollapsedState({
-                                            ...collapsedState,
-                                            [route.name]: !collapsedState[route.name],
-                                        })
-                                    }
-                                }}
+                                onClick={(e) => handleGroupCollapsedState(e, route)}
                             >
                                 {route.name}
                                 <Dropdown
