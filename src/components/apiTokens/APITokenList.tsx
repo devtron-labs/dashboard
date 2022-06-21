@@ -10,6 +10,7 @@ import { toast } from 'react-toastify'
 import { showError } from '../common'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { APITokenListType } from './authorization.type'
+import { getDateInMilliseconds } from './authorization.utils'
 
 function APITokenList({
     tokenList,
@@ -44,6 +45,11 @@ function APITokenList({
             setSelectedList(tokenList.filter((list) => list.userId === parseInt(id))[0])
     }
 
+    const isTokenExpired = (expiredDate: number): boolean => {
+        const expired = getDateInMilliseconds(new Date().valueOf()) > getDateInMilliseconds(expiredDate)
+        return expired
+    }
+
     return (
         <div>
             <div className="cn-9 fw-6 fs-16">API tokens</div>
@@ -73,17 +79,20 @@ function APITokenList({
                             className="transparent cursor"
                             onClick={() => handleGenerateRowActionButton('edit', list.id)}
                         >
-                            <Bulb className="scn-5 icon-dim-20" />
+                            <Bulb className={`scn-5 icon-dim-20 ${isTokenExpired(list.expireAtInMs) ? 'scr-5' : ''}`} />
                         </button>
                         <div
-                            className="flexbox cb-5 cursor"
+                            className={`flexbox cb-5 cursor`}
                             onClick={() => handleGenerateRowActionButton('edit', list.id)}
                         >
                             {list.name}
                         </div>
                         <div className="ellipsis-right">{moment(list.lastUsedAt).format(Moment12HourFormat)}</div>
                         <div>{list.lastUsedByIp}</div>
-                        <div>{moment(list.expireAtInMs).format(Moment12HourFormat)}</div>
+                        <div className={`${isTokenExpired(list.expireAtInMs) ? 'cr-5' : ''}`}>
+                            {isTokenExpired(list.expireAtInMs) ? 'Expired on' : ''}
+                            {moment(list.expireAtInMs).format(Moment12HourFormat)}
+                        </div>
                         <div className="api__row-actions flex">
                             <button
                                 type="button"
