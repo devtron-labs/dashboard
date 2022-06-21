@@ -38,8 +38,7 @@ import { QueryParams } from '../charts.util'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
 import PageHeader from '../../common/header/PageHeader'
-import emptyImage from '../../../assets/img/empty-noresult@2x.png';
-
+import emptyImage from '../../../assets/img/empty-noresult@2x.png'
 
 interface EmptyCharts {
     title?: string
@@ -49,6 +48,8 @@ interface EmptyCharts {
     buttonText?: string
     subTitle?: string
     styles?: {}
+    showChartGroupModal?: boolean
+    toggleChartGroupModal?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 //TODO: move to service
@@ -337,7 +338,11 @@ function DiscoverChartList() {
                                 ) : (
                                     <>
                                         {serverMode == SERVER_MODE.FULL && (
-                                            <ChartGroupListMin chartGroups={state.chartGroups.slice(0, 4)} />
+                                            <ChartGroupListMin
+                                                chartGroups={state.chartGroups.slice(0, 4)}
+                                                showChartGroupModal={showChartGroupModal}
+                                                toggleChartGroupModal={toggleChartGroupModal}
+                                            />
                                         )}
                                         <ChartListHeader
                                             chartRepoList={state.chartRepos}
@@ -615,15 +620,17 @@ export function EmptyChartGroup({
     buttonText,
     subTitle,
     styles,
+    toggleChartGroupModal,
+    showChartGroupModal,
 }: EmptyCharts) {
     const { url } = useRouteMatch()
     return (
         <div className="bcn-0 flex left br-8 mt-20 ml-20 mr-20" style={{ gridColumn: '1 / span 4', ...styles }}>
             <img src={image || empty} style={{ width: '200px', margin: '20px 42px' }} />
             <div>
-                <div className="fs-16 fw-6">{title || "Chart group"}</div>
+                <div className="fs-16 fw-6">{title || 'Chart group'}</div>
                 <div className="cn-7">
-                    {subTitle || "Use chart groups to preconfigure and deploy frequently used charts together."}
+                    {subTitle || 'Use chart groups to preconfigure and deploy frequently used charts together.'}
                 </div>
                 {!removeLearnMore && (
                     <a
@@ -640,24 +647,35 @@ export function EmptyChartGroup({
                         {buttonText || 'View all charts'}
                     </button>
                 ) : (
-                    <NavLink
-                        to={`${url}/group/create`}
-                        className="en-2 br-4 bw-1 mt-16 cursor flex no-decor"
-                        style={{ width: '100px' }}
+                    <button
+                        type="button"
+                        className="en-2 br-4 bw-1 mt-16 cursor flex fw-6 cn-7 pt-6 pr-10 pb-6 pl-10 bcn-0 h-32"
+                        onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}
                     >
-                        <div className="fw-6 cn-7 p-6">Create group</div>
-                    </NavLink>
+                        Create group
+                    </button>
                 )}
             </div>
         </div>
     )
 }
 
-export function ChartGroupListMin({ chartGroups }) {
+export function ChartGroupListMin({
+    chartGroups,
+    toggleChartGroupModal,
+    showChartGroupModal,
+}: {
+    chartGroups
+    showChartGroupModal?: boolean
+    toggleChartGroupModal?: React.Dispatch<React.SetStateAction<boolean>>
+}) {
     const history = useHistory()
     const match = useRouteMatch()
+    return <EmptyChartGroup showChartGroupModal={showChartGroupModal} toggleChartGroupModal={toggleChartGroupModal} />
     if (chartGroups.length == 0) {
-        return <EmptyChartGroup />
+        return (
+            <EmptyChartGroup showChartGroupModal={showChartGroupModal} toggleChartGroupModal={toggleChartGroupModal} />
+        )
     }
     return (
         <div className="chart-group" style={{ minHeight: '280px' }}>
