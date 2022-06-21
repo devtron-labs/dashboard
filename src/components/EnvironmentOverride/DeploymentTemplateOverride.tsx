@@ -33,6 +33,7 @@ import '../deploymentConfig/deploymentConfig.scss'
 import warningIcon from '../../assets/img/warning-medium.svg'
 import { MODES } from '../../../src/config/constants'
 import YAML from 'yaml'
+import { ReactComponent as DiffIcon } from '../../assets/icons/ic-compare.svg'
 
 export default function DeploymentTemplateOverride({ parentState, setParentState, ...props }) {
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -239,6 +240,7 @@ function DeploymentTemplateOverrideForm({
     const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
     const [loading, setLoading] = useState(false)
     const { appId, envId } = useParams<{ appId; envId }>()
+    const [diffView, setDiffview] = useState(false)
 
     async function handleSubmit(e) {
         e.preventDefault()
@@ -375,10 +377,20 @@ function DeploymentTemplateOverrideForm({
                         validatorSchema={state.data.schema}
                         readOnly={!state.duplicate}
                         loading={chartRefLoading}
+                        diffView={state.duplicate && diffView}
                     >
                         <div className="readme-container ">
-                            <CodeEditor.Header>
+                            <CodeEditor.Header hideDefaultSplitHeader={true}>
                                 <h5>{MODES.YAML.toUpperCase()}</h5>
+                                {state.duplicate && (
+                                    <div
+                                        className="code-editor__split-pane flex pointer"
+                                        onClick={() => setDiffview(!diffView)}
+                                    >
+                                        <DiffIcon className="icon-dim-20 mr-5" />
+                                        {diffView ? 'Hide comparison' : 'Compare with default'}
+                                    </div>
+                                )}
                                 <CodeEditor.ValidationError />
                             </CodeEditor.Header>
                             {state.data.readme && (
