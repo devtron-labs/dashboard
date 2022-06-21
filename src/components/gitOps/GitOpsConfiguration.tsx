@@ -451,8 +451,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 </div>
 
                 <div className="form__buttons">
-                    <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.saveGitOps() }} tabIndex={5} className="cta">
-                        {this.state.saveLoading ? <Progressing /> : "Save"}
+                    <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.saveGitOps() }} tabIndex={5} className={`cta ${this.state.saveLoading ? 'cursor-not-allowed': '' }`}>
+                        Save
                     </button>
                 </div>
             </form>
