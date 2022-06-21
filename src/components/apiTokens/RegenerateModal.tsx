@@ -12,7 +12,15 @@ import GenerateModal from './GenerateModal'
 import ExpirationDate from './ExpirationDate'
 import moment from 'moment'
 
-function RegeneratedModal({ close, setShowRegeneratedModal, editData, customDate, setCustomDate, reload, redirectToTokenList }: RegenerateModalType) {
+function RegeneratedModal({
+    close,
+    setShowRegeneratedModal,
+    editData,
+    customDate,
+    setCustomDate,
+    reload,
+    redirectToTokenList,
+}: RegenerateModalType) {
     const [loader, setLoader] = useState(false)
     const [showGenerateModal, setShowGenerateModal] = useState(false)
     const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: any }>({
@@ -20,7 +28,9 @@ function RegeneratedModal({ close, setShowRegeneratedModal, editData, customDate
         value: 30,
     })
     const [tokenResponse, setTokenResponse] = useState<TokenResponseType>()
-    const [regeneratedExpireAtInMs, setRegeneratedExpireAtInMs] = useState<number>(getDateInMilliseconds(selectedExpirationDate.value))
+    const [regeneratedExpireAtInMs, setRegeneratedExpireAtInMs] = useState<number>(
+        getDateInMilliseconds(selectedExpirationDate.value),
+    )
     const [copied, setCopied] = useState(false)
 
     const onChangeSelectFormData = (selectedOption: { label: string; value: any }) => {
@@ -29,9 +39,8 @@ function RegeneratedModal({ close, setShowRegeneratedModal, editData, customDate
     }
 
     const handleDatesChange = (event): void => {
-        debugger
-        setCustomDate(parseInt(event.target.value) | 0)
-        // setRegeneratedData(_regeneratedData)
+        setCustomDate(event)
+        setRegeneratedExpireAtInMs(event.valueOf())
     }
 
     const renderModalHeader = () => {
@@ -55,7 +64,6 @@ function RegeneratedModal({ close, setShowRegeneratedModal, editData, customDate
                 expireAtInMs: regeneratedExpireAtInMs,
             }
             await updateGeneratedAPIToken(payload, editData?.id).then((response) => {
-                toast.success('Regenerated Token successfully')
                 setTokenResponse(response.result)
                 setShowGenerateModal(true)
             })
@@ -71,12 +79,22 @@ function RegeneratedModal({ close, setShowRegeneratedModal, editData, customDate
     }
 
     const handleGenerateTokenActionButton = () => {
-        setShowGenerateModal(false)
         setShowRegeneratedModal(false)
+        setShowGenerateModal(false)
     }
 
-    return (
-        <VisibleModal className={undefined}>
+    return showGenerateModal ? (
+        <GenerateModal
+            close={handleGenerateTokenActionButton}
+            token={tokenResponse.token}
+            copied={copied}
+            setCopied={setCopied}
+            setShowGenerateModal={setShowGenerateModal}
+            reload={reload}
+            redirectToTokenList={redirectToTokenList}
+        />
+    ) : (
+        <VisibleModal className=''>
             <div className="modal__body w-600 flex column p-0">
                 {renderModalHeader()}
                 <div className="p-20 w-100">
@@ -104,18 +122,6 @@ function RegeneratedModal({ close, setShowRegeneratedModal, editData, customDate
                     buttonText="Regenerate Token"
                 />
             </div>
-
-            {showGenerateModal && (
-                <GenerateModal
-                    close={handleGenerateTokenActionButton}
-                    token={tokenResponse.token}
-                    copied={copied}
-                    setCopied={setCopied}
-                    setShowGenerateModal={setShowGenerateModal}
-                    reload={reload}
-                    redirectToTokenList={redirectToTokenList}
-                />
-            )}
         </VisibleModal>
     )
 }

@@ -5,6 +5,7 @@ export interface FormType {
     name: string
     description: string
     expireAtInMs: number
+    dateType?: string
 }
 export interface TokenResponseType {
     success: boolean

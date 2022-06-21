@@ -5,6 +5,8 @@ export class ValidationRules {
         let re = PATTERNS.APP_NAME
         let regExp = new RegExp(re)
         let test = regExp.test(value)
+        if (value.length === 0) return { isValid: false, message: 'This is a required field' };
+        if (value.length < 3) return { isValid: false, message: 'Atleast 3 characters required' };
         if (!test) {
             return { message: `Max 100 characters allowed; Do not use ‘spaces’ or ‘,’`, isValid: false }
         } else {

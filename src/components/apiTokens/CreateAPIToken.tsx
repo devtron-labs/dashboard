@@ -23,6 +23,7 @@ import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExpirationDate from './ExpirationDate'
 import { Moment } from 'moment'
+import { toast } from 'react-toastify'
 
 function CreateAPIToken({
     setShowGenerateModal,
@@ -46,12 +47,14 @@ function CreateAPIToken({
         description: '',
         expireAtInMs: selectedExpirationDate ? getDateInMilliseconds(selectedExpirationDate.value) : undefined,
     })
-    const [showErrors, setshowErrors] = useState(false)
-    const [formDataErrorObj, setFormDataErrorObj] = useState<FormType>()
-    const validationRules = new ValidationRules()
-    const [isValid, setIsValid] = useState({
-        name: false,
-        expireAtInMs: false,
+    const [formDataErrorObj, setFormDataErrorObj] = useState<{
+        invalidName: boolean
+        invalidaNameMessage: string
+        invalidCustomDate: boolean
+    }>({
+        invalidName: false,
+        invalidaNameMessage: '',
+        invalidCustomDate: false,
     })
     const [userGroups, setUserGroups] = useState<OptionType[]>([])
     const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
@@ -61,18 +64,39 @@ function CreateAPIToken({
         entityName: [],
     })
     const [customDate, setCustomDate] = useState<Moment>(null)
+    const validationRules = new ValidationRules()
 
     const onChangeFormData = (event, key): void => {
-        if (key === 'customDate') {
+        if (key === 'customDate') { 
             setCustomDate(event)
             setFormData({
                 ...formData,
-                expireAtInMs: event.valueOf() || 0,
+                expireAtInMs: event.valueOf(),
+                dateType: 'Custom',
+            })
+
+            if (formDataErrorObj.invalidCustomDate) {
+                setFormDataErrorObj({
+                    ...formDataErrorObj,
+                    invalidCustomDate: false,
+                })
+            }
+        } else if (key === 'name') {
+            setFormData({
+                ...formData,
+                name: event.target.value,
+            })
+
+            const nameValidation = validationRules.name(event.target.value)
+            setFormDataErrorObj({
+                ...formDataErrorObj,
+                invalidName: !nameValidation.isValid,
+                invalidaNameMessage: nameValidation.message,
             })
         } else {
             setFormData({
                 ...formData,
-                [key]: event.target.value || '',
+                [key]: event.target.value,
             })
             setFormDataErrorObj({
                 ...formDataErrorObj,
@@ -108,11 +132,12 @@ function CreateAPIToken({
     }
 
     const onChangeSelectFormData = (selectedOption: { label: string; value: number }) => {
-        const _formData = { ...formData }
         setSelectedExpirationDate(selectedOption)
-
-        _formData['expireAtInMs'] = selectedOption.value === 0 ? 0 : getDateInMilliseconds(selectedOption.value)
-        setFormData(_formData)
+        setFormData({
+            ...formData,
+            expireAtInMs: selectedOption.value === 0 ? 0 : getDateInMilliseconds(selectedOption.value),
+            dateType: selectedOption.label,
+        })
     }
 
     const handleGenerateAPIToken = async (e) => {
@@ -120,7 +145,18 @@ function CreateAPIToken({
             return
         }
 
-        setshowErrors(true)
+        const nameValidation = validationRules.name(formData.name)
+        const noCustomDate = formData.dateType === 'Custom' && !customDate
+        if (!nameValidation.isValid || noCustomDate) {
+            toast.error('Some required fields are missing')
+            setFormDataErrorObj({
+                invalidName: !nameValidation.isValid,
+                invalidaNameMessage: nameValidation.message,
+                invalidCustomDate: noCustomDate,
+            })
+            return
+        }
+
         setLoader(true)
 
         try {
@@ -147,7 +183,6 @@ function CreateAPIToken({
                 if (userPermissionResponse) {
                     setTokenResponse(result)
                     setShowGenerateModal(true)
-                    setshowErrors(false)
                 }
             }
         } catch (error) {
@@ -164,8 +199,6 @@ function CreateAPIToken({
     const handleDatesChange = (e) => {
         onChangeFormData(e, 'customDate')
     }
-
-    const errorObject = validationRules.name(formData.name)
 
     return (
         <>
@@ -194,10 +227,10 @@ function CreateAPIToken({
                                 value={formData.name}
                                 onChange={(e) => onChangeFormData(e, 'name')}
                             />
-                            {showErrors && !isValid.name && (
+                            {formDataErrorObj.invalidName && (
                                 <span className="form__error">
                                     <Error className="form__icon form__icon--error" />
-                                    {errorObject.message} <br />
+                                    {formDataErrorObj.invalidaNameMessage} <br />
                                 </span>
                             )}
                         </label>
@@ -221,6 +254,12 @@ function CreateAPIToken({
                                     customDate={customDate}
                                 />
                             </div>
+                            {formData.dateType === 'Custom' && formDataErrorObj.invalidCustomDate && (
+                                <span className="form__error">
+                                    <Error className="form__icon form__icon--error" />
+                                    &nbsp; Custom expiration can't be blank. Please select a date. <br />
+                                </span>
+                            )}
                         </label>
                         {selectedExpirationDate.label === 'No expiration' && (
                             <div className="mb-20">

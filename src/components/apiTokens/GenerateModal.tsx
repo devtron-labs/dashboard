@@ -5,6 +5,7 @@ import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { GenerateTokenModalType } from './authorization.type'
 import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
 
 function GenerateModal({
     close,
@@ -24,7 +25,6 @@ function GenerateModal({
                     onClick={() => {
                         close()
                         reload()
-                        toast.success('Changes saved')
                         redirectToTokenList()
                     }}
                 >
@@ -41,20 +41,30 @@ function GenerateModal({
                 >
                     {token}
                 </div>
-                <button
-                    className="flex cta mt-20 mb-20"
-                    onClick={(e) => {
-                        e.stopPropagation()
-                        copyToClipboard(token, () => setCopied(true))
-                        close()
-                        reload()
-                        toast.success('Copied successfully')
-                        redirectToTokenList()
+                <Tippy
+                    className="default-tt"
+                    arrow={false}
+                    placement="bottom"
+                    content={copied ? 'Copied!' : 'Copy to clipboard'}
+                    trigger="mouseenter click"
+                    onShow={(_tippy) => {
+                        setTimeout(() => {
+                            _tippy.hide()
+                            setCopied(false)
+                        }, 5000)
                     }}
                 >
-                    <Clipboard className="icon-dim-16 ml-8" />
-                    Copy token
-                </button>
+                    <button
+                        className="flex cta mt-20 mb-20"
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            copyToClipboard(token, () => setCopied(true))
+                        }}
+                    >
+                        <Clipboard className="icon-dim-16 ml-8" />
+                        Copy token
+                    </button>
+                </Tippy>
             </div>
         </VisibleModal>
     )
