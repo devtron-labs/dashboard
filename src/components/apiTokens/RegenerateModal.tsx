@@ -12,34 +12,26 @@ import GenerateModal from './GenerateModal'
 import ExpirationDate from './ExpirationDate'
 import moment from 'moment'
 
-function RegeneratedModal({ close, setShowRegeneratedModal, editData }: RegenerateModalType) {
-    const [customDate, setCustomDate] = useState<number>(undefined)
+function RegeneratedModal({ close, setShowRegeneratedModal, editData, customDate, setCustomDate, reload, redirectToTokenList }: RegenerateModalType) {
     const [loader, setLoader] = useState(false)
     const [showGenerateModal, setShowGenerateModal] = useState(false)
-    const expirationDays = editData?.expireAtInMs && moment(editData?.expireAtInMs).days()
     const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: any }>({
-        label: editData?.expireAtInMs === 0 ? 'No expiration' : expirationDays ? `${expirationDays} days` : null,
-        value: editData?.expireAtInMs === 0 ? 0 : expirationDays || null,
+        label: '30 days',
+        value: 30,
     })
     const [tokenResponse, setTokenResponse] = useState<TokenResponseType>()
-    const [regeneratedData, setRegeneratedData] = useState<{ expireAtInMs: number }>({
-        expireAtInMs: editData?.expireAtInMs,
-    })
+    const [regeneratedExpireAtInMs, setRegeneratedExpireAtInMs] = useState<number>(getDateInMilliseconds(selectedExpirationDate.value))
     const [copied, setCopied] = useState(false)
 
     const onChangeSelectFormData = (selectedOption: { label: string; value: any }) => {
-        const _regeneratedData = { ...regeneratedData }
-        _regeneratedData['expireAtInMs'] = getDateInMilliseconds(regeneratedData.expireAtInMs)
-        setRegeneratedData(regeneratedData)
+        setRegeneratedExpireAtInMs(getDateInMilliseconds(selectedOption.value))
         setSelectedExpirationDate(selectedOption)
-
-        // _regeneratedExpirationTime['expireAtInMs'] = getDateInMilliseconds(selectedExpirationDate.value)
     }
 
-    const handleDatesChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-        const _regeneratedData = { ...regeneratedData }
+    const handleDatesChange = (event): void => {
+        debugger
         setCustomDate(parseInt(event.target.value) | 0)
-        setRegeneratedData(_regeneratedData)
+        // setRegeneratedData(_regeneratedData)
     }
 
     const renderModalHeader = () => {
@@ -58,9 +50,9 @@ function RegeneratedModal({ close, setShowRegeneratedModal, editData }: Regenera
     const handleRegenrateToken = async () => {
         setLoader(true)
         try {
-            let payload = {
+            const payload = {
                 description: '',
-                expireAtInMs: getDateInMilliseconds(regeneratedData.expireAtInMs),
+                expireAtInMs: regeneratedExpireAtInMs,
             }
             await updateGeneratedAPIToken(payload, editData?.id).then((response) => {
                 toast.success('Regenerated Token successfully')
@@ -101,6 +93,7 @@ function RegeneratedModal({ close, setShowRegeneratedModal, editData }: Regenera
                             selectedExpirationDate={selectedExpirationDate}
                             onChangeSelectFormData={onChangeSelectFormData}
                             handleDatesChange={handleDatesChange}
+                            customDate={customDate}
                         />
                     </div>
                 </div>
@@ -119,7 +112,8 @@ function RegeneratedModal({ close, setShowRegeneratedModal, editData }: Regenera
                     copied={copied}
                     setCopied={setCopied}
                     setShowGenerateModal={setShowGenerateModal}
-                    // reload={reload}
+                    reload={reload}
+                    redirectToTokenList={redirectToTokenList}
                 />
             )}
         </VisibleModal>

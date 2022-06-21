@@ -1,7 +1,7 @@
 import moment from 'moment'
 import React, { useState } from 'react'
 import { MomentDateFormat } from '../../config'
-import { ReactComponent as Bulb } from '../../assets/icons/ic-slant-bulb.svg'
+import { ReactComponent as Key } from '../../assets/icons/ic-key-bulb.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import './apiToken.scss'
@@ -72,7 +72,7 @@ function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, rel
                             className="transparent cursor flex"
                             onClick={() => handleGenerateRowActionButton('edit', list.id)}
                         >
-                            <Bulb className={`scn-5 icon-dim-20 ${isTokenExpired(list.expireAtInMs) ? 'scr-5' : ''}`} />
+                            <Key className={`api-key-icon icon-dim-20 ${isTokenExpired(list.expireAtInMs) ? 'api-key-expired-icon' : ''}`} />
                         </button>
                         <div
                             className={`flexbox cb-5 cursor`}
@@ -101,7 +101,7 @@ function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, rel
                                     setDeleteConfirmation(false)
                                 }}
                             >
-                                <Trash className="scn-5 icon-dim-20" onClick={() => deleteToken(list.id)} />
+                                <Trash className="scn-6 icon-dim-20" onClick={() => deleteToken(list.id)} />
                             </button>
                         </div>
                     </div>

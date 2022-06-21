@@ -13,7 +13,7 @@ export function getOptions(customDate) {
         { value: 30, label: '30 days' },
         { value: 60, label: '60 days' },
         { value: 90, label: '90 days' },
-        { value: customDate, label: 'Custom...' },
+        { value: customDate, label: 'Custom' },
         { value: 0, label: 'No expiration' },
     ]
 }

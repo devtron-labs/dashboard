@@ -33,8 +33,6 @@ function EditAPIToken({
     handleRegenerateActionButton,
     selectedExpirationDate,
     setSelectedExpirationDate,
-    customDate,
-    setCustomDate,
     tokenList,
     copied,
     setCopied,
@@ -58,6 +56,7 @@ function EditAPIToken({
         action: ActionTypes.VIEW,
         entityName: [],
     })
+    const [customDate, setCustomDate] = useState<number>(undefined)
 
     useEffect(() => {
         const _editData = tokenList && tokenList.find((list) => list.id === parseInt(params.id))
@@ -107,8 +106,7 @@ function EditAPIToken({
     }
 
     const redirectToTokenList = () => {
-        let url = match.path.split('edit')[0]
-        history.push(`${url}list`)
+        history.push(`${match.path.split('edit')[0]}list`)
     }
 
     const handleDeleteButton = () => {
@@ -140,7 +138,7 @@ function EditAPIToken({
                 if (userPermissionResponse) {
                     toast.success('Changes saved')
                     reload()
-                    history.push('/global-config/auth/api-token/list')
+                    redirectToTokenList()
                 }
             }
         } catch (err) {
@@ -155,7 +153,7 @@ function EditAPIToken({
             .then(() => {
                 toast.success('Deleted successfully')
                 reload()
-                history.push('/global-config/auth/api-token/list')
+                redirectToTokenList()
             })
             .catch((error) => {
                 showError(error)
@@ -333,12 +331,15 @@ function EditAPIToken({
                     onDelete={handleDeleteButton}
                 />
             </div>
-
             {showRegeneratedModal && (
                 <RegeneratedModal
                     close={handleRegenerateActionButton}
                     setShowRegeneratedModal={setShowRegeneratedModal}
                     editData={editData}
+                    customDate={customDate}
+                    setCustomDate={setCustomDate}
+                    reload={reload}
+                    redirectToTokenList={redirectToTokenList}
                 />
             )}
         </div>

@@ -22,6 +22,7 @@ import GroupPermission from './GroupPermission'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExpirationDate from './ExpirationDate'
+import { Moment } from 'moment'
 
 function CreateAPIToken({
     setShowGenerateModal,
@@ -31,8 +32,6 @@ function CreateAPIToken({
     selectedExpirationDate,
     tokenResponse,
     setTokenResponse,
-    customDate,
-    setCustomDate,
     setCopied,
     copied,
     reload,
@@ -61,28 +60,29 @@ function CreateAPIToken({
         action: ActionTypes.VIEW,
         entityName: [],
     })
+    const [customDate, setCustomDate] = useState<Moment>(null)
 
-    const onChangeFormData = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key): void => {
-        const _formData = { ...formData }
-        _formData[key] = event.target.value || ''
-        setFormData(_formData)
-
-        const _formErrorObject = { ...formDataErrorObj }
-        _formErrorObject[key] = validationRules.requiredField(event.target.value).isValid
-        setFormDataErrorObj(_formErrorObject)
-
+    const onChangeFormData = (event, key): void => {
         if (key === 'customDate') {
-            setCustomDate(parseInt(event.target.value) | 0)
+            setCustomDate(event)
+            setFormData({
+                ...formData,
+                expireAtInMs: event.valueOf() || 0,
+            })
+        } else {
+            setFormData({
+                ...formData,
+                [key]: event.target.value || '',
+            })
+            setFormDataErrorObj({
+                ...formDataErrorObj,
+                [key]: validationRules.requiredField(event.target.value).isValid,
+            })
         }
     }
 
     const redirectToTokenList = () => {
-        let url = match.path.split('create')[0]
-        history.push(`${url}list`)
-    }
-
-    const validateToken = (): boolean => {
-        return
+        history.push(`${match.path.split('create')[0]}list`)
     }
 
     function isFormComplete(): boolean {
@@ -148,8 +148,6 @@ function CreateAPIToken({
                     setTokenResponse(result)
                     setShowGenerateModal(true)
                     setshowErrors(false)
-                    reload()
-                    history.push('/global-config/auth/api-token/list')
                 }
             }
         } catch (error) {
@@ -220,6 +218,7 @@ function CreateAPIToken({
                                     selectedExpirationDate={selectedExpirationDate}
                                     onChangeSelectFormData={onChangeSelectFormData}
                                     handleDatesChange={handleDatesChange}
+                                    customDate={customDate}
                                 />
                             </div>
                         </label>
@@ -280,6 +279,7 @@ function CreateAPIToken({
                     setCopied={setCopied}
                     setShowGenerateModal={setShowGenerateModal}
                     reload={reload}
+                    redirectToTokenList={redirectToTokenList}
                 />
             )}
         </>

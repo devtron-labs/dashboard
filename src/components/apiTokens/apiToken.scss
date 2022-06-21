@@ -6,6 +6,16 @@
         display: grid;
         grid-template-columns: 30px 30% 15% auto 25% 24px 24px;
         grid-column-gap: 16px;
+
+        .api-key-expired-icon {
+            path:first-of-type {
+                stroke: var(--R500);
+            }
+
+            path:last-of-type {
+                fill: var(--R500);
+            }
+        }
     }
 
     .api__row-actions {
@@ -18,26 +28,28 @@
 
             .api__row-actions {
                 display: flex;
+
+                button {
+                    height: 24px;
+                }
             }
         }
     }
 
-    .form__label {
-        margin-bottom: 6px;
-    }
-
     .form__row {
         margin-bottom: 16px;
+
+        .form__label {
+            margin-bottom: 6px;
+        }
+
+        .form__input {
+            height: 36px;
+        }
     }
 
     .form__permission {
         display: grid;
         grid-template-columns: 50% 50%;
-    }
-
-    .DateInput_input {
-        font-size: 13px;
-        padding: 8px 8px;
-        border-radius: 4px;
     }
 }

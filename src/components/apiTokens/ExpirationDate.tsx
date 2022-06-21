@@ -2,16 +2,12 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import ReactSelect from 'react-select'
 import { MomentDateFormat } from '../../config'
-import { multiSelectStyles } from '../common'
+import { multiSelectStyles, SingleDatePickerComponent } from '../common'
 import { DropdownIndicator } from '../security/security.util'
 import { getOptions, getDateInMilliseconds } from './authorization.utils'
-import SingleDatePickerComponent from './SingleDatePicker'
 import { Option } from '../v2/common/ReactSelect.utils'
 
-function ExpirationDate({ selectedExpirationDate, onChangeSelectFormData, handleDatesChange }) {
-    const [customDate, setCustomDate] = useState<number>(undefined)
-    const [focused, setFocused] = useState(undefined)
-
+function ExpirationDate({ selectedExpirationDate, onChangeSelectFormData, handleDatesChange, customDate }) {
     return (
         <div>
             <span className="form__label">
@@ -31,21 +27,32 @@ function ExpirationDate({ selectedExpirationDate, onChangeSelectFormData, handle
                     }}
                     styles={{
                         ...multiSelectStyles,
+                        control: (base) => ({
+                            ...base,
+                            minHeight: '36px',
+                            fontWeight: '400',
+                            backgroundColor: 'var(--N50)',
+                            cursor: 'pointer',
+                        }),
+                        dropdownIndicator: (base) => ({
+                            ...base,
+                            padding: '0 8px',
+                        }),
                     }}
                 />
-                {selectedExpirationDate.label !== 'Custom...' && (
+                {selectedExpirationDate.label !== 'Custom' && (
                     <span className="ml-16 fw-4">
                         <span>This token will expire on</span>&nbsp;
                         {moment(getDateInMilliseconds(selectedExpirationDate.value)).format(MomentDateFormat)}
                     </span>
                 )}
-                {selectedExpirationDate.label === 'Custom...' && (
+                {selectedExpirationDate.label === 'Custom' && (
                     <div className="w-200 ml-16">
                         <SingleDatePickerComponent
-                            date={moment(getDateInMilliseconds(customDate))}
-                            handleDatesChange={(e) => handleDatesChange(e, 'customDate')}
-                            focused={focused}
-                            handleFocusChange={() => setFocused(customDate)}
+                            date={customDate}
+                            handleDatesChange={handleDatesChange}
+                            openDirection={'up'}
+                            readOnly={true}
                         />
                     </div>
                 )}

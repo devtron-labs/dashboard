@@ -28,10 +28,9 @@ function ApiTokens({ reloadLists }) {
     const [showRegenerateTokenModal, setShowRegenerateTokenModal] = useState(false)
     const [copied, setCopied] = useState(false)
     const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: number }>({
-        value: 30,
         label: '30 days',
+        value: 30,
     })
-    const [customDate, setCustomDate] = useState<number>(undefined)
 
     const getData = (): void => {
         setLoader(true)
@@ -152,8 +151,6 @@ function ApiTokens({ reloadLists }) {
                                     selectedExpirationDate={selectedExpirationDate}
                                     tokenResponse={tokenResponse}
                                     setTokenResponse={setTokenResponse}
-                                    customDate={customDate}
-                                    setCustomDate={setCustomDate}
                                     setCopied={setCopied}
                                     copied={copied}
                                     reload={getData}
@@ -169,8 +166,6 @@ function ApiTokens({ reloadLists }) {
                                     showRegeneratedModal={showRegenerateTokenModal}
                                     setSelectedExpirationDate={setSelectedExpirationDate}
                                     selectedExpirationDate={selectedExpirationDate}
-                                    customDate={customDate}
-                                    setCustomDate={setCustomDate}
                                     tokenList={tokenList}
                                     setCopied={setCopied}
                                     copied={copied}

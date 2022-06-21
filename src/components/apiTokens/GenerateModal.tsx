@@ -4,12 +4,30 @@ import { ReactComponent as Success } from '../../assets/icons/ic-success-outline
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { GenerateTokenModalType } from './authorization.type'
+import { toast } from 'react-toastify'
 
-function GenerateModal({ close, token, copied, setCopied, setShowGenerateModal, reload }: GenerateTokenModalType) {
+function GenerateModal({
+    close,
+    token,
+    copied,
+    setCopied,
+    setShowGenerateModal,
+    reload,
+    redirectToTokenList,
+}: GenerateTokenModalType) {
     return (
-        <VisibleModal className={undefined}>
+        <VisibleModal className="">
             <div className={`modal__body w-600 pl-20 pr-20 pt-20 pb-20 flex column`}>
-                <button type="button" className="w-100 flex right transparent" onClick={close}>
+                <button
+                    type="button"
+                    className="w-100 flex right transparent"
+                    onClick={() => {
+                        close()
+                        reload()
+                        toast.success('Changes saved')
+                        redirectToTokenList()
+                    }}
+                >
                     <Close className="icon-dim-24" />
                 </button>
                 <Success className="vertical-align-middle mb-16" />
@@ -28,8 +46,10 @@ function GenerateModal({ close, token, copied, setCopied, setShowGenerateModal, 
                     onClick={(e) => {
                         e.stopPropagation()
                         copyToClipboard(token, () => setCopied(true))
-                        setShowGenerateModal(false)
+                        close()
                         reload()
+                        toast.success('Copied successfully')
+                        redirectToTokenList()
                     }}
                 >
                     <Clipboard className="icon-dim-16 ml-8" />
