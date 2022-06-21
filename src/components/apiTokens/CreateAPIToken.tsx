@@ -1,31 +1,33 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import ReactSelect from 'react-select'
-import { DatePicker, multiSelectStyles, showError, useAsync } from '../common'
+import { multiSelectStyles, showError } from '../common'
 import { DropdownIndicator } from '../security/security.util'
-import AppPermissions from '../userGroups/AppPermissions'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { FormType, GenerateTokenType } from './authorization.type'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { createGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
 import GenerateModal from './GenerateModal'
-import { getDateInMilliseconds, getOptions, PermissionType } from './authorization.utils'
+import { createUserPermissionPayload, getDateInMilliseconds, getOptions, PermissionType } from './authorization.utils'
 import GenerateActionButton from './GenerateActionButton'
 import moment from 'moment'
-import { Moment12HourFormat, SERVER_MODE } from '../../config'
+import { Moment12HourFormat } from '../../config'
 import { ValidationRules } from './validationRules'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
-import { getUserId } from '../userGroups/userGroup.service'
+import { saveUser } from '../userGroups/userGroup.service'
 import {
     ActionTypes,
     ChartGroupPermissionsFilter,
-    CreateUser,
     DirectPermissionsRoleFilter,
     EntityTypes,
+    OptionType,
 } from '../userGroups/userGroups.types'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { Option } from '../v2/common/ReactSelect.utils'
 import SingleDatePickerComponent from './SingleDatePicker'
+import GroupPermission from './GroupPermission'
+import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
+import { mainContext } from '../common/navigation/NavigationRoutes'
 
 function CreateAPIToken({
     setShowGenerateModal,
@@ -43,6 +45,7 @@ function CreateAPIToken({
 }: GenerateTokenType) {
     const history = useHistory()
     const match = useRouteMatch()
+    const { serverMode } = useContext(mainContext)
     const [loader, setLoader] = useState(false)
     const [adminPermission, setAdminPermission] = useState('SUPERADMIN')
     const [formData, setFormData] = useState<FormType>({
@@ -52,21 +55,20 @@ function CreateAPIToken({
     })
     const [showErrors, setshowErrors] = useState(false)
     const [formDataErrorObj, setFormDataErrorObj] = useState<FormType>()
-    const [userId, setUserId] = useState<number>(undefined)
     const validationRules = new ValidationRules()
+    const [isValid, setIsValid] = useState({
+        name: false,
+        expireAtInMs: false,
+    })
+    const [userGroups, setUserGroups] = useState<OptionType[]>([])
     const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
     const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({
         entity: EntityTypes.CHART_GROUP,
         action: ActionTypes.VIEW,
         entityName: [],
     })
-    const [isValid, setIsValid] = useState({
-        name: false,
-        expireAtInMs: false,
-    })
-    const [showDatePicker, setShowDatePicker] = useState(false)
 
-    const onChangeFormData = (event: React.ChangeEvent<HTMLInputElement>, key): void => {
+    const onChangeFormData = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key): void => {
         const _formData = { ...formData }
         _formData[key] = event.target.value || ''
 
@@ -121,72 +123,54 @@ function CreateAPIToken({
         setFormData(_formData)
     }
 
-    const handleGenerateAPIToken = (e) => {
+    const handleGenerateAPIToken = async (e) => {
         if (!isFormComplete()) {
             return
         }
-        // setIsValid({
-        //     ...isValid,
-        //     name: validationRules.name(e.target.value).isValid,
-        //     expireAtInMs: validationRules.expireAtInMs(e.target.value).isValid,
-        // })
 
         setshowErrors(true)
         setLoader(true)
 
-        //   const _payload: CreateUser = {
-        //     id: userId || 0,
-        //     email_id: emailState.emails.map((email) => email.value).join(','),
-        //     groups: userGroups.map((group) => group.value),
-        //     roleFilters: [
-        //         ...directPermission
-        //             .filter(
-        //                 (permission) =>
-        //                     permission.team?.value && permission.environment.length && permission.entityName.length,
-        //             )
-        //             .map((permission) => ({
-        //                 ...permission,
-        //                 action: permission.action.value,
-        //                 team: permission.team.value,
-        //                 environment: getSelectedEnvironments(permission),
-        //                 entityName: permission.entityName.find((entity) => entity.value === '*')
-        //                     ? ''
-        //                     : permission.entityName.map((entity) => entity.value).join(','),
-        //             })),
-        //     ],
-        //     superAdmin: localSuperAdmin,
-        // };
-        // if (serverMode !== SERVER_MODE.EA_ONLY) {
-        //     _payload.roleFilters.push({
-        //         ...chartPermission,
-        //         team: '',
-        //         environment: '',
-        //         entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
-        //     });
-        // }
+        try {
+            const payload = {
+                name: formData.name,
+                description: formData.description,
+                expireAtInMs: formData.expireAtInMs,
+            }
 
-        let payload = {
-            name: formData.name,
-            description: formData.description,
-            expireAtInMs: formData.expireAtInMs,
+            const { result } = await createGeneratedAPIToken(payload)
+
+            if (result) {
+                const userPermissionPayload = createUserPermissionPayload(
+                    result.userId,
+                    result.userIdentifier,
+                    serverMode,
+                    userGroups,
+                    directPermission,
+                    chartPermission,
+                    adminPermission === 'SUPERADMIN',
+                )
+
+                const { result: userPermissionResponse } = await saveUser(userPermissionPayload)
+                if (userPermissionResponse) {
+                    toast.success('Changes saved')
+                    setTokenResponse(result)
+                    setShowGenerateModal(true)
+                    setshowErrors(false)
+                    reload()
+                    history.push('/global-config/auth/api-token/list')
+                }
+            }
+        } catch (error) {
+            showError(error)
+        } finally {
+            setLoader(false)
         }
-
-        createGeneratedAPIToken(payload)
-            .then((response) => {
-                toast.success('Changes saved')
-                setTokenResponse(response.result)
-                setShowGenerateModal(true)
-                setshowErrors(false)
-                setUserId(response.result.userId)
-            })
-            .catch((error) => {
-                showError(error)
-            })
-            .finally(() => {
-                setLoader(false)
-            })
     }
-    // const [dataLoading, data, dataError, reloadData, setData] = useAsync(() => getUserId(userId))
+
+    const handlePermissionType = (e) => {
+        setAdminPermission(e.target.value)
+    }
 
     const errorObject = validationRules.name(formData.name)
 
@@ -217,21 +201,19 @@ function CreateAPIToken({
                                 value={formData.name}
                                 onChange={(e) => onChangeFormData(e, 'name')}
                             />
-                            <span className="form__error">
-                                {showError && !isValid.name ? (
-                                    <>
-                                        <Error className="form__icon form__icon--error" />
-                                        {errorObject[0]?.message} <br />
-                                    </>
-                                ) : null}
-                            </span>
+                            {showErrors && !isValid.name && (
+                                <span className="form__error">
+                                    <Error className="form__icon form__icon--error" />
+                                    {errorObject.message} <br />
+                                </span>
+                            )}
                         </label>
                         <label className="form__row">
                             <span className="form__label">Description</span>
-                            <input
+                            <textarea
                                 tabIndex={1}
                                 placeholder="Enter a description to remember where you have used this token"
-                                className="form__input"
+                                className="form__textarea"
                                 value={formData.description}
                                 onChange={(e) => onChangeFormData(e, 'description')}
                             />
@@ -265,7 +247,6 @@ function CreateAPIToken({
                                         )}
                                     </span>
                                 )}
-                                {console.log(customDate)}
                                 {selectedExpirationDate.label === 'Custom...' && (
                                     <div className="w-200 ml-16">
                                         <SingleDatePickerComponent
@@ -291,36 +272,29 @@ function CreateAPIToken({
                             </div>
                         )}
 
-                        <div className="pointer flex form__permission">
-                            {PermissionType.map(({ label: Lable, value }, index) => (
-                                <div
-                                    className="flex left"
-                                    key={`generate_token_${index}`}
-                                    onChange={() => setAdminPermission(value)}
-                                >
-                                    <label key={value} className=" flex left">
-                                        <input
-                                            type="radio"
-                                            name="auth"
-                                            value={value}
-                                            checked={value === adminPermission}
-                                        />
-                                        <span className="ml-8 mt-4">{Lable}</span>
-                                    </label>
-                                </div>
-                            ))}
+                        <div className="flex left">
+                            <RadioGroup
+                                className="permission-type__radio-group"
+                                value={adminPermission}
+                                name="permission-type"
+                                onChange={handlePermissionType}
+                            >
+                                {PermissionType.map(({ label, value }) => (
+                                    <RadioGroupItem value={value}> {label} </RadioGroupItem>
+                                ))}
+                            </RadioGroup>
                         </div>
-                        {/* {adminPermission === 'SUPERADMIN' && (
-                            <div>
-                                <AppPermissions
-                                    data={data.result}
-                                    directPermission={null}
-                                    setDirectPermission={() => null}
-                                    chartPermission={null}
-                                    setChartPermission={() => null}
-                                />
-                            </div>
-                        )} */}
+                        {adminPermission !== 'SUPERADMIN' && (
+                            <GroupPermission
+                                userData={null}
+                                userGroups={userGroups}
+                                setUserGroups={setUserGroups}
+                                directPermission={directPermission}
+                                setDirectPermission={setDirectPermission}
+                                chartPermission={chartPermission}
+                                setChartPermission={setChartPermission}
+                            />
+                        )}
                     </div>
                 </div>
                 <hr className="modal__divider mt-20 mb-0" />

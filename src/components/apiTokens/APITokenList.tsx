@@ -9,12 +9,17 @@ import { deleteGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
 import { showError } from '../common'
 import { useHistory, useRouteMatch } from 'react-router-dom'
-import { APITokenListType, TokenListType } from './authorization.type'
+import { APITokenListType } from './authorization.type'
 
-function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, reload }: APITokenListType) {
+function APITokenList({
+    tokenList,
+    setDeleteConfirmation,
+    renderSearchToken,
+    reload,
+    setSelectedList,
+}: APITokenListType) {
     const history = useHistory()
     const match = useRouteMatch()
-    const [selectedList, setSelectedList] = useState<TokenListType>()
 
     const deleteToken = (id) => {
         deleteGeneratedAPIToken(id)

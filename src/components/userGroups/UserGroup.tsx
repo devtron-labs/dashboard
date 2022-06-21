@@ -133,6 +133,11 @@ const tempMultiSelectStyles = {
         top: 'auto',
         width: '140%',
     }),
+    dropdownIndicator: (base, state) => ({
+        ...base,
+        transition: 'all .2s ease',
+        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+    }),
 }
 
 export function useUserGroupContext() {
@@ -1092,9 +1097,10 @@ const AppOption = (props) => {
 interface ChartPermissionRow {
     chartPermission: ChartGroupPermissionsFilter
     setChartPermission: any
+    hideInfoLegend?: boolean
 }
 
-export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(({ chartPermission, setChartPermission }) => {
+export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(({ chartPermission, setChartPermission, hideInfoLegend }) => {
     const { chartGroupsList } = useUserGroupContext()
     function handleChartCreateChange(event) {
         if (event.target.checked) {
@@ -1136,7 +1142,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(({ chart
 
     return (
         <>
-            <legend>Chart group permissions</legend>
+            {!hideInfoLegend && <legend>Chart group permissions</legend>}
             <div
                 className="w-100"
                 style={{ display: 'grid', gridTemplateColumns: '80px 80px 200px', alignItems: 'center' }}
