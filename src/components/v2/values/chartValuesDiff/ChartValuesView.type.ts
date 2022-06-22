@@ -52,6 +52,7 @@ export interface ChartValuesDiffOptionType extends ChartValuesOptionType {
     appStoreVersionId?: number
     info: string
     kind?: string
+    version?: string
 }
 
 export interface ChartGroupOptionType {
@@ -146,6 +147,7 @@ export interface ChartValuesEditorType {
     manifestView?: boolean
     generatedManifest?: string
     comparisonView: boolean
+    selectedChartValues: ChartValuesType
 }
 
 export interface ChartValuesYamlDataType {
