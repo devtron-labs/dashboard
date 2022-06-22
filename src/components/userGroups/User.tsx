@@ -375,6 +375,7 @@ export default function UserForm({
                         name="groups"
                         options={availableGroups}
                         hideSelectedOptions={false}
+                        menuShouldBlockScroll={true}
                         onChange={(selected, actionMeta) => setUserGroups((selected || []) as any)}
                         className={`basic-multi-select ${id ? 'mt-8 mb-16' : ''}`}
                     />
