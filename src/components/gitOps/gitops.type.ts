@@ -39,6 +39,7 @@ export interface GitOpsState {
     isFormEdited: boolean;
     lastActiveGitOp: undefined | GitOpsConfig;
     saveLoading: boolean;
+    validateLoading: boolean;
     isError: {
         host: string;
         username: string;
