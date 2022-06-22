@@ -128,49 +128,39 @@ function ApiTokens({ reloadLists }) {
             <Fragment>
                 <div className="api-token-container">
                     <Switch>
-                        <Route
-                            path={`${path}/list`}
-                            render={(props) => (
-                                <APITokenList
-                                    tokenList={filteredTokenList}
-                                    renderSearchToken={renderSearchToken}
-                                    reload={getData}
-                                />
-                            )}
-                        />
-                        <Route
-                            path={`${path}/create`}
-                            render={(props) => (
-                                <CreateAPIToken
-                                    setShowGenerateModal={setShowGenerateModal}
-                                    showGenerateModal={showGenerateModal}
-                                    handleGenerateTokenActionButton={handleActionButton}
-                                    setSelectedExpirationDate={setSelectedExpirationDate}
-                                    selectedExpirationDate={selectedExpirationDate}
-                                    tokenResponse={tokenResponse}
-                                    setTokenResponse={setTokenResponse}
-                                    setCopied={setCopied}
-                                    copied={copied}
-                                    reload={getData}
-                                />
-                            )}
-                        />
-                        <Route
-                            path={`${path}/edit/:id`}
-                            render={(props) => (
-                                <EditAPIToken
-                                    handleRegenerateActionButton={handleActionButton}
-                                    setShowRegeneratedModal={setShowRegenerateTokenModal}
-                                    showRegeneratedModal={showRegenerateTokenModal}
-                                    setSelectedExpirationDate={setSelectedExpirationDate}
-                                    selectedExpirationDate={selectedExpirationDate}
-                                    tokenList={tokenList}
-                                    setCopied={setCopied}
-                                    copied={copied}
-                                    reload={getData}
-                                />
-                            )}
-                        />
+                        <Route path={`${path}/list`}>
+                            <APITokenList
+                                tokenList={filteredTokenList}
+                                renderSearchToken={renderSearchToken}
+                                reload={getData}
+                            />
+                        </Route>
+                        <Route path={`${path}/create`}>
+                            <CreateAPIToken
+                                setShowGenerateModal={setShowGenerateModal}
+                                showGenerateModal={showGenerateModal}
+                                handleGenerateTokenActionButton={handleActionButton}
+                                setSelectedExpirationDate={setSelectedExpirationDate}
+                                selectedExpirationDate={selectedExpirationDate}
+                                tokenResponse={tokenResponse}
+                                setTokenResponse={setTokenResponse}
+                                setCopied={setCopied}
+                                reload={getData}
+                            />
+                        </Route>
+                        <Route path={`${path}/edit/:id`}>
+                            <EditAPIToken
+                                handleRegenerateActionButton={handleActionButton}
+                                setShowRegeneratedModal={setShowRegenerateTokenModal}
+                                showRegeneratedModal={showRegenerateTokenModal}
+                                setSelectedExpirationDate={setSelectedExpirationDate}
+                                selectedExpirationDate={selectedExpirationDate}
+                                tokenList={tokenList}
+                                setCopied={setCopied}
+                                copied={copied}
+                                reload={getData}
+                            />
+                        </Route>
                         <Redirect to={`${path}/list`} />
                     </Switch>
                 </div>
@@ -191,7 +181,6 @@ function ApiTokens({ reloadLists }) {
                     API tokens function like ordinary OAuth access tokens. They can be used instead of a password for
                     Git over HTTPS, or can be used to authenticate to the API over Basic Authentication.
                 </EmptyState.Subtitle>
-                {/* <EmptyState.Button>{handleGenerateRowActionButton('create')}</EmptyState.Button> */}
             </EmptyState>
         )
     }

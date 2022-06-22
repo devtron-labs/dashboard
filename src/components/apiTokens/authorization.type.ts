@@ -23,7 +23,6 @@ export interface GenerateTokenType {
     tokenResponse: TokenResponseType
     setTokenResponse: React.Dispatch<React.SetStateAction<TokenResponseType>>
     setCopied: React.Dispatch<React.SetStateAction<boolean>>
-    copied: boolean
     reload: () => void
 }
 
@@ -64,10 +63,9 @@ export interface GenerateTokenModalType {
     close: () => void
     token: string
     setCopied: React.Dispatch<React.SetStateAction<boolean>>
-    copied: boolean
-    setShowGenerateModal: React.Dispatch<React.SetStateAction<boolean>>
     reload: () => void
     redirectToTokenList: () => void
+    isRegenerationModal?: boolean
 }
 
 export interface APITokenListType {
@@ -89,7 +87,8 @@ export interface RegenerateModalType {
     close: () => void
     setShowRegeneratedModal: React.Dispatch<React.SetStateAction<boolean>>
     editData: EditDataType
-    customDate, setCustomDate
+    customDate
+    setCustomDate
     reload: () => void
     redirectToTokenList: () => void
 }
