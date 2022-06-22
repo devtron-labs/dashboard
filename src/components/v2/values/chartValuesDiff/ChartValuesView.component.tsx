@@ -400,10 +400,12 @@ export const ActiveReadmeColumn = ({
     )
 }
 
-const formatOptionLabel = (option: { label: string; value: number; info: string }): JSX.Element => {
+const formatOptionLabel = (option: { label: string; value: number; info: string; version?: string }): JSX.Element => {
     return (
         <div className="flex left column">
-            <span className="w-100 ellipsis-right">{option.label}</span>
+            <span className="w-100 ellipsis-right">
+                {option.label} ({option.version})
+            </span>
             {option.info && <small className="cn-6">{option.info}</small>}
         </div>
     )
@@ -412,7 +414,7 @@ const formatOptionLabel = (option: { label: string; value: number; info: string 
 const customValueContainer = (props: any): JSX.Element => {
     return (
         <components.ValueContainer {...props}>
-            {props.selectProps.value?.label}
+            {props.selectProps.value?.label} ({props.selectProps.value?.version})
             {React.cloneElement(props.children[1], {
                 style: { position: 'absolute' },
             })}
@@ -421,12 +423,14 @@ const customValueContainer = (props: any): JSX.Element => {
 }
 
 const CompareWithDropdown = ({
-    filteredChartValuesList,
+    deployedChartValues,
+    defaultChartValues,
     deploymentHistoryOptionsList,
     selectedVersionForDiff,
     handleSelectedVersionForDiff,
 }: {
-    filteredChartValuesList: ChartValuesDiffOptionType[]
+    deployedChartValues: ChartValuesDiffOptionType[]
+    defaultChartValues: ChartValuesDiffOptionType[]
     deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
     selectedVersionForDiff: ChartValuesDiffOptionType
     handleSelectedVersionForDiff: (selected: ChartValuesDiffOptionType) => void
@@ -448,8 +452,15 @@ const CompareWithDropdown = ({
                 {
                     label: 'Other apps using this chart',
                     options:
-                        filteredChartValuesList.length > 0
-                            ? filteredChartValuesList
+                        deployedChartValues.length > 0
+                            ? deployedChartValues
+                            : [{ label: 'No options', value: 0, info: '' }],
+                },
+                {
+                    label: 'Default',
+                    options:
+                        defaultChartValues.length > 0
+                            ? defaultChartValues
                             : [{ label: 'No options', value: 0, info: '' }],
                 },
             ]
@@ -459,14 +470,21 @@ const CompareWithDropdown = ({
                 {
                     label: 'Other apps using this chart',
                     options:
-                        filteredChartValuesList.length > 0
-                            ? filteredChartValuesList
+                        deployedChartValues.length > 0
+                            ? deployedChartValues
+                            : [{ label: 'No options', value: 0, info: '' }],
+                },
+                {
+                    label: 'Default',
+                    options:
+                        defaultChartValues.length > 0
+                            ? defaultChartValues
                             : [{ label: 'No options', value: 0, info: '' }],
                 },
             ]
             setGroupedOptions(_groupedOptions)
         }
-    }, [filteredChartValuesList, deploymentHistoryOptionsList])
+    }, [deployedChartValues, defaultChartValues, deploymentHistoryOptionsList])
 
     return (
         <ReactSelect
@@ -542,10 +560,12 @@ export const ChartValuesEditor = ({
     manifestView,
     generatedManifest,
     comparisonView,
+    selectedChartValues,
 }: ChartValuesEditorType) => {
     const [valuesForDiffState, setValuesForDiffState] = useState<{
         loadingValuesForDiff: boolean
-        filteredChartValues: ChartValuesDiffOptionType[]
+        deployedChartValues: ChartValuesDiffOptionType[]
+        defaultChartValues: ChartValuesDiffOptionType[]
         deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
         selectedVersionForDiff: ChartValuesDiffOptionType
         deployedManifest: string
@@ -553,7 +573,8 @@ export const ChartValuesEditor = ({
         selectedValuesForDiff: string
     }>({
         loadingValuesForDiff: false,
-        filteredChartValues: [],
+        deployedChartValues: [],
+        defaultChartValues: [],
         deploymentHistoryOptionsList: [],
         selectedValuesForDiff: defaultValuesText,
         deployedManifest: '',
@@ -563,17 +584,42 @@ export const ChartValuesEditor = ({
 
     useEffect(() => {
         if (!manifestView && chartValuesList.length > 0 && (isDeployChartView || deploymentHistoryList.length > 0)) {
-            const filteredChartValues = chartValuesList
-                .filter((_chartValue) => _chartValue.kind === ChartKind.DEPLOYED && _chartValue.name !== appName)
-                .map((_chartValue) => {
-                    return {
+            // const filteredChartValues = chartValuesList
+            //     .filter((_chartValue) => _chartValue.kind === ChartKind.DEPLOYED && _chartValue.name !== appName)
+            //     .map((_chartValue) => {
+            //         return {
+            //             label: _chartValue.name,
+            //             value: _chartValue.id,
+            //             appStoreVersionId: _chartValue.appStoreVersionId,
+            //             info: `Deployed on: ${_chartValue.environmentName}`,
+            //             kind: _chartValue.kind,
+            //             version: _chartValue.chartVersion,
+            //         }
+            //     })
+            let deployedChartValues = [],
+                defaultChartValues = []
+            for (let index = 0; index < chartValuesList.length; index++) {
+                const _chartValue = chartValuesList[index]
+                if (_chartValue.kind === ChartKind.DEPLOYED && _chartValue.name !== appName) {
+                    deployedChartValues.push({
                         label: _chartValue.name,
                         value: _chartValue.id,
                         appStoreVersionId: _chartValue.appStoreVersionId,
                         info: `Deployed on: ${_chartValue.environmentName}`,
                         kind: _chartValue.kind,
-                    }
-                })
+                        version: _chartValue.chartVersion,
+                    })
+                } else if (_chartValue.kind === ChartKind.DEFAULT) {
+                    defaultChartValues.push({
+                        label: _chartValue.name,
+                        value: _chartValue.id,
+                        appStoreVersionId: 0,
+                        info: '',
+                        kind: _chartValue.kind,
+                        version: _chartValue.chartVersion,
+                    })
+                }
+            }
             const deploymentHistoryOptionsList = deploymentHistoryList.map((_deploymentHistory) => {
                 return {
                     label: moment(new Date(_deploymentHistory.deployedAt.seconds * 1000)).format(Moment12HourFormat),
@@ -584,10 +630,11 @@ export const ChartValuesEditor = ({
 
             setValuesForDiffState({
                 ...valuesForDiffState,
-                filteredChartValues,
+                deployedChartValues,
+                defaultChartValues,
                 deploymentHistoryOptionsList,
                 selectedVersionForDiff:
-                    deploymentHistoryOptionsList.length > 0 ? deploymentHistoryOptionsList[0] : filteredChartValues[0],
+                    deploymentHistoryOptionsList.length > 0 ? deploymentHistoryOptionsList[0] : deployedChartValues[0],
             })
         }
     }, [chartValuesList, deploymentHistoryList])
@@ -604,7 +651,10 @@ export const ChartValuesEditor = ({
                 ? valuesForDiffState.deployedManifest
                 : valuesForDiffState.valuesForDiff.get(_version)
             if (!_currentValues) {
-                if (selectedVersionForDiff.kind === ChartKind.DEPLOYED) {
+                if (
+                    selectedVersionForDiff.kind === ChartKind.DEPLOYED ||
+                    selectedVersionForDiff.kind === ChartKind.DEFAULT
+                ) {
                     getChartValues(_version, selectedVersionForDiff.kind)
                         .then((res) => {
                             const _valuesForDiff = valuesForDiffState.valuesForDiff
@@ -675,7 +725,7 @@ export const ChartValuesEditor = ({
                 selectedVersionForDiff:
                     valuesForDiffState.deploymentHistoryOptionsList.length > 0
                         ? valuesForDiffState.deploymentHistoryOptionsList[0]
-                        : valuesForDiffState.filteredChartValues[0],
+                        : valuesForDiffState.deployedChartValues[0],
             })
         }
     }, [comparisonView])
@@ -714,7 +764,8 @@ export const ChartValuesEditor = ({
                             <>
                                 <span style={{ width: '90px' }}>Compare with: </span>
                                 <CompareWithDropdown
-                                    filteredChartValuesList={valuesForDiffState.filteredChartValues}
+                                    deployedChartValues={valuesForDiffState.deployedChartValues}
+                                    defaultChartValues={valuesForDiffState.defaultChartValues}
                                     deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
                                     selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
                                     handleSelectedVersionForDiff={handleSelectedVersionForDiff}
@@ -728,7 +779,7 @@ export const ChartValuesEditor = ({
                         ) : (
                             <>
                                 <Edit className="icon-dim-16 mr-10" />
-                                values.yaml
+                                values.yaml ({selectedChartValues?.chartVersion})
                             </>
                         )}
                     </div>

@@ -1068,6 +1068,7 @@ function ChartValuesView({
                                 comparisonView={commonState.openComparison}
                                 chartValuesList={chartValuesList}
                                 deploymentHistoryList={commonState.deploymentHistoryArr}
+                                selectedChartValues={commonState.chartValues}
                             />
                         )}
                         {!commonState.openComparison && !commonState.openReadMe && (
