@@ -386,7 +386,7 @@ export default function AppPermissions({
 
     return (
         <>
-            <ul role="tablist" className="tab-list mt-12">
+            <ul role="tablist" className="tab-list mt-12 border-bottom">
                 {serverMode !== SERVER_MODE.EA_ONLY && (
                     <li className="tab-list__tab">
                         <NavLink to={`${url}/devtron-apps`} className="tab-list__tab-link" activeClassName="active">
@@ -465,12 +465,11 @@ function AppPermissionDetail({
                 </legend>
             )}
             <div
-                className="w-100 mt-16 mb-16"
+                className="w-100 mt-16"
                 style={{
                     display: 'grid',
                     gridTemplateColumns:
                         accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ? '1fr 1fr 1fr 1fr 24px' : '1fr 2fr 1fr 1fr 24px',
-                    gridGap: '16px',
                 }}
             >
                 <label className="fw-6 fs-12 cn-5">Project</label>
@@ -482,6 +481,16 @@ function AppPermissionDetail({
                     {accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ? 'Role' : 'Permission'}
                 </label>
                 <span />
+            </div>
+            <div
+                className="w-100 mb-16"
+                style={{
+                    display: 'grid',
+                    gridTemplateColumns:
+                        accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ? '1fr 1fr 1fr 1fr 24px' : '1fr 2fr 1fr 1fr 24px',
+                    gridGap: '16px',
+                }}
+            >
                 {directPermission.map(
                     (permission, idx) =>
                         permission.accessType === accessType && (

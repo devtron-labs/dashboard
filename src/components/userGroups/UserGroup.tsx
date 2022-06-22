@@ -55,6 +55,7 @@ import './UserGroup.scss'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import { Option as singleOption } from '../v2/common/ReactSelect.utils'
 import ApiTokens from '../apiTokens/ApiTokens.component'
+import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -414,15 +415,18 @@ const UserGroupList: React.FC<{
         <div id="auth-page__body" className="auth-page__body-users__list-container">
             {renderHeaders()}
             {result.length > 0 && (
-                <input
-                    value={searchString}
-                    autoComplete="off"
-                    ref={searchRef}
-                    type="search"
-                    placeholder={`Search ${type}`}
-                    className="auth-search"
-                    onChange={(e) => setSearchString(e.target.value)}
-                />
+                <div className="search position-rel en-2 bw-1 br-4 mb-20 bcn-0">
+                    <Search className="search__icon icon-dim-18" />
+                    <input
+                        value={searchString}
+                        autoComplete="off"
+                        ref={searchRef}
+                        type="search"
+                        placeholder={`Search ${type}`}
+                        className="search__input bcn-0"
+                        onChange={(e) => setSearchString(e.target.value)}
+                    />
+                </div>
             )}
             {!(filteredAndSorted.length === 0 && result.length > 0) && (
                 <AddUser
@@ -1159,7 +1163,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
             <>
                 {!hideInfoLegend && <legend>Chart group permissions</legend>}
                 <div
-                    className="w-100"
+                    className="w-100 mt-16"
                     style={{ display: 'grid', gridTemplateColumns: '80px 80px 200px', alignItems: 'center' }}
                 >
                     <label className="fw-6 fs-12 cn-5">VIEW</label>
