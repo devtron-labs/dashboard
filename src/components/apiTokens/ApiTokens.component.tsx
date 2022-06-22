@@ -39,6 +39,9 @@ function ApiTokens({ reloadLists }) {
                     const sortedResult = response.result.sort((a, b) => a['name'].localeCompare(b['name']))
                     setTokenlist(sortedResult)
                     setFilteredTokenList(sortedResult)
+                } else {
+                    setTokenlist([])
+                    setFilteredTokenList([])
                 }
                 setLoader(false)
             })
@@ -77,10 +80,10 @@ function ApiTokens({ reloadLists }) {
     }
 
     const handleFilterKeyPress = (event): void => {
-        let theKeyCode = event.key
+        const theKeyCode = event.key
         if (theKeyCode === 'Enter') {
             handleFilterChanges(event.target.value)
-            setSearchApplied(true)
+            setSearchApplied(!!event.target.value)
         } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
             clearSearch()
         }
@@ -108,11 +111,11 @@ function ApiTokens({ reloadLists }) {
                         }}
                         onKeyDown={handleFilterKeyPress}
                     />
-                    {searchApplied ? (
+                    {searchApplied && (
                         <button className="search__clear-button" type="button" onClick={clearSearch}>
                             <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                         </button>
-                    ) : null}
+                    )}
                 </div>
             </div>
         )
@@ -144,7 +147,6 @@ function ApiTokens({ reloadLists }) {
                                 selectedExpirationDate={selectedExpirationDate}
                                 tokenResponse={tokenResponse}
                                 setTokenResponse={setTokenResponse}
-                                setCopied={setCopied}
                                 reload={getData}
                             />
                         </Route>
@@ -170,41 +172,31 @@ function ApiTokens({ reloadLists }) {
 
     const renderEmptyState = (): JSX.Element => {
         return (
-            <EmptyState>
-                <EmptyState.Image>
-                    <img src={emptyGeneratToken} alt="Empty api token links" />
-                </EmptyState.Image>
-                <EmptyState.Title>
-                    <h4 className="title">Generate a token to access the Devtron API</h4>
-                </EmptyState.Title>
-                <EmptyState.Subtitle>
-                    API tokens function like ordinary OAuth access tokens. They can be used instead of a password for
-                    Git over HTTPS, or can be used to authenticate to the API over Basic Authentication.
-                </EmptyState.Subtitle>
-            </EmptyState>
-        )
-    }
-
-    const renderEmptyNotAuthorized = () => {
-        return (
-            <EmptyState>
-                <EmptyState.Image>
-                    <img src={emptyGeneratToken} alt="Empty api token links" />
-                </EmptyState.Image>
-                <EmptyState.Title>
-                    <h4 className="title">Not authorized</h4>
-                </EmptyState.Title>
-                <EmptyState.Subtitle>
-                    Information on this page is available only to superadmin users.
-                </EmptyState.Subtitle>
-            </EmptyState>
+            <div className="flex column h-100">
+                <EmptyState>
+                    <EmptyState.Image>
+                        <img src={emptyGeneratToken} alt="Empty api token links" />
+                    </EmptyState.Image>
+                    <EmptyState.Title>
+                        <h4 className="title">Generate a token to access the Devtron API</h4>
+                    </EmptyState.Title>
+                    <EmptyState.Subtitle>
+                        API tokens function like ordinary OAuth access tokens. They can be used instead of a password
+                        for Git over HTTPS, or can be used to authenticate to the API over Basic Authentication.
+                    </EmptyState.Subtitle>
+                    <EmptyState.Button>
+                        <button className="flex cta h-32" onClick={() => history.push(`${path}/create`)}>
+                            Generate new token
+                        </button>
+                    </EmptyState.Button>
+                </EmptyState>
+            </div>
         )
     }
 
     if (loader) {
         return <Progressing pageLoader />
-    }
-    if (errorStatusCode > 0) {
+    } else if (errorStatusCode > 0) {
         return (
             <div className="error-screen-wrapper flex column h-100">
                 <ErrorScreenManager
@@ -213,20 +205,11 @@ function ApiTokens({ reloadLists }) {
                 />
             </div>
         )
-    }
-    if (tokenList && tokenList.length === 0) {
-        return renderEmptyNotAuthorized()
+    } else if (!pathname.includes('/create') && (!tokenList || tokenList.length === 0)) {
+        return renderEmptyState()
     }
 
-    return (
-        <div>
-            {tokenList && tokenList.length === 0 ? (
-                <div className="h-100">{renderEmptyState()}</div>
-            ) : (
-                renderAPITokenRoutes()
-            )}
-        </div>
-    )
+    return renderAPITokenRoutes()
 }
 
 export default ApiTokens

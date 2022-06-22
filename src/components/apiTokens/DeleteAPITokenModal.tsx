@@ -22,23 +22,23 @@ const DeleteAPITokenModal = ({
 
     const deleteToken = async () => {
         setApiCallInProgress(true)
-        deleteGeneratedAPIToken(tokenData.id)
-            .then(({ result }) => {
-                if (result) {
-                    deleteUser(tokenData.userId)
-                    toast.success('Deleted successfully')
-                    reload()
-                    if (isEditView) {
-                        history.push(`${match.path.split('edit')[0]}list`)
-                    }
+
+        try {
+            const { result } = await deleteGeneratedAPIToken(tokenData.id)
+
+            if (result) {
+                toast.success('Deleted successfully')
+                reload()
+
+                if (isEditView) {
+                    history.push(`${match.path.split('edit')[0]}list`)
                 }
-            })
-            .catch((error) => {
-                showError(error)
-            })
-            .finally(() => {
-                setApiCallInProgress(false)
-            })
+            }
+        } catch (error) {
+            showError(error)
+        } finally {
+            setApiCallInProgress(false)
+        }
     }
 
     return (

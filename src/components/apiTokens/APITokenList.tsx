@@ -6,9 +6,25 @@ import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import { useHistory } from 'react-router-dom'
 import { APITokenListType, TokenListType } from './authorization.type'
-import { getDateInMilliseconds, isTokenExpired } from './authorization.utils'
+import { isTokenExpired } from './authorization.utils'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
+import NoResults from '../../assets/img/empty-noresult@2x.png'
 import './apiToken.scss'
+import EmptyState from '../EmptyState/EmptyState'
+
+function NoMatchingResults() {
+    return (
+        <EmptyState>
+            <EmptyState.Image>
+                <img src={NoResults} width="250" height="200" alt="No matching results" />
+            </EmptyState.Image>
+            <EmptyState.Title>
+                <h2 className="fs-16 fw-4 c-9">No matching results</h2>
+            </EmptyState.Title>
+            <EmptyState.Subtitle>We couldn't find any matching external link configuration</EmptyState.Subtitle>
+        </EmptyState>
+    )
+}
 
 function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType) {
     const history = useHistory()
@@ -41,62 +57,66 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                     <div>Expires on</div>
                     <div></div>
                 </div>
-                {tokenList?.map((list, index) => (
-                    <div
-                        key={`api_${index}`}
-                        className="api-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
-                        style={{ height: '45px' }}
-                    >
-                        <button
-                            type="button"
-                            className="transparent cursor flex"
-                            onClick={() => handleGenerateRowActionButton('edit', list.id)}
-                        >
-                            <Key
-                                className={`api-key-icon icon-dim-20 ${
-                                    isTokenExpired(list.expireAtInMs) ? 'api-key-expired-icon' : ''
-                                }`}
-                            />
-                        </button>
+                {!tokenList || tokenList.length === 0 ? (
+                    <NoMatchingResults />
+                ) : (
+                    tokenList.map((list, index) => (
                         <div
-                            className={`flexbox cb-5 cursor`}
-                            onClick={() => handleGenerateRowActionButton('edit', list.id)}
+                            key={`api_${index}`}
+                            className="api-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
+                            style={{ height: '45px' }}
                         >
-                            {list.name}
-                        </div>
-                        <div className="ellipsis-right">{moment(list.lastUsedAt).format(MomentDateFormat)}</div>
-                        <div>{list.lastUsedByIp}</div>
-                        <div className={`${isTokenExpired(list.expireAtInMs) ? 'cr-5' : ''}`}>
-                            {list.expireAtInMs === 0 ? (
-                                'No expiration date'
-                            ) : (
-                                <>
-                                    {isTokenExpired(list.expireAtInMs) ? 'Expired on ' : ''}
-                                    {moment(list.expireAtInMs).format(MomentDateFormat)}
-                                </>
-                            )}
-                        </div>
-                        <div className="api__row-actions flex">
                             <button
                                 type="button"
-                                className="transparent mr-8 ml-8"
+                                className="transparent cursor flex"
                                 onClick={() => handleGenerateRowActionButton('edit', list.id)}
                             >
-                                <Edit className="icon-dim-20" />
+                                <Key
+                                    className={`api-key-icon icon-dim-20 ${
+                                        isTokenExpired(list.expireAtInMs) ? 'api-key-expired-icon' : ''
+                                    }`}
+                                />
                             </button>
-                            <button
-                                type="button"
-                                className="transparent"
-                                onClick={() => {
-                                    setSelectedToken(list)
-                                    setDeleteConfirmation(true)
-                                }}
+                            <div
+                                className={`flexbox cb-5 cursor`}
+                                onClick={() => handleGenerateRowActionButton('edit', list.id)}
                             >
-                                <Trash className="scn-6 icon-dim-20" />
-                            </button>
+                                {list.name}
+                            </div>
+                            <div className="ellipsis-right">{moment(list.lastUsedAt).format(MomentDateFormat)}</div>
+                            <div>{list.lastUsedByIp}</div>
+                            <div className={`${isTokenExpired(list.expireAtInMs) ? 'cr-5' : ''}`}>
+                                {list.expireAtInMs === 0 ? (
+                                    'No expiration date'
+                                ) : (
+                                    <>
+                                        {isTokenExpired(list.expireAtInMs) ? 'Expired on ' : ''}
+                                        {moment(list.expireAtInMs).format(MomentDateFormat)}
+                                    </>
+                                )}
+                            </div>
+                            <div className="api__row-actions flex">
+                                <button
+                                    type="button"
+                                    className="transparent mr-8 ml-8"
+                                    onClick={() => handleGenerateRowActionButton('edit', list.id)}
+                                >
+                                    <Edit className="icon-dim-20" />
+                                </button>
+                                <button
+                                    type="button"
+                                    className="transparent"
+                                    onClick={() => {
+                                        setSelectedToken(list)
+                                        setDeleteConfirmation(true)
+                                    }}
+                                >
+                                    <Trash className="scn-6 icon-dim-20" />
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))
+                )}
                 {showDeleteConfirmation && selectedToken && (
                     <DeleteAPITokenModal
                         tokenData={selectedToken}

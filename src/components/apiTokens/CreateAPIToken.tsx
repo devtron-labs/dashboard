@@ -3,7 +3,7 @@ import { showError } from '../common'
 import { FormType, GenerateTokenType } from './authorization.type'
 import { createGeneratedAPIToken } from './service'
 import GenerateModal from './GenerateModal'
-import { createUserPermissionPayload, getDateInMilliseconds, PermissionType } from './authorization.utils'
+import { createUserPermissionPayload, getDateInMilliseconds, isFormComplete, PermissionType } from './authorization.utils'
 import GenerateActionButton from './GenerateActionButton'
 import { ValidationRules } from './validationRules'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
@@ -31,7 +31,6 @@ function CreateAPIToken({
     selectedExpirationDate,
     tokenResponse,
     setTokenResponse,
-    setCopied,
     reload,
 }: GenerateTokenType) {
     const history = useHistory()
@@ -102,28 +101,6 @@ function CreateAPIToken({
         history.push(`${match.path.split('create')[0]}list`)
     }
 
-    function isFormComplete(): boolean {
-        let isComplete: boolean = true
-        const tempPermissions = directPermission.reduce((agg, curr) => {
-            if (curr.team && curr.entityName.length === 0) {
-                isComplete = false
-                curr.entityNameError = 'Applications are mandatory'
-            }
-            if (curr.team && curr.environment.length === 0) {
-                isComplete = false
-                curr.environmentError = 'Environments are mandatory'
-            }
-            agg.push(curr)
-            return agg
-        }, [])
-
-        if (!isComplete) {
-            setDirectPermission(tempPermissions)
-        }
-
-        return isComplete
-    }
-
     const onChangeSelectFormData = (selectedOption: { label: string; value: number }) => {
         setSelectedExpirationDate(selectedOption)
         setFormData({
@@ -134,7 +111,7 @@ function CreateAPIToken({
     }
 
     const handleGenerateAPIToken = async (e) => {
-        if (!isFormComplete()) {
+        if (!isFormComplete(directPermission, setDirectPermission)) {
             toast.error('Some required fields are missing')
             return
         }
@@ -299,7 +276,6 @@ function CreateAPIToken({
                 <GenerateModal
                     close={handleGenerateTokenActionButton}
                     token={tokenResponse.token}
-                    setCopied={setCopied}
                     reload={reload}
                     redirectToTokenList={redirectToTokenList}
                 />

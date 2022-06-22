@@ -74,7 +74,7 @@
 
 .SingleDatePickerInput__withBorder .SingleDatePicker_picker {
     bottom: 0 !important;
-    top: 46px;
+    top: 46px !important;
 }
 
 .SingleDatePickerInput__withBorder .DateInput_input__focused#single_date_picker + .DateInput_fang {

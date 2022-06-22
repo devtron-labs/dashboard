@@ -100,3 +100,25 @@ export const isTokenExpired = (expiredDate: number): boolean => {
 
     return getDateInMilliseconds(new Date().valueOf()) > getDateInMilliseconds(expiredDate)
 }
+
+export const isFormComplete = (directPermission, setDirectPermission): boolean => {
+    let isComplete: boolean = true
+    const tempPermissions = directPermission.reduce((agg, curr) => {
+        if (curr.team && curr.entityName.length === 0) {
+            isComplete = false
+            curr.entityNameError = 'Applications are mandatory'
+        }
+        if (curr.team && curr.environment.length === 0) {
+            isComplete = false
+            curr.environmentError = 'Environments are mandatory'
+        }
+        agg.push(curr)
+        return agg
+    }, [])
+
+    if (!isComplete) {
+        setDirectPermission(tempPermissions)
+    }
+
+    return isComplete
+}

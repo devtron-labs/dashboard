@@ -3,7 +3,7 @@ import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import RegeneratedModal from './RegenerateModal'
 import { EditDataType, EditTokenType } from './authorization.type'
-import { createUserPermissionPayload, isTokenExpired, PermissionType } from './authorization.utils'
+import { createUserPermissionPayload, isFormComplete, isTokenExpired, PermissionType } from './authorization.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import GenerateActionButton from './GenerateActionButton'
 import { useHistory, useRouteMatch } from 'react-router-dom'
@@ -110,6 +110,11 @@ function EditAPIToken({
     }
 
     const handleUpdatedToken = async (tokenId) => {
+        if (!isFormComplete(directPermission, setDirectPermission)) {
+            toast.error('Some required fields are missing')
+            return
+        }
+
         try {
             setLoader(true)
             const payload = {
@@ -271,6 +276,7 @@ function EditAPIToken({
                                 </span>
                             </div>
                         </label>
+                        <hr className="modal__divider mt-24 mb-12" />
                         <div className="flex left">
                             <RadioGroup
                                 className="permission-type__radio-group"
@@ -283,7 +289,6 @@ function EditAPIToken({
                                 ))}
                             </RadioGroup>
                         </div>
-
                         {adminPermission === 'SPECIFIC' && (
                             <GroupPermission
                                 userData={userData}

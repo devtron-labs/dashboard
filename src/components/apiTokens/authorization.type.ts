@@ -22,7 +22,6 @@ export interface GenerateTokenType {
     selectedExpirationDate
     tokenResponse: TokenResponseType
     setTokenResponse: React.Dispatch<React.SetStateAction<TokenResponseType>>
-    setCopied: React.Dispatch<React.SetStateAction<boolean>>
     reload: () => void
 }
 
@@ -62,7 +61,6 @@ export interface GenerateActionButtonType {
 export interface GenerateTokenModalType {
     close: () => void
     token: string
-    setCopied: React.Dispatch<React.SetStateAction<boolean>>
     reload: () => void
     redirectToTokenList: () => void
     isRegenerationModal?: boolean
