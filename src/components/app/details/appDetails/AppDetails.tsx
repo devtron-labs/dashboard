@@ -844,29 +844,47 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     </div>
 };
 
-export function AppNotConfigured() {
-    const { appId } = useParams<{ appId: string }>();
-    const { push } = useHistory();
+export function AppNotConfigured({
+    image,
+    title,
+    subtitle,
+    buttonTitle,
+    appConfigTabs ='',
+}: {
+    image?: any
+    title?: string
+    subtitle?: string
+    buttonTitle?: string
+    appConfigTabs?: string
+}) {
+    const { appId } = useParams<{ appId: string }>()
+    const { push } = useHistory()
     function handleEditApp(e) {
         getAppConfigStatus(+appId).then((response) => {
-            let url = `/app/${appId}/edit`;
-            push(url);
-        });
+            let url = `/app/${appId}/edit${appConfigTabs}`
+            push(url)
+        })
     }
 
     return (
         <section className="app-not-configured w-100">
-            <img src={noGroups} />
-            <h3 className='mb-20 fs-16 fw-600'>Looks like you’re all set. Go ahead and <br />select an image to deploy.</h3>
-            <p className='mb-20 fs-13'>Once deployed, details for the deployment will <br /> be available here.</p>
+            <img src={image || AppNotConfiguredIcon} />
+            <h3 className="mb-20 fs-16 fw-600 w-300">{title || 'Finish configuring this application'}</h3>
+                <p className="mb-20 fs-13 w-300"> {subtitle ? subtitle : 
+                    <>This application is not fully configured. Complete the configuration, trigger a deployment and come
+                    back here.
+                    <a href="https://docs.devtron.ai/devtron/user-guide/creating-application" target="_blank">
+                        Need help?
+                    </a></>}
+                </p>
             {appId && push && (
                 <button className="cta flex" onClick={handleEditApp}>
-                    Go to deploy
-                    <ForwardArrow className='ml-5'/>
+                    {buttonTitle || 'Go to app configurations'}
+                    <ForwardArrow className="ml-5" />
                 </button>
             )}
         </section>
-    );
+    )
 }
 
 export function EnvironmentNotConfigured({ environments, ...props }) {
