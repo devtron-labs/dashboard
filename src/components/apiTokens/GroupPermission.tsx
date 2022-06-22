@@ -102,7 +102,7 @@ function GroupPermission({
                 onChange={(selected, actionMeta) => setUserGroups((selected || []) as any)}
                 className="basic-multi-select"
             />
-            {/* {userGroups.length > 0 && id && (
+            {userGroups.length > 0 && (
                 <div
                     style={{
                         display: 'grid',
@@ -121,7 +121,7 @@ function GroupPermission({
                         />
                     ))}
                 </div>
-            )} */}
+            )}
             <AppPermissions
                 data={userData}
                 directPermission={directPermission}
