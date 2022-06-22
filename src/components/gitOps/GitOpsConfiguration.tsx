@@ -101,6 +101,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             statusCode: 0,
             gitList: [],
             saveLoading: false,
+            validateLoading: false,
             providerTab: GitProvider.GITHUB,
             lastActiveGitOp: undefined,
             form: {
@@ -297,7 +298,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             toast.error("Some Required Fields are missing");
             return;
         }
-        this.setState({ validationStatus: VALIDATION_STATUS.LOADER, saveLoading: true });
+        this.setState({ validationStatus: VALIDATION_STATUS.LOADER, saveLoading: true, validateLoading: true });
         let payload = {
             id: this.state.form.id,
             provider: this.state.form.provider,
@@ -316,10 +317,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             let resp = response.result
             let errorMap = resp.stageErrorMap;
             if (errorMap != null && Object.keys(errorMap).length > 0) {
-                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, saveLoading: false, isFormEdited: false,validationError : errorMap || [], deleteRepoError : resp.deleteRepoFailed});
+                this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, saveLoading: false, validateLoading: false, isFormEdited: false,validationError : errorMap || [], deleteRepoError : resp.deleteRepoFailed});
                 toast.error("Configuration validation failed");
             } else {
-                this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, isFormEdited: false, deleteRepoError : resp.deleteRepoFailed});
+                this.setState({ validationStatus: VALIDATION_STATUS.SUCCESS, saveLoading: false, validateLoading: false, isFormEdited: false, deleteRepoError : resp.deleteRepoFailed});
                 toast.success("Configuration validated");
             }
         }).catch((error) => {
@@ -451,8 +452,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 </div>
 
                 <div className="form__buttons">
-                    <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.saveGitOps() }} tabIndex={5} className="cta">
-                        {this.state.saveLoading ? <Progressing /> : "Save"}
+                    <button type="submit" disabled={this.state.saveLoading} onClick={(e) => { e.preventDefault(); this.saveGitOps() }} tabIndex={5} className={`cta ${this.state.saveLoading ? 'cursor-not-allowed': '' }`}>
+                    {this.state.saveLoading && !this.state.validateLoading ? <Progressing /> : "Save"}
                     </button>
                 </div>
             </form>
