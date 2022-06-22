@@ -645,7 +645,7 @@ const Finished: React.FC<{ triggerDetails: History; colorClass: string; type: 'C
         <div className="flex column left">
             <div className={`${triggerDetails.status} fs-14 fw-6 ${colorClass}`}>{triggerDetails.status}</div>
             <div className="flex left">
-                {triggerDetails.finishedOn && (
+                {triggerDetails.finishedOn && triggerDetails.finishedOn !== '0001-01-01T00:00:00Z' && (
                     <time className="cn-7 fs-12 mr-12">
                         {moment(triggerDetails.finishedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
                     </time>
