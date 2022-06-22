@@ -31,7 +31,6 @@ function CreateAPIToken({
     selectedExpirationDate,
     tokenResponse,
     setTokenResponse,
-    setCopied,
     reload,
 }: GenerateTokenType) {
     const history = useHistory()
@@ -299,7 +298,6 @@ function CreateAPIToken({
                 <GenerateModal
                     close={handleGenerateTokenActionButton}
                     token={tokenResponse.token}
-                    setCopied={setCopied}
                     reload={reload}
                     redirectToTokenList={redirectToTokenList}
                 />

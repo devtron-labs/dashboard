@@ -9,7 +9,6 @@ import Tippy from '@tippyjs/react'
 function GenerateModal({
     close,
     token,
-    setCopied,
     reload,
     redirectToTokenList,
     isRegenerationModal,
@@ -50,7 +49,6 @@ function GenerateModal({
                     onShow={(_tippy) => {
                         setTimeout(() => {
                             _tippy.hide()
-                            setCopied(false)
                         }, 5000)
                     }}
                 >
@@ -58,7 +56,7 @@ function GenerateModal({
                         className="flex cta mt-20 mb-20"
                         onClick={(e) => {
                             e.stopPropagation()
-                            copyToClipboard(token, () => setCopied(true))
+                            copyToClipboard(token)
                         }}
                     >
                         <Clipboard className="icon-dim-16 ml-8" />

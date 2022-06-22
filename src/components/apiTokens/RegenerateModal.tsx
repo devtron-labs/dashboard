@@ -58,13 +58,13 @@ function RegeneratedModal({
         setLoader(true)
         try {
             const payload = {
-                description: '',
+                description: editData.description,
                 expireAtInMs: regeneratedExpireAtInMs,
             }
-            await updateGeneratedAPIToken(payload, editData?.id).then((response) => {
-                setTokenResponse(response.result)
-                setShowGenerateModal(true)
-            })
+
+            const { result } = await updateGeneratedAPIToken(payload, editData.id)
+            setTokenResponse(result)
+            setShowGenerateModal(true)
         } catch (err) {
             showError(err)
         } finally {
@@ -85,7 +85,6 @@ function RegeneratedModal({
         <GenerateModal
             close={handleGenerateTokenActionButton}
             token={tokenResponse.token}
-            setCopied={setCopied}
             reload={reload}
             redirectToTokenList={redirectToTokenList}
             isRegenerationModal={true}
@@ -109,9 +108,15 @@ function RegeneratedModal({
                             customDate={customDate}
                         />
                     </div>
+                    {/* {formData.dateType === 'Custom' && formDataErrorObj.invalidCustomDate && (
+                                <span className="form__error">
+                                    <Error className="form__icon form__icon--error" />
+                                    Custom expiration can't be blank. Please select a date.
+                                </span>
+                            )} */}
                 </div>
                 <GenerateActionButton
-                    loader={false}
+                    loader={loader}
                     onCancel={() => setShowRegeneratedModal(false)}
                     onSave={handleRegenrateToken}
                     buttonText="Regenerate Token"

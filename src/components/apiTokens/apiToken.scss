@@ -23,6 +23,10 @@
     }
 
     .api-list-row {
+        + .empty-state {
+            height: 440px !important;
+        }
+
         &:hover {
             background-color: var(--N50);
 
@@ -66,5 +70,11 @@
 
     .search {
         margin-right: 0;
+    }
+
+    .anchor {
+        .add-svg path {
+            fill: var(--B500);
+        }
     }
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Progressing } from '../common'
+import { ButtonWithLoader } from '../common'
 import { GenerateActionButtonType } from './authorization.type'
 
 function GenerateActionButton({
@@ -13,17 +13,35 @@ function GenerateActionButton({
     return (
         <div className={`modal__buttons w-100 p-16 flex ${showDelete ? 'content-space ' : 'right'} border-top`}>
             {showDelete && (
-                <button className="cta delete cancel mr-16" type="button" onClick={onDelete}>
-                    Delete
-                </button>
+                <ButtonWithLoader
+                    rootClassName="flex cta delete h-36 mr-16"
+                    onClick={onDelete}
+                    disabled={loader}
+                    isLoading={false}
+                    loaderColor="white"
+                >
+                    Delete token
+                </ButtonWithLoader>
             )}
-            <div>
-                <button className="cta cancel mr-16" type="button" onClick={onCancel}>
+            <div className="flex">
+                <ButtonWithLoader
+                    rootClassName="flex cta cancel h-36 mr-16"
+                    onClick={onCancel}
+                    disabled={loader}
+                    isLoading={false}
+                    loaderColor="white"
+                >
                     Cancel
-                </button>
-                <button className="cta" onClick={() => onSave()}>
-                    {loader ? <Progressing /> : buttonText}
-                </button>
+                </ButtonWithLoader>
+                <ButtonWithLoader
+                    rootClassName="flex cta h-36"
+                    onClick={() => onSave()}
+                    disabled={loader}
+                    isLoading={loader}
+                    loaderColor="white"
+                >
+                    {buttonText}
+                </ButtonWithLoader>
             </div>
         </div>
     )
