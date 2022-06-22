@@ -4,32 +4,16 @@ import { MomentDateFormat } from '../../config'
 import { ReactComponent as Key } from '../../assets/icons/ic-key-bulb.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
-import './apiToken.scss'
-import { deleteGeneratedAPIToken } from './service'
-import { toast } from 'react-toastify'
-import { showError } from '../common'
-import { useHistory, useRouteMatch } from 'react-router-dom'
-import { APITokenListType } from './authorization.type'
+import { useHistory } from 'react-router-dom'
+import { APITokenListType, TokenListType } from './authorization.type'
 import { getDateInMilliseconds } from './authorization.utils'
+import DeleteAPITokenModal from './DeleteAPITokenModal'
+import './apiToken.scss'
 
-function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, reload }: APITokenListType) {
+function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType) {
     const history = useHistory()
-    const match = useRouteMatch()
-
-    const deleteToken = (id) => {
-        deleteGeneratedAPIToken(id)
-            .then((response) => {
-                if (response.code === 200) {
-                    toast.success('Token Deleted!!!')
-                    let url = match.path.split('edit')[0]
-                    history.push(`${url}list`)
-                    reload()
-                }
-            })
-            .catch((error) => {
-                showError(error)
-            })
-    }
+    const [showDeleteConfirmation, setDeleteConfirmation] = useState(false)
+    const [selectedToken, setSelectedToken] = useState<TokenListType>()
 
     const handleGenerateRowActionButton = (key: 'create' | 'edit', id?) => {
         history.push(id ? `${key}/${id}` : key)
@@ -72,7 +56,11 @@ function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, rel
                             className="transparent cursor flex"
                             onClick={() => handleGenerateRowActionButton('edit', list.id)}
                         >
-                            <Key className={`api-key-icon icon-dim-20 ${isTokenExpired(list.expireAtInMs) ? 'api-key-expired-icon' : ''}`} />
+                            <Key
+                                className={`api-key-icon icon-dim-20 ${
+                                    isTokenExpired(list.expireAtInMs) ? 'api-key-expired-icon' : ''
+                                }`}
+                            />
                         </button>
                         <div
                             className={`flexbox cb-5 cursor`}
@@ -98,14 +86,22 @@ function APITokenList({ tokenList, setDeleteConfirmation, renderSearchToken, rel
                                 type="button"
                                 className="transparent"
                                 onClick={() => {
-                                    setDeleteConfirmation(false)
+                                    setSelectedToken(list)
+                                    setDeleteConfirmation(true)
                                 }}
                             >
-                                <Trash className="scn-6 icon-dim-20" onClick={() => deleteToken(list.id)} />
+                                <Trash className="scn-6 icon-dim-20" />
                             </button>
                         </div>
                     </div>
                 ))}
+                {showDeleteConfirmation && selectedToken && (
+                    <DeleteAPITokenModal
+                        tokenData={selectedToken}
+                        reload={reload}
+                        setDeleteConfirmation={setDeleteConfirmation}
+                    />
+                )}
             </div>
         </div>
     )

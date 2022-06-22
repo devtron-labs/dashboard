@@ -48,8 +48,6 @@ export interface EditTokenType {
     tokenList: TokenListType[]
     setCopied: React.Dispatch<React.SetStateAction<boolean>>
     copied: boolean
-    setDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
-    deleteConfirmation: boolean
     reload: () => void
 }
 
@@ -74,7 +72,6 @@ export interface GenerateTokenModalType {
 
 export interface APITokenListType {
     tokenList: TokenListType[]
-    setDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
     renderSearchToken: () => void
     reload: () => void
 }

@@ -26,6 +26,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { getUserId, saveUser } from '../userGroups/userGroup.service'
 import { mainContext } from '../common/navigation/NavigationRoutes'
+import DeleteAPITokenModal from './DeleteAPITokenModal'
 
 function EditAPIToken({
     setShowRegeneratedModal,
@@ -36,8 +37,6 @@ function EditAPIToken({
     tokenList,
     copied,
     setCopied,
-    deleteConfirmation,
-    setDeleteConfirmation,
     reload,
 }: EditTokenType) {
     const history = useHistory()
@@ -57,6 +56,7 @@ function EditAPIToken({
         entityName: [],
     })
     const [customDate, setCustomDate] = useState<number>(undefined)
+    const [deleteConfirmation, setDeleteConfirmation] = useState(false)
 
     useEffect(() => {
         const _editData = tokenList && tokenList.find((list) => list.id === parseInt(params.id))
@@ -163,34 +163,6 @@ function EditAPIToken({
             })
     }
 
-    const renderDeleteModal = (tokenData) => {
-        return (
-            <DeleteDialog
-                title={`Delete API token '${tokenData.name}'?`}
-                delete={() => deleteToken(tokenData.id)}
-                closeDelete={() => {
-                    setDeleteConfirmation(false)
-                }}
-            >
-                <DeleteDialog.Description>
-                    {tokenData.description && (
-                        <p className="fs-14 cn-7 lh-20 bcn-1 p-16 br-4">
-                            {tokenData.description && <span className="fw-6">Token description:</span>}
-                            <br />
-                            <span>{tokenData.description}</span>
-                        </p>
-                    )}
-                    <p className="fs-14 cn-7 lh-20">
-                        Any applications or scripts using this token will no longer be able to access the Devtron API.
-                    </p>
-                    <p className="fs-14 cn-7 lh-20">
-                        You cannot undo this action. Are you sure you want to delete this token?
-                    </p>
-                </DeleteDialog.Description>
-            </DeleteDialog>
-        )
-    }
-
     const onChangeEditData = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key): void => {
         const _editData = { ...editData }
         _editData[key] = event.target.value
@@ -235,18 +207,7 @@ function EditAPIToken({
                     <div>
                         <label className="form__row w-400">
                             <span className="form__label">Name</span>
-                            <input
-                                tabIndex={1}
-                                className="form__input"
-                                value={editData.name}
-                                disabled={!!editData.name}
-                            />
-                            {/* {this.state.showError && !this.state.isValid.name ? (
-                                  <span className="form__error">
-                                      <Error className="form__icon form__icon--error" />
-                                      This is a required field
-                                  </span>
-                                  ) : null} */}
+                            <input tabIndex={1} className="form__input" value={editData.name} disabled={true} />
                         </label>
                         <label className="form__row">
                             <span className="form__label">Description</span>
@@ -318,7 +279,6 @@ function EditAPIToken({
                                 setChartPermission={setChartPermission}
                             />
                         )}
-                        {deleteConfirmation && renderDeleteModal(editData)}
                     </div>
                 </div>
                 <hr className="modal__divider mt-20 mb-0" />
@@ -331,6 +291,14 @@ function EditAPIToken({
                     onDelete={handleDeleteButton}
                 />
             </div>
+            {deleteConfirmation && (
+                <DeleteAPITokenModal
+                    isEditView={true}
+                    tokenData={editData}
+                    reload={reload}
+                    setDeleteConfirmation={setDeleteConfirmation}
+                />
+            )}
             {showRegeneratedModal && (
                 <RegeneratedModal
                     close={handleRegenerateActionButton}

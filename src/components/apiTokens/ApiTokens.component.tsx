@@ -23,7 +23,6 @@ function ApiTokens({ reloadLists }) {
     const [filteredTokenList, setFilteredTokenList] = useState<TokenListType[]>(undefined)
     const [noResults, setNoResults] = useState(false)
     const [errorStatusCode, setErrorStatusCode] = useState(0)
-    const [deleteConfirmation, setDeleteConfirmation] = useState(false)
     const [showGenerateModal, setShowGenerateModal] = useState(false)
     const [showRegenerateTokenModal, setShowRegenerateTokenModal] = useState(false)
     const [copied, setCopied] = useState(false)
@@ -134,7 +133,6 @@ function ApiTokens({ reloadLists }) {
                             render={(props) => (
                                 <APITokenList
                                     tokenList={filteredTokenList}
-                                    setDeleteConfirmation={setDeleteConfirmation}
                                     renderSearchToken={renderSearchToken}
                                     reload={getData}
                                 />
@@ -169,8 +167,6 @@ function ApiTokens({ reloadLists }) {
                                     tokenList={tokenList}
                                     setCopied={setCopied}
                                     copied={copied}
-                                    setDeleteConfirmation={setDeleteConfirmation}
-                                    deleteConfirmation={deleteConfirmation}
                                     reload={getData}
                                 />
                             )}
