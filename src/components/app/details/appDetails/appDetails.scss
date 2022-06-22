@@ -1111,18 +1111,19 @@ table.pod__table td:last-child {
         margin-bottom: 12px;
     }
 
+    h3{
+        font-weight: 600;
+        text-align: center;
+        line-height: 22px;
+    }
+
     p {
-        font-size: 16px;
-        margin-bottom: 20px;
+        text-align: center;
     }
 
     button {
-        padding: 8px 16px;
-        color: var(--B500);
-        border: 1px solid var(--B500);
-        border-radius: 4px;
-        outline: none;
-        background-color: var(--white);
+       font-size: 13px;
+       height: 36px;
     }
 }
 

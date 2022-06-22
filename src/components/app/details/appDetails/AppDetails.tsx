@@ -43,6 +43,7 @@ import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg';
 import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg';
 import { ReactComponent as AlertTriangle } from '../../../../assets/icons/ic-alert-triangle.svg';
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg';
+import { ReactComponent as ForwardArrow } from '../../../../assets/icons/ic-arrow-forward.svg'
 import Tippy from '@tippyjs/react';
 import ReactGA from 'react-ga';
 import Select, { components } from 'react-select';
@@ -66,6 +67,7 @@ import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/Ext
 import { ExternalLink, ExternalLinksAndToolsType, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab';
+import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -121,7 +123,7 @@ export default function AppDetail() {
                 </Route>
                 {otherEnvsResult && !otherEnvsLoading &&
                     <>
-                        {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) && <AppNotConfigured text="You have not finished configuring this app" />}
+                        {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) && <AppNotConfigured />}
                         {(!params.envId && otherEnvsResult?.result?.length > 0) && <EnvironmentNotConfigured environments={otherEnvsResult?.result} />}
                     </>}
         </div>
@@ -842,7 +844,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     </div>
 };
 
-export function AppNotConfigured({ text = 'You have not finished configuring this app' }) {
+export function AppNotConfigured() {
     const { appId } = useParams<{ appId: string }>();
     const { push } = useHistory();
     function handleEditApp(e) {
@@ -854,11 +856,13 @@ export function AppNotConfigured({ text = 'You have not finished configuring thi
 
     return (
         <section className="app-not-configured w-100">
-            <img src={AppNotConfiguredIcon} />
-            <p>{text}</p>
+            <img src={noGroups} />
+            <h3 className='mb-20 fs-16 fw-600'>Looks like you’re all set. Go ahead and <br />select an image to deploy.</h3>
+            <p className='mb-20 fs-13'>Once deployed, details for the deployment will <br /> be available here.</p>
             {appId && push && (
-                <button className="configure" onClick={handleEditApp}>
-                    Configure
+                <button className="cta flex" onClick={handleEditApp}>
+                    Go to deploy
+                    <ForwardArrow className='ml-5'/>
                 </button>
             )}
         </section>

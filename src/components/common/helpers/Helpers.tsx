@@ -809,13 +809,17 @@ export function useSize(): UseSize {
 }
 
 export function copyToClipboard(str, callback = noop) {
+    if (!str) {
+        return
+    }
+
     const listener = function (ev) {
-        ev.preventDefault();
-        ev.clipboardData.setData('text/plain', str);
-    };
-    document.addEventListener('copy', listener);
-    document.execCommand('copy');
-    document.removeEventListener('copy', listener);
+        ev.preventDefault()
+        ev.clipboardData.setData('text/plain', str)
+    }
+    document.addEventListener('copy', listener)
+    document.execCommand('copy')
+    document.removeEventListener('copy', listener)
     callback()
 }
 
