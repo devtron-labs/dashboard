@@ -187,8 +187,8 @@ export default function CDDetails() {
 
     if (loading || (loadingDeploymentHistory && triggerHistory.size === 0)) return <Progressing pageLoader />
     if (result && !Array.isArray(result[0].result))
-        return <AppNotConfigured text="App is not deployed on any environment." />
-    if (result && !Array.isArray(result[1]?.pipelines)) return <AppNotConfigured text="No CD pipelines found." />
+        return <AppNotConfigured />
+    if (result && !Array.isArray(result[1]?.pipelines)) return <AppNotConfigured />
     if (!result || dependencyState[2] !== envId) return null
 
     return (
