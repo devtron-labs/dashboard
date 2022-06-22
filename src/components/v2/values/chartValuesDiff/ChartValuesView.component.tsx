@@ -614,6 +614,7 @@ export const ChartValuesEditor = ({
                     label: moment(new Date(_deploymentHistory.deployedAt.seconds * 1000)).format(Moment12HourFormat),
                     value: _deploymentHistory.version,
                     info: '',
+                    version: _deploymentHistory.chartMetadata.chartVersion,
                 }
             })
 
@@ -769,7 +770,9 @@ export const ChartValuesEditor = ({
                             <>
                                 <Edit className="icon-dim-16 mr-10" />
                                 values.yaml&nbsp;
-                                {selectedChartValues?.chartVersion ? `(${selectedChartValues?.chartVersion})` : ``}
+                                {selectedChartValues?.chartVersion || repoChartValue?.version
+                                    ? `(${selectedChartValues?.chartVersion || repoChartValue?.version})`
+                                    : ``}
                             </>
                         )}
                     </div>
