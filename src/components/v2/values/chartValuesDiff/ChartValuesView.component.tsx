@@ -458,7 +458,7 @@ const CompareWithDropdown = ({
                             : [{ label: 'No options', value: 0, info: '' }],
                 },
                 {
-                    label: 'Default',
+                    label: 'Default values',
                     options:
                         defaultChartValues.length > 0
                             ? defaultChartValues
@@ -476,7 +476,7 @@ const CompareWithDropdown = ({
                             : [{ label: 'No options', value: 0, info: '' }],
                 },
                 {
-                    label: 'Default',
+                    label: 'Default values',
                     options:
                         defaultChartValues.length > 0
                             ? defaultChartValues
