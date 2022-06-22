@@ -4,13 +4,11 @@ import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { Progressing, showError, VisibleModal } from '../common'
 import GenerateActionButton from './GenerateActionButton'
-import { getDateInMilliseconds, getOptions } from './authorization.utils'
+import { getDateInMilliseconds } from './authorization.utils'
 import { RegenerateModalType, TokenResponseType } from './authorization.type'
 import { updateGeneratedAPIToken } from './service'
-import { toast } from 'react-toastify'
 import GenerateModal from './GenerateModal'
 import ExpirationDate from './ExpirationDate'
-import moment from 'moment'
 
 function RegeneratedModal({
     close,

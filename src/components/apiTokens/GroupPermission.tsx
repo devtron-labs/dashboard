@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import {
     ClearIndicator,
     multiSelectStyles,
@@ -6,20 +6,13 @@ import {
     MultiValueRemove,
     removeItemsFromArray,
     Option,
-    useAsync,
     mapByKey,
 } from '../common'
 import AppPermissions from '../userGroups/AppPermissions'
 import { GroupRow, useUserGroupContext } from '../userGroups/UserGroup'
 import Select from 'react-select'
 import { OptionType } from '../app/types'
-import {
-    ActionTypes,
-    ChartGroupPermissionsFilter,
-    CreateUser,
-    DirectPermissionsRoleFilter,
-    EntityTypes,
-} from '../userGroups/userGroups.types'
+import { ChartGroupPermissionsFilter, CreateUser, DirectPermissionsRoleFilter } from '../userGroups/userGroups.types'
 
 function GroupPermission({
     userData,
@@ -64,7 +57,7 @@ function GroupPermission({
 
     return (
         <>
-            <div className="cn-9 fs-14 fw-6 mb-16">Group permissions</div>
+            <div className="cn-9 fs-13 mt-10 fw-4 mb-6">Group permissions</div>
             <Select
                 placeholder="Select permission groups"
                 value={userGroups}

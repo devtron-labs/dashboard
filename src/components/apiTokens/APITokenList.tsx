@@ -24,7 +24,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
             <div className="cn-9 fw-6 fs-16">API tokens</div>
             <p className="fs-13 fw-4">Tokens you have generated that can be used to access the Devtron API.</p>
             <div className="flex content-space">
-                <button className="cta h-32" onClick={() => handleGenerateRowActionButton('create')}>
+                <button className="flex cta h-32" onClick={() => handleGenerateRowActionButton('create')}>
                     Generate new token
                 </button>
                 {renderSearchToken()}

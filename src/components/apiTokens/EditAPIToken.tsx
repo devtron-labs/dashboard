@@ -32,8 +32,6 @@ function EditAPIToken({
     setShowRegeneratedModal,
     showRegeneratedModal,
     handleRegenerateActionButton,
-    selectedExpirationDate,
-    setSelectedExpirationDate,
     tokenList,
     copied,
     setCopied,

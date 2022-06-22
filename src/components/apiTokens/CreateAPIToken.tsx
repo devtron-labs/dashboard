@@ -255,6 +255,7 @@ function CreateAPIToken({
                                 </span>
                             )}
                         </label>
+                        <hr className="modal__divider mt-24 mb-12" />
                         <div className="flex left">
                             <RadioGroup
                                 className="permission-type__radio-group"
@@ -263,10 +264,13 @@ function CreateAPIToken({
                                 onChange={handlePermissionType}
                             >
                                 {PermissionType.map(({ label, value }) => (
-                                    <RadioGroupItem value={value}> {label} </RadioGroupItem>
+                                    <RadioGroupItem value={value}>
+                                        <span className="fw-6">{label}</span>
+                                    </RadioGroupItem>
                                 ))}
                             </RadioGroup>
                         </div>
+
                         {adminPermission === 'SPECIFIC' && (
                             <GroupPermission
                                 userData={null}
