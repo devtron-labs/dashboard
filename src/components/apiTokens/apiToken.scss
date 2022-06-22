@@ -82,3 +82,19 @@
         }
     }
 }
+
+.generate-token-modal {
+    .api-token-icon {
+        path:first-of-type {
+            stroke: var(--G500);
+        }
+
+        path:last-of-type {
+            fill: var(--G500);
+        }
+    }
+
+    .api-token-text {
+        width: 94%;
+    }
+}

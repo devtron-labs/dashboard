@@ -242,7 +242,7 @@ function EditAPIToken({
                         </label>
                         <label className="form__row">
                             <span className="form__label">Token</span>
-                            <div className="flex content-space mono top">
+                            <div className="flex content-space mono top cn-9">
                                 <span style={{ wordBreak: 'break-word' }}>{editData.token}</span>
                                 <Tippy
                                     className="default-tt"

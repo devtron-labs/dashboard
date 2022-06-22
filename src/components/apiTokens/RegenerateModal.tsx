@@ -29,16 +29,24 @@ function RegeneratedModal({
     const [regeneratedExpireAtInMs, setRegeneratedExpireAtInMs] = useState<number>(
         getDateInMilliseconds(selectedExpirationDate.value),
     )
-    const [copied, setCopied] = useState(false)
+    const [invalidCustomDate, setInvalidCustomDate] = useState(false)
 
     const onChangeSelectFormData = (selectedOption: { label: string; value: any }) => {
         setRegeneratedExpireAtInMs(getDateInMilliseconds(selectedOption.value))
         setSelectedExpirationDate(selectedOption)
+
+        if (selectedOption.label === 'Custom' && invalidCustomDate) {
+            setInvalidCustomDate(false)
+        }
     }
 
     const handleDatesChange = (event): void => {
         setCustomDate(event)
         setRegeneratedExpireAtInMs(event.valueOf())
+
+        if (invalidCustomDate) {
+            setInvalidCustomDate(false)
+        }
     }
 
     const renderModalHeader = () => {
@@ -55,6 +63,11 @@ function RegeneratedModal({
     }
 
     const handleRegenrateToken = async () => {
+        if (selectedExpirationDate.label === 'Custom' && !customDate) {
+            setInvalidCustomDate(true)
+            return
+        }
+
         setLoader(true)
         try {
             const payload = {
@@ -108,12 +121,12 @@ function RegeneratedModal({
                             customDate={customDate}
                         />
                     </div>
-                    {/* {formData.dateType === 'Custom' && formDataErrorObj.invalidCustomDate && (
-                                <span className="form__error">
-                                    <Error className="form__icon form__icon--error" />
-                                    Custom expiration can't be blank. Please select a date.
-                                </span>
-                            )} */}
+                    {selectedExpirationDate.label === 'Custom' && invalidCustomDate && (
+                        <span className="form__error flexbox-imp flex-align-center">
+                            <Warn className="form__icon--error icon-dim-16 mr-4" />
+                            Custom expiration can't be blank. Please select a date.
+                        </span>
+                    )}
                 </div>
                 <GenerateActionButton
                     loader={loader}

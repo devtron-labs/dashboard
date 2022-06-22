@@ -3,18 +3,13 @@ import { copyToClipboard, VisibleModal } from '../common'
 import { ReactComponent as Success } from '../../assets/icons/ic-success-outline.svg'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as Key } from '../../assets/icons/ic-key-bulb.svg'
 import { GenerateTokenModalType } from './authorization.type'
 import Tippy from '@tippyjs/react'
 
-function GenerateModal({
-    close,
-    token,
-    reload,
-    redirectToTokenList,
-    isRegenerationModal,
-}: GenerateTokenModalType) {
+function GenerateModal({ close, token, reload, redirectToTokenList, isRegenerationModal }: GenerateTokenModalType) {
     return (
-        <VisibleModal className="">
+        <VisibleModal className="generate-token-modal">
             <div className={`modal__body w-600 pl-20 pr-20 pt-20 pb-20 flex column`}>
                 <button
                     type="button"
@@ -35,10 +30,11 @@ function GenerateModal({
                     </h2>
                 </div>
                 <div
-                    className="bcg-1 br-4 eg-2 bw-1 pl-16 pr-16 pt-10 pb-10"
+                    className="flex top left bcg-1 br-4 eg-2 bw-1 pl-16 pr-16 pt-10 pb-10"
                     style={{ width: '560px', wordWrap: 'break-word' }}
                 >
-                    {token}
+                    <Key className="api-token-icon icon-dim-20 mr-10" />
+                    <span className="api-token-text cn-9">{token}</span>
                 </div>
                 <Tippy
                     className="default-tt"
@@ -59,7 +55,7 @@ function GenerateModal({
                             copyToClipboard(token)
                         }}
                     >
-                        <Clipboard className="icon-dim-16 ml-8" />
+                        <Clipboard className="icon-dim-16" />&nbsp;
                         Copy token
                     </button>
                 </Tippy>
