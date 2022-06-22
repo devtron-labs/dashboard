@@ -404,7 +404,7 @@ const formatOptionLabel = (option: { label: string; value: number; info: string;
     return (
         <div className="flex left column">
             <span className="w-100 ellipsis-right">
-                {option.label}&nbsp;{option.version ? `(${option.version})` : ``}
+                {option.label}&nbsp;{option.version && `(${option.version})`}
             </span>
             {option.info && <small className="cn-6">{option.info}</small>}
         </div>
@@ -415,7 +415,7 @@ const customValueContainer = (props: any): JSX.Element => {
     return (
         <components.ValueContainer {...props}>
             {props.selectProps.value?.label}&nbsp;
-            {props.selectProps.value?.version ? `(${props.selectProps.value.version})` : ``}
+            {props.selectProps.value?.version && `(${props.selectProps.value.version})`}
             {React.cloneElement(props.children[1], {
                 style: { position: 'absolute' },
             })}
@@ -770,9 +770,8 @@ export const ChartValuesEditor = ({
                             <>
                                 <Edit className="icon-dim-16 mr-10" />
                                 values.yaml&nbsp;
-                                {selectedChartValues?.chartVersion || repoChartValue?.version
-                                    ? `(${selectedChartValues?.chartVersion || repoChartValue?.version})`
-                                    : ``}
+                                {(selectedChartValues?.chartVersion || repoChartValue?.version) &&
+                                    `(${selectedChartValues?.chartVersion || repoChartValue?.version})`}
                             </>
                         )}
                     </div>
