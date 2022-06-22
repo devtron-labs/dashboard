@@ -80,10 +80,10 @@ function ApiTokens({ reloadLists }) {
     }
 
     const handleFilterKeyPress = (event): void => {
-        let theKeyCode = event.key
+        const theKeyCode = event.key
         if (theKeyCode === 'Enter') {
             handleFilterChanges(event.target.value)
-            setSearchApplied(true)
+            setSearchApplied(!!event.target.value)
         } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
             clearSearch()
         }
@@ -111,11 +111,11 @@ function ApiTokens({ reloadLists }) {
                         }}
                         onKeyDown={handleFilterKeyPress}
                     />
-                    {searchApplied ? (
+                    {searchApplied && (
                         <button className="search__clear-button" type="button" onClick={clearSearch}>
                             <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                         </button>
-                    ) : null}
+                    )}
                 </div>
             </div>
         )
