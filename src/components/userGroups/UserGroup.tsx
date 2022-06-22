@@ -53,6 +53,7 @@ import EmptyImage from '../../assets/img/empty-applist@2x.png';
 import EmptySearch from '../../assets/img/empty-noresult@2x.png';
 import './UserGroup.scss';
 import { mainContext } from '../common/navigation/NavigationRoutes';
+import { Option as singleOption } from '../v2/common/ReactSelect.utils';
 import { responseInterceptor } from 'http-proxy-middleware';
 
 interface UserGroup {
@@ -865,6 +866,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         <React.Fragment>
             <Select
                 value={permission.team}
+                menuShouldBlockScroll={true}
                 name="team"
                 isMulti={false}
                 placeholder="Select project"
@@ -881,7 +883,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 components={{
                     ClearIndicator: null,
                     IndicatorSeparator: null,
-                    Option,
+                    Option: singleOption,
                     ValueContainer: projectValueContainer,
                 }}
                 styles={{
@@ -923,6 +925,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         classNamePrefix="select"
                         menuPortalTarget={document.body}
                         hideSelectedOptions={false}
+                        menuShouldBlockScroll={true}
                         styles={{
                             ...tempMultiSelectStyles,
                             option: (base, state) => ({
@@ -967,6 +970,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         menuPortalTarget={document.body}
                         hideSelectedOptions={false}
                         styles={tempMultiSelectStyles}
+                        menuShouldBlockScroll={true}
                         components={{
                             ClearIndicator: null,
                             ValueContainer,
@@ -1018,6 +1022,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     onChange={handleDirectPermissionChange}
                     hideSelectedOptions={false}
                     inputValue={appInput}
+                    menuShouldBlockScroll={true}
                     onBlur={() => {
                         setAppInput('');
                     }}
@@ -1041,6 +1046,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 formatOptionLabel={formatOptionLabel}
                 onChange={handleDirectPermissionChange}
                 isDisabled={!permission.team}
+                menuShouldBlockScroll={true}
                 styles={{
                     ...tempMultiSelectStyles,
                     option: (base, state) => ({
@@ -1173,6 +1179,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(({ chart
                         Option,
                     }}
                     styles={{ ...tempMultiSelectStyles }}
+                    menuShouldBlockScroll={true}
                 />
             </div>
             {chartPermission.action === ActionTypes.UPDATE && (
@@ -1202,6 +1209,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(({ chart
                     className="mt-8 mb-8"
                     classNamePrefix="select"
                     hideSelectedOptions={false}
+                    menuShouldBlockScroll={true}
                     components={{
                         ClearIndicator: null,
                         IndicatorSeparator: null,
