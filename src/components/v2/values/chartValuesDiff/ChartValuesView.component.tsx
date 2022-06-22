@@ -404,7 +404,7 @@ const formatOptionLabel = (option: { label: string; value: number; info: string;
     return (
         <div className="flex left column">
             <span className="w-100 ellipsis-right">
-                {option.label} ({option.version})
+                {option.label}&nbsp;{option.version ? `(${option.version})` : ``}
             </span>
             {option.info && <small className="cn-6">{option.info}</small>}
         </div>
@@ -414,7 +414,8 @@ const formatOptionLabel = (option: { label: string; value: number; info: string;
 const customValueContainer = (props: any): JSX.Element => {
     return (
         <components.ValueContainer {...props}>
-            {props.selectProps.value?.label} ({props.selectProps.value?.version})
+            {props.selectProps.value?.label}&nbsp;
+            {props.selectProps.value?.version ? `(${props.selectProps.value.version})` : ``}
             {React.cloneElement(props.children[1], {
                 style: { position: 'absolute' },
             })}
@@ -584,19 +585,7 @@ export const ChartValuesEditor = ({
 
     useEffect(() => {
         if (!manifestView && chartValuesList.length > 0 && (isDeployChartView || deploymentHistoryList.length > 0)) {
-            // const filteredChartValues = chartValuesList
-            //     .filter((_chartValue) => _chartValue.kind === ChartKind.DEPLOYED && _chartValue.name !== appName)
-            //     .map((_chartValue) => {
-            //         return {
-            //             label: _chartValue.name,
-            //             value: _chartValue.id,
-            //             appStoreVersionId: _chartValue.appStoreVersionId,
-            //             info: `Deployed on: ${_chartValue.environmentName}`,
-            //             kind: _chartValue.kind,
-            //             version: _chartValue.chartVersion,
-            //         }
-            //     })
-            let deployedChartValues = [],
+            const deployedChartValues = [],
                 defaultChartValues = []
             for (let index = 0; index < chartValuesList.length; index++) {
                 const _chartValue = chartValuesList[index]
@@ -779,7 +768,8 @@ export const ChartValuesEditor = ({
                         ) : (
                             <>
                                 <Edit className="icon-dim-16 mr-10" />
-                                values.yaml ({selectedChartValues?.chartVersion})
+                                values.yaml&nbsp;
+                                {selectedChartValues?.chartVersion ? `(${selectedChartValues?.chartVersion})` : ``}
                             </>
                         )}
                     </div>
