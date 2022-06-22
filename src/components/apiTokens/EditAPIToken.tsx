@@ -3,7 +3,7 @@ import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import RegeneratedModal from './RegenerateModal'
 import { EditDataType, EditTokenType } from './authorization.type'
-import { createUserPermissionPayload, PermissionType } from './authorization.utils'
+import { createUserPermissionPayload, isTokenExpired, PermissionType } from './authorization.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import GenerateActionButton from './GenerateActionButton'
 import { useHistory, useRouteMatch } from 'react-router-dom'
@@ -94,12 +94,10 @@ function EditAPIToken({
     const renderRegenrateInfoBar = () => {
         return (
             <InfoColourBar
-                message={
-                    'If you’ve lost or forgotten this token, you can regenerate it. Any scripts or applications using this token will need to be updated.'
-                }
-                classname={'info m-20'}
+                message="If you’ve lost or forgotten this token, you can regenerate it. Any scripts or applications using this token will need to be updated."
+                classname="info m-20"
                 Icon={InfoIcon}
-                iconClass={'icon-dim-20'}
+                iconClass="icon-dim-20"
                 renderActionButton={renderActionButton}
             />
         )
@@ -177,6 +175,26 @@ function EditAPIToken({
         setAdminPermission(e.target.value)
     }
 
+    const getExpirationText = () => {
+        if (isTokenExpired(editData.expireAtInMs)) {
+            return (
+                <span className="cr-5">
+                    This token expired on&nbsp;
+                    {moment(editData.expireAtInMs).format(MomentDateFormat)}.
+                </span>
+            )
+        } else if (editData.expireAtInMs === 0) {
+            return <span>This token has no expiration date.</span>
+        }
+
+        return (
+            <span>
+                This token expires on&nbsp;
+                {moment(editData.expireAtInMs).format(MomentDateFormat)}.
+            </span>
+        )
+    }
+
     if (isLoading || !editData) {
         return (
             <Progressing
@@ -247,8 +265,8 @@ function EditAPIToken({
                         <label className="form__row">
                             <span className="form__label">Expiration</span>
                             <div className="align-left">
-                                This token expires on&nbsp;
-                                {moment(editData.expireAtInMs).format(MomentDateFormat)}.&nbsp;
+                                {getExpirationText()}
+                                &nbsp;
                                 <span className="fw-4">To set a new expiration date you must</span>&nbsp;
                                 <span className="cb-5 cursor" onClick={() => setShowRegeneratedModal(true)}>
                                     regenerate the token.

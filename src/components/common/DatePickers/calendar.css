@@ -71,3 +71,12 @@
 .SingleDatePickerInput__withBorder .DateInput_input__focused#single_date_picker {
     border-color: var(--B500);
 }
+
+.SingleDatePickerInput__withBorder .SingleDatePicker_picker {
+    bottom: 0 !important;
+    top: 46px;
+}
+
+.SingleDatePickerInput__withBorder .DateInput_input__focused#single_date_picker + .DateInput_fang {
+    display: none;
+}

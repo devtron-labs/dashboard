@@ -95,3 +95,11 @@ export const createUserPermissionPayload = (
 
     return userPermissionPayload
 }
+
+export const isTokenExpired = (expiredDate: number): boolean => {
+    if (expiredDate === 0) {
+        return false
+    }
+
+    return getDateInMilliseconds(new Date().valueOf()) > getDateInMilliseconds(expiredDate)
+}

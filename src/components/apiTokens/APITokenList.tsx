@@ -6,7 +6,7 @@ import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import { useHistory } from 'react-router-dom'
 import { APITokenListType, TokenListType } from './authorization.type'
-import { getDateInMilliseconds } from './authorization.utils'
+import { getDateInMilliseconds, isTokenExpired } from './authorization.utils'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import './apiToken.scss'
 
@@ -19,16 +19,12 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
         history.push(id ? `${key}/${id}` : key)
     }
 
-    const isTokenExpired = (expiredDate: number): boolean => {
-        return getDateInMilliseconds(new Date().valueOf()) > getDateInMilliseconds(expiredDate)
-    }
-
     return (
         <div>
             <div className="cn-9 fw-6 fs-16">API tokens</div>
             <p className="fs-13 fw-4">Tokens you have generated that can be used to access the Devtron API.</p>
             <div className="flex content-space">
-                <button className="cta" onClick={() => handleGenerateRowActionButton('create')}>
+                <button className="cta h-32" onClick={() => handleGenerateRowActionButton('create')}>
                     Generate new token
                 </button>
                 {renderSearchToken()}
@@ -71,8 +67,14 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                         <div className="ellipsis-right">{moment(list.lastUsedAt).format(MomentDateFormat)}</div>
                         <div>{list.lastUsedByIp}</div>
                         <div className={`${isTokenExpired(list.expireAtInMs) ? 'cr-5' : ''}`}>
-                            {isTokenExpired(list.expireAtInMs) ? 'Expired on ' : ''}
-                            {moment(list.expireAtInMs).format(MomentDateFormat)}
+                            {list.expireAtInMs === 0 ? (
+                                'No expiration date'
+                            ) : (
+                                <>
+                                    {isTokenExpired(list.expireAtInMs) ? 'Expired on ' : ''}
+                                    {moment(list.expireAtInMs).format(MomentDateFormat)}
+                                </>
+                            )}
                         </div>
                         <div className="api__row-actions flex">
                             <button

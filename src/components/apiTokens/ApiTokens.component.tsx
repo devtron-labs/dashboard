@@ -96,7 +96,7 @@ function ApiTokens({ reloadLists }) {
     const renderSearchToken = () => {
         return (
             <div className="flexbox content-space">
-                <div className="search position-rel margin-right-0 en-2 bw-1 br-4">
+                <div className="search position-rel en-2 bw-1 br-4 h-32">
                     <Search className="search__icon icon-dim-18" />
                     <input
                         type="text"

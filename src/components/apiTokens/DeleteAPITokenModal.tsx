@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { DeleteDialog, showError } from '../common'
+import { deleteUser } from '../userGroups/userGroup.service'
 import { deleteGeneratedAPIToken } from './service'
 
 const DeleteAPITokenModal = ({
@@ -19,15 +20,18 @@ const DeleteAPITokenModal = ({
     const match = useRouteMatch()
     const [apiCallInProgress, setApiCallInProgress] = useState(false)
 
-    const deleteToken = (id) => {
+    const deleteToken = async () => {
         setApiCallInProgress(true)
-        deleteGeneratedAPIToken(id)
-            .then((response) => {
-                toast.success('API Token Deleted!')
-                if (isEditView) {
-                    history.push(`${match.path.split('edit')[0]}list`)
+        deleteGeneratedAPIToken(tokenData.id)
+            .then(({ result }) => {
+                if (result) {
+                    deleteUser(tokenData.userId)
+                    toast.success('Deleted successfully')
+                    reload()
+                    if (isEditView) {
+                        history.push(`${match.path.split('edit')[0]}list`)
+                    }
                 }
-                reload()
             })
             .catch((error) => {
                 showError(error)
@@ -40,7 +44,7 @@ const DeleteAPITokenModal = ({
     return (
         <DeleteDialog
             title={`Delete API token '${tokenData.name}'?`}
-            delete={() => deleteToken(tokenData.id)}
+            delete={deleteToken}
             closeDelete={() => {
                 setDeleteConfirmation(false)
             }}

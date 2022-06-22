@@ -14,7 +14,7 @@ export function updateGeneratedAPIToken(request, id): Promise<ResponseType> {
     return put(`${Routes.API_TOKEN}/${id}`, request)
 }
 
-export function deleteGeneratedAPIToken(userId: string): Promise<ResponseType> {
-    const URL = `${Routes.API_TOKEN}/${userId}`
+export function deleteGeneratedAPIToken(id: string): Promise<ResponseType> {
+    const URL = `${Routes.API_TOKEN}/${id}`
     return trash(URL)
 }

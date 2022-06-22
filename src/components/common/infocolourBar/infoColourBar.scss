@@ -4,10 +4,16 @@
 .warn {
     background: var(--Y100);
     border: solid var(--Y200);
+
+    .warning-icon path:nth-child(2) {
+        fill: var(--Y700);
+    }
 }
+
 .failed {
     background-color: var(--R100);
 }
+
 .info {
     background-color: var(--B100);
     border: 1px solid var(--B200);

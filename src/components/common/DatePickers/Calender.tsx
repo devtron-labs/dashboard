@@ -183,14 +183,12 @@ export class DatePicker extends Component<DatePickerProps> {
 interface SinglrDatePickerProps {
     date: Moment
     handleDatesChange: (e) => void
-    openDirection?: string
     readOnly?: boolean
 }
 
 export const SingleDatePickerComponent = ({
     date,
     handleDatesChange,
-    openDirection,
     readOnly,
 }: SinglrDatePickerProps) => {
     const [focused, setFocused] = useState(false)
@@ -208,7 +206,7 @@ export const SingleDatePickerComponent = ({
             focused={focused}
             onFocusChange={handleFocusChange}
             numberOfMonths={1}
-            openDirection={openDirection || 'down'}
+            openDirection={'down'}
             renderCalendarDay={(props) => <CustomizableCalendarDay {...props} {...customDayStyles} />}
             hideKeyboardShortcutsPanel={true}
             withFullScreenPortal={false}

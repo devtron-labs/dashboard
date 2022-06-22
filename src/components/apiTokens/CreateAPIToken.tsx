@@ -1,8 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { showError } from '../common'
-import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { FormType, GenerateTokenType } from './authorization.type'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { createGeneratedAPIToken } from './service'
 import GenerateModal from './GenerateModal'
 import { createUserPermissionPayload, getDateInMilliseconds, PermissionType } from './authorization.utils'
@@ -67,7 +65,7 @@ function CreateAPIToken({
     const validationRules = new ValidationRules()
 
     const onChangeFormData = (event, key): void => {
-        if (key === 'customDate') { 
+        if (key === 'customDate') {
             setCustomDate(event)
             setFormData({
                 ...formData,
@@ -97,10 +95,6 @@ function CreateAPIToken({
             setFormData({
                 ...formData,
                 [key]: event.target.value,
-            })
-            setFormDataErrorObj({
-                ...formDataErrorObj,
-                [key]: validationRules.requiredField(event.target.value).isValid,
             })
         }
     }
@@ -142,6 +136,7 @@ function CreateAPIToken({
 
     const handleGenerateAPIToken = async (e) => {
         if (!isFormComplete()) {
+            toast.error('Some required fields are missing')
             return
         }
 
@@ -230,7 +225,7 @@ function CreateAPIToken({
                             {formDataErrorObj.invalidName && (
                                 <span className="form__error">
                                     <Error className="form__icon form__icon--error" />
-                                    {formDataErrorObj.invalidaNameMessage} <br />
+                                    {formDataErrorObj.invalidaNameMessage}
                                 </span>
                             )}
                         </label>
@@ -257,23 +252,10 @@ function CreateAPIToken({
                             {formData.dateType === 'Custom' && formDataErrorObj.invalidCustomDate && (
                                 <span className="form__error">
                                     <Error className="form__icon form__icon--error" />
-                                    &nbsp; Custom expiration can't be blank. Please select a date. <br />
+                                    Custom expiration can't be blank. Please select a date.
                                 </span>
                             )}
                         </label>
-                        {selectedExpirationDate.label === 'No expiration' && (
-                            <div className="mb-20">
-                                <InfoColourBar
-                                    classname={'warn'}
-                                    Icon={Warn}
-                                    message={
-                                        'Devtron strongly recommends that you set an expiration date for your token to help keep your information secure.'
-                                    }
-                                    iconClass="scy-9"
-                                />
-                            </div>
-                        )}
-
                         <div className="flex left">
                             <RadioGroup
                                 className="permission-type__radio-group"

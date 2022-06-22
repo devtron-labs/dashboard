@@ -94,17 +94,15 @@ function RegeneratedModal({
             redirectToTokenList={redirectToTokenList}
         />
     ) : (
-        <VisibleModal className=''>
+        <VisibleModal className="">
             <div className="modal__body w-600 flex column p-0">
                 {renderModalHeader()}
                 <div className="p-20 w-100">
                     <InfoColourBar
-                        message={
-                            'Submitting this form will generate a new token. Be aware that any scripts or applications using the current token will need to be updated.'
-                        }
-                        classname={'warn'}
+                        message="Submitting this form will generate a new token. Be aware that any scripts or applications using the current token will need to be updated."
+                        classname="warn"
                         Icon={Warn}
-                        iconClass=""
+                        iconClass="warning-icon"
                     />
                     <div className="mt-20 mb-20">
                         <ExpirationDate

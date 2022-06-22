@@ -46,6 +46,17 @@
         .form__input {
             height: 36px;
         }
+
+        .form__error {
+            display: flex !important;
+            align-items: center;
+            margin-top: 6px;
+
+            .form__icon.form__icon--error {
+                width: 16px;
+                height: 16px;
+            }
+        }
     }
 
     .form__permission {
