@@ -21,7 +21,7 @@ function NoMatchingResults() {
             <EmptyState.Title>
                 <h2 className="fs-16 fw-4 c-9">No matching results</h2>
             </EmptyState.Title>
-            <EmptyState.Subtitle>We couldn't find any matching external link configuration</EmptyState.Subtitle>
+            <EmptyState.Subtitle>We couldn't find any matching token</EmptyState.Subtitle>
         </EmptyState>
     )
 }
