@@ -13,7 +13,7 @@ import Reload from '../../Reload/Reload'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { toast } from 'react-toastify'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
-import { getDiscoverChartDetailsURL, breadCrumbsChartValue } from '../charts.helper'
+import { breadCrumbsChartValue, getSavedValuesListURL } from '../charts.helper'
 import { ChartValuesState, ChartValuesProps } from '../charts.types'
 import YAML from 'yaml'
 import PageHeader from '../../common/header/PageHeader'
@@ -42,7 +42,7 @@ export default class ChartValues extends Component<ChartValuesProps, ChartValues
         this.handleChartVersionChange = this.handleChartVersionChange.bind(this)
         this.handleName = this.handleName.bind(this)
         this.saveChartValues = this.saveChartValues.bind(this)
-        this.redirectToDiscoverChart = this.redirectToDiscoverChart.bind(this)
+        this.redirectToSavedValueList = this.redirectToSavedValueList.bind(this)
         this.deleteChartValue = this.deleteChartValue.bind(this)
     }
 
@@ -53,7 +53,7 @@ export default class ChartValues extends Component<ChartValuesProps, ChartValues
                 return response.result[0].id
             })
             .then((chartVersionId) => {
-                if (this.props.match.params.chartValueId) {
+                if (this.props.match.params.chartValueId !== '0') {
                     getChartValues(this.props.match.params.chartValueId, 'TEMPLATE')
                         .then((response) => {
                             this.setState({
@@ -122,15 +122,15 @@ export default class ChartValues extends Component<ChartValuesProps, ChartValues
         deleteChartValues(parseInt(this.props.match.params.chartValueId))
             .then((response) => {
                 toast.success('Chart Values deleted successfully')
-                this.redirectToDiscoverChart(event)
+                this.redirectToSavedValueList(event)
             })
             .catch((error) => {
                 showError(error)
             })
     }
 
-    redirectToDiscoverChart(event: React.MouseEvent<HTMLButtonElement>) {
-        let url = getDiscoverChartDetailsURL(this.props.match.params.chartId)
+    redirectToSavedValueList(event: React.MouseEvent<HTMLButtonElement>) {
+        let url = getSavedValuesListURL(this.props.match.params.chartId)
         this.props.history.push(url)
     }
 
@@ -154,7 +154,7 @@ export default class ChartValues extends Component<ChartValuesProps, ChartValues
         let promise
         let requestBody
         let toastMessage: string
-        if (this.props.match.params.chartValueId) {
+        if (this.props.match.params.chartValueId !== '0') {
             requestBody = {
                 id: parseInt(this.props.match.params.chartValueId),
                 name: this.state.name,
@@ -186,10 +186,10 @@ export default class ChartValues extends Component<ChartValuesProps, ChartValues
                     showError: false,
                     isValid: { name: !!name.length },
                 })
-
-                if (!this.props.match.params.chartValueId) {
-                    this.redirectToDiscoverChart(event)
-                }
+                this.redirectToSavedValueList(event)
+                // if (this.props.match.params.chartValueId !== '0') {
+                //     this.redirectToDiscoverChart(event)
+                // }
             })
             .catch((error) => {
                 showError(error)
@@ -208,7 +208,7 @@ export default class ChartValues extends Component<ChartValuesProps, ChartValues
         } else {
             return (
                 <div className="chart-values">
-                    <Header appStoreApplicationName={this.state.appStoreApplicationName} />
+                    <Header appStoreApplicationName={this.state.appStoreApplicationName} name={this.state.name} />
                     <form className="chart-values__container">
                         <label className="form__row">
                             <span className="form__label">Name*</span>
@@ -216,7 +216,7 @@ export default class ChartValues extends Component<ChartValuesProps, ChartValues
                                 tabIndex={1}
                                 placeholder="Name"
                                 className="form__input"
-                                disabled={!!this.props.match.params.chartValueId}
+                                disabled={this.props.match.params.chartValueId !== '0'}
                                 value={this.state.name}
                                 onChange={this.handleName}
                             />
@@ -260,7 +260,7 @@ export default class ChartValues extends Component<ChartValuesProps, ChartValues
                         </div>
 
                         <div className="flex right">
-                            {this.props.match.params.chartValueId ? (
+                            {this.props.match.params.chartValueId !== '0' ? (
                                 <button type="button" className="cta delete mr-16" onClick={this.deleteChartValue}>
                                     Delete
                                 </button>
@@ -268,7 +268,7 @@ export default class ChartValues extends Component<ChartValuesProps, ChartValues
                                 <button
                                     type="button"
                                     className="cta cancel mr-16"
-                                    onClick={this.redirectToDiscoverChart}
+                                    onClick={this.redirectToSavedValueList}
                                 >
                                     Cancel
                                 </button>
@@ -289,15 +289,15 @@ export default class ChartValues extends Component<ChartValuesProps, ChartValues
     }
 }
 
-function Header({ appStoreApplicationName }) {
+function Header({ appStoreApplicationName, name }) {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
                 ':chartId': { component: appStoreApplicationName || null, linked: true },
                 chart: null,
-                ':chartValueId?': null,
+                ':chartValueId': name || 'New value',
                 'chart-store': null,
-                'chart-value': { component: 'Create Custom Values', linked: false },
+                'saved-value': 'Saved value',
             },
         },
         [],

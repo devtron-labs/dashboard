@@ -1,0 +1,15 @@
+.saved-values-container {
+    margin: 20px 95px;
+    .margin-right-0 {
+        margin-right: 0 !important;
+    }
+    .saved-values-row {
+        display: grid;
+        grid-template-columns: 30px 200px auto 70px;
+        &.hover-class {
+            &:hover {
+                background-color: var(--N50);
+            }
+        }
+    }
+}
