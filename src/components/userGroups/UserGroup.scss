@@ -8,6 +8,7 @@
 
 .auth-page__header-title {
     font-size: 16px !important;
+    font-weight: 600;
 }
 
 .auth-search {
@@ -24,6 +25,10 @@
     padding: 16px;
     min-height: 600px;
     height: 100%;
+
+    .search {
+        margin-bottom: 16px !important;
+    }
 }
 
 .auth-page__body-users__list-container {

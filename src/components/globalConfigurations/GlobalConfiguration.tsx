@@ -135,7 +135,7 @@ function NavItem({ hostURLConfig, serverMode }) {
     const location = useLocation()
     // Add key of NavItem if grouping is used
     const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
-        Authorisation: location.pathname.startsWith('/global-config/auth') ? false : true,
+        Authorization: location.pathname.startsWith('/global-config/auth') ? false : true,
     })
 
     const ConfigRequired = [
@@ -167,7 +167,7 @@ function NavItem({ hostURLConfig, serverMode }) {
         },
         { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin, isAvailableInEA: true },
         {
-            name: 'Authorisation',
+            name: 'Authorization',
             href: `${URLS.GLOBAL_CONFIG_AUTH}/users`,
             preventDefaultKey: URLS.GLOBAL_CONFIG_AUTH,
             group: [

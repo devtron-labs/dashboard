@@ -103,7 +103,7 @@ function RegeneratedModal({
             isRegenerationModal={true}
         />
     ) : (
-        <VisibleModal className="">
+        <VisibleModal className="regenerate-token-modal">
             <div className="modal__body w-600 flex column p-0">
                 {renderModalHeader()}
                 <div className="p-20 w-100">

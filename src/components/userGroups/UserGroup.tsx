@@ -150,20 +150,30 @@ export function useUserGroupContext() {
     return context
 }
 
-function HeaderSection() {
-    const { url, path } = useRouteMatch()
+function HeaderSection(type: string) {
+    const isUserPremissions = type === 'user'
+
     return (
         <div className="auth-page__header">
-            <h1 className="auth-page__header-title form__title">User access</h1>
+            <h2 className="auth-page__header-title form__title">
+                {isUserPremissions ? 'User permissions' : 'Permission groups'}
+            </h2>
             <p className="form__subtitle">
-                Manage user permissions.&nbsp;
+                {isUserPremissions
+                    ? "Manage your organization's users and their permissions."
+                    : 'Permission groups allow you to easily manage user permissions by assigning desired permissions to a group and assigning these groups to users to provide all underlying permissions.'}
+                &nbsp;
                 <a
                     className="learn-more__href"
                     rel="noreferrer noopener"
-                    href={DOCUMENTATION.GLOBAL_CONFIG_USER}
+                    href={
+                        isUserPremissions
+                            ? DOCUMENTATION.GLOBAL_CONFIG_USER
+                            : `${DOCUMENTATION.GLOBAL_CONFIG_USER}#groups`
+                    }
                     target="_blank"
                 >
-                    Learn more about User Access
+                    Learn more about {isUserPremissions ? 'User permissions' : 'Permission groups'}
                 </a>
             </p>
         </div>
@@ -308,7 +318,7 @@ export default function UserGroupRoute() {
 const UserGroupList: React.FC<{
     type: 'user' | 'group'
     reloadLists: () => void
-    renderHeaders: () => JSX.Element
+    renderHeaders: (type: string) => JSX.Element
 }> = ({ type, reloadLists, renderHeaders }) => {
     const [loading, data, error, reload, setState] = useAsync(type === 'user' ? getUserList : getGroupList, [type])
     const result = (data && data['result']) || []
@@ -413,9 +423,9 @@ const UserGroupList: React.FC<{
     )
     return (
         <div id="auth-page__body" className="auth-page__body-users__list-container">
-            {renderHeaders()}
+            {renderHeaders(type)}
             {result.length > 0 && (
-                <div className="search position-rel en-2 bw-1 br-4 mb-20 bcn-0">
+                <div className="search position-rel en-2 bw-1 br-4 mb-16 bcn-0">
                     <Search className="search__icon icon-dim-18" />
                     <input
                         value={searchString}

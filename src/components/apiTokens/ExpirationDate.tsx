@@ -11,7 +11,7 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 
 function ExpirationDate({ selectedExpirationDate, onChangeSelectFormData, handleDatesChange, customDate }) {
     return (
-        <div>
+        <div className="w-100">
             <span className="form__label">
                 Expiration <span className="cr-5"> *</span>
             </span>
@@ -62,7 +62,7 @@ function ExpirationDate({ selectedExpirationDate, onChangeSelectFormData, handle
                 )}
             </div>
             {selectedExpirationDate.label === 'No expiration' && (
-                <div className="mb-20 mt-16">
+                <div className="mt-16">
                     <InfoColourBar
                         classname="warn"
                         Icon={Warn}

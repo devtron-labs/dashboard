@@ -1,10 +1,11 @@
 .api-token-container {
-    width: 922px;
+    max-width: 1012px;
+    min-width: 938px;
     margin: 0 auto;
 
     .api-list-row {
         display: grid;
-        grid-template-columns: 30px 30% 15% auto 25% 24px 24px;
+        grid-template-columns: 30px minmax(272px, 346px) 120px 120px 190px minmax(74px, 84px);
         grid-column-gap: 16px;
 
         .api-key-expired-icon {
@@ -27,7 +28,7 @@
             height: 440px !important;
         }
 
-        &:hover {
+        &:hover:not(:first-of-type) {
             background-color: var(--N50);
 
             .api__row-actions {
@@ -70,16 +71,37 @@
 
     .search {
         margin-right: 0;
+        margin-bottom: 0 !important;
+        background-color: white;
 
-        .search__input:focus {
-            border: none;
+        .search__input {
+            &.search-applied {
+                width: 90%;
+            }
+
+            &:focus {
+                border: none;
+            }
         }
     }
 
     .anchor {
+        font-weight: 600;
+
         .add-svg path {
             fill: var(--B500);
         }
+    }
+}
+
+.generate-token-modal,
+.regenerate-token-modal {
+    top: -84px;
+
+    .modal__body {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        border-top: none;
     }
 }
 

@@ -66,7 +66,10 @@ function ApiTokens({ reloadLists }) {
     }, [])
 
     const handleFilterChanges = (_searchText: string): void => {
-        const _filteredData = tokenList.filter((token) => token.name.indexOf(_searchText) >= 0)
+        const _searchTextTrimmed = _searchText.trim()
+        const _filteredData = tokenList.filter(
+            (_tokenData) => _tokenData.name.indexOf(_searchTextTrimmed) >= 0 || _tokenData.token === _searchTextTrimmed,
+        )
         setFilteredTokenList(_filteredData)
         setNoResults(_filteredData.length === 0)
     }
@@ -105,14 +108,14 @@ function ApiTokens({ reloadLists }) {
                         type="text"
                         placeholder="Search Token"
                         value={searchText}
-                        className="search__input bcn-0"
+                        className={`search__input bcn-0 ${searchApplied ? 'search-applied' : ''}`}
                         onChange={(event) => {
                             setSearchText(event.target.value)
                         }}
                         onKeyDown={handleFilterKeyPress}
                     />
                     {searchApplied && (
-                        <button className="search__clear-button" type="button" onClick={clearSearch}>
+                        <button className="flex search__clear-button" type="button" onClick={clearSearch}>
                             <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                         </button>
                     )}

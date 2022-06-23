@@ -179,7 +179,7 @@ function CreateAPIToken({
                 </span>{' '}
                 / New API token
             </div>
-            <p className="fs-13 fw-4">
+            <p className="fs-12 fw-4">
                 API tokens function like ordinary OAuth access tokens. They can be used instead of a password for Git
                 over HTTPS, or can be used to authenticate to the API over Basic Authentication.
             </p>
@@ -215,7 +215,6 @@ function CreateAPIToken({
                                 onChange={(e) => onChangeFormData(e, 'description')}
                             />
                         </label>
-
                         <label className="form__row">
                             <div className="flex left">
                                 <ExpirationDate
@@ -232,7 +231,7 @@ function CreateAPIToken({
                                 </span>
                             )}
                         </label>
-                        <hr className="modal__divider mt-24 mb-12" />
+                        <hr className="modal__divider mt-20 mb-12" />
                         <div className="flex left">
                             <RadioGroup
                                 className="permission-type__radio-group"
@@ -261,7 +260,6 @@ function CreateAPIToken({
                         )}
                     </div>
                 </div>
-                <hr className="modal__divider mt-20 mb-0" />
                 <GenerateActionButton
                     loader={loader}
                     onCancel={() => {

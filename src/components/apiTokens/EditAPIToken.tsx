@@ -81,7 +81,7 @@ function EditAPIToken({
         return (
             <span
                 style={{ width: '120px' }}
-                className="cr-5 cursor flexbox top"
+                className="cr-5 cursor flexbox top fw-6"
                 onClick={() => setShowRegeneratedModal(true)}
             >
                 Regenerate token
@@ -217,7 +217,7 @@ function EditAPIToken({
                 </span>{' '}
                 / Edit API token
             </div>
-            <p className="fs-13 fw-4">
+            <p className="fs-12 fw-4">
                 API tokens function like ordinary OAuth access tokens. They can be used instead of a password for Git
                 over HTTPS, or can be used to authenticate to the API over Basic Authentication.
             </p>
@@ -242,26 +242,33 @@ function EditAPIToken({
                         </label>
                         <label className="form__row">
                             <span className="form__label">Token</span>
-                            <div className="flex content-space mono top cn-9">
-                                <span style={{ wordBreak: 'break-word' }}>{editData.token}</span>
+                            <div className="flex content-space top cn-9">
+                                <span className="mono" style={{ wordBreak: 'break-word' }}>
+                                    {editData.token}
+                                </span>
                                 <Tippy
                                     className="default-tt"
                                     arrow={false}
                                     placement="bottom"
                                     content={copied ? 'Copied!' : 'Copy'}
                                     trigger="mouseenter click"
-                                    onShow={(instance) => {
-                                        setCopied(false)
+                                    onShow={(_tippy) => {
+                                        setTimeout(() => {
+                                            _tippy.hide()
+                                            setCopied(false)
+                                        }, 5000)
                                     }}
                                     interactive={true}
                                 >
-                                    <Clipboard
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            copyToClipboard(editData.token, () => setCopied(true))
-                                        }}
-                                        className="icon-dim-16 ml-8 cursor"
-                                    />
+                                    <div className="icon-dim-16 ml-8">
+                                        <Clipboard
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                copyToClipboard(editData.token, () => setCopied(true))
+                                            }}
+                                            className="icon-dim-16 cursor"
+                                        />
+                                    </div>
                                 </Tippy>
                             </div>
                         </label>
@@ -276,7 +283,7 @@ function EditAPIToken({
                                 </span>
                             </div>
                         </label>
-                        <hr className="modal__divider mt-24 mb-12" />
+                        <hr className="modal__divider mt-20 mb-12" />
                         <div className="flex left">
                             <RadioGroup
                                 className="permission-type__radio-group"
@@ -302,7 +309,6 @@ function EditAPIToken({
                         )}
                     </div>
                 </div>
-                <hr className="modal__divider mt-20 mb-0" />
                 <GenerateActionButton
                     loader={loader}
                     onCancel={redirectToTokenList}

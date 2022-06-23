@@ -38,17 +38,14 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
     return (
         <div>
             <div className="cn-9 fw-6 fs-16">API tokens</div>
-            <p className="fs-13 fw-4">Tokens you have generated that can be used to access the Devtron API.</p>
-            <div className="flex content-space">
+            <p className="fs-12 fw-4">Tokens you have generated that can be used to access the Devtron API.</p>
+            <div className="flex content-space mb-16">
                 <button className="flex cta h-32" onClick={() => handleGenerateRowActionButton('create')}>
                     Generate new token
                 </button>
                 {renderSearchToken()}
             </div>
-            <div
-                className="mt-16 en-2 bw-1 bcn-0 br-8"
-                style={{ minHeight: 'calc(100vh - 235px)', overflow: 'hidden' }}
-            >
+            <div className="en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 235px)', overflow: 'hidden' }}>
                 <div className="api-list-row fw-6 cn-7 fs-12 border-bottom pt-10 pb-10 pr-20 pl-20 text-uppercase">
                     <div></div>
                     <div>Name</div>
@@ -81,7 +78,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                                 className={`flexbox cb-5 cursor`}
                                 onClick={() => handleGenerateRowActionButton('edit', list.id)}
                             >
-                                {list.name}
+                                <span className="ellipsis-right">{list.name}</span>
                             </div>
                             <div className="ellipsis-right">{moment(list.lastUsedAt).format(MomentDateFormat)}</div>
                             <div>{list.lastUsedByIp}</div>
@@ -95,10 +92,10 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                                     </>
                                 )}
                             </div>
-                            <div className="api__row-actions flex">
+                            <div className="api__row-actions flex right">
                                 <button
                                     type="button"
-                                    className="transparent mr-8 ml-8"
+                                    className="transparent mr-18"
                                     onClick={() => handleGenerateRowActionButton('edit', list.id)}
                                 >
                                     <Edit className="icon-dim-20" />
