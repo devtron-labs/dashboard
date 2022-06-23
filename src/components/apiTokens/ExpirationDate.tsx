@@ -57,6 +57,7 @@ function ExpirationDate({ selectedExpirationDate, onChangeSelectFormData, handle
                             date={customDate}
                             handleDatesChange={handleDatesChange}
                             readOnly={true}
+                            isTodayBlocked={true}
                         />
                     </div>
                 )}

@@ -1,9 +1,14 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { showError } from '../common'
 import { FormType, GenerateTokenType } from './authorization.type'
 import { createGeneratedAPIToken } from './service'
 import GenerateModal from './GenerateModal'
-import { createUserPermissionPayload, getDateInMilliseconds, isFormComplete, PermissionType } from './authorization.utils'
+import {
+    createUserPermissionPayload,
+    getDateInMilliseconds,
+    isFormComplete,
+    PermissionType,
+} from './authorization.utils'
 import GenerateActionButton from './GenerateActionButton'
 import { ValidationRules } from './validationRules'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
@@ -61,6 +66,16 @@ function CreateAPIToken({
     })
     const [customDate, setCustomDate] = useState<Moment>(null)
     const validationRules = new ValidationRules()
+
+    // Reset selected expiration date to 30 days on unmount
+    useEffect(() => {
+        return (): void => {
+            setSelectedExpirationDate({
+                label: '30 days',
+                value: 30,
+            })
+        }
+    }, [])
 
     const onChangeFormData = (event, key): void => {
         if (key === 'customDate') {
@@ -241,7 +256,13 @@ function CreateAPIToken({
                             >
                                 {PermissionType.map(({ label, value }) => (
                                     <RadioGroupItem value={value}>
-                                        <span className="fw-6">{label}</span>
+                                        <span
+                                            className={`no-text-transform ${
+                                                adminPermission === value ? 'fw-6' : 'fw-4'
+                                            }`}
+                                        >
+                                            {label}
+                                        </span>
                                     </RadioGroupItem>
                                 ))}
                             </RadioGroup>

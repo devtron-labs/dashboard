@@ -196,7 +196,7 @@ function NavItem({ hostURLConfig, serverMode }) {
         (!hostURLConfig || hostURLConfig.value !== window.location.origin) &&
         !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)
 
-    const renderNavItem = (route, className = '') => {
+    const renderNavItem = (route, className = '', preventOnClickOp = false) => {
         return (
             <NavLink
                 to={`${route.href}`}
@@ -208,6 +208,11 @@ function NavItem({ hostURLConfig, serverMode }) {
                         ? 'active-route'
                         : ''
                 }`}
+                onClick={(e) => {
+                    if (!preventOnClickOp) {
+                        handleGroupCollapsedState(e, route)
+                    }
+                }}
             >
                 <div className={`flexbox flex-justify ${className || ''}`}>
                     <div>{route.name}</div>
@@ -221,18 +226,48 @@ function NavItem({ hostURLConfig, serverMode }) {
         )
     }
 
+    // Collapse group except the one with preventKey
+    const collapseExpandedGroup = (preventKey: string) => {
+        const expandedGroupKey = Object.entries(collapsedState).find(([key, value]) => {
+            if (!value) {
+                return [key, value]
+            }
+        })
+
+        if (!expandedGroupKey && !preventKey) {
+            return
+        }
+
+        const _collapsedState = {
+            ...collapsedState,
+        }
+
+        // If any group is expanded then collapse it
+        if (expandedGroupKey) {
+            _collapsedState[expandedGroupKey[0]] = true
+        }
+
+        // If preventKey is passed then prevent the expanded state for the same
+        if (preventKey) {
+            _collapsedState[preventKey] = false
+        }
+
+        // set the updated state
+        setCollapsedState(_collapsedState)
+    }
+
     const handleGroupCollapsedState = (e, route) => {
+        // If current path starts with default prevent key then prevent the default behaviour
+        // & reverse the collapse state
         if (location.pathname.startsWith(route.preventDefaultKey)) {
             e.preventDefault()
             setCollapsedState({
                 ...collapsedState,
                 [route.name]: !collapsedState[route.name],
             })
-        } else if (collapsedState[route.name]) {
-            setCollapsedState({
-                ...collapsedState,
-                [route.name]: false,
-            })
+        } else {
+            // Pass the route name as preventKey if it's a group and/else collapse any expanded group
+            collapseExpandedGroup(route.group ? route.name : '')
         }
     }
 
@@ -262,7 +297,7 @@ function NavItem({ hostURLConfig, serverMode }) {
                             {!collapsedState[route.name] && (
                                 <>
                                     {route.group.map((_route) => {
-                                        return renderNavItem(_route, 'ml-10')
+                                        return renderNavItem(_route, 'ml-10', true)
                                     })}
                                 </>
                             )}

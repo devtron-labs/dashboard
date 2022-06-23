@@ -292,7 +292,15 @@ function EditAPIToken({
                                 onChange={handlePermissionType}
                             >
                                 {PermissionType.map(({ label, value }) => (
-                                    <RadioGroupItem value={value}> {label} </RadioGroupItem>
+                                    <RadioGroupItem value={value}>
+                                        <span
+                                            className={`no-text-transform ${
+                                                adminPermission === value ? 'fw-6' : 'fw-4'
+                                            }`}
+                                        >
+                                            {label}
+                                        </span>
+                                    </RadioGroupItem>
                                 ))}
                             </RadioGroup>
                         </div>

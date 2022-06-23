@@ -5,7 +5,7 @@
 
     .api-list-row {
         display: grid;
-        grid-template-columns: 30px minmax(272px, 346px) 120px 120px 190px minmax(74px, 84px);
+        grid-template-columns: 24px minmax(278px, 346px) 120px 120px 190px minmax(80px, 90px);
         grid-column-gap: 16px;
 
         .api-key-expired-icon {

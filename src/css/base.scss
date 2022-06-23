@@ -201,6 +201,10 @@ a:focus {
     text-transform: uppercase;
 }
 
+.no-text-transform {
+    text-transform: none;
+}
+
 .ff-monospace {
     font-family: monospace;
 }

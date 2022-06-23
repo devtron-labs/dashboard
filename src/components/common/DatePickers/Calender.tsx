@@ -5,6 +5,7 @@ import CustomizableCalendarDay from 'react-dates/lib/components/CustomizableCale
 import ReactGA from 'react-ga'
 import moment, { Moment } from 'moment'
 import { isInclusivelyBeforeDay, DateRangePicker, SingleDatePicker } from 'react-dates'
+import { noop } from '../helpers/Helpers'
 import './calendar.css'
 
 interface DatePickerProps {
@@ -184,12 +185,18 @@ interface SinglrDatePickerProps {
     date: Moment
     handleDatesChange: (e) => void
     readOnly?: boolean
+    isTodayBlocked?: boolean
+}
+
+const blockToday = (day: Moment): boolean => {
+    return day.isSame(moment(), 'day')
 }
 
 export const SingleDatePickerComponent = ({
     date,
     handleDatesChange,
     readOnly,
+    isTodayBlocked,
 }: SinglrDatePickerProps) => {
     const [focused, setFocused] = useState(false)
 
@@ -212,6 +219,7 @@ export const SingleDatePickerComponent = ({
             withFullScreenPortal={false}
             orientation={'horizontal'}
             readOnly={readOnly || false}
+            isDayBlocked={isTodayBlocked ? blockToday : noop}
         />
     )
 }
