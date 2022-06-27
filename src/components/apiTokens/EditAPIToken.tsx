@@ -93,7 +93,7 @@ function EditAPIToken({
         return (
             <InfoColourBar
                 message="To set a new expiration date, you can regenerate this token. Any scripts or applications using this token will need to be updated."
-                classname="info m-20"
+                classname="info_bar m-20"
                 Icon={InfoIcon}
                 iconClass="icon-dim-20"
                 renderActionButton={renderActionButton}
