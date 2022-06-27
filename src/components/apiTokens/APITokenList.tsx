@@ -35,6 +35,10 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
         history.push(id ? `${key}/${id}` : key)
     }
 
+    const handleDeleteButton = (tokenList) => {
+        setSelectedToken(tokenList)
+        setDeleteConfirmation(true)
+    }
     return (
         <div>
             <div className="cn-9 fw-6 fs-16">API tokens</div>
@@ -100,14 +104,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                                 >
                                     <Edit className="icon-dim-20" />
                                 </button>
-                                <button
-                                    type="button"
-                                    className="transparent"
-                                    onClick={() => {
-                                        setSelectedToken(list)
-                                        setDeleteConfirmation(true)
-                                    }}
-                                >
+                                <button type="button" className="transparent" onClick={() => handleDeleteButton(list)}>
                                     <Trash className="scn-6 icon-dim-20" />
                                 </button>
                             </div>

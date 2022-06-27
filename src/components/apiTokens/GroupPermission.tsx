@@ -92,7 +92,7 @@ function GroupPermission({
                 name="groups"
                 options={availableGroups}
                 hideSelectedOptions={false}
-                onChange={(selected, actionMeta) => setUserGroups((selected || []) as any)}
+                onChange={(selected) => setUserGroups((selected || []) as any)}
                 className="basic-multi-select"
             />
             {userGroups.length > 0 && (

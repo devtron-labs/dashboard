@@ -1,3 +1,4 @@
+import { Moment } from 'moment'
 import React from 'react'
 import { CreateUser } from '../userGroups/userGroups.types'
 
@@ -52,7 +53,7 @@ export interface EditTokenType {
 export interface GenerateActionButtonType {
     loader: boolean
     onCancel: () => void
-    onSave
+    onSave: () => void
     buttonText: string
     showDelete?: boolean
     onDelete?: () => void
@@ -85,8 +86,8 @@ export interface RegenerateModalType {
     close: () => void
     setShowRegeneratedModal: React.Dispatch<React.SetStateAction<boolean>>
     editData: EditDataType
-    customDate
-    setCustomDate
+    customDate: number
+    setCustomDate: React.Dispatch<React.SetStateAction<number>>
     reload: () => void
     redirectToTokenList: () => void
 }

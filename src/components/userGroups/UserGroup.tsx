@@ -305,7 +305,7 @@ export default function UserGroupRoute() {
                             <UserGroupList type="group" reloadLists={reloadLists} renderHeaders={HeaderSection} />
                         </Route>
                         <Route path={`${path}/${Routes.API_TOKEN}`}>
-                            <ApiTokens reloadLists={reloadLists} />
+                            <ApiTokens />
                         </Route>
                         <Redirect to={`${path}/users`} />
                     </Switch>

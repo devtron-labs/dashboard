@@ -10,18 +10,28 @@ import Tippy from '@tippyjs/react'
 function GenerateModal({ close, token, reload, redirectToTokenList, isRegenerationModal }: GenerateTokenModalType) {
     const [copied, setCopied] = useState(false)
 
+    const handleCloseButton = () => {
+        close()
+        reload()
+        redirectToTokenList()
+    }
+
+    const handleTippyText = (_tippy) => {
+        setTimeout(() => {
+            _tippy.hide()
+            setCopied(false)
+        }, 5000)
+    }
+
+    const handleCopyToClipboard = (e) => {
+        e.stopPropagation()
+        copyToClipboard(token, () => setCopied(true))
+    }
+
     return (
         <VisibleModal className="generate-token-modal">
             <div className={`modal__body w-600 pl-20 pr-20 pt-20 pb-20 flex column`}>
-                <button
-                    type="button"
-                    className="w-100 flex right transparent"
-                    onClick={() => {
-                        close()
-                        reload()
-                        redirectToTokenList()
-                    }}
-                >
+                <button type="button" className="w-100 flex right transparent" onClick={handleCloseButton}>
                     <Close className="icon-dim-24" />
                 </button>
                 <Success className="vertical-align-middle mb-16" />
@@ -45,19 +55,10 @@ function GenerateModal({ close, token, reload, redirectToTokenList, isRegenerati
                     content={copied ? 'Copied!' : 'Copy'}
                     trigger="mouseenter click"
                     onShow={(_tippy) => {
-                        setTimeout(() => {
-                            _tippy.hide()
-                            setCopied(false)
-                        }, 5000)
+                        handleTippyText(_tippy)
                     }}
                 >
-                    <button
-                        className="flex cta mt-20 mb-20"
-                        onClick={(e) => {
-                            e.stopPropagation()
-                            copyToClipboard(token, () => setCopied(true))
-                        }}
-                    >
+                    <button className="flex cta mt-20 mb-20" onClick={(e) => handleCopyToClipboard(e)}>
                         <Clipboard className="icon-dim-16" />
                         &nbsp; Copy token
                     </button>

@@ -12,7 +12,7 @@ import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
 import { TokenListType, TokenResponseType } from './authorization.type'
 
-function ApiTokens({ reloadLists }) {
+function ApiTokens() {
     const { path } = useRouteMatch()
     const history = useHistory()
     const { pathname } = useLocation()
@@ -174,6 +174,10 @@ function ApiTokens({ reloadLists }) {
         )
     }
 
+    const redirectToCreate = () => {
+        history.push(`${path}/create`)
+    }
+
     const renderEmptyState = (): JSX.Element => {
         return (
             <div className="flex column h-100">
@@ -189,7 +193,7 @@ function ApiTokens({ reloadLists }) {
                         password for programmatic access to API.
                     </EmptyState.Subtitle>
                     <EmptyState.Button>
-                        <button className="flex cta h-32" onClick={() => history.push(`${path}/create`)}>
+                        <button className="flex cta h-32" onClick={redirectToCreate}>
                             Generate new token
                         </button>
                     </EmptyState.Button>
@@ -212,7 +216,6 @@ function ApiTokens({ reloadLists }) {
     } else if (!pathname.includes('/create') && (!tokenList || tokenList.length === 0)) {
         return renderEmptyState()
     }
-
     return renderAPITokenRoutes()
 }
 

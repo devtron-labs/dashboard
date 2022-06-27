@@ -21,7 +21,7 @@ function ExpirationDate({ selectedExpirationDate, onChangeSelectFormData, handle
                     options={getOptions(customDate)}
                     className="select-width w-200"
                     isSearchable={false}
-                    onChange={(e) => onChangeSelectFormData(e)}
+                    onChange={onChangeSelectFormData}
                     components={{
                         IndicatorSeparator: null,
                         DropdownIndicator,

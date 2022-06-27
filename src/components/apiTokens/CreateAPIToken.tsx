@@ -142,7 +142,7 @@ function CreateAPIToken({
         })
     }
 
-    const handleGenerateAPIToken = async (e) => {
+    const handleGenerateAPIToken = async () => {
         if (!isFormComplete(directPermission, setDirectPermission)) {
             toast.error('Some required fields are missing')
             return

@@ -181,7 +181,7 @@ export class DatePicker extends Component<DatePickerProps> {
     }
 }
 
-interface SinglrDatePickerProps {
+interface SingleDatePickerProps {
     date: Moment
     handleDatesChange: (e) => void
     readOnly?: boolean
@@ -197,7 +197,7 @@ export const SingleDatePickerComponent = ({
     handleDatesChange,
     readOnly,
     isTodayBlocked,
-}: SinglrDatePickerProps) => {
+}: SingleDatePickerProps) => {
     const [focused, setFocused] = useState(false)
 
     const handleFocusChange = ({ focused }) => {
