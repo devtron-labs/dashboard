@@ -3,6 +3,12 @@
     min-width: 938px;
     margin: 0 auto;
 
+    .api-token__list {
+        height: calc(100vh - 194px);
+        overflow: hidden;
+        min-height: 500px;
+    }
+
     .api-list-row {
         display: grid;
         grid-template-columns: 24px minmax(278px, 346px) 120px 120px 190px minmax(80px, 90px);

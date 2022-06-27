@@ -286,7 +286,9 @@ function NavItem({ hostURLConfig, serverMode }) {
                                 key={`nav_item_${index}`}
                                 to={route.href}
                                 className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'} flex content-space`}
-                                onClick={(e) => handleGroupCollapsedState(e, route)}
+                                onClick={(e) => {
+                                    handleGroupCollapsedState(e, route)
+                                }}
                             >
                                 {route.name}
                                 <Dropdown
