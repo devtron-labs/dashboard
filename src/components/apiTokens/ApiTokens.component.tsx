@@ -68,7 +68,8 @@ function ApiTokens({ reloadLists }) {
     const handleFilterChanges = (_searchText: string): void => {
         const _searchTextTrimmed = _searchText.trim()
         const _filteredData = tokenList.filter(
-            (_tokenData) => _tokenData.name.indexOf(_searchTextTrimmed) >= 0 || _tokenData.token === _searchTextTrimmed,
+            (_tokenData) =>
+                _tokenData.name.indexOf(_searchTextTrimmed) >= 0 || _tokenData.token.indexOf(_searchTextTrimmed) >= 0,
         )
         setFilteredTokenList(_filteredData)
         setNoResults(_filteredData.length === 0)
