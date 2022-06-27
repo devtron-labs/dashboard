@@ -185,7 +185,7 @@ export default function SavedValuesList() {
                                 <div className="pr-16">Version</div>
                                 <div className="pr-16"></div>
                             </div>
-                            {filteredSavedValueList?.map((chartData) => (
+                            {filteredSavedValueList.map((chartData) => (
                                 <div className="saved-values-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pr-16 pb-12 pl-16">
                                     <div className="pr-16">
                                         <File className="icon-dim-18 icon-n4 vertical-align-middle" />
