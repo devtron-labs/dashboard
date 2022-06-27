@@ -185,8 +185,8 @@ function ApiTokens({ reloadLists }) {
                         <h4 className="title">Generate a token to access the Devtron API</h4>
                     </EmptyState.Title>
                     <EmptyState.Subtitle>
-                        API tokens function like ordinary OAuth access tokens. They can be used instead of a password
-                        for Git over HTTPS, or can be used to authenticate to the API over Basic Authentication.
+                        API tokens are like ordinary OAuth access tokens. They can be used instead of username and
+                        password for programmatic access to API.
                     </EmptyState.Subtitle>
                     <EmptyState.Button>
                         <button className="flex cta h-32" onClick={() => history.push(`${path}/create`)}>

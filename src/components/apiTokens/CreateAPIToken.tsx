@@ -52,10 +52,14 @@ function CreateAPIToken({
         invalidName: boolean
         invalidaNameMessage: string
         invalidCustomDate: boolean
+        invalidDescription: boolean
+        invalidDescriptionMessage: string
     }>({
         invalidName: false,
         invalidaNameMessage: '',
         invalidCustomDate: false,
+        invalidDescription: false,
+        invalidDescriptionMessage: '',
     })
     const [userGroups, setUserGroups] = useState<OptionType[]>([])
     const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
@@ -104,6 +108,18 @@ function CreateAPIToken({
                 invalidName: !nameValidation.isValid,
                 invalidaNameMessage: nameValidation.message,
             })
+        } else if (key === 'description') {
+            setFormData({
+                ...formData,
+                description: event.target.value,
+            })
+
+            const descriptionValidation = validationRules.description(event.target.value)
+            setFormDataErrorObj({
+                ...formDataErrorObj,
+                invalidDescription: !descriptionValidation.isValid,
+                invalidDescriptionMessage: descriptionValidation.message,
+            })
         } else {
             setFormData({
                 ...formData,
@@ -132,14 +148,18 @@ function CreateAPIToken({
         }
 
         const nameValidation = validationRules.name(formData.name)
+        const descriptionValidation = validationRules.description(formData.description)
         const noCustomDate = formData.dateType === 'Custom' && !customDate
-        if (!nameValidation.isValid || noCustomDate) {
-            toast.error('Some required fields are missing')
+        if (!nameValidation.isValid || noCustomDate || !descriptionValidation.isValid) {
             setFormDataErrorObj({
                 invalidName: !nameValidation.isValid,
                 invalidaNameMessage: nameValidation.message,
                 invalidCustomDate: noCustomDate,
+                invalidDescription: !descriptionValidation.isValid,
+                invalidDescriptionMessage: descriptionValidation.message,
             })
+            toast.error('Some required fields are missing')
+
             return
         }
 
@@ -195,8 +215,8 @@ function CreateAPIToken({
                 / New API token
             </div>
             <p className="fs-12 fw-4">
-                API tokens function like ordinary OAuth access tokens. They can be used instead of a password for Git
-                over HTTPS, or can be used to authenticate to the API over Basic Authentication.
+                API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for
+                programmatic access to API.
             </p>
 
             <div className="bcn-0 br-8 en-2 bw-1">
@@ -212,6 +232,7 @@ function CreateAPIToken({
                                 className="form__input"
                                 value={formData.name}
                                 onChange={(e) => onChangeFormData(e, 'name')}
+                                autoFocus
                             />
                             {formDataErrorObj.invalidName && (
                                 <span className="form__error">
@@ -229,6 +250,12 @@ function CreateAPIToken({
                                 value={formData.description}
                                 onChange={(e) => onChangeFormData(e, 'description')}
                             />
+                            {formDataErrorObj.invalidDescription && (
+                                <span className="form__error">
+                                    <Error className="form__icon form__icon--error" />
+                                    {formDataErrorObj.invalidDescriptionMessage}
+                                </span>
+                            )}
                         </label>
                         <label className="form__row">
                             <div className="flex left">

@@ -89,10 +89,10 @@ function EditAPIToken({
         )
     }
 
-    const renderRegenrateInfoBar = () => {
+    const renderRegenerateInfoBar = () => {
         return (
             <InfoColourBar
-                message="If you’ve lost or forgotten this token, you can regenerate it. Any scripts or applications using this token will need to be updated."
+                message="To set a new expiration date, you can regenerate this token. Any scripts or applications using this token will need to be updated."
                 classname="info m-20"
                 Icon={InfoIcon}
                 iconClass="icon-dim-20"
@@ -223,7 +223,7 @@ function EditAPIToken({
             </p>
 
             <div className="bcn-0 br-8 en-2 bw-1">
-                {renderRegenrateInfoBar()}
+                {renderRegenerateInfoBar()}
                 <div className="pl-20 pr-20 pb-20 ">
                     <div>
                         <label className="form__row w-400">

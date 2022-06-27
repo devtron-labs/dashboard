@@ -52,7 +52,7 @@ const DeleteAPITokenModal = ({
         >
             <DeleteDialog.Description>
                 {tokenData.description && (
-                    <p className="fs-14 cn-7 lh-20 bcn-1 p-16 br-4">
+                    <p className="fs-14 cn-7 lh-20 bcn-1 p-16 br-4 break-word">
                         {tokenData.description && <span className="fw-6">Token description:</span>}
                         <br />
                         <span>{tokenData.description}</span>
