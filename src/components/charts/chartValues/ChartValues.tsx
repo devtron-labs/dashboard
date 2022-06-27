@@ -187,9 +187,6 @@ export default class ChartValues extends Component<ChartValuesProps, ChartValues
                     isValid: { name: !!name.length },
                 })
                 this.redirectToSavedValueList(event)
-                // if (this.props.match.params.chartValueId !== '0') {
-                //     this.redirectToDiscoverChart(event)
-                // }
             })
             .catch((error) => {
                 showError(error)
