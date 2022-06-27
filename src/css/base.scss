@@ -1933,3 +1933,7 @@ textarea {
 .break-word {
     word-wrap: break-word;
 }
+
+.basic-multi-select > .select__control--is-disabled {
+    background-color: var(--N100) !important;
+}
