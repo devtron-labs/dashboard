@@ -27,6 +27,7 @@ import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExpirationDate from './ExpirationDate'
 import { Moment } from 'moment'
 import { toast } from 'react-toastify'
+import { ServerErrors } from '../../modals/commonTypes'
 
 function CreateAPIToken({
     setShowGenerateModal,
@@ -191,8 +192,18 @@ function CreateAPIToken({
                     setShowGenerateModal(true)
                 }
             }
-        } catch (error) {
-            showError(error)
+        } catch (err) {
+            showError(err)
+            if (err instanceof ServerErrors && Array.isArray(err.errors)) {
+                const _invalidNameErr = err.errors[0]
+                if (_invalidNameErr.userMessage.includes('please use another name')) {
+                    setFormDataErrorObj({
+                        ...formDataErrorObj,
+                        invalidName: true,
+                        invalidaNameMessage: _invalidNameErr.userMessage,
+                    })
+                }
+            }
         } finally {
             setLoader(false)
         }

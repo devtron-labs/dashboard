@@ -36,7 +36,7 @@ function GenerateModal({ close, token, reload, redirectToTokenList, isRegenerati
                     style={{ width: '560px', wordWrap: 'break-word' }}
                 >
                     <Key className="api-token-icon icon-dim-20 mr-10" />
-                    <span className="api-token-text cn-9">{token}</span>
+                    <span className="api-token-text cn-9 fs-14">{token}</span>
                 </div>
                 <Tippy
                     className="default-tt"

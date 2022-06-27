@@ -32,7 +32,7 @@ function RegeneratedModal({
     const [invalidCustomDate, setInvalidCustomDate] = useState(false)
 
     const onChangeSelectFormData = (selectedOption: { label: string; value: any }) => {
-        setRegeneratedExpireAtInMs(getDateInMilliseconds(selectedOption.value))
+        setRegeneratedExpireAtInMs(selectedOption.value === 0 ? 0 : getDateInMilliseconds(selectedOption.value))
         setSelectedExpirationDate(selectedOption)
 
         if (selectedOption.label === 'Custom' && invalidCustomDate) {

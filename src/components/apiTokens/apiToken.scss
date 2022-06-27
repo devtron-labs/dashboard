@@ -1,6 +1,6 @@
 .api-token-container {
-    max-width: 1012px;
-    min-width: 938px;
+    max-width: 1024px;
+    min-width: 960px;
     margin: 0 auto;
 
     .api-token__list {
@@ -30,10 +30,6 @@
     }
 
     .api-list-row {
-        + .empty-state {
-            height: 440px !important;
-        }
-
         &:hover:not(:first-of-type) {
             background-color: var(--N50);
 
