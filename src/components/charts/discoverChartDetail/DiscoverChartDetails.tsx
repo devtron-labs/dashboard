@@ -324,13 +324,13 @@ const Deployment: React.FC<DeploymentProps> = ({
 
     return (
         <div className="deployment-container chart-deployment flex column left white-card white-card--chart-detail">
-            <div className="chart-grid-item__icon-wrapper">
+            <div className="chart-grid-item__icon-wrapper h-48">
                 <img src={icon} onError={handleImageError} className="chart-grid-item__icon" alt="chart icon" />
             </div>
             <div className="mb-16">
                 <div className="repository">
-                    <span className="user anchor">{chartName}/</span>
-                    <span className="repo">{appStoreApplicationName}</span>
+                    <div className="user anchor fs-13 fw-4 cn-6">{chartName}</div>
+                    <div className="repo fs-16 fw-6 cn-9">{appStoreApplicationName}</div>
                 </div>
                 {deprecated && (
                     <div className="mt-8">
@@ -338,7 +338,7 @@ const Deployment: React.FC<DeploymentProps> = ({
                     </div>
                 )}
             </div>
-            <span className="form__label">Chart version</span>
+            {/* <span className="form__label">Chart version</span>
             <DevtronSelect
                 rootClassName="select-button--default mb-20"
                 value={
@@ -378,9 +378,12 @@ const Deployment: React.FC<DeploymentProps> = ({
                         setChartValues(event)
                     }}
                 />
-            </div>
-            <button type="button" className="flex cta" onClick={handleDeploy}>
-                Deploy
+            </div> */}
+            <button type="button" className="flex cta h-36" onClick={handleDeploy}>
+                Deploy...
+            </button>
+            <button type="button" className="flex cta h-36 cb-5 cancel mt-8" onClick={openSavedValuesList}>
+                Saved values
             </button>
 
             {showGitOpsWarningModal ? (

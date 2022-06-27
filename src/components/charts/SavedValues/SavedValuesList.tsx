@@ -205,11 +205,11 @@ export default function SavedValuesList() {
                                     <div className="pr-16">{chartData.chartVersion}</div>
                                     <div className="pr-16">
                                         <Edit
-                                            className="icon-dim-18 mr-16 vertical-align-middle pointer"
+                                            className="icon-dim-18 mr-16 vertical-align-middle pointer action-icon"
                                             onClick={() => editChartValue(chartData.id)}
                                         />
                                         <Delete
-                                            className="icon-dim-18 vertical-align-middle pointer"
+                                            className="icon-dim-18 vertical-align-middle pointer action-icon"
                                             onClick={() => deleteChartValue(chartData.id)}
                                         />
                                     </div>
