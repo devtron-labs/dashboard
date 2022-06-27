@@ -35,8 +35,7 @@ export default function SavedValuesList() {
         setLoader(true)
         getChartValuesTemplateList(chartId)
             .then((response: SavedValueListResponse) => {
-                let list = response.result || []
-                list = list
+                let list = (response.result || [])
                     .map((item) => {
                         return { ...item, isLoading: false }
                     })
@@ -52,20 +51,14 @@ export default function SavedValuesList() {
             })
     }
 
-    const createNewChartValue = (): void => {
-        let link = `${URLS.CHARTS}/discover/chart/${chartId}/saved-values/0`
-        history.push(link)
-    }
-
-    const editChartValue = (chartValueId: number): void => {
-        let link = `${URLS.CHARTS}/discover/chart/${chartId}/saved-values/${chartValueId}`
-        history.push(link)
+    const gotoChartValuePage = (chartValueId: number): void => {
+        history.push(`${URLS.CHARTS}/discover/chart/${chartId}/saved-values/${chartValueId}`)
     }
 
     const deleteChartValue = (chartValueId: number): void => {
         deleteChartValues(chartValueId)
             .then((response) => {
-                toast.success('Deleted')
+                toast.success('Deleted successfully')
                 getData()
             })
             .catch((error) => {
@@ -121,7 +114,7 @@ export default function SavedValuesList() {
 
     const renderUploadButton = (): JSX.Element => {
         return (
-            <button onClick={createNewChartValue} className="add-link cta flex">
+            <button onClick={() => gotoChartValuePage(0)} className="add-link cta flex">
                 <Upload className="icon-dim-16 mr-8" />
                 New
             </button>
@@ -199,14 +192,17 @@ export default function SavedValuesList() {
                                     <div className="pr-16">
                                         <File className="icon-dim-18 icon-n4 vertical-align-middle" />
                                     </div>
-                                    <div className="pr-16 cb-5 pointer" onClick={() => editChartValue(chartData.id)}>
+                                    <div
+                                        className="pr-16 cb-5 pointer"
+                                        onClick={() => gotoChartValuePage(chartData.id)}
+                                    >
                                         {chartData.name}
                                     </div>
                                     <div className="pr-16">{chartData.chartVersion}</div>
                                     <div className="pr-16">
                                         <Edit
                                             className="icon-dim-18 mr-16 vertical-align-middle pointer action-icon"
-                                            onClick={() => editChartValue(chartData.id)}
+                                            onClick={() => gotoChartValuePage(chartData.id)}
                                         />
                                         <Delete
                                             className="icon-dim-18 vertical-align-middle pointer action-icon"
