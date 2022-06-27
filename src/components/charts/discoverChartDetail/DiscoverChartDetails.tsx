@@ -35,6 +35,7 @@ import './DiscoverChartDetails.scss'
 import PageHeader from '../../common/header/PageHeader'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
 import { ChartInstalledConfig } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
+import ChartVersionSelectorModal from './ChartVersionSelectorModal'
 
 const DiscoverDetailsContext = React.createContext(null)
 
@@ -307,6 +308,7 @@ const Deployment: React.FC<DeploymentProps> = ({
     const match = useRouteMatch()
     const { push } = useHistory()
     const { serverMode } = useContext(mainContext)
+    const [showChartVersionSelectorModal, setShowChartVersionSelectorModal] = useState(false)
 
     const handleImageError = (e) => {
         const target = e.target as HTMLImageElement
@@ -320,6 +322,14 @@ const Deployment: React.FC<DeploymentProps> = ({
         } else {
             toggleGitOpsWarningModal(true)
         }
+    }
+
+    const showVersionModal = (): void => {
+        setShowChartVersionSelectorModal(true)
+    }
+
+    const hideVersionModal = (): void => {
+        setShowChartVersionSelectorModal(false)
     }
 
     return (
@@ -379,13 +389,21 @@ const Deployment: React.FC<DeploymentProps> = ({
                     }}
                 />
             </div> */}
-            <button type="button" className="flex cta h-36" onClick={handleDeploy}>
+            <button type="button" className="flex cta h-36" onClick={showVersionModal}>
                 Deploy...
             </button>
             <button type="button" className="flex cta h-36 cb-5 cancel mt-8" onClick={openSavedValuesList}>
                 Saved values
             </button>
 
+            {showChartVersionSelectorModal && (
+                <ChartVersionSelectorModal
+                    closePopup={hideVersionModal}
+                    appStoreApplicationName={appStoreApplicationName}
+                    appIconUrl={icon}
+                    onError={handleImageError}
+                />
+            )}
             {showGitOpsWarningModal ? (
                 <ConfirmationDialog>
                     <ConfirmationDialog.Icon src={warn} />

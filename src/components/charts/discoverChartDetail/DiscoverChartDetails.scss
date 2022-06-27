@@ -373,3 +373,15 @@
         background-color: var(--window-bg);
     }
 }
+
+.chart-version-selector {
+    width: 800px;
+    .header-container {
+        display: grid;
+        grid-template-columns: 50px auto 30px;
+        grid-column-gap: 16px;
+    }
+    .rotate-270 {
+        transform: rotate(270deg);
+    }
+}
