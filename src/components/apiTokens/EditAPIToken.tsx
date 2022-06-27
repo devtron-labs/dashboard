@@ -27,6 +27,7 @@ import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { getUserId, saveUser } from '../userGroups/userGroup.service'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
+import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 
 function EditAPIToken({
     setShowRegeneratedModal,
@@ -55,6 +56,7 @@ function EditAPIToken({
     })
     const [customDate, setCustomDate] = useState<number>(undefined)
     const [deleteConfirmation, setDeleteConfirmation] = useState(false)
+    const [invalidDescription, setInvalidDescription] = useState(false)
 
     useEffect(() => {
         const _editData = tokenList && tokenList.find((list) => list.id === parseInt(params.id))
@@ -115,6 +117,10 @@ function EditAPIToken({
             return
         }
 
+        if (invalidDescription) {
+            return
+        }
+
         try {
             setLoader(true)
             const payload = {
@@ -165,6 +171,14 @@ function EditAPIToken({
     }
 
     const onChangeEditData = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key): void => {
+        if (key === 'description' && invalidDescription) {
+            setInvalidDescription(false)
+        }
+
+        if (key === 'description' && event.target.value.length > 10) {
+            setInvalidDescription(true)
+        }
+
         const _editData = { ...editData }
         _editData[key] = event.target.value
         setEditData(_editData)
@@ -239,6 +253,12 @@ function EditAPIToken({
                                 value={editData.description}
                                 onChange={(e) => onChangeEditData(e, 'description')}
                             />
+                            {invalidDescription && (
+                                <span className="form__error flexbox-imp flex-align-center">
+                                    <Warn className="form__icon--error icon-dim-16 mr-4" />
+                                    Max 350 characters allowed.
+                                </span>
+                            )}
                         </label>
                         <label className="form__row">
                             <span className="form__label">Token</span>
