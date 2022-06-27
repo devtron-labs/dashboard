@@ -175,7 +175,7 @@ function EditAPIToken({
             setInvalidDescription(false)
         }
 
-        if (key === 'description' && event.target.value.length > 10) {
+        if (key === 'description' && event.target.value.length > 350) {
             setInvalidDescription(true)
         }
 

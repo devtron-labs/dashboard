@@ -1,7 +1,4 @@
-import { Moment } from 'moment'
 import React from 'react'
-import { CreateUser } from '../userGroups/userGroups.types'
-
 export interface FormType {
     name: string
     description: string

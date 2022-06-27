@@ -82,49 +82,41 @@ function CreateAPIToken({
         }
     }, [])
 
-    const onChangeFormData = (event, key): void => {
-        if (key === 'customDate') {
-            setCustomDate(event)
-            setFormData({
-                ...formData,
-                expireAtInMs: event.valueOf(),
-                dateType: 'Custom',
-            })
+    const onChangeHandler = (event): void => {
+        setFormData({
+            ...formData,
+            [event.target.name]: event.target.value,
+        })
 
-            if (formDataErrorObj.invalidCustomDate) {
-                setFormDataErrorObj({
-                    ...formDataErrorObj,
-                    invalidCustomDate: false,
-                })
-            }
-        } else if (key === 'name') {
-            setFormData({
-                ...formData,
-                name: event.target.value,
-            })
-
+        if (event.target.name === 'name') {
             const nameValidation = validationRules.name(event.target.value)
             setFormDataErrorObj({
                 ...formDataErrorObj,
                 invalidName: !nameValidation.isValid,
                 invalidaNameMessage: nameValidation.message,
             })
-        } else if (key === 'description') {
-            setFormData({
-                ...formData,
-                description: event.target.value,
-            })
-
+        } else if (event.target.name === 'description') {
             const descriptionValidation = validationRules.description(event.target.value)
             setFormDataErrorObj({
                 ...formDataErrorObj,
                 invalidDescription: !descriptionValidation.isValid,
                 invalidDescriptionMessage: descriptionValidation.message,
             })
-        } else {
-            setFormData({
-                ...formData,
-                [key]: event.target.value,
+        }
+    }
+
+    const onCustomDateChange = (event) => {
+        setCustomDate(event)
+        setFormData({
+            ...formData,
+            expireAtInMs: event.valueOf(),
+            dateType: 'Custom',
+        })
+
+        if (formDataErrorObj.invalidCustomDate) {
+            setFormDataErrorObj({
+                ...formDataErrorObj,
+                invalidCustomDate: false,
             })
         }
     }
@@ -213,10 +205,6 @@ function CreateAPIToken({
         setAdminPermission(e.target.value)
     }
 
-    const handleDatesChange = (e) => {
-        onChangeFormData(e, 'customDate')
-    }
-
     return (
         <>
             <div className="cn-9 fw-6 fs-16">
@@ -241,8 +229,9 @@ function CreateAPIToken({
                                 tabIndex={1}
                                 placeholder="Name"
                                 className="form__input"
+                                name="name"
                                 value={formData.name}
-                                onChange={(e) => onChangeFormData(e, 'name')}
+                                onChange={onChangeHandler}
                                 autoFocus
                             />
                             {formDataErrorObj.invalidName && (
@@ -259,7 +248,8 @@ function CreateAPIToken({
                                 placeholder="Enter a description to remember where you have used this token"
                                 className="form__textarea"
                                 value={formData.description}
-                                onChange={(e) => onChangeFormData(e, 'description')}
+                                name="description"
+                                onChange={onChangeHandler}
                             />
                             {formDataErrorObj.invalidDescription && (
                                 <span className="form__error">
@@ -273,7 +263,7 @@ function CreateAPIToken({
                                 <ExpirationDate
                                     selectedExpirationDate={selectedExpirationDate}
                                     onChangeSelectFormData={onChangeSelectFormData}
-                                    handleDatesChange={handleDatesChange}
+                                    handleDatesChange={onCustomDateChange}
                                     customDate={customDate}
                                 />
                             </div>
