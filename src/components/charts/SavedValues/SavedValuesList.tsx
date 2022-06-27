@@ -195,7 +195,7 @@ export default function SavedValuesList() {
                                 <div className="pr-16"></div>
                             </div>
                             {filteredSavedValueList?.map((chartData) => (
-                                <div className="saved-values-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pr-16 pb-12 pl-16 hover-class">
+                                <div className="saved-values-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pr-16 pb-12 pl-16">
                                     <div className="pr-16">
                                         <File className="icon-dim-18 icon-n4 vertical-align-middle" />
                                     </div>
@@ -205,11 +205,11 @@ export default function SavedValuesList() {
                                     <div className="pr-16">{chartData.chartVersion}</div>
                                     <div className="pr-16">
                                         <Edit
-                                            className="icon-dim-18 mr-16 vertical-align-middle pointer"
+                                            className="icon-dim-18 mr-16 vertical-align-middle pointer action-icon"
                                             onClick={() => editChartValue(chartData.id)}
                                         />
                                         <Delete
-                                            className="icon-dim-18 vertical-align-middle pointer"
+                                            className="icon-dim-18 vertical-align-middle pointer action-icon"
                                             onClick={() => deleteChartValue(chartData.id)}
                                         />
                                     </div>
