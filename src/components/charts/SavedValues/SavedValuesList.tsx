@@ -25,7 +25,6 @@ export default function SavedValuesList() {
     const [savedValueList, setSavedValueList] = useState<SavedValueType[]>([])
     const [filteredSavedValueList, setFilteredSavedValueList] = useState<SavedValueType[]>([])
     const [errorStatusCode, setErrorStatusCode] = useState(0)
-    const [noResults, setNoResults] = useState(false)
 
     useEffect(() => {
         getData()
@@ -35,7 +34,7 @@ export default function SavedValuesList() {
         setLoader(true)
         getChartValuesTemplateList(chartId)
             .then((response: SavedValueListResponse) => {
-                let list = (response.result || [])
+                const list = (response.result || [])
                     .map((item) => {
                         return { ...item, isLoading: false }
                     })
@@ -69,7 +68,6 @@ export default function SavedValuesList() {
     const handleFilterChanges = (_searchText: string): void => {
         const _filteredData = savedValueList.filter((cluster) => cluster.name.indexOf(_searchText) >= 0)
         setFilteredSavedValueList(_filteredData)
-        setNoResults(_filteredData.length === 0)
     }
 
     const clearSearch = (): void => {
@@ -177,7 +175,7 @@ export default function SavedValuesList() {
                 <div className="mt-16 en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 235px)' }}>
                     {savedValueList.length === 0 ? (
                         renderEmptyState()
-                    ) : noResults ? (
+                    ) : filteredSavedValueList.length === 0 ? (
                         renderEmptyState('No matching saved values', 'We couldn’t find any matching results', true)
                     ) : (
                         <>
