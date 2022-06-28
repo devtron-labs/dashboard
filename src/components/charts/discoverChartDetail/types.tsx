@@ -1,6 +1,7 @@
 import { RouteComponentProps } from 'react-router'
 import { ReactComponent as GotToBuildDeploy } from '../../../assets/icons/go-to-buildanddeploy@2x.svg'
 import { ReactComponent as GoToEnvOverride } from '../../../assets/icons/go-to-envoverride@2x.svg'
+import { DOCUMENTATION } from '../../../config'
 
 export interface DiscoverChartDetailsProps extends RouteComponentProps<{ chartId: string }> {}
 
@@ -47,6 +48,7 @@ export const PrimaryOptions: PrimaryOptionType[] = [
         subtitle: 'Choose from a list of pre-defined values',
         valueType: ValueType.PRESET,
         noDataSubtitle: ['No saved values found for this chart.', 'Learn how to create and use saved values'],
+        helpLink: DOCUMENTATION.CHART_DEPLOY,
     },
     {
         icon: GoToEnvOverride,

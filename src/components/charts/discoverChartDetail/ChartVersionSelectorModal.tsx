@@ -29,6 +29,7 @@ export default function ChartVersionSelectorModal({
     const [selectedValueType, setSelectedValueType] = useState<string>('')
     const [deployedChartValueList, setDeployedChartValueList] = useState<ChartValuesType[]>([])
     const [presetChartValueList, setPresetChartValueList] = useState<ChartValuesType[]>([])
+    const [selectedChartValue, setSelectedChartValue] = useState<ChartValuesType>(null)
 
     useEffect(() => {
         const _deployedChartValues = [],
@@ -53,6 +54,7 @@ export default function ChartVersionSelectorModal({
     }, [chartValuesList])
 
     const onClickActionCard = (valueType): void => {
+        setSelectedChartValue(null)
         if (valueType === ValueType.NEW) {
             redirectToDeploy()
         } else {
@@ -62,6 +64,9 @@ export default function ChartVersionSelectorModal({
     }
 
     const redirectToDeploy = (): void => {
+        if (selectedChartValue) {
+            setChartValues(selectedChartValue)
+        }
         closePopup()
         handleDeploy()
     }
@@ -124,15 +129,15 @@ export default function ChartVersionSelectorModal({
 
     const renderInitialHeader = (): JSX.Element => {
         return (
-            <>
-                <div className="icon-dim-44 mr-16 mr-16">
+            <div className="flex content-start">
+                <div className="h-44 mr-16">
                     <img src={appIconUrl} onError={onError} className="chart-grid-item__icon" alt="chart icon" />
                 </div>
-                <div>
-                    <div className="fw-6 fs-16 cn-9">Deploy {appStoreApplicationName}</div>
-                    <div className="fw-4 fs-13 cn-9">Choose to start with...</div>
+                <div className="h-44">
+                    <div className="fw-6 fs-16 cn-9 h-22 mb-2">Deploy {appStoreApplicationName}</div>
+                    <div className="fw-4 fs-13 cn-9 h-20">Choose to start with...</div>
                 </div>
-            </>
+            </div>
         )
     }
 
@@ -142,15 +147,15 @@ export default function ChartVersionSelectorModal({
 
     const renderListHeader = (): JSX.Element => {
         return (
-            <>
-                <button type="button" className="transparent" onClick={togglePageState}>
+            <div className="flex content-start">
+                <button type="button" className="transparent pl-16 pr-16" onClick={togglePageState}>
                     <Back className="icon-dim-20" />
                 </button>
                 <div>
                     <div className="fw-6 fs-16 cn-9">{appStoreApplicationName}</div>
                     <div className="fw-4 fs-13 cn-9">Select a {selectedValueType} value</div>
                 </div>
-            </>
+            </div>
         )
     }
     const renderList = (): JSX.Element => {
@@ -166,10 +171,10 @@ export default function ChartVersionSelectorModal({
                         <div
                             key={`chart-value-${index}`}
                             className={`chart-value-row fw-4 cn-9 fs-13 pt-12 pr-16 pb-12 pl-16 ${
-                                chartValues.id === valueDetail.id ? 'active' : ''
+                                selectedChartValue?.id === valueDetail.id ? 'active' : ''
                             }`}
                             onClick={() => {
-                                setChartValues(valueDetail)
+                                setSelectedChartValue(valueDetail)
                             }}
                         >
                             <div className="pr-16">
@@ -199,7 +204,12 @@ export default function ChartVersionSelectorModal({
                 {isListpage ? renderList() : PrimaryOptions.map((primaryOption) => createActionCard(primaryOption))}
                 {isListpage && (
                     <div className="pt-20 pr-20 pb-20 pl-20 border-top right-align">
-                        <button type="button" className="cta h-36 lh-36" onClick={redirectToDeploy}>
+                        <button
+                            type="button"
+                            className="cta h-36 lh-36"
+                            onClick={redirectToDeploy}
+                            disabled={selectedChartValue === null}
+                        >
                             Edit & deploy
                             <Back className="icon-dim-20 rotate-180 vertical-align-middle ml-5" />
                         </button>

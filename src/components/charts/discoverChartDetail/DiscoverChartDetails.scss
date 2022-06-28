@@ -378,7 +378,7 @@
     width: 800px;
     .header-container {
         display: grid;
-        grid-template-columns: 50px auto 30px;
+        grid-template-columns: auto 30px;
         grid-column-gap: 16px;
     }
     .rotate-270 {
