@@ -12,7 +12,7 @@
 
     .api-list-row {
         display: grid;
-        grid-template-columns: 24px minmax(278px, 346px) 120px 120px 190px minmax(80px, 90px);
+        grid-template-columns: 24px minmax(278px, 346px) 120px 130px 190px minmax(80px, 90px);
         grid-column-gap: 16px;
 
         .api-key-expired-icon {

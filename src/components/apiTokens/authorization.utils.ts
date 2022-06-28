@@ -31,9 +31,15 @@ export const getDateInMilliseconds = (days) => {
 
 export const getSelectedEnvironments = (permission) => {
     if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
-        return permission.environment.find((env) => env.value === '*')
-            ? ''
-            : permission.environment.map((env) => env.value).join(',')
+        let env = ''
+        for (let _env of permission.environment) {
+            if (_env.value === '*') {
+                break
+            } else {
+                env = !env ? _env.value : `,${_env.value}`
+            }
+        }
+        return env
     } else {
         let allFutureCluster = {}
         let envList = ''
@@ -48,6 +54,18 @@ export const getSelectedEnvironments = (permission) => {
         })
         return envList
     }
+}
+
+const getSelectedEntityName = (permission) => {
+    let entityName = ''
+    for (let _entityName of permission.entityName) {
+        if (_entityName.value === '*') {
+            break
+        } else {
+            entityName = !entityName ? _entityName.value : `,${_entityName.value}`
+        }
+    }
+    return entityName
 }
 
 export const createUserPermissionPayload = (
@@ -74,9 +92,7 @@ export const createUserPermissionPayload = (
                     action: permission.action.value,
                     team: permission.team.value,
                     environment: getSelectedEnvironments(permission),
-                    entityName: permission.entityName.find((entity) => entity.value === '*')
-                        ? ''
-                        : permission.entityName.map((entity) => entity.value).join(','),
+                    entityName: getSelectedEntityName(permission),
                 })),
         ],
         superAdmin: isSuperAdminAccess,

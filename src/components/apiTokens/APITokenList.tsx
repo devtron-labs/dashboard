@@ -54,7 +54,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                     <div></div>
                     <div>Name</div>
                     <div>Last Used On</div>
-                    <div>Ip address</div>
+                    <div>Last used by Ip add.</div>
                     <div>Expires on</div>
                     <div></div>
                 </div>
