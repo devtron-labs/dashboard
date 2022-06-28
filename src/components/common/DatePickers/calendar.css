@@ -80,3 +80,9 @@
 .SingleDatePickerInput__withBorder .DateInput_input__focused#single_date_picker + .DateInput_fang {
     display: none;
 }
+
+.SingleDatePickerInput__withBorder .DayPicker .CalendarDay[aria-disabled='true'] {
+    border: 1px solid rgb(228, 231, 231) !important;
+    color: rgb(202, 204, 205) !important;
+    background: rgb(255, 255, 255) !important;
+}
