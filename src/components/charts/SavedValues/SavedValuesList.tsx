@@ -41,11 +41,11 @@ export default function SavedValuesList() {
                 .sort((a, b) => a['name'].localeCompare(b['name']))
             setSavedValueList(list)
             setFilteredSavedValueList(list)
-            setLoader(false)
         } catch (error) {
-            setLoader(false)
             showError(error)
             setErrorStatusCode(error['code'])
+        } finally {
+            setLoader(false)
         }
     }
 
