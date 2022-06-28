@@ -8,7 +8,8 @@ import { getReadme, getChartValues } from './charts.service'
 import { ValuesYamlConfirmDialog } from './dialogs/ValuesYamlConfirmDialog'
 import { ReactComponent as LockIcon } from '../../assets/icons/ic-locked.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg';
-import ManageValues from './modal/ManageValues'
+import { useHistory } from 'react-router'
+import { getSavedValuesListURL } from './charts.helper'
 
 interface AdvancedConfig extends AdvancedConfigHelpers {
     chart: ChartGroupEntry;
@@ -24,7 +25,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
     const [showValuesYamlDialog, toggleValuesYamlDialog] = useState(false);
     const [valuesYamlSelection, setValuesYamlSelection] = useState({ valuesId: appStoreApplicationVersionId, kind: kind });
     const [readmeLoading, readmeResult, error, reload] = useAsync(() => getReadme(appStoreApplicationVersionId), [appStoreApplicationVersionId])
-    const [showManageValuesModal, toggleManagaValuesModal] = useState(false)
+    const { push } = useHistory()
 
     useEffect(() => {
         async function getEnvironments() {
@@ -92,6 +93,11 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
         else {
             setDiff(true)
         }
+    }
+
+    function openSavedValuesList() {
+        let link = getSavedValuesListURL(chart.id)
+        push(link)
     }
 
     let selectedChartValue: ChartValuesNativeType = {
@@ -171,10 +177,9 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                         <div className="flex column left top half">
                             <label className="form__label form__label--manage-values">
                                 <span>Values</span>
-                                <button type="button" className="text-button p-0" onClick={(event) => {
-                                    event.stopPropagation();
-                                    toggleManagaValuesModal(!showManageValuesModal);
-                                }}>Manage</button>
+                                <button type="button" className="flex cta h-36 cb-5 cancel mt-8" onClick={openSavedValuesList}>
+                                  Saved values
+                                </button>
                             </label>
                             <Select onChange={handleChartValueChangeAdvancedConfig} value={`${kind}..${appStoreValuesVersionId}`}>
                                 {!chartValuesDropDown?.length && <Select.Async api={() => getChartVersionsAndValues(chart.id, index)} />}
@@ -263,9 +268,6 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                 copyYamlToClipboard={copyValuesYamlToClipBoard}
                 discardYamlChanges={discardValuesYamlChangesAdvancedConfig} />
                 : null}
-            {showManageValuesModal ? <ManageValues chartId={String(chart.id)}
-                close={() => { toggleManagaValuesModal(!showManageValuesModal) }}
-                onDeleteChartValue={() => { }} /> : null}
         </>
     )
 }
