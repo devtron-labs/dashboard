@@ -201,6 +201,10 @@ a:focus {
     text-transform: uppercase;
 }
 
+.no-text-transform {
+    text-transform: none;
+}
+
 .ff-monospace {
     font-family: monospace;
 }
@@ -1721,6 +1725,14 @@ button.anchor {
     text-align: center !important;
 }
 
+.align-left {
+    text-align: left;
+}
+
+.align-right {
+    text-align: right;
+}
+
 .lh-20 {
     line-height: 20px;
 }
@@ -1762,6 +1774,10 @@ button.anchor {
 
 .h-32 {
     height: 32px !important;
+}
+
+.h-36 {
+    height: 36px !important;
 }
 
 .fw-n {
@@ -1905,10 +1921,6 @@ button.anchor {
     padding-left: 220px;
 }
 
-.h-32 {
-    height: 32px;
-}
-
 input,
 textarea {
     background-color: var(--N50);
@@ -1916,4 +1928,12 @@ textarea {
 
 .no-text-transform {
     text-transform: none !important;
+}
+
+.break-word {
+    word-wrap: break-word;
+}
+
+.basic-multi-select > .select__control--is-disabled {
+    background-color: var(--N100) !important;
 }

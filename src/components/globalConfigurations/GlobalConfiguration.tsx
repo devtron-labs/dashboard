@@ -12,10 +12,11 @@ import { GlobalConfigCheckList } from '../checkList/GlobalConfigCheckList'
 import { getAppCheckList } from '../../services/service'
 import { showError } from '../common'
 import './globalConfigurations.scss'
-import { SERVER_MODE } from '../../config/constants'
+import { Routes, SERVER_MODE } from '../../config/constants'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExternalLinks from '../externalLinks/ExternalLinks'
 import PageHeader from '../common/header/PageHeader'
+import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -132,6 +133,11 @@ export default function GlobalConfiguration(props) {
 
 function NavItem({ hostURLConfig, serverMode }) {
     const location = useLocation()
+    // Add key of NavItem if grouping is used
+    const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
+        Authorization: location.pathname.startsWith('/global-config/auth') ? false : true,
+    })
+
     const ConfigRequired = [
         {
             name: 'Host URL',
@@ -160,45 +166,147 @@ function NavItem({ hostURLConfig, serverMode }) {
             isAvailableInEA: false,
         },
         { name: 'SSO login services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin, isAvailableInEA: true },
-        { name: 'User access', href: URLS.GLOBAL_CONFIG_AUTH, component: UserGroup, isAvailableInEA: true },
+        {
+            name: 'Authorization',
+            href: `${URLS.GLOBAL_CONFIG_AUTH}/users`,
+            preventDefaultKey: URLS.GLOBAL_CONFIG_AUTH,
+            group: [
+                {
+                    name: 'User permissions',
+                    href: `${URLS.GLOBAL_CONFIG_AUTH}/users`,
+                    isAvailableInEA: true,
+                },
+                {
+                    name: 'Permission groups',
+                    href: `${URLS.GLOBAL_CONFIG_AUTH}/groups`,
+                    isAvailableInEA: true,
+                },
+                {
+                    name: 'API tokens',
+                    href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}/list`,
+                    isAvailableInEA: true,
+                },
+            ],
+            component: UserGroup,
+            isAvailableInEA: true,
+        },
         { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier, isAvailableInEA: false },
     ]
     let showError =
         (!hostURLConfig || hostURLConfig.value !== window.location.origin) &&
         !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)
 
+    const renderNavItem = (route, className = '', preventOnClickOp = false) => {
+        return (
+            <NavLink
+                to={`${route.href}`}
+                key={route.href}
+                activeClassName="active-route"
+                className={`${
+                    route.name === 'API tokens' &&
+                    location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)
+                        ? 'active-route'
+                        : ''
+                }`}
+                onClick={(e) => {
+                    if (!preventOnClickOp) {
+                        handleGroupCollapsedState(e, route)
+                    }
+                }}
+            >
+                <div className={`flexbox flex-justify ${className || ''}`}>
+                    <div>{route.name}</div>
+                    {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? (
+                        <Error className="global-configuration__error-icon icon-dim-20" />
+                    ) : (
+                        ''
+                    )}
+                </div>
+            </NavLink>
+        )
+    }
+
+    // Collapse group except the one with preventKey
+    const collapseExpandedGroup = (preventKey: string) => {
+        const expandedGroupKey = Object.entries(collapsedState).find(([key, value]) => {
+            if (!value) {
+                return [key, value]
+            }
+        })
+
+        if (!expandedGroupKey && !preventKey) {
+            return
+        }
+
+        const _collapsedState = {
+            ...collapsedState,
+        }
+
+        // If any group is expanded then collapse it
+        if (expandedGroupKey) {
+            _collapsedState[expandedGroupKey[0]] = true
+        }
+
+        // If preventKey is passed then prevent the expanded state for the same
+        if (preventKey) {
+            _collapsedState[preventKey] = false
+        }
+
+        // set the updated state
+        setCollapsedState(_collapsedState)
+    }
+
+    const handleGroupCollapsedState = (e, route) => {
+        // If current path starts with default prevent key then prevent the default behaviour
+        // & reverse the collapse state
+        if (location.pathname.startsWith(route.preventDefaultKey)) {
+            e.preventDefault()
+            setCollapsedState({
+                ...collapsedState,
+                [route.name]: !collapsedState[route.name],
+            })
+        } else {
+            // Pass the route name as preventKey if it's a group and/else collapse any expanded group
+            collapseExpandedGroup(route.group ? route.name : '')
+        }
+    }
+
     return (
         <div className="flex column left">
             {ConfigRequired.map(
-                (route) =>
-                    (serverMode !== SERVER_MODE.EA_ONLY || route.isAvailableInEA) && (
-                        <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route">
-                            <div className="flexbox flex-justify">
-                                <div>{route.name}</div>
-                                {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? (
-                                    <Error className="global-configuration__error-icon icon-dim-20" />
-                                ) : (
-                                    ''
-                                )}
-                            </div>
-                        </NavLink>
-                    ),
+                (route) => (serverMode !== SERVER_MODE.EA_ONLY || route.isAvailableInEA) && renderNavItem(route),
             )}
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
             {ConfigOptional.map(
-                (route) =>
-                    (serverMode !== SERVER_MODE.EA_ONLY || route.isAvailableInEA) && (
-                        <NavLink to={`${route.href}`} key={route.href} activeClassName="active-route">
-                            <div className="flexbox flex-justify">
-                                <div>{route.name}</div>
-                                {route.href.includes(URLS.GLOBAL_CONFIG_HOST_URL) && showError ? (
-                                    <Error className="global-configuration__error-icon icon-dim-20" />
-                                ) : (
-                                    ''
-                                )}
-                            </div>
-                        </NavLink>
-                    ),
+                (route, index) =>
+                    (serverMode !== SERVER_MODE.EA_ONLY || route.isAvailableInEA) &&
+                    (route.group ? (
+                        <>
+                            <NavLink
+                                key={`nav_item_${index}`}
+                                to={route.href}
+                                className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'} flex content-space`}
+                                onClick={(e) => {
+                                    handleGroupCollapsedState(e, route)
+                                }}
+                            >
+                                {route.name}
+                                <Dropdown
+                                    className="icon-dim-24 rotate"
+                                    style={{ ['--rotateBy' as any]: !collapsedState[route.name] ? '180deg' : '0deg' }}
+                                />
+                            </NavLink>
+                            {!collapsedState[route.name] && (
+                                <>
+                                    {route.group.map((_route) => {
+                                        return renderNavItem(_route, 'ml-10', true)
+                                    })}
+                                </>
+                            )}
+                        </>
+                    ) : (
+                        renderNavItem(route)
+                    )),
             )}
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
             <NavLink
