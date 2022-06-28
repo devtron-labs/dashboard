@@ -177,7 +177,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                         <div className="flex column left top half">
                             <label className="form__label form__label--manage-values">
                                 <span>Values</span>
-                                <button type="button" className="flex cta h-36 cb-5 cancel mt-8" onClick={openSavedValuesList}>
+                                <button type="button" className="text-button p-0" onClick={openSavedValuesList}>
                                   Saved values
                                 </button>
                             </label>
