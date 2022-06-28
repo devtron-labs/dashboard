@@ -39,7 +39,7 @@ import ChartVersionSelectorModal from './ChartVersionSelectorModal'
 
 const DiscoverDetailsContext = React.createContext(null)
 
-function useDiscoverDetailsContext() {
+export function useDiscoverDetailsContext() {
     const context = React.useContext(DiscoverDetailsContext)
     if (!context) {
         throw new Error(`Chart Detail Context Not Found`)
@@ -316,7 +316,7 @@ const Deployment: React.FC<DeploymentProps> = ({
         target.src = placeHolder
     }
 
-    function handleDeploy() {
+    function handleDeploy(): void {
         if (serverMode == SERVER_MODE.EA_ONLY || isGitOpsConfigAvailable) {
             push(`${match.url}/deploy-chart`)
         } else {
@@ -402,6 +402,7 @@ const Deployment: React.FC<DeploymentProps> = ({
                     appStoreApplicationName={appStoreApplicationName}
                     appIconUrl={icon}
                     onError={handleImageError}
+                    handleDeploy={handleDeploy}
                 />
             )}
             {showGitOpsWarningModal ? (

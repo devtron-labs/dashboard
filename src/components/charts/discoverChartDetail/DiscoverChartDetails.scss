@@ -384,4 +384,17 @@
     .rotate-270 {
         transform: rotate(270deg);
     }
+    .rotate-180 {
+        transform: rotate(180deg);
+    }
+    .chart-value-row {
+        display: grid;
+        grid-template-columns: 50px 200px auto;
+        &:not(:first-of-type):hover {
+            background-color: var(--N50);
+        }
+    }
+    .right-align {
+        text-align: right;
+    }
 }
