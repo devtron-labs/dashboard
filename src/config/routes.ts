@@ -52,6 +52,7 @@ export const URLS = {
     GLOBAL_CONFIG_CHART: '/global-config/chart-repo',
     GLOBAL_CONFIG_CUSTOM_CHARTS: '/global-config/custom-charts',
     GLOBAL_CONFIG_AUTH: '/global-config/auth',
+    GLOBAL_CONFIG_API: '/api',
     GLOBAL_CONFIG_NOTIFIER: '/global-config/notifier',
     GLOBAL_CONFIG_NOTIFIER_ADD_NEW: '/global-config/notifier/edit',
     GLOBAL_CONFIG_PROJECT: '/global-config/projects',
@@ -66,6 +67,8 @@ export const URLS = {
     STACK_MANAGER_ABOUT: '/stack-manager/about',
     STACK_MANAGER_ABOUT_RELEASES: '/stack-manager/about/releases',
     DEPLOYMENT_HISTORY_CONFIGURATIONS: '/configuration',
+    CHART: '/chart',
+    SAVED_VALUES: '/saved-values',
 }
 
 export enum APP_COMPOSE_STAGE {

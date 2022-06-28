@@ -458,7 +458,7 @@ const CompareWithDropdown = ({
                             : [{ label: 'No options', value: 0, info: '' }],
                 },
                 {
-                    label: 'Default',
+                    label: 'Default values',
                     options:
                         defaultChartValues.length > 0
                             ? defaultChartValues
@@ -476,7 +476,7 @@ const CompareWithDropdown = ({
                             : [{ label: 'No options', value: 0, info: '' }],
                 },
                 {
-                    label: 'Default',
+                    label: 'Default values',
                     options:
                         defaultChartValues.length > 0
                             ? defaultChartValues
@@ -624,7 +624,11 @@ export const ChartValuesEditor = ({
                 defaultChartValues,
                 deploymentHistoryOptionsList,
                 selectedVersionForDiff:
-                    deploymentHistoryOptionsList.length > 0 ? deploymentHistoryOptionsList[0] : deployedChartValues[0],
+                    deploymentHistoryOptionsList.length > 0
+                        ? deploymentHistoryOptionsList[0]
+                        : deployedChartValues.length > 0
+                        ? deployedChartValues[0]
+                        : defaultChartValues[0],
             })
         }
     }, [chartValuesList, deploymentHistoryList])
@@ -715,7 +719,9 @@ export const ChartValuesEditor = ({
                 selectedVersionForDiff:
                     valuesForDiffState.deploymentHistoryOptionsList.length > 0
                         ? valuesForDiffState.deploymentHistoryOptionsList[0]
-                        : valuesForDiffState.deployedChartValues[0],
+                        : valuesForDiffState.deployedChartValues.length > 0
+                        ? valuesForDiffState.deployedChartValues[0]
+                        : valuesForDiffState.defaultChartValues[0],
             })
         }
     }, [comparisonView])

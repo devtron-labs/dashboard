@@ -16,6 +16,7 @@ export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
         textAlign: 'left',
         whiteSpace: 'nowrap',
         cursor: 'pointer',
+        fontSize: '13px',
         ...styleOverrides,
     })
 }
