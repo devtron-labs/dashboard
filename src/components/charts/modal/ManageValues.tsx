@@ -38,46 +38,43 @@ class ManageValues extends Component<ManageValuesProps, ManageValuesState> {
         this.getChartValuesList()
     }
 
-    getChartValuesList() {
-        getChartValuesTemplateList(this.props.chartId)
-            .then((response) => {
-                let list = response.result || []
-                list = list.map((item) => {
-                    return { ...item, isLoading: false }
-                })
-                this.setState({ values: list, view: ViewType.FORM })
+    async getChartValuesList() {
+        try {
+            const { result } = await getChartValuesTemplateList(this.props.chartId)
+            const list = (result || []).map((item) => {
+                return { ...item, isLoading: false }
             })
-            .catch((error) => {
-                showError(error)
-            })
+            this.setState({ values: list, view: ViewType.FORM })
+        } catch (error) {
+            showError(error)
+        }
     }
 
     onCreateNewChartValue() {
-        let link = `${URLS.CHARTS}/discover/chart/${this.props.chartId}/chart-value`
+        let link = `${URLS.CHARTS_DISCOVER}${URLS.CHART}/${this.props.chartId}${URLS.SAVED_VALUES}/0`
         this.props.history.push(link)
     }
 
     onEditChartValue(chartValueId: number) {
-        let link = `${URLS.CHARTS}/discover/chart/${this.props.chartId}/saved-values/${chartValueId}`
+        let link = `${URLS.CHARTS_DISCOVER}${URLS.CHART}/${this.props.chartId}${URLS.SAVED_VALUES}/${chartValueId}`
         this.props.history.push(link)
     }
 
-    deleteChartValue(chartValueId: number) {
+    async deleteChartValue(chartValueId: number) {
         let { values } = { ...this.state }
         values = values.map((val) => {
             if (val.id === chartValueId) return { ...val, isLoading: true }
             return val
         })
         this.setState({ values })
-        deleteChartValues(chartValueId)
-            .then((response) => {
-                toast.success('Deleted')
-                this.getChartValuesList()
-                this.props.onDeleteChartValue()
-            })
-            .catch((error) => {
-                showError(error)
-            })
+        try {
+            await deleteChartValues(chartValueId)
+            toast.success('Deleted')
+            this.getChartValuesList()
+            this.props.onDeleteChartValue()
+        } catch (error) {
+            showError(error)
+        }
     }
 
     renderHeader() {
@@ -91,7 +88,7 @@ class ManageValues extends Component<ManageValuesProps, ManageValuesState> {
         )
     }
 
-    renderCreateNew() {
+    renderCreateNewChartValue() {
         return (
             <div
                 className="manage-values__create-new"
@@ -114,7 +111,7 @@ class ManageValues extends Component<ManageValuesProps, ManageValuesState> {
                         <ul className="manage-values__list">
                             <Progressing pageLoader />
                         </ul>
-                        {this.renderCreateNew()}
+                        {this.renderCreateNewChartValue()}
                     </div>
                 </VisibleModal>
             )
@@ -127,7 +124,7 @@ class ManageValues extends Component<ManageValuesProps, ManageValuesState> {
                             <EmptyData className="manage-values__empty-state-img" />
                             <span className="manage-values__empty-state-title">No custom values available</span>
                         </div>
-                        {this.renderCreateNew()}
+                        {this.renderCreateNewChartValue()}
                     </div>
                 </VisibleModal>
             )
@@ -173,7 +170,7 @@ class ManageValues extends Component<ManageValuesProps, ManageValuesState> {
                                 )
                             })}
                         </ul>
-                        {this.renderCreateNew()}
+                        {this.renderCreateNewChartValue()}
                     </div>
                 </VisibleModal>
             )

@@ -9,7 +9,7 @@ import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
 import { BreadCrumb, ErrorScreenManager, Progressing, showError, useBreadcrumb } from '../../common'
-import { SavedValueListResponse, SavedValueType } from './types'
+import { SavedValueType } from './types'
 import EmptyState from '../../EmptyState/EmptyState'
 import { deleteChartValues, getChartValuesTemplateList } from '../charts.service'
 import './savedValues.scss'
@@ -18,7 +18,7 @@ import { toast } from 'react-toastify'
 
 export default function SavedValuesList() {
     const history: RouteComponentProps['history'] = useHistory()
-    const { chartId } = useParams<{ chartId }>()
+    const { chartId } = useParams<{ chartId: string }>()
     const [loader, setLoader] = useState(false)
     const [searchApplied, setSearchApplied] = useState(false)
     const [searchText, setSearchText] = useState('')
@@ -30,28 +30,27 @@ export default function SavedValuesList() {
         getData()
     }, [])
 
-    const getData = (): void => {
-        setLoader(true)
-        getChartValuesTemplateList(chartId)
-            .then((response: SavedValueListResponse) => {
-                const list = (response.result || [])
-                    .map((item) => {
-                        return { ...item, isLoading: false }
-                    })
-                    .sort((a, b) => a['name'].localeCompare(b['name']))
-                setSavedValueList(list)
-                setFilteredSavedValueList(list)
-                setLoader(false)
-            })
-            .catch((error) => {
-                setLoader(false)
-                setErrorStatusCode(error.code)
-                showError(error)
-            })
+    async function getData() {
+        try {
+            setLoader(true)
+            const { result } = await getChartValuesTemplateList(chartId)
+            const list = (result || [])
+                .map((item) => {
+                    return { ...item, isLoading: false }
+                })
+                .sort((a, b) => a['name'].localeCompare(b['name']))
+            setSavedValueList(list)
+            setFilteredSavedValueList(list)
+            setLoader(false)
+        } catch (error) {
+            setLoader(false)
+            showError(error)
+            setErrorStatusCode(error['code'])
+        }
     }
 
-    const gotoChartValuePage = (chartValueId: number): void => {
-        history.push(`${URLS.CHARTS}/discover/chart/${chartId}/saved-values/${chartValueId}`)
+    const redirectToChartValuePage = (chartValueId: number): void => {
+        history.push(`${URLS.CHARTS_DISCOVER}${URLS.CHART}/${chartId}${URLS.SAVED_VALUES}/${chartValueId}`)
     }
 
     const deleteChartValue = (chartValueId: number): void => {
@@ -112,7 +111,7 @@ export default function SavedValuesList() {
 
     const renderUploadButton = (): JSX.Element => {
         return (
-            <button onClick={() => gotoChartValuePage(0)} className="add-link cta flex">
+            <button onClick={() => redirectToChartValuePage(0)} className="add-link cta flex">
                 <Upload className="icon-dim-16 mr-8" />
                 New
             </button>
@@ -185,14 +184,17 @@ export default function SavedValuesList() {
                                 <div className="pr-16">Version</div>
                                 <div className="pr-16"></div>
                             </div>
-                            {filteredSavedValueList.map((chartData) => (
-                                <div className="saved-values-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pr-16 pb-12 pl-16">
+                            {filteredSavedValueList.map((chartData, index) => (
+                                <div
+                                    key={`saved-value-${index}`}
+                                    className="saved-values-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pr-16 pb-12 pl-16"
+                                >
                                     <div className="pr-16">
                                         <File className="icon-dim-18 icon-n4 vertical-align-middle" />
                                     </div>
                                     <div
                                         className="pr-16 cb-5 pointer"
-                                        onClick={() => gotoChartValuePage(chartData.id)}
+                                        onClick={() => redirectToChartValuePage(chartData.id)}
                                     >
                                         {chartData.name}
                                     </div>
@@ -200,7 +202,7 @@ export default function SavedValuesList() {
                                     <div className="pr-16">
                                         <Edit
                                             className="icon-dim-18 mr-16 vertical-align-middle pointer action-icon"
-                                            onClick={() => gotoChartValuePage(chartData.id)}
+                                            onClick={() => redirectToChartValuePage(chartData.id)}
                                         />
                                         <Delete
                                             className="icon-dim-18 vertical-align-middle pointer action-icon"
@@ -219,7 +221,7 @@ export default function SavedValuesList() {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                'saved-values': 'Saved values',
+                'saved-values': { component: 'Saved values', linked: false },
                 ':chartId': 'chart name',
                 chart: null,
                 'chart-store': null,
