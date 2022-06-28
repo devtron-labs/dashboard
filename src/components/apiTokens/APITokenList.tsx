@@ -84,8 +84,10 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                             >
                                 <span className="ellipsis-right">{list.name}</span>
                             </div>
-                            <div className="ellipsis-right">{moment(list.lastUsedAt).format(MomentDateFormat)}</div>
-                            <div>{list.lastUsedByIp}</div>
+                            <div className="ellipsis-right">
+                                {list.lastUsedAt ? moment(list.lastUsedAt).format(MomentDateFormat) : 'Never used'}
+                            </div>
+                            <div>{list.lastUsedByIp ? list.lastUsedByIp : '-'}</div>
                             <div className={`${isTokenExpired(list.expireAtInMs) ? 'cr-5' : ''}`}>
                                 {list.expireAtInMs === 0 ? (
                                     'No expiration date'
