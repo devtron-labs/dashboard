@@ -8,7 +8,7 @@ export class ValidationRules {
         if (value.length === 0) return { isValid: false, message: 'This is a required field' }
         if (value.length < 3) return { isValid: false, message: 'Atleast 3 characters required' }
         if (!test || value.length > 50) {
-            return { isValid: false, message: `Max 50 characters allowed; Do not use ‘spaces’ or ‘,’` }
+            return { isValid: false, message: `Max 50 characters allowed; Use only alphanumeric chars, '-' or '_'` }
         } else {
             return { message: null, isValid: true }
         }
