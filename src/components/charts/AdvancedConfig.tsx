@@ -96,8 +96,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
     }
 
     function openSavedValuesList() {
-        let link = getSavedValuesListURL(chart.id)
-        push(link)
+        push(getSavedValuesListURL(chart.id))
     }
 
     let selectedChartValue: ChartValuesNativeType = {
