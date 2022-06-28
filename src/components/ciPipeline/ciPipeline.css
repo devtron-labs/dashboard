@@ -207,8 +207,9 @@
 }
 
 .ci-error {
-    text-align: center;
-    margin-left: 19%;
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+    padding: 2px 0px 0px 0px;
 }
 
 .modal__body__ci_new_ui {
@@ -479,4 +480,8 @@
 
 .container-image-info path[fill='#06C'] {
     fill: var(--B500);
+}
+
+.h-18 {
+    height: 18px;
 }

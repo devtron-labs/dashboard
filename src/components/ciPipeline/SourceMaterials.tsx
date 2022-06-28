@@ -1,7 +1,6 @@
 import React from 'react'
 import { SourceTypeMap, URLS } from '../../config'
 import { components } from 'react-select'
-import { MaterialType, Githost, WebhookEvent, CiPipelineSourceTypeOption } from './types'
 import { Link } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import error from '../../assets/icons/misc/errorInfo.svg'
@@ -11,8 +10,11 @@ import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { DropdownIndicator } from '../charts/charts.util'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outline-purple.svg'
 import { ConfigureWebhook } from './ConfigureWebhook'
+import { MaterialType, CiPipelineSourceTypeOption, Githost } from './types'
+import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 
-interface SourceMaterialsProps {
+export interface SourceMaterialsProps {
     materials: MaterialType[]
     showError: boolean
     validationRules?
@@ -124,7 +126,8 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                 }
 
                 let errorObj = props.validationRules?.sourceValue(mat.value)
-
+                const isBranchRegex = mat.type !== SourceTypeMap.WEBHOOK && mat.type === SourceTypeMap.BranchRegex
+                const isBranchFixed = mat.type !== SourceTypeMap.WEBHOOK && mat.type === SourceTypeMap.BranchFixed
                 return (
                     <div key={`source-material-${index}`}>
                         <div className="mt-20" key={mat.gitMaterialId}>
@@ -136,7 +139,9 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             </div>
                             <div className="mt-16 flex left">
                                 <div className="w-50 mr-8">
-                                    <label className="form__label mb-6">Source type*</label>
+                                    <label className="form__label mb-6">
+                                        Source type <span className="cr-5"> *</span>
+                                    </label>
                                     <ReactSelect
                                         className="workflow-ci__source"
                                         placeholder="Source Type"
@@ -164,16 +169,47 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                         }}
                                         menuPortalTarget={document.getElementById('visible-modal')}
                                     />
+                                    <div className="h-18"></div>
                                 </div>
-                                {mat.type !== SourceTypeMap.WEBHOOK ? (
+                                {isBranchFixed && (
+                                    <div className="w-50 ml-8 left">
+                                        <div>
+                                            <label className="form__label mb-6">
+                                                Branch Name<span className="cr-5"> *</span>
+                                            </label>
+                                            <input
+                                                className="form__input"
+                                                autoComplete="off"
+                                                placeholder="Eg. main"
+                                                type="text"
+                                                disabled={!props.handleSourceChange}
+                                                value={mat.value}
+                                                onChange={(event) => {
+                                                    props?.handleSourceChange(event, mat.gitMaterialId)
+                                                }}
+                                                autoFocus={true}
+                                            />
+                                        </div>
+                                        {props.showError && !errorObj.isValid ? (
+                                            <span className="form__error ci-error ">
+                                                <img src={error} className="form__icon" />
+                                                {props.validationRules?.sourceValue(_materials[index].value).message}
+                                            </span>
+                                        ) : (
+                                            <div className="h-18"></div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {isBranchRegex && (
                                     <div className="w-50 ml-8">
                                         <label className="form__label mb-6">
-                                            {mat.type === SourceTypeMap.BranchFixed ? 'Branch Name*' : ''}
+                                            Branch Regex<span className="cr-5"> *</span>
                                         </label>
                                         <input
                                             className="form__input"
                                             autoComplete="off"
-                                            placeholder="Name"
+                                            placeholder="Enter branch regex"
                                             type="text"
                                             disabled={!props.handleSourceChange}
                                             value={mat.value}
@@ -182,18 +218,30 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             }}
                                             autoFocus={true}
                                         />
+                                        {props.showError && !errorObj.isValid ? (
+                                            <span className="form__error ci-error ">
+                                                <img src={error} className="form__icon" />
+                                                {props.validationRules?.sourceValue(_materials[index].value).message}
+                                            </span>
+                                        ) : (
+                                            <div className="h-18"></div>
+                                        )}
                                     </div>
-                                ) : (
-                                    ''
                                 )}
                             </div>
-                            {props.showError && !errorObj.isValid ? (
-                                <span className="form__error ci-error">
-                                    <img src={error} className="form__icon" />
-                                    {props.validationRules?.sourceValue(_materials[index].value).message}
-                                </span>
-                            ) : null}
                         </div>
+                        {isBranchRegex && (
+                            <div className={`${props.showError && !errorObj.isValid ? 'mt-16' : ''}`}>
+                                <InfoColourBar
+                                    message={
+                                        'Branch - Regex allows you to easily switch between branches matching the configured regex before triggering the build pipeline.'
+                                    }
+                                    classname={'info_bar'}
+                                    Icon={InfoIcon}
+                                />
+                            </div>
+                        )}
+
                         {props.includeWebhookEvents && mat.type == SourceTypeMap.WEBHOOK && (
                             <ConfigureWebhook
                                 webhookConditionList={props.webhookData.webhookConditionList}

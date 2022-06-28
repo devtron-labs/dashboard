@@ -203,6 +203,7 @@ export const TriggerTypeMap = {
 export const SourceTypeMap = {
     BranchFixed: 'SOURCE_TYPE_BRANCH_FIXED',
     WEBHOOK: 'WEBHOOK',
+    BranchRegex: 'SOURCE_TYPE_BRANCH_REGEX',
 }
 
 export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A'
