@@ -78,6 +78,7 @@ export const Routes = {
 
     REFRESH_MATERIAL: 'app/ci-pipeline/refresh-material',
     APPLICATIONS: 'api/v1/applications',
+    API_TOKEN: 'api-token',
     USER_CREATE: 'user/create',
     USER_UPDATE: 'user/update',
     USER_LIST: 'user/all',
@@ -186,6 +187,7 @@ export const PATTERNS = {
     APP_LABEL_CHIP: /^.+:.+$/,
     CONFIG_MAP_AND_SECRET_MULTPLS_KEYS: /^[-._a-zA-Z0-9\,\?\s]*[-._a-zA-Z0-9\s]$/,
     VARIABLE: /^[A-z0-9-_]+$/,
+    API_TOKEN: '^[a-z0-9][a-z0-9_-]*[a-z0-9]$/*',
 }
 
 export const TriggerType = {
@@ -204,6 +206,7 @@ export const SourceTypeMap = {
 }
 
 export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A'
+export const MomentDateFormat = 'ddd, DD MMM YYYY'
 
 export const DOCUMENTATION = {
     HOME_PAGE: 'https://docs.devtron.ai',

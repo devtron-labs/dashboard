@@ -33,6 +33,10 @@
     display: flex;
 }
 
+.flexbox-imp {
+    display: flex !important;
+}
+
 .flexbox-col {
     display: flex;
     flex-direction: column;
