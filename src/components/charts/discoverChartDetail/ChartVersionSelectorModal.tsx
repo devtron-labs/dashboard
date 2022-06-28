@@ -1,34 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { VisibleModal } from '../../common'
-import { ReactComponent as GotToBuildDeploy } from '../../../assets/icons/go-to-buildanddeploy@2x.svg'
-import { ReactComponent as GoToEnvOverride } from '../../../assets/icons/go-to-envoverride@2x.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Back } from '../../../assets/icons/ic-back.svg'
 import { useDiscoverDetailsContext } from './DiscoverChartDetails'
 import { ChartKind } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
+import { ChartValuesType } from '../charts.types'
+import { PrimaryOptions, PrimaryOptionType, ValueType } from './types'
 
-const PrimaryOptions = [
-    {
-        Icon: GotToBuildDeploy,
-        title: 'Preset value',
-        subtitle: 'Choose from a list of pre-defined values',
-        valueType: 'preset',
-    },
-    {
-        Icon: GoToEnvOverride,
-        title: 'Deployed value',
-        subtitle: 'Choose from currently deployed values',
-        valueType: 'deployed',
-    },
-    {
-        Icon: GotToBuildDeploy,
-        title: 'I want to start from scratch',
-        subtitle: 'Start with the latest default value for this chart',
-        valueType: '',
-    },
-]
 interface ChartVersionSelectorModalType {
     closePopup: () => void
     appStoreApplicationName: string
@@ -47,31 +27,15 @@ export default function ChartVersionSelectorModal({
     const { chartValuesList, chartValues, setChartValues } = useDiscoverDetailsContext()
     const [isListpage, setIsListPage] = useState(false)
     const [selectedValueType, setSelectedValueType] = useState<string>('')
-    const [deployedChartValueList, setDeployedChartValueList] = useState<
-        {
-            id: string
-            kind: string
-            name: string
-            chartVersion: string
-            environmentName: string
-        }[]
-    >([])
-    const [presetChartValueList, setPresetChartValueList] = useState<
-        {
-            id: string
-            kind: string
-            name: string
-            chartVersion: string
-            environmentName: string
-        }[]
-    >([])
+    const [deployedChartValueList, setDeployedChartValueList] = useState<ChartValuesType[]>([])
+    const [presetChartValueList, setPresetChartValueList] = useState<ChartValuesType[]>([])
 
     useEffect(() => {
         const _deployedChartValues = [],
             _presetChartValues = []
         for (let index = 0; index < chartValuesList.length; index++) {
             const _chartValue = chartValuesList[index]
-            const chartValueObj = {
+            const chartValueObj: ChartValuesType = {
                 id: _chartValue.id,
                 kind: _chartValue.kind,
                 name: _chartValue.name,
@@ -89,11 +53,11 @@ export default function ChartVersionSelectorModal({
     }, [chartValuesList])
 
     const onClickActionCard = (valueType): void => {
-        if (valueType) {
+        if (valueType === ValueType.NEW) {
+            redirectToDeploy()
+        } else {
             setSelectedValueType(valueType)
             togglePageState()
-        } else {
-            redirectToDeploy()
         }
     }
 
@@ -102,28 +66,58 @@ export default function ChartVersionSelectorModal({
         handleDeploy()
     }
 
-    const createActionCard = (
-        Icon: React.FunctionComponent<any>,
-        title: string,
-        subtitle: string,
-        valueType: string,
-    ): JSX.Element => {
+    const renderSubtitle = (cardDetail: PrimaryOptionType): JSX.Element => {
+        if (cardDetail.valueType === ValueType.PRESET) {
+            return (
+                <div className="fw-4 fs-13 cn-7">
+                    <span className="cr-5">{cardDetail.noDataSubtitle[0]}</span>&nbsp;
+                    <a
+                        className="learn-more__href"
+                        href={cardDetail.helpLink}
+                        rel="noreferrer noopener"
+                        target="_blank"
+                    >
+                        {cardDetail.noDataSubtitle[1]}
+                    </a>
+                </div>
+            )
+        } else if (cardDetail.valueType === ValueType.DEPLOYED) {
+            return (
+                <div className="fw-4 fs-13 cn-7">
+                    <span className="cr-5">{cardDetail.noDataSubtitle[0]}</span>&nbsp;
+                    <span>{cardDetail.noDataSubtitle[1]}</span>
+                </div>
+            )
+        }
+    }
+
+    const createActionCard = (cardDetail: PrimaryOptionType): JSX.Element => {
+        const Icon = cardDetail.icon
+        const renderNoDataCard =
+            (cardDetail.valueType === ValueType.DEPLOYED && deployedChartValueList.length === 0) ||
+            (cardDetail.valueType === ValueType.PRESET && presetChartValueList.length === 0)
         return (
             <div
-                key={valueType}
-                className="flex left br-4 pt-12 pr-16 pb-12 pl-16 mb-12 ml-20 mr-20 en-2 bw-1 action-card pointer"
+                key={cardDetail.valueType}
+                className={`flex left br-4 pt-12 pr-16 pb-12 pl-16 mb-12 ml-20 mr-20 en-2 bw-1 ${
+                    renderNoDataCard ? '' : 'pointer'
+                }`}
                 onClick={() => {
-                    onClickActionCard(valueType)
+                    !renderNoDataCard && onClickActionCard(cardDetail.valueType)
                 }}
             >
                 <div className="h-60 ">
                     <Icon />
                 </div>
-                <div className="ml-16 mr-16 flex-1">
-                    <div className="fw-6 fs-13 cn-9">{title}</div>
-                    <div className="fw-4 fs-13 cn-7">{subtitle}</div>
+                <div className={`ml-16 ${renderNoDataCard ? '' : 'mr-16'} flex-1`}>
+                    <div className="fw-6 fs-13 cn-9">{cardDetail.title}</div>
+                    {renderNoDataCard ? (
+                        renderSubtitle(cardDetail)
+                    ) : (
+                        <div className="fw-4 fs-13 cn-7">{cardDetail.subtitle}</div>
+                    )}
                 </div>
-                <Dropdown className="icon-dim-20 rotate-270" />
+                {!renderNoDataCard && <Dropdown className="icon-dim-20 rotate-270" />}
             </div>
         )
     }
@@ -202,19 +196,10 @@ export default function ChartVersionSelectorModal({
                         <Close className="icon-dim-20" />
                     </button>
                 </div>
-                {isListpage
-                    ? renderList()
-                    : PrimaryOptions.map((primaryOption) =>
-                          createActionCard(
-                              primaryOption.Icon,
-                              primaryOption.title,
-                              primaryOption.subtitle,
-                              primaryOption.valueType,
-                          ),
-                      )}
+                {isListpage ? renderList() : PrimaryOptions.map((primaryOption) => createActionCard(primaryOption))}
                 {isListpage && (
                     <div className="pt-20 pr-20 pb-20 pl-20 border-top right-align">
-                        <button type="button" className="cta" onClick={redirectToDeploy}>
+                        <button type="button" className="cta h-36 lh-36" onClick={redirectToDeploy}>
                             Edit & deploy
                             <Back className="icon-dim-20 rotate-180 vertical-align-middle ml-5" />
                         </button>
