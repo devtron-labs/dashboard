@@ -54,7 +54,6 @@ export default function ChartVersionSelectorModal({
     }, [chartValuesList])
 
     const onClickActionCard = (valueType): void => {
-        setSelectedChartValue(null)
         if (valueType === ValueType.NEW) {
             redirectToDeploy()
         } else {
@@ -143,6 +142,7 @@ export default function ChartVersionSelectorModal({
 
     const togglePageState = (): void => {
         setIsListPage(!isListpage)
+        setSelectedChartValue(null)
     }
 
     const renderListHeader = (): JSX.Element => {
