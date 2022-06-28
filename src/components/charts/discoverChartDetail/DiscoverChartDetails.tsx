@@ -1,16 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Route, Switch, NavLink } from 'react-router-dom'
 import { useRouteMatch, useLocation, useParams, useHistory } from 'react-router'
-import {
-    Select as DevtronSelect,
-    OpaqueModal,
-    useEffectAfterMount,
-    List,
-    showError,
-    Progressing,
-    useBreadcrumb,
-    BreadCrumb,
-} from '../../common'
+import { useEffectAfterMount, List, showError, Progressing, useBreadcrumb, BreadCrumb } from '../../common'
 import { URLS, SERVER_MODE } from '../../../config'
 import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service'
 import { getAvailableCharts } from '../../../services/service'
@@ -18,13 +9,9 @@ import { DiscoverChartDetailsProps, DeploymentProps } from './types'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import fileIcon from '../../../assets/icons/ic-file.svg'
 import { marked } from 'marked'
-import DeployChart from '../modal/DeployChart'
-import ManageValues from '../modal/ManageValues'
 import { About } from './About'
 import { ChartDeploymentList } from './ChartDeploymentList'
-import { ChartValuesSelect } from '../util/ChartValueSelect'
 import { getSavedValuesListURL, getChartValuesURL } from '../charts.helper'
-import { getDiscoverChartDetailsURL } from '../charts.helper'
 import { ChartSelector } from '../../AppSelector'
 import { DeprecatedWarn } from '../../common/DeprecatedUpdateWarn'
 import { isGitopsConfigured } from '../../../services/service'
@@ -348,47 +335,6 @@ const Deployment: React.FC<DeploymentProps> = ({
                     </div>
                 )}
             </div>
-            {/* <span className="form__label">Chart version</span>
-            <DevtronSelect
-                rootClassName="select-button--default mb-20"
-                value={
-                    selectedVersion && availableVersions.has(selectedVersion)
-                        ? availableVersions.get(selectedVersion).id
-                        : null
-                }
-                onChange={(event) => {
-                    selectVersion(event.target.value)
-                }}
-            >
-                <DevtronSelect.Button>
-                    {availableVersions.has(selectedVersion)
-                        ? availableVersions.get(selectedVersion).version
-                        : 'Select version'}
-                </DevtronSelect.Button>
-                {availableVersions &&
-                    Array.from(availableVersions).map(([versionId, versionInfo], idx) => (
-                        <DevtronSelect.Option key={versionId} value={versionId}>
-                            {versionInfo.version}
-                        </DevtronSelect.Option>
-                    ))}
-            </DevtronSelect>
-
-            <div className="form__label form__label--manage-values">
-                <span className="form__label form__label--no-margin">Chart Values*</span>
-                <button className="text-button p-0" onClick={openSavedValuesList}>
-                    Manage
-                </button>
-            </div>
-            <div className="mb-20 w-100">
-                <ChartValuesSelect
-                    chartValuesList={chartValuesList}
-                    chartValues={chartValues}
-                    redirectToChartValues={redirectToChartValues}
-                    onChange={(event) => {
-                        setChartValues(event)
-                    }}
-                />
-            </div> */}
             <button type="button" className="flex cta h-36" onClick={showVersionModal}>
                 Deploy...
             </button>
