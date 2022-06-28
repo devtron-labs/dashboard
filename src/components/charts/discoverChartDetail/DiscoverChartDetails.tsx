@@ -21,8 +21,9 @@ import warn from '../../../assets/icons/ic-warning.svg'
 import './DiscoverChartDetails.scss'
 import PageHeader from '../../common/header/PageHeader'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
-import { ChartInstalledConfig } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
+import { ChartInstalledConfig, ChartKind } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
 import ChartVersionSelectorModal from './ChartVersionSelectorModal'
+import { ChartValuesType } from '../charts.types'
 
 const DiscoverDetailsContext = React.createContext(null)
 
@@ -295,6 +296,30 @@ const Deployment: React.FC<DeploymentProps> = ({
     const { push } = useHistory()
     const { serverMode } = useContext(mainContext)
     const [showChartVersionSelectorModal, setShowChartVersionSelectorModal] = useState(false)
+    const [deployedChartValueList, setDeployedChartValueList] = useState<ChartValuesType[]>([])
+    const [presetChartValueList, setPresetChartValueList] = useState<ChartValuesType[]>([])
+
+    useEffect(() => {
+        const _deployedChartValues = [],
+            _presetChartValues = []
+        for (let index = 0; index < chartValuesList.length; index++) {
+            const _chartValue = chartValuesList[index]
+            const chartValueObj: ChartValuesType = {
+                id: _chartValue.id,
+                kind: _chartValue.kind,
+                name: _chartValue.name,
+                chartVersion: _chartValue.chartVersion,
+                environmentName: '',
+            }
+            if (_chartValue.kind === ChartKind.DEPLOYED) {
+                _deployedChartValues.push(chartValueObj)
+            } else if (_chartValue.kind === ChartKind.TEMPLATE) {
+                _presetChartValues.push(chartValueObj)
+            }
+        }
+        setDeployedChartValueList(_deployedChartValues)
+        setPresetChartValueList(_presetChartValues)
+    }, [chartValuesList])
 
     const handleImageError = (e) => {
         const target = e.target as HTMLImageElement
@@ -310,8 +335,12 @@ const Deployment: React.FC<DeploymentProps> = ({
         }
     }
 
-    const showVersionModal = (): void => {
-        setShowChartVersionSelectorModal(true)
+    const handleDeployButtonClick = (): void => {
+        if (deployedChartValueList.length === 0 && presetChartValueList.length === 0) {
+            handleDeploy()
+        } else {
+            setShowChartVersionSelectorModal(true)
+        }
     }
 
     const hideVersionModal = (): void => {
@@ -334,7 +363,7 @@ const Deployment: React.FC<DeploymentProps> = ({
                     </div>
                 )}
             </div>
-            <button type="button" className="flex cta h-36" onClick={showVersionModal}>
+            <button type="button" className="flex cta h-36" onClick={handleDeployButtonClick}>
                 Deploy...
             </button>
             <button type="button" className="flex cta h-36 cb-5 cancel mt-8" onClick={openSavedValuesList}>
@@ -348,6 +377,8 @@ const Deployment: React.FC<DeploymentProps> = ({
                     appIconUrl={icon}
                     onError={handleImageError}
                     handleDeploy={handleDeploy}
+                    deployedChartValueList={deployedChartValueList}
+                    presetChartValueList={presetChartValueList}
                 />
             )}
             {showGitOpsWarningModal ? (

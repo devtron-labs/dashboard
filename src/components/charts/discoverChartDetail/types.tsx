@@ -18,14 +18,6 @@ export interface DeploymentProps {
     availableVersions: Map<number, { id; version }>
 }
 
-export interface ChartValuesType {
-    id: string
-    kind: string
-    name: string
-    chartVersion: string
-    environmentName: string
-}
-
 export interface PrimaryOptionType {
     icon: React.FunctionComponent<any>
     title: string

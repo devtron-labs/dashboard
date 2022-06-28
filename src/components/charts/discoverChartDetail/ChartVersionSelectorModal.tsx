@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { VisibleModal } from '../../common'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Back } from '../../../assets/icons/ic-back.svg'
 import { useDiscoverDetailsContext } from './DiscoverChartDetails'
-import { ChartKind } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ChartValuesType } from '../charts.types'
 import { PrimaryOptions, PrimaryOptionType, ValueType } from './types'
@@ -15,6 +14,8 @@ interface ChartVersionSelectorModalType {
     appIconUrl: string
     onError: (e) => void
     handleDeploy: () => void
+    deployedChartValueList: ChartValuesType[]
+    presetChartValueList: ChartValuesType[]
 }
 
 export default function ChartVersionSelectorModal({
@@ -23,35 +24,13 @@ export default function ChartVersionSelectorModal({
     appIconUrl,
     onError,
     handleDeploy,
+    deployedChartValueList,
+    presetChartValueList,
 }: ChartVersionSelectorModalType) {
-    const { chartValuesList, chartValues, setChartValues } = useDiscoverDetailsContext()
+    const { setChartValues } = useDiscoverDetailsContext()
     const [isListpage, setIsListPage] = useState(false)
     const [selectedValueType, setSelectedValueType] = useState<string>('')
-    const [deployedChartValueList, setDeployedChartValueList] = useState<ChartValuesType[]>([])
-    const [presetChartValueList, setPresetChartValueList] = useState<ChartValuesType[]>([])
     const [selectedChartValue, setSelectedChartValue] = useState<ChartValuesType>(null)
-
-    useEffect(() => {
-        const _deployedChartValues = [],
-            _presetChartValues = []
-        for (let index = 0; index < chartValuesList.length; index++) {
-            const _chartValue = chartValuesList[index]
-            const chartValueObj: ChartValuesType = {
-                id: _chartValue.id,
-                kind: _chartValue.kind,
-                name: _chartValue.name,
-                chartVersion: _chartValue.chartVersion,
-                environmentName: '',
-            }
-            if (_chartValue.kind === ChartKind.DEPLOYED) {
-                _deployedChartValues.push(chartValueObj)
-            } else if (_chartValue.kind === ChartKind.TEMPLATE) {
-                _presetChartValues.push(chartValueObj)
-            }
-        }
-        setDeployedChartValueList(_deployedChartValues)
-        setPresetChartValueList(_presetChartValues)
-    }, [chartValuesList])
 
     const onClickActionCard = (valueType): void => {
         if (valueType === ValueType.NEW) {
@@ -126,6 +105,25 @@ export default function ChartVersionSelectorModal({
         )
     }
 
+    const renderValueTypeList = (): JSX.Element => {
+        let emptyValue: PrimaryOptionType
+        return (
+            <>
+                {PrimaryOptions.map((primaryOption) => {
+                    if (
+                        (primaryOption.valueType === ValueType.PRESET && presetChartValueList.length === 0) ||
+                        (primaryOption.valueType === ValueType.DEPLOYED && deployedChartValueList.length === 0)
+                    ) {
+                        emptyValue = primaryOption
+                        return null
+                    }
+                    return createActionCard(primaryOption)
+                })}
+                {emptyValue && createActionCard(emptyValue)}
+            </>
+        )
+    }
+
     const renderInitialHeader = (): JSX.Element => {
         return (
             <div className="flex content-start">
@@ -158,7 +156,7 @@ export default function ChartVersionSelectorModal({
             </div>
         )
     }
-    const renderList = (): JSX.Element => {
+    const renderValueList = (): JSX.Element => {
         return (
             <div style={{ height: 'calc(100vh - 170px)' }}>
                 <div className="chart-value-row fw-6 cn-7 fs-12 border-top border-bottom text-uppercase pt-8 pr-16 pb-8 pl-16">
@@ -201,7 +199,7 @@ export default function ChartVersionSelectorModal({
                         <Close className="icon-dim-20" />
                     </button>
                 </div>
-                {isListpage ? renderList() : PrimaryOptions.map((primaryOption) => createActionCard(primaryOption))}
+                {isListpage ? renderValueList() : renderValueTypeList()}
                 {isListpage && (
                     <div className="pt-20 pr-20 pb-20 pl-20 border-top right-align">
                         <button
