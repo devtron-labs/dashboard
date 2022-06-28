@@ -44,15 +44,7 @@ export default function ChartVersionSelectorModal({
     onError,
     handleDeploy,
 }: ChartVersionSelectorModalType) {
-    const {
-        redirectToChartValues,
-        openSavedValuesList,
-        selectedVersion,
-        selectVersion,
-        chartValuesList,
-        chartValues,
-        setChartValues,
-    } = useDiscoverDetailsContext()
+    const { chartValuesList, chartValues, setChartValues } = useDiscoverDetailsContext()
     const [isListpage, setIsListPage] = useState(false)
     const [selectedValueType, setSelectedValueType] = useState<string>('')
     const [deployedChartValueList, setDeployedChartValueList] = useState<
@@ -101,10 +93,15 @@ export default function ChartVersionSelectorModal({
             setSelectedValueType(valueType)
             togglePageState()
         } else {
-            closePopup()
-            handleDeploy()
+            redirectToDeploy()
         }
     }
+
+    const redirectToDeploy = (): void => {
+        closePopup()
+        handleDeploy()
+    }
+
     const createActionCard = (
         Icon: React.FunctionComponent<any>,
         title: string,
@@ -113,6 +110,7 @@ export default function ChartVersionSelectorModal({
     ): JSX.Element => {
         return (
             <div
+                key={valueType}
                 className="flex left br-4 pt-12 pr-16 pb-12 pl-16 mb-12 ml-20 mr-20 en-2 bw-1 action-card pointer"
                 onClick={() => {
                     onClickActionCard(valueType)
@@ -169,15 +167,25 @@ export default function ChartVersionSelectorModal({
                     <div className="pr-16">Name</div>
                     <div>Chart Version</div>
                 </div>
-                {(selectedValueType === 'preset' ? presetChartValueList : deployedChartValueList).map((valueDetail) => (
-                    <div className="chart-value-row fw-4 cn-9 fs-13 pt-12 pr-16 pb-12 pl-16">
-                        <div className="pr-16">
-                            <File className="icon-dim-18 icon-n4 vertical-align-middle" />
+                {(selectedValueType === 'preset' ? presetChartValueList : deployedChartValueList).map(
+                    (valueDetail, index) => (
+                        <div
+                            key={`chart-value-${index}`}
+                            className={`chart-value-row fw-4 cn-9 fs-13 pt-12 pr-16 pb-12 pl-16 ${
+                                chartValues.id === valueDetail.id ? 'active' : ''
+                            }`}
+                            onClick={() => {
+                                setChartValues(valueDetail)
+                            }}
+                        >
+                            <div className="pr-16">
+                                <File className="icon-dim-18 icon-n4 vertical-align-middle" />
+                            </div>
+                            <div className="pr-16">{valueDetail.name}</div>
+                            <div>{valueDetail.chartVersion}</div>
                         </div>
-                        <div className="pr-16">{valueDetail.name}</div>
-                        <div>{valueDetail.chartVersion}</div>
-                    </div>
-                ))}
+                    ),
+                )}
             </div>
         )
     }
@@ -206,7 +214,7 @@ export default function ChartVersionSelectorModal({
                       )}
                 {isListpage && (
                     <div className="pt-20 pr-20 pb-20 pl-20 border-top right-align">
-                        <button type="button" className="cta" onClick={closePopup}>
+                        <button type="button" className="cta" onClick={redirectToDeploy}>
                             Edit & deploy
                             <Back className="icon-dim-20 rotate-180 vertical-align-middle ml-5" />
                         </button>

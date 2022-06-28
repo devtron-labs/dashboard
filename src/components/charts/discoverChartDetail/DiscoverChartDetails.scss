@@ -390,6 +390,14 @@
     .chart-value-row {
         display: grid;
         grid-template-columns: 50px 200px auto;
+        &.active {
+            background-color: var(--B100) !important;
+            svg {
+                path {
+                    stroke: var(--B500);
+                }
+            }
+        }
         &:not(:first-of-type):hover {
             background-color: var(--N50);
         }
