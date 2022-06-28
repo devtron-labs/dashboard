@@ -23,7 +23,7 @@ import ManageValues from '../modal/ManageValues'
 import { About } from './About'
 import { ChartDeploymentList } from './ChartDeploymentList'
 import { ChartValuesSelect } from '../util/ChartValueSelect'
-import { getManageValuesURL, getChartValuesURL } from '../charts.helper'
+import { getSavedValuesListURL, getChartValuesURL } from '../charts.helper'
 import { getDiscoverChartDetailsURL } from '../charts.helper'
 import { ChartSelector } from '../../AppSelector'
 import { DeprecatedWarn } from '../../common/DeprecatedUpdateWarn'
@@ -150,8 +150,8 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         }
     }
 
-    function openManageValues() {
-        let link = getManageValuesURL(chartId)
+    function openSavedValuesList() {
+        let link = getSavedValuesListURL(chartId)
         history.push(link)
     }
 
@@ -204,7 +204,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         <DiscoverDetailsContext.Provider
             value={{
                 goBackToDiscoverChart,
-                openManageValues,
+                openSavedValuesList,
                 availableVersions,
                 selectedVersion,
                 selectVersion,
@@ -277,21 +277,6 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                         )
                     }}
                 />
-                <Route
-                    path={`${URLS.CHARTS}/discover/chart/:chartId/manage-values`}
-                    render={(props) => {
-                        return (
-                            <ManageValues
-                                chartId={chartId}
-                                onDeleteChartValue={getChartValuesList}
-                                close={() => {
-                                    let link = getDiscoverChartDetailsURL(chartId)
-                                    history.push(link)
-                                }}
-                            />
-                        )
-                    }}
-                />
             </Switch>
         </DiscoverDetailsContext.Provider>
     )
@@ -312,7 +297,7 @@ const Deployment: React.FC<DeploymentProps> = ({
 }) => {
     const {
         redirectToChartValues,
-        openManageValues,
+        openSavedValuesList,
         selectedVersion,
         selectVersion,
         chartValuesList,
@@ -380,7 +365,7 @@ const Deployment: React.FC<DeploymentProps> = ({
 
             <div className="form__label form__label--manage-values">
                 <span className="form__label form__label--no-margin">Chart Values*</span>
-                <button className="text-button p-0" onClick={openManageValues}>
+                <button className="text-button p-0" onClick={openSavedValuesList}>
                     Manage
                 </button>
             </div>

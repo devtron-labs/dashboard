@@ -1,0 +1,19 @@
+.saved-values-container {
+    margin: 20px 95px;
+    .margin-right-0 {
+        margin-right: 0 !important;
+    }
+    .saved-values-row {
+        display: grid;
+        grid-template-columns: 30px 200px auto 70px;
+        .action-icon {
+            visibility: hidden;
+        }
+        &:not(:first-of-type):hover {
+            background-color: var(--N50);
+            .action-icon {
+                visibility: visible;
+            }
+        }
+    }
+}
