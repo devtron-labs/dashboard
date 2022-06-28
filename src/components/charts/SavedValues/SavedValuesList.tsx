@@ -242,7 +242,7 @@ export default function SavedValuesList() {
         {
             alias: {
                 'saved-values': { component: 'Saved values', linked: false },
-                ':chartId': { component: appStoreApplicationName || null, linked: true },
+                ':chartId': appStoreApplicationName || null,
                 chart: null,
                 'chart-store': null,
             },

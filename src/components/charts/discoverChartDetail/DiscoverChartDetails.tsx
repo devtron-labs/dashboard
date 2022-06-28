@@ -139,8 +139,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     }
 
     function openSavedValuesList() {
-        let link = getSavedValuesListURL(chartId)
-        history.push(link)
+        history.push(getSavedValuesListURL(chartId))
     }
 
     async function getChartValuesList() {
@@ -321,13 +320,13 @@ const Deployment: React.FC<DeploymentProps> = ({
 
     return (
         <div className="deployment-container chart-deployment flex column left white-card white-card--chart-detail">
-            <div className="chart-grid-item__icon-wrapper h-48">
+            <div className="chart-grid-item__icon-wrapper">
                 <img src={icon} onError={handleImageError} className="chart-grid-item__icon" alt="chart icon" />
             </div>
             <div className="mb-16">
                 <div className="repository">
-                    <div className="user anchor fs-13 fw-4 cn-6">{chartName}</div>
-                    <div className="repo fs-16 fw-6 cn-9">{appStoreApplicationName}</div>
+                    <div className="user anchor">{chartName}</div>
+                    <div className="repo">{appStoreApplicationName}</div>
                 </div>
                 {deprecated && (
                     <div className="mt-8">
