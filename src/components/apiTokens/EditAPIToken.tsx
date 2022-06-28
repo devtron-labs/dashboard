@@ -170,22 +170,18 @@ function EditAPIToken({
             })
     }
 
-    const onChangeEditData = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key): void => {
-        if (key === 'description' && invalidDescription) {
+    const onChangeEditData = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+        if (event.target.name === 'description' && invalidDescription) {
             setInvalidDescription(false)
         }
 
-        if (key === 'description' && event.target.value.length > 350) {
+        if (event.target.name === 'description' && event.target.value.length > 350) {
             setInvalidDescription(true)
         }
 
         const _editData = { ...editData }
-        _editData[key] = event.target.value
+        _editData[event.target.name] = event.target.value
         setEditData(_editData)
-
-        if (key === 'customDate') {
-            setCustomDate(parseInt(event.target.value))
-        }
     }
 
     const handlePermissionType = (e) => {
@@ -223,6 +219,11 @@ function EditAPIToken({
         )
     }
 
+    const handleCopyToClipboard = (e) => {
+        e.stopPropagation()
+        copyToClipboard(editData.token, () => setCopied(true))
+    }
+
     return (
         <div className="fs-13 fw-4" style={{ minHeight: 'calc(100vh - 235px)' }}>
             <div className="cn-9 fw-6 fs-16">
@@ -251,7 +252,8 @@ function EditAPIToken({
                                 placeholder="Enter a description to remember where you have used this token"
                                 className="form__textarea"
                                 value={editData.description}
-                                onChange={(e) => onChangeEditData(e, 'description')}
+                                name="description"
+                                onChange={onChangeEditData}
                             />
                             {invalidDescription && (
                                 <span className="form__error flexbox-imp flex-align-center">
@@ -281,13 +283,7 @@ function EditAPIToken({
                                     interactive={true}
                                 >
                                     <div className="icon-dim-16 ml-8">
-                                        <Clipboard
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                copyToClipboard(editData.token, () => setCopied(true))
-                                            }}
-                                            className="icon-dim-16 cursor"
-                                        />
+                                        <Clipboard onClick={handleCopyToClipboard} className="icon-dim-16 cursor" />
                                     </div>
                                 </Tippy>
                             </div>

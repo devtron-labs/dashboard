@@ -2,7 +2,7 @@ import { PATTERNS } from '../../config'
 
 export class ValidationRules {
     name = (value: string): { isValid: boolean; message: string } => {
-        let re = PATTERNS.APP_NAME
+        let re = PATTERNS.API_TOKEN
         let regExp = new RegExp(re)
         let test = regExp.test(value)
         if (value.length === 0) return { isValid: false, message: 'This is a required field' }

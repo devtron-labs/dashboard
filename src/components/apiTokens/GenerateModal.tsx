@@ -58,7 +58,7 @@ function GenerateModal({ close, token, reload, redirectToTokenList, isRegenerati
                         handleTippyText(_tippy)
                     }}
                 >
-                    <button className="flex cta mt-20 mb-20" onClick={(e) => handleCopyToClipboard(e)}>
+                    <button className="flex cta mt-20 mb-20" onClick={handleCopyToClipboard}>
                         <Clipboard className="icon-dim-16" />
                         &nbsp; Copy token
                     </button>

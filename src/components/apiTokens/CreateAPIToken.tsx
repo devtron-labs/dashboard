@@ -233,6 +233,7 @@ function CreateAPIToken({
                                 value={formData.name}
                                 onChange={onChangeHandler}
                                 autoFocus
+                                autoComplete="off"
                             />
                             {formDataErrorObj.invalidName && (
                                 <span className="form__error">
