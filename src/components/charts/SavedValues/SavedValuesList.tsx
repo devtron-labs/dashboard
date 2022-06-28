@@ -11,7 +11,12 @@ import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-intera
 import { BreadCrumb, ErrorScreenManager, Progressing, showError, useBreadcrumb } from '../../common'
 import { SavedValueType } from './types'
 import EmptyState from '../../EmptyState/EmptyState'
-import { deleteChartValues, getChartValuesTemplateList } from '../charts.service'
+import {
+    deleteChartValues,
+    getChartValuesTemplateList,
+    getChartVersionDetails,
+    getChartVersionsMin,
+} from '../charts.service'
 import './savedValues.scss'
 import PageHeader from '../../common/header/PageHeader'
 import { toast } from 'react-toastify'
@@ -25,9 +30,11 @@ export default function SavedValuesList() {
     const [savedValueList, setSavedValueList] = useState<SavedValueType[]>([])
     const [filteredSavedValueList, setFilteredSavedValueList] = useState<SavedValueType[]>([])
     const [errorStatusCode, setErrorStatusCode] = useState(0)
+    const [appStoreApplicationName, setAppStoreApplicationName] = useState('')
 
     useEffect(() => {
         getData()
+        getChartDetails()
     }, [])
 
     async function getData() {
@@ -41,6 +48,19 @@ export default function SavedValuesList() {
                 .sort((a, b) => a['name'].localeCompare(b['name']))
             setSavedValueList(list)
             setFilteredSavedValueList(list)
+        } catch (error) {
+            showError(error)
+            setErrorStatusCode(error['code'])
+        } finally {
+            setLoader(false)
+        }
+    }
+
+    async function getChartDetails() {
+        try {
+            const { result: chartVersionMinResult } = await getChartVersionsMin(chartId)
+            const { result } = await getChartVersionDetails(chartVersionMinResult[0].id)
+            setAppStoreApplicationName(result.appStoreApplicationName)
         } catch (error) {
             showError(error)
             setErrorStatusCode(error['code'])
@@ -222,12 +242,12 @@ export default function SavedValuesList() {
         {
             alias: {
                 'saved-values': { component: 'Saved values', linked: false },
-                ':chartId': 'chart name',
+                ':chartId': { component: appStoreApplicationName || null, linked: true },
                 chart: null,
                 'chart-store': null,
             },
         },
-        [chartId],
+        [appStoreApplicationName],
     )
 
     const renderBreadcrumbs = () => {

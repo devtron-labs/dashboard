@@ -292,7 +292,7 @@ function Header({ appStoreApplicationName, name }) {
             alias: {
                 ':chartId': { component: appStoreApplicationName || null, linked: true },
                 chart: null,
-                ':chartValueId': name || 'New value',
+                ':chartValueId': { component: name || 'New value', linked: false },
                 'chart-store': null,
                 'saved-value': 'Saved value',
             },
