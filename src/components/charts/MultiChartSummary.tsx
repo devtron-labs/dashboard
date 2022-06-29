@@ -34,13 +34,13 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
         <div className="chart-group--summary">
             {chartListing && (
                 <>
-                    <div className="flex column left border-bottom mb-20">
+                    {name && <div className="flex column left border-bottom mb-20">
                         <span className="flex flex-justify w-100 fs-14 cn-9">
                             Group name
                             <Pencil className="pointer" onClick={(e) => setChartDetailsUpdate(true)} />
                         </span>
                         <div className="flex left fw-6 fs-14 mt-8 mb-20">{name}</div>
-                    </div>
+                    </div>}
                     <div
                         className={`selected-chart-widget p-12 select-chart cursor ${
                             typeof configureChartIndex !== 'number' ? 'active' : ''
