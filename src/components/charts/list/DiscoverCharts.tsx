@@ -40,6 +40,7 @@ import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
 import PageHeader from '../../common/header/PageHeader'
 import emptyImage from '../../../assets/img/empty-noresult@2x.png'
 import SavedValuesList from '../SavedValues/SavedValuesList'
+import ChartValuesN from '../chartValues/ChartValuesN'
 
 interface EmptyCharts {
     title?: string
@@ -559,13 +560,9 @@ export default function DiscoverCharts() {
                 <ChartGroupList />
             </Route>
             <Route path={`${path}${URLS.CHART}/:chartId${URLS.SAVED_VALUES}`} component={SavedValuesList} exact />
-            <Route
-                path={`${path}${URLS.CHART}/:chartId${URLS.SAVED_VALUES}/:chartValueId`}
-                render={({ location, history, match }: { location: any; history: any; match: any }) => {
-                    return <ChartValues location={location} match={match} history={history} />
-                }}
-                exact
-            />
+            <Route path={`${path}${URLS.CHART}/:chartId${URLS.SAVED_VALUES}/:chartValueId`} exact>
+                <ChartValuesN />
+            </Route>
             <Route path={`${path}${URLS.CHART}/:chartId`} component={DiscoverChartDetails} />
             <Route>
                 <DiscoverChartList />

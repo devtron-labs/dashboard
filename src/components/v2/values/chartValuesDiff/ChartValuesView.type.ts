@@ -14,12 +14,14 @@ export interface ChartValuesViewType {
     appId?: string
     isExternalApp?: boolean
     isDeployChartView?: boolean
+    isCreateValueView?: boolean
     installedConfigFromParent?: ChartInstalledConfig
     appDetails?: AppDetails
     chartValuesListFromParent?: ChartValuesType[]
     chartVersionsDataFromParent?: ChartVersionType[]
     chartValuesFromParent?: ChartValuesType
     selectedVersionFromParent?: number
+    chartValueId?: string
 }
 
 export interface ChartSelectorType {
@@ -125,6 +127,7 @@ export interface ChartValuesSelectorType {
     handleChartValuesSelection: (chartValues: ChartValuesType) => void
     redirectToChartValues?: () => Promise<void>
     hideVersionFromLabel?: boolean
+    hideCreateNewOption?: boolean
 }
 
 export interface ChartVersionValuesSelectorType extends ChartVersionSelectorType, ChartValuesSelectorType {}

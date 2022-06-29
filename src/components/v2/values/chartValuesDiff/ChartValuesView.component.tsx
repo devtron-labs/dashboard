@@ -331,6 +331,7 @@ export const ChartValuesSelector = ({
     redirectToChartValues,
     handleChartValuesSelection,
     hideVersionFromLabel,
+    hideCreateNewOption,
 }: ChartValuesSelectorType) => {
     return (
         <div className="w-100 mb-12">
@@ -342,6 +343,7 @@ export const ChartValuesSelector = ({
                 redirectToChartValues={redirectToChartValues}
                 onChange={handleChartValuesSelection}
                 hideVersionFromLabel={hideVersionFromLabel}
+                hideCreateNewOption={hideCreateNewOption}
             />
         </div>
     )
@@ -359,6 +361,7 @@ export const ChartVersionValuesSelector = ({
     redirectToChartValues,
     handleChartValuesSelection,
     hideVersionFromLabel,
+    hideCreateNewOption,
 }: ChartVersionValuesSelectorType) => {
     return (
         <>
@@ -376,6 +379,7 @@ export const ChartVersionValuesSelector = ({
                 redirectToChartValues={redirectToChartValues}
                 handleChartValuesSelection={handleChartValuesSelection}
                 hideVersionFromLabel={hideVersionFromLabel}
+                hideCreateNewOption={hideCreateNewOption}
             />
         </>
     )
@@ -915,6 +919,39 @@ const renderValidationErrorLabel = (message?: string): JSX.Element => {
     )
 }
 
+export const ValueNameInput = ({
+    valueName,
+    handleValueNameChange,
+    handleValueNameOnBlur,
+    invalidValueName,
+    invalidValueNameMessage,
+    valueNameDisabled,
+}: {
+    valueName: string
+    handleValueNameChange: (newAppName: string) => void
+    handleValueNameOnBlur: () => void
+    invalidValueName: boolean
+    invalidValueNameMessage: string
+    valueNameDisabled: boolean
+}) => {
+    return (
+        <label className="form__row form__row--w-100">
+            <span className="form__label required-field">Name</span>
+            <input
+                autoComplete="off"
+                tabIndex={1}
+                placeholder="Eg. value-template"
+                className="form__input"
+                value={valueName}
+                onChange={(e) => handleValueNameChange(e.target.value)}
+                onBlur={() => handleValueNameOnBlur()}
+                disabled={valueNameDisabled}
+            />
+            {invalidValueName && renderValidationErrorLabel(invalidValueNameMessage)}
+        </label>
+    )
+}
+
 export const AppNameInput = ({
     appName,
     handleAppNameChange,
@@ -946,22 +983,32 @@ export const AppNameInput = ({
 }
 
 export const DeleteApplicationButton = ({
+    type,
     isUpdateInProgress,
     isDeleteInProgress,
     dispatch,
+    clickHandler,
 }: {
+    type: string
     isUpdateInProgress: boolean
     isDeleteInProgress: boolean
     dispatch: (action: ChartValuesViewAction) => void
+    clickHandler?: () => void
 }) => {
     return (
         <button
             className="chart-values-view__delete-cta cta delete"
             disabled={isUpdateInProgress || isDeleteInProgress}
             onClick={(e) =>
+                // type === 'Application'
+                //     ? dispatch({
+                //           type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
+                //           payload: true,
+                //       })
+                //     : clickHandler()
                 dispatch({
                     type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
-                    payload: true,
+                    payload: false,
                 })
             }
         >
@@ -973,7 +1020,7 @@ export const DeleteApplicationButton = ({
                     </span>
                 </div>
             ) : (
-                'Delete Application'
+                `Delete ${type}`
             )}
         </button>
     )

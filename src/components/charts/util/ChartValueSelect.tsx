@@ -12,6 +12,7 @@ export interface ChartValuesSelectProps {
     chartValuesList: ChartValuesType[];
     hideVersionFromLabel?: boolean;
     className?: string;
+    hideCreateNewOption?: boolean
 }
 
 export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
@@ -89,10 +90,12 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                  </Select.Option>
                     }) : this.renderNoResultsOption()}
                 </Select.OptGroup>
-                <div className="select__sticky-bottom" onClick={this.props.redirectToChartValues}>
-                    <Add className="icon-dim-20 mr-5" />
-                    Create Custom
-                </div>
+                {!this.props.hideCreateNewOption && (
+                        <div className="select__sticky-bottom" onClick={this.props.redirectToChartValues}>
+                            <Add className="icon-dim-20 mr-5" />
+                            Create Custom
+                        </div>
+                    )}
             </Select>
         </>
     }
