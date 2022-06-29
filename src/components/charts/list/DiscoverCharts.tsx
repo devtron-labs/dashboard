@@ -674,7 +674,6 @@ export function ChartGroupListMin({
 }) {
     const history = useHistory()
     const match = useRouteMatch()
-    return <EmptyChartGroup showChartGroupModal={showChartGroupModal} toggleChartGroupModal={toggleChartGroupModal} />
     if (chartGroups.length == 0) {
         return (
             <EmptyChartGroup showChartGroupModal={showChartGroupModal} toggleChartGroupModal={toggleChartGroupModal} />
