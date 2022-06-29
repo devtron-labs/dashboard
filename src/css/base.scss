@@ -201,6 +201,10 @@ a:focus {
     text-transform: uppercase;
 }
 
+.no-text-transform {
+    text-transform: none;
+}
+
 .ff-monospace {
     font-family: monospace;
 }
@@ -1737,6 +1741,14 @@ button.anchor {
     text-align: center !important;
 }
 
+.align-left {
+    text-align: left;
+}
+
+.align-right {
+    text-align: right;
+}
+
 .lh-20 {
     line-height: 20px;
 }
@@ -1968,4 +1980,11 @@ textarea {
             margin-top: 9px;
         }
     }
+}
+.break-word {
+    word-wrap: break-word;
+}
+
+.basic-multi-select > .select__control--is-disabled {
+    background-color: var(--N100) !important;
 }

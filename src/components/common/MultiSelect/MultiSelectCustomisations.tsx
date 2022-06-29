@@ -84,7 +84,7 @@ export const MultiValueChipContainer = ({ validator, ...props }) => {
     const isValidEmail = validator ? validator(value) : true
     return (
         <components.MultiValueContainer {...{ data, innerProps, selectProps }}>
-            <div className={`flex fs-12`}>
+            <div className={`flex fs-12 pl-4 pr-4`}>
                 {!isValidEmail && <RedWarning className="mr-4 icon-dim-16" />}
                 <div className={`${isValidEmail ? 'cn-9' : 'cr-5'}`}>{label}</div>
             </div>
@@ -102,7 +102,6 @@ export const multiSelectStyles = {
     }),
     menu: (base, state) => ({
         ...base,
-        top: `40px`,
     }),
     option: (base, state) => {
         return {
@@ -124,7 +123,6 @@ export const multiSelectStyles = {
 
 interface CustomSelect {
     sortSelected?: boolean
-
     options: any[]
     onChange: (...args) => void
     value?: any
