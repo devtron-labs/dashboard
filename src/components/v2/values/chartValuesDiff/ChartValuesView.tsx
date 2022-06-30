@@ -999,7 +999,7 @@ function ChartValuesView({
         return (
             <div
                 className={`chart-values-view__container bcn-0 ${
-                    isDeployChartView ? 'chart-values-view__deploy-chart' : ''
+                    isDeployChartView || isCreateValueView ? 'chart-values-view__deploy-chart' : ''
                 } ${commonState.openReadMe ? 'readmeOpened' : ''} ${
                     commonState.openComparison ? 'comparisonOpened' : ''
                 }`}
