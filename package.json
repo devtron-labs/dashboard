@@ -4,9 +4,11 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@sentry/browser": "^6.18.2",
-        "@sentry/integrations": "^6.18.2",
+        "@sentry/browser": "^7.3.1",
+        "@sentry/integrations": "^7.3.1",
+        "@sentry/tracing": "^7.3.1",
         "@tippyjs/react": "^4.2.0",
+        "@types/marked": "4.0.1",
         "@types/react-select": "^5.0.1",
         "@uiw/react-monacoeditor": "^3.5.2",
         "ansi_up": "^5.1.0",
@@ -14,7 +16,6 @@
         "compute-histogram": "^0.9.11",
         "flexsearch": "^0.6.32",
         "http-proxy-middleware": "^2.0.4",
-        "@types/marked": "4.0.1",
         "marked": "^4.0.12",
         "moment": "^2.29.1",
         "monaco-editor": "^0.19.3",
@@ -66,7 +67,7 @@
         "not op_mini all"
     ],
     "devDependencies": {
-        "@sentry/cli": "^1.73.2",
+        "@sentry/cli": "^2.2.0",
         "@testing-library/jest-dom": "^5.16.2",
         "@testing-library/react": "^12.1.4",
         "@types/chai": "^4.3.0",

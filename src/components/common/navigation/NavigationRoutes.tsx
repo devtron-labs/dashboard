@@ -43,7 +43,7 @@ export default function NavigationRoutes() {
         const loginInfo = getLoginInfo()
         if (!loginInfo) return
         if (process.env.NODE_ENV === 'production' && window._env_) {
-            if (window._env_.SENTRY_ENABLED) {
+            if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
                     scope.setUser({ email: loginInfo['email'] || loginInfo['sub'] })
                 })
@@ -246,8 +246,7 @@ export function RedirectWithSentry() {
     const { push } = useHistory()
     const { pathname } = useLocation()
     useEffect(() => {
-        if (pathname && pathname !== '/')
-            Sentry.captureMessage(`redirecting to app-list from ${pathname}`, Sentry.Severity.Warning)
+        if (pathname && pathname !== '/') Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
         push(`${URLS.APP}/${URLS.APP_LIST}`)
     }, [])
     return null
