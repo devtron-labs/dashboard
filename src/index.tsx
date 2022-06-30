@@ -1,44 +1,57 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import * as Sentry from '@sentry/browser';
-import { CaptureConsole } from '@sentry/integrations';
-import { BrowserRouter } from 'react-router-dom';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import App from './App'
+import * as Sentry from '@sentry/browser'
+import { CaptureConsole } from '@sentry/integrations'
+import { BrowserRouter } from 'react-router-dom'
+import { BrowserTracing } from '@sentry/tracing'
 
 interface customEnv {
-    SENTRY_ENV?: string,
-    SENTRY_ENABLED?: boolean,
-    SENTRY_DSN?: string;
-    HOTJAR_ENABLED?: boolean;
-    CLUSTER_NAME?: boolean;
-    APPLICATION_METRICS_ENABLED?: boolean;
-    GA_ENABLED?: boolean;
-    GA_TRACKING_ID?: string;
-    RECOMMEND_SECURITY_SCANNING?: boolean;
-    FORCE_SECURITY_SCANNING?: boolean;
-    HIDE_DISCORD?: boolean;
-    POSTHOG_ENABLED?: boolean;
-    POSTHOG_TOKEN?: string;
+    SENTRY_ENV?: string
+    SENTRY_ERROR_ENABLED?: boolean
+    SENTRY_PERFORMANCE_ENABLED?: boolean
+    SENTRY_DSN?: string
+    SENTRY_TRACES_SAMPLE_RATE?: number
+    HOTJAR_ENABLED?: boolean
+    CLUSTER_NAME?: boolean
+    APPLICATION_METRICS_ENABLED?: boolean
+    GA_ENABLED?: boolean
+    GA_TRACKING_ID?: string
+    RECOMMEND_SECURITY_SCANNING?: boolean
+    FORCE_SECURITY_SCANNING?: boolean
+    HIDE_DISCORD?: boolean
+    POSTHOG_ENABLED?: boolean
+    POSTHOG_TOKEN?: string
 }
 declare global {
     interface Window {
-        _env_: customEnv;
-        hj: any;
-        _hjSettings: any;
-        Worker: any;
+        _env_: customEnv
+        hj: any
+        _hjSettings: any
+        Worker: any
     }
 }
 
-const root = document.getElementById('root');
-if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.SENTRY_ENABLED) {
+const root = document.getElementById('root')
+if (
+    process.env.NODE_ENV === 'production' &&
+    window._env_ &&
+    (window._env_.SENTRY_ERROR_ENABLED || window._env_.SENTRY_PERFORMANCE_ENABLED)
+) {
+    const integrationArr = []
+    if (window._env_.SENTRY_ERROR_ENABLED) {
+        integrationArr.push(new CaptureConsole({ levels: ['error'] }))
+    }
+    if (window._env_.SENTRY_PERFORMANCE_ENABLED) {
+        integrationArr.push(new BrowserTracing())
+    }
     Sentry.init({
         beforeBreadcrumb(breadcrumb, hint) {
             if (breadcrumb.category === 'console') {
                 if (breadcrumb.level === 'warning') {
                     return null
                 }
-            }
-            else if (['xhr', 'fetch', 'post', 'put', 'delete'].includes(breadcrumb.category)) {
+            } else if (['xhr', 'fetch', 'post', 'put', 'delete'].includes(breadcrumb.category)) {
                 if (breadcrumb.data && breadcrumb.data.status_code === 200) {
                     return null
                 }
@@ -46,23 +59,25 @@ if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.SENTRY
             return breadcrumb
         },
         dsn: window._env_.SENTRY_DSN || '',
-        integrations: [new CaptureConsole({ levels: ['error'] })],
+        integrations: integrationArr,
+        tracesSampleRate: window._env_.SENTRY_TRACES_SAMPLE_RATE,
         ...(process.env.REACT_APP_GIT_SHA ? { release: `dashboard@${process.env.REACT_APP_GIT_SHA}` } : {}),
         environment: window._env_ && window._env_.SENTRY_ENV ? window._env_.SENTRY_ENV : 'staging',
-    });
+    })
 }
 
-
-if (!window || !window._env_ ) {
+if (!window || !window._env_) {
     window._env_ = {
-        SENTRY_ENV: "staging",
-        SENTRY_ENABLED: false,
-        SENTRY_DSN: "",
+        SENTRY_ENV: 'staging',
+        SENTRY_ERROR_ENABLED: false,
+        SENTRY_PERFORMANCE_ENABLED: false,
+        SENTRY_DSN: '',
+        SENTRY_TRACES_SAMPLE_RATE: 0.2,
         HOTJAR_ENABLED: false,
         GA_ENABLED: false,
         APPLICATION_METRICS_ENABLED: false,
         POSTHOG_ENABLED: false,
-        POSTHOG_TOKEN: "",
+        POSTHOG_TOKEN: '',
         RECOMMEND_SECURITY_SCANNING: false,
         FORCE_SECURITY_SCANNING: false,
         HIDE_DISCORD: true,
@@ -71,15 +86,14 @@ if (!window || !window._env_ ) {
 
 ReactDOM.render(
     <React.StrictMode>
-        {window.top === window.self
-            ?
+        {window.top === window.self ? (
             <BrowserRouter basename={`${process.env.PUBLIC_URL}/`}>
                 <App />
             </BrowserRouter>
-            : null
-        }
+        ) : null}
     </React.StrictMode>,
-    root);
+    root,
+)
 
 if (process.env.NODE_ENV === 'development') {
     (module as any).hot.accept()
