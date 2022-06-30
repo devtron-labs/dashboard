@@ -1,55 +1,7 @@
 import { getGeneratedHelmManifest } from '../common/chartValues.api'
 import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
 
-export const getCommonSelectStyle = (styleOverrides = {}) => {
-    return {
-        menuList: (base) => ({
-            ...base,
-            paddingTop: 0,
-            paddingBottom: 0,
-        }),
-        control: (base, state) => ({
-            ...base,
-            minHeight: '32px',
-            boxShadow: 'none',
-            backgroundColor: 'var(--N50)',
-            border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-            cursor: 'pointer',
-        }),
-        option: (base, state) => ({
-            ...base,
-            color: 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-            padding: '10px 12px',
-        }),
-        dropdownIndicator: (base, state) => ({
-            ...base,
-            color: 'var(--N400)',
-            padding: '0 8px',
-            transition: 'all .2s ease',
-            transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-        }),
-        valueContainer: (base) => ({
-            ...base,
-            padding: '0 8px',
-        }),
-        loadingMessage: (base) => ({
-            ...base,
-            color: 'var(--N600)',
-        }),
-        noOptionsMessage: (base) => ({
-            ...base,
-            color: 'var(--N600)',
-        }),
-        ...styleOverrides,
-    }
-}
-
-const generateManifestGenerationKey = (
-    isExternalApp: boolean,
-    appName: string,
-    commonState: ChartValuesViewState,
-) => {
+const generateManifestGenerationKey = (isExternalApp: boolean, appName: string, commonState: ChartValuesViewState) => {
     return isExternalApp
         ? `${commonState.releaseInfo.deployedAppDetail.environmentDetail.namespace}_${commonState.releaseInfo.deployedAppDetail.appName}_${commonState.chartValues?.id}_${commonState.selectedVersionUpdatePage?.id}`
         : `${commonState.selectedEnvironment.value}_${appName}_${commonState.chartValues?.id}_${commonState.selectedEnvironment.namespace}_${commonState.selectedVersionUpdatePage?.id}`
@@ -100,4 +52,235 @@ export const updateGeneratedManifest = (
             dispatch,
         )
     }
+}
+
+const dummySchema = {
+    $schema: 'http://json-schema.org/schema#',
+    type: 'object',
+    properties: {
+        drupalUsername: {
+            type: 'string',
+            title: 'Username',
+            form: true,
+        },
+        drupalPassword: {
+            type: 'string',
+            title: 'Password',
+            form: true,
+            description: 'Defaults to a random 10-character alphanumeric string if not set',
+        },
+        drupalEmail: {
+            type: 'string',
+            title: 'Admin email',
+            form: true,
+        },
+        persistence: {
+            type: 'object',
+            properties: {
+                drupal: {
+                    type: 'object',
+                    properties: {
+                        size: {
+                            type: 'string',
+                            title: 'Persistent Volume Size',
+                            form: true,
+                            render: 'slider',
+                            sliderMin: 1,
+                            sliderMax: 100,
+                            sliderUnit: 'Gi',
+                        },
+                    },
+                },
+            },
+        },
+        ingress: {
+            type: 'object',
+            form: true,
+            title: 'Ingress Configuration',
+            properties: {
+                enabled: {
+                    type: 'boolean',
+                    form: true,
+                    title: 'Use a custom hostname',
+                    description: 'Enable the ingress resource that allows you to access the Drupal installation.',
+                },
+                hostname: {
+                    type: 'string',
+                    form: true,
+                    title: 'Hostname',
+                    hidden: {
+                        value: false,
+                        path: 'ingress/enabled',
+                    },
+                },
+            },
+        },
+        service: {
+            type: 'object',
+            form: true,
+            title: 'Service Configuration',
+            properties: {
+                type: {
+                    type: 'string',
+                    form: true,
+                    title: 'Service Type',
+                    description: 'Allowed values: "ClusterIP", "NodePort" and "LoadBalancer"',
+                },
+            },
+        },
+        mariadb: {
+            type: 'object',
+            title: 'MariaDB Details',
+            form: true,
+            properties: {
+                enabled: {
+                    type: 'boolean',
+                    title: 'Use a new MariaDB database hosted in the cluster',
+                    form: true,
+                    description:
+                        'Whether to deploy a mariadb server to satisfy the applications database requirements. To use an external database switch this off and configure the external database details',
+                },
+                primary: {
+                    type: 'object',
+                    properties: {
+                        persistence: {
+                            type: 'object',
+                            properties: {
+                                size: {
+                                    type: 'string',
+                                    title: 'Volume Size',
+                                    form: true,
+                                    hidden: {
+                                        value: false,
+                                        path: 'mariadb/enabled',
+                                    },
+                                    render: 'slider',
+                                    sliderMin: 1,
+                                    sliderMax: 100,
+                                    sliderUnit: 'Gi',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        externalDatabase: {
+            type: 'object',
+            title: 'External Database Details',
+            description: 'If MariaDB is disabled. Use this section to specify the external database details',
+            form: true,
+            hidden: 'mariadb/enabled',
+            properties: {
+                host: {
+                    type: 'string',
+                    form: true,
+                    title: 'Database Host',
+                },
+                user: {
+                    type: 'string',
+                    form: true,
+                    title: 'Database Username',
+                },
+                password: {
+                    type: 'string',
+                    form: true,
+                    title: 'Database Password',
+                },
+                database: {
+                    type: 'string',
+                    form: true,
+                    title: 'Database Name',
+                },
+                port: {
+                    type: 'integer',
+                    form: true,
+                    title: 'Database Port',
+                },
+            },
+        },
+        resources: {
+            type: 'object',
+            title: 'Requested Resources',
+            description: 'Configure resource requests',
+            form: true,
+            properties: {
+                requests: {
+                    type: 'object',
+                    properties: {
+                        memory: {
+                            type: 'string',
+                            form: true,
+                            render: 'slider',
+                            title: 'Memory Request',
+                            sliderMin: 10,
+                            sliderMax: 2048,
+                            sliderUnit: 'Mi',
+                        },
+                        cpu: {
+                            type: 'string',
+                            form: true,
+                            render: 'slider',
+                            title: 'CPU Request',
+                            sliderMin: 10,
+                            sliderMax: 2000,
+                            sliderUnit: 'm',
+                        },
+                    },
+                },
+            },
+        },
+        metrics: {
+            type: 'object',
+            properties: {
+                enabled: {
+                    type: 'boolean',
+                    title: 'Enable Metrics',
+                    description: 'Prometheus Exporter / Metrics',
+                    form: true,
+                },
+            },
+        },
+    },
+}
+
+const getFieldType = (type: string, renderType: string, containsEnum): string => {
+    switch (type) {
+        case 'string':
+            return containsEnum ? 'select' : renderType ? renderType : 'input'
+        case 'object':
+            return 'formBox'
+        case 'boolean':
+            return 'checkbox'
+        case 'integer':
+            return 'numberInput'
+        default:
+            return type
+    }
+}
+
+// Todo: Revisit for child refs
+export const convertJSONSchemaToMap = (schema, parentRef = '', keyValuePair = new Map<string, any>()) => {
+    if (schema && schema.properties) {
+        const properties = schema.properties!
+        Object.keys(properties).forEach((propertyKey) => {
+            const propertyPath = `${parentRef}${parentRef ? '/' : ''}${propertyKey}`
+            const property = properties[propertyKey]
+            const haveChildren = property.type === 'object' && property.properties
+            const newProps = {
+                ...property,
+                type: getFieldType(property.type, property.render, !!property.enum),
+                parentRef: parentRef,
+                children: haveChildren && Object.keys(property.properties).map((key) => `${propertyPath}/${key}`),
+            }
+
+            keyValuePair.set(propertyPath, newProps)
+
+            if (haveChildren) {
+                convertJSONSchemaToMap(property, propertyPath, keyValuePair)
+            }
+        })
+    }
+
+    return keyValuePair
 }

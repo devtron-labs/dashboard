@@ -69,6 +69,14 @@ import { ValidationRules } from '../../../app/create/validationRules'
 import './ChartValuesView.scss'
 import { updateGeneratedManifest } from './ChartValuesView.utils'
 import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
+import {
+    CheckboxWithTippy,
+    Slider,
+    StyledFormBox,
+    StyledInput,
+    StyledSelect,
+    StyledTextarea,
+} from '../../../common/formFields/Widgets'
 
 function ChartValuesView({
     appId,
@@ -775,6 +783,7 @@ function ChartValuesView({
                 disabled={isExternalApp && !commonState.installedAppInfo}
                 onChange={handleTabSwitch}
             >
+                <RadioGroup.Radio value="gui">GUI (Basic)</RadioGroup.Radio>
                 <RadioGroup.Radio value="yaml">
                     <Edit className="icon-dim-12 mr-6" />
                     YAML
@@ -931,6 +940,79 @@ function ChartValuesView({
         }
     }
 
+    // Todo: Update along with upcoming GUI form creation changes
+    const renderGUIForm = () => {
+        return (
+            <div className="chart-values-view__gui-form-container">
+                <form className="chart-values-view__gui-form">
+                    {/* GUI form inputs */}
+                </form>
+                {!commonState.openReadMe && (
+                    <UpdateApplicationButton
+                        isUpdateInProgress={commonState.isUpdateInProgress}
+                        isDeleteInProgress={commonState.isDeleteInProgress}
+                        isDeployChartView={isDeployChartView}
+                        deployOrUpdateApplication={deployOrUpdateApplication}
+                    />
+                )}
+            </div>
+        )
+    }
+
+    const renderChartValuesEditor = () => {
+        return (
+            <div
+                className={`chart-values-view__editor ${
+                    commonState.openReadMe || commonState.openComparison ? 'chart-values-view__full-mode' : ''
+                }`}
+            >
+                {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
+                    <ErrorScreenWithInfo info={commonState.valuesEditorError} />
+                ) : (
+                    <ChartValuesEditor
+                        loading={
+                            commonState.fetchingValuesYaml ||
+                            (commonState.activeTab === 'manifest' && commonState.generatingManifest)
+                        }
+                        isExternalApp={isExternalApp}
+                        isDeployChartView={isDeployChartView}
+                        appId={appId}
+                        appName={
+                            isExternalApp
+                                ? commonState.releaseInfo.deployedAppDetail.appName
+                                : commonState.installedConfig.appName
+                        }
+                        valuesText={commonState.modifiedValuesYaml}
+                        defaultValuesText={
+                            isExternalApp
+                                ? YAML.stringify(JSON.parse(commonState.releaseInfo.mergedValues))
+                                : commonState.installedConfig?.valuesOverrideYaml
+                        }
+                        onChange={onEditorValueChange}
+                        repoChartValue={commonState.repoChartValue}
+                        showEditorHeader={commonState.openReadMe}
+                        hasChartChanged={hasChartChanged()}
+                        showInfoText={!commonState.openReadMe && !commonState.openComparison}
+                        manifestView={commonState.activeTab === 'manifest'}
+                        generatedManifest={commonState.generatedManifest}
+                        comparisonView={commonState.openComparison}
+                        chartValuesList={chartValuesList}
+                        deploymentHistoryList={commonState.deploymentHistoryArr}
+                        selectedChartValues={commonState.chartValues}
+                    />
+                )}
+                {!commonState.openComparison && !commonState.openReadMe && (
+                    <UpdateApplicationButton
+                        isUpdateInProgress={commonState.isUpdateInProgress}
+                        isDeleteInProgress={commonState.isDeleteInProgress}
+                        isDeployChartView={isDeployChartView}
+                        deployOrUpdateApplication={deployOrUpdateApplication}
+                    />
+                )}
+            </div>
+        )
+    }
+
     const renderData = () => {
         return (
             <div
@@ -1031,55 +1113,7 @@ function ChartValuesView({
                         />
                     )}
                     {!commonState.openComparison && <div className="chart-values-view__vr-divider bcn-2" />}
-                    <div
-                        className={`chart-values-view__editor ${
-                            commonState.openReadMe || commonState.openComparison ? 'chart-values-view__full-mode' : ''
-                        }`}
-                    >
-                        {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
-                            <ErrorScreenWithInfo info={commonState.valuesEditorError} />
-                        ) : (
-                            <ChartValuesEditor
-                                loading={
-                                    commonState.fetchingValuesYaml ||
-                                    (commonState.activeTab === 'manifest' && commonState.generatingManifest)
-                                }
-                                isExternalApp={isExternalApp}
-                                isDeployChartView={isDeployChartView}
-                                appId={appId}
-                                appName={
-                                    isExternalApp
-                                        ? commonState.releaseInfo.deployedAppDetail.appName
-                                        : commonState.installedConfig.appName
-                                }
-                                valuesText={commonState.modifiedValuesYaml}
-                                defaultValuesText={
-                                    isExternalApp
-                                        ? YAML.stringify(JSON.parse(commonState.releaseInfo.mergedValues))
-                                        : commonState.installedConfig?.valuesOverrideYaml
-                                }
-                                onChange={onEditorValueChange}
-                                repoChartValue={commonState.repoChartValue}
-                                showEditorHeader={commonState.openReadMe}
-                                hasChartChanged={hasChartChanged()}
-                                showInfoText={!commonState.openReadMe && !commonState.openComparison}
-                                manifestView={commonState.activeTab === 'manifest'}
-                                generatedManifest={commonState.generatedManifest}
-                                comparisonView={commonState.openComparison}
-                                chartValuesList={chartValuesList}
-                                deploymentHistoryList={commonState.deploymentHistoryArr}
-                                selectedChartValues={commonState.chartValues}
-                            />
-                        )}
-                        {!commonState.openComparison && !commonState.openReadMe && (
-                            <UpdateApplicationButton
-                                isUpdateInProgress={commonState.isUpdateInProgress}
-                                isDeleteInProgress={commonState.isDeleteInProgress}
-                                isDeployChartView={isDeployChartView}
-                                deployOrUpdateApplication={deployOrUpdateApplication}
-                            />
-                        )}
-                    </div>
+                    {commonState.activeTab === 'gui' ? renderGUIForm() : renderChartValuesEditor()}
                 </div>
                 {commonState.showDeleteAppConfirmationDialog && (
                     <DeleteChartDialog

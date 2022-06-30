@@ -299,6 +299,21 @@
             }
         }
 
+        .chart-values-view__gui-form-container {
+            padding: 20px;
+            height: calc(100vh - 162px);
+            border-bottom: 1px solid var(--N100);
+            overflow: scroll;
+
+            .chart-values-view__gui-form {
+                width: 600px;
+
+                label {
+                    margin-bottom: 16px;
+                }
+            }
+        }
+
         .chart-values-view__editor {
             &.chart-values-view__full-mode {
                 .code-editor-container {
@@ -376,12 +391,12 @@
                     }
                 }
             }
+        }
 
-            .chart-values-view__update-cta {
-                position: absolute;
-                bottom: 12px;
-                right: 20px;
-            }
+        .chart-values-view__update-cta {
+            position: absolute;
+            bottom: 12px;
+            right: 20px;
         }
 
         .cta {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import ReactSelect, { components } from 'react-select'
 import AsyncSelect from 'react-select/async'
-import { DropdownIndicator, Option } from '../../common/ReactSelect.utils'
+import { DropdownIndicator, getCommonSelectStyle, Option } from '../../common/ReactSelect.utils'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg'
@@ -36,7 +36,6 @@ import moment from 'moment'
 import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
 import EmptyState from '../../../EmptyState/EmptyState'
-import { getCommonSelectStyle } from './ChartValuesView.utils'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
