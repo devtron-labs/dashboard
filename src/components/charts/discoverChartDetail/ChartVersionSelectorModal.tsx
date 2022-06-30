@@ -6,17 +6,7 @@ import { ReactComponent as Back } from '../../../assets/icons/ic-back.svg'
 import { useDiscoverDetailsContext } from './DiscoverChartDetails'
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ChartValuesType } from '../charts.types'
-import { PrimaryOptions, PrimaryOptionType, ValueType } from './types'
-
-interface ChartVersionSelectorModalType {
-    closePopup: () => void
-    appStoreApplicationName: string
-    appIconUrl: string
-    onError: (e) => void
-    handleDeploy: () => void
-    deployedChartValueList: ChartValuesType[]
-    presetChartValueList: ChartValuesType[]
-}
+import { ChartVersionSelectorModalType, PrimaryOptions, PrimaryOptionType, ValueType } from './types'
 
 export default function ChartVersionSelectorModal({
     closePopup,
