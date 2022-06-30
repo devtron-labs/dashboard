@@ -121,6 +121,8 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
             return { ...state, forceDeleteData: action.payload }
         case ChartValuesViewActionTypes.errorResponseCode:
             return { ...state, errorResponseCode: action.payload }
+        case ChartValuesViewActionTypes.invalidValueName:
+            return { ...state, invalidValueName: action.payload }
         case ChartValuesViewActionTypes.invalidAppName:
             return { ...state, invalidAppName: action.payload }
         case ChartValuesViewActionTypes.invalidAppNameMessage:

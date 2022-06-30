@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useHistory } from 'react-router'
+import { useParams } from 'react-router'
 import { BreadCrumb, ErrorScreenManager, Progressing, showError, useBreadcrumb } from '../../common'
-import {
-    getChartValues,
-    getChartValuesCategorizedListParsed,
-    getChartVersionDetails,
-    getChartVersionsMin,
-} from '../charts.service'
+import { getChartValuesCategorizedListParsed, getChartVersionDetails, getChartVersionsMin } from '../charts.service'
 import PageHeader from '../../common/header/PageHeader'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
 import { ChartInstalledConfig, ChartKind } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
@@ -101,7 +96,6 @@ export default function ChartValuesN() {
                 chartVersionsDataFromParent={availableVersions}
                 chartValuesFromParent={chartValues}
                 selectedVersionFromParent={availableVersions[0]?.id}
-                chartValueId={chartValueId}
             />
         </>
     )

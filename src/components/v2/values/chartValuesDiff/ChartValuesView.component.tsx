@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useParams } from 'react-router'
 import ReactSelect, { components } from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { DropdownIndicator, Option } from '../../common/ReactSelect.utils'
@@ -1000,16 +1001,12 @@ export const DeleteApplicationButton = ({
             className="chart-values-view__delete-cta cta delete"
             disabled={isUpdateInProgress || isDeleteInProgress}
             onClick={(e) =>
-                // type === 'Application'
-                //     ? dispatch({
-                //           type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
-                //           payload: true,
-                //       })
-                //     : clickHandler()
-                dispatch({
-                    type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
-                    payload: false,
-                })
+                type === 'Value'
+                    ? clickHandler()
+                    : dispatch({
+                          type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
+                          payload: true,
+                      })
             }
         >
             {isDeleteInProgress ? (
@@ -1030,13 +1027,16 @@ export const UpdateApplicationButton = ({
     isUpdateInProgress,
     isDeleteInProgress,
     isDeployChartView,
+    isCreateValueView,
     deployOrUpdateApplication,
 }: {
     isUpdateInProgress: boolean
     isDeleteInProgress: boolean
     isDeployChartView: boolean
+    isCreateValueView: boolean
     deployOrUpdateApplication: (forceUpdate?: boolean) => Promise<void>
 }) => {
+    const { chartValueId } = useParams<{ chartValueId: string }>()
     return (
         <button
             type="button"
@@ -1051,11 +1051,19 @@ export const UpdateApplicationButton = ({
         >
             {isUpdateInProgress ? (
                 <div className="flex">
-                    <span>{isDeployChartView ? 'Deploying chart' : 'Updating and deploying'}</span>
+                    <span>
+                        {isCreateValueView
+                            ? `Saving ${chartValueId !== '0' ? 'changes' : 'value'}`
+                            : isDeployChartView
+                            ? 'Deploying chart'
+                            : 'Updating and deploying'}
+                    </span>
                     <span className="ml-10">
                         <Progressing />
                     </span>
                 </div>
+            ) : isCreateValueView ? (
+                `Save ${chartValueId !== '0' ? 'changes' : 'value'}`
             ) : isDeployChartView ? (
                 'Deploy chart'
             ) : (

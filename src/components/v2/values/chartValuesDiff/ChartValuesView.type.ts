@@ -21,7 +21,6 @@ export interface ChartValuesViewType {
     chartVersionsDataFromParent?: ChartVersionType[]
     chartValuesFromParent?: ChartValuesType
     selectedVersionFromParent?: number
-    chartValueId?: string
 }
 
 export interface ChartSelectorType {
@@ -273,6 +272,7 @@ export enum ChartValuesViewActionTypes {
     environments = 'environments',
     forceDeleteData = 'forceDeleteData',
     errorResponseCode = 'errorResponseCode',
+    invalidValueName = 'invalidValueName',
     invalidAppName = 'invalidAppName',
     invalidAppNameMessage = 'invalidAppNameMessage',
     invalidaEnvironment = 'invalidaEnvironment',
