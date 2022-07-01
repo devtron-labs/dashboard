@@ -1,0 +1,63 @@
+.styled-field.form__row {
+    .info-label-icon {
+        svg circle {
+            fill: var(--N500);
+        }
+    }
+
+    .error-label-icon {
+        svg g path:nth-of-type(2) {
+            fill: var(--R500);
+        }
+    }
+}
+
+.slider-input-box-container {
+    .slider-input {
+        -webkit-appearance: none;
+        width: 450px;
+        height: 12px;
+        border-radius: 6px;
+        background: linear-gradient(to right, var(--B500) 0%, var(--B500) 50%, var(--N200) 50%, var(--N200) 100%);
+        outline: none;
+        transition: background 450ms ease-in;
+    }
+
+    .slider-input::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        height: 24px;
+        width: 24px;
+        border-radius: 50%;
+        background-image: radial-gradient(circle, var(--B500) 35%, white 36%);
+        box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.4);
+        cursor: pointer;
+    }
+
+    .slider-input::-moz-range-thumb {
+        height: 24px;
+        width: 24px;
+        border-radius: 50%;
+        background-image: radial-gradient(circle, var(--B500) 35%, white 36%);
+        box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.4);
+        cursor: pointer;
+    }
+
+    .slider-input-box-wrapper {
+        .slider-input-box,
+        .slider-input-unit {
+            padding: 6px 10px;
+        }
+
+        .slider-input-box {
+            width: 98px;
+            background-color: var(--N50);
+            outline: none;
+        }
+
+        .slider-input-unit {
+            background-color: white;
+            border-left: none;
+        }
+    }
+}
