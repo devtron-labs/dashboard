@@ -71,12 +71,12 @@ import { updateGeneratedManifest } from './ChartValuesView.utils'
 import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import {
     CheckboxWithTippy,
-    Slider,
+    RangeSlider,
     StyledFormBox,
     StyledInput,
     StyledSelect,
     StyledTextarea,
-} from '../../../common/formFields/Widgets'
+} from '../../../common/formFields/Widgets/Widgets'
 
 function ChartValuesView({
     appId,

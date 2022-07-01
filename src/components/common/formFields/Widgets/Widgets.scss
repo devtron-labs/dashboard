@@ -1,14 +1,4 @@
 .styled-field.form__row {
-    input.form__input:not(.form__textarea) {
-        height: 32px;
-    }
-
-    .info-label-icon,
-    .error-label-icon {
-        width: 16px;
-        height: 16px;
-    }
-
     .info-label-icon {
         svg circle {
             fill: var(--N500);
@@ -19,14 +9,6 @@
         svg g path:nth-of-type(2) {
             fill: var(--R500);
         }
-    }
-}
-
-.styled-form-box {
-    &.show-box {
-        border: 1px solid var(--N200);
-        border-radius: 4px;
-        padding: 16px;
     }
 }
 
@@ -62,19 +44,13 @@
     }
 
     .slider-input-box-wrapper {
-        margin-left: 20px;
-
         .slider-input-box,
         .slider-input-unit {
-            height: 32px;
             padding: 6px 10px;
-            border: 1px solid var(--N200);
         }
 
         .slider-input-box {
             width: 98px;
-            border-top-left-radius: 4px;
-            border-bottom-left-radius: 4px;
             background-color: var(--N50);
             outline: none;
         }
@@ -82,8 +58,6 @@
         .slider-input-unit {
             background-color: white;
             border-left: none;
-            border-top-right-radius: 4px;
-            border-bottom-right-radius: 4px;
         }
     }
 }
