@@ -205,7 +205,14 @@ export default function ChartVersionSelectorModal({
                         <Close className="icon-dim-20" />
                     </button>
                 </div>
-                {isListpage ? <>renderValueList() renderDeployButton()</> : renderValueTypeList()}
+                {isListpage ? (
+                    <>
+                        {renderValueList()}
+                        {renderDeployButton()}
+                    </>
+                ) : (
+                    renderValueTypeList()
+                )}
             </div>
         </VisibleModal>
     )
