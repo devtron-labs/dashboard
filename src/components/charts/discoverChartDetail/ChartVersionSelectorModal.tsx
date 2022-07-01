@@ -6,7 +6,8 @@ import { ReactComponent as Back } from '../../../assets/icons/ic-back.svg'
 import { useDiscoverDetailsContext } from './DiscoverChartDetails'
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ChartValuesType } from '../charts.types'
-import { ChartVersionSelectorModalType, PrimaryOptions, PrimaryOptionType, ValueType } from './types'
+import { ChartVersionSelectorModalType, PrimaryOptionType } from './types'
+import { PrimaryOptions, ValueType } from './constants'
 
 export default function ChartVersionSelectorModal({
     closePopup,
@@ -176,6 +177,21 @@ export default function ChartVersionSelectorModal({
             </div>
         )
     }
+    const renderDeployButton = (): JSX.Element => {
+        return (
+            <div className="pt-20 pr-20 pb-20 pl-20 border-top right-align">
+                <button
+                    type="button"
+                    className="cta h-36 lh-36"
+                    onClick={redirectToDeploy}
+                    disabled={selectedChartValue === null}
+                >
+                    Edit & deploy
+                    <Back className="icon-dim-20 rotate-180 vertical-align-middle ml-5" />
+                </button>
+            </div>
+        )
+    }
     return (
         <VisibleModal className="transition-effect">
             <div
@@ -189,20 +205,7 @@ export default function ChartVersionSelectorModal({
                         <Close className="icon-dim-20" />
                     </button>
                 </div>
-                {isListpage ? renderValueList() : renderValueTypeList()}
-                {isListpage && (
-                    <div className="pt-20 pr-20 pb-20 pl-20 border-top right-align">
-                        <button
-                            type="button"
-                            className="cta h-36 lh-36"
-                            onClick={redirectToDeploy}
-                            disabled={selectedChartValue === null}
-                        >
-                            Edit & deploy
-                            <Back className="icon-dim-20 rotate-180 vertical-align-middle ml-5" />
-                        </button>
-                    </div>
-                )}
+                {isListpage ? <>renderValueList() renderDeployButton()</> : renderValueTypeList()}
             </div>
         </VisibleModal>
     )
