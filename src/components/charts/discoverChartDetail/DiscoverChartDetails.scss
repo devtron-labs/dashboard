@@ -373,3 +373,36 @@
         background-color: var(--window-bg);
     }
 }
+
+.chart-version-selector {
+    width: 800px;
+    .header-container {
+        display: grid;
+        grid-template-columns: auto 30px;
+        grid-column-gap: 16px;
+    }
+    .rotate-270 {
+        transform: rotate(270deg);
+    }
+    .rotate-180 {
+        transform: rotate(180deg);
+    }
+    .chart-value-row {
+        display: grid;
+        grid-template-columns: 50px 200px auto;
+        &.active {
+            background-color: var(--B100) !important;
+            svg {
+                path {
+                    stroke: var(--B500);
+                }
+            }
+        }
+        &:not(:first-of-type):hover {
+            background-color: var(--N50);
+        }
+    }
+    .right-align {
+        text-align: right;
+    }
+}
