@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { fetchAppDetailsInTime } from '../../service';
 import {
+    URLS,
     Host,
     getAppDetailsURL,
     getAppTriggerURL,
@@ -312,111 +313,141 @@ export const Details: React.FC<{
             setHibernating(false);
         }
     }
-    
-    return ( 
-        <React.Fragment>
-            <div className="w-100 pt-16 pr-24 pb-20 pl-24">
-                <SourceInfo
-                    appDetails={appDetails}
-                    setDetailed={toggleDetailedStatus}
-                    environments={environments}
-                    showCommitInfo={isAppDeployment ? showCommitInfo : null}
-                    showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
+
+    if (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0){
+        return (
+            <>
+                <div className="flex left ml-20 mt-16">
+                    <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} controlStyleOverrides={{backgroundColor:'white'}}/>
+                </div>
+                <AppNotConfigured
+                    style={{ height: 'calc(100vh - 150px)' }}
+                    image={noGroups}
+                    title={'Looks like you’re all set. Go ahead and select an image to deploy.'}
+                    subtitle={'Once deployed, details for the deployment will be available here.'}
+                    buttonTitle={'Go to deploy'}
+                    appConfigTabs={URLS.APP_TRIGGER}
                 />
-            </div>
-            <SyncError appStreamData={streamData} />
-            <SecurityVulnerabilitites imageScanDeployInfoId={lastExecutionDetail.imageScanDeployInfoId}
-                severityCount={lastExecutionDetail.severityCount}
-                onClick={() => { toggleScanDetailsModal(true) }} />
-            {environment && <AppMetrics appName={appDetails.appName}
-                addExtraSpace={!isExternalToolAvailable}
-                environment={environment}
-                podMap={aggregatedNodes.nodes.Pod}
-                k8sVersion={appDetails.k8sVersion} />}
-            {isExternalToolAvailable && (
-                <AppLevelExternalLinks
-                    appDetails={appDetails}
-                    externalLinks={externalLinksAndTools.externalLinks}
-                    monitoringTools={externalLinksAndTools.monitoringTools}
-                />
-            )}
+            </>
+        )
+    }
 
-            <NodeTreeDetailTab
-                appDetails={appDetails}
-                externalLinks={externalLinksAndTools.externalLinks}
-                monitoringTools={externalLinksAndTools.monitoringTools}
-                isDevtronApp = {true}
-            />
-
-            {detailedStatus && (
-                <ProgressStatus
-                    message={message}
-                    nodes={aggregatedNodes}
-                    streamData={streamData}
-                    status={appDetails?.resourceTree?.status}
-                    close={(e) => toggleDetailedStatus(false)}
-                    appName={appDetails.appName}
-                    environmentName={appDetails.environmentName}
-                />
-            )}
-            {showScanDetailsModal ? <ScanDetailsModal
-                showAppInfo={false}
-                uniqueId={{
-                    imageScanDeployInfoId: lastExecutionDetail.imageScanDeployInfoId,
-                    appId: params.appId,
-                    envId: params.envId
-                }}
-                close={() => { toggleScanDetailsModal(false) }} /> : null}
-
-            {commitInfo && (
-                <TriggerInfoModal appId={appDetails?.appId} ciArtifactId={appDetails?.ciArtifactId} close={() => showCommitInfo(false)} />
-            )}
-
-            {hibernateConfirmationModal && (
-                <ConfirmationDialog>
-                    <ConfirmationDialog.Icon
-                        src={hibernateConfirmationModal === 'hibernate' ? warningIcon : restoreIcon}
+    return <React.Fragment>
+         <div className="w-100 pt-16 pr-24 pb-20 pl-24">
+                        <SourceInfo
+                            appDetails={appDetails}
+                            setDetailed={toggleDetailedStatus}
+                            environments={environments}
+                            showCommitInfo={isAppDeployment ? showCommitInfo : null}
+                            showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
+                        />
+                    </div>
+                    <SyncError appStreamData={streamData} />
+                    <SecurityVulnerabilitites
+                        imageScanDeployInfoId={lastExecutionDetail.imageScanDeployInfoId}
+                        severityCount={lastExecutionDetail.severityCount}
+                        onClick={() => {
+                            toggleScanDetailsModal(true)
+                        }}
                     />
-                    <ConfirmationDialog.Body
-                        title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${appDetails.appName
-                            }' on '${appDetails.environmentName}'`}
-                        subtitle={
-                            <p>
-                                Pods for this application will be{' '}
-                                <b>
-                                    scaled{' '}
-                                    {hibernateConfirmationModal === 'hibernate'
-                                        ? 'down to 0'
-                                        : ' upto its original count'}{' '}
-                                    on {appDetails.environmentName}
-                                </b>{' '}
-                                environment.
-                            </p>
-                        }
-                    >
-                        <p style={{ marginTop: '16px' }}>Are you sure you want to continue?</p>
-                    </ConfirmationDialog.Body>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button className="cta cancel" onClick={(e) => setHibernateConfirmationModal('')}>
-                            Cancel
-                        </button>
-                        <button className="cta" disabled={hibernating} onClick={handleHibernate}>
-                            {hibernating ? (
-                                <Progressing />
-                            ) : hibernateConfirmationModal === 'hibernate' ? (
-                                `Hibernate App`
-                            ) : (
+                    {environment && (
+                        <AppMetrics
+                            appName={appDetails.appName}
+                            addExtraSpace={!isExternalToolAvailable}
+                            environment={environment}
+                            podMap={aggregatedNodes.nodes.Pod}
+                            k8sVersion={appDetails.k8sVersion}
+                        />
+                    )}
+                    {isExternalToolAvailable && (
+                        <AppLevelExternalLinks
+                            appDetails={appDetails}
+                            externalLinks={externalLinksAndTools.externalLinks}
+                            monitoringTools={externalLinksAndTools.monitoringTools}
+                        />
+                    )}
+                    <NodeTreeDetailTab
+                        appDetails={appDetails}
+                        externalLinks={externalLinksAndTools.externalLinks}
+                        monitoringTools={externalLinksAndTools.monitoringTools}
+                        isDevtronApp={true}
+                    />
+                    {detailedStatus && (
+                        <ProgressStatus
+                            message={message}
+                            nodes={aggregatedNodes}
+                            streamData={streamData}
+                            status={appDetails?.resourceTree?.status}
+                            close={(e) => toggleDetailedStatus(false)}
+                            appName={appDetails.appName}
+                            environmentName={appDetails.environmentName}
+                        />
+                    )}
+                    {showScanDetailsModal && 
+                        <ScanDetailsModal
+                            showAppInfo={false}
+                            uniqueId={{
+                                imageScanDeployInfoId: lastExecutionDetail.imageScanDeployInfoId,
+                                appId: params.appId,
+                                envId: params.envId,
+                            }}
+                            close={() => {
+                                toggleScanDetailsModal(false)
+                            }}
+                        />
+                    }
+                    {commitInfo && (
+                        <TriggerInfoModal
+                            appId={appDetails?.appId}
+                            ciArtifactId={appDetails?.ciArtifactId}
+                            close={() => showCommitInfo(false)}
+                        />
+                    )}
+                    {hibernateConfirmationModal && (
+                        <ConfirmationDialog>
+                            <ConfirmationDialog.Icon
+                                src={hibernateConfirmationModal === 'hibernate' ? warningIcon : restoreIcon}
+                            />
+                            <ConfirmationDialog.Body
+                                title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${
+                                    appDetails.appName
+                                }' on '${appDetails.environmentName}'`}
+                                subtitle={
+                                    <p>
+                                        Pods for this application will be
+                                        <b>
+                                            scaled
+                                            {hibernateConfirmationModal === 'hibernate'
+                                                ? 'down to 0'
+                                                : ' upto its original count'}
+                                            on {appDetails.environmentName}
+                                        </b>
+                                        environment.
+                                    </p>
+                                }
+                            >
+                                <p className='mt-16'>Are you sure you want to continue?</p>
+                            </ConfirmationDialog.Body>
+                            <ConfirmationDialog.ButtonGroup>
+                                <button className="cta cancel" onClick={(e) => setHibernateConfirmationModal('')}>
+                                    Cancel
+                                </button>
+                                <button className="cta" disabled={hibernating} onClick={handleHibernate}>
+                                    {hibernating ? (
+                                        <Progressing />
+                                    ) : hibernateConfirmationModal === 'hibernate' ? (
+                                        `Hibernate App`
+                                    ) : (
                                         'Restore App'
                                     )}
-                        </button>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>
-            )}
-        </React.Fragment> 
-    );
+                                </button>
+                            </ConfirmationDialog.ButtonGroup>
+                        </ConfirmationDialog>
+                    )}
+        </React.Fragment>
 };
 
-export function EnvSelector({ environments, disabled }) {
+export function EnvSelector({ environments, disabled, controlStyleOverrides }:{ environments: any, disabled: boolean, controlStyleOverrides?: React.CSSProperties }) {
     const { push } = useHistory();
     const { path } = useRouteMatch();
     const { appId, envId } = useParams<{ appId: string, envId?: string; }>();
@@ -464,7 +495,7 @@ export function EnvSelector({ environments, disabled }) {
                     components={{ IndicatorSeparator: null, Option, DropdownIndicator: disabled ? null : components.DropdownIndicator }}
                     styles={{
                         ...multiSelectStyles,
-                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'transparent' }),
+                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'transparent',...controlStyleOverrides }),
                         singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: '#06c' })
                     }}
                     isDisabled={disabled}
@@ -850,26 +881,31 @@ export function AppNotConfigured({
     subtitle,
     buttonTitle,
     appConfigTabs ='',
+    style
 }: {
     image?: any
     title?: string
     subtitle?: string
     buttonTitle?: string
     appConfigTabs?: string
+    style?: React.CSSProperties
 }) {
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
     function handleEditApp(e) {
         getAppConfigStatus(+appId).then((response) => {
-            let url = `/app/${appId}/edit${appConfigTabs}`
+            let url = `/app/${appId}/edit`
+            if(appConfigTabs){
+                url = `/app/${appId}/${appConfigTabs}`
+            }
             push(url)
         })
     }
 
     return (
-        <section className="app-not-configured w-100">
+        <section className="app-not-configured w-100" style={style}>
             <img src={image || AppNotConfiguredIcon} />
-            <h3 className="mb-20 fs-16 fw-600 w-300">{title || 'Finish configuring this application'}</h3>
+            <h3 className="mb-8 mt-20 fs-16 fw-600 w-300">{title || 'Finish configuring this application'}</h3>
                 <p className="mb-20 fs-13 w-300"> {subtitle ? subtitle : 
                     <>This application is not fully configured. Complete the configuration, trigger a deployment and come
                     back here.
