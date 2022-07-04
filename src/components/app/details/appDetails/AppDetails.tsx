@@ -447,7 +447,7 @@ export const Details: React.FC<{
         </React.Fragment>
 };
 
-export function EnvSelector({ environments, disabled, controlStyleOverrides }:{ environments: any, disabled: any, controlStyleOverrides?: React.CSSProperties}) {
+export function EnvSelector({ environments, disabled, controlStyleOverrides }:{ environments: any, disabled: boolean, controlStyleOverrides?: React.CSSProperties }) {
     const { push } = useHistory();
     const { path } = useRouteMatch();
     const { appId, envId } = useParams<{ appId: string, envId?: string; }>();
