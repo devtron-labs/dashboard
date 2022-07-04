@@ -383,7 +383,7 @@ export const Details: React.FC<{
                             environmentName={appDetails.environmentName}
                         />
                     )}
-                    {showScanDetailsModal ? (
+                    {showScanDetailsModal && 
                         <ScanDetailsModal
                             showAppInfo={false}
                             uniqueId={{
@@ -395,7 +395,7 @@ export const Details: React.FC<{
                                 toggleScanDetailsModal(false)
                             }}
                         />
-                    ) : null}
+                    }
                     {commitInfo && (
                         <TriggerInfoModal
                             appId={appDetails?.appId}
@@ -426,7 +426,7 @@ export const Details: React.FC<{
                                     </p>
                                 }
                             >
-                                <p style={{ marginTop: '16px' }}>Are you sure you want to continue?</p>
+                                <p className='mt-16'>Are you sure you want to continue?</p>
                             </ConfirmationDialog.Body>
                             <ConfirmationDialog.ButtonGroup>
                                 <button className="cta cancel" onClick={(e) => setHibernateConfirmationModal('')}>
@@ -888,7 +888,7 @@ export function AppNotConfigured({
     subtitle?: string
     buttonTitle?: string
     appConfigTabs?: string
-    style?:object
+    style?: React.CSSProperties
 }) {
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
