@@ -52,16 +52,34 @@ const StyledField = (props: StyledFieldPropsType) => {
 
 export const StyledFormBox = (props: StyledFieldPropsType) => {
     return (
-        <div className={`styled-form-box ${props.showBox ? 'en-2 bw-1 br-4 p-16' : ''}`}>
-            <h2 className="fs-14 fw-6 p-0 m-0 lh-20">{props.title}</h2>
+        <div className={`styled-form-box mb-16 ${props.showBox ? 'en-2 bw-1 br-4 p-16' : ''}`}>
+            {props.title && <h2 className="fs-14 fw-6 p-0 m-0 lh-20">{props.title}</h2>}
             {props.description && <p className="fs-11 fw-4 p-0 mt-4 lh-16">{props.description}</p>}
-            <hr />
+            {(props.title || props.description) && <hr />}
             {props.children}
         </div>
     )
 }
 
 export const StyledInput = (props: StyledInputPropsType): JSX.Element => {
+    const [inputValue, setInputValue] = useState(props.value || '')
+
+    const onValueChange = (e) => {
+        setInputValue(e.target.value)
+
+        if (props.onChange) {
+            props.onChange(e)
+        }
+    }
+
+    const onInputBlur = (e) => {
+        setInputValue(e.target.value)
+
+        if (props.onBlur) {
+            props.onBlur(e)
+        }
+    }
+
     return (
         <StyledField
             title={props.title}
@@ -71,12 +89,13 @@ export const StyledInput = (props: StyledInputPropsType): JSX.Element => {
             errorMessage={props.errorMessage}
         >
             <input
+                type={props.type === 'numberInput' ? 'number' : 'text'}
                 placeholder={props.placeholder && props.placeholder}
                 name={props.title.replace(/\s/g, '_')}
                 className="form__input h-32"
-                value={props.value}
-                onChange={props.onChange}
-                onBlur={props.onBlur}
+                value={inputValue}
+                onChange={onValueChange}
+                onBlur={onInputBlur}
                 autoComplete="off"
                 required={props.isRequired}
                 minLength={props.minLength}
@@ -88,6 +107,24 @@ export const StyledInput = (props: StyledInputPropsType): JSX.Element => {
 }
 
 export const StyledTextarea = (props: StyledInputPropsType): JSX.Element => {
+    const [inputValue, setInputValue] = useState(props.value || '')
+
+    const onValueChange = (e) => {
+        setInputValue(e.target.value)
+
+        if (props.onChange) {
+            props.onChange(e)
+        }
+    }
+
+    const onInputBlur = (e) => {
+        setInputValue(e.target.value)
+
+        if (props.onBlur) {
+            props.onBlur(e)
+        }
+    }
+
     return (
         <StyledField
             title={props.title}
@@ -99,10 +136,10 @@ export const StyledTextarea = (props: StyledInputPropsType): JSX.Element => {
             <textarea
                 className="form__input form__textarea"
                 name={props.title.replace(/\s/g, '_')}
-                value={props.value}
+                value={inputValue}
                 placeholder={props.placeholder && props.placeholder}
-                onChange={props.onChange}
-                onBlur={props.onBlur}
+                onChange={onValueChange}
+                onBlur={onInputBlur}
                 autoComplete="off"
                 required={props.isRequired}
                 minLength={props.minLength}
@@ -113,13 +150,13 @@ export const StyledTextarea = (props: StyledInputPropsType): JSX.Element => {
 }
 
 export const RangeSlider = (props: SliderPropsType) => {
-    const [sliderValue, setSliderValue] = useState(props.defaultValue ?? props.minLength)
-    const [sliderInputValue, setSliderInputValue] = useState(`${props.defaultValue ?? props.minLength}`)
+    const [sliderValue, setSliderValue] = useState(props.value ? parseInt(props.value) : props.sliderMin)
+    const [sliderInputValue, setSliderInputValue] = useState(`${props.value && props.sliderMin}`)
     const sliderRef = useRef()
 
     useEffect(() => {
         if (sliderRef?.current) {
-            sliderRangeUpdate(sliderRef.current, sliderValue, props.minLength, props.maxLength)
+            sliderRangeUpdate(sliderRef.current, sliderValue, props.sliderMin, props.sliderMax)
         }
     }, [sliderRef])
 
@@ -128,8 +165,11 @@ export const RangeSlider = (props: SliderPropsType) => {
             setSliderInputValue(inputValue)
         }
         setSliderValue(sliderValue)
-        props.onInput(sliderValue)
-        sliderRangeUpdate(sliderRef.current, sliderValue, props.minLength, props.maxLength)
+
+        if (props.onInputValue) {
+            props.onInputValue(sliderValue)
+        }
+        sliderRangeUpdate(sliderRef.current, sliderValue, props.sliderMin, props.sliderMax)
     }
 
     const sliderRangeUpdate = (e, value: number, min: number, max: number) => {
@@ -141,10 +181,14 @@ export const RangeSlider = (props: SliderPropsType) => {
         const value = e.target.value && parseInt(e.target.value)
 
         if (!value) {
-            updateStates(`${props.defaultValue ?? props.minLength}`, props.defaultValue ?? props.minLength)
-        } else if (value >= props.minLength && value <= props.maxLength) {
+            updateStates(`${props.value && props.sliderMin}`, props.value ? parseInt(props.value) : props.sliderMin)
+        } else if (value >= props.sliderMin && value <= props.sliderMax) {
             updateStates(e.target.value, value)
         }
+    }
+
+    const handleSliderInputValue = (e) => {
+        setSliderInputValue(e.target.value)
     }
 
     const handleKeyDown = (e) => {
@@ -159,8 +203,8 @@ export const RangeSlider = (props: SliderPropsType) => {
                 ref={sliderRef}
                 className="slider-input"
                 type="range"
-                min={props.minLength}
-                max={props.maxLength}
+                min={props.sliderMin}
+                max={props.sliderMax}
                 value={sliderValue}
                 onChange={changeHandler}
             />
@@ -174,19 +218,17 @@ export const RangeSlider = (props: SliderPropsType) => {
                     name={props.title.replace(/\s/g, '_')}
                     type="number"
                     autoComplete="off"
-                    min={props.minLength}
-                    max={props.maxLength}
+                    min={props.sliderMin}
+                    max={props.sliderMax}
                     className="slider-input-box h-32 en-2 bw-1 left-radius-4"
                     value={sliderInputValue}
-                    onChange={(e) => {
-                        setSliderInputValue(e.target.value)
-                    }}
+                    onChange={handleSliderInputValue}
                     onBlur={changeHandler}
                     onKeyDown={handleKeyDown}
                 />
-                {props.unit && (
+                {props.sliderUnit && (
                     <span className="slider-input-unit flex fs-13 fw-4 cn-9 h-32 en-2 bw-1 right-radius-4">
-                        {props.unit}
+                        {props.sliderUnit}
                     </span>
                 )}
             </div>
@@ -218,23 +260,23 @@ export const CheckboxWithTippy = (props: CheckboxWithTippyProps) => {
         <Checkbox
             id={props.id}
             isChecked={props.isChecked}
-            onClick={props.onClick}
+            onClick={props.onClick && props.onClick}
             rootClassName={props.rootClassName || ''}
             value={props.value}
-            onChange={props.onChange}
+            onChange={props.onChange && props.onChange}
             disabled={props.disabled}
             tabIndex={props.tabIndex}
         >
             <ConditionalWrap
-                condition={props.showTippy}
+                condition={!!props.description}
                 wrap={(children) => (
                     <Tippy className="default-tt" arrow={false} placement="bottom" content={props.description}>
                         <span>{children}</span>
                     </Tippy>
                 )}
             >
-                <span className={`fs-13 cn-9 ${props.showTippy ? 'text-underline-dashed-300' : ''}`}>
-                    {props.label}
+                <span className={`fs-13 cn-9 ${!!props.description ? 'text-underline-dashed-300' : ''}`}>
+                    {props.title}
                 </span>
             </ConditionalWrap>
         </Checkbox>
@@ -255,7 +297,7 @@ export const StyledSelect = (props: StyledSelectPropsType) => {
                 classNamePrefix={props.classNamePrefix}
                 value={props.value}
                 options={props.options}
-                onChange={props.onChange}
+                onChange={props.onChange && props.onChange}
                 components={{
                     IndicatorSeparator: null,
                     DropdownIndicator,

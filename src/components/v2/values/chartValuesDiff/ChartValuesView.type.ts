@@ -2,6 +2,7 @@ import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import { InstalledAppInfo, ReleaseInfo } from '../../../external-apps/ExternalAppService'
 import { AppDetails } from '../../appDetails/appDetails.type'
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
+import YAML from 'yaml'
 
 export enum ChartKind {
     DEFAULT = 'DEFAULT',
@@ -193,6 +194,7 @@ export interface ChartInstalledConfig {
 
 export interface ChartValuesViewState {
     isLoading: boolean
+    isLodingGUIForm: boolean
     openReadMe: boolean
     openComparison: boolean
     isUpdateInProgress: boolean
@@ -207,6 +209,8 @@ export interface ChartValuesViewState {
     repoChartValue: ChartRepoOptions
     fetchingValuesYaml: boolean
     modifiedValuesYaml: string
+    schemaJson: Map<string, any>
+    valuesYamlDocument: YAML.Document.Parsed
     valuesYamlUpdated: boolean
     generatingManifest: boolean
     manifestGenerationKey: string
@@ -238,6 +242,7 @@ export interface ChartValuesViewState {
 
 export enum ChartValuesViewActionTypes {
     isLoading = 'isLoading',
+    isLoadingGUIForm = 'isLoadingGUIForm',
     openReadMe = 'openReadMe',
     openComparison = 'openComparison',
     isUpdateInProgress = 'isUpdateInProgress',
@@ -252,6 +257,8 @@ export enum ChartValuesViewActionTypes {
     repoChartValue = 'repoChartValue',
     fetchingValuesYaml = 'fetchingValuesYaml',
     modifiedValuesYaml = 'modifiedValuesYaml',
+    schemaJson = 'schemaJson',
+    valuesYamlDocument = 'valuesYamlDocument',
     valuesYamlUpdated = 'valuesYamlUpdated',
     generatingManifest = 'generatingManifest',
     manifestGenerationKey = 'manifestGenerationKey',

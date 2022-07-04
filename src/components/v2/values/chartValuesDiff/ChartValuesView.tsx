@@ -66,17 +66,10 @@ import {
 } from './ChartValuesView.type'
 import { chartValuesReducer, initState } from './ChartValuesView.reducer'
 import { ValidationRules } from '../../../app/create/validationRules'
-import './ChartValuesView.scss'
-import { updateGeneratedManifest } from './ChartValuesView.utils'
+import { convertJSONSchemaToMap, dummySchema, updateGeneratedManifest } from './ChartValuesView.utils'
 import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
-import {
-    CheckboxWithTippy,
-    RangeSlider,
-    StyledFormBox,
-    StyledInput,
-    StyledSelect,
-    StyledTextarea,
-} from '../../../common/formFields/Widgets/Widgets'
+import ChartValuesGUIForm from './ChartValuesGUIView'
+import './ChartValuesView.scss'
 
 function ChartValuesView({
     appId,
@@ -112,20 +105,26 @@ function ChartValuesView({
             fetchProjectsAndEnvironments(serverMode, dispatch)
             const _fetchedReadMe = commonState.fetchedReadMe
             _fetchedReadMe.set(0, commonState.installedConfig.readme)
+            const parsedValuesYamlDocument = YAML.parseDocument(commonState.installedConfig.valuesYaml)
 
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
                     isLoading: false,
                     fetchedReadMe: _fetchedReadMe,
+                    schemaJson: convertJSONSchemaToMap(dummySchema, parsedValuesYamlDocument),
+                    valuesYamlDocument: parsedValuesYamlDocument,
                 },
             })
         } else if (!isExternalApp && !isDeployChartView) {
             fetchProjectsAndEnvironments(serverMode, dispatch)
+            const parsedValuesYamlDocument = YAML.parseDocument(commonState.installedConfig.valuesOverrideYaml)
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
                     modifiedValuesYaml: commonState.installedConfig.valuesOverrideYaml,
+                    schemaJson: convertJSONSchemaToMap(dummySchema, parsedValuesYamlDocument),
+                    valuesYamlDocument: parsedValuesYamlDocument,
                     repoChartValue: {
                         appStoreApplicationVersionId: commonState.installedConfig.appStoreVersion,
                         chartRepoName: appDetails.appStoreChartName,
@@ -278,12 +277,13 @@ function ChartValuesView({
     }, [commonState.chartValues])
 
     useEffect(() => {
-        if (
-            commonState.selectedVersionUpdatePage &&
-            commonState.selectedVersionUpdatePage.id &&
-            !commonState.fetchedReadMe.has(commonState.selectedVersionUpdatePage.id)
-        ) {
-            getChartRelatedReadMe(commonState.selectedVersionUpdatePage.id, commonState.fetchedReadMe, dispatch)
+        if (commonState.selectedVersionUpdatePage?.id) {
+            getChartRelatedReadMe(
+                commonState.selectedVersionUpdatePage.id,
+                commonState.fetchedReadMe,
+                commonState.modifiedValuesYaml,
+                dispatch,
+            )
         }
     }, [commonState.selectedVersionUpdatePage, commonState.isReadMeAvailable])
 
@@ -365,6 +365,7 @@ function ChartValuesView({
 
             getChartValuesList(_repoChartValue.chartId, setChartValuesList)
             fetchChartVersionsData(_repoChartValue.chartId, dispatch, _releaseInfo.deployedAppDetail.chartVersion)
+            const parsedValuesYamlDocument = YAML.parseDocument(commonState.installedConfig.valuesOverrideYaml)
 
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
@@ -379,6 +380,8 @@ function ChartValuesView({
                     },
                     installedConfig: result,
                     modifiedValuesYaml: result?.valuesOverrideYaml,
+                    schemaJson: convertJSONSchemaToMap(dummySchema, parsedValuesYamlDocument),
+                    valuesYamlDocument: parsedValuesYamlDocument,
                 },
             })
         } catch (e) {
@@ -783,7 +786,7 @@ function ChartValuesView({
                 disabled={isExternalApp && !commonState.installedAppInfo}
                 onChange={handleTabSwitch}
             >
-                <RadioGroup.Radio value="gui">GUI (Basic)</RadioGroup.Radio>
+                <RadioGroup.Radio value="gui">GUI (Beta)</RadioGroup.Radio>
                 <RadioGroup.Radio value="yaml">
                     <Edit className="icon-dim-12 mr-6" />
                     YAML
@@ -940,25 +943,6 @@ function ChartValuesView({
         }
     }
 
-    // Todo: Update along with upcoming GUI form creation changes
-    const renderGUIForm = () => {
-        return (
-            <div className="chart-values-view__gui-form-container">
-                <form className="chart-values-view__gui-form">
-                    {/* GUI form inputs */}
-                </form>
-                {!commonState.openReadMe && (
-                    <UpdateApplicationButton
-                        isUpdateInProgress={commonState.isUpdateInProgress}
-                        isDeleteInProgress={commonState.isDeleteInProgress}
-                        isDeployChartView={isDeployChartView}
-                        deployOrUpdateApplication={deployOrUpdateApplication}
-                    />
-                )}
-            </div>
-        )
-    }
-
     const renderChartValuesEditor = () => {
         return (
             <div
@@ -1038,31 +1022,27 @@ function ChartValuesView({
                         {!isExternalApp &&
                             ((!isDeployChartView && commonState.selectedProject) ||
                                 (isDeployChartView && serverMode === SERVER_MODE.FULL)) && (
-                                <>
-                                    <ChartProjectSelector
-                                        isDeployChartView={isDeployChartView}
-                                        selectedProject={commonState.selectedProject}
-                                        handleProjectSelection={handleProjectSelection}
-                                        projects={commonState.projects}
-                                        invalidProject={commonState.invalidProject}
-                                    />
-                                </>
+                                <ChartProjectSelector
+                                    isDeployChartView={isDeployChartView}
+                                    selectedProject={commonState.selectedProject}
+                                    handleProjectSelection={handleProjectSelection}
+                                    projects={commonState.projects}
+                                    invalidProject={commonState.invalidProject}
+                                />
                             )}
                         {(isDeployChartView ||
                             (!isDeployChartView && (isExternalApp || commonState.selectedEnvironment))) && (
-                            <>
-                                <ChartEnvironmentSelector
-                                    isExternal={isExternalApp}
-                                    isDeployChartView={isDeployChartView}
-                                    installedAppInfo={commonState.installedAppInfo}
-                                    releaseInfo={commonState.releaseInfo}
-                                    isUpdate={!!isUpdate}
-                                    selectedEnvironment={commonState.selectedEnvironment}
-                                    handleEnvironmentSelection={handleEnvironmentSelection}
-                                    environments={commonState.environments}
-                                    invalidaEnvironment={commonState.invalidaEnvironment}
-                                />
-                            </>
+                            <ChartEnvironmentSelector
+                                isExternal={isExternalApp}
+                                isDeployChartView={isDeployChartView}
+                                installedAppInfo={commonState.installedAppInfo}
+                                releaseInfo={commonState.releaseInfo}
+                                isUpdate={!!isUpdate}
+                                selectedEnvironment={commonState.selectedEnvironment}
+                                handleEnvironmentSelection={handleEnvironmentSelection}
+                                environments={commonState.environments}
+                                invalidaEnvironment={commonState.invalidaEnvironment}
+                            />
                         )}
                         <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
                         {!isDeployChartView && (
@@ -1113,7 +1093,21 @@ function ChartValuesView({
                         />
                     )}
                     {!commonState.openComparison && <div className="chart-values-view__vr-divider bcn-2" />}
-                    {commonState.activeTab === 'gui' ? renderGUIForm() : renderChartValuesEditor()}
+                    {commonState.activeTab === 'gui' ? (
+                        <ChartValuesGUIForm
+                            schemaJson={commonState.schemaJson}
+                            valuesYamlDocument={commonState.valuesYamlDocument}
+                            fetchingSchemaJson={commonState.fetchingReadMe}
+                            openReadMe={commonState.openReadMe}
+                            isUpdateInProgress={commonState.isUpdateInProgress}
+                            isDeleteInProgress={commonState.isDeleteInProgress}
+                            isDeployChartView={isDeployChartView}
+                            deployOrUpdateApplication={deployOrUpdateApplication}
+                            dispatch={dispatch}
+                        />
+                    ) : (
+                        renderChartValuesEditor()
+                    )}
                 </div>
                 {commonState.showDeleteAppConfirmationDialog && (
                     <DeleteChartDialog

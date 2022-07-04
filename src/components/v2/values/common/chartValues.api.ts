@@ -10,6 +10,8 @@ import {
 } from '../../../charts/charts.service'
 import { showError, sortCallback, sortObjectArrayAlphabetically } from '../../../common'
 import { ChartKind, ChartValuesViewAction, ChartValuesViewActionTypes } from '../chartValuesDiff/ChartValuesView.type'
+import YAML from 'yaml'
+import { convertJSONSchemaToMap } from '../chartValuesDiff/ChartValuesView.utils'
 
 export async function fetchChartVersionsData(
     id: number,
@@ -52,7 +54,7 @@ export async function getChartValuesList(
         if (installedAppVersionId && handleChartValuesSelection) {
             handleChartValuesSelection({
                 id: initId,
-                kind: ChartKind.EXISTING
+                kind: ChartKind.EXISTING,
             })
         }
     } catch (err) {
@@ -63,21 +65,30 @@ export async function getChartValuesList(
 export async function getChartRelatedReadMe(
     id: number,
     currentFetchedReadMe: Map<number, string>,
+    valuesYaml: string,
     dispatch: (action: ChartValuesViewAction) => void,
 ) {
     try {
         dispatch({ type: ChartValuesViewActionTypes.fetchingReadMe, payload: true })
         const { result } = await getReadme(id)
-        const _fetchedReadMe = currentFetchedReadMe
-        _fetchedReadMe.set(id, result.readme)
+        const parsedValuesYamlDocument = YAML.parseDocument(valuesYaml)
+        const _payload = {
+            fetchingReadMe: false,
+            schemaJson: convertJSONSchemaToMap(result.schemaJson, parsedValuesYamlDocument),
+            valuesYamlDocument: parsedValuesYamlDocument,
+        }
+
+        if (!currentFetchedReadMe.has(id)) {
+            const _fetchedReadMe = currentFetchedReadMe
+            _fetchedReadMe.set(id, result.readme)
+
+            _payload['fetchedReadMe'] = _fetchedReadMe
+            _payload['isReadMeAvailable'] = !!result.readme?.trim()
+        }
 
         dispatch({
             type: ChartValuesViewActionTypes.multipleOptions,
-            payload: {
-                fetchingReadMe: false,
-                fetchedReadMe: _fetchedReadMe,
-                isReadMeAvailable: !!result.readme?.trim(),
-            },
+            payload: _payload,
         })
     } catch (err) {
         showError(err)

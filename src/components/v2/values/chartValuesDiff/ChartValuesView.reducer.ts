@@ -9,6 +9,7 @@ export const initState = (
 ): ChartValuesViewState => {
     return {
         isLoading: true,
+        isLodingGUIForm: false,
         openReadMe: false,
         openComparison: false,
         isUpdateInProgress: false,
@@ -23,6 +24,8 @@ export const initState = (
         repoChartValue: null,
         fetchingValuesYaml: false,
         modifiedValuesYaml: '',
+        schemaJson: null,
+        valuesYamlDocument: null,
         valuesYamlUpdated: true,
         generatingManifest: false,
         manifestGenerationKey: '',
@@ -57,6 +60,8 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
     switch (action.type) {
         case ChartValuesViewActionTypes.isLoading:
             return { ...state, isLoading: action.payload }
+        case ChartValuesViewActionTypes.isLoadingGUIForm:
+            return { ...state, isLoadingGUIForm: action.payload }
         case ChartValuesViewActionTypes.openReadMe:
             return { ...state, openReadMe: action.payload }
         case ChartValuesViewActionTypes.openComparison:
@@ -85,6 +90,10 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
             return { ...state, fetchingValuesYaml: action.payload }
         case ChartValuesViewActionTypes.modifiedValuesYaml:
             return { ...state, modifiedValuesYaml: action.payload }
+        case ChartValuesViewActionTypes.schemaJson:
+            return { ...state, schemaJson: action.payload }
+        case ChartValuesViewActionTypes.valuesYamlDocument:
+            return { ...state, valuesYamlDocument: action.payload }
         case ChartValuesViewActionTypes.valuesYamlUpdated:
             return { ...state, valuesYamlUpdated: action.payload }
         case ChartValuesViewActionTypes.generatingManifest:
