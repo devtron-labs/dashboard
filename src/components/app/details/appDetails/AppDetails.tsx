@@ -313,12 +313,10 @@ export const Details: React.FC<{
             setHibernating(false);
         }
     }
-    
-    return (
-        <React.Fragment>
-            {environment && appDetails?.resourceTree?.nodes?.length > 0 ? (
-                <>
-                    <div className="w-100 pt-16 pr-24 pb-20 pl-24">
+
+    if (environment && appDetails?.resourceTree?.nodes?.length > 0 ){
+        return <>
+         <div className="w-100 pt-16 pr-24 pb-20 pl-24">
                         <SourceInfo
                             appDetails={appDetails}
                             setDetailed={toggleDetailedStatus}
@@ -399,14 +397,14 @@ export const Details: React.FC<{
                                 }' on '${appDetails.environmentName}'`}
                                 subtitle={
                                     <p>
-                                        Pods for this application will be{' '}
+                                        Pods for this application will be
                                         <b>
-                                            scaled{' '}
+                                            scaled
                                             {hibernateConfirmationModal === 'hibernate'
                                                 ? 'down to 0'
-                                                : ' upto its original count'}{' '}
+                                                : ' upto its original count'}
                                             on {appDetails.environmentName}
-                                        </b>{' '}
+                                        </b>
                                         environment.
                                     </p>
                                 }
@@ -429,24 +427,25 @@ export const Details: React.FC<{
                             </ConfirmationDialog.ButtonGroup>
                         </ConfirmationDialog>
                     )}
-                </>
-            ) : (
-                <>
-                    <div className="flex left ml-20 mt-16">
-                        <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
-                    </div>
-                    <AppNotConfigured
-                        style={{ height: 'calc(100vh - 150px)' }}
-                        image={noGroups}
-                        title={'Looks like you’re all set. Go ahead and select an image to deploy.'}
-                        subtitle={'Once deployed, details for the deployment will be available here.'}
-                        buttonTitle={'Go to deploy'}
-                        appConfigTabs={URLS.APP_TRIGGER}
-                    />
-                </>
-            )}
-        </React.Fragment>
-    )
+        </>
+    }
+    else{
+        return (
+            <>
+                <div className="flex left ml-20 mt-16">
+                    <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
+                </div>
+                <AppNotConfigured
+                    style={{ height: 'calc(100vh - 150px)' }}
+                    image={noGroups}
+                    title={'Looks like you’re all set. Go ahead and select an image to deploy.'}
+                    subtitle={'Once deployed, details for the deployment will be available here.'}
+                    buttonTitle={'Go to deploy'}
+                    appConfigTabs={URLS.APP_TRIGGER}
+                />
+            </>
+        )
+    }
 };
 
 export function EnvSelector({ environments, disabled }) {
@@ -890,7 +889,7 @@ export function AppNotConfigured({
     subtitle?: string
     buttonTitle?: string
     appConfigTabs?: string
-    style?:{}
+    style?:object
 }) {
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
