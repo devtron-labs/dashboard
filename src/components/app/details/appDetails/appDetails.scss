@@ -1108,17 +1108,18 @@ table.pod__table td:last-child {
     img {
         width: 250px;
         height: 200px;
-        margin-bottom: 12px;
     }
 
     h3{
         font-weight: 600;
         text-align: center;
         line-height: 22px;
+        color: var(--N900);
     }
 
     p {
         text-align: center;
+        color: var(--N700);
     }
 
     button {
