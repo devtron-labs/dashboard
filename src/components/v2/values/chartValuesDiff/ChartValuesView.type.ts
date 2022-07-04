@@ -135,6 +135,7 @@ export interface ChartValuesEditorType {
     loading: boolean
     isExternalApp: boolean
     isDeployChartView: boolean
+    isCreateValueView: boolean
     appId: string
     appName: string
     valuesText: string

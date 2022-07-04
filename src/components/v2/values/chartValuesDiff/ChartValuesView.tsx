@@ -365,7 +365,8 @@ function ChartValuesView({
         if (chartValuesList.length > 0 || commonState.deploymentHistoryArr.length > 0) {
             const isVersionAvailableForDiff =
                 chartValuesList.some((_chartValues) => _chartValues.kind === ChartKind.DEPLOYED) ||
-                commonState.deploymentHistoryArr.length > 0
+                commonState.deploymentHistoryArr.length > 0 ||
+                isCreateValueView
 
             dispatch({ type: ChartValuesViewActionTypes.isComparisonAvailable, payload: isVersionAvailableForDiff })
         }
@@ -878,7 +879,9 @@ function ChartValuesView({
 
     const getComparisonTippyContent = () => {
         if (commonState.isComparisonAvailable) {
-            return isDeployChartView
+            return isCreateValueView
+                ? 'Compare values with other values of this chart'
+                : isDeployChartView
                 ? 'Compare values with other deployments of this chart'
                 : 'Compare values with previous deployments of this app or other deployments of this chart'
         }
@@ -1182,6 +1185,7 @@ function ChartValuesView({
                                 }
                                 isExternalApp={isExternalApp}
                                 isDeployChartView={isDeployChartView}
+                                isCreateValueView={isCreateValueView}
                                 appId={appId}
                                 appName={
                                     isExternalApp

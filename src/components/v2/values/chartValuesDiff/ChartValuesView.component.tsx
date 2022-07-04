@@ -552,6 +552,7 @@ export const ChartValuesEditor = ({
     loading,
     isExternalApp,
     isDeployChartView,
+    isCreateValueView,
     appId,
     appName,
     valuesText,
@@ -589,7 +590,11 @@ export const ChartValuesEditor = ({
     })
 
     useEffect(() => {
-        if (!manifestView && chartValuesList.length > 0 && (isDeployChartView || deploymentHistoryList.length > 0)) {
+        if (
+            !manifestView &&
+            chartValuesList.length > 0 &&
+            (isDeployChartView || isCreateValueView || deploymentHistoryList.length > 0)
+        ) {
             const deployedChartValues = [],
                 defaultChartValues = []
             for (let index = 0; index < chartValuesList.length; index++) {
