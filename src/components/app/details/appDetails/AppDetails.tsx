@@ -314,8 +314,25 @@ export const Details: React.FC<{
         }
     }
 
-    if (environment && appDetails?.resourceTree?.nodes?.length > 0 ){
-        return <>
+    if (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0){
+        return (
+            <>
+                <div className="flex left ml-20 mt-16">
+                    <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
+                </div>
+                <AppNotConfigured
+                    style={{ height: 'calc(100vh - 150px)' }}
+                    image={noGroups}
+                    title={'Looks like you’re all set. Go ahead and select an image to deploy.'}
+                    subtitle={'Once deployed, details for the deployment will be available here.'}
+                    buttonTitle={'Go to deploy'}
+                    appConfigTabs={URLS.APP_TRIGGER}
+                />
+            </>
+        )
+    }
+
+    return <React.Fragment>
          <div className="w-100 pt-16 pr-24 pb-20 pl-24">
                         <SourceInfo
                             appDetails={appDetails}
@@ -427,25 +444,7 @@ export const Details: React.FC<{
                             </ConfirmationDialog.ButtonGroup>
                         </ConfirmationDialog>
                     )}
-        </>
-    }
-    else{
-        return (
-            <>
-                <div className="flex left ml-20 mt-16">
-                    <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
-                </div>
-                <AppNotConfigured
-                    style={{ height: 'calc(100vh - 150px)' }}
-                    image={noGroups}
-                    title={'Looks like you’re all set. Go ahead and select an image to deploy.'}
-                    subtitle={'Once deployed, details for the deployment will be available here.'}
-                    buttonTitle={'Go to deploy'}
-                    appConfigTabs={URLS.APP_TRIGGER}
-                />
-            </>
-        )
-    }
+        </React.Fragment>
 };
 
 export function EnvSelector({ environments, disabled }) {
