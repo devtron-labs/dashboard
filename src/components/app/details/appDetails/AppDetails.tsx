@@ -318,7 +318,7 @@ export const Details: React.FC<{
         return (
             <>
                 <div className="flex left ml-20 mt-16">
-                    <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
+                    <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} controlStyleOverrides={{backgroundColor:'white'}}/>
                 </div>
                 <AppNotConfigured
                     style={{ height: 'calc(100vh - 150px)' }}
@@ -447,7 +447,7 @@ export const Details: React.FC<{
         </React.Fragment>
 };
 
-export function EnvSelector({ environments, disabled }) {
+export function EnvSelector({ environments, disabled, controlStyleOverrides }:{ environments: any, disabled: any, controlStyleOverrides?: React.CSSProperties}) {
     const { push } = useHistory();
     const { path } = useRouteMatch();
     const { appId, envId } = useParams<{ appId: string, envId?: string; }>();
@@ -495,7 +495,7 @@ export function EnvSelector({ environments, disabled }) {
                     components={{ IndicatorSeparator: null, Option, DropdownIndicator: disabled ? null : components.DropdownIndicator }}
                     styles={{
                         ...multiSelectStyles,
-                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'transparent' }),
+                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'transparent',...controlStyleOverrides }),
                         singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: '#06c' })
                     }}
                     isDisabled={disabled}
@@ -905,7 +905,7 @@ export function AppNotConfigured({
     return (
         <section className="app-not-configured w-100" style={style}>
             <img src={image || AppNotConfiguredIcon} />
-            <h3 className="mb-20 fs-16 fw-600 w-300">{title || 'Finish configuring this application'}</h3>
+            <h3 className="mb-8 mt-20 fs-16 fw-600 w-300">{title || 'Finish configuring this application'}</h3>
                 <p className="mb-20 fs-13 w-300"> {subtitle ? subtitle : 
                     <>This application is not fully configured. Complete the configuration, trigger a deployment and come
                     back here.
