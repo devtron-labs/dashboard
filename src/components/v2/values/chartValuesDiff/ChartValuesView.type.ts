@@ -235,6 +235,8 @@ export interface ChartValuesViewState {
     errorResponseCode: number
     invalidAppName: boolean
     invalidAppNameMessage: string
+    invalidValueName: boolean
+    invalidValueNameMessage: string
     invalidaEnvironment: boolean
     invalidProject: boolean
 }
@@ -284,4 +286,30 @@ export enum ChartValuesViewActionTypes {
 export interface ChartValuesViewAction {
     type: ChartValuesViewActionTypes
     payload: any
+}
+
+export interface InputType {
+    valueName: string
+    handleValueNameChange: (newAppName: string) => void
+    handleValueNameOnBlur: () => void
+    invalidValueName: boolean
+    invalidValueNameMessage: string
+    valueNameDisabled: boolean
+}
+
+export interface AppNameInputType {
+    appName: string
+    handleAppNameChange: (newAppName: string) => void
+    handleAppNameOnBlur: () => void
+    invalidAppName: boolean
+    invalidAppNameMessage: string
+}
+
+export interface ValueNameInputType {
+    valueName: string
+    handleValueNameChange: (newAppName: string) => void
+    handleValueNameOnBlur: () => void
+    invalidValueName: boolean
+    invalidValueNameMessage: string
+    valueNameDisabled: boolean
 }

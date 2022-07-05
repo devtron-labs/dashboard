@@ -26,6 +26,8 @@ import {
     ChartKind,
     ChartValuesViewActionTypes,
     ChartValuesViewAction,
+    ValueNameInputType,
+    AppNameInputType,
 } from './ChartValuesView.type'
 import { getChartsByKeyword, getChartValues } from '../../../charts/charts.service'
 import CodeEditor from '../../../CodeEditor/CodeEditor'
@@ -932,14 +934,7 @@ export const ValueNameInput = ({
     invalidValueName,
     invalidValueNameMessage,
     valueNameDisabled,
-}: {
-    valueName: string
-    handleValueNameChange: (newAppName: string) => void
-    handleValueNameOnBlur: () => void
-    invalidValueName: boolean
-    invalidValueNameMessage: string
-    valueNameDisabled: boolean
-}) => {
+}: ValueNameInputType) => {
     return (
         <label className="form__row form__row--w-100">
             <span className="form__label required-field">Name</span>
@@ -964,13 +959,7 @@ export const AppNameInput = ({
     handleAppNameOnBlur,
     invalidAppName,
     invalidAppNameMessage,
-}: {
-    appName: string
-    handleAppNameChange: (newAppName: string) => void
-    handleAppNameOnBlur: () => void
-    invalidAppName: boolean
-    invalidAppNameMessage: string
-}) => {
+}: AppNameInputType) => {
     return (
         <label className="form__row form__row--w-100">
             <span className="form__label required-field">App Name</span>

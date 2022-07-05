@@ -48,6 +48,8 @@ export const initState = (
         errorResponseCode: 0,
         invalidAppName: false,
         invalidAppNameMessage: '',
+        invalidValueName: false,
+        invalidValueNameMessage: '',
         invalidaEnvironment: false,
         invalidProject: false,
     }

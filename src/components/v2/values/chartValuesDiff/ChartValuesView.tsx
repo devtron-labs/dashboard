@@ -1003,7 +1003,7 @@ function ChartValuesView({
         setAppName(newAppName)
     }
 
-    const handleAppNameOnBlur = () => {
+    const handleNameOnBlur = () => {
         if (commonState.activeTab === 'manifest') {
             updateGeneratedManifest(
                 isCreateValueView,
@@ -1041,22 +1041,6 @@ function ChartValuesView({
         setValueName(newValueName)
     }
 
-    const handleValueNameOnBlur = () => {
-        if (commonState.activeTab === 'manifest') {
-            updateGeneratedManifest(
-                isCreateValueView,
-                isExternalApp,
-                isDeployChartView,
-                appName,
-                valueName,
-                commonState,
-                commonState.chartValues.appStoreVersionId || commonState.chartValues.id,
-                commonState.modifiedValuesYaml,
-                dispatch,
-            )
-        }
-    }
-
     const renderData = () => {
         return (
             <div
@@ -1074,7 +1058,7 @@ function ChartValuesView({
                             <ValueNameInput
                                 valueName={valueName}
                                 handleValueNameChange={handleValueNameChange}
-                                handleValueNameOnBlur={handleValueNameOnBlur}
+                                handleValueNameOnBlur={handleNameOnBlur}
                                 invalidValueName={commonState.invalidValueName}
                                 invalidValueNameMessage={commonState.invalidValueNameMessage}
                                 valueNameDisabled={chartValueId !== '0'}
@@ -1084,7 +1068,7 @@ function ChartValuesView({
                             <AppNameInput
                                 appName={appName}
                                 handleAppNameChange={handleAppNameChange}
-                                handleAppNameOnBlur={handleAppNameOnBlur}
+                                handleAppNameOnBlur={handleNameOnBlur}
                                 invalidAppName={commonState.invalidAppName}
                                 invalidAppNameMessage={commonState.invalidAppNameMessage}
                             />
