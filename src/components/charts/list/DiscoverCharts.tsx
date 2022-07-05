@@ -13,7 +13,6 @@ import { Switch, Route, NavLink } from 'react-router-dom'
 import { useHistory, useLocation, useRouteMatch } from 'react-router'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import ChartSelect from '../util/ChartSelect'
-import ChartValues from '../chartValues/ChartValues'
 import ChartGroupList from './ChartGroup'
 import ChartGroupCard from '../util/ChartGroupCard'
 import DiscoverChartDetails from '../discoverChartDetail/DiscoverChartDetails'
@@ -40,6 +39,7 @@ import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
 import PageHeader from '../../common/header/PageHeader'
 import emptyImage from '../../../assets/img/empty-noresult@2x.png'
 import SavedValuesList from '../SavedValues/SavedValuesList'
+import ChartValues from '../chartValues/ChartValues'
 
 interface EmptyCharts {
     title?: string
@@ -559,13 +559,9 @@ export default function DiscoverCharts() {
                 <ChartGroupList />
             </Route>
             <Route path={`${path}${URLS.CHART}/:chartId${URLS.SAVED_VALUES}`} component={SavedValuesList} exact />
-            <Route
-                path={`${path}${URLS.CHART}/:chartId${URLS.SAVED_VALUES}/:chartValueId`}
-                render={({ location, history, match }: { location: any; history: any; match: any }) => {
-                    return <ChartValues location={location} match={match} history={history} />
-                }}
-                exact
-            />
+            <Route path={`${path}${URLS.CHART}/:chartId${URLS.SAVED_VALUES}/:chartValueId`} exact>
+                <ChartValues />
+            </Route>
             <Route path={`${path}${URLS.CHART}/:chartId`} component={DiscoverChartDetails} />
             <Route>
                 <DiscoverChartList />

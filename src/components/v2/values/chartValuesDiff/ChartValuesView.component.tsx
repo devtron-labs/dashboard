@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useParams } from 'react-router'
 import ReactSelect, { components } from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { DropdownIndicator, Option } from '../../common/ReactSelect.utils'
@@ -25,6 +26,8 @@ import {
     ChartKind,
     ChartValuesViewActionTypes,
     ChartValuesViewAction,
+    ValueNameInputType,
+    AppNameInputType,
 } from './ChartValuesView.type'
 import { getChartsByKeyword, getChartValues } from '../../../charts/charts.service'
 import CodeEditor from '../../../CodeEditor/CodeEditor'
@@ -331,6 +334,7 @@ export const ChartValuesSelector = ({
     redirectToChartValues,
     handleChartValuesSelection,
     hideVersionFromLabel,
+    hideCreateNewOption,
 }: ChartValuesSelectorType) => {
     return (
         <div className="w-100 mb-12">
@@ -342,6 +346,7 @@ export const ChartValuesSelector = ({
                 redirectToChartValues={redirectToChartValues}
                 onChange={handleChartValuesSelection}
                 hideVersionFromLabel={hideVersionFromLabel}
+                hideCreateNewOption={hideCreateNewOption}
             />
         </div>
     )
@@ -359,6 +364,7 @@ export const ChartVersionValuesSelector = ({
     redirectToChartValues,
     handleChartValuesSelection,
     hideVersionFromLabel,
+    hideCreateNewOption,
 }: ChartVersionValuesSelectorType) => {
     return (
         <>
@@ -376,6 +382,7 @@ export const ChartVersionValuesSelector = ({
                 redirectToChartValues={redirectToChartValues}
                 handleChartValuesSelection={handleChartValuesSelection}
                 hideVersionFromLabel={hideVersionFromLabel}
+                hideCreateNewOption={hideCreateNewOption}
             />
         </>
     )
@@ -547,6 +554,7 @@ export const ChartValuesEditor = ({
     loading,
     isExternalApp,
     isDeployChartView,
+    isCreateValueView,
     appId,
     appName,
     valuesText,
@@ -584,7 +592,11 @@ export const ChartValuesEditor = ({
     })
 
     useEffect(() => {
-        if (!manifestView && chartValuesList.length > 0 && (isDeployChartView || deploymentHistoryList.length > 0)) {
+        if (
+            !manifestView &&
+            chartValuesList.length > 0 &&
+            (isDeployChartView || isCreateValueView || deploymentHistoryList.length > 0)
+        ) {
             const deployedChartValues = [],
                 defaultChartValues = []
             for (let index = 0; index < chartValuesList.length; index++) {
@@ -915,19 +927,39 @@ const renderValidationErrorLabel = (message?: string): JSX.Element => {
     )
 }
 
+export const ValueNameInput = ({
+    valueName,
+    handleValueNameChange,
+    handleValueNameOnBlur,
+    invalidValueName,
+    invalidValueNameMessage,
+    valueNameDisabled,
+}: ValueNameInputType) => {
+    return (
+        <label className="form__row form__row--w-100">
+            <span className="form__label required-field">Name</span>
+            <input
+                autoComplete="off"
+                tabIndex={1}
+                placeholder="Eg. value-template"
+                className="form__input"
+                value={valueName}
+                onChange={(e) => handleValueNameChange(e.target.value)}
+                onBlur={() => handleValueNameOnBlur()}
+                disabled={valueNameDisabled}
+            />
+            {invalidValueName && renderValidationErrorLabel(invalidValueNameMessage)}
+        </label>
+    )
+}
+
 export const AppNameInput = ({
     appName,
     handleAppNameChange,
     handleAppNameOnBlur,
     invalidAppName,
     invalidAppNameMessage,
-}: {
-    appName: string
-    handleAppNameChange: (newAppName: string) => void
-    handleAppNameOnBlur: () => void
-    invalidAppName: boolean
-    invalidAppNameMessage: string
-}) => {
+}: AppNameInputType) => {
     return (
         <label className="form__row form__row--w-100">
             <span className="form__label required-field">App Name</span>
@@ -946,23 +978,29 @@ export const AppNameInput = ({
 }
 
 export const DeleteApplicationButton = ({
+    type,
     isUpdateInProgress,
     isDeleteInProgress,
     dispatch,
+    clickHandler,
 }: {
+    type: string
     isUpdateInProgress: boolean
     isDeleteInProgress: boolean
     dispatch: (action: ChartValuesViewAction) => void
+    clickHandler?: () => void
 }) => {
     return (
         <button
             className="chart-values-view__delete-cta cta delete"
             disabled={isUpdateInProgress || isDeleteInProgress}
             onClick={(e) =>
-                dispatch({
-                    type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
-                    payload: true,
-                })
+                type === 'Value'
+                    ? clickHandler()
+                    : dispatch({
+                          type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
+                          payload: true,
+                      })
             }
         >
             {isDeleteInProgress ? (
@@ -973,7 +1011,7 @@ export const DeleteApplicationButton = ({
                     </span>
                 </div>
             ) : (
-                'Delete Application'
+                `Delete ${type}`
             )}
         </button>
     )
@@ -983,13 +1021,16 @@ export const UpdateApplicationButton = ({
     isUpdateInProgress,
     isDeleteInProgress,
     isDeployChartView,
+    isCreateValueView,
     deployOrUpdateApplication,
 }: {
     isUpdateInProgress: boolean
     isDeleteInProgress: boolean
     isDeployChartView: boolean
+    isCreateValueView: boolean
     deployOrUpdateApplication: (forceUpdate?: boolean) => Promise<void>
 }) => {
+    const { chartValueId } = useParams<{ chartValueId: string }>()
     return (
         <button
             type="button"
@@ -1004,11 +1045,19 @@ export const UpdateApplicationButton = ({
         >
             {isUpdateInProgress ? (
                 <div className="flex">
-                    <span>{isDeployChartView ? 'Deploying chart' : 'Updating and deploying'}</span>
+                    <span>
+                        {isCreateValueView
+                            ? `Saving ${chartValueId !== '0' ? 'changes' : 'value'}`
+                            : isDeployChartView
+                            ? 'Deploying chart'
+                            : 'Updating and deploying'}
+                    </span>
                     <span className="ml-10">
                         <Progressing />
                     </span>
                 </div>
+            ) : isCreateValueView ? (
+                `Save ${chartValueId !== '0' ? 'changes' : 'value'}`
             ) : isDeployChartView ? (
                 'Deploy chart'
             ) : (
