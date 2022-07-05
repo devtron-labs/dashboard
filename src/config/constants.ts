@@ -10,7 +10,7 @@ export const Routes = {
     CHART_REFERENCES_MIN: 'chartref/autocomplete',
     CI_CONFIG_GET: 'app/ci-pipeline',
     CI_CONFIG_UPDATE: 'app/ci-pipeline/template/patch',
-    CI_PIPELINE: 'app/ci-pipeline/patch',
+    CI_PIPELINE_PATCH: 'app/ci-pipeline/patch',
 
     CI_PIPELINE_TRIGGER: 'app/ci-pipeline/trigger',
     CLUSTER: 'cluster',

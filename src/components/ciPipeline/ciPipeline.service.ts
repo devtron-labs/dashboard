@@ -8,9 +8,12 @@ const emptyStepsData = () => {
     return { id: 0, steps: [] }
 }
 
-export function savePipeline(request): Promise<any> {
-    const URL = `${Routes.CI_PIPELINE}`
-    return post(URL, request)
+export function savePipeline(request, isRegexMaterial = false): Promise<any> {
+    if (isRegexMaterial) {
+        return post(`${Routes.CI_PIPELINE_PATCH}/regex`, request)
+    } else {
+        return post(Routes.CI_PIPELINE_PATCH, request)
+    }
 }
 
 export function getCIPipelineNameSuggestion(appId: string | number): Promise<any> {
@@ -50,7 +53,7 @@ export function getInitData(appId: string | number, includeWebhookData: boolean 
     })
 }
 
-function getCIPipeline(appId: string, ciPipelineId: string): Promise<any> {
+export function getCIPipeline(appId: string, ciPipelineId: string): Promise<any> {
     const URL = `${Routes.CI_CONFIG_GET}/${appId}/${ciPipelineId}`
     return get(URL)
 }
@@ -264,10 +267,12 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
                 return {
                     gitMaterialId: mat.gitMaterialId,
                     id: mat.id,
-                    source: {
-                        type: mat.type,
-                        value: _value,
-                    },
+                    source: [
+                        {
+                            type: mat.type,
+                            value: _value,
+                        },
+                    ],
                 }
             }),
         name: formData.name,
@@ -475,7 +480,6 @@ export function createWebhookConditionList(materialJsonValue: string) {
     }
 
     const _materialValue = JSON.parse(materialJsonValue)
-    const _selectedEventId = _materialValue.eventId
     const _selectedEventCondition = _materialValue.condition
 
     if (!_selectedEventCondition || Object.keys(_selectedEventCondition).length == 0) {
