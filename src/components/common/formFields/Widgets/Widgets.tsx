@@ -40,9 +40,11 @@ const renderDescription = (description: string) => {
 const StyledField = (props: StyledFieldPropsType) => {
     return (
         <label className={`styled-field form__row form__row--w-100 ${props.rootClassName || ''}`}>
-            <span className={`form__label fs-13 cn-9 mb-6${props.isRequired ? ' required-field' : ''}`}>
-                {props.title}
-            </span>
+            {props.title && (
+                <span className={`form__label fs-13 cn-9 mb-6${props.isRequired ? ' required-field' : ''}`}>
+                    {props.title}
+                </span>
+            )}
             {props.children}
             {props.description && renderDescription(props.description)}
             {props.errorMessage && renderValidationErrorLabel(props.errorMessage)}
@@ -91,7 +93,7 @@ export const StyledInput = (props: StyledInputPropsType): JSX.Element => {
             <input
                 type={props.type === 'numberInput' ? 'number' : 'text'}
                 placeholder={props.placeholder && props.placeholder}
-                name={props.title.replace(/\s/g, '_')}
+                name={props.title?.replace(/\s/g, '_')}
                 className="form__input h-32"
                 value={inputValue}
                 onChange={onValueChange}
@@ -135,7 +137,7 @@ export const StyledTextarea = (props: StyledInputPropsType): JSX.Element => {
         >
             <textarea
                 className="form__input form__textarea"
-                name={props.title.replace(/\s/g, '_')}
+                name={props.title?.replace(/\s/g, '_')}
                 value={inputValue}
                 placeholder={props.placeholder && props.placeholder}
                 onChange={onValueChange}
@@ -156,7 +158,7 @@ export const RangeSlider = (props: SliderPropsType) => {
 
     useEffect(() => {
         if (sliderRef?.current) {
-            sliderRangeUpdate(sliderRef.current, sliderValue, props.sliderMin, props.sliderMax)
+            sliderRangeUpdate(sliderRef.current, sliderValue)
         }
     }, [sliderRef])
 
@@ -169,11 +171,11 @@ export const RangeSlider = (props: SliderPropsType) => {
         if (props.onInputValue) {
             props.onInputValue(sliderValue)
         }
-        sliderRangeUpdate(sliderRef.current, sliderValue, props.sliderMin, props.sliderMax)
+        sliderRangeUpdate(sliderRef.current, sliderValue)
     }
 
-    const sliderRangeUpdate = (e, value: number, min: number, max: number) => {
-        const newValue = ((value - min) / (max - min)) * 100
+    const sliderRangeUpdate = (e, value: number) => {
+        const newValue = ((value - props.sliderMin) / (props.sliderMax - props.sliderMin)) * 100
         e.style.background = `linear-gradient(to right, var(--B500) 0%, var(--B500) ${newValue}%, var(--N200) ${newValue}%, var(--N200) 100%)`
     }
 
@@ -182,7 +184,7 @@ export const RangeSlider = (props: SliderPropsType) => {
 
         if (!value) {
             updateStates(`${props.value && props.sliderMin}`, props.value ? parseInt(props.value) : props.sliderMin)
-        } else if (value >= props.sliderMin && value <= props.sliderMax) {
+        } else if (props.sliderMin > 1 || value >= props.sliderMin) {
             updateStates(e.target.value, value)
         }
     }
@@ -297,6 +299,7 @@ export const StyledSelect = (props: StyledSelectPropsType) => {
                 classNamePrefix={props.classNamePrefix}
                 value={props.value}
                 options={props.options}
+                isSearchable={props.options.length > 5}
                 onChange={props.onChange && props.onChange}
                 components={{
                     IndicatorSeparator: null,

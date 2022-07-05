@@ -1,6 +1,5 @@
 import { getGeneratedHelmManifest } from '../common/chartValues.api'
 import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
-import YAML from 'yaml'
 
 const generateManifestGenerationKey = (isExternalApp: boolean, appName: string, commonState: ChartValuesViewState) => {
     return isExternalApp
@@ -64,6 +63,7 @@ const getFieldType = (type: string, renderType: string, containsEnum): string =>
         case 'boolean':
             return 'checkbox'
         case 'integer':
+        case 'number':
             return 'numberInput'
         default:
             return type
@@ -71,6 +71,203 @@ const getFieldType = (type: string, renderType: string, containsEnum): string =>
 }
 
 export const dummySchema = {
+    $schema: 'http://json-schema.org/schema#',
+    type: 'object',
+    properties: {
+        architecture: {
+            type: 'string',
+            title: 'MySQL architecture',
+            form: true,
+            description: 'Allowed values: `standalone` or `replication`',
+            enum: ['standalone', 'replication'],
+        },
+        auth: {
+            type: 'object',
+            title: 'Authentication configuration',
+            form: true,
+            required: ['username', 'password'],
+            if: {
+                properties: {
+                    createDatabase: { enum: [true] },
+                },
+            },
+            then: {
+                properties: {
+                    database: {
+                        pattern: '[a-zA-Z0-9]{1,64}',
+                    },
+                },
+            },
+            properties: {
+                rootPassword: {
+                    type: 'string',
+                    title: 'MySQL root password',
+                    description: 'Defaults to a random 10-character alphanumeric string if not set',
+                },
+                database: {
+                    type: 'string',
+                    title: 'MySQL custom database name',
+                    maxLength: 64,
+                },
+                username: {
+                    type: 'string',
+                    title: 'MySQL custom username',
+                },
+                password: {
+                    type: 'string',
+                    title: 'MySQL custom password',
+                },
+                replicationUser: {
+                    type: 'string',
+                    title: 'MySQL replication username',
+                },
+                replicationPassword: {
+                    type: 'string',
+                    title: 'MySQL replication password',
+                },
+                createDatabase: {
+                    type: 'boolean',
+                    title: 'MySQL create custom database',
+                },
+            },
+        },
+        primary: {
+            type: 'object',
+            title: 'Primary database configuration',
+            form: true,
+            properties: {
+                podSecurityContext: {
+                    type: 'object',
+                    title: 'MySQL primary Pod security context',
+                    properties: {
+                        enabled: {
+                            type: 'boolean',
+                            default: false,
+                        },
+                        fsGroup: {
+                            type: 'integer',
+                            default: 1001,
+                            hidden: {
+                                value: false,
+                                path: 'primary/podSecurityContext/enabled',
+                            },
+                        },
+                    },
+                },
+                containerSecurityContext: {
+                    type: 'object',
+                    title: 'MySQL primary container security context',
+                    properties: {
+                        enabled: {
+                            type: 'boolean',
+                            default: false,
+                        },
+                        runAsUser: {
+                            type: 'integer',
+                            default: 1001,
+                            hidden: {
+                                value: false,
+                                path: 'primary/containerSecurityContext/enabled',
+                            },
+                        },
+                    },
+                },
+                persistence: {
+                    type: 'object',
+                    title: 'Enable persistence using Persistent Volume Claims',
+                    properties: {
+                        enabled: {
+                            type: 'boolean',
+                            form: true,
+                            default: true,
+                            title: 'If true, use a Persistent Volume Claim, If false, use emptyDir',
+                        },
+                        size: {
+                            type: 'string',
+                            title: 'Persistent Volume Size',
+                            form: true,
+                            render: 'slider',
+                            sliderMin: 1,
+                            sliderUnit: 'Gi',
+                            hidden: {
+                                value: false,
+                                path: 'primary/persistence/enabled',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        secondary: {
+            type: 'object',
+            title: 'Secondary database configuration',
+            form: true,
+            properties: {
+                podSecurityContext: {
+                    type: 'object',
+                    title: 'MySQL secondary Pod security context',
+                    properties: {
+                        enabled: {
+                            type: 'boolean',
+                            default: false,
+                        },
+                        fsGroup: {
+                            type: 'integer',
+                            default: 1001,
+                            hidden: {
+                                value: false,
+                                path: 'secondary/podSecurityContext/enabled',
+                            },
+                        },
+                    },
+                },
+                containerSecurityContext: {
+                    type: 'object',
+                    title: 'MySQL secondary container security context',
+                    properties: {
+                        enabled: {
+                            type: 'boolean',
+                            default: false,
+                        },
+                        runAsUser: {
+                            type: 'integer',
+                            default: 1001,
+                            hidden: {
+                                value: false,
+                                path: 'secondary/containerSecurityContext/enabled',
+                            },
+                        },
+                    },
+                },
+                persistence: {
+                    type: 'object',
+                    title: 'Enable persistence using Persistent Volume Claims',
+                    properties: {
+                        enabled: {
+                            type: 'boolean',
+                            default: true,
+                            title: 'If true, use a Persistent Volume Claim, If false, use emptyDir',
+                        },
+                        size: {
+                            type: 'string',
+                            title: 'Persistent Volume Size',
+                            form: true,
+                            render: 'slider',
+                            sliderMin: 1,
+                            sliderUnit: 'Gi',
+                            hidden: {
+                                value: false,
+                                path: 'secondary/persistence/enabled',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    },
+}
+
+export const dummySchemaT = {
     $schema: 'http://json-schema.org/schema#',
     type: 'object',
     properties: {
@@ -238,7 +435,7 @@ export const dummySchema = {
                             form: true,
                             render: 'slider',
                             title: 'CPU Request',
-                            sliderMin: 100,
+                            sliderMin: 10,
                             sliderMax: 2000,
                             sliderUnit: 'm',
                         },
@@ -260,12 +457,23 @@ export const dummySchema = {
     },
 }
 
-export const convertJSONSchemaToMap = (
-    schema,
-    parsedValuesYamlDocument: YAML.Document.Parsed,
-    parentRef = '',
-    keyValuePair = new Map<string, any>(),
-) => {
+const isFieldEnabled = (property: any, isChild: boolean) => {
+    if (property.form && !property.properties) {
+        return true
+    } else if (!isChild && property.properties) {
+        return Object.values(property.properties).some((_prop) => {
+            if (_prop['properties']) {
+                return isFieldEnabled(_prop, isChild)
+            }
+
+            return _prop['form']
+        })
+    }
+
+    return false
+}
+
+export const convertJSONSchemaToMap = (schema, parentRef = '', keyValuePair = new Map<string, any>()) => {
     if (schema && schema.properties) {
         const properties = schema.properties
         Object.keys(properties).forEach((propertyKey) => {
@@ -277,9 +485,8 @@ export const convertJSONSchemaToMap = (
                 key: propertyPath,
                 type: getFieldType(property.type, property.render, !!property.enum),
                 showBox: property.type === 'object' && property.form,
-                value: property.enum
-                    ? { label: property.enum[0], value: property.enum[0] }
-                    : parsedValuesYamlDocument.getIn(propertyPath.split('/')),
+                value: property.enum ? { label: property.enum[0], value: property.enum[0] } : property.default,
+                showField: isFieldEnabled(property, !!parentRef),
                 parentRef: parentRef,
                 children: haveChildren && Object.keys(property.properties).map((key) => `${propertyPath}/${key}`),
             }
@@ -288,7 +495,7 @@ export const convertJSONSchemaToMap = (
             keyValuePair.set(propertyPath, newProps)
 
             if (haveChildren) {
-                convertJSONSchemaToMap(property, parsedValuesYamlDocument, propertyPath, keyValuePair)
+                convertJSONSchemaToMap(property, propertyPath, keyValuePair)
             }
         })
     }

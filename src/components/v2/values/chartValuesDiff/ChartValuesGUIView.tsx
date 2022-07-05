@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { Fragment, useEffect } from 'react'
 import {
     StyledInput,
     StyledTextarea,
@@ -40,6 +40,9 @@ const getGUIWidget = (props: any, callback): JSX.Element => {
             return (
                 <StyledSelect
                     {...props}
+                    options={props.enum.map((option) => {
+                        return { label: option, value: option }
+                    })}
                     onChange={(selected) => {
                         callback(selected)
                     }}
@@ -50,6 +53,8 @@ const getGUIWidget = (props: any, callback): JSX.Element => {
                 <RangeSlider
                     {...props}
                     value={props.value ? props.value.replace(props.sliderUnit, '') : ''}
+                    sliderMin={props.sliderMin ?? 1}
+                    sliderMax={props.sliderMax ?? 1000}
                     onInputValue={(newValue) => {
                         callback(`${newValue}${props.sliderUnit}`)
                     }}
@@ -84,19 +89,44 @@ const updateYamlDocument = (
         ...property,
         value: _newValue,
     })
-
-    const pathIn = property.key.split('/')
-    if (valuesYamlDocument.hasIn(pathIn)) {
-        valuesYamlDocument.setIn(pathIn, _newValue)
-    }
+    valuesYamlDocument.setIn(property.key.split('/'), property.type === 'select' ? _newValue.value : _newValue)
 
     dispatch({
         type: ChartValuesViewActionTypes.multipleOptions,
         payload: {
             schemaJson,
+            valuesYamlDocument,
             modifiedValuesYaml: valuesYamlDocument.toString(),
         },
     })
+}
+
+const renderChildGUIWidget = (
+    _childKey: string,
+    schemaJson: Map<string, any>,
+    valuesYamlDocument: YAML.Document.Parsed,
+    dispatch: React.Dispatch<ChartValuesViewAction>,
+) => {
+    const _childProps = schemaJson.get(_childKey)
+    if (_childProps.type === 'formBox' && _childProps.children) {
+        return renderGUIWidget(_childProps, schemaJson, valuesYamlDocument, dispatch, true)
+    } else if (_childProps.showField) {
+        return getGUIWidget(_childProps, (_newValue) => {
+            updateYamlDocument(_newValue, _childProps, schemaJson, valuesYamlDocument, dispatch)
+        })
+    }
+}
+
+const isFieldHidden = (props: any, valuesYamlDocument: YAML.Document.Parsed) => {
+    if (!props.hidden) return false
+
+    if (typeof props.hidden === 'object') {
+        return props.hidden.value === valuesYamlDocument.getIn(props.hidden.path?.split('/'))
+    } else if (typeof props.hidden === 'string') {
+        return valuesYamlDocument.getIn(props.hidden.split('/'))
+    }
+
+    return props.hidden
 }
 
 const renderGUIWidget = (
@@ -106,25 +136,26 @@ const renderGUIWidget = (
     dispatch: React.Dispatch<ChartValuesViewAction>,
     fromParent?: boolean,
 ) => {
-    if (props.type === 'formBox') {
-        return (
-            <StyledFormBox key={props.key} {...props}>
-                {props.children?.map((_child) => {
-                    const _childProps = schemaJson.get(_child)
-                    if (_childProps.type === 'formBox' && _childProps.children) {
-                        return renderGUIWidget(_childProps, schemaJson, valuesYamlDocument, dispatch, true)
-                    } else {
-                        return getGUIWidget(_childProps, (_newValue) => {
-                            updateYamlDocument(_newValue, _childProps, schemaJson, valuesYamlDocument, dispatch)
-                        })
-                    }
-                })}
-            </StyledFormBox>
-        )
-    } else if (!props.parentRef || fromParent) {
-        return getGUIWidget(props, (_newValue) => {
-            updateYamlDocument(_newValue, props, schemaJson, valuesYamlDocument, dispatch)
-        })
+    if (!isFieldHidden(props, valuesYamlDocument) && (!props.parentRef || fromParent)) {
+        if (props.type === 'formBox' && props.children) {
+            return props.showField ? (
+                <StyledFormBox key={props.key} {...props}>
+                    {props.children.map((_childKey) =>
+                        renderChildGUIWidget(_childKey, schemaJson, valuesYamlDocument, dispatch),
+                    )}
+                </StyledFormBox>
+            ) : (
+                <Fragment key={props.key}>
+                    {props.children.map((_childKey) =>
+                        renderChildGUIWidget(_childKey, schemaJson, valuesYamlDocument, dispatch),
+                    )}
+                </Fragment>
+            )
+        } else {
+            return getGUIWidget(props, (_newValue) => {
+                updateYamlDocument(_newValue, props, schemaJson, valuesYamlDocument, dispatch)
+            })
+        }
     }
 }
 
@@ -153,15 +184,15 @@ const ChartValuesGUIForm = React.memo(
         deployOrUpdateApplication: (forceUpdate?: boolean) => Promise<void>
         dispatch: React.Dispatch<ChartValuesViewAction>
     }) => {
+        useEffect(() => {
+            console.log([...props.schemaJson.values()])
+        }, [])
+
         if (!props.schemaJson?.size) {
             return <SchemaNotAvailable />
         } else if (props.fetchingSchemaJson) {
             return <Progressing size={32} fullHeight />
         }
-
-        useEffect(() => {
-            console.log(props.schemaJson)
-        }, [])
 
         return (
             <div

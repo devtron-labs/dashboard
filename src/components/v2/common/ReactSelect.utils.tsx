@@ -52,6 +52,7 @@ export const getCommonSelectStyle = (styleOverrides = {}) => {
         valueContainer: (base) => ({
             ...base,
             padding: '0 8px',
+            fontWeight: '400',
         }),
         loadingMessage: (base) => ({
             ...base,

@@ -12,6 +12,12 @@
     }
 }
 
+.styled-form-box {
+    > .styled-form-box:last-of-type {
+        margin-bottom: 0 !important;
+    }
+}
+
 .slider-input-box-container {
     .slider-input {
         -webkit-appearance: none;

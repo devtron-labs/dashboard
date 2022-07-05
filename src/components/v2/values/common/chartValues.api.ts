@@ -65,17 +65,14 @@ export async function getChartValuesList(
 export async function getChartRelatedReadMe(
     id: number,
     currentFetchedReadMe: Map<number, string>,
-    valuesYaml: string,
     dispatch: (action: ChartValuesViewAction) => void,
 ) {
     try {
         dispatch({ type: ChartValuesViewActionTypes.fetchingReadMe, payload: true })
         const { result } = await getReadme(id)
-        const parsedValuesYamlDocument = YAML.parseDocument(valuesYaml)
         const _payload = {
             fetchingReadMe: false,
-            schemaJson: convertJSONSchemaToMap(result.schemaJson, parsedValuesYamlDocument),
-            valuesYamlDocument: parsedValuesYamlDocument,
+            // schemaJson: convertJSONSchemaToMap(result.schemaJson),
         }
 
         if (!currentFetchedReadMe.has(id)) {
@@ -97,6 +94,7 @@ export async function getChartRelatedReadMe(
             payload: {
                 fetchingReadMe: false,
                 isReadMeAvailable: false,
+                // schemaJson: null
             },
         })
     }

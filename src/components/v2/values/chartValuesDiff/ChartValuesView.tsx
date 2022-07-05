@@ -105,26 +105,22 @@ function ChartValuesView({
             fetchProjectsAndEnvironments(serverMode, dispatch)
             const _fetchedReadMe = commonState.fetchedReadMe
             _fetchedReadMe.set(0, commonState.installedConfig.readme)
-            const parsedValuesYamlDocument = YAML.parseDocument(commonState.installedConfig.valuesYaml)
 
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
                     isLoading: false,
                     fetchedReadMe: _fetchedReadMe,
-                    schemaJson: convertJSONSchemaToMap(dummySchema, parsedValuesYamlDocument),
-                    valuesYamlDocument: parsedValuesYamlDocument,
+                    schemaJson: convertJSONSchemaToMap(dummySchema),
                 },
             })
         } else if (!isExternalApp && !isDeployChartView) {
             fetchProjectsAndEnvironments(serverMode, dispatch)
-            const parsedValuesYamlDocument = YAML.parseDocument(commonState.installedConfig.valuesOverrideYaml)
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
                     modifiedValuesYaml: commonState.installedConfig.valuesOverrideYaml,
-                    schemaJson: convertJSONSchemaToMap(dummySchema, parsedValuesYamlDocument),
-                    valuesYamlDocument: parsedValuesYamlDocument,
+                    schemaJson: convertJSONSchemaToMap(dummySchema),
                     repoChartValue: {
                         appStoreApplicationVersionId: commonState.installedConfig.appStoreVersion,
                         chartRepoName: appDetails.appStoreChartName,
@@ -281,7 +277,6 @@ function ChartValuesView({
             getChartRelatedReadMe(
                 commonState.selectedVersionUpdatePage.id,
                 commonState.fetchedReadMe,
-                commonState.modifiedValuesYaml,
                 dispatch,
             )
         }
@@ -365,7 +360,6 @@ function ChartValuesView({
 
             getChartValuesList(_repoChartValue.chartId, setChartValuesList)
             fetchChartVersionsData(_repoChartValue.chartId, dispatch, _releaseInfo.deployedAppDetail.chartVersion)
-            const parsedValuesYamlDocument = YAML.parseDocument(commonState.installedConfig.valuesOverrideYaml)
 
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
@@ -380,8 +374,7 @@ function ChartValuesView({
                     },
                     installedConfig: result,
                     modifiedValuesYaml: result?.valuesOverrideYaml,
-                    schemaJson: convertJSONSchemaToMap(dummySchema, parsedValuesYamlDocument),
-                    valuesYamlDocument: parsedValuesYamlDocument,
+                    schemaJson: convertJSONSchemaToMap(dummySchema),
                 },
             })
         } catch (e) {
@@ -682,7 +675,26 @@ function ChartValuesView({
                 }
             }
 
-            let chartValidationsPayload = {}
+            let _payload = {}
+            if (e.target.value === 'gui' && commonState.schemaJson) {
+                const parsedValuesYamlDocument = YAML.parseDocument(commonState.modifiedValuesYaml)
+                const updatedSchemaJson = commonState.schemaJson
+                for (let [key, value] of updatedSchemaJson) {
+                    const _value = parsedValuesYamlDocument.getIn(key.split('/')) ?? value.default
+                    value.value =
+                        value['type'] === 'select'
+                            ? value['enum']?.includes(_value)
+                                ? { label: _value, value: _value }
+                                : null
+                            : _value
+                    updatedSchemaJson.set(key, value)
+                }
+
+                _payload = {
+                    valuesYamlDocument: parsedValuesYamlDocument,
+                    schemaJson: updatedSchemaJson,
+                }
+            }
 
             if (
                 commonState.invalidAppName ||
@@ -690,11 +702,12 @@ function ChartValuesView({
                 commonState.invalidaEnvironment ||
                 commonState.invalidProject
             ) {
-                chartValidationsPayload = {
+                _payload = {
                     invalidAppName: false,
                     invalidAppNameMessage: '',
                     invalidaEnvironment: false,
                     invalidProject: false,
+                    ..._payload,
                 }
             }
 
@@ -704,7 +717,7 @@ function ChartValuesView({
                     activeTab: e.target.value,
                     openReadMe: false,
                     openComparison: false,
-                    ...chartValidationsPayload,
+                    ..._payload,
                 },
             })
         }
