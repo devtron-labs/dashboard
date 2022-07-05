@@ -276,6 +276,7 @@ export enum ChartValuesViewActionTypes {
     forceDeleteData = 'forceDeleteData',
     errorResponseCode = 'errorResponseCode',
     invalidValueName = 'invalidValueName',
+    invalidValueNameMessage = 'invalidValueNameMessage',
     invalidAppName = 'invalidAppName',
     invalidAppNameMessage = 'invalidAppNameMessage',
     invalidaEnvironment = 'invalidaEnvironment',
@@ -286,15 +287,6 @@ export enum ChartValuesViewActionTypes {
 export interface ChartValuesViewAction {
     type: ChartValuesViewActionTypes
     payload: any
-}
-
-export interface InputType {
-    valueName: string
-    handleValueNameChange: (newAppName: string) => void
-    handleValueNameOnBlur: () => void
-    invalidValueName: boolean
-    invalidValueNameMessage: string
-    valueNameDisabled: boolean
 }
 
 export interface AppNameInputType {
