@@ -3,6 +3,7 @@ import {
     BreadCrumb,
     ButtonWithLoader,
     copyToClipboard,
+    handleUTCTime,
     Pagination,
     Progressing,
     showError,
@@ -55,11 +56,14 @@ export default function NodeDetails() {
     const [sortByColumnName, setSortByColumnName] = useState<string>('name')
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
     const pageSize = 10
+    const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
+    const [lastDataSync, setLastDataSync] = useState(false)
 
-    useEffect(() => {
+    const getData = () => {
         setLoader(true)
         getNodeCapacity(clusterId, nodeName)
             .then((response: NodeDetailResponse) => {
+                setLastDataSync(!lastDataSync)
                 if (response.result) {
                     setSortedPodList(response.result.pods.sort((a, b) => a['name'].localeCompare(b['name'])))
                     setNodeDetail(response.result)
@@ -83,7 +87,22 @@ export default function NodeDetails() {
                 showError(error)
                 setLoader(false)
             })
+    }
+
+    useEffect(() => {
+        getData()
     }, [])
+
+    useEffect(() => {
+        const _lastDataSyncTime = Date()
+        setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
+        const interval = setInterval(() => {
+            setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
+        }, 1000)
+        return () => {
+            clearInterval(interval)
+        }
+    }, [lastDataSync])
 
     const renderNodeDetailsTabs = (): JSX.Element => {
         return (
@@ -607,10 +626,22 @@ export default function NodeDetails() {
         if (!nodeDetail) return null
         return (
             <div className="node-details-container">
-                <div className="ml-20 mr-20 mb-12 mt-16 pl-20 pr-20 pt-16 pb-16 bcn-0 br-4 en-2 bw-1">
-                    <div className="fw-6 fs-16 cn-9">{nodeDetail.name}</div>
-                    <div className={`fw-6 fs-13 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>
-                        {nodeDetail.status}
+                <div className="ml-20 mr-20 mb-12 mt-16 pl-20 pr-20 pt-16 pb-16 bcn-0 br-4 en-2 bw-1 flexbox content-space">
+                    <div className="fw-6">
+                        <div className="fs-16 cn-9">{nodeDetail.name}</div>
+                        <div className={`fs-13 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>
+                            {nodeDetail.status}
+                        </div>
+                    </div>
+                    <div className="fs-13">
+                        {lastDataSyncTimeString && (
+                            <span>
+                                {lastDataSyncTimeString}
+                                <button className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13" onClick={getData}>
+                                    Refresh
+                                </button>
+                            </span>
+                        )}
                     </div>
                 </div>
                 <div className="ml-20 mr-20 mt-12 node-details-grid">

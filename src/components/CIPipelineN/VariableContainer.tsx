@@ -54,7 +54,7 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                         }}
                     />
                 ) : (
-                    <div className="fs-13 cn-7">No output variables</div>
+                    <div className="fs-13 cn-7">No {type} variables</div>
                 )}
             </div>
             {!collapsedSection && (
