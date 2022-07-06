@@ -36,6 +36,8 @@ import { toast } from 'react-toastify'
 import { ReactComponent as Sort } from '../../assets/icons/ic-sort-arrow.svg'
 import { OrderBy } from '../app/list/types'
 import { MODES } from '../../config'
+import * as jsonpatch from 'fast-json-patch'
+import { applyOperation } from 'fast-json-patch'
 import './clusterNodes.scss'
 
 export default function NodeDetails() {
@@ -694,6 +696,7 @@ export default function NodeDetails() {
                 })
         } else {
             setIsReviewStates(true)
+            const testPatch = jsonpatch.compare(nodeDetail?.manifest, YAML.parse(modifiedManifest))
         }
     }
 
