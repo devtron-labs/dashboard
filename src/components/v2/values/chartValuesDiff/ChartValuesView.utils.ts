@@ -171,9 +171,9 @@ const convertItemsToObj = (items) => {
     return itemsObj
 }
 
-const getCurrentPath = (parentPathKey: string[], valuesYamlDocument: YAML.Document.Parsed) => {
-    let currentPath = []
-    let noValueInCurrentPath = false
+const getAvailalbePath = (parentPathKey: string[], valuesYamlDocument: YAML.Document.Parsed) => {
+    let currentPath = [],
+        noValueInCurrentPath = false
     for (let _pathKey of parentPathKey) {
         if (noValueInCurrentPath) {
             break
@@ -197,23 +197,22 @@ export const getPathAndValueToSetIn = (pathKey: string[], valuesYamlDocument: YA
     const parentPathKey = pathKey.slice(0, pathKey.length - 1)
     const parentValue = valuesYamlDocument.getIn(parentPathKey)
     if (typeof parentValue === 'undefined' || parentValue === null) {
-        const currentPath = getCurrentPath(parentPathKey, valuesYamlDocument)
-        const remainingPath = pathKey.slice(currentPath.length + 1)
-        valueToSetIn = { [remainingPath.join('.')]: _newValue }
-        pathToSetIn = pathKey.slice(0, currentPath.length + 1)
+        const availablePath = getAvailalbePath(parentPathKey, valuesYamlDocument)
+        const availablePathToSetIn = pathKey.slice(availablePath.length + 1)
+        valueToSetIn = { [availablePathToSetIn.join('.')]: _newValue }
+        pathToSetIn = pathKey.slice(0, availablePath.length + 1)
     } else if (typeof parentValue === 'object') {
-        const _path = parentPathKey.splice(0, 1)
         valueToSetIn = {
             ...(parentValue.items ? convertItemsToObj(parentValue.items) : parentValue),
             [pathKey[pathKey.length - 1]]: _newValue,
         }
-        pathToSetIn = _path
+        pathToSetIn = parentPathKey.splice(0, 1)
     }
 
     return { pathToSetIn, valueToSetIn }
 }
 
-export const convertJSONSchemaToMap = (schema, parentRef = '', keyValuePair = new Map<string, any>()) => {
+export const convertJSONSchemaToMap = (schema, parentRef = '', pathKeyAndPropsPair = new Map<string, any>()) => {
     if (schema && schema.properties) {
         const properties = schema.properties
         Object.keys(properties).forEach((propertyKey) => {
@@ -231,14 +230,14 @@ export const convertJSONSchemaToMap = (schema, parentRef = '', keyValuePair = ne
                 children: haveChildren && Object.keys(property.properties).map((key) => `${propertyPath}/${key}`),
             }
 
-            delete newProps['properties'] // Don't need properties as there're already being flatten
-            keyValuePair.set(propertyPath, newProps)
+            delete newProps['properties'] // Don't need properties as they're already being flatten
+            pathKeyAndPropsPair.set(propertyPath, newProps)
 
             if (haveChildren) {
-                convertJSONSchemaToMap(property, propertyPath, keyValuePair)
+                convertJSONSchemaToMap(property, propertyPath, pathKeyAndPropsPair)
             }
         })
     }
 
-    return keyValuePair
+    return pathKeyAndPropsPair
 }
