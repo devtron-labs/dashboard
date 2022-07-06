@@ -599,26 +599,25 @@ export const ChartValuesEditor = ({
         ) {
             const deployedChartValues = [],
                 defaultChartValues = []
+            let _selectedVersionForDiff
+
             for (let index = 0; index < chartValuesList.length; index++) {
                 const _chartValue = chartValuesList[index]
+                const processedChartValue = {
+                    label: _chartValue.name,
+                    value: _chartValue.id,
+                    appStoreVersionId: _chartValue.appStoreVersionId || 0,
+                    info: _chartValue.environmentName ? `Deployed on: ${_chartValue.environmentName}` : '',
+                    kind: _chartValue.kind,
+                    version: _chartValue.chartVersion,
+                }
                 if (_chartValue.kind === ChartKind.DEPLOYED && _chartValue.name !== appName) {
-                    deployedChartValues.push({
-                        label: _chartValue.name,
-                        value: _chartValue.id,
-                        appStoreVersionId: _chartValue.appStoreVersionId,
-                        info: `Deployed on: ${_chartValue.environmentName}`,
-                        kind: _chartValue.kind,
-                        version: _chartValue.chartVersion,
-                    })
+                    deployedChartValues.push(processedChartValue)
                 } else if (_chartValue.kind === ChartKind.DEFAULT) {
-                    defaultChartValues.push({
-                        label: _chartValue.name,
-                        value: _chartValue.id,
-                        appStoreVersionId: 0,
-                        info: '',
-                        kind: _chartValue.kind,
-                        version: _chartValue.chartVersion,
-                    })
+                    defaultChartValues.push(processedChartValue)
+                }
+                if (isCreateValueView && _chartValue.id === selectedChartValues?.id) {
+                    _selectedVersionForDiff = processedChartValue
                 }
             }
             const deploymentHistoryOptionsList = deploymentHistoryList.map((_deploymentHistory) => {
@@ -636,14 +635,15 @@ export const ChartValuesEditor = ({
                 defaultChartValues,
                 deploymentHistoryOptionsList,
                 selectedVersionForDiff:
-                    deploymentHistoryOptionsList.length > 0
+                    _selectedVersionForDiff ||
+                    (deploymentHistoryOptionsList.length > 0
                         ? deploymentHistoryOptionsList[0]
                         : deployedChartValues.length > 0
                         ? deployedChartValues[0]
-                        : defaultChartValues[0],
+                        : defaultChartValues[0]),
             })
         }
-    }, [chartValuesList, deploymentHistoryList])
+    }, [chartValuesList, deploymentHistoryList, selectedChartValues])
 
     useEffect(() => {
         if (comparisonView && valuesForDiffState.selectedVersionForDiff) {
@@ -726,14 +726,27 @@ export const ChartValuesEditor = ({
             (!comparisonView && valuesForDiffState.selectedVersionForDiff) ||
             (comparisonView && !valuesForDiffState.selectedVersionForDiff)
         ) {
+            let _selectedVersionForDiff
+            if (isCreateValueView && selectedChartValues && valuesForDiffState.selectedVersionForDiff) {
+                if (valuesForDiffState.selectedVersionForDiff.value !== selectedChartValues?.id) {
+                    let listToTraverse =
+                        selectedChartValues.kind === ChartKind.DEPLOYED ? 'deployedChartValues' : 'defaultChartValues'
+                    _selectedVersionForDiff = valuesForDiffState[listToTraverse].find(
+                        (chartData) => chartData.value === selectedChartValues.id,
+                    )
+                } else {
+                    _selectedVersionForDiff = valuesForDiffState.selectedVersionForDiff
+                }
+            }
             setValuesForDiffState({
                 ...valuesForDiffState,
                 selectedVersionForDiff:
-                    valuesForDiffState.deploymentHistoryOptionsList.length > 0
+                    _selectedVersionForDiff ||
+                    (valuesForDiffState.deploymentHistoryOptionsList.length > 0
                         ? valuesForDiffState.deploymentHistoryOptionsList[0]
                         : valuesForDiffState.deployedChartValues.length > 0
                         ? valuesForDiffState.deployedChartValues[0]
-                        : valuesForDiffState.defaultChartValues[0],
+                        : valuesForDiffState.defaultChartValues[0]),
             })
         }
     }, [comparisonView])
