@@ -15,7 +15,7 @@ export const PrimaryOptions: PrimaryOptionType[] = [
         title: 'Preset value',
         subtitle: 'Choose from a list of pre-defined values',
         valueType: ValueType.PRESET,
-        noDataSubtitle: ['No saved values found for this chart.', 'Learn how to create and use saved values'],
+        noDataSubtitle: ['No preset values found for this chart.', 'Learn how to create and use preset values'],
         helpLink: DOCUMENTATION.CHART_DEPLOY,
     },
     {

@@ -109,7 +109,7 @@ function Header({ appStoreApplicationName, name }) {
                 chart: null,
                 ':chartValueId': { component: name || 'New value', linked: false },
                 'chart-store': null,
-                'saved-values': 'Saved value',
+                'preset-values': 'Preset values',
             },
         },
         [appStoreApplicationName, name],

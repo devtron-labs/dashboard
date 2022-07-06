@@ -367,7 +367,7 @@ const Deployment: React.FC<DeploymentProps> = ({
                 Deploy...
             </button>
             <button type="button" className="flex cta h-36 cb-5 cancel mt-8" onClick={openSavedValuesList}>
-                Saved values
+                Preset values
             </button>
 
             {showChartVersionSelectorModal && (

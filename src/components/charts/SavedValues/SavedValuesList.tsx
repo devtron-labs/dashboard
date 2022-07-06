@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useHistory, RouteComponentProps } from 'react-router'
 import { DOCUMENTATION, URLS } from '../../../config'
 import emptyCustomChart from '../../../assets/img/app-not-configured.png'
-import { ReactComponent as Upload } from '../../../assets/icons/ic-arrow-line-up.svg'
+import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
@@ -70,7 +70,7 @@ export default function SavedValuesList() {
     }
 
     const redirectToChartValuePage = (chartValueId: number): void => {
-        history.push(`${URLS.CHARTS_DISCOVER}${URLS.CHART}/${chartId}${URLS.SAVED_VALUES}/${chartValueId}`)
+        history.push(`${URLS.CHARTS_DISCOVER}${URLS.CHART}/${chartId}${URLS.PRESET_VALUES}/${chartValueId}`)
     }
 
     const deleteChartValue = (chartValueId: number): void => {
@@ -131,8 +131,8 @@ export default function SavedValuesList() {
 
     const renderUploadButton = (): JSX.Element => {
         return (
-            <button onClick={() => redirectToChartValuePage(0)} className="add-link cta flex">
-                <Upload className="icon-dim-16 mr-8" />
+            <button onClick={() => redirectToChartValuePage(0)} className="add-link cta flex h-32">
+                <Add className="icon-dim-16 mr-5" />
                 New
             </button>
         )
@@ -188,17 +188,17 @@ export default function SavedValuesList() {
 
     const renderSavedValuesList = (): JSX.Element => {
         return (
-            <div className="saved-values-container">
-                <div className="cn-9 fw-6 fs-16">Saved values</div>
+            <div className="preset-values-container">
+                <div className="cn-9 fw-6 fs-16">Preset values</div>
                 {renderSubtitleAndNewButton('Customize, Dry Run and Save values so they’re ready to be used later.')}
                 <div className="mt-16 en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 235px)' }}>
                     {savedValueList.length === 0 ? (
                         renderEmptyState()
                     ) : filteredSavedValueList.length === 0 ? (
-                        renderEmptyState('No matching saved values', 'We couldn’t find any matching results', true)
+                        renderEmptyState('No matching preset values', 'We couldn’t find any matching results', true)
                     ) : (
                         <>
-                            <div className="saved-values-row fw-6 cn-7 fs-12 border-bottom text-uppercase pt-8 pr-16 pb-8 pl-16">
+                            <div className="preset-values-row fw-6 cn-7 fs-12 border-bottom text-uppercase pt-8 pr-16 pb-8 pl-16">
                                 <div className="pr-16"></div>
                                 <div className="pr-16">Name</div>
                                 <div className="pr-16">Version</div>
@@ -207,7 +207,7 @@ export default function SavedValuesList() {
                             {filteredSavedValueList.map((chartData, index) => (
                                 <div
                                     key={`saved-value-${index}`}
-                                    className="saved-values-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pr-16 pb-12 pl-16"
+                                    className="preset-values-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pr-16 pb-12 pl-16"
                                 >
                                     <div className="pr-16">
                                         <File className="icon-dim-18 icon-n4 vertical-align-middle" />
@@ -241,7 +241,7 @@ export default function SavedValuesList() {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                'saved-values': { component: 'Saved values', linked: false },
+                'preset-values': { component: 'Preset values', linked: false },
                 ':chartId': appStoreApplicationName || null,
                 chart: null,
                 'chart-store': null,
