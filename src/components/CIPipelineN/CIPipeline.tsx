@@ -218,7 +218,6 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                     setPageState(ViewType.FORM)
                     close()
                     deleteWorkflow(appId,Number(workflowId))
-                    getWorkflows()
                 }
             })
             .catch((error: ServerErrors) => {
