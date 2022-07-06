@@ -204,33 +204,35 @@ export default function SavedValuesList() {
                                 <div className="pr-16">Version</div>
                                 <div className="pr-16"></div>
                             </div>
-                            {filteredSavedValueList.map((chartData, index) => (
-                                <div
-                                    key={`saved-value-${index}`}
-                                    className="preset-values-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pr-16 pb-12 pl-16"
-                                >
-                                    <div className="pr-16">
-                                        <File className="icon-dim-18 icon-n4 vertical-align-middle" />
-                                    </div>
+                            <div style={{ height: 'calc(100vh - 235px)', overflowY: 'auto' }}>
+                                {filteredSavedValueList.map((chartData, index) => (
                                     <div
-                                        className="pr-16 cb-5 pointer ellipsis-right"
-                                        onClick={() => redirectToChartValuePage(chartData.id)}
+                                        key={`saved-value-${index}`}
+                                        className="preset-values-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pr-16 pb-12 pl-16"
                                     >
-                                        {chartData.name}
-                                    </div>
-                                    <div className="pr-16">{chartData.chartVersion}</div>
-                                    <div className="pr-16">
-                                        <Edit
-                                            className="icon-dim-18 mr-16 vertical-align-middle pointer action-icon"
+                                        <div className="pr-16">
+                                            <File className="icon-dim-18 icon-n4 vertical-align-middle" />
+                                        </div>
+                                        <div
+                                            className="pr-16 cb-5 pointer ellipsis-right"
                                             onClick={() => redirectToChartValuePage(chartData.id)}
-                                        />
-                                        <Delete
-                                            className="icon-dim-18 vertical-align-middle pointer action-icon"
-                                            onClick={() => deleteChartValue(chartData.id)}
-                                        />
+                                        >
+                                            {chartData.name}
+                                        </div>
+                                        <div className="pr-16">{chartData.chartVersion}</div>
+                                        <div className="pr-16">
+                                            <Edit
+                                                className="icon-dim-18 mr-16 vertical-align-middle pointer action-icon"
+                                                onClick={() => redirectToChartValuePage(chartData.id)}
+                                            />
+                                            <Delete
+                                                className="icon-dim-18 vertical-align-middle pointer action-icon"
+                                                onClick={() => deleteChartValue(chartData.id)}
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </>
                     )}
                 </div>
