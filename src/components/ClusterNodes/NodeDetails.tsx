@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
     BreadCrumb,
     ButtonWithLoader,
@@ -8,6 +8,7 @@ import {
     Progressing,
     showError,
     useBreadcrumb,
+    ToastBodyWithButton,
 } from '../common'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -37,8 +38,9 @@ import { ReactComponent as Sort } from '../../assets/icons/ic-sort-arrow.svg'
 import { OrderBy } from '../app/list/types'
 import { MODES } from '../../config'
 import * as jsonpatch from 'fast-json-patch'
-import { applyOperation } from 'fast-json-patch'
+import { applyPatch } from 'fast-json-patch'
 import './clusterNodes.scss'
+import { ServerErrors } from '../../modals/commonTypes'
 
 export default function NodeDetails() {
     const [loader, setLoader] = useState(false)
@@ -60,6 +62,9 @@ export default function NodeDetails() {
     const pageSize = 10
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
+    const [isShowWarning, setIsShowWarning] = useState(false)
+    const [patchData, setPatchData] = useState<jsonpatch.Operation[]>(null)
+    const toastId = useRef(null)
 
     const getData = () => {
         setLoader(true)
@@ -81,7 +86,12 @@ export default function NodeDetails() {
                             index++
                         }
                     }
-                    setModifiedManifest(YAML.stringify(response.result.manifest))
+                    let manifestData = JSON.parse(JSON.stringify(response.result.manifest))
+                    if (patchData) {
+                        manifestData = applyPatch(manifestData, patchData).newDocument
+                        setIsShowWarning(true)
+                    }
+                    setModifiedManifest(YAML.stringify(manifestData))
                 }
                 setLoader(false)
             })
@@ -671,6 +681,12 @@ export default function NodeDetails() {
         setModifiedManifest(codeEditorData)
     }
 
+    const reloadDataAndHideToast = (): void => {
+        setNodeDetail(null)
+        getData()
+        toast.dismiss(toastId.current)
+    }
+
     const saveYAML = (): void => {
         if (isReviewState) {
             const requestData: UpdateNodeRequestBody = {
@@ -681,22 +697,44 @@ export default function NodeDetails() {
                 kind: nodeDetail.kind,
             }
             setApiInProgress(true)
+            setPatchData(jsonpatch.compare(nodeDetail.manifest, YAML.parse(modifiedManifest)))
             updateNodeManifest(clusterId, nodeName, requestData)
                 .then((response: NodeDetailResponse) => {
                     setApiInProgress(false)
                     if (response.result) {
                         toast.success('Node updated')
-                        nodeDetail.manifest = response.result
+                        nodeDetail.manifest = response.result.manifest
                         setIsReviewStates(false)
+                        setPatchData(null)
+                        setIsShowWarning(false)
                     }
                 })
                 .catch((error) => {
-                    showError(error)
+                    let modifiedYAMLError
+                    if (error instanceof ServerErrors && Array.isArray(error.errors)) {
+                        modifiedYAMLError = error.errors.find((errorData) => Number(errorData.code) === 409)
+                    }
+                    if (modifiedYAMLError) {
+                        const updateToastBody = (
+                            <ToastBodyWithButton
+                                onClick={reloadDataAndHideToast}
+                                title="Cannot apply changes as node yaml has changed"
+                                subtitle="Please apply your changes to the latest version and try again."
+                                buttonText="Show latest YAML"
+                            />
+                        )
+                        toastId.current = toast.info(updateToastBody, { autoClose: false, closeButton: false })
+                    } else {
+                        showError(error)
+                    }
+
                     setApiInProgress(false)
                 })
         } else {
             setIsReviewStates(true)
-            const testPatch = jsonpatch.compare(nodeDetail?.manifest, YAML.parse(modifiedManifest))
+            const _patchData = jsonpatch.compare(nodeDetail.manifest, YAML.parse(modifiedManifest))
+            console.log(_patchData)
+            setPatchData(_patchData)
         }
     }
 
@@ -705,8 +743,10 @@ export default function NodeDetails() {
             <div className="node-details-container">
                 <CodeEditor
                     value={modifiedManifest}
-                    defaultValue={(nodeDetail?.manifest && YAML.stringify(nodeDetail?.manifest)) || ''}
-                    height={isReviewState ? 'calc( 100vh - 170px)' : 'calc( 100vh - 137px)'}
+                    defaultValue={(nodeDetail?.manifest && YAML.stringify(nodeDetail.manifest)) || ''}
+                    height={
+                        isReviewState ? `calc( 100vh - ${isShowWarning ? '203px' : '170px'})` : 'calc( 100vh - 137px)'
+                    }
                     diffView={isReviewState}
                     onChange={handleEditorValueChange}
                     mode={MODES.YAML}
@@ -722,6 +762,12 @@ export default function NodeDetails() {
                                 </div>
                             </div>
                         </CodeEditor.Header>
+                    )}
+                    {isReviewState && isShowWarning && (
+                        <CodeEditor.Warning
+                            className="ellipsis-right"
+                            text="Actual YAML has changed since you made the changes. Please check the diff carefully."
+                        />
                     )}
                 </CodeEditor>
                 <div className="bcn-0 border-top p-12 text-right" style={{ height: '60px' }}>
