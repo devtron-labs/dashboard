@@ -330,7 +330,7 @@ const Deployment: React.FC<DeploymentProps> = ({
     }
 
     function handleDeploy() {
-        if (serverMode == SERVER_MODE.EA_ONLY || isGitOpsConfigAvailable) {
+        if (serverMode == SERVER_MODE.EA_ONLY) {
             push(`${match.url}/deploy-chart`)
         } else {
             toggleGitOpsWarningModal(true)
