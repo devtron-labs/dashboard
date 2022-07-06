@@ -172,16 +172,18 @@ const convertItemsToObj = (items) => {
 }
 
 const getCurrentPath = (parentPathKey: string[], valuesYamlDocument: YAML.Document.Parsed) => {
-    const currentPath = []
+    let currentPath = []
     let noValueInCurrentPath = false
-    for (let _currentPath of parentPathKey) {
+    for (let _pathKey of parentPathKey) {
         if (noValueInCurrentPath) {
             break
         } else {
-            currentPath.push(_currentPath)
-            const _valueInCurrentPath = valuesYamlDocument.getIn(currentPath)
+            const _currentPath = currentPath.concat(_pathKey)
+            const _valueInCurrentPath = valuesYamlDocument.getIn(_currentPath)
             if (typeof _valueInCurrentPath === 'undefined' || _valueInCurrentPath === null) {
                 noValueInCurrentPath = true
+            } else {
+                currentPath = _currentPath
             }
         }
     }
