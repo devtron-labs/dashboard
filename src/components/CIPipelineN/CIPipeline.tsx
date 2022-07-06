@@ -37,7 +37,7 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 
 export const ciPipelineContext = createContext(null)
 
-export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, close }: CIPipelineType) {
+export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, close, deleteWorkflow }: CIPipelineType) {
     let { appId, workflowId, ciPipelineId } = useParams<{ appId: string; workflowId: string; ciPipelineId: string }>()
     if (ciPipelineId === '0') {
         ciPipelineId = null
@@ -217,6 +217,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                     toast.success('Pipeline Deleted')
                     setPageState(ViewType.FORM)
                     close()
+                    deleteWorkflow(appId,Number(workflowId))
                     getWorkflows()
                 }
             })

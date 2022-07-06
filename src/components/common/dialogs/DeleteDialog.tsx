@@ -25,7 +25,7 @@ export const DeleteDialog: React.FC<DeleteDialogProps> & { Description?: React.F
         <ConfirmationDialog.ButtonGroup>
             <div className="flex right">
                 <button type="button" className="cta cancel cta-cd-delete-modal ml-16" onClick={props.closeDelete} disabled={props.apiCallInProgress}>Cancel</button>
-                <button type="button" className="cta delete cta-cd-delete-modal ml-16" onClick={props.delete} disabled={props.apiCallInProgress}>
+                <button type="button" className="cta delete cta-cd-delete-modal ml-16" onClick={() => props.delete()} disabled={props.apiCallInProgress}>
                     {props.apiCallInProgress ? <Progressing /> :  `${props.deletePrefix || ''}Delete`}
                 </button>
             </div>
