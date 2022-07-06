@@ -16,7 +16,7 @@ import { ReactComponent as BitBucket } from '../../../../assets/icons/git/bitbuc
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as RightArrow } from '../../../../assets/icons/ic-arrow-forward.svg'
 import { getCIPipeline, saveCIPipeline } from '../../../ciPipeline/ciPipeline.service'
-import { toast } from 'react-toastify'
+import { ViewType, TriggerType, SourceTypeMap } from '../../../../config'
 
 export class CIMaterial extends Component<CIMaterialProps> {
     renderMaterialSource(context) {
@@ -284,7 +284,9 @@ export class CIMaterial extends Component<CIMaterialProps> {
                                     e.stopPropagation()
                                 }}
                             >
-                                {this.props.renderShowCIModal && this.props.showMaterialRegexModal
+                                {this.props.renderShowCIModal &&
+                                this.props.showMaterialRegexModal &&
+                                this.props.material[0]?.type === SourceTypeMap.BranchRegex
                                     ? this.renderBranchRegexModal(this.props.material, context)
                                     : this.renderCIModal(context)}
                             </div>
