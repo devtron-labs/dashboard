@@ -153,7 +153,7 @@ export const StyledTextarea = (props: StyledInputPropsType): JSX.Element => {
 
 export const RangeSlider = (props: SliderPropsType) => {
     const [sliderValue, setSliderValue] = useState(props.value ? parseInt(props.value) : props.sliderMin)
-    const [sliderInputValue, setSliderInputValue] = useState(`${props.value && props.sliderMin}`)
+    const [sliderInputValue, setSliderInputValue] = useState(`${props.value ?? props.sliderMin}`)
     const sliderRef = useRef()
 
     useEffect(() => {
@@ -167,10 +167,6 @@ export const RangeSlider = (props: SliderPropsType) => {
             setSliderInputValue(inputValue)
         }
         setSliderValue(sliderValue)
-
-        if (props.onInputValue) {
-            props.onInputValue(sliderValue)
-        }
         sliderRangeUpdate(sliderRef.current, sliderValue)
     }
 
@@ -183,7 +179,7 @@ export const RangeSlider = (props: SliderPropsType) => {
         const value = e.target.value && parseInt(e.target.value)
 
         if (!value) {
-            updateStates(`${props.value && props.sliderMin}`, props.value ? parseInt(props.value) : props.sliderMin)
+            updateStates(`${props.value ?? props.sliderMin}`, props.value ? parseInt(props.value) : props.sliderMin)
         } else if (props.sliderMin > 1 || value >= props.sliderMin) {
             updateStates(e.target.value, value)
         }
@@ -199,6 +195,12 @@ export const RangeSlider = (props: SliderPropsType) => {
         }
     }
 
+    const onInputBlur = () => {
+        if (props.onInputValue) {
+            props.onInputValue(sliderValue)
+        }
+    }
+
     const renderInput = () => {
         return (
             <input
@@ -209,6 +211,7 @@ export const RangeSlider = (props: SliderPropsType) => {
                 max={props.sliderMax}
                 value={sliderValue}
                 onChange={changeHandler}
+                onBlur={onInputBlur}
             />
         )
     }

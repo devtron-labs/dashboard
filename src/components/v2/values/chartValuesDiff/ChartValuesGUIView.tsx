@@ -14,6 +14,7 @@ import { CHECKBOX_VALUE, Progressing } from '../../../common'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
+import { getPathAndValueToSetIn, isRequiredField } from './ChartValuesView.utils'
 
 const getGUIWidget = (props: any, callback): JSX.Element => {
     switch (props.type) {
@@ -89,14 +90,27 @@ const updateYamlDocument = (
         ...property,
         value: _newValue,
     })
-    valuesYamlDocument.setIn(property.key.split('/'), property.type === 'select' ? _newValue.value : _newValue)
+
+    const pathKey = property.key.split('/')
+
+    if (valuesYamlDocument.hasIn(pathKey)) {
+        valuesYamlDocument.setIn(pathKey, property.type === 'select' ? _newValue.value : _newValue)
+    } else {
+        const { pathToSetIn, valueToSetIn } = getPathAndValueToSetIn(pathKey, valuesYamlDocument, _newValue)
+
+        if (typeof valueToSetIn !== 'undefined' && valueToSetIn !== null) {
+            valuesYamlDocument.setIn(pathToSetIn, valueToSetIn)
+        }
+    }
 
     dispatch({
         type: ChartValuesViewActionTypes.multipleOptions,
         payload: {
             schemaJson,
-            valuesYamlDocument,
-            modifiedValuesYaml: valuesYamlDocument.toString(),
+            ...(valuesYamlDocument.contents && {
+                valuesYamlDocument,
+                modifiedValuesYaml: valuesYamlDocument.toString(),
+            }),
         },
     })
 }
@@ -110,10 +124,14 @@ const renderChildGUIWidget = (
     const _childProps = schemaJson.get(_childKey)
     if (_childProps.type === 'formBox' && _childProps.children) {
         return renderGUIWidget(_childProps, schemaJson, valuesYamlDocument, dispatch, true)
-    } else if (_childProps.showField) {
-        return getGUIWidget(_childProps, (_newValue) => {
-            updateYamlDocument(_newValue, _childProps, schemaJson, valuesYamlDocument, dispatch)
-        })
+    } else {
+        const isRequired = isRequiredField(_childProps, true, schemaJson)
+        if (_childProps.showField || isRequired) {
+            _childProps['isRequired'] = isRequired
+            return getGUIWidget(_childProps, (_newValue) => {
+                updateYamlDocument(_newValue, _childProps, schemaJson, valuesYamlDocument, dispatch)
+            })
+        }
     }
 }
 
@@ -152,6 +170,7 @@ const renderGUIWidget = (
                 </Fragment>
             )
         } else {
+            props['isRequired'] = isRequiredField(props, fromParent, schemaJson)
             return getGUIWidget(props, (_newValue) => {
                 updateYamlDocument(_newValue, props, schemaJson, valuesYamlDocument, dispatch)
             })
@@ -184,10 +203,6 @@ const ChartValuesGUIForm = React.memo(
         deployOrUpdateApplication: (forceUpdate?: boolean) => Promise<void>
         dispatch: React.Dispatch<ChartValuesViewAction>
     }) => {
-        useEffect(() => {
-            console.log([...props.schemaJson.values()])
-        }, [])
-
         if (!props.schemaJson?.size) {
             return <SchemaNotAvailable />
         } else if (props.fetchingSchemaJson) {

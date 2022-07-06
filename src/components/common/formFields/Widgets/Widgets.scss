@@ -18,6 +18,11 @@
     }
 }
 
+.required-field::after {
+    content: ' *';
+    color: var(--R500);
+}
+
 .slider-input-box-container {
     .slider-input {
         -webkit-appearance: none;

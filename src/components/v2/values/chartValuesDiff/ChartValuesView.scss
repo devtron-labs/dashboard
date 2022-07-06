@@ -312,7 +312,7 @@
             .gui-form-info {
                 position: absolute;
                 z-index: 1;
-                width: 100%;
+                width: calc(100% - 301px);
                 padding: 6px 12px;
                 border-radius: 0;
                 border-bottom: 1px solid var(--B200);

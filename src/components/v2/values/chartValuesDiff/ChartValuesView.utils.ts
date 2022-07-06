@@ -1,5 +1,6 @@
 import { getGeneratedHelmManifest } from '../common/chartValues.api'
 import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
+import YAML from 'yaml'
 
 const generateManifestGenerationKey = (isExternalApp: boolean, appName: string, commonState: ChartValuesViewState) => {
     return isExternalApp
@@ -86,18 +87,6 @@ export const dummySchema = {
             title: 'Authentication configuration',
             form: true,
             required: ['username', 'password'],
-            if: {
-                properties: {
-                    createDatabase: { enum: [true] },
-                },
-            },
-            then: {
-                properties: {
-                    database: {
-                        pattern: '[a-zA-Z0-9]{1,64}',
-                    },
-                },
-            },
             properties: {
                 rootPassword: {
                     type: 'string',
@@ -116,193 +105,6 @@ export const dummySchema = {
                 password: {
                     type: 'string',
                     title: 'MySQL custom password',
-                },
-                replicationUser: {
-                    type: 'string',
-                    title: 'MySQL replication username',
-                },
-                replicationPassword: {
-                    type: 'string',
-                    title: 'MySQL replication password',
-                },
-                createDatabase: {
-                    type: 'boolean',
-                    title: 'MySQL create custom database',
-                },
-            },
-        },
-        primary: {
-            type: 'object',
-            title: 'Primary database configuration',
-            form: true,
-            properties: {
-                podSecurityContext: {
-                    type: 'object',
-                    title: 'MySQL primary Pod security context',
-                    properties: {
-                        enabled: {
-                            type: 'boolean',
-                            default: false,
-                        },
-                        fsGroup: {
-                            type: 'integer',
-                            default: 1001,
-                            hidden: {
-                                value: false,
-                                path: 'primary/podSecurityContext/enabled',
-                            },
-                        },
-                    },
-                },
-                containerSecurityContext: {
-                    type: 'object',
-                    title: 'MySQL primary container security context',
-                    properties: {
-                        enabled: {
-                            type: 'boolean',
-                            default: false,
-                        },
-                        runAsUser: {
-                            type: 'integer',
-                            default: 1001,
-                            hidden: {
-                                value: false,
-                                path: 'primary/containerSecurityContext/enabled',
-                            },
-                        },
-                    },
-                },
-                persistence: {
-                    type: 'object',
-                    title: 'Enable persistence using Persistent Volume Claims',
-                    properties: {
-                        enabled: {
-                            type: 'boolean',
-                            form: true,
-                            default: true,
-                            title: 'If true, use a Persistent Volume Claim, If false, use emptyDir',
-                        },
-                        size: {
-                            type: 'string',
-                            title: 'Persistent Volume Size',
-                            form: true,
-                            render: 'slider',
-                            sliderMin: 1,
-                            sliderUnit: 'Gi',
-                            hidden: {
-                                value: false,
-                                path: 'primary/persistence/enabled',
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        secondary: {
-            type: 'object',
-            title: 'Secondary database configuration',
-            form: true,
-            properties: {
-                podSecurityContext: {
-                    type: 'object',
-                    title: 'MySQL secondary Pod security context',
-                    properties: {
-                        enabled: {
-                            type: 'boolean',
-                            default: false,
-                        },
-                        fsGroup: {
-                            type: 'integer',
-                            default: 1001,
-                            hidden: {
-                                value: false,
-                                path: 'secondary/podSecurityContext/enabled',
-                            },
-                        },
-                    },
-                },
-                containerSecurityContext: {
-                    type: 'object',
-                    title: 'MySQL secondary container security context',
-                    properties: {
-                        enabled: {
-                            type: 'boolean',
-                            default: false,
-                        },
-                        runAsUser: {
-                            type: 'integer',
-                            default: 1001,
-                            hidden: {
-                                value: false,
-                                path: 'secondary/containerSecurityContext/enabled',
-                            },
-                        },
-                    },
-                },
-                persistence: {
-                    type: 'object',
-                    title: 'Enable persistence using Persistent Volume Claims',
-                    properties: {
-                        enabled: {
-                            type: 'boolean',
-                            default: true,
-                            title: 'If true, use a Persistent Volume Claim, If false, use emptyDir',
-                        },
-                        size: {
-                            type: 'string',
-                            title: 'Persistent Volume Size',
-                            form: true,
-                            render: 'slider',
-                            sliderMin: 1,
-                            sliderUnit: 'Gi',
-                            hidden: {
-                                value: false,
-                                path: 'secondary/persistence/enabled',
-                            },
-                        },
-                    },
-                },
-            },
-        },
-    },
-}
-
-export const dummySchemaT = {
-    $schema: 'http://json-schema.org/schema#',
-    type: 'object',
-    properties: {
-        drupalUsername: {
-            type: 'string',
-            title: 'Username',
-            form: true,
-        },
-        drupalPassword: {
-            type: 'string',
-            title: 'Password',
-            form: true,
-            description: 'Defaults to a random 10-character alphanumeric string if not set',
-        },
-        drupalEmail: {
-            type: 'string',
-            title: 'Admin email',
-            form: true,
-        },
-        persistence: {
-            type: 'object',
-            properties: {
-                drupal: {
-                    type: 'object',
-                    properties: {
-                        size: {
-                            type: 'string',
-                            title: 'Persistent Volume Size',
-                            form: true,
-                            render: 'slider',
-                            sliderMin: 1,
-                            sliderMax: 100,
-                            sliderUnit: 'Gi',
-                        },
-                    },
                 },
             },
         },
@@ -328,132 +130,6 @@ export const dummySchemaT = {
                 },
             },
         },
-        service: {
-            type: 'object',
-            form: true,
-            title: 'Service Configuration',
-            properties: {
-                type: {
-                    type: 'string',
-                    form: true,
-                    title: 'Service Type',
-                    description: 'Allowed values: "ClusterIP", "NodePort" and "LoadBalancer"',
-                },
-            },
-        },
-        mariadb: {
-            type: 'object',
-            title: 'MariaDB Details',
-            form: true,
-            properties: {
-                enabled: {
-                    type: 'boolean',
-                    title: 'Use a new MariaDB database hosted in the cluster',
-                    form: true,
-                    description:
-                        'Whether to deploy a mariadb server to satisfy the applications database requirements. To use an external database switch this off and configure the external database details',
-                },
-                primary: {
-                    type: 'object',
-                    properties: {
-                        persistence: {
-                            type: 'object',
-                            properties: {
-                                size: {
-                                    type: 'string',
-                                    title: 'Volume Size',
-                                    form: true,
-                                    hidden: {
-                                        value: false,
-                                        path: 'mariadb/enabled',
-                                    },
-                                    render: 'slider',
-                                    sliderMin: 1,
-                                    sliderMax: 100,
-                                    sliderUnit: 'Gi',
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        externalDatabase: {
-            type: 'object',
-            title: 'External Database Details',
-            description: 'If MariaDB is disabled. Use this section to specify the external database details',
-            form: true,
-            hidden: 'mariadb/enabled',
-            properties: {
-                host: {
-                    type: 'string',
-                    form: true,
-                    title: 'Database Host',
-                },
-                user: {
-                    type: 'string',
-                    form: true,
-                    title: 'Database Username',
-                },
-                password: {
-                    type: 'string',
-                    form: true,
-                    title: 'Database Password',
-                },
-                database: {
-                    type: 'string',
-                    form: true,
-                    title: 'Database Name',
-                },
-                port: {
-                    type: 'integer',
-                    form: true,
-                    title: 'Database Port',
-                },
-            },
-        },
-        resources: {
-            type: 'object',
-            title: 'Requested Resources',
-            description: 'Configure resource requests',
-            form: true,
-            properties: {
-                requests: {
-                    type: 'object',
-                    properties: {
-                        memory: {
-                            type: 'string',
-                            form: true,
-                            render: 'slider',
-                            title: 'Memory Request',
-                            sliderMin: 10,
-                            sliderMax: 2048,
-                            sliderUnit: 'Mi',
-                        },
-                        cpu: {
-                            type: 'string',
-                            form: true,
-                            render: 'slider',
-                            title: 'CPU Request',
-                            sliderMin: 10,
-                            sliderMax: 2000,
-                            sliderUnit: 'm',
-                        },
-                    },
-                },
-            },
-        },
-        metrics: {
-            type: 'object',
-            properties: {
-                enabled: {
-                    type: 'boolean',
-                    title: 'Enable Metrics',
-                    description: 'Prometheus Exporter / Metrics',
-                    form: true,
-                },
-            },
-        },
     },
 }
 
@@ -473,6 +149,68 @@ const isFieldEnabled = (property: any, isChild: boolean) => {
     return false
 }
 
+export const isRequiredField = (property: any, isChild: boolean, schemaJson: Map<string, any>) => {
+    if (isChild) {
+        const _parentValue = schemaJson.get(property.parentRef)
+
+        if (_parentValue?.required) {
+            return _parentValue.required.includes(property.key.split('/').slice(1).join('/'))
+        } else if (property.parentRef) {
+            return isRequiredField(_parentValue, true, schemaJson)
+        }
+    }
+
+    return false
+}
+
+const convertItemsToObj = (items) => {
+    const itemsObj = {}
+    for (let item of items) {
+        itemsObj[item.key.value] = item.value.value
+    }
+    return itemsObj
+}
+
+const getCurrentPath = (parentPathKey: string[], valuesYamlDocument: YAML.Document.Parsed) => {
+    const currentPath = []
+    let noValueInCurrentPath = false
+    for (let _currentPath of parentPathKey) {
+        if (noValueInCurrentPath) {
+            break
+        } else {
+            currentPath.push(_currentPath)
+            const _valueInCurrentPath = valuesYamlDocument.getIn(currentPath)
+            if (typeof _valueInCurrentPath === 'undefined' || _valueInCurrentPath === null) {
+                noValueInCurrentPath = true
+            }
+        }
+    }
+
+    return currentPath
+}
+
+export const getPathAndValueToSetIn = (pathKey: string[], valuesYamlDocument: YAML.Document.Parsed, _newValue) => {
+    let pathToSetIn = [],
+        valueToSetIn
+    const parentPathKey = pathKey.slice(0, pathKey.length - 1)
+    const parentValue = valuesYamlDocument.getIn(parentPathKey)
+    if (typeof parentValue === 'undefined' || parentValue === null) {
+        const currentPath = getCurrentPath(parentPathKey, valuesYamlDocument)
+        const remainingPath = pathKey.slice(currentPath.length + 1)
+        valueToSetIn = { [remainingPath.join('.')]: _newValue }
+        pathToSetIn = pathKey.slice(0, currentPath.length + 1)
+    } else if (typeof parentValue === 'object') {
+        const _path = parentPathKey.splice(0, 1)
+        valueToSetIn = {
+            ...(parentValue.items ? convertItemsToObj(parentValue.items) : parentValue),
+            [pathKey[pathKey.length - 1]]: _newValue,
+        }
+        pathToSetIn = _path
+    }
+
+    return { pathToSetIn, valueToSetIn }
+}
+
 export const convertJSONSchemaToMap = (schema, parentRef = '', keyValuePair = new Map<string, any>()) => {
     if (schema && schema.properties) {
         const properties = schema.properties
@@ -486,7 +224,7 @@ export const convertJSONSchemaToMap = (schema, parentRef = '', keyValuePair = ne
                 type: getFieldType(property.type, property.render, !!property.enum),
                 showBox: property.type === 'object' && property.form,
                 value: property.enum ? { label: property.enum[0], value: property.enum[0] } : property.default,
-                showField: isFieldEnabled(property, !!parentRef),
+                showField: property.required || isFieldEnabled(property, !!parentRef),
                 parentRef: parentRef,
                 children: haveChildren && Object.keys(property.properties).map((key) => `${propertyPath}/${key}`),
             }
