@@ -165,7 +165,7 @@ export default function SavedValuesList() {
 
     const renderLearnMoreLink = (): JSX.Element => {
         return (
-            <a className="no-decor" href={DOCUMENTATION.CUSTOM_CHART} target="_blank" rel="noreferrer noopener">
+            <a className="no-decor" href={DOCUMENTATION.CUSTOM_VALUES} target="_blank" rel="noreferrer noopener">
                 Learn more
             </a>
         )
