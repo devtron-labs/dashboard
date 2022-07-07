@@ -887,10 +887,10 @@ export const DeleteChartDialog = ({
         >
             {isCreateValueView ? (
                 <DeleteDialog.Description>
-                    <p className="fs-14 cn-7 lh-20">
+                    <p>
                         This will delete the preset value and it will no longer be available to be used for deployment.
                     </p>
-                    <p className="fs-14 cn-7 lh-20">Are you sure?</p>
+                    <p>Are you sure?</p>
                 </DeleteDialog.Description>
             ) : (
                 <DeleteDialog.Description>
