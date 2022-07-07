@@ -30,7 +30,7 @@ export class AppCheckListModal extends Component<AppCheckListModalProps, AppChec
     }
 
     renderAppChecklist() {
-        if (this.props.appStageCompleted < 5 && this.props.chartStageCompleted < 3) {
+        if (this.props.appStageCompleted < 5 && this.props.chartStageCompleted < 2) {
             //(app + chart) incomplete
             return <div>
                 <img src={Checklist} className="applist__checklist-img" />
@@ -49,32 +49,10 @@ export class AppCheckListModal extends Component<AppCheckListModalProps, AppChec
                     toggleChartChecklist={this.toggleChartChecklist} />
             </div>
         }
-        else if (this.props.appStageCompleted >= 5 && this.props.chartStageCompleted >= 3) {
+        else if (this.props.appStageCompleted >= 5 && this.props.chartStageCompleted >= 2) {
             //(app + chart) complete
             return <AllCheckModal />
             
-        }
-        else if (this.props.appStageCompleted >= 5 && this.props.chartStageCompleted < 3){
-
-            return (
-                <div>
-                    <img src={Checklist} className="applist__checklist-img" />
-                    <h2 className="cn-9 fw-6 fs-16 mt-16 mb-4">Let’s get you started!</h2>
-                    <p className="cn-9 mb-16 fs-13">Complete the required configurations to perform desired task</p>
-                    <SampleAppDeploy parentClassName="bcg-1 flexbox" imageClassName="pb-12" />
-                    <CustomAppDeploy parentClassName="bcg-1 flexbox" imageClassName="pb-12" />
-                    <hr className="checklist__divider mt-16 mb-0" />
-                    <div className="mb-8">
-                        <ChartCheckList
-                            chartChecklist={this.props.chartChecklist}
-                            isChartCollapsed={this.state.isChartCollapsed}
-                            showDivider={false}
-                            chartStageCompleted={this.props.chartStageCompleted}
-                            toggleChartChecklist={this.toggleChartChecklist}
-                        />
-                    </div>
-                </div>
-            )
         }
         else {
             //app incomplete, chart complete 
