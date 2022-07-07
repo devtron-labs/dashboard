@@ -1143,7 +1143,6 @@ function ChartValuesView({
                                 isUpdateInProgress={commonState.isUpdateInProgress}
                                 isDeleteInProgress={commonState.isDeleteInProgress}
                                 dispatch={dispatch}
-                                clickHandler={deleteApplication}
                             />
                         )}
                     </div>
@@ -1209,6 +1208,7 @@ function ChartValuesView({
                 {commonState.showDeleteAppConfirmationDialog && (
                     <DeleteChartDialog
                         appName={
+                            (isCreateValueView && valueName) ||
                             (isExternalApp && commonState.releaseInfo.deployedAppDetail.appName) ||
                             commonState.installedConfig?.appName
                         }
@@ -1219,6 +1219,7 @@ function ChartValuesView({
                                 payload: false,
                             })
                         }}
+                        isCreateValueView
                     />
                 )}
                 {commonState.forceDeleteData.forceDelete && (

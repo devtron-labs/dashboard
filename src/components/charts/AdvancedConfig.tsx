@@ -177,7 +177,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                             <label className="form__label form__label--manage-values">
                                 <span>Values</span>
                                 <button type="button" className="text-button p-0" onClick={openSavedValuesList}>
-                                  Saved values
+                                  Preset values
                                 </button>
                             </label>
                             <Select onChange={handleChartValueChangeAdvancedConfig} value={`${kind}..${appStoreValuesVersionId}`}>

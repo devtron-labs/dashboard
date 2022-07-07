@@ -433,12 +433,14 @@ const customValueContainer = (props: any): JSX.Element => {
 const CompareWithDropdown = ({
     deployedChartValues,
     defaultChartValues,
+    presetChartValues,
     deploymentHistoryOptionsList,
     selectedVersionForDiff,
     handleSelectedVersionForDiff,
 }: {
     deployedChartValues: ChartValuesDiffOptionType[]
     defaultChartValues: ChartValuesDiffOptionType[]
+    presetChartValues: ChartValuesDiffOptionType[]
     deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
     selectedVersionForDiff: ChartValuesDiffOptionType
     handleSelectedVersionForDiff: (selected: ChartValuesDiffOptionType) => void
@@ -451,47 +453,33 @@ const CompareWithDropdown = ({
     ])
 
     useEffect(() => {
+        const _groupedOptions = []
         if (deploymentHistoryOptionsList.length > 0) {
-            const _groupedOptions = [
-                {
-                    label: 'Previous deployments',
-                    options: deploymentHistoryOptionsList,
-                },
-                {
-                    label: 'Other apps using this chart',
-                    options:
-                        deployedChartValues.length > 0
-                            ? deployedChartValues
-                            : [{ label: 'No options', value: 0, info: '' }],
-                },
-                {
-                    label: 'Default values',
-                    options:
-                        defaultChartValues.length > 0
-                            ? defaultChartValues
-                            : [{ label: 'No options', value: 0, info: '' }],
-                },
-            ]
-            setGroupedOptions(_groupedOptions)
-        } else {
-            const _groupedOptions = [
-                {
-                    label: 'Other apps using this chart',
-                    options:
-                        deployedChartValues.length > 0
-                            ? deployedChartValues
-                            : [{ label: 'No options', value: 0, info: '' }],
-                },
-                {
-                    label: 'Default values',
-                    options:
-                        defaultChartValues.length > 0
-                            ? defaultChartValues
-                            : [{ label: 'No options', value: 0, info: '' }],
-                },
-            ]
-            setGroupedOptions(_groupedOptions)
+            _groupedOptions.push({
+                label: 'Previous deployments',
+                options: deploymentHistoryOptionsList,
+            })
         }
+        _groupedOptions.push(
+            {
+                label: 'Other apps using this chart',
+                options:
+                    deployedChartValues.length > 0
+                        ? deployedChartValues
+                        : [{ label: 'No options', value: 0, info: '' }],
+            },
+            {
+                label: 'Preset values',
+                options:
+                    presetChartValues.length > 0 ? presetChartValues : [{ label: 'No options', value: 0, info: '' }],
+            },
+            {
+                label: 'Default values',
+                options:
+                    defaultChartValues.length > 0 ? defaultChartValues : [{ label: 'No options', value: 0, info: '' }],
+            },
+        )
+        setGroupedOptions(_groupedOptions)
     }, [deployedChartValues, defaultChartValues, deploymentHistoryOptionsList])
 
     return (
@@ -575,6 +563,7 @@ export const ChartValuesEditor = ({
         loadingValuesForDiff: boolean
         deployedChartValues: ChartValuesDiffOptionType[]
         defaultChartValues: ChartValuesDiffOptionType[]
+        presetChartValues: ChartValuesDiffOptionType[]
         deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
         selectedVersionForDiff: ChartValuesDiffOptionType
         deployedManifest: string
@@ -584,6 +573,7 @@ export const ChartValuesEditor = ({
         loadingValuesForDiff: false,
         deployedChartValues: [],
         defaultChartValues: [],
+        presetChartValues: [],
         deploymentHistoryOptionsList: [],
         selectedValuesForDiff: defaultValuesText,
         deployedManifest: '',
@@ -598,27 +588,29 @@ export const ChartValuesEditor = ({
             (isDeployChartView || isCreateValueView || deploymentHistoryList.length > 0)
         ) {
             const deployedChartValues = [],
-                defaultChartValues = []
+                defaultChartValues = [],
+                presetChartValues = []
+            let _selectedVersionForDiff
+
             for (let index = 0; index < chartValuesList.length; index++) {
                 const _chartValue = chartValuesList[index]
+                const processedChartValue = {
+                    label: _chartValue.name,
+                    value: _chartValue.id,
+                    appStoreVersionId: _chartValue.appStoreVersionId || 0,
+                    info: _chartValue.environmentName ? `Deployed on: ${_chartValue.environmentName}` : '',
+                    kind: _chartValue.kind,
+                    version: _chartValue.chartVersion,
+                }
                 if (_chartValue.kind === ChartKind.DEPLOYED && _chartValue.name !== appName) {
-                    deployedChartValues.push({
-                        label: _chartValue.name,
-                        value: _chartValue.id,
-                        appStoreVersionId: _chartValue.appStoreVersionId,
-                        info: `Deployed on: ${_chartValue.environmentName}`,
-                        kind: _chartValue.kind,
-                        version: _chartValue.chartVersion,
-                    })
+                    deployedChartValues.push(processedChartValue)
                 } else if (_chartValue.kind === ChartKind.DEFAULT) {
-                    defaultChartValues.push({
-                        label: _chartValue.name,
-                        value: _chartValue.id,
-                        appStoreVersionId: 0,
-                        info: '',
-                        kind: _chartValue.kind,
-                        version: _chartValue.chartVersion,
-                    })
+                    defaultChartValues.push(processedChartValue)
+                } else if (_chartValue.kind === ChartKind.TEMPLATE) {
+                    presetChartValues.push(processedChartValue)
+                }
+                if (isCreateValueView && _chartValue.id === selectedChartValues?.id) {
+                    _selectedVersionForDiff = processedChartValue
                 }
             }
             const deploymentHistoryOptionsList = deploymentHistoryList.map((_deploymentHistory) => {
@@ -634,16 +626,20 @@ export const ChartValuesEditor = ({
                 ...valuesForDiffState,
                 deployedChartValues,
                 defaultChartValues,
+                presetChartValues,
                 deploymentHistoryOptionsList,
                 selectedVersionForDiff:
-                    deploymentHistoryOptionsList.length > 0
+                    _selectedVersionForDiff ||
+                    (deploymentHistoryOptionsList.length > 0
                         ? deploymentHistoryOptionsList[0]
                         : deployedChartValues.length > 0
                         ? deployedChartValues[0]
-                        : defaultChartValues[0],
+                        : presetChartValues.length > 0
+                        ? presetChartValues[0]
+                        : defaultChartValues[0]),
             })
         }
-    }, [chartValuesList, deploymentHistoryList])
+    }, [chartValuesList, deploymentHistoryList, selectedChartValues])
 
     useEffect(() => {
         if (comparisonView && valuesForDiffState.selectedVersionForDiff) {
@@ -659,7 +655,8 @@ export const ChartValuesEditor = ({
             if (!_currentValues) {
                 if (
                     selectedVersionForDiff.kind === ChartKind.DEPLOYED ||
-                    selectedVersionForDiff.kind === ChartKind.DEFAULT
+                    selectedVersionForDiff.kind === ChartKind.DEFAULT ||
+                    selectedVersionForDiff.kind === ChartKind.TEMPLATE
                 ) {
                     getChartValues(_version, selectedVersionForDiff.kind)
                         .then((res) => {
@@ -726,14 +723,27 @@ export const ChartValuesEditor = ({
             (!comparisonView && valuesForDiffState.selectedVersionForDiff) ||
             (comparisonView && !valuesForDiffState.selectedVersionForDiff)
         ) {
+            let _selectedVersionForDiff
+            if (isCreateValueView && selectedChartValues && valuesForDiffState.selectedVersionForDiff) {
+                if (valuesForDiffState.selectedVersionForDiff.value !== selectedChartValues?.id) {
+                    let listToTraverse =
+                        selectedChartValues.kind === ChartKind.DEPLOYED ? 'deployedChartValues' : 'defaultChartValues'
+                    _selectedVersionForDiff = valuesForDiffState[listToTraverse].find(
+                        (chartData) => chartData.value === selectedChartValues.id,
+                    )
+                } else {
+                    _selectedVersionForDiff = valuesForDiffState.selectedVersionForDiff
+                }
+            }
             setValuesForDiffState({
                 ...valuesForDiffState,
                 selectedVersionForDiff:
-                    valuesForDiffState.deploymentHistoryOptionsList.length > 0
+                    _selectedVersionForDiff ||
+                    (valuesForDiffState.deploymentHistoryOptionsList.length > 0
                         ? valuesForDiffState.deploymentHistoryOptionsList[0]
                         : valuesForDiffState.deployedChartValues.length > 0
                         ? valuesForDiffState.deployedChartValues[0]
-                        : valuesForDiffState.defaultChartValues[0],
+                        : valuesForDiffState.defaultChartValues[0]),
             })
         }
     }, [comparisonView])
@@ -774,6 +784,7 @@ export const ChartValuesEditor = ({
                                 <CompareWithDropdown
                                     deployedChartValues={valuesForDiffState.deployedChartValues}
                                     defaultChartValues={valuesForDiffState.defaultChartValues}
+                                    presetChartValues={valuesForDiffState.presetChartValues}
                                     deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
                                     selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
                                     handleSelectedVersionForDiff={handleSelectedVersionForDiff}
@@ -861,10 +872,12 @@ export const DeleteChartDialog = ({
     appName,
     handleDelete,
     toggleConfirmation,
+    isCreateValueView,
 }: {
     appName: string
     handleDelete: (force?: boolean) => void
     toggleConfirmation: () => void
+    isCreateValueView?: boolean
 }) => {
     return (
         <DeleteDialog
@@ -872,10 +885,19 @@ export const DeleteChartDialog = ({
             delete={() => handleDelete(false)}
             closeDelete={toggleConfirmation}
         >
-            <DeleteDialog.Description>
-                <p>This will delete all resources associated with this application.</p>
-                <p>Deleted applications cannot be restored.</p>
-            </DeleteDialog.Description>
+            {isCreateValueView ? (
+                <DeleteDialog.Description>
+                    <p>
+                        This will delete the preset value and it will no longer be available to be used for deployment.
+                    </p>
+                    <p>Are you sure?</p>
+                </DeleteDialog.Description>
+            ) : (
+                <DeleteDialog.Description>
+                    <p>This will delete all resources associated with this application.</p>
+                    <p>Deleted applications cannot be restored.</p>
+                </DeleteDialog.Description>
+            )}
         </DeleteDialog>
     )
 }
@@ -982,7 +1004,6 @@ export const DeleteApplicationButton = ({
     isUpdateInProgress,
     isDeleteInProgress,
     dispatch,
-    clickHandler,
 }: {
     type: string
     isUpdateInProgress: boolean
@@ -995,12 +1016,10 @@ export const DeleteApplicationButton = ({
             className="chart-values-view__delete-cta cta delete"
             disabled={isUpdateInProgress || isDeleteInProgress}
             onClick={(e) =>
-                type === 'Value'
-                    ? clickHandler()
-                    : dispatch({
-                          type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
-                          payload: true,
-                      })
+                dispatch({
+                    type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
+                    payload: true,
+                })
             }
         >
             {isDeleteInProgress ? (

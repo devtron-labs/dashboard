@@ -12,11 +12,11 @@ export function getDiscoverChartDetailsURL(chartId: string | number) {
 }
 
 export function getSavedValuesListURL(chartId): string {
-    return `${URLS.CHARTS}/discover/chart/${chartId}/saved-values`
+    return `${URLS.CHARTS}/discover/chart/${chartId}/preset-values`
 }
 
 export function getChartValuesURL(chartId: number | string, chartValueId?: number | string): string {
-    return `${URLS.CHARTS}/discover/chart/${chartId}/saved-values/${chartValueId || 0}`
+    return `${URLS.CHARTS}/discover/chart/${chartId}/preset-values/${chartValueId || 0}`
 }
 
 export function getChartGroupURL(chartGroupId: number | string | null) {

@@ -558,8 +558,8 @@ export default function DiscoverCharts() {
             <Route path={`${path}/group`}>
                 <ChartGroupList />
             </Route>
-            <Route path={`${path}${URLS.CHART}/:chartId${URLS.SAVED_VALUES}`} component={SavedValuesList} exact />
-            <Route path={`${path}${URLS.CHART}/:chartId${URLS.SAVED_VALUES}/:chartValueId`} exact>
+            <Route path={`${path}${URLS.CHART}/:chartId${URLS.PRESET_VALUES}`} component={SavedValuesList} exact />
+            <Route path={`${path}${URLS.CHART}/:chartId${URLS.PRESET_VALUES}/:chartValueId`} exact>
                 <ChartValues />
             </Route>
             <Route path={`${path}${URLS.CHART}/:chartId`} component={DiscoverChartDetails} />

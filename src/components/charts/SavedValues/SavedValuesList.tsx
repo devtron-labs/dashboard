@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useHistory, RouteComponentProps } from 'react-router'
 import { DOCUMENTATION, URLS } from '../../../config'
 import emptyCustomChart from '../../../assets/img/app-not-configured.png'
-import { ReactComponent as Upload } from '../../../assets/icons/ic-arrow-line-up.svg'
+import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
-import { BreadCrumb, ErrorScreenManager, Progressing, showError, useBreadcrumb } from '../../common'
+import { BreadCrumb, ErrorScreenManager, Progressing, showError, useBreadcrumb, DeleteDialog } from '../../common'
 import { SavedValueType } from './types'
 import EmptyState from '../../EmptyState/EmptyState'
 import {
@@ -31,6 +31,8 @@ export default function SavedValuesList() {
     const [filteredSavedValueList, setFilteredSavedValueList] = useState<SavedValueType[]>([])
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [appStoreApplicationName, setAppStoreApplicationName] = useState('')
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+    const [selectedValue, setSelectedValue] = useState<SavedValueType>(null)
 
     useEffect(() => {
         getData()
@@ -70,17 +72,21 @@ export default function SavedValuesList() {
     }
 
     const redirectToChartValuePage = (chartValueId: number): void => {
-        history.push(`${URLS.CHARTS_DISCOVER}${URLS.CHART}/${chartId}${URLS.SAVED_VALUES}/${chartValueId}`)
+        history.push(`${URLS.CHARTS_DISCOVER}${URLS.CHART}/${chartId}${URLS.PRESET_VALUES}/${chartValueId}`)
     }
 
-    const deleteChartValue = (chartValueId: number): void => {
-        deleteChartValues(chartValueId)
+    const deleteChartValue = () => {
+        deleteChartValues(selectedValue.id)
             .then((response) => {
                 toast.success('Deleted successfully')
                 getData()
             })
             .catch((error) => {
                 showError(error)
+            })
+            .finally(() => {
+                setShowDeleteDialog(false)
+                setSelectedValue(null)
             })
     }
 
@@ -129,10 +135,29 @@ export default function SavedValuesList() {
         )
     }
 
+    const renderDeleteDialog = (): JSX.Element => {
+        return (
+            <DeleteDialog
+                title={`Delete preset value '${selectedValue.name}'?`}
+                delete={deleteChartValue}
+                closeDelete={() => {
+                    setShowDeleteDialog(false)
+                }}
+            >
+                <DeleteDialog.Description>
+                    <p className="fs-14 cn-7 lh-20">
+                        This will delete the preset value and it will no longer be available to be used for deployment.
+                    </p>
+                    <p className="fs-14 cn-7 lh-20">Are you sure?</p>
+                </DeleteDialog.Description>
+            </DeleteDialog>
+        )
+    }
+
     const renderUploadButton = (): JSX.Element => {
         return (
-            <button onClick={() => redirectToChartValuePage(0)} className="add-link cta flex">
-                <Upload className="icon-dim-16 mr-8" />
+            <button onClick={() => redirectToChartValuePage(0)} className="add-link cta flex h-32">
+                <Add className="icon-dim-16 mr-5" />
                 New
             </button>
         )
@@ -140,7 +165,7 @@ export default function SavedValuesList() {
 
     const renderLearnMoreLink = (): JSX.Element => {
         return (
-            <a className="no-decor" href={DOCUMENTATION.CUSTOM_CHART} target="_blank" rel="noreferrer noopener">
+            <a className="no-decor" href={DOCUMENTATION.CUSTOM_VALUES} target="_blank" rel="noreferrer noopener">
                 Learn more
             </a>
         )
@@ -186,51 +211,58 @@ export default function SavedValuesList() {
         )
     }
 
+    const onDeleteButtonClick = (clickedData: SavedValueType): void => {
+        setShowDeleteDialog(true)
+        setSelectedValue(clickedData)
+    }
+
     const renderSavedValuesList = (): JSX.Element => {
         return (
-            <div className="saved-values-container">
-                <div className="cn-9 fw-6 fs-16">Saved values</div>
+            <div className="preset-values-container">
+                <div className="cn-9 fw-6 fs-16">Preset values</div>
                 {renderSubtitleAndNewButton('Customize, Dry Run and Save values so they’re ready to be used later.')}
                 <div className="mt-16 en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 235px)' }}>
                     {savedValueList.length === 0 ? (
                         renderEmptyState()
                     ) : filteredSavedValueList.length === 0 ? (
-                        renderEmptyState('No matching saved values', 'We couldn’t find any matching results', true)
+                        renderEmptyState('No matching preset values', 'We couldn’t find any matching results', true)
                     ) : (
                         <>
-                            <div className="saved-values-row fw-6 cn-7 fs-12 border-bottom text-uppercase pt-8 pr-16 pb-8 pl-16">
+                            <div className="preset-values-row fw-6 cn-7 fs-12 border-bottom text-uppercase pt-8 pr-16 pb-8 pl-16">
                                 <div className="pr-16"></div>
                                 <div className="pr-16">Name</div>
                                 <div className="pr-16">Version</div>
                                 <div className="pr-16"></div>
                             </div>
-                            {filteredSavedValueList.map((chartData, index) => (
-                                <div
-                                    key={`saved-value-${index}`}
-                                    className="saved-values-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pr-16 pb-12 pl-16"
-                                >
-                                    <div className="pr-16">
-                                        <File className="icon-dim-18 icon-n4 vertical-align-middle" />
-                                    </div>
+                            <div style={{ height: 'calc(100vh - 235px)', overflowY: 'auto' }}>
+                                {filteredSavedValueList.map((chartData, index) => (
                                     <div
-                                        className="pr-16 cb-5 pointer"
-                                        onClick={() => redirectToChartValuePage(chartData.id)}
+                                        key={`saved-value-${index}`}
+                                        className="preset-values-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pr-16 pb-12 pl-16"
                                     >
-                                        {chartData.name}
-                                    </div>
-                                    <div className="pr-16">{chartData.chartVersion}</div>
-                                    <div className="pr-16">
-                                        <Edit
-                                            className="icon-dim-18 mr-16 vertical-align-middle pointer action-icon"
+                                        <div className="pr-16">
+                                            <File className="icon-dim-18 icon-n4 vertical-align-middle" />
+                                        </div>
+                                        <div
+                                            className="pr-16 cb-5 pointer ellipsis-right"
                                             onClick={() => redirectToChartValuePage(chartData.id)}
-                                        />
-                                        <Delete
-                                            className="icon-dim-18 vertical-align-middle pointer action-icon"
-                                            onClick={() => deleteChartValue(chartData.id)}
-                                        />
+                                        >
+                                            {chartData.name}
+                                        </div>
+                                        <div className="pr-16">{chartData.chartVersion}</div>
+                                        <div className="pr-16">
+                                            <Edit
+                                                className="icon-dim-18 mr-16 vertical-align-middle pointer action-icon"
+                                                onClick={() => redirectToChartValuePage(chartData.id)}
+                                            />
+                                            <Delete
+                                                className="icon-dim-18 vertical-align-middle pointer action-icon"
+                                                onClick={() => onDeleteButtonClick(chartData)}
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </>
                     )}
                 </div>
@@ -241,7 +273,7 @@ export default function SavedValuesList() {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                'saved-values': { component: 'Saved values', linked: false },
+                'preset-values': { component: 'Preset values', linked: false },
                 ':chartId': appStoreApplicationName || null,
                 chart: null,
                 'chart-store': null,
@@ -274,6 +306,7 @@ export default function SavedValuesList() {
         <>
             <PageHeader isBreadcrumbs={true} breadCrumbs={renderBreadcrumbs} />
             {renderSavedValuesList()}
+            {showDeleteDialog && renderDeleteDialog()}
         </>
     )
 }
