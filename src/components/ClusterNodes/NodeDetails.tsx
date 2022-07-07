@@ -689,24 +689,26 @@ export default function NodeDetails() {
 
     const saveYAML = (): void => {
         if (isReviewState) {
+            const parsedManifest = YAML.parse(modifiedManifest)
             const requestData: UpdateNodeRequestBody = {
                 clusterId: +clusterId,
                 name: nodeName,
-                manifestPatch: JSON.stringify(YAML.parse(modifiedManifest)),
+                manifestPatch: JSON.stringify(parsedManifest),
                 version: nodeDetail.version,
                 kind: nodeDetail.kind,
             }
             setApiInProgress(true)
-            setPatchData(jsonpatch.compare(nodeDetail.manifest, YAML.parse(modifiedManifest)))
+            const _patchData = jsonpatch.compare(nodeDetail.manifest, parsedManifest)
+            setPatchData(_patchData)
             updateNodeManifest(clusterId, nodeName, requestData)
                 .then((response: NodeDetailResponse) => {
                     setApiInProgress(false)
                     if (response.result) {
                         toast.success('Node updated')
-                        nodeDetail.manifest = response.result.manifest
                         setIsReviewStates(false)
                         setPatchData(null)
                         setIsShowWarning(false)
+                        getData()
                     }
                 })
                 .catch((error) => {
@@ -733,7 +735,6 @@ export default function NodeDetails() {
         } else {
             setIsReviewStates(true)
             const _patchData = jsonpatch.compare(nodeDetail.manifest, YAML.parse(modifiedManifest))
-            console.log(_patchData)
             setPatchData(_patchData)
         }
     }
