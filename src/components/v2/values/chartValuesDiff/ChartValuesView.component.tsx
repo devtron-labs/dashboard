@@ -433,12 +433,14 @@ const customValueContainer = (props: any): JSX.Element => {
 const CompareWithDropdown = ({
     deployedChartValues,
     defaultChartValues,
+    presetChartValues,
     deploymentHistoryOptionsList,
     selectedVersionForDiff,
     handleSelectedVersionForDiff,
 }: {
     deployedChartValues: ChartValuesDiffOptionType[]
     defaultChartValues: ChartValuesDiffOptionType[]
+    presetChartValues: ChartValuesDiffOptionType[]
     deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
     selectedVersionForDiff: ChartValuesDiffOptionType
     handleSelectedVersionForDiff: (selected: ChartValuesDiffOptionType) => void
@@ -451,47 +453,33 @@ const CompareWithDropdown = ({
     ])
 
     useEffect(() => {
+        const _groupedOptions = []
         if (deploymentHistoryOptionsList.length > 0) {
-            const _groupedOptions = [
-                {
-                    label: 'Previous deployments',
-                    options: deploymentHistoryOptionsList,
-                },
-                {
-                    label: 'Other apps using this chart',
-                    options:
-                        deployedChartValues.length > 0
-                            ? deployedChartValues
-                            : [{ label: 'No options', value: 0, info: '' }],
-                },
-                {
-                    label: 'Default values',
-                    options:
-                        defaultChartValues.length > 0
-                            ? defaultChartValues
-                            : [{ label: 'No options', value: 0, info: '' }],
-                },
-            ]
-            setGroupedOptions(_groupedOptions)
-        } else {
-            const _groupedOptions = [
-                {
-                    label: 'Other apps using this chart',
-                    options:
-                        deployedChartValues.length > 0
-                            ? deployedChartValues
-                            : [{ label: 'No options', value: 0, info: '' }],
-                },
-                {
-                    label: 'Default values',
-                    options:
-                        defaultChartValues.length > 0
-                            ? defaultChartValues
-                            : [{ label: 'No options', value: 0, info: '' }],
-                },
-            ]
-            setGroupedOptions(_groupedOptions)
+            _groupedOptions.push({
+                label: 'Previous deployments',
+                options: deploymentHistoryOptionsList,
+            })
         }
+        _groupedOptions.push(
+            {
+                label: 'Other apps using this chart',
+                options:
+                    deployedChartValues.length > 0
+                        ? deployedChartValues
+                        : [{ label: 'No options', value: 0, info: '' }],
+            },
+            {
+                label: 'Preset values',
+                options:
+                    presetChartValues.length > 0 ? presetChartValues : [{ label: 'No options', value: 0, info: '' }],
+            },
+            {
+                label: 'Default values',
+                options:
+                    defaultChartValues.length > 0 ? defaultChartValues : [{ label: 'No options', value: 0, info: '' }],
+            },
+        )
+        setGroupedOptions(_groupedOptions)
     }, [deployedChartValues, defaultChartValues, deploymentHistoryOptionsList])
 
     return (
@@ -575,6 +563,7 @@ export const ChartValuesEditor = ({
         loadingValuesForDiff: boolean
         deployedChartValues: ChartValuesDiffOptionType[]
         defaultChartValues: ChartValuesDiffOptionType[]
+        presetChartValues: ChartValuesDiffOptionType[]
         deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
         selectedVersionForDiff: ChartValuesDiffOptionType
         deployedManifest: string
@@ -584,6 +573,7 @@ export const ChartValuesEditor = ({
         loadingValuesForDiff: false,
         deployedChartValues: [],
         defaultChartValues: [],
+        presetChartValues: [],
         deploymentHistoryOptionsList: [],
         selectedValuesForDiff: defaultValuesText,
         deployedManifest: '',
@@ -598,7 +588,8 @@ export const ChartValuesEditor = ({
             (isDeployChartView || isCreateValueView || deploymentHistoryList.length > 0)
         ) {
             const deployedChartValues = [],
-                defaultChartValues = []
+                defaultChartValues = [],
+                presetChartValues = []
             let _selectedVersionForDiff
 
             for (let index = 0; index < chartValuesList.length; index++) {
@@ -615,6 +606,8 @@ export const ChartValuesEditor = ({
                     deployedChartValues.push(processedChartValue)
                 } else if (_chartValue.kind === ChartKind.DEFAULT) {
                     defaultChartValues.push(processedChartValue)
+                } else if (_chartValue.kind === ChartKind.TEMPLATE) {
+                    presetChartValues.push(processedChartValue)
                 }
                 if (isCreateValueView && _chartValue.id === selectedChartValues?.id) {
                     _selectedVersionForDiff = processedChartValue
@@ -633,6 +626,7 @@ export const ChartValuesEditor = ({
                 ...valuesForDiffState,
                 deployedChartValues,
                 defaultChartValues,
+                presetChartValues,
                 deploymentHistoryOptionsList,
                 selectedVersionForDiff:
                     _selectedVersionForDiff ||
@@ -640,6 +634,8 @@ export const ChartValuesEditor = ({
                         ? deploymentHistoryOptionsList[0]
                         : deployedChartValues.length > 0
                         ? deployedChartValues[0]
+                        : presetChartValues.length > 0
+                        ? presetChartValues[0]
                         : defaultChartValues[0]),
             })
         }
@@ -659,7 +655,8 @@ export const ChartValuesEditor = ({
             if (!_currentValues) {
                 if (
                     selectedVersionForDiff.kind === ChartKind.DEPLOYED ||
-                    selectedVersionForDiff.kind === ChartKind.DEFAULT
+                    selectedVersionForDiff.kind === ChartKind.DEFAULT ||
+                    selectedVersionForDiff.kind === ChartKind.TEMPLATE
                 ) {
                     getChartValues(_version, selectedVersionForDiff.kind)
                         .then((res) => {
@@ -787,6 +784,7 @@ export const ChartValuesEditor = ({
                                 <CompareWithDropdown
                                     deployedChartValues={valuesForDiffState.deployedChartValues}
                                     defaultChartValues={valuesForDiffState.defaultChartValues}
+                                    presetChartValues={valuesForDiffState.presetChartValues}
                                     deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
                                     selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
                                     handleSelectedVersionForDiff={handleSelectedVersionForDiff}
