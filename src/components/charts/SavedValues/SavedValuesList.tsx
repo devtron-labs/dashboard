@@ -8,7 +8,7 @@ import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
-import { BreadCrumb, ErrorScreenManager, Progressing, showError, useBreadcrumb } from '../../common'
+import { BreadCrumb, ErrorScreenManager, Progressing, showError, useBreadcrumb, DeleteDialog } from '../../common'
 import { SavedValueType } from './types'
 import EmptyState from '../../EmptyState/EmptyState'
 import {
@@ -31,6 +31,8 @@ export default function SavedValuesList() {
     const [filteredSavedValueList, setFilteredSavedValueList] = useState<SavedValueType[]>([])
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [appStoreApplicationName, setAppStoreApplicationName] = useState('')
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+    const [selectedValue, setSelectedValue] = useState<SavedValueType>(null)
 
     useEffect(() => {
         getData()
@@ -73,14 +75,18 @@ export default function SavedValuesList() {
         history.push(`${URLS.CHARTS_DISCOVER}${URLS.CHART}/${chartId}${URLS.PRESET_VALUES}/${chartValueId}`)
     }
 
-    const deleteChartValue = (chartValueId: number): void => {
-        deleteChartValues(chartValueId)
+    const deleteChartValue = () => {
+        deleteChartValues(selectedValue.id)
             .then((response) => {
                 toast.success('Deleted successfully')
                 getData()
             })
             .catch((error) => {
                 showError(error)
+            })
+            .finally(() => {
+                setShowDeleteDialog(false)
+                setSelectedValue(null)
             })
     }
 
@@ -126,6 +132,25 @@ export default function SavedValuesList() {
                     </button>
                 )}
             </div>
+        )
+    }
+
+    const renderDeleteDialog = (): JSX.Element => {
+        return (
+            <DeleteDialog
+                title={`Delete preset value '${selectedValue.name}'?`}
+                delete={deleteChartValue}
+                closeDelete={() => {
+                    setShowDeleteDialog(false)
+                }}
+            >
+                <DeleteDialog.Description>
+                    <p className="fs-14 cn-7 lh-20">
+                        This will delete the preset value and it will no longer be available to be used for deployment.
+                    </p>
+                    <p className="fs-14 cn-7 lh-20">Are you sure?</p>
+                </DeleteDialog.Description>
+            </DeleteDialog>
         )
     }
 
@@ -186,6 +211,11 @@ export default function SavedValuesList() {
         )
     }
 
+    const onDeleteButtonClick = (clickedData: SavedValueType): void => {
+        setShowDeleteDialog(true)
+        setSelectedValue(clickedData)
+    }
+
     const renderSavedValuesList = (): JSX.Element => {
         return (
             <div className="preset-values-container">
@@ -227,7 +257,7 @@ export default function SavedValuesList() {
                                             />
                                             <Delete
                                                 className="icon-dim-18 vertical-align-middle pointer action-icon"
-                                                onClick={() => deleteChartValue(chartData.id)}
+                                                onClick={() => onDeleteButtonClick(chartData)}
                                             />
                                         </div>
                                     </div>
@@ -276,6 +306,7 @@ export default function SavedValuesList() {
         <>
             <PageHeader isBreadcrumbs={true} breadCrumbs={renderBreadcrumbs} />
             {renderSavedValuesList()}
+            {showDeleteDialog && renderDeleteDialog()}
         </>
     )
 }

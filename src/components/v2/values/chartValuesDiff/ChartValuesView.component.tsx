@@ -874,10 +874,12 @@ export const DeleteChartDialog = ({
     appName,
     handleDelete,
     toggleConfirmation,
+    isCreateValueView,
 }: {
     appName: string
     handleDelete: (force?: boolean) => void
     toggleConfirmation: () => void
+    isCreateValueView?: boolean
 }) => {
     return (
         <DeleteDialog
@@ -885,10 +887,19 @@ export const DeleteChartDialog = ({
             delete={() => handleDelete(false)}
             closeDelete={toggleConfirmation}
         >
-            <DeleteDialog.Description>
-                <p>This will delete all resources associated with this application.</p>
-                <p>Deleted applications cannot be restored.</p>
-            </DeleteDialog.Description>
+            {isCreateValueView ? (
+                <DeleteDialog.Description>
+                    <p className="fs-14 cn-7 lh-20">
+                        This will delete the preset value and it will no longer be available to be used for deployment.
+                    </p>
+                    <p className="fs-14 cn-7 lh-20">Are you sure?</p>
+                </DeleteDialog.Description>
+            ) : (
+                <DeleteDialog.Description>
+                    <p>This will delete all resources associated with this application.</p>
+                    <p>Deleted applications cannot be restored.</p>
+                </DeleteDialog.Description>
+            )}
         </DeleteDialog>
     )
 }
@@ -995,7 +1006,6 @@ export const DeleteApplicationButton = ({
     isUpdateInProgress,
     isDeleteInProgress,
     dispatch,
-    clickHandler,
 }: {
     type: string
     isUpdateInProgress: boolean
@@ -1008,12 +1018,10 @@ export const DeleteApplicationButton = ({
             className="chart-values-view__delete-cta cta delete"
             disabled={isUpdateInProgress || isDeleteInProgress}
             onClick={(e) =>
-                type === 'Value'
-                    ? clickHandler()
-                    : dispatch({
-                          type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
-                          payload: true,
-                      })
+                dispatch({
+                    type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
+                    payload: true,
+                })
             }
         >
             {isDeleteInProgress ? (
