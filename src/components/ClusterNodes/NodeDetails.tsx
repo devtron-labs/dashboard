@@ -66,7 +66,7 @@ export default function NodeDetails() {
     const [patchData, setPatchData] = useState<jsonpatch.Operation[]>(null)
     const toastId = useRef(null)
 
-    const getData = () => {
+    const getData = (_patchdata: jsonpatch.Operation[]) => {
         setLoader(true)
         getNodeCapacity(clusterId, nodeName)
             .then((response: NodeDetailResponse) => {
@@ -87,8 +87,9 @@ export default function NodeDetails() {
                         }
                     }
                     let manifestData = JSON.parse(JSON.stringify(response.result.manifest))
-                    if (patchData) {
-                        manifestData = applyPatch(manifestData, patchData).newDocument
+                    if (_patchdata) {
+                        setPatchData(_patchdata)
+                        manifestData = applyPatch(manifestData, _patchdata).newDocument
                         setIsShowWarning(true)
                     }
                     setModifiedManifest(YAML.stringify(manifestData))
@@ -102,7 +103,7 @@ export default function NodeDetails() {
     }
 
     useEffect(() => {
-        getData()
+        getData(patchData)
     }, [])
 
     useEffect(() => {
@@ -649,7 +650,10 @@ export default function NodeDetails() {
                         {lastDataSyncTimeString && (
                             <span>
                                 {lastDataSyncTimeString}
-                                <button className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13" onClick={getData}>
+                                <button
+                                    className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13"
+                                    onClick={() => getData(patchData)}
+                                >
                                     Refresh
                                 </button>
                             </span>
@@ -683,7 +687,8 @@ export default function NodeDetails() {
 
     const reloadDataAndHideToast = (): void => {
         setNodeDetail(null)
-        getData()
+        const _patchData = jsonpatch.compare(nodeDetail.manifest, YAML.parse(modifiedManifest))
+        getData(_patchData)
         toast.dismiss(toastId.current)
     }
 
@@ -698,17 +703,17 @@ export default function NodeDetails() {
                 kind: nodeDetail.kind,
             }
             setApiInProgress(true)
-            const _patchData = jsonpatch.compare(nodeDetail.manifest, parsedManifest)
-            setPatchData(_patchData)
+            // const _patchData = jsonpatch.compare(nodeDetail.manifest, parsedManifest)
+            // console.log(2, _patchData)
+            // setPatchData(_patchData)
             updateNodeManifest(clusterId, nodeName, requestData)
                 .then((response: NodeDetailResponse) => {
                     setApiInProgress(false)
                     if (response.result) {
                         toast.success('Node updated')
                         setIsReviewStates(false)
-                        setPatchData(null)
                         setIsShowWarning(false)
-                        getData()
+                        getData([])
                     }
                 })
                 .catch((error) => {
@@ -734,8 +739,9 @@ export default function NodeDetails() {
                 })
         } else {
             setIsReviewStates(true)
-            const _patchData = jsonpatch.compare(nodeDetail.manifest, YAML.parse(modifiedManifest))
-            setPatchData(_patchData)
+            // const _patchData = jsonpatch.compare(nodeDetail.manifest, YAML.parse(modifiedManifest))
+            // console.log(1, _patchData)
+            // setPatchData(_patchData)
         }
     }
 
