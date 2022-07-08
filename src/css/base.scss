@@ -265,6 +265,10 @@ a:focus {
     width: 80%;
 }
 
+.w-90 {
+    width: 90%;
+}
+
 .w-100 {
     width: 100%;
 }
@@ -1741,6 +1745,10 @@ button.anchor {
     line-height: 32px;
 }
 
+.lh-36 {
+    line-height: 36px !important;
+}
+
 .lh-16 {
     line-height: 16px;
 }
@@ -1772,10 +1780,29 @@ button.anchor {
     line-height: normal !important;
 }
 
+.h-20 {
+    height: 20px !important;
+}
+
+.h-22 {
+    height: 22px !important;
+}
+
 .h-32 {
     height: 32px !important;
 }
 
+.h-44 {
+    height: 44px !important;
+}
+
+.h-48 {
+    height: 48px !important;
+}
+
+.h-60 {
+    height: 60px !important;
+}
 .h-36 {
     height: 36px !important;
 }
@@ -1885,6 +1912,11 @@ button.anchor {
 .no-top-radius {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+}
+
+.no-bottom-radius {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .left-radius-4 {
