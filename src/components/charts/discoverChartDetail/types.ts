@@ -10,9 +10,6 @@ export interface DeploymentProps {
     chartId: string
     appStoreApplicationName?: string
     deprecated: boolean
-    isGitOpsConfigAvailable
-    showGitOpsWarningModal
-    toggleGitOpsWarningModal
     availableVersions: Map<number, { id; version }>
 }
 

@@ -56,7 +56,7 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
         appId: getAppId(
             appDetails.clusterId,
             appDetails.namespace,
-            appDetails.deploymentAppType === DeploymentAppType.helm
+            appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP
                 ? `${appDetails.appName}-${appDetails.environmentName}`
                 : appDetails.appName,
         ),
@@ -110,7 +110,9 @@ export const getLogsURL = (ad, nodeName, Host, container) => {
         return `${prefix}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}&appId=${getAppId(
             ad.clusterId,
             ad.namespace,
-            ad.deploymentAppType === DeploymentAppType.helm ? `${ad.appName}-${ad.environmentName}` : ad.appName,
+            ad.deploymentAppType === DeploymentAppType.helm && ad.appType === AppType.DEVTRON_APP
+                ? `${ad.appName}-${ad.environmentName}`
+                : ad.appName,
         )}&follow=true&tailLines=500`
     }
     return `${prefix}${Host}/api/v1/applications/${ad.appName}-${ad.environmentName}/pods/${nodeName}/logs?container=${container}&follow=true&namespace=${ad.namespace}&tailLines=500`;

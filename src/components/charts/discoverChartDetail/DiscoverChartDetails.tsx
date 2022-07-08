@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Route, Switch, NavLink } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 import { useRouteMatch, useLocation, useParams, useHistory } from 'react-router'
 import { useEffectAfterMount, List, showError, Progressing, useBreadcrumb, BreadCrumb } from '../../common'
-import { URLS, SERVER_MODE } from '../../../config'
+import { URLS } from '../../../config'
 import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service'
 import { getAvailableCharts } from '../../../services/service'
 import { DiscoverChartDetailsProps, DeploymentProps } from './types'
@@ -14,10 +14,7 @@ import { ChartDeploymentList } from './ChartDeploymentList'
 import { getSavedValuesListURL, getChartValuesURL } from '../charts.helper'
 import { ChartSelector } from '../../AppSelector'
 import { DeprecatedWarn } from '../../common/DeprecatedUpdateWarn'
-import { isGitopsConfigured } from '../../../services/service'
-import { ConfirmationDialog } from '../../common'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
-import warn from '../../../assets/icons/ic-warning.svg'
 import './DiscoverChartDetails.scss'
 import PageHeader from '../../common/header/PageHeader'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
@@ -56,8 +53,6 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     const [chartYaml, setChartYaml] = React.useState(null)
     const [loading, setLoading] = React.useState(false)
     const [chartValuesList, setChartValuesList] = useState([])
-    const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false)
-    const [isGitOpsConfigAvailable, setIsGitOpsConfigAvailable] = useState(false)
     const [chartValues, setChartValues] = useState({
         id: 0,
         kind: null,
@@ -158,16 +153,6 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     useEffect(() => {
         fetchVersions()
         getChartValuesList()
-        if (serverMode == SERVER_MODE.FULL) {
-            isGitopsConfigured()
-                .then((response) => {
-                    let isGitOpsConfigAvailable = response.result && response.result.exists
-                    setIsGitOpsConfigAvailable(isGitOpsConfigAvailable)
-                })
-                .catch((error) => {
-                    showError(error)
-                })
-        }
     }, [chartId])
 
     useEffectAfterMount(() => {
@@ -219,9 +204,6 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                                     chartId={chartId}
                                     {...chartInformation}
                                     availableVersions={mapById(availableVersions)}
-                                    isGitOpsConfigAvailable={isGitOpsConfigAvailable}
-                                    showGitOpsWarningModal={showGitOpsWarningModal}
-                                    toggleGitOpsWarningModal={toggleGitOpsWarningModal}
                                 />
                             </div>
                         </div>
@@ -275,9 +257,6 @@ const Deployment: React.FC<DeploymentProps> = ({
     chartId = '',
     chartName = '',
     name = '',
-    isGitOpsConfigAvailable,
-    showGitOpsWarningModal,
-    toggleGitOpsWarningModal,
     appStoreApplicationName = '',
     availableVersions,
     deprecated = '',
@@ -327,12 +306,8 @@ const Deployment: React.FC<DeploymentProps> = ({
         target.src = placeHolder
     }
 
-    function handleDeploy(): void {
-        if (serverMode == SERVER_MODE.EA_ONLY || isGitOpsConfigAvailable) {
-            push(`${match.url}/deploy-chart`)
-        } else {
-            toggleGitOpsWarningModal(true)
-        }
+    function handleDeploy() {
+        push(`${match.url}/deploy-chart`)
     }
 
     const handleDeployButtonClick = (): void => {
@@ -369,42 +344,6 @@ const Deployment: React.FC<DeploymentProps> = ({
             <button type="button" className="flex cta h-36 cb-5 cancel mt-8" onClick={openSavedValuesList}>
                 Preset values
             </button>
-
-            {showChartVersionSelectorModal && (
-                <ChartVersionSelectorModal
-                    closePopup={hideVersionModal}
-                    appStoreApplicationName={appStoreApplicationName}
-                    appIconUrl={icon}
-                    onError={handleImageError}
-                    handleDeploy={handleDeploy}
-                    deployedChartValueList={deployedChartValueList}
-                    presetChartValueList={presetChartValueList}
-                />
-            )}
-            {showGitOpsWarningModal ? (
-                <ConfirmationDialog>
-                    <ConfirmationDialog.Icon src={warn} />
-                    <ConfirmationDialog.Body title="GitOps configuration required">
-                        <p className="">
-                            GitOps configuration is required to perform this action. Please configure GitOps and try
-                            again.
-                        </p>
-                    </ConfirmationDialog.Body>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button
-                            type="button"
-                            tabIndex={3}
-                            className="cta cancel sso__warn-button"
-                            onClick={() => toggleGitOpsWarningModal(false)}
-                        >
-                            Cancel
-                        </button>
-                        <NavLink className="cta sso__warn-button btn-confirm" to={`/global-config/gitops`}>
-                            Configure GitOps
-                        </NavLink>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>
-            ) : null}
         </div>
     )
 }
