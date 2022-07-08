@@ -91,6 +91,8 @@ export default function NodeDetails() {
                         setPatchData(_patchdata)
                         manifestData = applyPatch(manifestData, _patchdata).newDocument
                         setIsShowWarning(true)
+                    } else if (isShowWarning) {
+                        setIsShowWarning(false)
                     }
                     setModifiedManifest(YAML.stringify(manifestData))
                 }
