@@ -705,9 +705,6 @@ export default function NodeDetails() {
                 kind: nodeDetail.kind,
             }
             setApiInProgress(true)
-            // const _patchData = jsonpatch.compare(nodeDetail.manifest, parsedManifest)
-            // console.log(2, _patchData)
-            // setPatchData(_patchData)
             updateNodeManifest(clusterId, nodeName, requestData)
                 .then((response: NodeDetailResponse) => {
                     setApiInProgress(false)
@@ -732,7 +729,11 @@ export default function NodeDetails() {
                                 buttonText="Show latest YAML"
                             />
                         )
-                        toastId.current = toast.info(updateToastBody, { autoClose: false, closeButton: false })
+                        if (toast.isActive(toastId.current)) {
+                            toast.update(toastId.current, { render: updateToastBody })
+                        } else {
+                            toastId.current = toast.info(updateToastBody, { autoClose: false, closeButton: false })
+                        }
                     } else {
                         showError(error)
                     }
@@ -741,9 +742,6 @@ export default function NodeDetails() {
                 })
         } else {
             setIsReviewStates(true)
-            // const _patchData = jsonpatch.compare(nodeDetail.manifest, YAML.parse(modifiedManifest))
-            // console.log(1, _patchData)
-            // setPatchData(_patchData)
         }
     }
 
