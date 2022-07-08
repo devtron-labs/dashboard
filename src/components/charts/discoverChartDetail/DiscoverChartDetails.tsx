@@ -1,15 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { useRouteMatch, useLocation, useParams, useHistory } from 'react-router'
-import {
-    Select as DevtronSelect,
-    useEffectAfterMount,
-    List,
-    showError,
-    Progressing,
-    useBreadcrumb,
-    BreadCrumb,
-} from '../../common'
+import { useEffectAfterMount, List, showError, Progressing, useBreadcrumb, BreadCrumb } from '../../common'
 import { URLS } from '../../../config'
 import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service'
 import { getAvailableCharts } from '../../../services/service'
@@ -17,23 +9,22 @@ import { DiscoverChartDetailsProps, DeploymentProps } from './types'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import fileIcon from '../../../assets/icons/ic-file.svg'
 import { marked } from 'marked'
-import ManageValues from '../modal/ManageValues'
 import { About } from './About'
 import { ChartDeploymentList } from './ChartDeploymentList'
-import { ChartValuesSelect } from '../util/ChartValueSelect'
-import { getManageValuesURL, getChartValuesURL } from '../charts.helper'
-import { getDiscoverChartDetailsURL } from '../charts.helper'
+import { getSavedValuesListURL, getChartValuesURL } from '../charts.helper'
 import { ChartSelector } from '../../AppSelector'
 import { DeprecatedWarn } from '../../common/DeprecatedUpdateWarn'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import './DiscoverChartDetails.scss'
 import PageHeader from '../../common/header/PageHeader'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
-import { ChartInstalledConfig } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
+import { ChartInstalledConfig, ChartKind } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
+import ChartVersionSelectorModal from './ChartVersionSelectorModal'
+import { ChartValuesType } from '../charts.types'
 
 const DiscoverDetailsContext = React.createContext(null)
 
-function useDiscoverDetailsContext() {
+export function useDiscoverDetailsContext() {
     const context = React.useContext(DiscoverDetailsContext)
     if (!context) {
         throw new Error(`Chart Detail Context Not Found`)
@@ -143,9 +134,8 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         }
     }
 
-    function openManageValues() {
-        let link = getManageValuesURL(chartId)
-        history.push(link)
+    function openSavedValuesList() {
+        history.push(getSavedValuesListURL(chartId))
     }
 
     async function getChartValuesList() {
@@ -187,7 +177,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         <DiscoverDetailsContext.Provider
             value={{
                 goBackToDiscoverChart,
-                openManageValues,
+                openSavedValuesList,
                 availableVersions,
                 selectedVersion,
                 selectVersion,
@@ -257,21 +247,6 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                         )
                     }}
                 />
-                <Route
-                    path={`${URLS.CHARTS}/discover/chart/:chartId/manage-values`}
-                    render={(props) => {
-                        return (
-                            <ManageValues
-                                chartId={chartId}
-                                onDeleteChartValue={getChartValuesList}
-                                close={() => {
-                                    let link = getDiscoverChartDetailsURL(chartId)
-                                    history.push(link)
-                                }}
-                            />
-                        )
-                    }}
-                />
             </Switch>
         </DiscoverDetailsContext.Provider>
     )
@@ -289,7 +264,7 @@ const Deployment: React.FC<DeploymentProps> = ({
 }) => {
     const {
         redirectToChartValues,
-        openManageValues,
+        openSavedValuesList,
         selectedVersion,
         selectVersion,
         chartValuesList,
@@ -299,6 +274,31 @@ const Deployment: React.FC<DeploymentProps> = ({
     const match = useRouteMatch()
     const { push } = useHistory()
     const { serverMode } = useContext(mainContext)
+    const [showChartVersionSelectorModal, setShowChartVersionSelectorModal] = useState(false)
+    const [deployedChartValueList, setDeployedChartValueList] = useState<ChartValuesType[]>([])
+    const [presetChartValueList, setPresetChartValueList] = useState<ChartValuesType[]>([])
+
+    useEffect(() => {
+        const _deployedChartValues = [],
+            _presetChartValues = []
+        for (let index = 0; index < chartValuesList.length; index++) {
+            const _chartValue = chartValuesList[index]
+            const chartValueObj: ChartValuesType = {
+                id: _chartValue.id,
+                kind: _chartValue.kind,
+                name: _chartValue.name,
+                chartVersion: _chartValue.chartVersion,
+                environmentName: '',
+            }
+            if (_chartValue.kind === ChartKind.DEPLOYED) {
+                _deployedChartValues.push(chartValueObj)
+            } else if (_chartValue.kind === ChartKind.TEMPLATE) {
+                _presetChartValues.push(chartValueObj)
+            }
+        }
+        setDeployedChartValueList(_deployedChartValues)
+        setPresetChartValueList(_presetChartValues)
+    }, [chartValuesList])
 
     const handleImageError = (e) => {
         const target = e.target as HTMLImageElement
@@ -310,6 +310,18 @@ const Deployment: React.FC<DeploymentProps> = ({
         push(`${match.url}/deploy-chart`)
     }
 
+    const handleDeployButtonClick = (): void => {
+        if (deployedChartValueList.length === 0 && presetChartValueList.length === 0) {
+            handleDeploy()
+        } else {
+            setShowChartVersionSelectorModal(true)
+        }
+    }
+
+    const hideVersionModal = (): void => {
+        setShowChartVersionSelectorModal(false)
+    }
+
     return (
         <div className="deployment-container chart-deployment flex column left white-card white-card--chart-detail">
             <div className="chart-grid-item__icon-wrapper">
@@ -317,8 +329,8 @@ const Deployment: React.FC<DeploymentProps> = ({
             </div>
             <div className="mb-16">
                 <div className="repository">
-                    <span className="user anchor">{chartName}/</span>
-                    <span className="repo">{appStoreApplicationName}</span>
+                    <div className="user anchor">{chartName}</div>
+                    <div className="repo">{appStoreApplicationName}</div>
                 </div>
                 {deprecated && (
                     <div className="mt-8">
@@ -326,49 +338,11 @@ const Deployment: React.FC<DeploymentProps> = ({
                     </div>
                 )}
             </div>
-            <span className="form__label">Chart version</span>
-            <DevtronSelect
-                rootClassName="select-button--default mb-20"
-                value={
-                    selectedVersion && availableVersions.has(selectedVersion)
-                        ? availableVersions.get(selectedVersion).id
-                        : null
-                }
-                onChange={(event) => {
-                    selectVersion(event.target.value)
-                }}
-            >
-                <DevtronSelect.Button>
-                    {availableVersions.has(selectedVersion)
-                        ? availableVersions.get(selectedVersion).version
-                        : 'Select version'}
-                </DevtronSelect.Button>
-                {availableVersions &&
-                    Array.from(availableVersions).map(([versionId, versionInfo], idx) => (
-                        <DevtronSelect.Option key={versionId} value={versionId}>
-                            {versionInfo.version}
-                        </DevtronSelect.Option>
-                    ))}
-            </DevtronSelect>
-
-            <div className="form__label form__label--manage-values">
-                <span className="form__label form__label--no-margin">Chart Values*</span>
-                <button className="text-button p-0" onClick={openManageValues}>
-                    Manage
-                </button>
-            </div>
-            <div className="mb-20 w-100">
-                <ChartValuesSelect
-                    chartValuesList={chartValuesList}
-                    chartValues={chartValues}
-                    redirectToChartValues={redirectToChartValues}
-                    onChange={(event) => {
-                        setChartValues(event)
-                    }}
-                />
-            </div>
-            <button type="button" className="flex cta" onClick={handleDeploy}>
-                Deploy
+            <button type="button" className="flex cta h-36" onClick={handleDeploy}>
+                Deploy...
+            </button>
+            <button type="button" className="flex cta h-36 cb-5 cancel mt-8" onClick={openSavedValuesList}>
+                Preset values
             </button>
         </div>
     )

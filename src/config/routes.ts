@@ -70,6 +70,8 @@ export const URLS = {
     CLUSTER_LIST: '/clusters',
     NODES_LIST: '/nodes',
     NODE_DETAILS: '/node-details',
+    CHART: '/chart',
+    PRESET_VALUES: '/preset-values',
 }
 
 export enum APP_COMPOSE_STAGE {

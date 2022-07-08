@@ -1,0 +1,23 @@
+.preset-values-container {
+    margin: 20px 95px;
+    .margin-right-0 {
+        margin-right: 0 !important;
+    }
+    .preset-values-row {
+        display: grid;
+        grid-template-columns: 30px 200px auto 70px;
+        .action-icon {
+            visibility: hidden;
+        }
+    }
+    .preset-value-list {
+        .preset-values-row {
+            &:hover {
+                background-color: var(--N50);
+                .action-icon {
+                    visibility: visible;
+                }
+            }
+        }
+    }
+}
