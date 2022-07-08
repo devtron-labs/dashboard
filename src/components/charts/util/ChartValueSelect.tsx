@@ -91,7 +91,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                           })
                         : this.renderNoResultsOption()}
                 </Select.OptGroup>
-                <Select.OptGroup label="SAVED" key={'SAVED'}>
+                <Select.OptGroup label="PRESET VALUES" key={'SAVED'}>
                     {chartValues.savedChartValues.length
                         ? chartValues.savedChartValues.map((chartValue) => {
                               return (
@@ -133,7 +133,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                 {!this.props.hideCreateNewOption && (
                     <div className="select__sticky-bottom" onClick={this.props.redirectToChartValues}>
                         <Add className="icon-dim-20 mr-5" />
-                        Create Custom
+                        Create preset value
                     </div>
                 )}
             </Select>

@@ -1139,7 +1139,7 @@ function ChartValuesView({
                         )}
                         {!isDeployChartView && chartValueId !== '0' && (
                             <DeleteApplicationButton
-                                type={isCreateValueView ? 'Value' : 'Application'}
+                                type={isCreateValueView ? 'preset value' : 'Application'}
                                 isUpdateInProgress={commonState.isUpdateInProgress}
                                 isDeleteInProgress={commonState.isDeleteInProgress}
                                 dispatch={dispatch}
