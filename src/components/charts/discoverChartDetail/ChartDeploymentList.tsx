@@ -111,8 +111,8 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
         }
         finally {
                 setDeleting(false);
-                toggleConfirmation(false);
-                setForceDeleteDialog(true);
+                toggleConfirmation(false)
+                setForceDeleteDialog(false)
                 setView(ViewType.LOADING)
                 fetchDeployments()
         }
