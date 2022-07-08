@@ -92,7 +92,7 @@ export function getProjectFilteredApps(
 }
 
 export function getAvailableCharts(queryString?: string, options?: APIOptions): Promise<{ code: number, result: Chart[] }> {
-    let url = `${Routes.CHART_AVAILABLE}/discover`;
+    let url = `${Routes.CHART_AVAILABLE}/discover/`;
     if (queryString) {
         url = `${url}${queryString}`
     }
