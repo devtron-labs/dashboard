@@ -264,6 +264,7 @@ export interface CIPipelineType {
     connectCDPipelines: number
     getWorkflows: () => void
     close: () => void
+    deleteWorkflow: (appId?: string, workflowId?: number) => any
 }
 
 export interface CIPipelineDataType {
