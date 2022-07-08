@@ -9,10 +9,14 @@
         .action-icon {
             visibility: hidden;
         }
-        &:not(:first-of-type):hover {
-            background-color: var(--N50);
-            .action-icon {
-                visibility: visible;
+    }
+    .preset-value-list {
+        .preset-values-row {
+            &:hover {
+                background-color: var(--N50);
+                .action-icon {
+                    visibility: visible;
+                }
             }
         }
     }

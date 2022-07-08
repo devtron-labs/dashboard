@@ -234,7 +234,10 @@ export default function SavedValuesList() {
                                 <div className="pr-16">Version</div>
                                 <div className="pr-16"></div>
                             </div>
-                            <div style={{ height: 'calc(100vh - 235px)', overflowY: 'auto' }}>
+                            <div
+                                className="preset-value-list"
+                                style={{ height: 'calc(100vh - 235px)', overflowY: 'auto' }}
+                            >
                                 {filteredSavedValueList.map((chartData, index) => (
                                     <div
                                         key={`saved-value-${index}`}
