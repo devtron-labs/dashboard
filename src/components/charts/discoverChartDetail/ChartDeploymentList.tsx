@@ -99,6 +99,10 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
                 await deleteInstalledChart(Number(installedAppId))
             }
             toast.success('Successfully deleted');
+            toggleConfirmation(false)
+            setForceDeleteDialog(false)
+            setView(ViewType.LOADING)
+            fetchDeployments()
         }
         catch (err: any) {
             if (!force && err.code != 403) {
@@ -110,11 +114,7 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
             }
         }
         finally {
-                setDeleting(false);
-                toggleConfirmation(false)
-                setForceDeleteDialog(false)
-                setView(ViewType.LOADING)
-                fetchDeployments()
+            setDeleting(false);
         }
     }
 
