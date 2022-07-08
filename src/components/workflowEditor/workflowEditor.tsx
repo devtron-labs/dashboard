@@ -107,8 +107,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         })
     }
 
-    deleteWorkflow = () => {
-        deleteWorkflow(this.props.match.params.appId, this.state.workflowId)
+    deleteWorkflow = (appId?: string,workflowId?: number) => {        
+        deleteWorkflow(appId || this.props.match.params.appId, workflowId || this.state.workflowId)
             .then((response) => {
                 if (response.status.toLowerCase() === 'ok') {
                     this.setState({ showDeleteDialog: false })
@@ -259,6 +259,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         connectCDPipelines={this.getLen()}
                         close={this.closePipeline}
                         getWorkflows={this.getWorkflows}
+                        deleteWorkflow={this.deleteWorkflow}
                     />
                 </Route>
                 <Route
