@@ -87,7 +87,7 @@ export default function NodeDetails() {
                         }
                     }
                     let manifestData = JSON.parse(JSON.stringify(response.result.manifest))
-                    if (_patchdata) {
+                    if (_patchdata?.length) {
                         setPatchData(_patchdata)
                         manifestData = applyPatch(manifestData, _patchdata).newDocument
                         setIsShowWarning(true)
