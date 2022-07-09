@@ -273,6 +273,10 @@ a:focus {
     width: 100%;
 }
 
+.w-100-px {
+    width: 100px;
+}
+
 .margin-auto {
     margin: auto;
 }
@@ -356,6 +360,14 @@ a:focus {
 
 .position-rel {
     position: relative;
+}
+
+.position-abs {
+    position: absolute;
+}
+
+.position-sticky {
+    position: sticky;
 }
 
 .vertical-align-middle {
@@ -1658,6 +1670,10 @@ button.anchor {
     width: 0px;
 }
 
+.w-180 {
+    width: 180px;
+}
+
 .w-200 {
     width: 200px;
 }
@@ -1765,6 +1781,10 @@ button.anchor {
     line-height: 28px;
 }
 
+.h-28 {
+    height: 28px !important;
+}
+
 .pl-16 {
     padding-left: 16px !important;
 }
@@ -1807,12 +1827,20 @@ button.anchor {
     height: 36px !important;
 }
 
+.h-44 {
+    height: 44px !important;
+}
+
 .fw-n {
     font-weight: normal !important;
 }
 
 .h-8 {
     height: 8px;
+}
+
+.h-20 {
+    height: 20px;
 }
 
 .hide-section {
@@ -1961,7 +1989,30 @@ textarea {
 .no-text-transform {
     text-transform: none !important;
 }
-
+.split-header {
+    display: flex;
+    background-color: var(--N100);
+    border-bottom: 1px solid #d6dbdf;
+    height: 40px;
+    color: var(--N700);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 40px;
+    width: 100%;
+    .left-pane {
+        width: 49%;
+        border-right: 1px solid #d6dbdf;
+        padding-left: 10px;
+    }
+    .right-pane {
+        width: 51%;
+        padding-left: 25px;
+        .apply-change {
+            float: right;
+            margin-top: 9px;
+        }
+    }
+}
 .break-word {
     word-wrap: break-word;
 }

@@ -1,7 +1,7 @@
-import React, { useState, useMemo, Component } from 'react';
-import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback, Toggle } from '../common';
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
-import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration';
+import React, { useState, useMemo, Component } from 'react'
+import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback, Toggle } from '../common'
+import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
+import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import {
     getClusterList,
     saveCluster,
@@ -13,25 +13,29 @@ import {
     retryClusterInstall,
     deleteCluster,
     deleteEnvironment,
-} from './cluster.service';
-import { ResizableTextarea } from '../configMaps/ConfigMap';
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.svg';
-import { ReactComponent as Database } from '../../assets/icons/ic-env.svg';
-import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg';
-import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg';
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
-import { ClusterComponentModal } from './ClusterComponentModal';
-import { ClusterInstallStatus } from './ClusterInstallStatus';
-import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type';
-import { useHistory } from 'react-router';
-import { toast } from 'react-toastify';
-import { DOCUMENTATION, SERVER_MODE, ViewType, URLS } from '../../config';
-import { getEnvName } from './cluster.util';
-import Reload from '../Reload/Reload';
-import DeleteComponent from '../../util/DeleteComponent';
-import { DC_CLUSTER_CONFIRMATION_MESSAGE, DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
+} from './cluster.service'
+import { ResizableTextarea } from '../configMaps/ConfigMap'
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as Database } from '../../assets/icons/ic-env.svg'
+import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
+import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
+import { ClusterComponentModal } from './ClusterComponentModal'
+import { ClusterInstallStatus } from './ClusterInstallStatus'
+import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
+import { useHistory } from 'react-router'
+import { toast } from 'react-toastify'
+import { DOCUMENTATION, SERVER_MODE, ViewType, URLS } from '../../config'
+import { getEnvName } from './cluster.util'
+import Reload from '../Reload/Reload'
+import DeleteComponent from '../../util/DeleteComponent'
+import {
+    DC_CLUSTER_CONFIRMATION_MESSAGE,
+    DC_ENVIRONMENT_CONFIRMATION_MESSAGE,
+    DeleteComponentsName,
+} from '../../config/constantMessaging'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -44,8 +48,8 @@ const PrometheusWarningInfo = () => {
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}
 
 const PrometheusRequiredFieldInfo = () => {
     return (
@@ -57,46 +61,46 @@ const PrometheusRequiredFieldInfo = () => {
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}
 
 export default class ClusterList extends Component<ClusterListProps, any> {
-    timerRef;
+    timerRef
 
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             view: ViewType.LOADING,
             clusters: [],
             clusterEnvMap: {},
-        };
-        this.initialise = this.initialise.bind(this);
+        }
+        this.initialise = this.initialise.bind(this)
     }
 
     componentDidMount() {
-        this.initialise();
+        this.initialise()
     }
 
     componentDidUpdate(prevProps) {
         if (this.props.serverMode !== prevProps.serverMode) {
-            this.initialise();
+            this.initialise()
         }
     }
 
     initialise() {
-        if (this.timerRef) clearInterval(this.timerRef);
+        if (this.timerRef) clearInterval(this.timerRef)
         Promise.all([
             getClusterList(),
             this.props.serverMode === SERVER_MODE.EA_ONLY ? { result: undefined } : getEnvironmentList(),
         ])
             .then(([clusterRes, envResponse]) => {
-                let environments = envResponse.result || [];
+                let environments = envResponse.result || []
                 const clusterEnvMap = environments.reduce((agg, curr, idx) => {
-                    agg[curr.cluster_id] = agg[curr.cluster_id] || [];
-                    agg[curr.cluster_id].push(curr);
-                    return agg;
-                }, {});
-                let clusters = clusterRes.result || [];
+                    agg[curr.cluster_id] = agg[curr.cluster_id] || []
+                    agg[curr.cluster_id].push(curr)
+                    return agg
+                }, {})
+                let clusters = clusterRes.result || []
                 clusters = clusters.concat({
                     id: null,
                     cluster_name: '',
@@ -104,14 +108,14 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                     active: true,
                     config: {},
                     environments: [],
-                });
+                })
                 clusters = clusters.map((c) => {
                     return {
                         ...c,
                         environments: clusterEnvMap[c.id],
-                    };
-                });
-                clusters = clusters.sort((a, b) => sortCallback('cluster_name', a, b));
+                    }
+                })
+                clusters = clusters.sort((a, b) => sortCallback('cluster_name', a, b))
                 this.setState(
                     {
                         clusters: clusters,
@@ -121,33 +125,33 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                     () => {
                         let cluster = this.state.clusters.find(
                             (c) => c.agentInstallationStage === 1 || c.agentInstallationStage === 3,
-                        );
+                        )
                         if (cluster) {
                             this.timerRef = setInterval(() => {
-                                this.pollClusterlist();
-                            }, POLLING_INTERVAL);
+                                this.pollClusterlist()
+                            }, POLLING_INTERVAL)
                         }
                     },
-                );
+                )
             })
             .catch((error) => {
-                showError(error);
-                this.setState({ view: ViewType.ERROR });
-            });
+                showError(error)
+                this.setState({ view: ViewType.ERROR })
+            })
     }
 
     async pollClusterlist() {
         //updates defaultComponents and agentInstallationStatus
         try {
-            const { result } = await getClusterList();
+            const { result } = await getClusterList()
             let clusters = result
                 ? result.map((c) => {
                       return {
                           ...c,
                           environments: this.state.clusterEnvMap[c.id],
-                      };
+                      }
                   })
-                : [];
+                : []
             clusters = clusters.concat({
                 id: null,
                 cluster_name: '',
@@ -155,27 +159,27 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 active: true,
                 config: {},
                 environments: [],
-            });
-            clusters = clusters.sort((a, b) => sortCallback('cluster_name', a, b));
-            this.setState({ clusters: clusters });
+            })
+            clusters = clusters.sort((a, b) => sortCallback('cluster_name', a, b))
+            this.setState({ clusters: clusters })
 
             let cluster = this.state.clusters.find(
                 (c) => c.agentInstallationStage === 1 || c.agentInstallationStage === 3,
-            );
-            if (!cluster) clearInterval(this.timerRef);
+            )
+            if (!cluster) clearInterval(this.timerRef)
         } catch (error) {}
     }
 
     componentWillUnmount() {
-        clearInterval(this.timerRef);
+        clearInterval(this.timerRef)
     }
 
     render() {
-        if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />;
-        else if (this.state.view === ViewType.ERROR) return <Reload />;
+        if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
+        else if (this.state.view === ViewType.ERROR) return <Reload />
         else {
             const moduleBasedTitle =
-                'Clusters' + (this.props.serverMode === SERVER_MODE.EA_ONLY ? '' : ' and Environments');
+                'Clusters' + (this.props.serverMode === SERVER_MODE.EA_ONLY ? '' : ' and Environments')
             return (
                 <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
                     <h2 className="form__title">{moduleBasedTitle}</h2>
@@ -199,7 +203,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                         />
                     ))}
                 </section>
-            );
+            )
         }
     }
 }
@@ -217,58 +221,58 @@ function Cluster({
     prometheus_url,
     serverMode,
 }) {
-    const [editMode, toggleEditMode] = useState(false);
-    const [environment, setEnvironment] = useState(null);
-    const [config, setConfig] = useState(defaultConfig);
-    const [prometheusAuth, setPrometheusAuth] = useState(undefined);
-    const [showClusterComponentModal, toggleClusterComponentModal] = useState(false);
-    const history = useHistory();
+    const [editMode, toggleEditMode] = useState(false)
+    const [environment, setEnvironment] = useState(null)
+    const [config, setConfig] = useState(defaultConfig)
+    const [prometheusAuth, setPrometheusAuth] = useState(undefined)
+    const [showClusterComponentModal, toggleClusterComponentModal] = useState(false)
+    const history = useHistory()
     const newEnvs = useMemo(() => {
-        let namespacesInAll = true;
+        let namespacesInAll = true
         if (Array.isArray(environments)) {
-            namespacesInAll = !environments.some((env) => !env.namespace);
+            namespacesInAll = !environments.some((env) => !env.namespace)
         }
-        return namespacesInAll && clusterId ? [{ id: null }].concat(environments || []) : environments || [];
-    }, [environments]);
+        return namespacesInAll && clusterId ? [{ id: null }].concat(environments || []) : environments || []
+    }, [environments])
 
     function handleClose(isReload): void {
-        setEnvironment(null);
-        if (isReload) reload();
+        setEnvironment(null)
+        if (isReload) reload()
     }
 
     async function handleEdit(e) {
         try {
-            const { result } = await getCluster(clusterId);
-            setPrometheusAuth(result.prometheusAuth);
-            setConfig(result.config);
-            toggleEditMode((t) => !t);
+            const { result } = await getCluster(clusterId)
+            setPrometheusAuth(result.prometheusAuth)
+            setConfig(result.config)
+            toggleEditMode((t) => !t)
         } catch (err) {
-            showError(err);
+            showError(err)
         }
     }
 
     function redirectToChartDeployment(appId, envId): void {
-        history.push(`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`);
+        history.push(`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`)
     }
 
     async function callRetryClusterInstall() {
         try {
-            let payload = {};
-            const { result } = await retryClusterInstall(clusterId, payload);
-            if (result) toast.success('Successfully triggered');
-            reload();
+            let payload = {}
+            const { result } = await retryClusterInstall(clusterId, payload)
+            if (result) toast.success('Successfully triggered')
+            reload()
         } catch (error) {
-            showError(error);
+            showError(error)
         }
     }
 
     async function clusterInstallStatusOnclick(e) {
         if (agentInstallationStage === 3) {
-            callRetryClusterInstall();
-        } else toggleClusterComponentModal(!showClusterComponentModal);
+            callRetryClusterInstall()
+        } else toggleClusterComponentModal(!showClusterComponentModal)
     }
 
-    let envName: string = getEnvName(defaultClusterComponent, agentInstallationStage);
+    let envName: string = getEnvName(defaultClusterComponent, agentInstallationStage)
 
     return (
         <>
@@ -286,7 +290,9 @@ function Cluster({
                                 </List.Logo>
                             )}
                             <div className="flex left">
-                                {clusterId ? <ClusterIcon className="icon-dim-24 vertical-align-middle mr-16" /> : null}
+                                {clusterId ? (
+                                    <ClusterIcon className="cluster-icon icon-dim-24 vertical-align-middle mr-16" />
+                                ) : null}
                                 <List.Title
                                     title={cluster_name || 'Add cluster'}
                                     subtitle={server_url}
@@ -311,7 +317,7 @@ function Cluster({
                                 callRetryClusterInstall={callRetryClusterInstall}
                                 redirectToChartDeployment={redirectToChartDeployment}
                                 close={(e) => {
-                                    toggleClusterComponentModal(!showClusterComponentModal);
+                                    toggleClusterComponentModal(!showClusterComponentModal)
                                 }}
                             />
                         ) : null}
@@ -379,7 +385,7 @@ function Cluster({
                                 prometheus_url,
                                 prometheusAuth,
                                 serverMode,
-                                defaultClusterComponent 
+                                defaultClusterComponent,
                             }}
                         />
                     </>
@@ -395,7 +401,7 @@ function Cluster({
                 />
             )}
         </>
-    );
+    )
 }
 
 function ClusterForm({
@@ -410,21 +416,21 @@ function ClusterForm({
     prometheus_url,
     prometheusAuth,
     serverMode,
-    defaultClusterComponent
+    defaultClusterComponent,
 }) {
-    const [loading, setLoading] = useState(false);
-    const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false);
+    const [loading, setLoading] = useState(false)
+    const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
         type: prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
-    });
+    })
     let authenTicationType =
-        prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS;
+        prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
 
     const isDefaultCluster = (): boolean => {
-        return id == 1;
-    };
-    const [deleting, setDeleting] = useState(false);
-    const [confirmation, toggleConfirmation] = useState(false);
+        return id == 1
+    }
+    const [deleting, setDeleting] = useState(false)
+    const [confirmation, toggleConfirmation] = useState(false)
 
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -490,10 +496,10 @@ function ClusterForm({
             },
         },
         onValidation,
-    );
+    )
 
     const getClusterPayload = () => {
-         return {
+        return {
             id,
             cluster_name: state.cluster_name.value,
             config: { bearer_token: state.token.value },
@@ -503,72 +509,72 @@ function ClusterForm({
                 userName: prometheusToggleEnabled ? state.userName.value : '',
                 password: prometheusToggleEnabled ? state.password.value : '',
             },
-        };
+        }
     }
-    
+
     async function onValidation() {
         let payload = getClusterPayload()
-     
+
         if (state.url.value.endsWith('/')) {
-            payload['server_url'] = state.url.value.slice(0, -1);
+            payload['server_url'] = state.url.value.slice(0, -1)
         } else {
-            payload['server_url'] = state.url.value;
+            payload['server_url'] = state.url.value
         }
 
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
-            let isValid = state.userName?.value && state.password?.value;
+            let isValid = state.userName?.value && state.password?.value
             if (!isValid) {
-                toast.error('Please add both username and password');
-                return;
+                toast.error('Please add both username and password')
+                return
             } else {
-                payload.prometheusAuth['userName'] = state.userName.value || '';
-                payload.prometheusAuth['password'] = state.password.value || '';
+                payload.prometheusAuth['userName'] = state.userName.value || ''
+                payload.prometheusAuth['password'] = state.password.value || ''
             }
         }
         if ((state.tlsClientKey.value || state.tlsClientCert.value) && prometheusToggleEnabled) {
-            let isValid = state.tlsClientKey.value?.length && state.tlsClientCert.value?.length;
+            let isValid = state.tlsClientKey.value?.length && state.tlsClientCert.value?.length
             if (!isValid) {
-                toast.error('Please add both TLS Key and Certificate');
-                return;
+                toast.error('Please add both TLS Key and Certificate')
+                return
             } else {
-                payload.prometheusAuth['tlsClientKey'] = state.tlsClientKey.value || '';
-                payload.prometheusAuth['tlsClientCert'] = state.tlsClientCert.value || '';
+                payload.prometheusAuth['tlsClientKey'] = state.tlsClientKey.value || ''
+                payload.prometheusAuth['tlsClientCert'] = state.tlsClientCert.value || ''
             }
         }
-        const api = id ? updateCluster : saveCluster;
+        const api = id ? updateCluster : saveCluster
         try {
-            setLoading(true);
-            const { result } = await api(payload);
-            toast.success(`Successfully ${id ? 'updated' : 'saved'}.`);
-            reload();
-            toggleEditMode((e) => !e);
+            setLoading(true)
+            const { result } = await api(payload)
+            toast.success(`Successfully ${id ? 'updated' : 'saved'}.`)
+            reload()
+            toggleEditMode((e) => !e)
         } catch (err) {
-            showError(err);
+            showError(err)
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
     }
 
     const clusterTitle = () => {
         if (!id) {
-            return 'Add cluster';
+            return 'Add cluster'
         } else {
-            return 'Edit cluster';
+            return 'Edit cluster'
         }
-    };
+    }
 
     const setPrometheusToggle = () => {
-        setPrometheusToggleEnabled(!prometheusToggleEnabled);
-    };
+        setPrometheusToggleEnabled(!prometheusToggleEnabled)
+    }
 
     const OnPrometheusAuthTypeChange = (e) => {
-        handleOnChange(e);
+        handleOnChange(e)
         if (state.authType.value == AuthenticationType.BASIC) {
-            setPrometheusAuthenticationType({ type: AuthenticationType.ANONYMOUS });
+            setPrometheusAuthenticationType({ type: AuthenticationType.ANONYMOUS })
         } else {
-            setPrometheusAuthenticationType({ type: AuthenticationType.BASIC });
+            setPrometheusAuthenticationType({ type: AuthenticationType.BASIC })
         }
-    };
+    }
 
     let payload = {
         id,
@@ -584,7 +590,7 @@ function ClusterForm({
 
         defaultClusterComponent: defaultClusterComponent,
         k8sversion: '',
-}
+    }
 
     return (
         <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
@@ -726,7 +732,12 @@ function ClusterForm({
             )}
             <div className={`form__buttons`}>
                 {id && (
-                    <button style={{margin: 'auto', marginLeft: 0 }} className="cta delete" type="button" onClick={() => toggleConfirmation(true)}>
+                    <button
+                        style={{ margin: 'auto', marginLeft: 0 }}
+                        className="cta delete"
+                        type="button"
+                        onClick={() => toggleConfirmation(true)}
+                    >
                         {deleting ? <Progressing /> : 'Delete'}
                     </button>
                 )}
@@ -748,7 +759,7 @@ function ClusterForm({
                 />
             )}
         </form>
-    );
+    )
 }
 
 function Environment({
@@ -761,11 +772,11 @@ function Environment({
     prometheus_endpoint,
     isProduction,
     isNamespaceMandatory = true,
-    reload
+    reload,
 }) {
-    const [loading, setLoading] = useState(false);
-    const [ignore, setIngore] = useState(false);
-    const [ignoreError, setIngoreError] = useState('');
+    const [loading, setLoading] = useState(false)
+    const [ignore, setIngore] = useState(false)
+    const [ignoreError, setIngoreError] = useState('')
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             environment_name: { value: environment_name, error: '' },
@@ -797,9 +808,9 @@ function Environment({
             },
         },
         onValidation,
-    );
-    const [deleting, setDeleting] = useState(false);
-    const [confirmation, toggleConfirmation] = useState(false);
+    )
+    const [deleting, setDeleting] = useState(false)
+    const [confirmation, toggleConfirmation] = useState(false)
 
     const getEnvironmentPayload = () => {
         return {
@@ -810,25 +821,25 @@ function Environment({
             namespace: state.namespace.value || '',
             active: true,
             default: state.isProduction.value === 'true',
-        };
+        }
     }
     async function onValidation() {
         if (!state.namespace.value && !ignore) {
-            setIngoreError('Enter a namespace or select ignore namespace');
-            return;
+            setIngoreError('Enter a namespace or select ignore namespace')
+            return
         }
         let payload = getEnvironmentPayload()
 
-        const api = id ? updateEnvironment : saveEnvironment;
+        const api = id ? updateEnvironment : saveEnvironment
         try {
-            setLoading(true);
-            await api(payload, id);
-            toast.success(`Successfully ${id ? 'updated' : 'saved'}`);
-            handleClose(true);
+            setLoading(true)
+            await api(payload, id)
+            toast.success(`Successfully ${id ? 'updated' : 'saved'}`)
+            handleClose(true)
         } catch (err) {
-            showError(err);
+            showError(err)
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
     }
 
@@ -868,8 +879,8 @@ function Environment({
                             <input
                                 type="checkbox"
                                 onChange={(e) => {
-                                    setIngore((t) => !t);
-                                    setIngoreError('');
+                                    setIngore((t) => !t)
+                                    setIngoreError('')
                                 }}
                                 checked={ignore}
                             />
@@ -912,9 +923,13 @@ function Environment({
                 </div>
                 <div className={`form__buttons`}>
                     {id && (
-                            <button className="cta delete m-auto ml-0" type="button" onClick={() => toggleConfirmation(true)}>
-                                {deleting ? <Progressing /> : 'Delete'}
-                            </button>
+                        <button
+                            className="cta delete m-auto ml-0"
+                            type="button"
+                            onClick={() => toggleConfirmation(true)}
+                        >
+                            {deleting ? <Progressing /> : 'Delete'}
+                        </button>
                     )}
                     <button className="cta" type="submit" disabled={loading}>
                         {loading ? <Progressing /> : id ? 'Update' : 'Save'}
@@ -934,5 +949,5 @@ function Environment({
                 )}
             </form>
         </VisibleModal>
-    );
+    )
 }

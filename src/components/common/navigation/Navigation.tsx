@@ -22,6 +22,7 @@ import { Command, CommandErrorBoundary } from '../../command'
 import { InstallationType, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import ReactGA from 'react-ga'
 import './navigation.scss'
+import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
 
 const NavigationList = [
     {
@@ -55,6 +56,14 @@ const NavigationList = [
         iconClass: 'nav-security',
         icon: SecurityIcon,
         isAvailableInEA: false,
+    },
+    {
+        title: 'Clusters',
+        type: 'link',
+        href: URLS.CLUSTER_LIST,
+        iconClass: 'nav-short-clusters',
+        icon: ClusterIcon,
+        isAvailableInEA: true,
     },
     {
         title: 'Bulk Edit',
