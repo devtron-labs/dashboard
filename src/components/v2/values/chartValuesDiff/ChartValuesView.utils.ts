@@ -53,7 +53,7 @@ const generateManifestGenerationKey = (
     commonState: ChartValuesViewState,
 ) => {
     return isCreateValueView
-        ? `0_${valueName}_${commonState.chartValues?.id}_default`
+        ? `0_${valueName}_${commonState.chartValues?.id}_default_${commonState.selectedVersionUpdatePage?.id}`
         : isExternalApp
         ? `${commonState.releaseInfo.deployedAppDetail.environmentDetail.namespace}_${commonState.releaseInfo.deployedAppDetail.appName}_${commonState.chartValues?.id}_${commonState.selectedVersionUpdatePage?.id}`
         : `${commonState.selectedEnvironment.value}_${appName}_${commonState.chartValues?.id}_${commonState.selectedEnvironment.namespace}_${commonState.selectedVersionUpdatePage?.id}`
