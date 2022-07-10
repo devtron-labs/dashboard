@@ -41,7 +41,7 @@ const GitLink = {
 }
 
 const AccessTokenLink = {
-    AccessLink: "https://docs.devtron.ai/user-guide/global-configurations/gitops#3-git-access-credential",
+    AccessLink: "https://docs.devtron.ai/devtron/setup/global-configurations/gitops#4.-git-access-credential",
 }
 const DefaultGitOpsConfig = {
     id: undefined,
