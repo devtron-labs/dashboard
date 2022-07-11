@@ -122,9 +122,8 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                 if (props.ciPipelineSourceTypeOptions.length == 1) {
                     selectedMaterial = props.ciPipelineSourceTypeOptions[0]
                 } else {
-                    selectedMaterial = props.ciPipelineSourceTypeOptions.find((i) => i.isSelected === true)
+                    selectedMaterial = props.ciPipelineSourceTypeOptions.find((i) => i.isSelected)
                 }
-
                 let errorObj = props.validationRules?.sourceValue(mat.value)
                 const isBranchRegex = mat.type !== SourceTypeMap.WEBHOOK && mat.type === SourceTypeMap.BranchRegex
                 const isBranchFixed = mat.type !== SourceTypeMap.WEBHOOK && mat.type === SourceTypeMap.BranchFixed

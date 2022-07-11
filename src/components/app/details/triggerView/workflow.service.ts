@@ -182,7 +182,9 @@ export interface WorkflowDisplay {
     type: string
 }
 
-export const getTriggerWorkflows = (appId): Promise<{ appName: string; workflows: WorkflowType[] }> => {
+export const getTriggerWorkflows = (
+    appId,
+): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
     return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow)
 }
 
@@ -194,7 +196,7 @@ export const getInitialWorkflows = (
     id,
     dimensions: WorkflowDimensions,
     workflowOffset: Offset,
-): Promise<{ appName: string; workflows: WorkflowType[] }> => {
+): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
     return Promise.all([getWorkflowList(id), getCIConfig(id), getCDConfig(id)]).then(
         ([workflow, ciConfig, cdConfig]) => {
             return processWorkflow(
@@ -214,10 +216,12 @@ export function processWorkflow(
     cdResponse: CdPipelineResult,
     dimensions: WorkflowDimensions,
     workflowOffset: Offset,
-): { appName: string; workflows: Array<WorkflowType> } {
+): { appName: string; workflows: Array<WorkflowType>; filteredCIPipelines } {
     let ciPipelineToNodeWithDimension = (ciPipeline: CiPipeline) => ciPipelineToNode(ciPipeline, dimensions)
+    const filteredCIPipelines =
+        ciResponse?.ciPipelines?.filter((pipeline) => pipeline.active && !pipeline.deleted) ?? []
     let ciMap = new Map(
-        (ciResponse?.ciPipelines?.filter((pipeline) => pipeline.active && !pipeline.deleted) ?? [])
+        filteredCIPipelines
             .map(ciPipelineToNodeWithDimension)
             .map((ciPipeline) => [ciPipeline.id, ciPipeline] as [string, NodeAttr]),
     )
@@ -339,7 +343,7 @@ export function processWorkflow(
     })
 
     workflows.forEach((workflow) => (workflow.width = maxWorkflowWidth))
-    return { appName, workflows }
+    return { appName, workflows, filteredCIPipelines }
 }
 
 function processDownstreamDeployments(

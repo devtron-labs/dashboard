@@ -25,6 +25,7 @@ import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { getHostURLConfiguration } from '../../../../services/service'
 import { getCIWebhookRes } from './ciWebhook.service'
+import { workflow } from './workflow.data'
 
 export const TriggerViewContext = createContext({
     invalidateCache: false,
@@ -71,6 +72,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             isWebhookPayloadLoading: false,
             webhhookTimeStampOrder: 'DESC',
             showMaterialRegexModal: false,
+            filteredCIPipelines: [],
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -87,8 +89,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getHostURLConfig()
         getTriggerWorkflows(this.props.match.params.appId)
             .then((result) => {
+                const _filteredCIPipelines = result.filteredCIPipelines || []
                 let wf = result.workflows || []
-                this.setState({ workflows: wf, view: ViewType.FORM }, () => {
+                this.setState({ workflows: wf, view: ViewType.FORM, filteredCIPipelines: _filteredCIPipelines }, () => {
                     this.getWorkflowStatus()
                     this.timerRef = setInterval(() => {
                         this.getWorkflowStatus()
@@ -671,13 +674,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             let nd: NodeAttr
             for (let i = 0; i < this.state.workflows.length; i++) {
                 nd = this.state.workflows[i].nodes.find((node) => +node.id == this.state.ciNodeId && node.type === 'CI')
-                if (nd) break
+                if (nd) {
+                    break
+                }
             }
             let material = nd[this.state.materialType] || []
 
             return (
                 <>
-                    {console.log(material)}
                     <CIMaterial
                         workflowId={this.state.workflowId}
                         history={this.props.history}
@@ -698,6 +702,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         showMaterialRegexModal={this.state.showMaterialRegexModal}
                         renderShowCIModal={this.renderShowCIModal}
                         onCloseBranchRegexModal={this.onCloseBranchRegexModal}
+                        filteredCIPipelines={this.state.filteredCIPipelines}
                     />
                 </>
             )

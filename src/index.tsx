@@ -96,5 +96,5 @@ ReactDOM.render(
 )
 
 if (process.env.NODE_ENV === 'development') {
-    (module as any).hot.accept()
+    ;(module as any).hot.accept()
 }
