@@ -160,7 +160,7 @@ export function Build({
         setFormData(_form)
     }
 
-    const handleScanToggle = (e): void => {
+    const handleScanToggle = (): void => {
         const _formData = { ...formData }
         _formData.scanEnabled = !_formData.scanEnabled
         setFormData(_formData)
