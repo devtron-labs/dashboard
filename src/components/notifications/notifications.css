@@ -15,9 +15,9 @@
 
 .pipeline-list__row:hover {
     background-color: #edf1f5;
- }
+}
 
-.pipeline-list__row:hover .pipeline-list__hover{
+.pipeline-list__row:hover .pipeline-list__hover {
     visibility: visible;
 }
 
@@ -77,7 +77,7 @@
     padding: 10px;
 }
 
-.pipeline-list__hover{
+.pipeline-list__hover {
     width: 10%;
     visibility: hidden;
 }
@@ -310,8 +310,26 @@
     stroke: var(--N400);
 }
 
-.select-button--pipeline-filter.loading-applist{
+.select-button--pipeline-filter.loading-applist {
     text-align: center;
     padding: 12px;
     font-size: 13px;
+}
+
+.no-border {
+    border: none;
+    display: inline-block;
+}
+
+.no-border .form__radio-item {
+    border: none;
+    margin: 10px 20px 0 0;
+}
+
+.no-border .form__radio-item .form__radio-item-content {
+    padding: 0;
+}
+
+.no-border .form__radio-item .form__radio-item-content .radio__title {
+    text-transform: none;
 }

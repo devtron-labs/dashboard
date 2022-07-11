@@ -30,6 +30,8 @@ import CreatableSelect from 'react-select/creatable'
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
 import './notifications.css'
 import { getAppListMin, getEnvironmentListMin, getTeamListMin } from '../../services/service'
+import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
+import { EMAIL_AGENT } from './constants'
 
 interface AddNotificationsProps extends RouteComponentProps<{}> {}
 
@@ -78,25 +80,28 @@ interface AddNotificationState {
     showSESConfigModal: boolean
     showSMTPConfigModal: boolean
     channelOptions: {
+        __isNew__?: boolean
         label: string
         value
         data: { dest: 'slack' | 'ses' | 'smtp' | ''; configId: number; recipient: string }
     }[]
     sesConfigOptions: { id: number; configName: string; dest: 'slack' | 'ses' | 'smtp' | ''; recipient: string }[]
+    smtpConfigOptions: { id: number; configName: string; dest: 'slack' | 'ses' | 'smtp' | ''; recipient: string }[]
     isLoading: boolean
     appliedFilters: Array<{ type: string; value: number | string | undefined; label: string | undefined }>
     selectedChannels: {
         __isNew__?: boolean
         label: string
         value
-        data: { dest: 'slack' | 'ses' | ''; configId: number; recipient: string }
+        data: { dest: 'slack' | 'ses' | 'smtp' | ''; configId: number; recipient: string }
     }[]
     openSelectPipeline: boolean
     pipelineList: PipelineType[]
     filterInput: string
-    sesConfigId: number
+    emailAgentConfigId: number
     options: Options
     isApplistLoading: boolean
+    selectedEmailAgent: string
 }
 
 export class AddNotification extends Component<AddNotificationsProps, AddNotificationState> {
@@ -113,6 +118,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             view: ViewType.LOADING,
             channelOptions: [],
             sesConfigOptions: [],
+            smtpConfigOptions: [],
             showSlackConfigModal: false,
             showSESConfigModal: false,
             showSMTPConfigModal: false,
@@ -123,8 +129,9 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             isApplistLoading: false,
             selectedChannels: [],
             pipelineList: [],
-            sesConfigId: 0,
+            emailAgentConfigId: 0,
             options: { environment: [], application: [], project: [] },
+            selectedEmailAgent: EMAIL_AGENT.SES,
         }
         this.handleFilterInput = this.handleFilterInput.bind(this)
         this.selectFilterType = this.selectFilterType.bind(this)
@@ -132,8 +139,10 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         this.handlePipelineEventType = this.handlePipelineEventType.bind(this)
         this.selectChannel = this.selectChannel.bind(this)
         this.handleFilterTag = this.handleFilterTag.bind(this)
-        this.selectSES = this.selectSES.bind(this)
+        this.selectEmailAgentAccount = this.selectEmailAgentAccount.bind(this)
         this.selectSESFromChild = this.selectSESFromChild.bind(this)
+        this.openAddEmailConfigPopup = this.openAddEmailConfigPopup.bind(this)
+        this.changeEmailAgent = this.changeEmailAgent.bind(this)
     }
 
     componentDidMount() {
@@ -145,6 +154,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         getAddNotificationInitData().then((result) => {
             this.setState({
                 sesConfigOptions: result.sesConfigOptions,
+                smtpConfigOptions: result.smtpConfigOptions,
                 channelOptions: result.channelOptions,
                 view: ViewType.FORM,
             })
@@ -203,13 +213,17 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         }
     }
 
-    showSesDropdown(): boolean {
-        let allEmails = this.state.selectedChannels?.filter((p) => p.data.dest === '' || p.data.dest === 'ses')
-        let show = allEmails.reduce((isValid, item) => {
-            isValid = isValid || validateEmail(item.data.recipient)
-            return isValid
-        }, false)
-        return show
+    showEmailAgents(): boolean {
+        let allEmails = this.state.selectedChannels?.filter(
+            (p) =>
+                (p.data.dest === '' || p.data.dest === 'ses' || p.data.dest === 'smtp') &&
+                validateEmail(p.data.recipient),
+        )
+        // let show = allEmails.reduce((isValid, item) => {
+        //     isValid = isValid || validateEmail(item.data.recipient)
+        //     return isValid
+        // }, false)
+        return allEmails.length > 0
     }
 
     toggleSelectPipeline() {
@@ -316,13 +330,17 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         this.setState(state)
     }
 
-    selectSES(event): void {
-        this.setState({ sesConfigId: event.target.value })
+    selectEmailAgentAccount(event): void {
+        let state = { ...this.state }
+        state.emailAgentConfigId = event.target.value
+        this.setState(state)
     }
 
     selectSESFromChild(sesConfigId: number): void {
         if (sesConfigId && sesConfigId > 0) {
-            this.setState({ sesConfigId: sesConfigId })
+            let state = { ...this.state }
+            state.emailAgentConfigId = sesConfigId
+            this.setState(state)
         }
     }
 
@@ -336,12 +354,12 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         } else if (!this.state.selectedChannels.length) {
             toast.error('Select atleast one recipient')
             return
-        } else if (isAnyEmail && !this.state.sesConfigId) {
+        } else if (isAnyEmail && !this.state.emailAgentConfigId) {
             toast.error('Select SES Account')
             return
         }
 
-        saveNotification(selectedPipelines, this.state.selectedChannels, this.state.sesConfigId)
+        saveNotification(selectedPipelines, this.state.selectedChannels, this.state.emailAgentConfigId)
             .then((response) => {
                 this.props.history.push(`${URLS.GLOBAL_CONFIG_NOTIFIER}/channels`)
                 toast.success('Saved Successfully')
@@ -351,34 +369,87 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             })
     }
 
+    changeEmailAgent(event: any): void {
+        let state = { ...this.state }
+        state.selectedEmailAgent = event.target.value
+        this.setState(state)
+    }
+
+    openAddEmailConfigPopup(): void {
+        let state = { ...this.state }
+        if (this.state.selectedEmailAgent === EMAIL_AGENT.SES) {
+            state.showSESConfigModal = true
+        } else {
+            state.showSMTPConfigModal = true
+        }
+        this.setState(state)
+    }
+
     renderEmailAgentSelector() {
-        let show = this.showSesDropdown()
-        if (show) {
-            let sesConfig = this.state.sesConfigOptions.find((config) => config.id === this.state.sesConfigId)
+        if (this.showEmailAgents()) {
+            const emailConfigAgentOptions =
+                this.state.selectedEmailAgent === EMAIL_AGENT.SES ? 'sesConfigOptions' : 'smtpConfigOptions'
+            const emailAgentConfig = this.state[emailConfigAgentOptions].find(
+                (config) => config.id === this.state.emailAgentConfigId,
+            )
             return (
-                <div>
-                    <div></div>
-                    <label className="form__row form__row--ses-account">
-                        <span className="form__label">SES Account (used for sending email notifications)</span>
-                        <Select rootClassName="" onChange={this.selectSES} value={this.state.sesConfigId}>
-                            <Select.Button rootClassName="select-button--default">
-                                {sesConfig ? sesConfig.configName : 'Select SES Account'}
+                <div className="flexbox mb-20">
+                    <RadioGroup
+                        className="no-border"
+                        value={this.state.selectedEmailAgent}
+                        name="trigger-type"
+                        onChange={this.changeEmailAgent}
+                    >
+                        <RadioGroupItem value={EMAIL_AGENT.SES}>{EMAIL_AGENT.SES}</RadioGroupItem>
+                        <RadioGroupItem value={EMAIL_AGENT.SMTP}>{EMAIL_AGENT.SMTP}</RadioGroupItem>
+                    </RadioGroup>
+                    <div className="w-300">
+                        <Select
+                            rootClassName=""
+                            onChange={this.selectEmailAgentAccount}
+                            value={this.state.emailAgentConfigId}
+                        >
+                            <Select.Button rootClassName="select-button--default h-36">
+                                {emailAgentConfig
+                                    ? emailAgentConfig.configName
+                                    : `Select ${EMAIL_AGENT[this.state.selectedEmailAgent]} Account`}
                             </Select.Button>
-                            {this.state.sesConfigOptions.map((sesConfig) => (
-                                <Select.Option key={sesConfig.id} value={sesConfig.id}>
-                                    <span className="ellipsis-left">{sesConfig.configName}</span>
+                            {this.state[emailConfigAgentOptions].map((config) => (
+                                <Select.Option key={`${this.state.selectedEmailAgent}_${config.id}`} value={config.id}>
+                                    <span className="ellipsis-left">{config.configName}</span>
                                 </Select.Option>
                             ))}
-                            <div
-                                className="select__sticky-bottom"
-                                onClick={(e) => {
-                                    this.setState({ showSESConfigModal: true })
-                                }}
-                            >
-                                <Add className="icon-dim-20 mr-5" /> Add SES Account
+                            <div className="select__sticky-bottom" onClick={this.openAddEmailConfigPopup}>
+                                <Add className="icon-dim-20 mr-5" /> Add {EMAIL_AGENT[this.state.selectedEmailAgent]}
+                                Account
                             </div>
                         </Select>
-                    </label>
+                    </div>
+                    {/* <label className="form__row form__row--ses-account">
+                        <span className="form__label">
+                            {EMAIL_AGENT[this.state.selectedEmailAgent]} Account (used for sending email notifications)
+                        </span>
+                        <Select
+                            rootClassName=""
+                            onChange={this.selectEmailAgentAccount}
+                            value={this.state.emailAgentConfigId}
+                        >
+                            <Select.Button rootClassName="select-button--default">
+                                {emailAgentConfig
+                                    ? emailAgentConfig.configName
+                                    : `Select ${EMAIL_AGENT[this.state.selectedEmailAgent]} Account`}
+                            </Select.Button>
+                            {this.state[emailConfigAgentOptions].map((config) => (
+                                <Select.Option key={`${this.state.selectedEmailAgent}_${config.id}`} value={config.id}>
+                                    <span className="ellipsis-left">{config.configName}</span>
+                                </Select.Option>
+                            ))}
+                            <div className="select__sticky-bottom" onClick={this.openAddEmailConfigPopup}>
+                                <Add className="icon-dim-20 mr-5" /> Add {EMAIL_AGENT[this.state.selectedEmailAgent]}
+                                Account
+                            </div>
+                        </Select>
+                    </label> */}
                 </div>
             )
         }
