@@ -147,7 +147,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
                 {/* @ts-ignore */}
-                <form className="login-dt__form" autocomplete="on" onSubmit={this.login}>
+                <form className="login-dt__form" autoComplete="on" onSubmit={this.login}>
                     <input
                         type="text"
                         className="form__input fs-14 mb-24"

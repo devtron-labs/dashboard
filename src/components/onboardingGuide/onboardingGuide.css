@@ -1,0 +1,17 @@
+.h-300 {
+    min-height: 300px;
+}
+
+.guide-body {
+    height: calc(100vh - 300px);
+}
+.guide-cards__wrap {
+    display: grid;
+    grid-template-columns: 300px 300px;
+    grid-gap: 20px;
+}
+
+.guide-card__img {
+    width: 300px;
+    height: 210px;
+}
