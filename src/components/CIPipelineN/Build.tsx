@@ -292,7 +292,7 @@ export function Build({
         return (
             <>
                 <hr />
-                <div className=" mr-20">
+                <div>
                     <div
                         className="en-2 bw-1 br-4 pt-12 pb-12 pl-16 pr-12"
                         style={{ display: 'grid', gridTemplateColumns: '52px auto 32px' }}
