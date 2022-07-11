@@ -333,3 +333,11 @@
 .no-border .form__radio-item .form__radio-item-content .radio__title {
     text-transform: none;
 }
+
+.smtp-protected-input .protected-input__toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}

@@ -4,6 +4,7 @@ import { sortCallback } from '../common'
 import { NotificationConfiguration } from './NotificationTab'
 import { PipelineType } from './AddNotification'
 import { ResponseType } from '../../services/service.types'
+import { SMTPConfigResponseType } from './types'
 
 interface UpdateNotificationEvent {
     id: number
@@ -121,7 +122,7 @@ export function getChannelConfigs(): Promise<ResponseType> {
     return get(URL)
 }
 
-export function getSlackAndSESConfigs(): Promise<ResponseType> {
+export function getConfigs(): Promise<ResponseType> {
     return getChannelConfigs().then((response) => {
         let slackConfigs = response.result?.slackConfigs || []
         slackConfigs = slackConfigs.sort((a, b) => {
@@ -148,11 +149,25 @@ export function getSlackAndSESConfigs(): Promise<ResponseType> {
                 isDefault: sesConfig.default || false,
             }
         })
+        let smtpConfigs = response.result?.smtpConfigs || []
+        smtpConfigs = smtpConfigs.sort((a, b) => {
+            return sortCallback('configName', a, b)
+        })
+        smtpConfigs = smtpConfigs.map((smtpConfig) => {
+            return {
+                id: smtpConfig.id,
+                name: smtpConfig.configName || '',
+                accessKeyId: smtpConfig.accessKey || '',
+                email: smtpConfig.fromEmail || '',
+                isDefault: smtpConfig.default || false,
+            }
+        })
         return {
             ...response,
             result: {
                 slackConfigurationList: slackConfigs,
                 sesConfigurationList: sesConfigs,
+                smtpConfigurationList: smtpConfigs,
             },
         }
     })
@@ -273,19 +288,10 @@ export function deleteNotifications(requestBody, singleDeletedId): Promise<Delet
     return trash(URL, payload)
 }
 
-export function saveSESConfiguration(data): Promise<UpdateConfigResponseType> {
+export function saveEmailConfiguration(data, channel: string): Promise<UpdateConfigResponseType> {
     const URL = `${Routes.NOTIFIER}/channel`
     let payload = {
-        channel: 'ses',
-        configs: [data],
-    }
-    return post(URL, payload)
-}
-
-export function updateSESConfiguration(data): Promise<UpdateConfigResponseType> {
-    const URL = `${Routes.NOTIFIER}/channel`
-    let payload = {
-        channel: 'ses',
+        channel: channel,
         configs: [data],
     }
     return post(URL, payload)
@@ -293,6 +299,11 @@ export function updateSESConfiguration(data): Promise<UpdateConfigResponseType> 
 
 export function getSESConfiguration(sesConfigId: number): Promise<SESConfigResponseType> {
     const URL = `${Routes.NOTIFIER}/channel/ses/${sesConfigId}`
+    return get(URL)
+}
+
+export function getSMTPConfiguration(smtpConfigId: number): Promise<SMTPConfigResponseType> {
+    const URL = `${Routes.NOTIFIER}/channel/smtp/${smtpConfigId}`
     return get(URL)
 }
 

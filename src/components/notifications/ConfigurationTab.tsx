@@ -8,29 +8,42 @@ import {
     deleteNotification,
     getChannelConfigs,
     getSESConfiguration,
-    getSlackAndSESConfigs,
+    getConfigs,
     getSlackConfiguration,
 } from './notifications.service'
 import slack from '../../assets/img/slack-logo.svg'
 import ses from '../../assets/icons/ic-aws-ses.svg'
+import { ReactComponent as SMTP } from '../../assets/icons/ic-smtp.svg'
 import { ViewType } from '../../config/constants'
 import EmptyState from '../EmptyState/EmptyState'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CONFIGURATION_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import Tippy from '@tippyjs/react'
+import { SMTPConfigModal } from './SMTPConfigModal'
 export interface ConfigurationTabState {
     view: string
     showSlackConfigModal: boolean
     showSESConfigModal: boolean
+    showSMTPConfigModal: boolean
     slackConfigId: number
     sesConfigId: number
+    smtpConfigId: number
     sesConfigurationList: Array<{ id: number; name: string; accessKeyId: string; email: string; isDefault: boolean }>
+    smtpConfigurationList: Array<{
+        id: number
+        name: string
+        port: string
+        host: string
+        email: string
+        isDefault: boolean
+    }>
     slackConfigurationList: Array<{ id: number; slackChannel: string; projectId: number; webhookUrl: string }>
     abortAPI: boolean
     deleting: boolean
     confirmation: boolean
     sesConfig: any
+    smtpConfig: any
     slackConfig: any
     showDeleteSlackConfigModal: boolean
 }
@@ -47,14 +60,18 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             view: ViewType.LOADING,
             showSlackConfigModal: false,
             showSESConfigModal: false,
+            showSMTPConfigModal: false,
             slackConfigId: 0,
             sesConfigId: 0,
+            smtpConfigId: 0,
             sesConfigurationList: [],
+            smtpConfigurationList: [],
             slackConfigurationList: [],
             abortAPI: false,
             deleting: false,
             confirmation: false,
             sesConfig: {},
+            smtpConfig: {},
             slackConfig: {},
             showDeleteSlackConfigModal: false,
         }
@@ -66,11 +83,12 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     }
 
     getAllChannelConfigs(): void {
-        getSlackAndSESConfigs()
+        getConfigs()
             .then((response) => {
                 let state = { ...this.state }
                 state.slackConfigurationList = response.result.slackConfigurationList
                 state.sesConfigurationList = response.result.sesConfigurationList
+                state.smtpConfigurationList = response.result.smtpConfigurationList
                 state.view = ViewType.FORM
                 this.setState(state)
             })
@@ -211,10 +229,10 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
 
     renderSMTPConfigurations() {
         return (
-            <div key="ses-config" className="white-card white-card--configuration-tab">
+            <div key="smtp-config" className="white-card white-card--configuration-tab">
                 <div className="configuration-tab__header">
-                    <p className="configuration-tab__title">
-                        <img alt="ses config" src={ses} className="icon-dim-24 mr-10" />
+                    <p className="configuration-tab__title flexbox">
+                        <SMTP className="icon-dim-24 mr-10" />
                         SMTP Configurations
                     </p>
                     <button
@@ -274,7 +292,6 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             showError(e)
         }
     }
-
     renderSESConfigurationTable() {
         if (this.state.view === ViewType.LOADING) {
             return (
@@ -387,6 +404,122 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             )
     }
 
+    renderSMTPConfigurationTable() {
+        if (this.state.view === ViewType.LOADING) {
+            return (
+                <div className="flex" style={{ height: 'calc(100% - 68px)' }}>
+                    <Progressing pageLoader />
+                </div>
+            )
+        } else if (this.state.smtpConfigurationList.length === 0) {
+            return (
+                <div style={{ height: 'calc(100% - 70px)' }}>
+                    <EmptyState>
+                        <EmptyState.Title>
+                            <h3>No Configurations</h3>
+                        </EmptyState.Title>
+                    </EmptyState>
+                </div>
+            )
+        } else
+            return (
+                <table className="w-100">
+                    <thead>
+                        <tr className="configuration-tab__table-header">
+                            <th className="ses-config-table__name truncate-text">Name</th>
+                            <th className="ses-config-table__access-key truncate-text">Host</th>
+                            <th className="ses-config-table__access-key truncate-text">Port</th>
+                            <th className="ses-config-table__email truncate-text">Sender's Email</th>
+                            <th className="ses-config-table__action"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr className="mb-8">
+                            {this.state.smtpConfigurationList.map((smtpConfig) => {
+                                return (
+                                    <td key={smtpConfig.id} className="configuration-tab__table-row">
+                                        <div className="ses-config-table__name truncate-text">
+                                            {smtpConfig.name}
+                                            {smtpConfig.isDefault ? (
+                                                <span className="ses_config-table__tag">Default</span>
+                                            ) : null}
+                                        </div>
+                                        <div className="ses-config-table__access-key truncate-text">
+                                            {smtpConfig.host}
+                                        </div>
+                                        <div className="ses-config-table__access-key truncate-text">
+                                            {smtpConfig.port}
+                                        </div>
+                                        <div className="ses-config-table__email truncate-text">{smtpConfig.email}</div>
+                                        <div className="ses-config-table__action">
+                                            <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
+                                                <button
+                                                    type="button"
+                                                    className="transparent align-right mr-16"
+                                                    onClick={() => {
+                                                        this.setState({
+                                                            showSMTPConfigModal: true,
+                                                            smtpConfigId: smtpConfig.id,
+                                                        })
+                                                    }}
+                                                >
+                                                    <Edit className="icon-dim-20" />
+                                                </button>
+                                            </Tippy>
+                                            <Tippy
+                                                className="default-tt"
+                                                arrow={false}
+                                                placement="top"
+                                                content="Delete"
+                                            >
+                                                <button
+                                                    type="button"
+                                                    className="transparent align-right"
+                                                    onClick={() => {
+                                                        this.deleteClickHandler(
+                                                            smtpConfig.id,
+                                                            DeleteComponentsName.SMTPConfigurationTab,
+                                                        )
+                                                    }}
+                                                >
+                                                    <Trash className="scn-5 icon-dim-20" />
+                                                </button>
+                                            </Tippy>{' '}
+                                        </div>
+                                    </td>
+                                )
+                            })}
+                        </tr>
+                        {/* {this.state.confirmation && (
+                            <DeleteComponent
+                                setDeleting={this.setDeleting}
+                                deleteComponent={deleteNotification}
+                                payload={
+                                    this.state.showDeleteSlackConfigModal
+                                        ? this.state.slackConfig
+                                        : this.state.sesConfig
+                                }
+                                title={
+                                    this.state.showDeleteSlackConfigModal
+                                        ? this.state.slackConfig.configName
+                                        : this.state.sesConfig.configName
+                                }
+                                toggleConfirmation={this.toggleConfirmation}
+                                component={
+                                    this.state.showDeleteSlackConfigModal
+                                        ? DeleteComponentsName.SlackConfigurationTab
+                                        : DeleteComponentsName.SesConfigurationTab
+                                }
+                                confirmationDialogDescription={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
+                                reload={this.getAllChannelConfigs}
+                                configuration="configuration"
+                            />
+                        )} */}
+                    </tbody>
+                </table>
+            )
+    }
+
     renderSESConfigModal() {
         if (this.state.showSESConfigModal) {
             return (
@@ -399,6 +532,24 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                     }}
                     closeSESConfigModal={(event) => {
                         this.setState({ showSESConfigModal: false })
+                    }}
+                />
+            )
+        }
+    }
+
+    renderSMTPConfigModal() {
+        if (this.state.showSMTPConfigModal) {
+            return (
+                <SMTPConfigModal
+                    smtpConfigId={this.state.smtpConfigId}
+                    shouldBeDefault={this.state.smtpConfigurationList.length === 0}
+                    onSaveSuccess={() => {
+                        this.setState({ showSMTPConfigModal: false, smtpConfigId: 0 })
+                        this.getAllChannelConfigs()
+                    }}
+                    closeSMTPConfigModal={(event) => {
+                        this.setState({ showSMTPConfigModal: false })
                     }}
                 />
             )
@@ -427,9 +578,11 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             <>
                 <div className="configuration-tab">
                     {this.renderSESConfigurations()}
+                    {this.renderSMTPConfigurations()}
                     {this.renderSlackConfigurations()}
                 </div>
                 {this.renderSESConfigModal()}
+                {this.renderSMTPConfigModal()}
                 {this.renderSlackConfigModal()}
             </>
         )

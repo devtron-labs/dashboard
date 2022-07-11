@@ -32,6 +32,7 @@ import './notifications.css'
 import { getAppListMin, getEnvironmentListMin, getTeamListMin } from '../../services/service'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { EMAIL_AGENT } from './constants'
+import { SMTPConfigModal } from './SMTPConfigModal'
 
 interface AddNotificationsProps extends RouteComponentProps<{}> {}
 
@@ -140,7 +141,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         this.selectChannel = this.selectChannel.bind(this)
         this.handleFilterTag = this.handleFilterTag.bind(this)
         this.selectEmailAgentAccount = this.selectEmailAgentAccount.bind(this)
-        this.selectSESFromChild = this.selectSESFromChild.bind(this)
+        this.selectEmailAgentConfigIdFromChild = this.selectEmailAgentConfigIdFromChild.bind(this)
         this.openAddEmailConfigPopup = this.openAddEmailConfigPopup.bind(this)
         this.changeEmailAgent = this.changeEmailAgent.bind(this)
     }
@@ -336,10 +337,10 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         this.setState(state)
     }
 
-    selectSESFromChild(sesConfigId: number): void {
-        if (sesConfigId && sesConfigId > 0) {
+    selectEmailAgentConfigIdFromChild(emailAgentConfigId: number): void {
+        if (emailAgentConfigId && emailAgentConfigId > 0) {
             let state = { ...this.state }
-            state.emailAgentConfigId = sesConfigId
+            state.emailAgentConfigId = emailAgentConfigId
             this.setState(state)
         }
     }
@@ -839,7 +840,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                 <SESConfigModal
                     sesConfigId={0}
                     shouldBeDefault={false}
-                    selectSESFromChild={this.selectSESFromChild}
+                    selectSESFromChild={this.selectEmailAgentConfigIdFromChild}
                     onSaveSuccess={() => {
                         this.setState({ showSESConfigModal: false })
                         getChannelConfigs()
@@ -853,6 +854,32 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                     }}
                     closeSESConfigModal={(event) => {
                         this.setState({ showSESConfigModal: false })
+                    }}
+                />
+            )
+        }
+    }
+
+    renderSMTPConfigModal() {
+        if (this.state.showSMTPConfigModal) {
+            return (
+                <SMTPConfigModal
+                    smtpConfigId={0}
+                    shouldBeDefault={false}
+                    selectSMTPFromChild={this.selectEmailAgentConfigIdFromChild}
+                    onSaveSuccess={() => {
+                        this.setState({ showSESConfigModal: false })
+                        getChannelConfigs()
+                            .then((response: any) => {
+                                let providers = response?.result.sesConfigs || []
+                                this.setState({ sesConfigOptions: providers })
+                            })
+                            .catch((error) => {
+                                showError(error)
+                            })
+                    }}
+                    closeSMTPConfigModal={(event) => {
+                        this.setState({ showSMTPConfigModal: false })
                     }}
                 />
             )

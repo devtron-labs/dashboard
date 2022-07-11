@@ -1,14 +1,23 @@
-import { RouteComponentProps } from 'react-router';
-import { ServerError } from '../../modals/commonTypes';
+import { RouteComponentProps } from 'react-router'
+import { ServerError } from '../../modals/commonTypes'
+import { ResponseType } from '../../services/service.types'
 
-export interface NotifierProps extends RouteComponentProps<{ id: string;}> {
-   
-}
+export interface NotifierProps extends RouteComponentProps<{ id: string }> {}
 
 export interface NotifierState {
-    code: number;
-    errors: ServerError[];
-    successMessage: string | null;
-    channel: string,
+    code: number
+    errors: ServerError[]
+    successMessage: string | null
+    channel: string
 }
-
+export interface SMTPConfigResponseType extends ResponseType {
+    result?: {
+        configName: string
+        port: number
+        host: string
+        username: string
+        password: string
+        fromEmail: string
+        default: boolean
+    }
+}
