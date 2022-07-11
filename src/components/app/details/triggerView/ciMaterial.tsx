@@ -14,7 +14,7 @@ import { ReactComponent as Git } from '../../../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as RightArrow } from '../../../../assets/icons/ic-arrow-forward.svg'
+import RightArrow from '../../../../assets/icons/ic-arrow-forward.svg'
 import { getCIPipeline, saveCIPipeline, savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { ViewType, TriggerType, SourceTypeMap } from '../../../../config'
 import { getCIMaterialList } from '../../service'
@@ -224,7 +224,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     }}
                 >
                     Next
-                    {/* <RightArrow /> */}
+                    <img src={RightArrow} style={{ height: '48px', width: '48px', marginBottom: '8px' }} />
                 </button>
             </div>
         )
