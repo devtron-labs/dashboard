@@ -5,6 +5,20 @@
 .guide-body {
     height: calc(100vh - 300px);
 }
+
+.guide-card__left {
+    position: absolute;
+    top: 240px;
+    background: white;
+}
+
+.guide-card__right {
+    position: absolute;
+    top: 240px;
+    background: white;
+    left: calc(100vw - 700px);
+}
+
 .guide-cards__wrap {
     display: grid;
     grid-template-columns: 300px 300px;

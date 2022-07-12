@@ -58,6 +58,7 @@ export const URLS = {
     GLOBAL_CONFIG_PROJECT: '/global-config/projects',
     GLOBAL_CONFIG_LOGIN: '/global-config/login-service',
     GLOBAL_CONFIG_EXTERNAL_LINKS: '/global-config/external-links',
+    GUIDE: 'guide',
     SECURITY: '/security',
     STACK_MANAGER: '/stack-manager',
     STACK_MANAGER_DISCOVER_MODULES: '/stack-manager/discover',
