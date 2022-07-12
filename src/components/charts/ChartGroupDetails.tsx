@@ -66,10 +66,6 @@ export default function ChartGroupDetails() {
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
 
-    function handleOnDeployTo() {
-        toggleDeployModal(true)
-    }
-
     function handleAdvancedChart() {
             push(`${url}/deploy`, {
                 charts: state.charts,
@@ -243,7 +239,7 @@ export default function ChartGroupDetails() {
                                     <button
                                         type="button"
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
-                                        onClick={() => handleOnDeployTo()}
+                                        onClick={() => toggleDeployModal(true)}
                                         className="cta ellipsis-right w100"
                                     >
                                         {loading ? <Progressing /> : 'Deploy to ...'}

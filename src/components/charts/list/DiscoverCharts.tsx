@@ -127,14 +127,6 @@ function DiscoverChartList() {
         }
     }
 
-    function handleOnDeployTo() {
-            toggleDeployModal(true)
-    }
-
-    function handleAdvancedChart() {
-            configureChart(0)
-    }
-
     async function handleInstall() {
         if (!project.id) {
             setProject((project) => ({ ...project, error: 'Project is mandatory for deployment.' }))
@@ -427,7 +419,7 @@ function DiscoverChartList() {
                                         <button
                                             type="button"
                                             disabled={state.charts.length === 0}
-                                            onClick={handleAdvancedChart}
+                                            onClick={() => configureChart(0)}
                                             className="cta cancel ellipsis-right"
                                         >
                                             Advanced Options
@@ -450,7 +442,7 @@ function DiscoverChartList() {
                                     <button
                                         type="button"
                                         disabled={state.charts.length === 0}
-                                        onClick={state.advanceVisited ? handleInstall : () => handleOnDeployTo()}
+                                        onClick={state.advanceVisited ? handleInstall : () => toggleDeployModal(true)}
                                         className="cta ellipsis-right"
                                     >
                                         {installing ? (
