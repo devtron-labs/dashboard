@@ -307,7 +307,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                             <input
                                 className="form__input"
                                 type="email"
-                                name="emailFrom"
+                                name="fromEmail"
                                 value={this.state.form.fromEmail}
                                 onChange={this.handleInputChange}
                                 onBlur={this.handleBlur}
