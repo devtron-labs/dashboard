@@ -10,6 +10,7 @@ export const Option = (props) => {
         <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
             <input
                 checked={props.isSelected}
+                disabled={props.isDisabled}
                 onChange={(e) => selectOption(data)}
                 type="checkbox"
                 style={{ height: '16px', width: '16px', flex: '0 0 16px' }}
@@ -122,7 +123,6 @@ export const multiSelectStyles = {
 
 interface CustomSelect {
     sortSelected?: boolean
-
     options: any[]
     onChange: (...args) => void
     value?: any

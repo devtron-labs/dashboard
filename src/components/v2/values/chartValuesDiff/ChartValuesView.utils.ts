@@ -46,25 +46,37 @@ export const getCommonSelectStyle = (styleOverrides = {}) => {
 }
 
 const generateManifestGenerationKey = (
+    isCreateValueView: boolean,
     isExternalApp: boolean,
     appName: string,
+    valueName: string,
     commonState: ChartValuesViewState,
 ) => {
-    return isExternalApp
+    return isCreateValueView
+        ? `0_${valueName}_${commonState.chartValues?.id}_default_${commonState.selectedVersionUpdatePage?.id}`
+        : isExternalApp
         ? `${commonState.releaseInfo.deployedAppDetail.environmentDetail.namespace}_${commonState.releaseInfo.deployedAppDetail.appName}_${commonState.chartValues?.id}_${commonState.selectedVersionUpdatePage?.id}`
         : `${commonState.selectedEnvironment.value}_${appName}_${commonState.chartValues?.id}_${commonState.selectedEnvironment.namespace}_${commonState.selectedVersionUpdatePage?.id}`
 }
 
 export const updateGeneratedManifest = (
+    isCreateValueView: boolean,
     isExternalApp: boolean,
     isDeployChartView: boolean,
     appName: string,
+    valueName: string,
     commonState: ChartValuesViewState,
     appStoreApplicationVersionId: number,
     valuesYaml: string,
     dispatch: (action: ChartValuesViewAction) => void,
 ) => {
-    const _manifestGenerationKey = generateManifestGenerationKey(isExternalApp, appName, commonState)
+    const _manifestGenerationKey = generateManifestGenerationKey(
+        isCreateValueView,
+        isExternalApp,
+        appName,
+        valueName,
+        commonState,
+    )
 
     if (commonState.manifestGenerationKey === _manifestGenerationKey && !commonState.valuesYamlUpdated) {
         return
@@ -89,6 +101,8 @@ export const updateGeneratedManifest = (
             valuesYaml,
             dispatch,
         )
+    } else if (isCreateValueView) {
+        getGeneratedHelmManifest(0, 1, 'default', valueName, appStoreApplicationVersionId, valuesYaml, dispatch)
     } else {
         getGeneratedHelmManifest(
             commonState.installedConfig.environmentId,

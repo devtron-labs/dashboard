@@ -105,7 +105,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                     options: previousStepVariables,
                 },
                 {
-                    label: 'Global variables',
+                    label: 'System variables',
                     options: globalVariables,
                 },
             ])
@@ -116,7 +116,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                     options: previousStepVariables,
                 },
                 {
-                    label: 'Global variables',
+                    label: 'System variables',
                     options: globalVariables,
                 },
             ])

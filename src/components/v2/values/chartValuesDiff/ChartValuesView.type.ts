@@ -14,6 +14,7 @@ export interface ChartValuesViewType {
     appId?: string
     isExternalApp?: boolean
     isDeployChartView?: boolean
+    isCreateValueView?: boolean
     installedConfigFromParent?: ChartInstalledConfig
     appDetails?: AppDetails
     chartValuesListFromParent?: ChartValuesType[]
@@ -125,6 +126,7 @@ export interface ChartValuesSelectorType {
     handleChartValuesSelection: (chartValues: ChartValuesType) => void
     redirectToChartValues?: () => Promise<void>
     hideVersionFromLabel?: boolean
+    hideCreateNewOption?: boolean
 }
 
 export interface ChartVersionValuesSelectorType extends ChartVersionSelectorType, ChartValuesSelectorType {}
@@ -133,6 +135,7 @@ export interface ChartValuesEditorType {
     loading: boolean
     isExternalApp: boolean
     isDeployChartView: boolean
+    isCreateValueView: boolean
     appId: string
     appName: string
     valuesText: string
@@ -232,6 +235,8 @@ export interface ChartValuesViewState {
     errorResponseCode: number
     invalidAppName: boolean
     invalidAppNameMessage: string
+    invalidValueName: boolean
+    invalidValueNameMessage: string
     invalidaEnvironment: boolean
     invalidProject: boolean
 }
@@ -270,6 +275,8 @@ export enum ChartValuesViewActionTypes {
     environments = 'environments',
     forceDeleteData = 'forceDeleteData',
     errorResponseCode = 'errorResponseCode',
+    invalidValueName = 'invalidValueName',
+    invalidValueNameMessage = 'invalidValueNameMessage',
     invalidAppName = 'invalidAppName',
     invalidAppNameMessage = 'invalidAppNameMessage',
     invalidaEnvironment = 'invalidaEnvironment',
@@ -280,4 +287,21 @@ export enum ChartValuesViewActionTypes {
 export interface ChartValuesViewAction {
     type: ChartValuesViewActionTypes
     payload: any
+}
+
+export interface AppNameInputType {
+    appName: string
+    handleAppNameChange: (newAppName: string) => void
+    handleAppNameOnBlur: () => void
+    invalidAppName: boolean
+    invalidAppNameMessage: string
+}
+
+export interface ValueNameInputType {
+    valueName: string
+    handleValueNameChange: (newAppName: string) => void
+    handleValueNameOnBlur: () => void
+    invalidValueName: boolean
+    invalidValueNameMessage: string
+    valueNameDisabled: boolean
 }

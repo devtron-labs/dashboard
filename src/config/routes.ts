@@ -67,6 +67,11 @@ export const URLS = {
     STACK_MANAGER_ABOUT: '/stack-manager/about',
     STACK_MANAGER_ABOUT_RELEASES: '/stack-manager/about/releases',
     DEPLOYMENT_HISTORY_CONFIGURATIONS: '/configuration',
+    CLUSTER_LIST: '/clusters',
+    NODES_LIST: '/nodes',
+    NODE_DETAILS: '/node-details',
+    CHART: '/chart',
+    PRESET_VALUES: '/preset-values',
 }
 
 export enum APP_COMPOSE_STAGE {
