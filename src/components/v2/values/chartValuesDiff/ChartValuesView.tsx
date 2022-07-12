@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react'
-import { useHistory, useRouteMatch } from 'react-router'
+import { useHistory, useRouteMatch, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { showError, Progressing, ErrorScreenManager, RadioGroup, useJsonYaml, ConditionalWrap } from '../../../common'
 import {
@@ -16,10 +16,13 @@ import {
     updateAppReleaseWithoutLinking,
 } from '../../../external-apps/ExternalAppService'
 import {
+    createChartValues,
+    deleteChartValues,
     deleteInstalledChart,
     getChartValues,
     getChartVersionDetailsV2,
     installChart,
+    updateChartValues,
 } from '../../../charts/charts.service'
 import { ServerErrors } from '../../../../modals/commonTypes'
 import { SERVER_MODE, URLS } from '../../../../config'
@@ -37,6 +40,7 @@ import {
     UpdateApplicationButton,
     AppNameInput,
     ErrorScreenWithInfo,
+    ValueNameInput,
 } from './ChartValuesView.component'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import {
@@ -45,7 +49,7 @@ import {
     getChartRelatedReadMe,
     getChartValuesList,
 } from '../common/chartValues.api'
-import { getChartValuesURL } from '../../../charts/charts.helper'
+import { getChartValuesURL, getSavedValuesListURL } from '../../../charts/charts.helper'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Arrows } from '../../../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as File } from '../../../../assets/icons/ic-file-text.svg'
@@ -82,6 +86,7 @@ function ChartValuesView({
     appId,
     isExternalApp,
     isDeployChartView,
+    isCreateValueView,
     installedConfigFromParent,
     appDetails,
     chartValuesListFromParent = [],
@@ -91,9 +96,11 @@ function ChartValuesView({
 }: ChartValuesViewType) {
     const history = useHistory()
     const { url } = useRouteMatch()
+    const { chartValueId } = useParams<{ chartValueId: string }>()
     const { serverMode } = useContext(mainContext)
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
+    const [valueName, setValueName] = useState('')
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
         initState(
@@ -109,6 +116,18 @@ function ChartValuesView({
 
     useEffect(() => {
         if (isDeployChartView) {
+            fetchProjectsAndEnvironments(serverMode, dispatch)
+            const _fetchedReadMe = commonState.fetchedReadMe
+            _fetchedReadMe.set(0, commonState.installedConfig.readme)
+
+            dispatch({
+                type: ChartValuesViewActionTypes.multipleOptions,
+                payload: {
+                    isLoading: false,
+                    fetchedReadMe: _fetchedReadMe,
+                },
+            })
+        } else if (isCreateValueView) {
             fetchProjectsAndEnvironments(serverMode, dispatch)
             const _fetchedReadMe = commonState.fetchedReadMe
             _fetchedReadMe.set(0, commonState.installedConfig.readme)
@@ -205,7 +224,7 @@ function ChartValuesView({
                 })
         }
 
-        if (!isDeployChartView) {
+        if (!isDeployChartView && !isCreateValueView) {
             getDeploymentHistory(appId, isExternalApp)
                 .then((deploymentHistoryResponse: ChartDeploymentHistoryResponse) => {
                     const _deploymentHistoryArr =
@@ -238,15 +257,22 @@ function ChartValuesView({
                                 modifiedValuesYaml: response.result.values || '',
                             },
                         })
+                        let _valueName
+                        if (isCreateValueView && commonState.chartValues.kind === ChartKind.TEMPLATE) {
+                            setValueName(response.result.name)
+                            _valueName = response.result.name
+                        }
 
                         if (
                             ((isExternalApp || !isDeployChartView) && commonState.installedConfig) ||
                             (isDeployChartView && commonState.selectedEnvironment)
                         ) {
                             updateGeneratedManifest(
+                                isCreateValueView,
                                 isExternalApp,
                                 isDeployChartView,
                                 appName,
+                                _valueName,
                                 commonState,
                                 commonState.chartValues.appStoreVersionId || commonState.chartValues.id,
                                 response.result.values,
@@ -330,9 +356,11 @@ function ChartValuesView({
                     : commonState.chartValues?.appStoreVersionId || commonState.chartValues?.id
 
             updateGeneratedManifest(
+                isCreateValueView,
                 isExternalApp,
                 isDeployChartView,
                 appName,
+                valueName,
                 commonState,
                 appStoreApplicationVersionId,
                 commonState.modifiedValuesYaml,
@@ -345,7 +373,8 @@ function ChartValuesView({
         if (chartValuesList.length > 0 || commonState.deploymentHistoryArr.length > 0) {
             const isVersionAvailableForDiff =
                 chartValuesList.some((_chartValues) => _chartValues.kind === ChartKind.DEPLOYED) ||
-                commonState.deploymentHistoryArr.length > 0
+                commonState.deploymentHistoryArr.length > 0 ||
+                isCreateValueView
 
             dispatch({ type: ChartValuesViewActionTypes.isComparisonAvailable, payload: isVersionAvailableForDiff })
         }
@@ -435,7 +464,11 @@ function ChartValuesView({
                     payload: false,
                 })
                 toast.success('Successfully deleted.')
-                history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`)
+                history.push(
+                    isCreateValueView
+                        ? getSavedValuesListURL(installedConfigFromParent.appStoreId)
+                        : `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`,
+                )
             })
             .catch((error) => {
                 if (!force && error.code !== 403) {
@@ -470,6 +503,8 @@ function ChartValuesView({
     const getDeleteApplicationApi = (force?: boolean): Promise<any> => {
         if (isExternalApp && !commonState.installedAppInfo) {
             return deleteApplicationRelease(appId)
+        } else if (isCreateValueView) {
+            return deleteChartValues(parseInt(chartValueId))
         } else {
             return deleteInstalledChart(commonState.installedConfig.installedAppId, force)
         }
@@ -519,14 +554,23 @@ function ChartValuesView({
             return
         }
 
-        const validatedAppName = validationRules.appName(appName)
-
-        if (!isValidData(validatedAppName)) {
+        const validatedName = validationRules.appName(isCreateValueView ? valueName : appName)
+        if (isCreateValueView && !validatedName.isValid) {
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
-                    invalidAppName: !validatedAppName.isValid,
-                    invalidAppNameMessage: validatedAppName.message,
+                    invalidValueName: !validatedName.isValid,
+                    invalidValueNameMessage: validatedName.message,
+                },
+            })
+            toast.error('Some required fields are missing')
+            return
+        } else if (!isValidData(validatedName)) {
+            dispatch({
+                type: ChartValuesViewActionTypes.multipleOptions,
+                payload: {
+                    invalidAppName: !validatedName.isValid,
+                    invalidAppNameMessage: validatedName.message,
                     invalidaEnvironment: !commonState.selectedEnvironment,
                     invalidProject: !commonState.selectedProject,
                 },
@@ -555,20 +599,30 @@ function ChartValuesView({
             toast.error(`Encountered data validation error while updating. “${err}”`)
             return
         }
-
-        dispatch({
-            type: ChartValuesViewActionTypes.multipleOptions,
-            payload: {
-                isUpdateInProgress: true,
-                invalidAppName: false,
-                invalidAppNameMessage: '',
-                invalidaEnvironment: false,
-                invalidProject: false,
-            },
-        })
+        if (isCreateValueView && !validatedName.isValid) {
+            dispatch({
+                type: ChartValuesViewActionTypes.multipleOptions,
+                payload: {
+                    isUpdateInProgress: true,
+                    invalidValueName: false,
+                    invalidValueNameMessage: '',
+                },
+            })
+        } else {
+            dispatch({
+                type: ChartValuesViewActionTypes.multipleOptions,
+                payload: {
+                    isUpdateInProgress: true,
+                    invalidAppName: false,
+                    invalidAppNameMessage: '',
+                    invalidaEnvironment: false,
+                    invalidProject: false,
+                },
+            })
+        }
 
         try {
-            let res
+            let res, toastMessage
 
             if (isExternalApp && !commonState.installedAppInfo) {
                 if (!forceUpdate) {
@@ -601,6 +655,21 @@ function ChartValuesView({
                     appName: appName.trim(),
                 }
                 res = await installChart(payload)
+            } else if (isCreateValueView) {
+                const payload = {
+                    name: valueName,
+                    appStoreVersionId: commonState.selectedVersion,
+                    values: commonState.modifiedValuesYaml,
+                }
+                if (chartValueId !== '0') {
+                    payload['id'] = parseInt(chartValueId)
+                    payload['chartVersion'] = commonState.chartValues.chartVersion
+                    toastMessage = 'Chart Value Updated'
+                    res = await updateChartValues(payload)
+                } else {
+                    toastMessage = 'Chart Value Created'
+                    res = await createChartValues(payload)
+                }
             } else {
                 const payload: UpdateAppReleaseRequest = {
                     id: hasChartChanged() ? 0 : commonState.installedConfig.id,
@@ -618,7 +687,10 @@ function ChartValuesView({
                 payload: false,
             })
 
-            if (isDeployChartView && res?.result) {
+            if (isCreateValueView) {
+                toast.success(toastMessage)
+                history.push(getSavedValuesListURL(installedConfigFromParent.appStoreId))
+            } else if (isDeployChartView && res?.result) {
                 const {
                     result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId },
                 } = res
@@ -661,15 +733,27 @@ function ChartValuesView({
     const handleTabSwitch = (e) => {
         if (e?.target && e.target.value !== commonState.activeTab) {
             if (e.target.value === 'manifest') {
-                const validatedAppName = validationRules.appName(appName)
-                if (!isValidData(validatedAppName)) {
+                const validatedName = validationRules.appName(isCreateValueView ? valueName : appName)
+                if (isCreateValueView && !validatedName.isValid) {
                     dispatch({
                         type: ChartValuesViewActionTypes.multipleOptions,
                         payload: {
                             openReadMe: false,
                             openComparison: false,
-                            invalidAppName: !validatedAppName.isValid,
-                            invalidAppNameMessage: validatedAppName.message,
+                            invalidValueName: !validatedName.isValid,
+                            invalidValueNameMessage: validatedName.message,
+                        },
+                    })
+                    toast.error('Please provide the required inputs to view generated manifest')
+                    return
+                } else if (!isValidData(validatedName)) {
+                    dispatch({
+                        type: ChartValuesViewActionTypes.multipleOptions,
+                        payload: {
+                            openReadMe: false,
+                            openComparison: false,
+                            invalidAppName: !validatedName.isValid,
+                            invalidAppNameMessage: validatedName.message,
                             invalidaEnvironment: !commonState.selectedEnvironment,
                             invalidProject: !commonState.selectedProject,
                         },
@@ -804,7 +888,9 @@ function ChartValuesView({
 
     const getComparisonTippyContent = () => {
         if (commonState.isComparisonAvailable) {
-            return isDeployChartView
+            return isCreateValueView
+                ? 'Compare values with other values of this chart'
+                : isDeployChartView
                 ? 'Compare values with other deployments of this chart'
                 : 'Compare values with previous deployments of this app or other deployments of this chart'
         }
@@ -926,12 +1012,14 @@ function ChartValuesView({
         setAppName(newAppName)
     }
 
-    const handleAppNameOnBlur = () => {
+    const handleNameOnBlur = () => {
         if (commonState.activeTab === 'manifest') {
             updateGeneratedManifest(
+                isCreateValueView,
                 isExternalApp,
                 isDeployChartView,
                 appName,
+                valueName,
                 commonState,
                 commonState.chartValues.appStoreVersionId || commonState.chartValues.id,
                 commonState.modifiedValuesYaml,
@@ -944,9 +1032,7 @@ function ChartValuesView({
     const renderGUIForm = () => {
         return (
             <div className="chart-values-view__gui-form-container">
-                <form className="chart-values-view__gui-form">
-                    {/* GUI form inputs */}
-                </form>
+                <form className="chart-values-view__gui-form">{/* GUI form inputs */}</form>
                 {!commonState.openReadMe && (
                     <UpdateApplicationButton
                         isUpdateInProgress={commonState.isUpdateInProgress}
@@ -976,6 +1062,7 @@ function ChartValuesView({
                         }
                         isExternalApp={isExternalApp}
                         isDeployChartView={isDeployChartView}
+                        isCreateValueView={isCreateValueView}
                         appId={appId}
                         appName={
                             isExternalApp
@@ -1006,18 +1093,40 @@ function ChartValuesView({
                         isUpdateInProgress={commonState.isUpdateInProgress}
                         isDeleteInProgress={commonState.isDeleteInProgress}
                         isDeployChartView={isDeployChartView}
+                        isCreateValueView={isCreateValueView}
                         deployOrUpdateApplication={deployOrUpdateApplication}
                     />
                 )}
             </div>
         )
     }
+    const handleValueNameChange = (newValueName: string) => {
+        const validatedValueName = validationRules.appName(newValueName)
+        if (!validatedValueName.isValid && commonState.invalidAppNameMessage !== validatedValueName.message) {
+            dispatch({
+                type: ChartValuesViewActionTypes.multipleOptions,
+                payload: {
+                    invalidValueName: true,
+                    invalidValueNameMessage: validatedValueName.message,
+                },
+            })
+        } else if (validatedValueName.isValid) {
+            dispatch({
+                type: ChartValuesViewActionTypes.multipleOptions,
+                payload: {
+                    invalidValueName: false,
+                    invalidValueNameMessage: '',
+                },
+            })
+        }
+        setValueName(newValueName)
+    }
 
     const renderData = () => {
         return (
             <div
                 className={`chart-values-view__container bcn-0 ${
-                    isDeployChartView ? 'chart-values-view__deploy-chart' : ''
+                    isDeployChartView || isCreateValueView ? 'chart-values-view__deploy-chart' : ''
                 } ${commonState.openReadMe ? 'readmeOpened' : ''} ${
                     commonState.openComparison ? 'comparisonOpened' : ''
                 }`}
@@ -1026,11 +1135,21 @@ function ChartValuesView({
                 <div className="chart-values-view__hr-divider bcn-2" />
                 <div className="chart-values-view__wrapper">
                     <div className="chart-values-view__details">
+                        {isCreateValueView && (
+                            <ValueNameInput
+                                valueName={valueName}
+                                handleValueNameChange={handleValueNameChange}
+                                handleValueNameOnBlur={handleNameOnBlur}
+                                invalidValueName={commonState.invalidValueName}
+                                invalidValueNameMessage={commonState.invalidValueNameMessage}
+                                valueNameDisabled={chartValueId !== '0'}
+                            />
+                        )}
                         {isDeployChartView && (
                             <AppNameInput
                                 appName={appName}
                                 handleAppNameChange={handleAppNameChange}
-                                handleAppNameOnBlur={handleAppNameOnBlur}
+                                handleAppNameOnBlur={handleNameOnBlur}
                                 invalidAppName={commonState.invalidAppName}
                                 invalidAppNameMessage={commonState.invalidAppNameMessage}
                             />
@@ -1096,10 +1215,12 @@ function ChartValuesView({
                                     !commonState.installedAppInfo &&
                                     commonState.chartValues.kind === ChartKind.EXISTING
                                 }
+                                hideCreateNewOption={isCreateValueView}
                             />
                         )}
-                        {!isDeployChartView && (
+                        {!isDeployChartView && chartValueId !== '0' && (
                             <DeleteApplicationButton
+                                type={isCreateValueView ? 'preset value' : 'Application'}
                                 isUpdateInProgress={commonState.isUpdateInProgress}
                                 isDeleteInProgress={commonState.isDeleteInProgress}
                                 dispatch={dispatch}
@@ -1118,6 +1239,7 @@ function ChartValuesView({
                 {commonState.showDeleteAppConfirmationDialog && (
                     <DeleteChartDialog
                         appName={
+                            (isCreateValueView && valueName) ||
                             (isExternalApp && commonState.releaseInfo.deployedAppDetail.appName) ||
                             commonState.installedConfig?.appName
                         }
@@ -1128,6 +1250,7 @@ function ChartValuesView({
                                 payload: false,
                             })
                         }}
+                        isCreateValueView
                     />
                 )}
                 {commonState.forceDeleteData.forceDelete && (

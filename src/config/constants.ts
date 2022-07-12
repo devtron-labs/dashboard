@@ -149,6 +149,10 @@ export const Routes = {
     CUSTOM_CHART_LIST: 'deployment/template/fetch',
     VALIDATE_CUSTOM_CHART: 'deployment/template/validate',
     UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
+    CLUSTER_LIST: 'k8s/capacity/cluster/list',
+    CLUSTER_CAPACITY: 'k8s/capacity/cluster',
+    NODE_LIST: 'k8s/capacity/node/list',
+    NODE_CAPACITY: 'k8s/capacity/node',
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
 }
 
@@ -242,6 +246,7 @@ export const DOCUMENTATION = {
     CUSTOM_CHART_PRE_REQUISITES:
         'https://docs.devtron.ai/devtron/setup/global-configurations/custom-charts#prerequisites',
     ADMIN_PASSWORD: 'https://docs.devtron.ai/devtron/setup/install/install-devtron-with-cicd#devtron-admin-credentials',
+    CUSTOM_VALUES: 'https://docs.devtron.ai/devtron/user-guide/deploy-chart/overview-of-charts#custom-values',
 }
 
 // APP LIST STARTS

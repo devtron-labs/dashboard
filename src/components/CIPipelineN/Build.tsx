@@ -3,7 +3,7 @@ import { ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
 import { SourceMaterials, WebhookCIProps } from '../ciPipeline/SourceMaterials'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { Progressing } from '../common'
+import { Progressing, Toggle } from '../common'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ciPipelineContext } from './CIPipeline'
 import { CiPipelineSourceTypeOption, FormErrorObjectType, FormType } from '../ciPipeline/types'
@@ -11,6 +11,7 @@ import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.s
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as BugScanner } from '../../assets/icons/scanner.svg'
 
 export function Build({
     showFormError,
@@ -159,6 +160,12 @@ export function Build({
         setFormData(_form)
     }
 
+    const handleScanToggle = (): void => {
+        const _formData = { ...formData }
+        _formData.scanEnabled = !_formData.scanEnabled
+        setFormData(_formData)
+    }
+
     const renderBasicCI = () => {
         const _webhookData: WebhookCIProps = {
             webhookConditionList: formData.webhookConditionList,
@@ -281,6 +288,35 @@ export function Build({
         )
     }
 
+    const renderScanner = () => {
+        return (
+            <>
+                <hr />
+                <div>
+                    <div
+                        className="en-2 bw-1 br-4 pt-12 pb-12 pl-16 pr-12"
+                        style={{ display: 'grid', gridTemplateColumns: '52px auto 32px' }}
+                    >
+                        <BugScanner />
+                        <div>
+                            <p className="fs-13 lh-20 fw-6 cn-9" style={{'marginBottom': '4px'}}>Scan for vulnerabilities</p>
+                            <p className="fs-13 lh-18 mb-0 fs-12">
+                                Perform security scan after container image is built.
+                            </p>
+                        </div>
+                        <div className="mt-4" style={{ width: '32px', height: '20px' }}>
+                            <Toggle
+                                disabled={window._env_.FORCE_SECURITY_SCANNING && formData.scanEnabled}
+                                selected={formData.scanEnabled}
+                                onSelect={handleScanToggle}
+                            />
+                        </div>
+                        </div>
+                </div>
+            </>
+        )
+    }
+
     return pageState === ViewType.LOADING.toString() ? (
         <div style={{ minHeight: '200px' }} className="flex">
             <Progressing pageLoader />
@@ -288,7 +324,12 @@ export function Build({
     ) : (
         <div className="p-20 ci-scrollable-content">
             {renderBasicCI()}
-            {isAdvanced && renderDockerArgs()}
+            {isAdvanced && (
+                <>
+                    {renderScanner()}
+                    {renderDockerArgs()}
+                </>
+            )}
         </div>
     )
 }
