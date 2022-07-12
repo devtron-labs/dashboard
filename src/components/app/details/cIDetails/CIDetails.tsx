@@ -1129,7 +1129,6 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
         isError: false,
     })
     const { appId } = useParams<{ appId: string }>()
-    const ciPipelineId = props?.triggerHistory?.ciPipelineId
     const { push } = useHistory()
     async function callGetSecurityIssues() {
         try {
@@ -1164,7 +1163,8 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
     }, [props.triggerHistory.artifactId])
 
     const redirectToCreate = () => {
-        let url = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${ciPipelineId}/${URLS.APP_CI_CONFIG}/${ciPipelineId}/build`
+        const ciPipelineId = props?.triggerHistory?.ciPipelineId
+        const url = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${ciPipelineId}/${URLS.APP_CI_CONFIG}/${ciPipelineId}/build`
         push(url)
     }
 
