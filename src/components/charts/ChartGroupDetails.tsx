@@ -16,10 +16,6 @@ import {
 import { toast } from 'react-toastify'
 import ChartGroupBasicDeploy from './modal/ChartGroupBasicDeploy'
 import Tippy from '@tippyjs/react'
-import { isGitopsConfigured } from '../../services/service'
-import { ConfirmationDialog } from '../common'
-import warn from '../../assets/icons/ic-warning.svg'
-import { NavLink } from 'react-router-dom'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartSelector } from '../AppSelector'
@@ -31,8 +27,6 @@ export default function ChartGroupDetails() {
     const { url } = useRouteMatch()
     const [projectId, setProjectId] = useState(null)
     const [loading, setLoading] = useState(null)
-    const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false)
-    const [isGitOpsConfigAvailable, setIsGitOpsConfigAvailable] = useState(false)
     const {
         state,
         validateData,
@@ -72,38 +66,15 @@ export default function ChartGroupDetails() {
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
 
-    const getGitopsConfiguration = () => {
-        isGitopsConfigured()
-            .then((response) => {
-                let isGitOpsConfigAvailable = response.result && response.result.exists
-                setIsGitOpsConfigAvailable(isGitOpsConfigAvailable)
-            })
-            .catch((error) => {
-                showError(error)
-            })
-    }
-
-    useEffect(() => {
-        getGitopsConfiguration()
-    }, [])
-
     function handleOnDeployTo() {
-        if (isGitOpsConfigAvailable) {
-            toggleDeployModal(true)
-        } else {
-            toggleGitOpsWarningModal(true)
-        }
+        toggleDeployModal(true)
     }
 
     function handleAdvancedChart() {
-        if (isGitOpsConfigAvailable) {
             push(`${url}/deploy`, {
                 charts: state.charts,
                 configureChartIndex: state.charts.findIndex((chart) => chart.isEnabled),
             })
-        } else {
-            toggleGitOpsWarningModal(true)
-        }
     }
 
     function redirectToConfigure() {
@@ -161,7 +132,7 @@ export default function ChartGroupDetails() {
                 component={DeleteComponentsName.ChartGroup}
                 redirectTo={true}
                 url={`${URLS.CHARTS}/discover`}
-                reload={getGitopsConfiguration}
+                reload={false}
             />
         )
     }
@@ -303,31 +274,6 @@ export default function ChartGroupDetails() {
                     }}
                 />
             ) : null}
-
-            {showGitOpsWarningModal && (
-                <ConfirmationDialog>
-                    <ConfirmationDialog.Icon src={warn} />
-                    <ConfirmationDialog.Body title="GitOps configuration required">
-                        <p className="">
-                            GitOps configuration is required to perform this action. Please configure GitOps and try
-                            again.
-                        </p>
-                    </ConfirmationDialog.Body>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button
-                            type="button"
-                            tabIndex={3}
-                            className="cta cancel sso__warn-button"
-                            onClick={() => toggleGitOpsWarningModal(false)}
-                        >
-                            Cancel
-                        </button>
-                        <NavLink className="cta sso__warn-button btn-confirm" to={`/global-config/gitops`}>
-                            Configure GitOps
-                        </NavLink>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>
-            )}
         </div>
     )
 }
