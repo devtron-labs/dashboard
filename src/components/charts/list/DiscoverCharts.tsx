@@ -13,7 +13,6 @@ import { Switch, Route, NavLink } from 'react-router-dom'
 import { useHistory, useLocation, useRouteMatch } from 'react-router'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import ChartSelect from '../util/ChartSelect'
-import ChartValues from '../chartValues/ChartValues'
 import ChartGroupList from './ChartGroup'
 import ChartGroupCard from '../util/ChartGroupCard'
 import DiscoverChartDetails from '../discoverChartDetail/DiscoverChartDetails'
@@ -39,6 +38,8 @@ import { mainContext } from '../../common/navigation/NavigationRoutes'
 import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
 import PageHeader from '../../common/header/PageHeader'
 import emptyImage from '../../../assets/img/empty-noresult@2x.png'
+import SavedValuesList from '../SavedValues/SavedValuesList'
+import ChartValues from '../chartValues/ChartValues'
 
 interface EmptyCharts {
     title?: string
@@ -557,13 +558,11 @@ export default function DiscoverCharts() {
             <Route path={`${path}/group`}>
                 <ChartGroupList />
             </Route>
-            <Route
-                path={`${path}/chart/:chartId/chart-value/:chartValueId?`}
-                render={({ location, history, match }: { location: any; history: any; match: any }) => {
-                    return <ChartValues location={location} match={match} history={history} />
-                }}
-            />
-            <Route path={`${path}/chart/:chartId`} component={DiscoverChartDetails} />
+            <Route path={`${path}${URLS.CHART}/:chartId${URLS.PRESET_VALUES}`} component={SavedValuesList} exact />
+            <Route path={`${path}${URLS.CHART}/:chartId${URLS.PRESET_VALUES}/:chartValueId`} exact>
+                <ChartValues />
+            </Route>
+            <Route path={`${path}${URLS.CHART}/:chartId`} component={DiscoverChartDetails} />
             <Route>
                 <DiscoverChartList />
             </Route>

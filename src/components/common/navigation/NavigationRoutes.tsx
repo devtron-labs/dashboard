@@ -13,6 +13,7 @@ import { EnvType } from '../../v2/appDetails/appDetails.type'
 import DevtronStackManager from '../../v2/devtronStackManager/DevtronStackManager'
 import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import ClusterNodeContainer from '../../ClusterNodes/ClusterNodeContainer'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -163,6 +164,9 @@ export default function NavigationRoutes() {
                                             path={URLS.GLOBAL_CONFIG}
                                             render={(props) => <GlobalConfig {...props} />}
                                         />
+                                        <Route path={URLS.CLUSTER_LIST}>
+                                            <ClusterNodeContainer />
+                                        </Route>
                                         <Route
                                             path={URLS.BULK_EDITS}
                                             render={(props) => <BulkEdit {...props} serverMode={serverMode} />}

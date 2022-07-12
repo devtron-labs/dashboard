@@ -56,7 +56,7 @@ export function ChartDeploymentList({ chartId }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {installs.map((install, idx) => <DeploymentRow {...install} key={idx} />)}
+                    {installs.map((install, idx) => <DeploymentRow {...install} key={idx} setView={setView} fetchDeployments={fetchDeployments}/>)}
                 </tbody>
             </table>
         }
@@ -65,7 +65,7 @@ export function ChartDeploymentList({ chartId }) {
 }
 
 
-export function DeploymentRow({ installedAppId, appName, status, environmentId, environmentName, deployedBy, deployedAt, appOfferingMode, clusterId, namespace }) {
+export function DeploymentRow({ installedAppId, appName, status, environmentId, environmentName, deployedBy, deployedAt, appOfferingMode, clusterId, namespace, setView, fetchDeployments }) {
     const link = _buildAppDetailUrl();
     const [confirmation, toggleConfirmation] = useState(false)
     const [deleting, setDeleting] = useState(false);
@@ -99,6 +99,10 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
                 await deleteInstalledChart(Number(installedAppId))
             }
             toast.success('Successfully deleted');
+            toggleConfirmation(false)
+            setForceDeleteDialog(false)
+            setView(ViewType.LOADING)
+            fetchDeployments()
         }
         catch (err: any) {
             if (!force && err.code != 403) {

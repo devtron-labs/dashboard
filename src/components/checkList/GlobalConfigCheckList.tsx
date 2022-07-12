@@ -30,7 +30,7 @@ export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps,
     }
 
     renderGlobalChecklist() {
-        if (this.props.appStageCompleted < 5 && this.props.chartStageCompleted < 3) {
+        if (this.props.appStageCompleted < 5 && this.props.chartStageCompleted < 2) {
             //(app + chart) incomplete
             return <div>
                 <img src={Checklist} className="applist__checklist-img" />
@@ -49,33 +49,9 @@ export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps,
                     toggleChartChecklist={this.toggleChartChecklist} />
             </div>
         }
-        else if (this.props.appStageCompleted >= 5 && this.props.chartStageCompleted >= 3) {
+        else if (this.props.appStageCompleted >= 5 && this.props.chartStageCompleted >= 2) {
             //(app + chart) complete
             return <GlobalAllCheckModal />
-        }
-        else if (this.props.appStageCompleted >= 5 && this.props.chartStageCompleted < 3){
-
-            return (
-                <div>
-                   <img src={Checklist} className="applist__checklist-img" />
-                   <div className="cn-9 fw-6 fs-16 mt-16 mb-4">Configuration checklist</div>
-                   <div className="cn-9 mb-16 fs-13">Complete the required configurations to perform desired task</div>
-                    {!this.props.isAppCreated && 
-                        <>
-                            <SampleAppDeploy />
-                            <CustomAppDeploy />
-                        </>
-                    }
-                    <ChartCheckList
-                        chartChecklist={this.props.chartChecklist}
-                        showDivider={false}
-                        isChartCollapsed={this.state.isChartCollapsed}
-                        chartStageCompleted={this.props.chartStageCompleted}
-                        toggleChartChecklist={this.toggleChartChecklist}
-                    />
-                </div>
-            )
-
         }
         else {
             //app incomplete, chart complete 
@@ -94,7 +70,7 @@ export class GlobalConfigCheckList extends Component<GlobalConfigCheckListProps,
     }
 
     render() {
-        if (!this.props.isLoading && (!this.props.isAppCreated || this.props.appStageCompleted < 5 || this.props.chartStageCompleted < 3)) {
+        if (!this.props.isLoading && !this.props.isAppCreated) {
             return <div className="mt-36 ml-20 mr-20 mb-20 global__checklist">
                 {this.renderGlobalChecklist()}
             </div>

@@ -809,7 +809,7 @@ export default function AppList() {
                         </li>
                     )}
                 </ul>
-                <div className="app-tabs-sync">
+                <div className="app-tabs-sync fs-13">
                     {lastDataSyncTimeString &&
                         (params.appType == AppListConstants.AppType.DEVTRON_APPS ||
                             (params.appType == AppListConstants.AppType.HELM_APPS && !fetchingExternalApps)) && (
