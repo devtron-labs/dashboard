@@ -200,6 +200,7 @@ const ChartValuesGUIForm = React.memo(
         isUpdateInProgress: boolean
         isDeleteInProgress: boolean
         isDeployChartView: boolean
+        isCreateValueView: boolean
         deployOrUpdateApplication: (forceUpdate?: boolean) => Promise<void>
         dispatch: React.Dispatch<ChartValuesViewAction>
     }) => {
@@ -240,6 +241,7 @@ const ChartValuesGUIForm = React.memo(
                         isUpdateInProgress={props.isUpdateInProgress}
                         isDeleteInProgress={props.isDeleteInProgress}
                         isDeployChartView={props.isDeployChartView}
+                        isCreateValueView={props.isCreateValueView}
                         deployOrUpdateApplication={props.deployOrUpdateApplication}
                     />
                 )}

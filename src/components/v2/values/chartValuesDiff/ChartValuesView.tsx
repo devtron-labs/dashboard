@@ -70,7 +70,7 @@ import {
 } from './ChartValuesView.type'
 import { chartValuesReducer, initState } from './ChartValuesView.reducer'
 import { ValidationRules } from '../../../app/create/validationRules'
-import { convertJSONSchemaToMap, dummySchema, updateGeneratedManifest } from './ChartValuesView.utils'
+import { convertSchemaJsonToMap, updateGeneratedManifest } from './ChartValuesView.utils'
 import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ChartValuesGUIForm from './ChartValuesGUIView'
 import './ChartValuesView.scss'
@@ -118,7 +118,6 @@ function ChartValuesView({
                 payload: {
                     isLoading: false,
                     fetchedReadMe: _fetchedReadMe,
-                    schemaJson: convertJSONSchemaToMap(dummySchema),
                 },
             })
         } else if (isCreateValueView) {
@@ -139,7 +138,6 @@ function ChartValuesView({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
                     modifiedValuesYaml: commonState.installedConfig.valuesOverrideYaml,
-                    schemaJson: convertJSONSchemaToMap(dummySchema),
                     repoChartValue: {
                         appStoreApplicationVersionId: commonState.installedConfig.appStoreVersion,
                         chartRepoName: appDetails.appStoreChartName,
@@ -171,6 +169,7 @@ function ChartValuesView({
                             releaseInfo: _releaseInfo,
                             installedAppInfo: _installedAppInfo,
                             fetchedReadMe: _fetchedReadMe,
+                            schemaJson: convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson)
                         },
                     })
 
@@ -300,11 +299,7 @@ function ChartValuesView({
 
     useEffect(() => {
         if (commonState.selectedVersionUpdatePage?.id) {
-            getChartRelatedReadMe(
-                commonState.selectedVersionUpdatePage.id,
-                commonState.fetchedReadMe,
-                dispatch,
-            )
+            getChartRelatedReadMe(commonState.selectedVersionUpdatePage.id, commonState.fetchedReadMe, dispatch)
         }
     }, [commonState.selectedVersionUpdatePage, commonState.isReadMeAvailable])
 
@@ -403,7 +398,6 @@ function ChartValuesView({
                     },
                     installedConfig: result,
                     modifiedValuesYaml: result?.valuesOverrideYaml,
-                    schemaJson: convertJSONSchemaToMap(dummySchema),
                 },
             })
         } catch (e) {
@@ -1044,24 +1038,6 @@ function ChartValuesView({
         }
     }
 
-    // Todo: Update along with upcoming GUI form creation changes
-    const renderGUIForm = () => {
-        return (
-            <div className="chart-values-view__gui-form-container">
-                <form className="chart-values-view__gui-form">{/* GUI form inputs */}</form>
-                {!commonState.openReadMe && (
-                    <UpdateApplicationButton
-                        isUpdateInProgress={commonState.isUpdateInProgress}
-                        isDeleteInProgress={commonState.isDeleteInProgress}
-                        isDeployChartView={isDeployChartView}
-                        deployOrUpdateApplication={deployOrUpdateApplication}
-                        isCreateValueView={isCreateValueView}
-                    />
-                )}
-            </div>
-        )
-    }
-
     const renderChartValuesEditor = () => {
         return (
             <div
@@ -1256,6 +1232,7 @@ function ChartValuesView({
                             isUpdateInProgress={commonState.isUpdateInProgress}
                             isDeleteInProgress={commonState.isDeleteInProgress}
                             isDeployChartView={isDeployChartView}
+                            isCreateValueView={isCreateValueView}
                             deployOrUpdateApplication={deployOrUpdateApplication}
                             dispatch={dispatch}
                         />

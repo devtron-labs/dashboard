@@ -36,6 +36,7 @@ export interface ReleaseInfo {
     overrideValues: string,
     mergedValues: string,
     readme: string,
+    valuesSchemaJson?: string
 }
 
 export interface InstalledAppInfo {

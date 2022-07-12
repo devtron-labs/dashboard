@@ -10,8 +10,7 @@ import {
 } from '../../../charts/charts.service'
 import { showError, sortCallback, sortObjectArrayAlphabetically } from '../../../common'
 import { ChartKind, ChartValuesViewAction, ChartValuesViewActionTypes } from '../chartValuesDiff/ChartValuesView.type'
-import YAML from 'yaml'
-import { convertJSONSchemaToMap } from '../chartValuesDiff/ChartValuesView.utils'
+import { convertSchemaJsonToMap } from '../chartValuesDiff/ChartValuesView.utils'
 
 export async function fetchChartVersionsData(
     id: number,
@@ -72,7 +71,7 @@ export async function getChartRelatedReadMe(
         const { result } = await getReadme(id)
         const _payload = {
             fetchingReadMe: false,
-            // schemaJson: convertJSONSchemaToMap(result.schemaJson),
+            schemaJson: convertSchemaJsonToMap(result.valuesSchemaJson),
         }
 
         if (!currentFetchedReadMe.has(id)) {

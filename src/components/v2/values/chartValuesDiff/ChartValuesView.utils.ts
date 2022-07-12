@@ -1,6 +1,7 @@
 import { getGeneratedHelmManifest } from '../common/chartValues.api'
 import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
 import YAML from 'yaml'
+import { showError } from '../../../common'
 
 export const getCommonSelectStyle = (styleOverrides = {}) => {
     return {
@@ -133,68 +134,6 @@ const getFieldType = (type: string, renderType: string, containsEnum): string =>
     }
 }
 
-export const dummySchema = {
-    $schema: 'http://json-schema.org/schema#',
-    type: 'object',
-    properties: {
-        architecture: {
-            type: 'string',
-            title: 'MySQL architecture',
-            form: true,
-            description: 'Allowed values: `standalone` or `replication`',
-            enum: ['standalone', 'replication'],
-        },
-        auth: {
-            type: 'object',
-            title: 'Authentication configuration',
-            form: true,
-            required: ['username', 'password'],
-            properties: {
-                rootPassword: {
-                    type: 'string',
-                    title: 'MySQL root password',
-                    description: 'Defaults to a random 10-character alphanumeric string if not set',
-                },
-                database: {
-                    type: 'string',
-                    title: 'MySQL custom database name',
-                    maxLength: 64,
-                },
-                username: {
-                    type: 'string',
-                    title: 'MySQL custom username',
-                },
-                password: {
-                    type: 'string',
-                    title: 'MySQL custom password',
-                },
-            },
-        },
-        ingress: {
-            type: 'object',
-            form: true,
-            title: 'Ingress Configuration',
-            properties: {
-                enabled: {
-                    type: 'boolean',
-                    form: true,
-                    title: 'Use a custom hostname',
-                    description: 'Enable the ingress resource that allows you to access the Drupal installation.',
-                },
-                hostname: {
-                    type: 'string',
-                    form: true,
-                    title: 'Hostname',
-                    hidden: {
-                        value: false,
-                        path: 'ingress/enabled',
-                    },
-                },
-            },
-        },
-    },
-}
-
 const isFieldEnabled = (property: any, isChild: boolean) => {
     if (property.form && !property.properties) {
         return true
@@ -222,7 +161,7 @@ export const isRequiredField = (property: any, isChild: boolean, schemaJson: Map
         }
     }
 
-    return false
+    return !!property.required
 }
 
 const convertItemsToObj = (items) => {
@@ -274,8 +213,8 @@ export const getPathAndValueToSetIn = (pathKey: string[], valuesYamlDocument: YA
     return { pathToSetIn, valueToSetIn }
 }
 
-export const convertJSONSchemaToMap = (schema, parentRef = '', pathKeyAndPropsPair = new Map<string, any>()) => {
-    if (schema && schema.properties) {
+const getPathKeyAndPropsPair = (schema, parentRef = '', pathKeyAndPropsPair = new Map<string, any>()) => {
+    if (schema?.properties) {
         const properties = schema.properties
         Object.keys(properties).forEach((propertyKey) => {
             const propertyPath = `${parentRef}${parentRef ? '/' : ''}${propertyKey}`
@@ -296,10 +235,21 @@ export const convertJSONSchemaToMap = (schema, parentRef = '', pathKeyAndPropsPa
             pathKeyAndPropsPair.set(propertyPath, newProps)
 
             if (haveChildren) {
-                convertJSONSchemaToMap(property, propertyPath, pathKeyAndPropsPair)
+                getPathKeyAndPropsPair(property, propertyPath, pathKeyAndPropsPair)
             }
         })
     }
 
     return pathKeyAndPropsPair
+}
+
+export const convertSchemaJsonToMap = (valuesSchemaJson: string) => {
+    if (valuesSchemaJson?.trim()) {
+        try {
+            return getPathKeyAndPropsPair(JSON.parse(valuesSchemaJson))
+        } catch (e) {
+            showError(e)
+        }
+    }
+    return null
 }

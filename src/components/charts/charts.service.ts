@@ -196,7 +196,7 @@ export function updateChartGroupEntries(payload) {
 }
 
 export function getReadme(appStoreApplicationVersionId: number) {
-    return get(`app-store/discover/application/readme/${appStoreApplicationVersionId}`)
+    return get(`app-store/discover/application/chartInfo/${appStoreApplicationVersionId}`)
 }
 
 export function getChartGroupInstallationDetails(chartGroupId: number | string) {
