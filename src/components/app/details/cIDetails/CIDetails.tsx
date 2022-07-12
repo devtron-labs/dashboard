@@ -1164,6 +1164,7 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
 
     const redirectToCreate = () => {
         const ciPipelineId = props?.triggerHistory?.ciPipelineId
+        if(!ciPipelineId)return
         push(`${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${ciPipelineId}/${URLS.APP_CI_CONFIG}/${ciPipelineId}/build`)
     }
 
