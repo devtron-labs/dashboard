@@ -12,7 +12,6 @@ export interface WorkflowEditState {
     appName: string;
     showDeleteDialog: boolean;
     showCIMenu: boolean;
-    isGitOpsConfigAvailable: boolean;
     allCINodesMap: { id: number; value: any };
     hostURLConfig: HostURLConfig;
     cIMenuPosition: {
