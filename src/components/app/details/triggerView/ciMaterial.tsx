@@ -15,11 +15,14 @@ import { ReactComponent as GitHub } from '../../../../assets/icons/git/github.sv
 import { ReactComponent as BitBucket } from '../../../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import RightArrow from '../../../../assets/icons/ic-arrow-forward.svg'
+import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
+
 import { getCIPipeline, saveCIPipeline, savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { ViewType, TriggerType, SourceTypeMap } from '../../../../config'
 import { getCIMaterialList } from '../../service'
 import { toast } from 'react-toastify'
 import { ServerErrors } from '../../../../modals/commonTypes'
+import { PatchAction } from '../../../ciPipeline/types'
 
 export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     constructor(props) {
@@ -27,6 +30,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
         this.state = {
             regexValue: {},
+            isInvalidRegex: false,
+            errorMessage: '',
         }
     }
     renderMaterialSource(context) {
@@ -160,6 +165,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                             isWebhookPayloadLoading={this.props.isWebhookPayloadLoading}
                             workflowId={this.props.workflowId}
                             renderBranchRegexModal={this.renderBranchRegexModal}
+                            onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
                         />
                     </div>
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(context, canTrigger)}
@@ -185,31 +191,50 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         )
     }
 
-    onClickNextButton = (material, context) => {
-        const payload = this.props.filteredCIPipelines.find((_ciPipeline) => _ciPipeline.id == this.props.workflowId)
-        payload.action = 0
+    onClickNextButton = (context) => {
+        const _ciPipeline = this.props.filteredCIPipelines.find(
+            (_ciPipeline) => _ciPipeline?.id == this.props.workflowId,
+        )
+
+        const payload: any = {
+            ciPipeline: _ciPipeline,
+        }
+        payload.action = PatchAction.UPDATE_SOURCE
         payload.appId = +this.props.match.params.appId
         payload.appWorkflowId = +this.props.workflowId
+        payload.ciPipeline.postBuildStage = {}
+        payload.ciPipeline.preBuildStage = {}
+        for (let _cm of payload.ciPipeline.ciMaterial) {
+            const regVal = this.state.regexValue[_cm.gitMaterialId]
+            if (regVal) {
+                const regEx = _cm.source.find((_rc) => _rc.type === SourceTypeMap.BranchRegex)?.value
+                if (regEx || regEx.includes('.*')) {
+                    if (!regVal.match(regEx)) {
+                        this.setState({ isInvalidRegex: true })
+                        this.setState({ errorMessage: 'No matching value' })
+                        return
+                    }
 
-        payload.cipipeline.ciMaterial.forEach((_cm) => {
-            const ci = this.state.regexValue[_cm.gitMaterialId]
-            if (ci) {
-                _cm.source.push({
-                    type: SourceTypeMap.BranchFixed,
-                    value: ci,
-                })
+                    _cm.source.push({
+                        type: SourceTypeMap.BranchFixed,
+                        value: regVal,
+                    })
+                }
             }
-        })
-        console.log(payload)
+        }
+
         savePipeline(payload, true)
             .then((response) => {
                 if (response) {
                     toast.success('Updated Pipeline')
-                    // getWorkflows()
+                    this.setState({ isInvalidRegex: false })
+                    this.props.onCloseBranchRegexModal()
+                    context.onClickTriggerCINode()
                 }
             })
             .catch((error: ServerErrors) => {
                 showError(error)
+                this.setState({ isInvalidRegex: true })
             })
     }
 
@@ -219,12 +244,12 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 <button
                     className="cta"
                     onClick={(e) => {
-                        this.onClickNextButton(material, context)
-                        this.props.onCloseBranchRegexModal()
+                        this.onClickNextButton(context)
+                        // this.props.onCloseBranchRegexModal()
                     }}
                 >
                     Next
-                    <img src={RightArrow} style={{ height: '48px', width: '48px', marginBottom: '8px' }} />
+                    <img className="icon-dim-16 ml-8 scn-0" src={RightArrow} />
                 </button>
             </div>
         )
@@ -239,6 +264,15 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 },
             }
         })
+    }
+
+    renderValidationErrorLabel = (message?: string): JSX.Element => {
+        return (
+            <div className="error-label flex left align-start fs-11 fw-4 mt-6 ml-36">
+                <Error className="icon-dim-16" />
+                <div className="ml-4 cr-5">{message}</div>
+            </div>
+        )
     }
 
     renderBranchRegexModal = (material, context) => {
@@ -287,6 +321,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                                             autoFocus
                                             autoComplete="off"
                                         />
+                                        {this.state.isInvalidRegex &&
+                                            this.renderValidationErrorLabel(this.state.errorMessage)}
                                     </div>
                                 )
                             })}
@@ -321,7 +357,4 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             </TriggerViewContext.Consumer>
         )
     }
-}
-function getWorkflows() {
-    throw new Error('Function not implemented.')
 }

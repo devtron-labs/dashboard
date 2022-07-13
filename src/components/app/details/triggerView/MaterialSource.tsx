@@ -66,8 +66,6 @@ export class MaterialSource extends Component<MaterialSourceProps> {
     }
 
     render() {
-        console.log(this.props.material)
-
         return (
             <>
                 {this.props.material.map((material, index) => {

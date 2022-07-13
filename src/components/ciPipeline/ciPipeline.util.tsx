@@ -2,7 +2,13 @@ import React, { components } from 'react-select'
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
 
 export const CiPipelineSourceTypeBaseOptions = [
-    { label: 'Branch Fixed', value: 'SOURCE_TYPE_BRANCH_FIXED', isDisabled: false, isSelected: true, isWebhook: false },
+    {
+        label: 'Branch Fixed',
+        value: 'SOURCE_TYPE_BRANCH_FIXED',
+        isDisabled: false,
+        isSelected: false,
+        isWebhook: false,
+    },
     {
         label: 'Branch Regex',
         value: 'SOURCE_TYPE_BRANCH_REGEX',

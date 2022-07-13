@@ -299,7 +299,9 @@ export function Build({
                     >
                         <BugScanner />
                         <div>
-                            <p className="fs-13 lh-20 fw-6 cn-9" style={{'marginBottom': '4px'}}>Scan for vulnerabilities</p>
+                            <p className="fs-13 lh-20 fw-6 cn-9" style={{ marginBottom: '4px' }}>
+                                Scan for vulnerabilities
+                            </p>
                             <p className="fs-13 lh-18 mb-0 fs-12">
                                 Perform security scan after container image is built.
                             </p>
@@ -311,12 +313,11 @@ export function Build({
                                 onSelect={handleScanToggle}
                             />
                         </div>
-                        </div>
+                    </div>
                 </div>
             </>
         )
     }
-
     return pageState === ViewType.LOADING.toString() ? (
         <div style={{ minHeight: '200px' }} className="flex">
             <Progressing pageLoader />

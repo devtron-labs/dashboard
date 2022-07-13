@@ -37,7 +37,13 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 
 export const ciPipelineContext = createContext(null)
 
-export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, close, deleteWorkflow }: CIPipelineType) {
+export default function CIPipeline({
+    appName,
+    connectCDPipelines,
+    getWorkflows,
+    close,
+    deleteWorkflow,
+}: CIPipelineType) {
     let { appId, workflowId, ciPipelineId } = useParams<{ appId: string; workflowId: string; ciPipelineId: string }>()
     if (ciPipelineId === '0') {
         ciPipelineId = null
@@ -217,7 +223,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
                     toast.success('Pipeline Deleted')
                     setPageState(ViewType.FORM)
                     close()
-                    deleteWorkflow(appId,Number(workflowId))
+                    deleteWorkflow(appId, Number(workflowId))
                 }
             })
             .catch((error: ServerErrors) => {
@@ -650,7 +656,7 @@ export default function CIPipeline({ appName, connectCDPipelines, getWorkflows, 
 
     return (
         <VisibleModal className="">
-            {' '}
+            {console.log(formData)}
             <div
                 className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'

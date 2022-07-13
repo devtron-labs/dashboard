@@ -669,6 +669,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             showMaterialRegexModal: false,
         })
     }
+
+    onClickShowBranchRegexModal = () => {
+        this.setState({
+            showMaterialRegexModal: true,
+        })
+    }
+
     renderCIMaterial = () => {
         if (this.state.ciNodeId && this.state.showCIModal) {
             let nd: NodeAttr
@@ -703,6 +710,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         renderShowCIModal={this.renderShowCIModal}
                         onCloseBranchRegexModal={this.onCloseBranchRegexModal}
                         filteredCIPipelines={this.state.filteredCIPipelines}
+                        onClickShowBranchRegexModal={this.onClickShowBranchRegexModal}
                     />
                 </>
             )

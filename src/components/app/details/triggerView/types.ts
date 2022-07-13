@@ -72,10 +72,13 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     renderShowCIModal: () => void
     onCloseBranchRegexModal: () => void
     filteredCIPipelines: any[]
+    onClickShowBranchRegexModal: () => void
 }
 
 export interface CIMaterialState {
     regexValue: Record<number, string>
+    isInvalidRegex: boolean
+    errorMessage: string
 }
 
 export interface NodeAttr {

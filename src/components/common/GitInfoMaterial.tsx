@@ -25,6 +25,7 @@ export default function GitInfoMaterial({
     hideWebhookModal,
     workflowId,
     renderBranchRegexModal,
+    onClickShowBranchRegexModal,
 }) {
     function renderMaterialHeader() {
         return (
@@ -109,7 +110,7 @@ export default function GitInfoMaterial({
             return (
                 <div className="select-material select-material--trigger-view">
                     {/* <div className="material-list__title pb-0">Select Material</div> */}
-                    {renderBranchChangeHeader()}
+                    {renderBranchChangeHeader(material)}
                     {material.type === SourceTypeMap.WEBHOOK && (
                         <div className="cn-7 fs-12 fw-0 pl-20 flex left">
                             Showing results matching &nbsp;
@@ -152,20 +153,22 @@ export default function GitInfoMaterial({
         )
     }
 
-    const renderBranchChangeHeader = () => {
+    const renderBranchChangeHeader = (material) => {
         return (
-            <div className="fs-13" style={{ background: 'var(--window-bg)' }}>
-                <div></div>
-                <div className=" fw-6 flex content-space pl-20 pr-20 pt-16 pb-16">
-                    <div className="flex">
-                        <Branch className="hw-100 mr-8" />
-                        feature-ea-app-list
-                    </div>
-                    <div className="cb-5 cursor" onClick={() => renderBranchRegexModal()}>
-                        Change branch
+            material.type === SourceTypeMap.BranchRegex && (
+                <div className="fs-13" style={{ background: 'var(--window-bg)' }}>
+                    <div></div>
+                    <div className=" fw-6 flex content-space pl-20 pr-20 pt-16 pb-16">
+                        <div className="flex">
+                            <Branch className="hw-100 mr-8" />
+                            feature-ea-app-list
+                        </div>
+                        <div className="cb-5 cursor" onClick={() => onClickShowBranchRegexModal}>
+                            Change branch
+                        </div>
                     </div>
                 </div>
-            </div>
+            )
         )
     }
 

@@ -289,18 +289,77 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
     return ci
 }
 
+const isBranchRegex = (_material) => {
+    return _material.source?.some((_source) => _source.type === SourceTypeMap.BranchRegex)
+}
+
+// function getSourceTypeAndValue(_material) {
+//     if (!Array.isArray(_material.source)) {
+//         return _material.source
+//     }
+
+//     for (let _source of _material.source) {
+//         if (_source.type === SourceTypeMap.BranchRegex) {
+//             return {
+//                 type: SourceTypeMap.BranchRegex,
+//                 value: _material.source.find((e) => e.type === SourceTypeMap.BranchFixed)?.value || _source.value,
+//             }
+//         }
+//     }
+
+//     return _material.source[0]
+// }
+
+function getSourceTypeAndValue(_material) {
+    if (!Array.isArray(_material.source)) {
+        return _material.source
+    }
+
+    if (_material.source.length > 1) {
+        let _value, isBranchRegex
+        for (let _source of _material.source) {
+            if (_source.type === SourceTypeMap.BranchRegex) {
+                if (!_value) {
+                    isBranchRegex = true
+                    continue
+                }
+
+                return {
+                    type: SourceTypeMap.BranchRegex,
+                    value: _value,
+                }
+            } else if (_source.type === SourceTypeMap.BranchFixed) {
+                if (!isBranchRegex) {
+                    _value = _source.value
+                    continue
+                }
+
+                return {
+                    type: SourceTypeMap.BranchRegex,
+                    value: _source.value,
+                }
+            }
+        }
+    }
+
+    return _material.source[0]
+}
+
 function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: Githost): MaterialType[] {
     let materials: MaterialType[] = []
     const ciMaterialSet = new Set()
+
     if (ciPipeline) {
         materials = ciPipeline.ciMaterial.map((mat) => {
             ciMaterialSet.add(mat.gitMaterialId)
+
+            const sourceInfo = getSourceTypeAndValue(mat)
             return {
                 id: mat.id,
                 gitMaterialId: mat.gitMaterialId,
                 name: mat.gitMaterialName,
-                type: mat.source.type,
-                value: mat.source.value,
+                type: sourceInfo?.type,
+                value: sourceInfo?.value,
                 isSelected: true,
                 gitHostId: gitHost ? gitHost.id : 0,
             }
