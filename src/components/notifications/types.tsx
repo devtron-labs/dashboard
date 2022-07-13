@@ -15,8 +15,8 @@ export interface SMTPConfigResponseType extends ResponseType {
         configName: string
         port: number
         host: string
-        username: string
-        password: string
+        authUser: string
+        authPassword: string
         fromEmail: string
         default: boolean
     }

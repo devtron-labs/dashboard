@@ -157,7 +157,10 @@ export function getConfigs(): Promise<ResponseType> {
             return {
                 id: smtpConfig.id,
                 name: smtpConfig.configName || '',
-                accessKeyId: smtpConfig.accessKey || '',
+                host: smtpConfig.host || '',
+                port: smtpConfig.port || '',
+                authUser: smtpConfig.authUser || '',
+                authPassword: smtpConfig.authPassword || '',
                 email: smtpConfig.fromEmail || '',
                 isDefault: smtpConfig.default || false,
             }
@@ -230,6 +233,7 @@ export function updateNotificationRecipients(
     notificationList,
     savedRecipient,
     newRecipients,
+    selectedEmailAgent,
 ): Promise<UpdateNotificationResponseType> {
     const URL = `${Routes.NOTIFIER}`
     newRecipients = newRecipients.map((r) => r.data)
@@ -240,10 +244,14 @@ export function updateNotificationRecipients(
     }
     let notificationConfigRequest = notificationList.map((config) => {
         let updatedProviders = []
+        let emailChannel = selectedEmailAgent?.toLowerCase()
         for (let i = 0; i < config.providers.length; i++) {
             let key = config.providers[i].configId + config.providers[i].name
             if (savedRecipientSet.has(key)) {
                 updatedProviders.push(config.providers[i])
+                if (config.providers[i].dest === 'smtp' || config.providers[i].dest === 'ses') {
+                    emailChannel = config.providers[i].dest
+                }
             }
         }
         updatedProviders = updatedProviders.concat(newRecipients)
@@ -251,7 +259,7 @@ export function updateNotificationRecipients(
             if (r.configId) {
                 return {
                     configId: r.configId,
-                    dest: r.dest,
+                    dest: r.dest === 'slack' ? r.dest : emailChannel,
                     recipient: '',
                 }
             } else
@@ -444,7 +452,7 @@ export function getAddNotificationInitData(): Promise<{
         ([providerRes, channelRes]) => {
             let providerOptions = providerRes.result || []
             let sesConfigOptions = channelRes.result.sesConfigs || []
-            let smtpConfigOptions = []
+            let smtpConfigOptions = channelRes.result.smtpConfigs || []
             return {
                 channelOptions: providerOptions.map((p) => {
                     return {

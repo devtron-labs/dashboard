@@ -21,8 +21,8 @@ export interface SMTPConfigModalState {
         configName: string
         port: number
         host: string
-        username: string
-        password: string
+        authUser: string
+        authPassword: string
         fromEmail: string
         default: boolean
         isLoading: boolean
@@ -32,8 +32,8 @@ export interface SMTPConfigModalState {
         configName: boolean
         port: boolean
         host: boolean
-        username: boolean
-        password: boolean
+        authUser: boolean
+        authPassword: boolean
         fromEmail: boolean
     }
 }
@@ -48,8 +48,8 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                 configName: '',
                 port: null,
                 host: '',
-                username: '',
-                password: '',
+                authUser: '',
+                authPassword: '',
                 fromEmail: '',
                 default: this.props.shouldBeDefault,
                 isLoading: false,
@@ -59,8 +59,8 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                 configName: true,
                 port: true,
                 host: true,
-                username: true,
-                password: true,
+                authUser: true,
+                authPassword: true,
                 fromEmail: true,
             },
         }
@@ -84,8 +84,8 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                         configName: true,
                         port: true,
                         host: true,
-                        username: true,
-                        password: true,
+                        authUser: true,
+                        authPassword: true,
                         fromEmail: true,
                     }
                     this.setState(state)
@@ -167,7 +167,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
     renderWithBackdrop(body) {
         return (
             <VisibleModal className="">
-                <div className="modal__body modal__body--w-600 modal__body--p-0">
+                <div className="modal__body modal__body--w-600 modal__body--p-0 no-top-radius mt-0">
                     <div className="modal__header m-24">
                         <h1 className="modal__title">Configure SMTP</h1>
                         <button type="button" className="transparent" onClick={this.props.closeSMTPConfigModal}>
@@ -274,8 +274,8 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                             <input
                                 className="form__input"
                                 type="text"
-                                name="username"
-                                value={this.state.form.username}
+                                name="authUser"
+                                value={this.state.form.authUser}
                                 onChange={this.handleInputChange}
                                 onBlur={this.handleBlur}
                                 placeholder="Enter SMTP username"
@@ -283,7 +283,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 required
                             />
                             <span className="form__error">
-                                {!this.state.isValid.username ? (
+                                {!this.state.isValid.authUser ? (
                                     <>
                                         <Error className="form__icon form__icon--error" />
                                         This is a required field <br />
@@ -293,10 +293,10 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                         </div>
                         <div className="form__row smtp-protected-input">
                             <ProtectedInput
-                                value={this.state.form.password}
+                                value={this.state.form.authPassword}
                                 onChange={this.handleInputChange}
-                                name="password"
-                                error={!this.state.isValid.password}
+                                name="authPassword"
+                                error={!this.state.isValid.authPassword}
                                 label="SMTP Password*"
                                 labelClassName="form__label--fs-13 mb-8 fw-5 fs-13"
                                 placeholder="Enter SMTP password"

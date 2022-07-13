@@ -427,9 +427,9 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                     <thead>
                         <tr className="configuration-tab__table-header">
                             <th className="ses-config-table__name truncate-text">Name</th>
-                            <th className="ses-config-table__access-key truncate-text">Host</th>
-                            <th className="ses-config-table__access-key truncate-text">Port</th>
-                            <th className="ses-config-table__email truncate-text">Sender's Email</th>
+                            <th className="smtp-config-table__host truncate-text">Host</th>
+                            <th className="smtp-config-table__port truncate-text">Port</th>
+                            <th className="smtp-config-table__email truncate-text">Sender's Email</th>
                             <th className="ses-config-table__action"></th>
                         </tr>
                     </thead>
@@ -444,13 +444,9 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                 <span className="ses_config-table__tag">Default</span>
                                             ) : null}
                                         </div>
-                                        <div className="ses-config-table__access-key truncate-text">
-                                            {smtpConfig.host}
-                                        </div>
-                                        <div className="ses-config-table__access-key truncate-text">
-                                            {smtpConfig.port}
-                                        </div>
-                                        <div className="ses-config-table__email truncate-text">{smtpConfig.email}</div>
+                                        <div className="smtp-config-table__host truncate-text">{smtpConfig.host}</div>
+                                        <div className="smtp-config-table__port truncate-text">{smtpConfig.port}</div>
+                                        <div className="smtp-config-table__email truncate-text">{smtpConfig.email}</div>
                                         <div className="ses-config-table__action">
                                             <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
                                                 <button

@@ -173,6 +173,21 @@
     font-weight: inherit;
 }
 
+.smtp-config-table__host {
+    flex-basis: 35%;
+    font-weight: inherit;
+}
+
+.smtp-config-table__port {
+    flex-basis: 5%;
+    font-weight: inherit;
+}
+
+.smtp-config-table__email {
+    flex-basis: 30%;
+    font-weight: inherit;
+}
+
 .slack-config-table__name {
     flex-basis: 25%;
     color: var(--N900);
@@ -340,4 +355,8 @@
     top: 50%;
     -webkit-transform: translateY(-50%);
     transform: translateY(-50%);
+}
+
+.no-email-channel-warning path {
+    fill: var(--Y700);
 }

@@ -220,10 +220,6 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                 (p.data.dest === '' || p.data.dest === 'ses' || p.data.dest === 'smtp') &&
                 validateEmail(p.data.recipient),
         )
-        // let show = allEmails.reduce((isValid, item) => {
-        //     isValid = isValid || validateEmail(item.data.recipient)
-        //     return isValid
-        // }, false)
         return allEmails.length > 0
     }
 
@@ -347,20 +343,35 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
 
     saveNotification(): void {
         let selectedPipelines = this.state.pipelineList.filter((p) => p.checkbox.isChecked)
-        let isAnyEmail = this.state.selectedChannels.find((p) => p.data.dest === '' || p.data.dest === 'ses')
-
         if (!selectedPipelines.length) {
             toast.error('Select atleast one pipeline')
             return
         } else if (!this.state.selectedChannels.length) {
             toast.error('Select atleast one recipient')
             return
-        } else if (isAnyEmail && !this.state.emailAgentConfigId) {
-            toast.error('Select SES Account')
-            return
         }
 
-        saveNotification(selectedPipelines, this.state.selectedChannels, this.state.emailAgentConfigId)
+        let selectedChannels = []
+        for (let index = 0; index < this.state.selectedChannels.length; index++) {
+            const element = this.state.selectedChannels[index]
+            if (element.data.dest === 'ses' || element.data.dest === 'smtp') {
+                if (!this.state.emailAgentConfigId) {
+                    toast.error(`Select ${this.state.selectedEmailAgent} Account`)
+                    return
+                }
+                selectedChannels.push({
+                    ...element,
+                    data: {
+                        ...element.data,
+                        dest: this.state.selectedEmailAgent.toLowerCase(),
+                    },
+                })
+            } else {
+                selectedChannels.push(element)
+            }
+        }
+
+        saveNotification(selectedPipelines, selectedChannels, this.state.emailAgentConfigId)
             .then((response) => {
                 this.props.history.push(`${URLS.GLOBAL_CONFIG_NOTIFIER}/channels`)
                 toast.success('Saved Successfully')
@@ -426,31 +437,6 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                             </div>
                         </Select>
                     </div>
-                    {/* <label className="form__row form__row--ses-account">
-                        <span className="form__label">
-                            {EMAIL_AGENT[this.state.selectedEmailAgent]} Account (used for sending email notifications)
-                        </span>
-                        <Select
-                            rootClassName=""
-                            onChange={this.selectEmailAgentAccount}
-                            value={this.state.emailAgentConfigId}
-                        >
-                            <Select.Button rootClassName="select-button--default">
-                                {emailAgentConfig
-                                    ? emailAgentConfig.configName
-                                    : `Select ${EMAIL_AGENT[this.state.selectedEmailAgent]} Account`}
-                            </Select.Button>
-                            {this.state[emailConfigAgentOptions].map((config) => (
-                                <Select.Option key={`${this.state.selectedEmailAgent}_${config.id}`} value={config.id}>
-                                    <span className="ellipsis-left">{config.configName}</span>
-                                </Select.Option>
-                            ))}
-                            <div className="select__sticky-bottom" onClick={this.openAddEmailConfigPopup}>
-                                <Add className="icon-dim-20 mr-5" /> Add {EMAIL_AGENT[this.state.selectedEmailAgent]}
-                                Account
-                            </div>
-                        </Select>
-                    </label> */}
                 </div>
             )
         }
@@ -871,8 +857,8 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         this.setState({ showSESConfigModal: false })
                         getChannelConfigs()
                             .then((response: any) => {
-                                let providers = response?.result.sesConfigs || []
-                                this.setState({ sesConfigOptions: providers })
+                                let providers = response?.result.smtpConfig || []
+                                this.setState({ smtpConfigOptions: providers })
                             })
                             .catch((error) => {
                                 showError(error)
@@ -911,6 +897,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                     {this.renderAddCard()}
                     {this.renderShowSlackConfigModal()}
                     {this.renderSESConfigModal()}
+                    {this.renderSMTPConfigModal()}
                 </div>
             </ErrorBoundary>
         )
