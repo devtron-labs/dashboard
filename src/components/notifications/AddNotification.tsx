@@ -31,8 +31,8 @@ import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
 import './notifications.css'
 import { getAppListMin, getEnvironmentListMin, getTeamListMin } from '../../services/service'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
-import { EMAIL_AGENT } from './constants'
 import { SMTPConfigModal } from './SMTPConfigModal'
+import { EMAIL_AGENT } from './types'
 
 interface AddNotificationsProps extends RouteComponentProps<{}> {}
 

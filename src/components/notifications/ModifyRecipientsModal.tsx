@@ -8,9 +8,9 @@ import { updateNotificationRecipients } from './notifications.service'
 import { multiSelectStyles, DropdownIndicator, MultiValueLabel, Option } from './notifications.util'
 import { toast } from 'react-toastify'
 import CreatableSelect from 'react-select/creatable'
-import { EMAIL_AGENT } from './constants'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import './notifications.css'
+import { EMAIL_AGENT } from './types'
 
 interface ModifyRecipientsModalProps {
     channelList: SelectedRecipientType[]

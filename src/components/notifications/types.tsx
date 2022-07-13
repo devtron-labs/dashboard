@@ -21,3 +21,8 @@ export interface SMTPConfigResponseType extends ResponseType {
         default: boolean
     }
 }
+
+export const EMAIL_AGENT = {
+    SES: 'SES',
+    SMTP: 'SMTP',
+}
