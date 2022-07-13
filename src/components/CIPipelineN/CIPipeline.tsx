@@ -656,7 +656,6 @@ export default function CIPipeline({
 
     return (
         <VisibleModal className="">
-            {console.log(formData)}
             <div
                 className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'

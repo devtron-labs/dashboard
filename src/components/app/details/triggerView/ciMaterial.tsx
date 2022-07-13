@@ -208,7 +208,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             const regVal = this.state.regexValue[_cm.gitMaterialId]
             if (regVal) {
                 const regEx = _cm.source.find((_rc) => _rc.type === SourceTypeMap.BranchRegex)?.value
-                if (regEx || regEx.includes('.*')) {
+                if (regEx) {
                     if (!regVal.match(regEx)) {
                         this.setState({ isInvalidRegex: true })
                         this.setState({ errorMessage: 'No matching value' })

@@ -3,7 +3,7 @@ import { ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
 import { SourceMaterials, WebhookCIProps } from '../ciPipeline/SourceMaterials'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { Progressing, Toggle } from '../common'
+import { Progressing, showError, Toggle } from '../common'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ciPipelineContext } from './CIPipeline'
 import { CiPipelineSourceTypeOption, FormErrorObjectType, FormType } from '../ciPipeline/types'
@@ -96,7 +96,7 @@ export function Build({
     }
     const getSelectedWebhookEvent = (material) => {
         const _materialValue = JSON.parse(material.value)
-        const _selectedEventId = _materialValue.eventId
+        const _selectedEventId = _materialValue?.eventId
         return formData.webhookEvents.find((we) => we.id === _selectedEventId)
     }
 
