@@ -178,7 +178,7 @@ export const RangeSlider = (props: SliderPropsType) => {
     const changeHandler = (e) => {
         const value = e.target.value && parseInt(e.target.value)
 
-        if (!value) {
+        if (!e.target.value) {
             updateStates(`${props.value ?? props.sliderMin}`, props.value ? parseInt(props.value) : props.sliderMin)
         } else if (props.sliderMin > 1 || value >= props.sliderMin) {
             updateStates(e.target.value, value)
@@ -195,10 +195,15 @@ export const RangeSlider = (props: SliderPropsType) => {
         }
     }
 
-    const onInputBlur = () => {
+    const onInputBlur = (e) => {
         if (props.onInputValue) {
-            props.onInputValue(sliderValue)
+            props.onInputValue(e.target.value ? parseInt(e.target.value) : sliderValue)
         }
+    }
+
+    const onValueInputBlur = (e) => {
+        changeHandler(e)
+        onInputBlur(e)
     }
 
     const renderInput = () => {
@@ -228,7 +233,7 @@ export const RangeSlider = (props: SliderPropsType) => {
                     className="slider-input-box h-32 en-2 bw-1 left-radius-4"
                     value={sliderInputValue}
                     onChange={handleSliderInputValue}
-                    onBlur={changeHandler}
+                    onBlur={onValueInputBlur}
                     onKeyDown={handleKeyDown}
                 />
                 {props.sliderUnit && (

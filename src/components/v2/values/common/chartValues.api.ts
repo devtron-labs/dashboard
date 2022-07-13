@@ -10,7 +10,7 @@ import {
 } from '../../../charts/charts.service'
 import { showError, sortCallback, sortObjectArrayAlphabetically } from '../../../common'
 import { ChartKind, ChartValuesViewAction, ChartValuesViewActionTypes } from '../chartValuesDiff/ChartValuesView.type'
-import { convertSchemaJsonToMap } from '../chartValuesDiff/ChartValuesView.utils'
+import { convertSchemaJsonToMap, getAndUpdateSchemaValue } from '../chartValuesDiff/ChartValuesView.utils'
 
 export async function fetchChartVersionsData(
     id: number,
@@ -64,16 +64,17 @@ export async function getChartValuesList(
 export async function getChartRelatedReadMe(
     id: number,
     currentFetchedReadMe: Map<number, string>,
+    modifiedValuesYaml: string,
     dispatch: (action: ChartValuesViewAction) => void,
 ) {
     try {
         dispatch({ type: ChartValuesViewActionTypes.fetchingReadMe, payload: true })
         const { result } = await getReadme(id)
+        getAndUpdateSchemaValue(modifiedValuesYaml, convertSchemaJsonToMap(result.valuesSchemaJson), dispatch)
+
         const _payload = {
             fetchingReadMe: false,
-            schemaJson: convertSchemaJsonToMap(result.valuesSchemaJson),
         }
-
         if (!currentFetchedReadMe.has(id)) {
             const _fetchedReadMe = currentFetchedReadMe
             _fetchedReadMe.set(id, result.readme)

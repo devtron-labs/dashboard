@@ -213,6 +213,33 @@ export const getPathAndValueToSetIn = (pathKey: string[], valuesYamlDocument: YA
     return { pathToSetIn, valueToSetIn }
 }
 
+export const getAndUpdateSchemaValue = (
+    modifiedValuesYaml: string,
+    schemaJson: Map<string, any>,
+    dispatch: (action: ChartValuesViewAction) => void,
+) => {
+    const parsedValuesYamlDocument = YAML.parseDocument(modifiedValuesYaml)
+    const updatedSchemaJson = schemaJson
+    for (let [key, value] of updatedSchemaJson) {
+        const _value = parsedValuesYamlDocument.getIn(key.split('/')) ?? value.default
+        value.value =
+            value['type'] === 'select'
+                ? value['enum']?.includes(_value)
+                    ? { label: _value, value: _value }
+                    : null
+                : _value
+        updatedSchemaJson.set(key, value)
+    }
+
+    dispatch({
+        type: ChartValuesViewActionTypes.multipleOptions,
+        payload: {
+            valuesYamlDocument: parsedValuesYamlDocument,
+            schemaJson: updatedSchemaJson,
+        },
+    })
+}
+
 const getPathKeyAndPropsPair = (schema, parentRef = '', pathKeyAndPropsPair = new Map<string, any>()) => {
     if (schema?.properties) {
         const properties = schema.properties

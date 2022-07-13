@@ -16,7 +16,11 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-error-excla
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { getPathAndValueToSetIn, isRequiredField } from './ChartValuesView.utils'
 
-const getGUIWidget = (props: any, callback): JSX.Element => {
+const getGUIWidget = (
+    props: any,
+    callback: (newValue) => void,
+    formValidationError: Record<string, boolean>,
+): JSX.Element => {
     switch (props.type) {
         case 'input':
         case 'numberInput':
@@ -26,6 +30,7 @@ const getGUIWidget = (props: any, callback): JSX.Element => {
                     onBlur={(e) => {
                         callback(e.target.value)
                     }}
+                    errorMessage={formValidationError[props.key] && 'This is a required field'}
                 />
             )
         case 'textArea':
@@ -35,6 +40,7 @@ const getGUIWidget = (props: any, callback): JSX.Element => {
                     onBlur={(e) => {
                         callback(e.target.value)
                     }}
+                    errorMessage={formValidationError[props.key] && 'This is a required field'}
                 />
             )
         case 'select':
@@ -47,6 +53,7 @@ const getGUIWidget = (props: any, callback): JSX.Element => {
                     onChange={(selected) => {
                         callback(selected)
                     }}
+                    errorMessage={formValidationError[props.key] && 'This is a required field'}
                 />
             )
         case 'slider':
@@ -59,6 +66,7 @@ const getGUIWidget = (props: any, callback): JSX.Element => {
                     onInputValue={(newValue) => {
                         callback(`${newValue}${props.sliderUnit}`)
                     }}
+                    errorMessage={formValidationError[props.key] && 'This is a required field'}
                 />
             )
         case 'checkbox':
@@ -119,18 +127,23 @@ const renderChildGUIWidget = (
     _childKey: string,
     schemaJson: Map<string, any>,
     valuesYamlDocument: YAML.Document.Parsed,
+    formValidationError: Record<string, boolean>,
     dispatch: React.Dispatch<ChartValuesViewAction>,
 ) => {
     const _childProps = schemaJson.get(_childKey)
     if (_childProps.type === 'formBox' && _childProps.children) {
-        return renderGUIWidget(_childProps, schemaJson, valuesYamlDocument, dispatch, true)
+        return renderGUIWidget(_childProps, schemaJson, valuesYamlDocument, formValidationError, dispatch, true)
     } else {
         const isRequired = isRequiredField(_childProps, true, schemaJson)
         if (_childProps.showField || isRequired) {
             _childProps['isRequired'] = isRequired
-            return getGUIWidget(_childProps, (_newValue) => {
-                updateYamlDocument(_newValue, _childProps, schemaJson, valuesYamlDocument, dispatch)
-            })
+            return getGUIWidget(
+                _childProps,
+                (_newValue) => {
+                    updateYamlDocument(_newValue, _childProps, schemaJson, valuesYamlDocument, dispatch)
+                },
+                formValidationError,
+            )
         }
     }
 }
@@ -151,6 +164,7 @@ const renderGUIWidget = (
     props: any,
     schemaJson: Map<string, any>,
     valuesYamlDocument: YAML.Document.Parsed,
+    formValidationError: Record<string, boolean>,
     dispatch: React.Dispatch<ChartValuesViewAction>,
     fromParent?: boolean,
 ) => {
@@ -159,21 +173,25 @@ const renderGUIWidget = (
             return props.showField ? (
                 <StyledFormBox key={props.key} {...props}>
                     {props.children.map((_childKey) =>
-                        renderChildGUIWidget(_childKey, schemaJson, valuesYamlDocument, dispatch),
+                        renderChildGUIWidget(_childKey, schemaJson, valuesYamlDocument, formValidationError, dispatch),
                     )}
                 </StyledFormBox>
             ) : (
                 <Fragment key={props.key}>
                     {props.children.map((_childKey) =>
-                        renderChildGUIWidget(_childKey, schemaJson, valuesYamlDocument, dispatch),
+                        renderChildGUIWidget(_childKey, schemaJson, valuesYamlDocument, formValidationError, dispatch),
                     )}
                 </Fragment>
             )
         } else {
             props['isRequired'] = isRequiredField(props, fromParent, schemaJson)
-            return getGUIWidget(props, (_newValue) => {
-                updateYamlDocument(_newValue, props, schemaJson, valuesYamlDocument, dispatch)
-            })
+            return getGUIWidget(
+                props,
+                (_newValue) => {
+                    updateYamlDocument(_newValue, props, schemaJson, valuesYamlDocument, dispatch)
+                },
+                formValidationError,
+            )
         }
     }
 }
@@ -203,6 +221,7 @@ const ChartValuesGUIForm = React.memo(
         isCreateValueView: boolean
         deployOrUpdateApplication: (forceUpdate?: boolean) => Promise<void>
         dispatch: React.Dispatch<ChartValuesViewAction>
+        formValidationError: Record<string, boolean>
     }) => {
         if (!props.schemaJson?.size) {
             return <SchemaNotAvailable />
@@ -213,8 +232,8 @@ const ChartValuesGUIForm = React.memo(
         return (
             <div
                 className={`chart-values-view__gui-form-container ${
-                    props.openReadMe ? 'chart-values-view__full-mode' : ''
-                }`}
+                    !props.isDeployChartView && !props.isCreateValueView ? 'values-update-view' : ''
+                } ${props.openReadMe ? 'chart-values-view__full-mode' : ''}`}
             >
                 <div className="gui-form-info flex left bcb-1">
                     <span className="icon-dim-16">
@@ -233,7 +252,13 @@ const ChartValuesGUIForm = React.memo(
                 </div>
                 <form className="chart-values-view__gui-form">
                     {[...props.schemaJson.values()].map((value) => {
-                        return renderGUIWidget(value, props.schemaJson, props.valuesYamlDocument, props.dispatch)
+                        return renderGUIWidget(
+                            value,
+                            props.schemaJson,
+                            props.valuesYamlDocument,
+                            props.formValidationError,
+                            props.dispatch,
+                        )
                     })}
                 </form>
                 {!props.openReadMe && (

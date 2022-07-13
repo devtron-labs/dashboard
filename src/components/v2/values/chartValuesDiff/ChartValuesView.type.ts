@@ -193,6 +193,7 @@ export interface ChartInstalledConfig {
     deprecated: boolean
     referenceValueId: number
     referenceValueKind: string
+    valuesSchemaJson?: string
 }
 
 export interface ChartValuesViewState {
@@ -243,6 +244,7 @@ export interface ChartValuesViewState {
     invalidValueNameMessage: string
     invalidaEnvironment: boolean
     invalidProject: boolean
+    formValidationError: Record<string, boolean>
 }
 
 export enum ChartValuesViewActionTypes {
@@ -289,6 +291,7 @@ export enum ChartValuesViewActionTypes {
     invalidaEnvironment = 'invalidaEnvironment',
     invalidProject = 'invalidProject',
     deploymentHistoryArr = 'deploymentHistoryArr',
+    formValidationError = 'formValidationError',
     multipleOptions = 'multipleOptions',
 }
 export interface ChartValuesViewAction {

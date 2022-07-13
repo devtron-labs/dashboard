@@ -304,6 +304,10 @@
             border-bottom: 1px solid var(--N100);
             overflow: scroll;
 
+            &.values-update-view {
+                height: calc(100vh - 192px);
+            }
+
             &.chart-values-view__full-mode {
                 height: calc(100vh - 130px);
                 border-bottom: none;

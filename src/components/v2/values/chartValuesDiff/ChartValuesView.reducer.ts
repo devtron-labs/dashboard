@@ -55,6 +55,7 @@ export const initState = (
         invalidValueNameMessage: '',
         invalidaEnvironment: false,
         invalidProject: false,
+        formValidationError: {},
     }
 }
 
@@ -146,6 +147,8 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
             return { ...state, invalidProject: action.payload }
         case ChartValuesViewActionTypes.deploymentHistoryArr:
             return { ...state, deploymentHistoryArr: action.payload }
+        case ChartValuesViewActionTypes.formValidationError:
+            return { ...state, formValidationError: action.payload }
         case ChartValuesViewActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:

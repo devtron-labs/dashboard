@@ -70,7 +70,7 @@ import {
 } from './ChartValuesView.type'
 import { chartValuesReducer, initState } from './ChartValuesView.reducer'
 import { ValidationRules } from '../../../app/create/validationRules'
-import { convertSchemaJsonToMap, updateGeneratedManifest } from './ChartValuesView.utils'
+import { convertSchemaJsonToMap, getAndUpdateSchemaValue, updateGeneratedManifest } from './ChartValuesView.utils'
 import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ChartValuesGUIForm from './ChartValuesGUIView'
 import './ChartValuesView.scss'
@@ -118,6 +118,8 @@ function ChartValuesView({
                 payload: {
                     isLoading: false,
                     fetchedReadMe: _fetchedReadMe,
+                    schemaJson: convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
+                    valuesYamlDocument: YAML.parseDocument(commonState.installedConfig.rawValues),
                 },
             })
         } else if (isCreateValueView) {
@@ -130,6 +132,8 @@ function ChartValuesView({
                 payload: {
                     isLoading: false,
                     fetchedReadMe: _fetchedReadMe,
+                    schemaJson: convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
+                    valuesYamlDocument: YAML.parseDocument(commonState.installedConfig.rawValues),
                 },
             })
         } else if (!isExternalApp && !isDeployChartView) {
@@ -138,6 +142,8 @@ function ChartValuesView({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
                     modifiedValuesYaml: commonState.installedConfig.valuesOverrideYaml,
+                    schemaJson: convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
+                    valuesYamlDocument: YAML.parseDocument(commonState.installedConfig.valuesOverrideYaml),
                     repoChartValue: {
                         appStoreApplicationVersionId: commonState.installedConfig.appStoreVersion,
                         chartRepoName: appDetails.appStoreChartName,
@@ -169,7 +175,7 @@ function ChartValuesView({
                             releaseInfo: _releaseInfo,
                             installedAppInfo: _installedAppInfo,
                             fetchedReadMe: _fetchedReadMe,
-                            schemaJson: convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson)
+                            schemaJson: convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson),
                         },
                     })
 
@@ -299,7 +305,12 @@ function ChartValuesView({
 
     useEffect(() => {
         if (commonState.selectedVersionUpdatePage?.id) {
-            getChartRelatedReadMe(commonState.selectedVersionUpdatePage.id, commonState.fetchedReadMe, dispatch)
+            getChartRelatedReadMe(
+                commonState.selectedVersionUpdatePage.id,
+                commonState.fetchedReadMe,
+                commonState.modifiedValuesYaml,
+                dispatch,
+            )
         }
     }, [commonState.selectedVersionUpdatePage, commonState.isReadMeAvailable])
 
@@ -567,6 +578,26 @@ function ChartValuesView({
             })
             toast.error('Some required fields are missing')
             return
+        } else if (commonState.activeTab === 'gui' && commonState.schemaJson?.size) {
+            const requiredValues = [...commonState.schemaJson.values()].filter((_val) => _val.isRequired && !_val.value)
+            if (requiredValues.length > 0) {
+                const formErrors = {}
+                requiredValues.forEach((e) => {
+                    formErrors[e.key] = true
+                })
+
+                dispatch({
+                    type: ChartValuesViewActionTypes.formValidationError,
+                    payload: formErrors,
+                })
+                toast.error('Some required fields are missing')
+                return
+            } else {
+                dispatch({
+                    type: ChartValuesViewActionTypes.formValidationError,
+                    payload: {},
+                })
+            }
         }
 
         if (
@@ -755,23 +786,7 @@ function ChartValuesView({
 
             let _payload = {}
             if (e.target.value === 'gui' && commonState.schemaJson) {
-                const parsedValuesYamlDocument = YAML.parseDocument(commonState.modifiedValuesYaml)
-                const updatedSchemaJson = commonState.schemaJson
-                for (let [key, value] of updatedSchemaJson) {
-                    const _value = parsedValuesYamlDocument.getIn(key.split('/')) ?? value.default
-                    value.value =
-                        value['type'] === 'select'
-                            ? value['enum']?.includes(_value)
-                                ? { label: _value, value: _value }
-                                : null
-                            : _value
-                    updatedSchemaJson.set(key, value)
-                }
-
-                _payload = {
-                    valuesYamlDocument: parsedValuesYamlDocument,
-                    schemaJson: updatedSchemaJson,
-                }
+                getAndUpdateSchemaValue(commonState.modifiedValuesYaml, commonState.schemaJson, dispatch)
             }
 
             if (
@@ -1235,6 +1250,7 @@ function ChartValuesView({
                             isCreateValueView={isCreateValueView}
                             deployOrUpdateApplication={deployOrUpdateApplication}
                             dispatch={dispatch}
+                            formValidationError={commonState.formValidationError}
                         />
                     ) : (
                         renderChartValuesEditor()
