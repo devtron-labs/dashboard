@@ -387,40 +387,6 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                 )
                             })}
                         </tr>
-                        {this.state.confirmation && (
-                            <DeleteComponent
-                                setDeleting={this.setDeleting}
-                                deleteComponent={deleteNotification}
-                                payload={
-                                    this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab
-                                        ? this.state.slackConfig
-                                        : this.state.showDeleteConfigModalType ===
-                                          DeleteComponentsName.SesConfigurationTab
-                                        ? this.state.sesConfig
-                                        : this.state.smtpConfig
-                                }
-                                title={
-                                    this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab
-                                        ? this.state.slackConfig.configName
-                                        : this.state.showDeleteConfigModalType ===
-                                          DeleteComponentsName.SesConfigurationTab
-                                        ? this.state.sesConfig.configName
-                                        : this.state.smtpConfig.configName
-                                }
-                                toggleConfirmation={this.toggleConfirmation}
-                                component={
-                                    this.state.showDeleteConfigModalType
-                                        ? DeleteComponentsName.SlackConfigurationTab
-                                        : this.state.showDeleteConfigModalType ===
-                                          DeleteComponentsName.SesConfigurationTab
-                                        ? DeleteComponentsName.SesConfigurationTab
-                                        : DeleteComponentsName.SMTPConfigurationTab
-                                }
-                                confirmationDialogDescription={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
-                                reload={this.getAllChannelConfigs}
-                                configuration="configuration"
-                            />
-                        )}
                     </tbody>
                 </table>
             )
@@ -577,6 +543,37 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                 {this.renderSESConfigModal()}
                 {this.renderSMTPConfigModal()}
                 {this.renderSlackConfigModal()}
+                {this.state.confirmation && (
+                    <DeleteComponent
+                        setDeleting={this.setDeleting}
+                        deleteComponent={deleteNotification}
+                        payload={
+                            this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab
+                                ? this.state.slackConfig
+                                : this.state.showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab
+                                ? this.state.sesConfig
+                                : this.state.smtpConfig
+                        }
+                        title={
+                            this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab
+                                ? this.state.slackConfig.configName
+                                : this.state.showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab
+                                ? this.state.sesConfig.configName
+                                : this.state.smtpConfig.configName
+                        }
+                        toggleConfirmation={this.toggleConfirmation}
+                        component={
+                            this.state.showDeleteConfigModalType
+                                ? DeleteComponentsName.SlackConfigurationTab
+                                : this.state.showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab
+                                ? DeleteComponentsName.SesConfigurationTab
+                                : DeleteComponentsName.SMTPConfigurationTab
+                        }
+                        confirmationDialogDescription={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
+                        reload={this.getAllChannelConfigs}
+                        configuration="configuration"
+                    />
+                )}
             </>
         )
     }
