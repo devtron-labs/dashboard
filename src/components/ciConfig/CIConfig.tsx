@@ -1,68 +1,70 @@
-import React, { useState, useEffect } from 'react';
-import { Progressing, useForm, showError, multiSelectStyles, sortObjectArrayAlphabetically } from '../common';
-import { DOCUMENTATION, PATTERNS, REGISTRY_TYPE_MAP, URLS } from '../../config';
-import { saveCIConfig, updateCIConfig, getDockerRegistryMinAuth } from './service';
-import { getSourceConfig, getCIConfig } from '../../services/service';
-import { useParams } from 'react-router';
-import { KeyValueInput } from '../configMaps/ConfigMap';
-import { toast } from 'react-toastify';
-import { NavLink } from 'react-router-dom';
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg';
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import './CIConfig.scss';
-import ReactSelect, { components } from 'react-select';
-import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils';
-import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg';
-import { ReactComponent as Git } from '../../assets/icons/git/git.svg';
-import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
-import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg';
+import React, { useState, useEffect } from 'react'
+import { Progressing, useForm, showError, multiSelectStyles, sortObjectArrayAlphabetically } from '../common'
+import { DOCUMENTATION, PATTERNS, REGISTRY_TYPE_MAP, URLS } from '../../config'
+import { saveCIConfig, updateCIConfig, getDockerRegistryMinAuth } from './service'
+import { getSourceConfig, getCIConfig } from '../../services/service'
+import { useParams } from 'react-router'
+import { KeyValueInput } from '../configMaps/ConfigMap'
+import { toast } from 'react-toastify'
+import { NavLink } from 'react-router-dom'
+import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import './CIConfig.scss'
+import ReactSelect, { components } from 'react-select'
+import CreatableSelect from 'react-select/creatable'
+import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
+import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
+import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
+import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
+import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
+import { OptionType } from '../app/types'
 
 export default function CIConfig({ respondOnSuccess, ...rest }) {
-    const [dockerRegistries, setDockerRegistries] = useState(null);
-    const [sourceConfig, setSourceConfig] = useState(null);
-    const [ciConfig, setCIConfig] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const { appId } = useParams<{ appId: string }>();
+    const [dockerRegistries, setDockerRegistries] = useState(null)
+    const [sourceConfig, setSourceConfig] = useState(null)
+    const [ciConfig, setCIConfig] = useState(null)
+    const [loading, setLoading] = useState(true)
+    const { appId } = useParams<{ appId: string }>()
     useEffect(() => {
-        initialise();
-    }, []);
+        initialise()
+    }, [])
 
     async function initialise() {
         try {
-            setLoading(true);
+            setLoading(true)
             const [{ result: dockerRegistries }, { result: sourceConfig }, { result: ciConfig }] = await Promise.all([
                 getDockerRegistryMinAuth(appId),
                 getSourceConfig(appId),
                 getCIConfig(+appId),
-            ]);
-            Array.isArray(dockerRegistries) && sortObjectArrayAlphabetically(dockerRegistries, 'id');
-            setDockerRegistries(dockerRegistries || []);
+            ])
+            Array.isArray(dockerRegistries) && sortObjectArrayAlphabetically(dockerRegistries, 'id')
+            setDockerRegistries(dockerRegistries || [])
             sourceConfig &&
                 Array.isArray(sourceConfig.material) &&
-                sortObjectArrayAlphabetically(sourceConfig.material, 'name');
-            setSourceConfig(sourceConfig);
-            setCIConfig(ciConfig);
-            setLoading(false);
+                sortObjectArrayAlphabetically(sourceConfig.material, 'name')
+            setSourceConfig(sourceConfig)
+            setCIConfig(ciConfig)
+            setLoading(false)
         } catch (err) {
-            showError(err);
-            setLoading(false);
+            showError(err)
+            setLoading(false)
         }
     }
 
     async function reload() {
         try {
-            setLoading(true);
-            const { result } = await getCIConfig(+appId);
-            setCIConfig(result);
-            setLoading(false);
-            respondOnSuccess();
+            setLoading(true)
+            const { result } = await getCIConfig(+appId)
+            setCIConfig(result)
+            setLoading(false)
+            respondOnSuccess()
         } catch (err) {
-            showError(err);
+            showError(err)
         }
     }
 
-    if (loading) return <Progressing pageLoader />;
-    if (!sourceConfig || !Array.isArray(sourceConfig.material || !Array.isArray(dockerRegistries))) return null;
+    if (loading) return <Progressing pageLoader />
+    if (!sourceConfig || !Array.isArray(sourceConfig.material || !Array.isArray(dockerRegistries))) return null
     return (
         <Form
             dockerRegistries={dockerRegistries}
@@ -71,21 +73,21 @@ export default function CIConfig({ respondOnSuccess, ...rest }) {
             reload={reload}
             appId={appId}
         />
-    );
+    )
 }
 
 function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(false)
     const _selectedMaterial =
         ciConfig && ciConfig.dockerBuildConfig && ciConfig.dockerBuildConfig.gitMaterialId
             ? sourceConfig.material.find((material) => material.id === ciConfig.dockerBuildConfig.gitMaterialId)
-            : sourceConfig.material[0];
-    const [selectedMaterial, setSelectedMaterial] = useState(_selectedMaterial);
+            : sourceConfig.material[0]
+    const [selectedMaterial, setSelectedMaterial] = useState(_selectedMaterial)
     const _selectedRegistry =
         ciConfig && ciConfig.dockerRegistry
             ? dockerRegistries.find((reg) => reg.id === ciConfig.dockerRegistry)
-            : dockerRegistries.find((reg) => reg.isDefault);
-    const [selectedRegistry, setSelectedRegistry] = useState(_selectedRegistry);
+            : dockerRegistries.find((reg) => reg.isDefault)
+    const [selectedRegistry, setSelectedRegistry] = useState(_selectedRegistry)
 
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -124,40 +126,48 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             },
         },
         onValidation,
-    );
-    const [args, setArgs] = useState([]);
-    const [loading, setLoading] = useState(false);
+    )
+    const [args, setArgs] = useState([])
+    const [loading, setLoading] = useState(false)
+    const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>(null)
+    const [targetPlatformList, setTargetPlatformList] = useState<OptionType[]>([
+        { label: 'linux/arm64', value: 'linux/arm64' },
+        { label: 'linux/arm/v7', value: 'linux/arm/v7' },
+        { label: 'darwin', value: 'ldarwin' },
+        { label: 'test', value: 'test' },
+    ])
 
+    const [appInput, setAppInput] = useState('')
     useEffect(() => {
-        let args = [];
+        let args = []
         if (ciConfig && ciConfig.dockerBuildConfig.args) {
             args = Object.keys(ciConfig.dockerBuildConfig.args).map((arg) => ({
                 k: arg,
                 v: ciConfig.dockerBuildConfig.args[arg],
                 keyError: '',
                 valueError: '',
-            }));
+            }))
         }
         if (args.length === 0) {
-            args.push({ k: '', v: '', keyError: '', valueError: '' });
+            args.push({ k: '', v: '', keyError: '', valueError: '' })
         }
-        setArgs(args);
-    }, []);
+        setArgs(args)
+    }, [])
 
     async function onValidation(state) {
         let args2 = args.map(({ k, v, keyError, valueError }, idx) => {
             if (v && !k) {
-                keyError = 'This field is required';
+                keyError = 'This field is required'
             } else if (k && !v) {
-                valueError = 'This field is required';
+                valueError = 'This field is required'
             }
-            let arg = { k, v, keyError, valueError };
-            return arg;
-        });
-        const areArgsWrong = args2.some((arg) => arg.keyError || arg.valueError);
+            let arg = { k, v, keyError, valueError }
+            return arg
+        })
+        const areArgsWrong = args2.some((arg) => arg.keyError || arg.valueError)
         if (areArgsWrong) {
-            setArgs([...args2]);
-            return;
+            setArgs([...args2])
+            return
         }
         let requestBody = {
             id: ciConfig ? ciConfig.id : null,
@@ -168,8 +178,8 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             dockerBuildConfig: {
                 dockerfilePath: `${selectedMaterial.checkoutPath}/${dockerfile.value}`.replace('//', '/'),
                 args: args.reduce((agg, { k, v }) => {
-                    if (k && v) agg[k] = v;
-                    return agg;
+                    if (k && v) agg[k] = v
+                    return agg
                 }, {}),
                 dockerfileRepository: repository.value,
                 dockerfileRelativePath: dockerfile.value.replace(/^\//, ''),
@@ -178,38 +188,38 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             afterDockerBuild: [],
             appName: '',
             ...(ciConfig && ciConfig.version ? { version: ciConfig.version } : {}),
-        };
-        setLoading(true);
+        }
+        setLoading(true)
         try {
-            const saveOrUpdate = ciConfig && ciConfig.id ? updateCIConfig : saveCIConfig;
-            const { result } = await saveOrUpdate(requestBody);
-            toast.success('Successfully saved.');
-            reload();
+            const saveOrUpdate = ciConfig && ciConfig.id ? updateCIConfig : saveCIConfig
+            const { result } = await saveOrUpdate(requestBody)
+            toast.success('Successfully saved.')
+            reload()
         } catch (err) {
-            showError(err);
+            showError(err)
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
     }
     function handleArgsChange(index, k, v) {
         setArgs((arr) => {
-            arr[index] = { k: k, v: v, keyError: '', valueError: '' };
-            return Array.from(arr);
-        });
+            arr[index] = { k: k, v: v, keyError: '', valueError: '' }
+            return Array.from(arr)
+        })
     }
 
     function toggleCollapse() {
-        setIsCollapsed(!isCollapsed);
+        setIsCollapsed(!isCollapsed)
     }
 
     function handleFileLocationChange(selectedMaterial) {
-        setSelectedMaterial(selectedMaterial);
-        repository.value = selectedMaterial.name;
+        setSelectedMaterial(selectedMaterial)
+        repository.value = selectedMaterial.name
     }
 
     function handleRegistryChange(selectedRegistry) {
-        setSelectedRegistry(selectedRegistry);
-        registry.value = selectedRegistry.id;
+        setSelectedRegistry(selectedRegistry)
+        registry.value = selectedRegistry.id
     }
 
     const _multiSelectStyles = {
@@ -224,12 +234,12 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                 position: 'relative',
                 paddingBottom: '0px',
                 maxHeight: '250px',
-            };
+            }
         },
-    };
+    }
 
     const containerRegistryOption = (props) => {
-        props.selectProps.styles.option = getCustomOptionSelectionStyle();
+        props.selectProps.styles.option = getCustomOptionSelectionStyle()
         return (
             <components.Option {...props}>
                 <div style={{ display: 'flex' }}>
@@ -237,8 +247,8 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                     {props.label}
                 </div>
             </components.Option>
-        );
-    };
+        )
+    }
 
     const containerRegistryMenuList = (props) => {
         return (
@@ -253,21 +263,21 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                     Add Container Registry
                 </NavLink>
             </components.MenuList>
-        );
-    };
+        )
+    }
 
     const containerRegistryControls = (props) => {
-        let value = '';
+        let value = ''
         if (props.hasValue) {
-            value = props.getValue()[0].registryType;
+            value = props.getValue()[0].registryType
         }
         return (
             <components.Control {...props}>
                 <div className={'registry-icon ml-5 ' + value}></div>
                 {props.children}
             </components.Control>
-        );
-    };
+        )
+    }
 
     const repositoryOption = (props) => {
         props.selectProps.styles.option = getCustomOptionSelectionStyle()
@@ -286,15 +296,15 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
 
                 {props.label}
             </components.Option>
-        );
-    };
+        )
+    }
 
     const repositoryControls = (props) => {
-        let value = '';
+        let value = ''
         if (props.hasValue) {
-            value = props.getValue()[0].url;
+            value = props.getValue()[0].url
         }
-        let showGit = value && !value.includes('github') && !value.includes('gitlab') && !value.includes('bitbucket');
+        let showGit = value && !value.includes('github') && !value.includes('gitlab') && !value.includes('bitbucket')
         return (
             <components.Control {...props}>
                 {value.includes('github') && <GitHub className="icon-dim-20 ml-8" />}
@@ -303,10 +313,49 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                 {showGit && <Git className="icon-dim-20 ml-8" />}
                 {props.children}
             </components.Control>
-        );
-    };
+        )
+    }
 
-    const { repository, dockerfile, registry, repository_name, key, value } = state;
+    const AppOption = (props) => {
+        const { selectOption, data } = props
+        return (
+            <div
+                onClick={(e) => selectOption(data)}
+                className="flex left pl-12"
+                style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}
+            >
+                <input
+                    checked={props.isSelected}
+                    type="checkbox"
+                    style={{ height: '16px', width: '16px', flex: '0 0 16px' }}
+                />
+                <div className="flex left column w-100">
+                    <components.Option className="w-100 option-label-padding" {...props} />
+                    {data.value === '*' && (
+                        <span className="fs-12 cn-6 ml-8 mb-4 mr-4">
+                            Allow access to existing and new apps for this project
+                        </span>
+                    )}
+                </div>
+            </div>
+        )
+    }
+    function handleDirectPermissionChange(selectedValue, actionMeta) {
+        // const _selectedTargetPlatforms = selectedTargetPlatforms
+        // _selectedTargetPlatforms.push(selectedValue)
+        setSelectedTargetPlatforms(selectedValue)
+    }
+
+    const tempMultiSelectStyles = {
+        ...multiSelectStyles,
+        dropdownIndicator: (base, state) => ({
+            ...base,
+            transition: 'all .2s ease',
+            transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+        }),
+    }
+
+    const { repository, dockerfile, registry, repository_name, key, value } = state
     return (
         <div className="form__app-compose">
             <h1 className="form__title">Docker build configuration</h1>
@@ -350,21 +399,23 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                 Control: containerRegistryControls,
                             }}
                             onChange={(selected) => {
-                                handleRegistryChange(selected);
+                                handleRegistryChange(selected)
                             }}
                         />
                         {registry.error && <label className="form__error">{registry.error}</label>}
                     </div>
                     <div className="form__field">
                         <label htmlFor="" className="form__label">
-                            Container Repository {selectedRegistry && REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.desiredFormat}
+                            Container Repository{' '}
+                            {selectedRegistry && REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.desiredFormat}
                         </label>
                         <input
                             tabIndex={2}
                             type="text"
                             className="form__input"
-                            placeholder={(selectedRegistry &&
-                                REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.placeholderText) ||
+                            placeholder={
+                                (selectedRegistry &&
+                                    REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.placeholderText) ||
                                 'Enter repository name'
                             }
                             name="repository_name"
@@ -401,7 +452,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                 Control: repositoryControls,
                             }}
                             onChange={(selected) => {
-                                handleFileLocationChange(selected);
+                                handleFileLocationChange(selected)
                             }}
                         />
                         {repository.error && <label className="form__error">{repository.error}</label>}
@@ -427,52 +478,87 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                     </div>
                 </div>
                 <hr className="mt-0 mb-20" />
-                <div onClick={toggleCollapse} className="flex left cursor">
+                <div onClick={toggleCollapse} className="flex content-space cursor mb-20">
                     <div>
                         <div className="fs-14 fw-6 ">Advanced (optional)</div>
-                        <div className="form-row form-row__add-parameters">
-                            <label htmlFor="" className="fs-13 fw-4 cn-7">
-                                Docker build arguments
-                            </label>
+                        <div className="form-row__add-parameters">
+                            <span className="fs-13 fw-4 cn-7">
+                                Set target platform for build, Docker build arguments
+                            </span>
                         </div>
                     </div>
-                    <span className="docker__dropdown ">
+                    <span>
                         <Dropdown
                             className="icon-dim-32 rotate "
                             style={{ ['--rotateBy' as any]: isCollapsed ? '180deg' : '0deg' }}
                         />
                     </span>
                 </div>
-                {isCollapsed ? (
+                {isCollapsed && (
                     <>
-                        {args &&
-                            args.map((arg, idx) => (
-                                <KeyValueInput
-                                    keyLabel={'Key'}
-                                    valueLabel={'Value'}
-                                    {...arg}
-                                    key={idx}
-                                    index={idx}
-                                    onChange={handleArgsChange}
-                                    onDelete={(e) => {
-                                        let argsTemp = [...args];
-                                        argsTemp.splice(idx, 1);
-                                        setArgs(argsTemp);
-                                    }}
-                                    valueType="text"
-                                />
-                            ))}
-                        <div
-                            className="add-parameter pointer fs-14 cb-5 mb-20"
-                            onClick={(e) =>
-                                setArgs((args) => [{ k: '', v: '', keyError: '', valueError: '' }, ...args])
-                            }
-                        >
-                            <span className="fa fa-plus mr-8"></span>Add parameter
-                        </div>{' '}
+                        <div>
+                            <div className="fs-13 fw-6">Set target platform for the build</div>
+                            <div className="fs-13 fw-4 cn-7 mb-4">
+                                If target platform is not set, Devtron will build image for architecture and operating
+                                system of the k8s node on which CI is running
+                            </div>
+                            <CreatableSelect
+                                value={selectedTargetPlatforms}
+                                isMulti={true}
+                                components={{
+                                    ClearIndicator: null,
+                                    IndicatorSeparator: null,
+                                    Option: AppOption,
+                                }}
+                                styles={tempMultiSelectStyles}
+                                closeMenuOnSelect={false}
+                                name="targetPlatform"
+                                placeholder="Type to select or create"
+                                options={targetPlatformList}
+                                className="basic-multi-select mb-20"
+                                classNamePrefix="select"
+                                menuPortalTarget={document.body}
+                                onChange={handleDirectPermissionChange}
+                                hideSelectedOptions={false}
+                                inputValue={appInput}
+                                menuShouldBlockScroll={true}
+                                onBlur={() => {
+                                    setAppInput('')
+                                }}
+                                onInputChange={(value, action) => {
+                                    if (action.action === 'input-change') setAppInput(value)
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <div className="fs-13 fw-6 mb-8">Set target platform for the build</div>
+                            {args &&
+                                args.map((arg, idx) => (
+                                    <KeyValueInput
+                                        keyLabel={'Key'}
+                                        valueLabel={'Value'}
+                                        {...arg}
+                                        key={idx}
+                                        index={idx}
+                                        onChange={handleArgsChange}
+                                        onDelete={(e) => {
+                                            let argsTemp = [...args]
+                                            argsTemp.splice(idx, 1)
+                                            setArgs(argsTemp)
+                                        }}
+                                        valueType="text"
+                                    />
+                                ))}
+                            <div
+                                className="add-parameter pointer fs-14 cb-5 mb-20"
+                                onClick={(e) =>
+                                    setArgs((args) => [{ k: '', v: '', keyError: '', valueError: '' }, ...args])
+                                }
+                            >
+                                <span className="fa fa-plus mr-8"></span>Add parameter
+                            </div>
+                        </div>
                     </>
-                ) : (
-                    ''
                 )}
                 <div className="form__buttons mt-12">
                     <button tabIndex={5} type="button" className={`cta`} onClick={handleOnSubmit}>
@@ -481,5 +567,5 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                 </div>
             </div>
         </div>
-    );
+    )
 }
