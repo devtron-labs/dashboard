@@ -859,7 +859,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                     shouldBeDefault={false}
                     selectSMTPFromChild={this.selectEmailAgentConfigIdFromChild}
                     onSaveSuccess={() => {
-                        this.setState({ showSESConfigModal: false })
+                        this.setState({ showSMTPConfigModal: false })
                         getChannelConfigs()
                             .then((response: any) => {
                                 let providers = response?.result.smtpConfig || []
