@@ -22,7 +22,38 @@ export interface SMTPConfigResponseType extends ResponseType {
     }
 }
 
-export const EMAIL_AGENT = {
-    SES: 'SES',
-    SMTP: 'SMTP',
+export enum EMAIL_AGENT {
+    SES = 'SES',
+    SMTP = 'SMTP',
+}
+
+export interface SMTPConfigModalProps {
+    smtpConfigId: number
+    shouldBeDefault: boolean
+    selectSMTPFromChild?: (smtpConfigId: number) => void
+    onSaveSuccess: () => void
+    closeSMTPConfigModal: (event) => void
+}
+
+export interface SMTPConfigModalState {
+    view: string
+    form: {
+        configName: string
+        port: number
+        host: string
+        authUser: string
+        authPassword: string
+        fromEmail: string
+        default: boolean
+        isLoading: boolean
+        isError: boolean
+    }
+    isValid: {
+        configName: boolean
+        port: boolean
+        host: boolean
+        authUser: boolean
+        authPassword: boolean
+        fromEmail: boolean
+    }
 }

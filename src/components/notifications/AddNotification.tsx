@@ -224,7 +224,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     }
 
     toggleSelectPipeline() {
-        let appliedFilters = this.state.appliedFilters
+        let appliedFilters = []
         if (this.state.openSelectPipeline) {
             appliedFilters = this.state.appliedFilters.filter((e) => e.value)
         }

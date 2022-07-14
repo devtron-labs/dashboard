@@ -6,37 +6,7 @@ import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { toast } from 'react-toastify'
 import { ViewType } from '../../config/constants'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
-
-export interface SMTPConfigModalProps {
-    smtpConfigId: number
-    shouldBeDefault: boolean
-    selectSMTPFromChild?: (smtpConfigId: number) => void
-    onSaveSuccess: () => void
-    closeSMTPConfigModal: (event) => void
-}
-
-export interface SMTPConfigModalState {
-    view: string
-    form: {
-        configName: string
-        port: number
-        host: string
-        authUser: string
-        authPassword: string
-        fromEmail: string
-        default: boolean
-        isLoading: boolean
-        isError: boolean
-    }
-    isValid: {
-        configName: boolean
-        port: boolean
-        host: boolean
-        authUser: boolean
-        authPassword: boolean
-        fromEmail: boolean
-    }
-}
+import { SMTPConfigModalProps, SMTPConfigModalState } from './types'
 
 export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigModalState> {
     _configName

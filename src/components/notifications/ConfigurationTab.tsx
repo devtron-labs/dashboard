@@ -10,6 +10,7 @@ import {
     getSESConfiguration,
     getConfigs,
     getSlackConfiguration,
+    getSMTPConfiguration,
 } from './notifications.service'
 import slack from '../../assets/img/slack-logo.svg'
 import ses from '../../assets/icons/ic-aws-ses.svg'
@@ -45,7 +46,7 @@ export interface ConfigurationTabState {
     sesConfig: any
     smtpConfig: any
     slackConfig: any
-    showDeleteSlackConfigModal: boolean
+    showDeleteConfigModalType: string
 }
 
 const enum ChannelConfigType {
@@ -73,7 +74,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             sesConfig: {},
             smtpConfig: {},
             slackConfig: {},
-            showDeleteSlackConfigModal: false,
+            showDeleteConfigModalType: '',
         }
         this.getAllChannelConfigs = this.getAllChannelConfigs.bind(this)
     }
@@ -260,7 +261,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     toggleConfirmation = (confirmation) => {
         this.setState({
             confirmation,
-            ...(!confirmation && { showDeleteSlackConfigModal: false }),
+            ...(!confirmation && { showDeleteConfigModalType: '' }),
         })
     }
 
@@ -275,7 +276,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                         channel: DeleteComponentsName.SlackConfigurationTab,
                     },
                     confirmation: true,
-                    showDeleteSlackConfigModal: true,
+                    showDeleteConfigModalType: DeleteComponentsName.SlackConfigurationTab,
                 })
             } else if (type === DeleteComponentsName.SesConfigurationTab) {
                 const { result } = await getSESConfiguration(configId)
@@ -286,6 +287,18 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                         channel: DeleteComponentsName.SesConfigurationTab,
                     },
                     confirmation: true,
+                    showDeleteConfigModalType: DeleteComponentsName.SesConfigurationTab,
+                })
+            } else if (type === DeleteComponentsName.SMTPConfigurationTab) {
+                const { result } = await getSMTPConfiguration(configId)
+                this.setState({
+                    sesConfigId: configId,
+                    smtpConfig: {
+                        ...result,
+                        channel: DeleteComponentsName.SMTPConfigurationTab,
+                    },
+                    confirmation: true,
+                    showDeleteConfigModalType: DeleteComponentsName.SMTPConfigurationTab,
                 })
             }
         } catch (e) {
@@ -379,20 +392,29 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                 setDeleting={this.setDeleting}
                                 deleteComponent={deleteNotification}
                                 payload={
-                                    this.state.showDeleteSlackConfigModal
+                                    this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab
                                         ? this.state.slackConfig
-                                        : this.state.sesConfig
+                                        : this.state.showDeleteConfigModalType ===
+                                          DeleteComponentsName.SesConfigurationTab
+                                        ? this.state.sesConfig
+                                        : this.state.smtpConfig
                                 }
                                 title={
-                                    this.state.showDeleteSlackConfigModal
+                                    this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab
                                         ? this.state.slackConfig.configName
-                                        : this.state.sesConfig.configName
+                                        : this.state.showDeleteConfigModalType ===
+                                          DeleteComponentsName.SesConfigurationTab
+                                        ? this.state.sesConfig.configName
+                                        : this.state.smtpConfig.configName
                                 }
                                 toggleConfirmation={this.toggleConfirmation}
                                 component={
-                                    this.state.showDeleteSlackConfigModal
+                                    this.state.showDeleteConfigModalType
                                         ? DeleteComponentsName.SlackConfigurationTab
-                                        : DeleteComponentsName.SesConfigurationTab
+                                        : this.state.showDeleteConfigModalType ===
+                                          DeleteComponentsName.SesConfigurationTab
+                                        ? DeleteComponentsName.SesConfigurationTab
+                                        : DeleteComponentsName.SMTPConfigurationTab
                                 }
                                 confirmationDialogDescription={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
                                 reload={this.getAllChannelConfigs}
@@ -480,37 +502,12 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                 >
                                                     <Trash className="scn-5 icon-dim-20" />
                                                 </button>
-                                            </Tippy>{' '}
+                                            </Tippy>
                                         </div>
                                     </td>
                                 )
                             })}
                         </tr>
-                        {/* {this.state.confirmation && (
-                            <DeleteComponent
-                                setDeleting={this.setDeleting}
-                                deleteComponent={deleteNotification}
-                                payload={
-                                    this.state.showDeleteSlackConfigModal
-                                        ? this.state.slackConfig
-                                        : this.state.sesConfig
-                                }
-                                title={
-                                    this.state.showDeleteSlackConfigModal
-                                        ? this.state.slackConfig.configName
-                                        : this.state.sesConfig.configName
-                                }
-                                toggleConfirmation={this.toggleConfirmation}
-                                component={
-                                    this.state.showDeleteSlackConfigModal
-                                        ? DeleteComponentsName.SlackConfigurationTab
-                                        : DeleteComponentsName.SesConfigurationTab
-                                }
-                                confirmationDialogDescription={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
-                                reload={this.getAllChannelConfigs}
-                                configuration="configuration"
-                            />
-                        )} */}
                     </tbody>
                 </table>
             )
