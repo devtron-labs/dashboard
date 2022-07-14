@@ -129,15 +129,19 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
     )
     const [args, setArgs] = useState([])
     const [loading, setLoading] = useState(false)
-    const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>(null)
-    const [targetPlatformList, setTargetPlatformList] = useState<OptionType[]>([
+    const [platformError, setPlatformError] = useState<string>('')
+    const targetPlatformList: OptionType[] = [
         { label: 'linux/arm64', value: 'linux/arm64' },
+        { label: 'linux/amd64', value: 'linux/amd64' },
         { label: 'linux/arm/v7', value: 'linux/arm/v7' },
-        { label: 'darwin', value: 'ldarwin' },
-        { label: 'test', value: 'test' },
-    ])
-
-    const [appInput, setAppInput] = useState('')
+    ]
+    let _selctedPlatforms = []
+    if (ciConfig && ciConfig.dockerBuildConfig && ciConfig.dockerBuildConfig.targetPlatform) {
+        _selctedPlatforms = ciConfig.dockerBuildConfig.targetPlatform.split(',').map((platformValue) => {
+            return { label: platformValue, value: platformValue }
+        })
+    }
+    const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>(_selctedPlatforms)
     useEffect(() => {
         let args = []
         if (ciConfig && ciConfig.dockerBuildConfig.args) {
@@ -169,6 +173,19 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             setArgs([...args2])
             return
         }
+        let targetPlatforms = ''
+        let set = new Set()
+        for (let index = 0; index < selectedTargetPlatforms.length; index++) {
+            const element = selectedTargetPlatforms[index]
+            if (!set.has(element.value)) {
+                if (!validatePlatform(element.value)) {
+                    setPlatformError('One or more platforms could be invalid.')
+                    return
+                }
+                set.add(element.value)
+                targetPlatforms += element.value + (index + 1 === selectedTargetPlatforms.length ? '' : ',')
+            }
+        }
         let requestBody = {
             id: ciConfig ? ciConfig.id : null,
             appId: +appId || null,
@@ -184,6 +201,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                 dockerfileRepository: repository.value,
                 dockerfileRelativePath: dockerfile.value.replace(/^\//, ''),
                 gitMaterialId: selectedMaterial.id,
+                targetPlatform: targetPlatforms,
             },
             afterDockerBuild: [],
             appName: '',
@@ -316,7 +334,22 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         )
     }
 
-    const AppOption = (props) => {
+    const platformMenuList = (props): JSX.Element => {
+        return (
+            <components.MenuList {...props}>
+                <div className="cn-5 pl-12 pt-4 pb-4" style={{ fontStyle: 'italic' }}>
+                    Type to enter a custom value. Press Enter to accept.
+                </div>
+                {props.children}
+            </components.MenuList>
+        )
+    }
+
+    const platFormNoOptions = (): string => {
+        return 'No matching options'
+    }
+
+    const platformOption = (props): JSX.Element => {
         const { selectOption, data } = props
         return (
             <div
@@ -324,11 +357,13 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                 className="flex left pl-12"
                 style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}
             >
-                <input
-                    checked={props.isSelected}
-                    type="checkbox"
-                    style={{ height: '16px', width: '16px', flex: '0 0 16px' }}
-                />
+                {!data.__isNew__ && (
+                    <input
+                        checked={props.isSelected}
+                        type="checkbox"
+                        style={{ height: '16px', width: '16px', flex: '0 0 16px' }}
+                    />
+                )}
                 <div className="flex left column w-100">
                     <components.Option className="w-100 option-label-padding" {...props} />
                     {data.value === '*' && (
@@ -340,19 +375,54 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             </div>
         )
     }
-    function handleDirectPermissionChange(selectedValue, actionMeta) {
-        // const _selectedTargetPlatforms = selectedTargetPlatforms
-        // _selectedTargetPlatforms.push(selectedValue)
+    function handlePlatformChange(selectedValue): void {
+        setPlatformError('')
         setSelectedTargetPlatforms(selectedValue)
+    }
+
+    function validatePlatform(platform: string): boolean {
+        let regExp = new RegExp(PATTERNS.BUILDX_PLATFORM)
+        const result = regExp.test(platform)
+        return result
     }
 
     const tempMultiSelectStyles = {
         ...multiSelectStyles,
+        multiValue: (base, state) => {
+            return {
+                ...base,
+                border: validatePlatform(state.data.value) ? `1px solid var(--N200)` : `1px solid var(--R500)`,
+                borderRadius: `4px`,
+                background: validatePlatform(state.data.value) ? 'white' : 'var(--R100)',
+                height: '28px',
+                marginRight: '8px',
+                padding: '2px',
+                fontSize: '12px',
+            }
+        },
         dropdownIndicator: (base, state) => ({
             ...base,
             transition: 'all .2s ease',
             transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
         }),
+    }
+
+    function handleCreatableBlur(event): void {
+        if (event.target.value) {
+            setSelectedTargetPlatforms([
+                ...selectedTargetPlatforms,
+                {
+                    label: event.target.value,
+                    value: event.target.value,
+                },
+            ])
+        }
+    }
+
+    const handleKeyDown = (event): void => {
+        if (event.key === 'Enter' || event.key === 'Tab') {
+            event.target.blur()
+        }
     }
 
     const { repository, dockerfile, registry, repository_name, key, value } = state
@@ -496,7 +566,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                 </div>
                 {isCollapsed && (
                     <>
-                        <div>
+                        <div className="mb-20">
                             <div className="fs-13 fw-6">Set target platform for the build</div>
                             <div className="fs-13 fw-4 cn-7 mb-4">
                                 If target platform is not set, Devtron will build image for architecture and operating
@@ -508,30 +578,29 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                 components={{
                                     ClearIndicator: null,
                                     IndicatorSeparator: null,
-                                    Option: AppOption,
+                                    Option: platformOption,
+                                    MenuList: platformMenuList,
                                 }}
                                 styles={tempMultiSelectStyles}
                                 closeMenuOnSelect={false}
                                 name="targetPlatform"
                                 placeholder="Type to select or create"
                                 options={targetPlatformList}
-                                className="basic-multi-select mb-20"
+                                className="basic-multi-select"
                                 classNamePrefix="select"
                                 menuPortalTarget={document.body}
-                                onChange={handleDirectPermissionChange}
+                                onChange={handlePlatformChange}
                                 hideSelectedOptions={false}
-                                inputValue={appInput}
                                 menuShouldBlockScroll={true}
-                                onBlur={() => {
-                                    setAppInput('')
-                                }}
-                                onInputChange={(value, action) => {
-                                    if (action.action === 'input-change') setAppInput(value)
-                                }}
+                                noOptionsMessage={platFormNoOptions}
+                                onBlur={handleCreatableBlur}
+                                isValidNewOption={() => false}
+                                onKeyDown={handleKeyDown}
                             />
+                            {platformError && <label className="form__error">{platformError}</label>}
                         </div>
                         <div>
-                            <div className="fs-13 fw-6 mb-8">Set target platform for the build</div>
+                            <div className="fs-13 fw-6 mb-8">Docker build arguments</div>
                             {args &&
                                 args.map((arg, idx) => (
                                     <KeyValueInput
