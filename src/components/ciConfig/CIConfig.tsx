@@ -135,13 +135,13 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         { label: 'linux/amd64', value: 'linux/amd64' },
         { label: 'linux/arm/v7', value: 'linux/arm/v7' },
     ]
-    let _selctedPlatforms = []
-    if (ciConfig && ciConfig.dockerBuildConfig && ciConfig.dockerBuildConfig.targetPlatform) {
-        _selctedPlatforms = ciConfig.dockerBuildConfig.targetPlatform.split(',').map((platformValue) => {
+    let _selectedPlatforms = []
+    if (ciConfig?.dockerBuildConfig?.targetPlatform) {
+        _selectedPlatforms = ciConfig.dockerBuildConfig.targetPlatform.split(',').map((platformValue) => {
             return { label: platformValue, value: platformValue }
         })
     }
-    const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>(_selctedPlatforms)
+    const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>(_selectedPlatforms)
     useEffect(() => {
         let args = []
         if (ciConfig && ciConfig.dockerBuildConfig.args) {
@@ -174,15 +174,15 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             return
         }
         let targetPlatforms = ''
-        let set = new Set()
+        const targetPlatformsSet = new Set()
         for (let index = 0; index < selectedTargetPlatforms.length; index++) {
             const element = selectedTargetPlatforms[index]
-            if (!set.has(element.value)) {
+            if (!targetPlatformsSet.has(element.value)) {
                 if (!validatePlatform(element.value)) {
                     setPlatformError('One or more platforms could be invalid.')
                     return
                 }
-                set.add(element.value)
+                targetPlatformsSet.add(element.value)
                 targetPlatforms += element.value + (index + 1 === selectedTargetPlatforms.length ? '' : ',')
             }
         }
@@ -345,7 +345,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         )
     }
 
-    const platFormNoOptions = (): string => {
+    const noMatchingPlatformOptions = (): string => {
         return 'No matching options'
     }
 
@@ -592,7 +592,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                 onChange={handlePlatformChange}
                                 hideSelectedOptions={false}
                                 menuShouldBlockScroll={true}
-                                noOptionsMessage={platFormNoOptions}
+                                noOptionsMessage={noMatchingPlatformOptions}
                                 onBlur={handleCreatableBlur}
                                 isValidNewOption={() => false}
                                 onKeyDown={handleKeyDown}
