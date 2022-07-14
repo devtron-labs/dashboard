@@ -289,27 +289,6 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
     return ci
 }
 
-const isBranchRegex = (_material) => {
-    return _material.source?.some((_source) => _source.type === SourceTypeMap.BranchRegex)
-}
-
-// function getSourceTypeAndValue(_material) {
-//     if (!Array.isArray(_material.source)) {
-//         return _material.source
-//     }
-
-//     for (let _source of _material.source) {
-//         if (_source.type === SourceTypeMap.BranchRegex) {
-//             return {
-//                 type: SourceTypeMap.BranchRegex,
-//                 value: _material.source.find((e) => e.type === SourceTypeMap.BranchFixed)?.value || _source.value,
-//             }
-//         }
-//     }
-
-//     return _material.source[0]
-// }
-
 function getSourceTypeAndValue(_material) {
     if (!Array.isArray(_material.source)) {
         return _material.source

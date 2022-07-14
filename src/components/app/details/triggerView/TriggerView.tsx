@@ -253,14 +253,45 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     return workflow
                 })
 
+                let showRegexModal = false
+                const selectedCIPipeline = this.state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
+                if (selectedCIPipeline?.ciMaterial) {
+                    for (let mat of selectedCIPipeline.ciMaterial) {
+                        if (mat.gitMaterialId === response.result[0].gitMaterialId) {
+                            if (!Array.isArray(mat.source)) {
+                                return mat.source
+                            }
+                            let _value, isBranchRegex
+                            if (mat.source.length > 1) {
+                                for (let _source of mat.source) {
+                                    if (_source.type === SourceTypeMap.BranchRegex) {
+                                        if (!_value) {
+                                            isBranchRegex = true
+                                            continue
+                                        }
+                                    } else if (_source.type === SourceTypeMap.BranchFixed) {
+                                        if (!isBranchRegex) {
+                                            _value = _source.value
+                                            continue
+                                        }
+                                    }
+                                }
+                            }
+
+                            showRegexModal = isBranchRegex && !_value
+                            break
+                        }
+                    }
+                }
+
                 this.setState(
                     {
                         workflows: workflows,
                         ciNodeId: +ciNodeId,
                         ciPipelineName: ciPipelineName,
                         materialType: 'inputMaterialList',
-                        showCIModal: true,
-                        showMaterialRegexModal: true,
+                        showCIModal: !showRegexModal,
+                        showMaterialRegexModal: showRegexModal,
                         workflowId: workflowId,
                     },
                     () => {
@@ -626,7 +657,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     closeCIModal = (): void => {
         this.preventBodyScroll(false)
-        this.setState({ showCIModal: false })
+        this.setState({ showCIModal: false, showMaterialRegexModal: false })
     }
 
     closeCDModal = (): void => {
@@ -637,6 +668,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     hideWebhookModal = () => {
         this.setState({
             showWebhookModal: false,
+        })
+    }
+
+    onShowCIModal = () => {
+        this.setState({
+            showCIModal: true,
         })
     }
 
@@ -660,10 +697,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
-    renderShowCIModal = () => {
-        this.setState({ showCIModal: true })
-    }
-
     onCloseBranchRegexModal = () => {
         this.setState({
             showMaterialRegexModal: false,
@@ -671,13 +704,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     onClickShowBranchRegexModal = () => {
-        this.setState({
-            showMaterialRegexModal: true,
-        })
+        this.setState({ showCIModal: false }, () => this.setState({ showMaterialRegexModal: true }))
     }
 
     renderCIMaterial = () => {
-        if (this.state.ciNodeId && this.state.showCIModal) {
+        if ((this.state.ciNodeId && this.state.showCIModal) || this.state.showMaterialRegexModal) {
             let nd: NodeAttr
             for (let i = 0; i < this.state.workflows.length; i++) {
                 nd = this.state.workflows[i].nodes.find((node) => +node.id == this.state.ciNodeId && node.type === 'CI')
@@ -707,10 +738,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         onClickWebhookTimeStamp={this.onClickWebhookTimeStamp}
                         webhhookTimeStampOrder={this.state.webhhookTimeStampOrder}
                         showMaterialRegexModal={this.state.showMaterialRegexModal}
-                        renderShowCIModal={this.renderShowCIModal}
                         onCloseBranchRegexModal={this.onCloseBranchRegexModal}
                         filteredCIPipelines={this.state.filteredCIPipelines}
                         onClickShowBranchRegexModal={this.onClickShowBranchRegexModal}
+                        showCIModal={this.state.showCIModal}
+                        onShowCIModal={this.onShowCIModal}
                     />
                 </>
             )

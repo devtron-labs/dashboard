@@ -1,5 +1,6 @@
 import React, { components } from 'react-select'
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
+import { SourceTypeMap } from '../../config'
 
 export const CiPipelineSourceTypeBaseOptions = [
     {
@@ -65,5 +66,11 @@ export function Option(props) {
             {/* )} */}
             <components.Option {...props} />
         </div>
+    )
+}
+
+export const isBranchRegex = (_material) => {
+    return _material.source?.some(
+        (_source) => _source.type !== SourceTypeMap.WEBHOOK && _source.type === SourceTypeMap.BranchRegex,
     )
 }

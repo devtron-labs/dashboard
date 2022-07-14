@@ -26,6 +26,7 @@ export default function GitInfoMaterial({
     workflowId,
     renderBranchRegexModal,
     onClickShowBranchRegexModal,
+    ciPipeline,
 }) {
     function renderMaterialHeader() {
         return (
@@ -153,17 +154,26 @@ export default function GitInfoMaterial({
         )
     }
 
+    const isBranchRegex = (material) => {
+        for (let mat of ciPipeline.ciMaterial) {
+            if (mat.gitMaterialId === material.gitMaterialId) {
+                return mat.source?.some((_source) => _source.type === SourceTypeMap.BranchRegex)
+            }
+        }
+
+        return false
+    }
+
     const renderBranchChangeHeader = (material) => {
         return (
-            material.type === SourceTypeMap.BranchRegex && (
+            isBranchRegex(material) && (
                 <div className="fs-13" style={{ background: 'var(--window-bg)' }}>
-                    <div></div>
                     <div className=" fw-6 flex content-space pl-20 pr-20 pt-16 pb-16">
                         <div className="flex">
                             <Branch className="hw-100 mr-8" />
                             feature-ea-app-list
                         </div>
-                        <div className="cb-5 cursor" onClick={() => onClickShowBranchRegexModal}>
+                        <div className="cb-5 cursor" onClick={onClickShowBranchRegexModal}>
                             Change branch
                         </div>
                     </div>

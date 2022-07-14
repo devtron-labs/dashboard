@@ -121,6 +121,7 @@ export default function CIPipeline({
         scanEnabled: false,
     })
     const validationRules = new ValidationRules()
+
     useEffect(() => {
         setPageState(ViewType.LOADING)
         if (ciPipelineId) {

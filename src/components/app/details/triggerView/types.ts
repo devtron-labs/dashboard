@@ -69,10 +69,11 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     onClickWebhookTimeStamp: () => void
     webhhookTimeStampOrder: string
     showMaterialRegexModal: boolean
-    renderShowCIModal: () => void
     onCloseBranchRegexModal: () => void
     filteredCIPipelines: any[]
     onClickShowBranchRegexModal: () => void
+    showCIModal: boolean
+    onShowCIModal: () => void
 }
 
 export interface CIMaterialState {

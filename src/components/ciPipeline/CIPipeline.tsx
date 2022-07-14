@@ -17,6 +17,7 @@ import { CIPipelineAdvanced } from './CIPipelineAdvanced'
 import { SourceMaterials, WebhookCIProps } from './SourceMaterials'
 import Tippy from '@tippyjs/react'
 import './ciPipeline.css'
+import { isBranchRegex } from './ciPipeline.util'
 
 export default class CIPipeline extends Component<CIPipelineProps, CIPipelineState> {
     validationRules
@@ -563,6 +564,7 @@ export default class CIPipeline extends Component<CIPipelineProps, CIPipelineSta
                     ciPipelineSourceTypeOptions={this.state.form.ciPipelineSourceTypeOptions}
                     webhookData={_webhookData}
                     canEditPipeline={this.state.form.ciPipelineEditable}
+                    // isBranchRegex={isBranchRegex}
                 />
             </div>
         )
