@@ -43,22 +43,19 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
         if (this.props.smtpConfigId) {
             getSMTPConfiguration(this.props.smtpConfigId)
                 .then((response) => {
-                    let state = { ...this.state }
-                    state.form = {
-                        ...response.result,
-                        isLoading: false,
-                        isError: true,
-                    }
-                    state.view = ViewType.FORM
-                    state.isValid = {
-                        configName: true,
-                        port: true,
-                        host: true,
-                        authUser: true,
-                        authPassword: true,
-                        fromEmail: true,
-                    }
-                    this.setState(state)
+                    this.setState((prevState) => ({
+                        ...prevState,
+                        form: { ...response.result, isLoading: false, isError: true },
+                        view: ViewType.FORM,
+                        isValid: {
+                            configName: true,
+                            port: true,
+                            host: true,
+                            authUser: true,
+                            authPassword: true,
+                            fromEmail: true,
+                        },
+                    }))
                 })
                 .then(() => {
                     this._configName.focus()
@@ -67,10 +64,11 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                     showError(error)
                 })
         } else {
-            let state = { ...this.state }
-            state.form.default = this.props.shouldBeDefault
-            state.view = ViewType.FORM
-            this.setState(state)
+            this.setState((prevState) => ({
+                ...prevState,
+                form: { ...prevState.form, default: this.props.shouldBeDefault },
+                view: ViewType.FORM,
+            }))
             setTimeout(() => {
                 if (this._configName) this._configName.focus()
             }, 100)
@@ -78,21 +76,26 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
     }
 
     handleBlur(event): void {
-        let { isValid } = { ...this.state }
-        isValid[event.target.name] = !!event.target.value.length
-        this.setState({ isValid })
+        const { name, value } = event.target
+        this.setState((prevState) => ({
+            ...prevState,
+            isValid: { ...prevState.isValid, [name]: !!value.length },
+        }))
     }
 
     handleInputChange(event: React.ChangeEvent<HTMLInputElement>): void {
-        let { form } = { ...this.state }
-        form[event.target.name] = event.target.value
-        this.setState({ form })
+        const { name, value } = event.target
+        this.setState((prevState) => ({
+            ...prevState,
+            form: { ...prevState.form, [name]: value },
+        }))
     }
 
     handleCheckbox(): void {
-        let { form, isValid } = { ...this.state }
-        form.default = !form.default
-        this.setState({ form, isValid })
+        this.setState((prevState) => ({
+            ...prevState,
+            form: { ...prevState.form, default: !prevState.form.default },
+        }))
     }
 
     saveSMTPConfig(): void {
@@ -103,23 +106,24 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
         }, true)
         isFormValid = isFormValid && validateEmail(this.state.form.fromEmail)
         if (!isFormValid) {
-            let state = { ...this.state }
-            state.form.isLoading = false
-            state.form.isError = true
-            this.setState(state)
+            this.setState((prevState) => ({
+                ...prevState,
+                form: { ...prevState.form, isLoading: false, isError: true },
+            }))
             toast.error('Some required fields are missing or Invalid')
             return
         } else {
-            let state = { ...this.state }
-            state.form.isLoading = true
-            state.form.isError = false
-            this.setState(state)
+            this.setState((prevState) => ({
+                ...prevState,
+                form: { ...prevState.form, isLoading: true, isError: false },
+            }))
         }
         saveEmailConfiguration(this.state.form, 'smtp')
             .then((response) => {
-                let state = { ...this.state }
-                state.form.isLoading = false
-                this.setState(state)
+                this.setState((prevState) => ({
+                    ...prevState,
+                    form: { ...prevState.form, isLoading: false },
+                }))
                 toast.success('Saved Successfully')
                 this.props.onSaveSuccess()
                 if (this.props.selectSMTPFromChild) {
@@ -128,9 +132,10 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
             })
             .catch((error) => {
                 showError(error)
-                let state = { ...this.state }
-                state.form.isLoading = false
-                this.setState(state)
+                this.setState((prevState) => ({
+                    ...prevState,
+                    form: { ...prevState.form, isLoading: false },
+                }))
             })
     }
 

@@ -382,19 +382,24 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     }
 
     changeEmailAgent(event: any): void {
-        let state = { ...this.state }
-        state.selectedEmailAgent = event.target.value
-        this.setState(state)
+        this.setState((prevState) => ({
+            ...prevState,
+            selectedEmailAgent: event.target.value,
+        }))
     }
 
     openAddEmailConfigPopup(): void {
-        let state = { ...this.state }
         if (this.state.selectedEmailAgent === EMAIL_AGENT.SES) {
-            state.showSESConfigModal = true
+            this.setState((prevState) => ({
+                ...prevState,
+                showSESConfigModal: true,
+            }))
         } else {
-            state.showSMTPConfigModal = true
+            this.setState((prevState) => ({
+                ...prevState,
+                showSMTPConfigModal: true,
+            }))
         }
-        this.setState(state)
     }
 
     renderEmailAgentSelector() {
