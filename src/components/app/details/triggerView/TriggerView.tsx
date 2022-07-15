@@ -264,12 +264,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             let _value, isBranchRegex
                             if (mat.source.length > 1) {
                                 for (let _source of mat.source) {
+                                    //checking if in ci material source is regex but value is not available
                                     if (_source.type === SourceTypeMap.BranchRegex) {
                                         if (!_value) {
                                             isBranchRegex = true
                                             continue
                                         }
                                     } else if (_source.type === SourceTypeMap.BranchFixed) {
+                                      //checking if in ci material source is fixed but value is available
                                         if (!isBranchRegex) {
                                             _value = _source.value
                                             continue
