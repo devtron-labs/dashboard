@@ -52,25 +52,3 @@ export const reactSelectStyles = {
         }
     },
 }
-
-export function Option(props) {
-    const { selectOption, data } = props
-    const style = { height: '16px', width: '16px', flex: '0 0 16px' }
-    const onClick = (e) => selectOption(data)
-    return (
-        <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
-            {/* {props.isSelected ? ( */}
-            {/* // <Check onClick={onClick} className="mr-8 icon-dim-16" style={style} /> */}
-            {/* // ) : ( */}
-            <span onClick={onClick} className="mr-8" style={style} />
-            {/* )} */}
-            <components.Option {...props} />
-        </div>
-    )
-}
-
-export const isBranchRegex = (_material) => {
-    return _material.source?.some(
-        (_source) => _source.type !== SourceTypeMap.WEBHOOK && _source.type === SourceTypeMap.BranchRegex,
-    )
-}
