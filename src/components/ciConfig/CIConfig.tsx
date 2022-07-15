@@ -455,7 +455,9 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         <span className="fs-13 cn-7 block">{targetPlatform.value}</span>
                     ),
                 )}
-                <p className="fs-13 cn-7 lh-1-54 mt-20">The build will fail if the target platform is invalid.</p>
+                <p className="fs-13 cn-7 lh-1-54 mt-20">
+                    The build will fail if the target platform is invalid or unsupported.
+                </p>
                 <ConfirmationDialog.ButtonGroup>
                     <button
                         type="button"
@@ -648,7 +650,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                     onKeyDown={handleKeyDown}
                                 />
                                 {showCustomPlatformWarning && (
-                                    <span className="flexbox">
+                                    <span className="flexbox cy-7">
                                         <WarningIcon className="icon-dim-16 mr-5 mt-2" />
                                         You have entered a custom target platform, please ensure it is valid.
                                     </span>
