@@ -1,7 +1,7 @@
 import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { get, post } from '../../services/api'
-import { CiPipelineSourceTypeBaseOptions } from './ciPipeline.util'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
+import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { MaterialType, Githost, PatchAction, ScriptType, PluginType, BuildStageType, RefVariableType } from './types'
 
 const emptyStepsData = () => {
