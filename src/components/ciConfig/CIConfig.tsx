@@ -9,6 +9,7 @@ import { toast } from 'react-toastify'
 import { NavLink } from 'react-router-dom'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import './CIConfig.scss'
 import ReactSelect, { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
@@ -129,19 +130,27 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
     )
     const [args, setArgs] = useState([])
     const [loading, setLoading] = useState(false)
-    const [platformError, setPlatformError] = useState<string>('')
     const targetPlatformList: OptionType[] = [
         { label: 'linux/arm64', value: 'linux/arm64' },
         { label: 'linux/amd64', value: 'linux/amd64' },
         { label: 'linux/arm/v7', value: 'linux/arm/v7' },
     ]
+    const targetPlatformMap = new Map<string, boolean>()
+    targetPlatformList.forEach((targetPlatform) => {
+        targetPlatformMap.set(targetPlatform.value, true)
+    })
     let _selectedPlatforms = []
+    let _customTargetPlatorm = false
     if (ciConfig?.dockerBuildConfig?.targetPlatform) {
         _selectedPlatforms = ciConfig.dockerBuildConfig.targetPlatform.split(',').map((platformValue) => {
+            if (!_customTargetPlatorm) {
+                _customTargetPlatorm = targetPlatformMap.get(platformValue)
+            }
             return { label: platformValue, value: platformValue }
         })
     }
     const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>(_selectedPlatforms)
+    const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(_customTargetPlatorm)
     useEffect(() => {
         let args = []
         if (ciConfig && ciConfig.dockerBuildConfig.args) {
@@ -178,10 +187,6 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         for (let index = 0; index < selectedTargetPlatforms.length; index++) {
             const element = selectedTargetPlatforms[index]
             if (!targetPlatformsSet.has(element.value)) {
-                if (!validatePlatform(element.value)) {
-                    setPlatformError('Invalid platform format')
-                    return
-                }
                 targetPlatformsSet.add(element.value)
                 targetPlatforms += element.value + (index + 1 === selectedTargetPlatforms.length ? '' : ',')
             }
@@ -376,14 +381,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         )
     }
     function handlePlatformChange(selectedValue): void {
-        setPlatformError('')
         setSelectedTargetPlatforms(selectedValue)
-    }
-
-    function validatePlatform(platform: string): boolean {
-        let regExp = new RegExp(PATTERNS.BUILDX_PLATFORM)
-        const result = regExp.test(platform)
-        return result
     }
 
     const tempMultiSelectStyles = {
@@ -391,9 +389,9 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         multiValue: (base, state) => {
             return {
                 ...base,
-                border: validatePlatform(state.data.value) ? `1px solid var(--N200)` : `1px solid var(--R500)`,
+                border: `1px solid var(--N200)`,
                 borderRadius: `4px`,
-                background: validatePlatform(state.data.value) ? 'white' : 'var(--R100)',
+                background: 'white',
                 height: '28px',
                 marginRight: '8px',
                 padding: '2px',
@@ -416,6 +414,10 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                     value: event.target.value,
                 },
             ])
+            setShowCustomPlatformWarning(
+                showCustomPlatformWarning ||
+                    selectedTargetPlatforms.some((targetPlatform) => targetPlatformMap.get(targetPlatform.value)),
+            )
         }
     }
 
@@ -568,7 +570,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                     <>
                         <div className="mb-20">
                             <div className="fs-13 fw-6">Set target platform for the build</div>
-                            <div className="fs-13 fw-4 cn-7 mb-4">
+                            <div className="fs-13 fw-4 cn-7 mb-12">
                                 If target platform is not set, Devtron will build image for architecture and operating
                                 system of the k8s node on which CI is running
                             </div>
@@ -586,7 +588,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                 name="targetPlatform"
                                 placeholder="Type to select or create"
                                 options={targetPlatformList}
-                                className="basic-multi-select"
+                                className="basic-multi-select mb-4"
                                 classNamePrefix="select"
                                 menuPortalTarget={document.body}
                                 onChange={handlePlatformChange}
@@ -597,7 +599,12 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                 isValidNewOption={() => false}
                                 onKeyDown={handleKeyDown}
                             />
-                            {platformError && <label className="form__error">{platformError}</label>}
+                            {showCustomPlatformWarning && (
+                                <span className="flexbox">
+                                    <WarningIcon className="icon-dim-16 mr-5 mt-2" />
+                                    You have entered a custom target platform, please ensure it is valid.
+                                </span>
+                            )}
                         </div>
                         <div>
                             <div className="fs-13 fw-6 mb-8">Docker build arguments</div>
