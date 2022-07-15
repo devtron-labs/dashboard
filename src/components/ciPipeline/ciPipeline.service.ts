@@ -333,6 +333,7 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: G
             ciMaterialSet.add(mat.gitMaterialId)
 
             const sourceInfo = getSourceTypeAndValue(mat)
+            console.log(sourceInfo)
             return {
                 id: mat.id,
                 gitMaterialId: mat.gitMaterialId,

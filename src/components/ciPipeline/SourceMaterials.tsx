@@ -129,7 +129,10 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                         ) || props.ciPipelineSourceTypeOptions[0]
                 }
                 let errorObj = props.validationRules?.sourceValue(mat.value)
-                const isBranchRegex = mat.type !== SourceTypeMap.WEBHOOK && mat.type === SourceTypeMap.BranchRegex
+                {
+                    console.log(mat)
+                }
+                const isBranchRegex = mat.type === SourceTypeMap.BranchRegex
                 const isBranchFixed = mat.type !== SourceTypeMap.WEBHOOK && mat.type === SourceTypeMap.BranchFixed
                 return (
                     <div key={`source-material-${index}`}>

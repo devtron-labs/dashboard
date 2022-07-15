@@ -18,7 +18,7 @@ import RightArrow from '../../../../assets/icons/ic-arrow-forward.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
 
 import { getCIPipeline, saveCIPipeline, savePipeline } from '../../../ciPipeline/ciPipeline.service'
-import { ViewType, TriggerType, SourceTypeMap } from '../../../../config'
+import { SourceTypeMap } from '../../../../config'
 import { getCIMaterialList } from '../../service'
 import { toast } from 'react-toastify'
 import { ServerErrors } from '../../../../modals/commonTypes'
@@ -136,6 +136,9 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     renderCIModal(context) {
+        const ciPipeline = this.props.filteredCIPipelines?.find(
+            (_ciPipeline) => _ciPipeline?.id == this.props.workflowId,
+        )
         let selectedMaterial = this.props.material.find((mat) => mat.isSelected)
         let commitInfo = this.props.material.find((mat) => mat.history)
         let canTrigger = this.props.material.reduce((isValid, mat) => {
@@ -162,7 +165,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                             workflowId={this.props.workflowId}
                             renderBranchRegexModal={this.renderBranchRegexModal}
                             onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
-                            ciPipeline={this._ciPipeline}
+                            ciPipeline={ciPipeline}
                         />
                     </div>
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(context, canTrigger)}
@@ -224,7 +227,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     toast.success('Updated Pipeline')
                     this.setState({ isInvalidRegex: false })
                     this.props.onCloseBranchRegexModal()
-                    context.onClickTriggerCINode()
                 }
             })
             .catch((error: ServerErrors) => {
@@ -299,7 +301,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                                         <span>
                                             <div className="fw-6 fs-14">{mat.gitMaterialName}</div>
                                             <div className="pb-12">
-                                                Use branch name matching <span className="fw-6">{mat.value}</span>{' '}
+                                                Use branch name matching &nbsp;
+                                                <span className="fw-6">{context.branch}</span>
                                             </div>
                                         </span>
                                     </div>
@@ -325,8 +328,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     render() {
-        console.log(this.props.showMaterialRegexModal, 'test')
-
         return (
             <TriggerViewContext.Consumer>
                 {(context) => {

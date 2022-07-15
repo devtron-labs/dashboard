@@ -110,7 +110,6 @@ export default function GitInfoMaterial({
         } else
             return (
                 <div className="select-material select-material--trigger-view">
-                    {/* <div className="material-list__title pb-0">Select Material</div> */}
                     {renderBranchChangeHeader(material)}
                     {material.type === SourceTypeMap.WEBHOOK && (
                         <div className="cn-7 fs-12 fw-0 pl-20 flex left">

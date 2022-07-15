@@ -74,6 +74,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     onClickShowBranchRegexModal: () => void
     showCIModal: boolean
     onShowCIModal: () => void
+    regex: string
 }
 
 export interface CIMaterialState {
@@ -190,6 +191,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     width: number
     height: number
     nodes: NodeAttr[]
+    onSetRegexValue: () => void
 }
 
 export interface TriggerViewRouterProps {
@@ -245,6 +247,7 @@ export interface TriggerViewState {
     webhhookTimeStampOrder: string
     showMaterialRegexModal: boolean
     filteredCIPipelines: any[]
+    regex: string
 }
 
 //-- begining of response type objects for trigger view
