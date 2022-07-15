@@ -563,7 +563,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                         }
                         toggleConfirmation={this.toggleConfirmation}
                         component={
-                            this.state.showDeleteConfigModalType
+                            this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab
                                 ? DeleteComponentsName.SlackConfigurationTab
                                 : this.state.showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab
                                 ? DeleteComponentsName.SesConfigurationTab
