@@ -179,7 +179,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             const element = selectedTargetPlatforms[index]
             if (!targetPlatformsSet.has(element.value)) {
                 if (!validatePlatform(element.value)) {
-                    setPlatformError('One or more platforms could be invalid.')
+                    setPlatformError('Invalid platform format')
                     return
                 }
                 targetPlatformsSet.add(element.value)
