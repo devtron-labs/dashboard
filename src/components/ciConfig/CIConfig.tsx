@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Progressing, useForm, showError, multiSelectStyles, sortObjectArrayAlphabetically } from '../common'
+import {
+    Progressing,
+    useForm,
+    showError,
+    multiSelectStyles,
+    sortObjectArrayAlphabetically,
+    ConfirmationDialog,
+} from '../common'
 import { DOCUMENTATION, PATTERNS, REGISTRY_TYPE_MAP, URLS } from '../../config'
 import { saveCIConfig, updateCIConfig, getDockerRegistryMinAuth } from './service'
 import { getSourceConfig, getCIConfig } from '../../services/service'
@@ -10,6 +17,7 @@ import { NavLink } from 'react-router-dom'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
+import warningIconSrc from '../../assets/icons/ic-warning.svg'
 import './CIConfig.scss'
 import ReactSelect, { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
@@ -143,14 +151,13 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
     let _customTargetPlatorm = false
     if (ciConfig?.dockerBuildConfig?.targetPlatform) {
         _selectedPlatforms = ciConfig.dockerBuildConfig.targetPlatform.split(',').map((platformValue) => {
-            if (!_customTargetPlatorm) {
-                _customTargetPlatorm = targetPlatformMap.get(platformValue)
-            }
+            _customTargetPlatorm = _customTargetPlatorm || !targetPlatformMap.get(platformValue)
             return { label: platformValue, value: platformValue }
         })
     }
     const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>(_selectedPlatforms)
     const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(_customTargetPlatorm)
+    const [showCustmPlatformConfirmation, setShowCustmPlatformConfirmation] = useState<boolean>(false)
     useEffect(() => {
         let args = []
         if (ciConfig && ciConfig.dockerBuildConfig.args) {
@@ -189,6 +196,12 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             if (!targetPlatformsSet.has(element.value)) {
                 targetPlatformsSet.add(element.value)
                 targetPlatforms += element.value + (index + 1 === selectedTargetPlatforms.length ? '' : ',')
+            }
+        }
+        if (showCustomPlatformWarning) {
+            setShowCustmPlatformConfirmation(!showCustmPlatformConfirmation)
+            if (!showCustmPlatformConfirmation) {
+                return
             }
         }
         let requestBody = {
@@ -414,9 +427,12 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                     value: event.target.value,
                 },
             ])
+            if (!showCustomPlatformWarning) {
+                setShowCustomPlatformWarning(!targetPlatformMap.get(event.target.value))
+            }
+        } else {
             setShowCustomPlatformWarning(
-                showCustomPlatformWarning ||
-                    selectedTargetPlatforms.some((targetPlatform) => targetPlatformMap.get(targetPlatform.value)),
+                selectedTargetPlatforms.some((targetPlatform) => !targetPlatformMap.get(targetPlatform.value)),
             )
         }
     }
@@ -427,221 +443,255 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         }
     }
 
+    const renderConfirmationModal = (): JSX.Element | null => {
+        if (!showCustmPlatformConfirmation) return null
+        return (
+            <ConfirmationDialog>
+                <ConfirmationDialog.Icon src={warningIconSrc} />
+                <ConfirmationDialog.Body title="Please ensure you have set valid target platform for the build" />
+                <span className="fs-14 cn-7 block">Custom target platform(s):</span>
+                {selectedTargetPlatforms.map((targetPlatform) =>
+                    targetPlatformMap.get(targetPlatform.value) ? null : (
+                        <span className="fs-13 cn-7 block">{targetPlatform.value}</span>
+                    ),
+                )}
+                <p className="fs-13 cn-7 lh-1-54 mt-20">The build will fail if the target platform is invalid.</p>
+                <ConfirmationDialog.ButtonGroup>
+                    <button
+                        type="button"
+                        className="cta cancel"
+                        onClick={(e) => {
+                            setShowCustmPlatformConfirmation(false)
+                        }}
+                    >
+                        Go back
+                    </button>
+                    <button onClick={onValidation} className="cta ml-12 no-decor">
+                        Confirm save
+                    </button>
+                </ConfirmationDialog.ButtonGroup>
+            </ConfirmationDialog>
+        )
+    }
+
     const { repository, dockerfile, registry, repository_name, key, value } = state
     return (
-        <div className="form__app-compose">
-            <h1 className="form__title">Docker build configuration</h1>
-            <p className="form__subtitle">
-                Required to execute CI pipelines for this application.
-                <span>
-                    <a
-                        rel="noreferrer noopener"
-                        target="_blank"
-                        className="learn-more__href"
-                        href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
-                    >
-                        {' '}
-                        Learn more
-                    </a>{' '}
-                </span>
-            </p>
-            <div className="white-card white-card__docker-config">
-                <div className="fs-14 fw-6 pb-16">
-                    Selected repository will be used to store container images for this application
-                </div>
-                <div className="mb-4 form-row__docker">
-                    <div className="form__field">
-                        <label htmlFor="" className="form__label">
-                            Container registry*
-                        </label>
-                        <ReactSelect
-                            className="m-0"
-                            tabIndex={1}
-                            isMulti={false}
-                            isClearable={false}
-                            options={dockerRegistries}
-                            getOptionLabel={(option) => `${option.id}`}
-                            getOptionValue={(option) => `${option.id}`}
-                            value={selectedRegistry}
-                            styles={_multiSelectStyles}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option: containerRegistryOption,
-                                MenuList: containerRegistryMenuList,
-                                Control: containerRegistryControls,
-                            }}
-                            onChange={(selected) => {
-                                handleRegistryChange(selected)
-                            }}
-                        />
-                        {registry.error && <label className="form__error">{registry.error}</label>}
+        <>
+            <div className="form__app-compose">
+                <h1 className="form__title">Docker build configuration</h1>
+                <p className="form__subtitle">
+                    Required to execute CI pipelines for this application.
+                    <span>
+                        <a
+                            rel="noreferrer noopener"
+                            target="_blank"
+                            className="learn-more__href"
+                            href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
+                        >
+                            {' '}
+                            Learn more
+                        </a>{' '}
+                    </span>
+                </p>
+                <div className="white-card white-card__docker-config">
+                    <div className="fs-14 fw-6 pb-16">
+                        Selected repository will be used to store container images for this application
                     </div>
-                    <div className="form__field">
-                        <label htmlFor="" className="form__label">
-                            Container Repository{' '}
-                            {selectedRegistry && REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.desiredFormat}
-                        </label>
-                        <input
-                            tabIndex={2}
-                            type="text"
-                            className="form__input"
-                            placeholder={
-                                (selectedRegistry &&
-                                    REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.placeholderText) ||
-                                'Enter repository name'
-                            }
-                            name="repository_name"
-                            value={repository_name.value}
-                            onChange={handleOnChange}
-                            autoFocus
-                            autoComplete={'off'}
-                        />
-                        {repository_name.error && <label className="form__error">{repository_name.error}</label>}
-                        {!ciConfig && selectedRegistry?.registryType === 'ecr' && (
-                            <label className="form__error form__error--info">
-                                New repository will be created if not provided
+                    <div className="mb-4 form-row__docker">
+                        <div className="form__field">
+                            <label htmlFor="" className="form__label">
+                                Container registry*
                             </label>
-                        )}
-                    </div>
-                </div>
-                <div className="fs-14 fw-6 pb-16">Docker file location</div>
-                <div className="mb-4 form-row__docker">
-                    <div className="form__field">
-                        <label className="form__label">Select repository containing docker file</label>
-                        <ReactSelect
-                            className="m-0"
-                            tabIndex={3}
-                            isMulti={false}
-                            isClearable={false}
-                            options={sourceConfig.material}
-                            getOptionLabel={(option) => `${option.name}`}
-                            getOptionValue={(option) => `${option.checkoutPath}`}
-                            value={selectedMaterial}
-                            styles={_multiSelectStyles}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option: repositoryOption,
-                                Control: repositoryControls,
-                            }}
-                            onChange={(selected) => {
-                                handleFileLocationChange(selected)
-                            }}
-                        />
-                        {repository.error && <label className="form__error">{repository.error}</label>}
-                    </div>
-                    <div className="form__field">
-                        <label htmlFor="" className="form__label">
-                            Docker file path (relative)*
-                        </label>
-                        <div className="docker-flie-container">
-                            <span className="checkout-path-container">{selectedMaterial.checkoutPath}</span>
+                            <ReactSelect
+                                className="m-0"
+                                tabIndex={1}
+                                isMulti={false}
+                                isClearable={false}
+                                options={dockerRegistries}
+                                getOptionLabel={(option) => `${option.id}`}
+                                getOptionValue={(option) => `${option.id}`}
+                                value={selectedRegistry}
+                                styles={_multiSelectStyles}
+                                components={{
+                                    IndicatorSeparator: null,
+                                    Option: containerRegistryOption,
+                                    MenuList: containerRegistryMenuList,
+                                    Control: containerRegistryControls,
+                                }}
+                                onChange={(selected) => {
+                                    handleRegistryChange(selected)
+                                }}
+                            />
+                            {registry.error && <label className="form__error">{registry.error}</label>}
+                        </div>
+                        <div className="form__field">
+                            <label htmlFor="" className="form__label">
+                                Container Repository{' '}
+                                {selectedRegistry && REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.desiredFormat}
+                            </label>
                             <input
-                                tabIndex={4}
+                                tabIndex={2}
                                 type="text"
-                                className="form__input file-name"
-                                placeholder="Dockerfile"
-                                name="dockerfile"
-                                value={dockerfile.value}
+                                className="form__input"
+                                placeholder={
+                                    (selectedRegistry &&
+                                        REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.placeholderText) ||
+                                    'Enter repository name'
+                                }
+                                name="repository_name"
+                                value={repository_name.value}
                                 onChange={handleOnChange}
+                                autoFocus
                                 autoComplete={'off'}
                             />
-                        </div>
-                        {dockerfile.error && <label className="form__error">{dockerfile.error}</label>}
-                    </div>
-                </div>
-                <hr className="mt-0 mb-20" />
-                <div onClick={toggleCollapse} className="flex content-space cursor mb-20">
-                    <div>
-                        <div className="fs-14 fw-6 ">Advanced (optional)</div>
-                        <div className="form-row__add-parameters">
-                            <span className="fs-13 fw-4 cn-7">
-                                Set target platform for build, Docker build arguments
-                            </span>
-                        </div>
-                    </div>
-                    <span>
-                        <Dropdown
-                            className="icon-dim-32 rotate "
-                            style={{ ['--rotateBy' as any]: isCollapsed ? '180deg' : '0deg' }}
-                        />
-                    </span>
-                </div>
-                {isCollapsed && (
-                    <>
-                        <div className="mb-20">
-                            <div className="fs-13 fw-6">Set target platform for the build</div>
-                            <div className="fs-13 fw-4 cn-7 mb-12">
-                                If target platform is not set, Devtron will build image for architecture and operating
-                                system of the k8s node on which CI is running
-                            </div>
-                            <CreatableSelect
-                                value={selectedTargetPlatforms}
-                                isMulti={true}
-                                components={{
-                                    ClearIndicator: null,
-                                    IndicatorSeparator: null,
-                                    Option: platformOption,
-                                    MenuList: platformMenuList,
-                                }}
-                                styles={tempMultiSelectStyles}
-                                closeMenuOnSelect={false}
-                                name="targetPlatform"
-                                placeholder="Type to select or create"
-                                options={targetPlatformList}
-                                className="basic-multi-select mb-4"
-                                classNamePrefix="select"
-                                menuPortalTarget={document.body}
-                                onChange={handlePlatformChange}
-                                hideSelectedOptions={false}
-                                menuShouldBlockScroll={true}
-                                noOptionsMessage={noMatchingPlatformOptions}
-                                onBlur={handleCreatableBlur}
-                                isValidNewOption={() => false}
-                                onKeyDown={handleKeyDown}
-                            />
-                            {showCustomPlatformWarning && (
-                                <span className="flexbox">
-                                    <WarningIcon className="icon-dim-16 mr-5 mt-2" />
-                                    You have entered a custom target platform, please ensure it is valid.
-                                </span>
+                            {repository_name.error && <label className="form__error">{repository_name.error}</label>}
+                            {!ciConfig && selectedRegistry?.registryType === 'ecr' && (
+                                <label className="form__error form__error--info">
+                                    New repository will be created if not provided
+                                </label>
                             )}
                         </div>
+                    </div>
+                    <div className="fs-14 fw-6 pb-16">Docker file location</div>
+                    <div className="mb-4 form-row__docker">
+                        <div className="form__field">
+                            <label className="form__label">Select repository containing docker file</label>
+                            <ReactSelect
+                                className="m-0"
+                                tabIndex={3}
+                                isMulti={false}
+                                isClearable={false}
+                                options={sourceConfig.material}
+                                getOptionLabel={(option) => `${option.name}`}
+                                getOptionValue={(option) => `${option.checkoutPath}`}
+                                value={selectedMaterial}
+                                styles={_multiSelectStyles}
+                                components={{
+                                    IndicatorSeparator: null,
+                                    Option: repositoryOption,
+                                    Control: repositoryControls,
+                                }}
+                                onChange={(selected) => {
+                                    handleFileLocationChange(selected)
+                                }}
+                            />
+                            {repository.error && <label className="form__error">{repository.error}</label>}
+                        </div>
+                        <div className="form__field">
+                            <label htmlFor="" className="form__label">
+                                Docker file path (relative)*
+                            </label>
+                            <div className="docker-flie-container">
+                                <span className="checkout-path-container">{selectedMaterial.checkoutPath}</span>
+                                <input
+                                    tabIndex={4}
+                                    type="text"
+                                    className="form__input file-name"
+                                    placeholder="Dockerfile"
+                                    name="dockerfile"
+                                    value={dockerfile.value}
+                                    onChange={handleOnChange}
+                                    autoComplete={'off'}
+                                />
+                            </div>
+                            {dockerfile.error && <label className="form__error">{dockerfile.error}</label>}
+                        </div>
+                    </div>
+                    <hr className="mt-0 mb-20" />
+                    <div onClick={toggleCollapse} className="flex content-space cursor mb-20">
                         <div>
-                            <div className="fs-13 fw-6 mb-8">Docker build arguments</div>
-                            {args &&
-                                args.map((arg, idx) => (
-                                    <KeyValueInput
-                                        keyLabel={'Key'}
-                                        valueLabel={'Value'}
-                                        {...arg}
-                                        key={idx}
-                                        index={idx}
-                                        onChange={handleArgsChange}
-                                        onDelete={(e) => {
-                                            let argsTemp = [...args]
-                                            argsTemp.splice(idx, 1)
-                                            setArgs(argsTemp)
-                                        }}
-                                        valueType="text"
-                                    />
-                                ))}
-                            <div
-                                className="add-parameter pointer fs-14 cb-5 mb-20"
-                                onClick={(e) =>
-                                    setArgs((args) => [{ k: '', v: '', keyError: '', valueError: '' }, ...args])
-                                }
-                            >
-                                <span className="fa fa-plus mr-8"></span>Add parameter
+                            <div className="fs-14 fw-6 ">Advanced (optional)</div>
+                            <div className="form-row__add-parameters">
+                                <span className="fs-13 fw-4 cn-7">
+                                    Set target platform for build, Docker build arguments
+                                </span>
                             </div>
                         </div>
-                    </>
-                )}
-                <div className="form__buttons mt-12">
-                    <button tabIndex={5} type="button" className={`cta`} onClick={handleOnSubmit}>
-                        {loading ? <Progressing /> : 'Save Configuration'}
-                    </button>
+                        <span>
+                            <Dropdown
+                                className="icon-dim-32 rotate "
+                                style={{ ['--rotateBy' as any]: isCollapsed ? '180deg' : '0deg' }}
+                            />
+                        </span>
+                    </div>
+                    {isCollapsed && (
+                        <>
+                            <div className="mb-20">
+                                <div className="fs-13 fw-6">Set target platform for the build</div>
+                                <div className="fs-13 fw-4 cn-7 mb-12">
+                                    If target platform is not set, Devtron will build image for architecture and
+                                    operating system of the k8s node on which CI is running
+                                </div>
+                                <CreatableSelect
+                                    value={selectedTargetPlatforms}
+                                    isMulti={true}
+                                    components={{
+                                        ClearIndicator: null,
+                                        IndicatorSeparator: null,
+                                        Option: platformOption,
+                                        MenuList: platformMenuList,
+                                    }}
+                                    styles={tempMultiSelectStyles}
+                                    closeMenuOnSelect={false}
+                                    name="targetPlatform"
+                                    placeholder="Type to select or create"
+                                    options={targetPlatformList}
+                                    className="basic-multi-select mb-4"
+                                    classNamePrefix="select"
+                                    menuPortalTarget={document.body}
+                                    onChange={handlePlatformChange}
+                                    hideSelectedOptions={false}
+                                    menuShouldBlockScroll={true}
+                                    noOptionsMessage={noMatchingPlatformOptions}
+                                    onBlur={handleCreatableBlur}
+                                    isValidNewOption={() => false}
+                                    onKeyDown={handleKeyDown}
+                                />
+                                {showCustomPlatformWarning && (
+                                    <span className="flexbox">
+                                        <WarningIcon className="icon-dim-16 mr-5 mt-2" />
+                                        You have entered a custom target platform, please ensure it is valid.
+                                    </span>
+                                )}
+                            </div>
+                            <div>
+                                <div className="fs-13 fw-6 mb-8">Docker build arguments</div>
+                                {args &&
+                                    args.map((arg, idx) => (
+                                        <KeyValueInput
+                                            keyLabel={'Key'}
+                                            valueLabel={'Value'}
+                                            {...arg}
+                                            key={idx}
+                                            index={idx}
+                                            onChange={handleArgsChange}
+                                            onDelete={(e) => {
+                                                let argsTemp = [...args]
+                                                argsTemp.splice(idx, 1)
+                                                setArgs(argsTemp)
+                                            }}
+                                            valueType="text"
+                                        />
+                                    ))}
+                                <div
+                                    className="add-parameter pointer fs-14 cb-5 mb-20"
+                                    onClick={(e) =>
+                                        setArgs((args) => [{ k: '', v: '', keyError: '', valueError: '' }, ...args])
+                                    }
+                                >
+                                    <span className="fa fa-plus mr-8"></span>Add parameter
+                                </div>
+                            </div>
+                        </>
+                    )}
+                    <div className="form__buttons mt-12">
+                        <button tabIndex={5} type="button" className={`cta`} onClick={handleOnSubmit}>
+                            {loading ? <Progressing /> : 'Save Configuration'}
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+            {renderConfirmationModal()}
+        </>
     )
 }
