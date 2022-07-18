@@ -29,3 +29,16 @@
     width: 300px;
     height: 210px;
 }
+
+.deploy_arrow {
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--N200);
+    border-radius: 50%;
+}
+
+.deploy-manage-cards__wrap {
+    display: grid;
+    grid-template-columns: 400px 400px;
+    grid-gap: 20px;
+}

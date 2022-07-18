@@ -31,6 +31,7 @@ import Reload from './components/Reload/Reload'
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))
 const OnboardingGuide = lazy(() => import('./components/onboardingGuide/OnboardingGuide'))
+const DeployManageGuide = lazy(() => import('./components/onboardingGuide/DeployManageGuide'))
 
 toast.configure({
     autoClose: 3000,
@@ -222,7 +223,9 @@ export default function App() {
                             <BreadcrumbStore>
                                 <Switch>
                                     <Route path={`/login`} component={Login} />
-                                    <Route path={'/'} render={() => <OnboardingGuide />} />
+                                    {/* <Route path={'/'} render={() => <OnboardingGuide />} /> */}
+                                    <Route path={'/'} render={() => <DeployManageGuide />} />
+
                                     {/* <Route path="/" render={() => <NavigationRoutes />} /> */}
                                     <Redirect to={`${URLS.LOGIN_SSO}${location.search}`} />
                                 </Switch>
