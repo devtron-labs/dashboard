@@ -94,7 +94,7 @@ export async function getChartRelatedReadMe(
             payload: {
                 fetchingReadMe: false,
                 isReadMeAvailable: false,
-                // schemaJson: null
+                schemaJson: null,
             },
         })
     }

@@ -8,7 +8,7 @@ import {
     StyledFormBox,
 } from '../../../common/formFields/Widgets/Widgets'
 import { UpdateApplicationButton } from './ChartValuesView.component'
-import { ChartValuesViewAction, ChartValuesViewActionTypes } from './ChartValuesView.type'
+import { ChaartValuesGUIFormType, ChartValuesViewAction, ChartValuesViewActionTypes } from './ChartValuesView.type'
 import YAML from 'yaml'
 import { CHECKBOX_VALUE, Progressing } from '../../../common'
 import EmptyState from '../../../EmptyState/EmptyState'
@@ -209,70 +209,56 @@ const SchemaNotAvailable = () => {
     )
 }
 
-const ChartValuesGUIForm = React.memo(
-    (props: {
-        schemaJson: Map<string, any>
-        valuesYamlDocument: YAML.Document.Parsed
-        fetchingSchemaJson: boolean
-        openReadMe: boolean
-        isUpdateInProgress: boolean
-        isDeleteInProgress: boolean
-        isDeployChartView: boolean
-        isCreateValueView: boolean
-        deployOrUpdateApplication: (forceUpdate?: boolean) => Promise<void>
-        dispatch: React.Dispatch<ChartValuesViewAction>
-        formValidationError: Record<string, boolean>
-    }) => {
-        if (!props.schemaJson?.size) {
-            return <SchemaNotAvailable />
-        } else if (props.fetchingSchemaJson) {
-            return <Progressing size={32} fullHeight />
-        }
+const ChartValuesGUIForm = (props: ChaartValuesGUIFormType) => {
+    if (!props.schemaJson?.size) {
+        return <SchemaNotAvailable />
+    } else if (props.fetchingSchemaJson) {
+        return <Progressing size={32} fullHeight />
+    }
 
-        return (
-            <div
-                className={`chart-values-view__gui-form-container ${
-                    !props.isDeployChartView && !props.isCreateValueView ? 'values-update-view' : ''
-                } ${props.openReadMe ? 'chart-values-view__full-mode' : ''}`}
-            >
-                <div className="gui-form-info flex left bcb-1">
-                    <span className="icon-dim-16">
-                        <InfoIcon className="icon-dim-16" />
-                    </span>
-                    <span className="fs-12 cn-9 ml-10">
-                        This feature is in BETA. If you find an issue please report it&nbsp;
-                        <a
-                            className="cb-5 fw-6"
-                            href="https://github.com/devtron-labs/devtron/issues/new/choose"
-                            target="_blank"
-                        >
-                            here.
-                        </a>
-                    </span>
-                </div>
-                <form className="chart-values-view__gui-form">
-                    {[...props.schemaJson.values()].map((value) => {
-                        return renderGUIWidget(
-                            value,
-                            props.schemaJson,
-                            props.valuesYamlDocument,
-                            props.formValidationError,
-                            props.dispatch,
-                        )
-                    })}
-                </form>
-                {!props.openReadMe && (
-                    <UpdateApplicationButton
-                        isUpdateInProgress={props.isUpdateInProgress}
-                        isDeleteInProgress={props.isDeleteInProgress}
-                        isDeployChartView={props.isDeployChartView}
-                        isCreateValueView={props.isCreateValueView}
-                        deployOrUpdateApplication={props.deployOrUpdateApplication}
-                    />
-                )}
+    return (
+        <div
+            className={`chart-values-view__gui-form-container ${
+                !props.isDeployChartView && !props.isCreateValueView ? 'values-update-view' : ''
+            } ${props.openReadMe ? 'chart-values-view__full-mode' : ''}`}
+        >
+            <div className="gui-form-info flex left bcb-1">
+                <span className="icon-dim-16">
+                    <InfoIcon className="icon-dim-16" />
+                </span>
+                <span className="fs-12 cn-9 ml-10">
+                    This feature is in BETA. If you find an issue please report it&nbsp;
+                    <a
+                        className="cb-5 fw-6"
+                        href="https://github.com/devtron-labs/devtron/issues/new/choose"
+                        target="_blank"
+                    >
+                        here.
+                    </a>
+                </span>
             </div>
-        )
-    },
-)
+            <form className="chart-values-view__gui-form">
+                {[...props.schemaJson.values()].map((value) => {
+                    return renderGUIWidget(
+                        value,
+                        props.schemaJson,
+                        props.valuesYamlDocument,
+                        props.formValidationError,
+                        props.dispatch,
+                    )
+                })}
+            </form>
+            {!props.openReadMe && (
+                <UpdateApplicationButton
+                    isUpdateInProgress={props.isUpdateInProgress}
+                    isDeleteInProgress={props.isDeleteInProgress}
+                    isDeployChartView={props.isDeployChartView}
+                    isCreateValueView={props.isCreateValueView}
+                    deployOrUpdateApplication={props.deployOrUpdateApplication}
+                />
+            )}
+        </div>
+    )
+}
 
 export default ChartValuesGUIForm
