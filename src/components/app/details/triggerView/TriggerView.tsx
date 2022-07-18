@@ -222,7 +222,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     onSetRegexValue = () => {
-        console.log(this.state.workflowId && this.state.workflowId)
+        console.log(this.state.workflowId, 'test')
         const ciPipeline = this.state.filteredCIPipelines?.find(
             (_ciPipeline) => _ciPipeline?.id == this.state.workflowId,
         )

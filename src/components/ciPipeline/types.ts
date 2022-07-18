@@ -395,3 +395,27 @@ export enum VariableFieldType {
     Input = 'inputVariables',
     Output = 'outputVariables',
 }
+
+export interface SourceMaterialsProps {
+    materials: MaterialType[]
+    showError: boolean
+    validationRules?
+    selectSourceType?: (event, gitMaterialId) => void
+    handleSourceChange?: (event, gitMaterialId) => void
+    includeWebhookEvents: boolean
+    ciPipelineSourceTypeOptions: CiPipelineSourceTypeOption[]
+    canEditPipeline: boolean
+    webhookData?: WebhookCIProps
+    isBranchRegex?: (material) => any
+}
+
+export interface WebhookCIProps {
+    webhookConditionList: any
+    gitHost: Githost
+    getSelectedWebhookEvent: (material: any) => any
+    addWebhookCondition: () => void
+    deleteWebhookCondition: (index: number) => void
+    onWebhookConditionSelectorChange: (index: number, selectorId: number) => void
+    onWebhookConditionSelectorValueChange: (index: number, value: string) => void
+    copyToClipboard: (text: string, callback) => void
+}

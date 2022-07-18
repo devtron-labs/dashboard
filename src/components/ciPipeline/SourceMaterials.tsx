@@ -9,34 +9,10 @@ import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { DropdownIndicator } from '../charts/charts.util'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outline-purple.svg'
 import { ConfigureWebhook } from './ConfigureWebhook'
-import { MaterialType, CiPipelineSourceTypeOption, Githost } from './types'
+import { MaterialType, CiPipelineSourceTypeOption, Githost, SourceMaterialsProps } from './types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { reactSelectStyles } from '../CIPipelineN/ciPipeline.utils'
-
-export interface SourceMaterialsProps {
-    materials: MaterialType[]
-    showError: boolean
-    validationRules?
-    selectSourceType?: (event, gitMaterialId) => void
-    handleSourceChange?: (event, gitMaterialId) => void
-    includeWebhookEvents: boolean
-    ciPipelineSourceTypeOptions: CiPipelineSourceTypeOption[]
-    canEditPipeline: boolean
-    webhookData?: WebhookCIProps
-    isBranchRegex?: (material) => any
-}
-
-export interface WebhookCIProps {
-    webhookConditionList: any
-    gitHost: Githost
-    getSelectedWebhookEvent: (material: any) => any
-    addWebhookCondition: () => void
-    deleteWebhookCondition: (index: number) => void
-    onWebhookConditionSelectorChange: (index: number, selectorId: number) => void
-    onWebhookConditionSelectorValueChange: (index: number, value: string) => void
-    copyToClipboard: (text: string, callback) => void
-}
 
 export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) {
     const isMultiGit = props.materials.length > 1
@@ -133,7 +109,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                     console.log(mat)
                 }
                 const isBranchRegex = mat.type === SourceTypeMap.BranchRegex
-                const isBranchFixed = mat.type !== SourceTypeMap.WEBHOOK && mat.type === SourceTypeMap.BranchFixed
+                const isBranchFixed = mat.type === SourceTypeMap.BranchFixed
                 return (
                     <div key={`source-material-${index}`}>
                         <div className="mt-20" key={mat.gitMaterialId}>
