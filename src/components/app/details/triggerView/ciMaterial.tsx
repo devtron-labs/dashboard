@@ -16,7 +16,7 @@ import { ReactComponent as BitBucket } from '../../../../assets/icons/git/bitbuc
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import RightArrow from '../../../../assets/icons/ic-arrow-forward.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
-
+import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
 import { getCIPipeline, saveCIPipeline, savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { SourceTypeMap } from '../../../../config'
 import { getCIMaterialList } from '../../service'
@@ -33,6 +33,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             isInvalidRegex: false,
             errorMessage: '',
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.workflowId),
+            isChangeBranchClicked: false,
         }
     }
     renderMaterialSource(context) {
@@ -136,6 +137,12 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         )
     }
 
+    setBranchChanged = () => {
+        this.setState({
+            isChangeBranchClicked: true,
+        })
+    }
+
     renderCIModal(context) {
         let selectedMaterial = this.props.material.find((mat) => mat.isSelected)
         let commitInfo = this.props.material.find((mat) => mat.history)
@@ -164,6 +171,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                             renderBranchRegexModal={this.renderBranchRegexModal}
                             onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
                             ciPipeline={this.state.selectedCIPipeline}
+                            setBranchChanged={this.setBranchChanged}
                         />
                     </div>
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(context, canTrigger)}
@@ -239,7 +247,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     className="cta"
                     onClick={(e) => {
                         this.onClickNextButton(context)
-                        // this.props.onCloseBranchRegexModal()
                     }}
                 >
                     Next
@@ -292,11 +299,22 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 <div>{this.renderBranchRegexMaterialHeader(context.closeCIModal)}</div>
 
                 <div className="select-material--regex-body m-20 fs-13">
-                    <h4 className="mb-0 fw-6">Set a primary branch</h4>
-                    <p className="mt-4">
-                        Primary branch will be used to trigger automatic builds on every commit. This can be changed
-                        later.
-                    </p>
+                    <div className="flex left">
+                        {this.state.isChangeBranchClicked && (
+                            <div onClick={this.props.onShowCIModal}>
+                                <LeftIcon className="rotate icon-dim-20 mr-16 cursor" />
+                            </div>
+                        )}
+
+                        <div>
+                            <h4 className="mb-0 fw-6 ">Set a primary branch</h4>
+                            <p className="mt-4">
+                                Primary branch will be used to trigger automatic builds on every commit. This can be
+                                changed later.
+                            </p>
+                        </div>
+                    </div>
+
                     {material &&
                         material.map((mat, index) => {
                             return (
@@ -345,6 +363,9 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         return (
             <TriggerViewContext.Consumer>
                 {(context) => {
+                    {
+                        console.log(this.props.material)
+                    }
                     return (
                         <VisibleModal className="" close={context.closeCIModal}>
                             <div

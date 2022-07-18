@@ -27,6 +27,7 @@ export default function GitInfoMaterial({
     renderBranchRegexModal,
     onClickShowBranchRegexModal,
     ciPipeline,
+    setBranchChanged,
 }) {
     function renderMaterialHeader() {
         return (
@@ -163,6 +164,11 @@ export default function GitInfoMaterial({
         return false
     }
 
+    const onClickChangebranch = (isBranchChangedClicked) => {
+        onClickShowBranchRegexModal()
+        setBranchChanged()
+    }
+
     const renderBranchChangeHeader = (material: CIMaterialType) => {
         return (
             isBranchRegex(material) && (
@@ -170,9 +176,9 @@ export default function GitInfoMaterial({
                     <div className=" fw-6 flex content-space pl-20 pr-20 pt-16 pb-16">
                         <div className="flex">
                             <Branch className="hw-100 mr-8" />
-                            feature-ea-app-list
+                            {material.value}
                         </div>
-                        <div className="cb-5 cursor" onClick={onClickShowBranchRegexModal}>
+                        <div className="cb-5 cursor" onClick={() => onClickChangebranch(true)}>
                             Change branch
                         </div>
                     </div>
