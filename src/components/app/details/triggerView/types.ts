@@ -81,6 +81,7 @@ export interface CIMaterialState {
     regexValue: Record<number, string>
     isInvalidRegex: boolean
     errorMessage: string
+    selectedCIPipeline?: any
 }
 
 export interface NodeAttr {

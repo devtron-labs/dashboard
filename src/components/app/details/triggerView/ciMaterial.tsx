@@ -32,6 +32,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             regexValue: {},
             isInvalidRegex: false,
             errorMessage: '',
+            selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.workflowId),
         }
     }
     renderMaterialSource(context) {
@@ -136,9 +137,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     renderCIModal(context) {
-        const ciPipeline = this.props.filteredCIPipelines?.find(
-            (_ciPipeline) => _ciPipeline?.id == this.props.workflowId,
-        )
         let selectedMaterial = this.props.material.find((mat) => mat.isSelected)
         let commitInfo = this.props.material.find((mat) => mat.history)
         let canTrigger = this.props.material.reduce((isValid, mat) => {
@@ -165,7 +163,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                             workflowId={this.props.workflowId}
                             renderBranchRegexModal={this.renderBranchRegexModal}
                             onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
-                            ciPipeline={ciPipeline}
+                            ciPipeline={this.state.selectedCIPipeline}
                         />
                     </div>
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(context, canTrigger)}
@@ -191,10 +189,9 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         )
     }
 
-    _ciPipeline = this.props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == this.props.workflowId)
     onClickNextButton = (context) => {
         const payload: any = {
-            ciPipeline: this._ciPipeline,
+            ciPipeline: this.state.selectedCIPipeline,
         }
         payload.action = PatchAction.UPDATE_SOURCE
         payload.appId = +this.props.match.params.appId
@@ -272,6 +269,23 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         )
     }
 
+    getBranchRegex = (gitMaterialId: number) => {
+        if (Array.isArray(this.state.selectedCIPipeline?.ciMaterial)) {
+            for (let _ciMaterial of this.state.selectedCIPipeline.ciMaterial) {
+                if (_ciMaterial.gitMaterialId === gitMaterialId) {
+                    for (let _source of _ciMaterial.source) {
+                        if (_source.type === SourceTypeMap.BranchRegex) {
+                            return _source.value
+                        }
+                    }
+                    break
+                }
+            }
+        }
+
+        return ''
+    }
+
     renderBranchRegexModal = (material, context) => {
         return (
             <>
@@ -302,14 +316,14 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                                             <div className="fw-6 fs-14">{mat.gitMaterialName}</div>
                                             <div className="pb-12">
                                                 Use branch name matching &nbsp;
-                                                <span className="fw-6">{context.branch}</span>
+                                                <span className="fw-6">{this.getBranchRegex(mat.gitMaterialId)}</span>
                                             </div>
                                         </span>
                                     </div>
                                     <input
                                         tabIndex={1}
                                         placeholder="Enter branch name matching regex"
-                                        className="form__input ml-36"
+                                        className="form__input ml-36 w-95"
                                         name="name"
                                         value={this.state.regexValue[mat.gitMaterialId]}
                                         onChange={(e) => this.handleRegexInputValue(mat.gitMaterialId, e.target.value)}
