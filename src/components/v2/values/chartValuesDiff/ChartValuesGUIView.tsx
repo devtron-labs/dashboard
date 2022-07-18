@@ -28,7 +28,7 @@ const getGUIWidget = (
                 <StyledInput
                     {...props}
                     onBlur={(e) => {
-                        callback(e.target.value)
+                        callback(props.type === 'numberInput' ? +e.target.value : e.target.value)
                     }}
                     errorMessage={formValidationError[props.key] && 'This is a required field'}
                 />
