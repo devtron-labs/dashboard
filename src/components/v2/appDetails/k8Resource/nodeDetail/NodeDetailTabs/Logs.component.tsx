@@ -293,9 +293,9 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
         </div>
     ) : (
         <React.Fragment>
-            <div className="container-fluid bcn-0">
-                <div className={`row pt-2 pb-2 pl-16 pr-16 ${!isLogAnalyzer ? 'border-top' : ''}`}>
-                    <div className="col-6 d-flex align-items-center">
+            <div className="node-container-fluid bcn-0">
+                <div className={`node-row pt-2 pb-2 pl-16 pr-16 ${!isLogAnalyzer ? 'border-top' : ''}`}>
+                    <div className="col-6 flexbox flex-align-center">
                         <Tippy
                             className="default-tt"
                             arrow={false}

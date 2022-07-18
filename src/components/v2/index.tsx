@@ -3,7 +3,6 @@ import { useRouteMatch, useParams, Redirect,useLocation, useHistory } from 'reac
 import { Switch, Route } from 'react-router-dom';
 import { URLS } from '../../config';
 import { DetailsProgressing, showError, ErrorScreenManager, sortOptionsByValue } from '../common';
-import './lib/bootstrap-grid.min.css';
 import ValuesComponent from './values/ChartValues.component';
 import AppHeaderComponent from './headers/AppHeader.component';
 import ChartHeaderComponent from './headers/ChartHeader.component';

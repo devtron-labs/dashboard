@@ -10,7 +10,6 @@ import { useEventSource } from '../../common';
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component';
 import NodeTreeDetailTab from './NodeTreeDetailTab';
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type';
-import '../lib/bootstrap-grid.min.css'
 
 const AppDetailsComponent = ({
     externalLinks,

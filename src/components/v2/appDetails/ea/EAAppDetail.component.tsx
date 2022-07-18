@@ -8,7 +8,6 @@ import { AppDetails, AppType } from "../appDetails.type";
 import AppDetailsComponent from '../AppDetails.component';
 import moment from 'moment'
 import * as queryString from 'query-string';
-import '../../lib/bootstrap-grid.min.css';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../../../util/URLUtil';
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service';
 import { ExternalLink, ExternalLinksAndToolsType, OptionTypeWithIcon } from '../../../externalLinks/ExternalLinks.type';
