@@ -153,7 +153,7 @@ export default function GitInfoMaterial({
         )
     }
 
-    const isBranchRegex = (material) => {
+    const isBranchRegex = (material: CIMaterialType) => {
         for (let mat of ciPipeline.ciMaterial) {
             if (mat.gitMaterialId === material.gitMaterialId) {
                 return mat.source?.some((_source) => _source.type === SourceTypeMap.BranchRegex)
@@ -163,7 +163,7 @@ export default function GitInfoMaterial({
         return false
     }
 
-    const renderBranchChangeHeader = (material) => {
+    const renderBranchChangeHeader = (material: CIMaterialType) => {
         return (
             isBranchRegex(material) && (
                 <div className="fs-13" style={{ background: 'var(--window-bg)' }}>

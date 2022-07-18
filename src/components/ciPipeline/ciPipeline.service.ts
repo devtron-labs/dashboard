@@ -9,11 +9,13 @@ const emptyStepsData = () => {
 }
 
 export function savePipeline(request, isRegexMaterial = false): Promise<any> {
+    let url
     if (isRegexMaterial) {
-        return post(`${Routes.CI_PIPELINE_PATCH}/regex`, request)
+        url = `${Routes.CI_PIPELINE_PATCH}/regex`
     } else {
-        return post(Routes.CI_PIPELINE_PATCH, request)
+        url = `${Routes.CI_PIPELINE_PATCH}`
     }
+    return post(url, request)
 }
 
 export function getCIPipelineNameSuggestion(appId: string | number): Promise<any> {
