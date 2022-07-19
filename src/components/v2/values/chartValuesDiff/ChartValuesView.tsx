@@ -119,7 +119,7 @@ function ChartValuesView({
                     isLoading: false,
                     fetchedReadMe: _fetchedReadMe,
                     schemaJson: convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
-                    valuesYamlDocument: YAML.parseDocument(commonState.installedConfig.rawValues || '')
+                    valuesYamlDocument: YAML.parseDocument(commonState.installedConfig.rawValues || ''),
                 },
             })
         } else if (isExternalApp) {
@@ -171,7 +171,7 @@ function ChartValuesView({
                                 chartVersionsData: [_chartVersionData],
                                 chartValues: _chartValues,
                                 modifiedValuesYaml: _valuesYaml,
-                                valuesYamlDocument: YAML.parseDocument(_valuesYaml || '')
+                                valuesYamlDocument: YAML.parseDocument(_valuesYaml || ''),
                             },
                         })
                     }
@@ -398,7 +398,7 @@ function ChartValuesView({
                     },
                     installedConfig: result,
                     modifiedValuesYaml: result?.valuesOverrideYaml,
-                    valuesYamlDocument: YAML.parseDocument(result?.valuesOverrideYaml || '')
+                    valuesYamlDocument: YAML.parseDocument(result?.valuesOverrideYaml || ''),
                 },
             })
         } catch (e) {
