@@ -93,7 +93,7 @@ const updateYamlDocument = (
     schemaJson: Map<string, any>,
     valuesYamlDocument: YAML.Document.Parsed,
     dispatch: React.Dispatch<ChartValuesViewAction>,
-) => {
+): void => {
     schemaJson.set(property.key, {
         ...property,
         value: _newValue,
@@ -129,11 +129,14 @@ const renderChildGUIWidget = (
     valuesYamlDocument: YAML.Document.Parsed,
     formValidationError: Record<string, boolean>,
     dispatch: React.Dispatch<ChartValuesViewAction>,
-) => {
+): JSX.Element | null => {
     const _childProps = schemaJson.get(_childKey)
     if (_childProps.type === 'formBox' && _childProps.children) {
         return renderGUIWidget(_childProps, schemaJson, valuesYamlDocument, formValidationError, dispatch, true)
     } else {
+        if (isFieldHidden(_childProps, valuesYamlDocument)) {
+            return null
+        }
         const isRequired = isRequiredField(_childProps, true, schemaJson)
         if (_childProps.showField || isRequired) {
             _childProps['isRequired'] = isRequired
@@ -148,13 +151,13 @@ const renderChildGUIWidget = (
     }
 }
 
-const isFieldHidden = (props: any, valuesYamlDocument: YAML.Document.Parsed) => {
+const isFieldHidden = (props: any, valuesYamlDocument: YAML.Document.Parsed): boolean => {
     if (!props.hidden) return false
 
     if (typeof props.hidden === 'object') {
         return props.hidden.value === valuesYamlDocument.getIn(props.hidden.path?.split('/'))
     } else if (typeof props.hidden === 'string') {
-        return valuesYamlDocument.getIn(props.hidden.split('/'))
+        return !!valuesYamlDocument.getIn(props.hidden.split('/'))
     }
 
     return props.hidden
@@ -167,7 +170,7 @@ const renderGUIWidget = (
     formValidationError: Record<string, boolean>,
     dispatch: React.Dispatch<ChartValuesViewAction>,
     fromParent?: boolean,
-) => {
+): JSX.Element | null => {
     if (!isFieldHidden(props, valuesYamlDocument) && (!props.parentRef || fromParent)) {
         if (props.type === 'formBox' && props.children) {
             return props.showField ? (
@@ -194,9 +197,11 @@ const renderGUIWidget = (
             )
         }
     }
+
+    return null
 }
 
-const SchemaNotAvailable = () => {
+const SchemaNotAvailable = (): JSX.Element => {
     return (
         <EmptyState>
             <EmptyState.Image>
@@ -209,11 +214,11 @@ const SchemaNotAvailable = () => {
     )
 }
 
-const ChartValuesGUIForm = (props: ChaartValuesGUIFormType) => {
-    if (!props.schemaJson?.size) {
-        return <SchemaNotAvailable />
-    } else if (props.fetchingSchemaJson) {
+const ChartValuesGUIForm = (props: ChaartValuesGUIFormType): JSX.Element => {
+    if (props.fetchingSchemaJson) {
         return <Progressing size={32} fullHeight />
+    } else if (!props.schemaJson?.size) {
+        return <SchemaNotAvailable />
     }
 
     return (

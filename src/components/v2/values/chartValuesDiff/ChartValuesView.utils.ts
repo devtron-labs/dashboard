@@ -134,7 +134,7 @@ const getFieldType = (type: string, renderType: string, containsEnum): string =>
     }
 }
 
-const isFieldEnabled = (property: any, isChild: boolean) => {
+const isFieldEnabled = (property: any, isChild: boolean): boolean => {
     if (property.form && !property.properties) {
         return true
     } else if (!isChild && property.properties) {
@@ -150,7 +150,7 @@ const isFieldEnabled = (property: any, isChild: boolean) => {
     return false
 }
 
-export const isRequiredField = (property: any, isChild: boolean, schemaJson: Map<string, any>) => {
+export const isRequiredField = (property: any, isChild: boolean, schemaJson: Map<string, any>): boolean => {
     if (isChild) {
         const _parentValue = schemaJson.get(property.parentRef)
 
@@ -172,8 +172,8 @@ const convertItemsToObj = (items) => {
     return itemsObj
 }
 
-const getAvailalbePath = (parentPathKey: string[], valuesYamlDocument: YAML.Document.Parsed) => {
-    let currentPath = [],
+const getAvailalbePath = (parentPathKey: string[], valuesYamlDocument: YAML.Document.Parsed): string[] => {
+    let currentPath: string[] = [],
         noValueInCurrentPath = false
     for (let _pathKey of parentPathKey) {
         if (noValueInCurrentPath) {
@@ -192,7 +192,14 @@ const getAvailalbePath = (parentPathKey: string[], valuesYamlDocument: YAML.Docu
     return currentPath
 }
 
-export const getPathAndValueToSetIn = (pathKey: string[], valuesYamlDocument: YAML.Document.Parsed, _newValue) => {
+export const getPathAndValueToSetIn = (
+    pathKey: string[],
+    valuesYamlDocument: YAML.Document.Parsed,
+    _newValue: any,
+): {
+    pathToSetIn: string[]
+    valueToSetIn: any
+} => {
     let pathToSetIn = [],
         valueToSetIn
     const parentPathKey = pathKey.slice(0, pathKey.length - 1)
@@ -217,7 +224,7 @@ export const getAndUpdateSchemaValue = (
     modifiedValuesYaml: string,
     schemaJson: Map<string, any>,
     dispatch: (action: ChartValuesViewAction) => void,
-) => {
+): void => {
     const parsedValuesYamlDocument = YAML.parseDocument(modifiedValuesYaml)
     const updatedSchemaJson = schemaJson
     for (let [key, value] of updatedSchemaJson) {
@@ -240,7 +247,11 @@ export const getAndUpdateSchemaValue = (
     })
 }
 
-const getPathKeyAndPropsPair = (schema, parentRef = '', pathKeyAndPropsPair = new Map<string, any>()) => {
+const getPathKeyAndPropsPair = (
+    schema,
+    parentRef = '',
+    pathKeyAndPropsPair = new Map<string, any>(),
+): Map<string, any> => {
     if (schema?.properties) {
         const properties = schema.properties
         Object.keys(properties).forEach((propertyKey) => {
@@ -270,7 +281,7 @@ const getPathKeyAndPropsPair = (schema, parentRef = '', pathKeyAndPropsPair = ne
     return pathKeyAndPropsPair
 }
 
-export const convertSchemaJsonToMap = (valuesSchemaJson: string) => {
+export const convertSchemaJsonToMap = (valuesSchemaJson: string): Map<string, any> | null => {
     if (valuesSchemaJson?.trim()) {
         try {
             return getPathKeyAndPropsPair(JSON.parse(valuesSchemaJson))
