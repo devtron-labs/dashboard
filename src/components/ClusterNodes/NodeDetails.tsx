@@ -65,6 +65,9 @@ export default function NodeDetails() {
     const [isShowWarning, setIsShowWarning] = useState(false)
     const [patchData, setPatchData] = useState<jsonpatch.Operation[]>(null)
     const toastId = useRef(null)
+    const [showAllLabel, setShowAllLabel] = useState(false)
+    const [showAllAnnotations, setShowAllAnnotations] = useState(false)
+    const [showAllTaints, setShowAllTaints] = useState(false)
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
         setLoader(true)
@@ -237,7 +240,25 @@ export default function NodeDetails() {
         if (nodeDetail.labels.length === 0) {
             return noDataInSubTab('Labels')
         } else {
-            return <div>{nodeDetail.labels.map((label) => renderKeyValueLabel(label.key, label.value))}</div>
+            return (
+                <>
+                    <div>
+                        {(showAllLabel ? nodeDetail.labels : nodeDetail.labels.slice(0, 10)).map((label) =>
+                            renderKeyValueLabel(label.key, label.value),
+                        )}
+                    </div>
+                    {nodeDetail.labels.length > 10 && (
+                        <div
+                            className="cb-5 pointer"
+                            onClick={() => {
+                                setShowAllLabel(!showAllLabel)
+                            }}
+                        >
+                            {showAllLabel ? 'Show less' : 'Show more'}
+                        </div>
+                    )}
+                </>
+            )
         }
     }
 
@@ -246,9 +267,23 @@ export default function NodeDetails() {
             return noDataInSubTab('Annotations')
         } else {
             return (
-                <div>
-                    {nodeDetail.annotations.map((annotation) => renderKeyValueLabel(annotation.key, annotation.value))}
-                </div>
+                <>
+                    <div>
+                        {(showAllAnnotations ? nodeDetail.annotations : nodeDetail.annotations.splice(0, 10)).map(
+                            (annotation) => renderKeyValueLabel(annotation.key, annotation.value),
+                        )}
+                    </div>
+                    {nodeDetail.annotations.length > 10 && (
+                        <div
+                            className="cb-5 pointer"
+                            onClick={() => {
+                                setShowAllAnnotations(!showAllAnnotations)
+                            }}
+                        >
+                            {showAllAnnotations ? 'Show less' : 'Show more'}
+                        </div>
+                    )}
+                </>
             )
         }
     }
@@ -291,12 +326,22 @@ export default function NodeDetails() {
                         <div>Key|Value</div>
                         <div>Effect</div>
                     </div>
-                    {nodeDetail.taints.map((taint) => (
+                    {(showAllTaints ? nodeDetail.taints : nodeDetail.taints.slice(0, 10)).map((taint) => (
                         <div className="subtab-grid">
                             {renderKeyValueLabel(taint.key, taint.value)}
                             {renderWithCopy(taint['effect'])}
                         </div>
                     ))}
+                    {nodeDetail.taints.length > 10 && (
+                        <div
+                            className="cb-5 pointer"
+                            onClick={() => {
+                                setShowAllTaints(!showAllTaints)
+                            }}
+                        >
+                            {showAllTaints ? 'Show less' : 'Show more'}
+                        </div>
+                    )}
                 </div>
             )
         }
@@ -525,8 +570,8 @@ export default function NodeDetails() {
             sortType === 'number'
                 ? (a, b) => {
                       const sortByColumnArr = columnName.split('.')
-                      let firstValue = a[sortByColumnArr[0]][sortByColumnArr[1]] || 0
-                      let secondValue = b[sortByColumnArr[0]][sortByColumnArr[1]] || 0
+                      let firstValue = a[sortByColumnArr[0]][sortByColumnArr[1]] || '0'
+                      let secondValue = b[sortByColumnArr[0]][sortByColumnArr[1]] || '0'
                       firstValue = Number(firstValue.slice(0, -1))
                       secondValue = Number(secondValue.slice(0, -1))
                       return _sortOrder === OrderBy.ASC ? firstValue - secondValue : secondValue - firstValue
@@ -556,9 +601,11 @@ export default function NodeDetails() {
                     handleSortClick(sortingFieldName, columnType)
                 }}
             >
-                <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
-                    {columnName}
-                </span>
+                <Tippy className="default-tt" arrow={false} placement="top" content={columnName}>
+                    <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
+                        {columnName}
+                    </span>
+                </Tippy>
                 <Sort className="pointer icon-dim-14 position-rel sort-icon" />
             </div>
         )
@@ -573,9 +620,9 @@ export default function NodeDetails() {
                     {renderPodHeaderCell('Namespace', 'namespace', 'string', 'pt-8 pr-8 pb-8 pl-20')}
                     {renderPodHeaderCell('Pod', 'name', 'string', 'p-8')}
                     {renderPodHeaderCell('CPU Requests', 'cpu.requestPercentage', 'number', 'p-8')}
-                    {renderPodHeaderCell('CPU Requests', 'cpu.limitPercentage', 'number', 'p-8')}
+                    {renderPodHeaderCell('CPU Limit', 'cpu.limitPercentage', 'number', 'p-8')}
                     {renderPodHeaderCell('Memory Requests', 'memory.requestPercentage', 'number', 'p-8')}
-                    {renderPodHeaderCell('Memory Requests', 'memory.limitPercentage', 'number', 'p-8')}
+                    {renderPodHeaderCell('Memory Limit', 'memory.limitPercentage', 'number', 'p-8')}
                     {renderPodHeaderCell('Age', 'createdAt', 'string', 'pt-8 pr-20 pb-8 pl-8')}
                     {sortedPodList.slice(podListOffset, podListOffset + pageSize).map((pod) => (
                         <>
@@ -759,6 +806,12 @@ export default function NodeDetails() {
                     mode={MODES.YAML}
                     noParsing
                 >
+                    {isReviewState && isShowWarning && (
+                        <CodeEditor.Warning
+                            className="ellipsis-right"
+                            text="Actual YAML has changed since you made the changes. Please check the diff carefully."
+                        />
+                    )}
                     {isReviewState && (
                         <CodeEditor.Header hideDefaultSplitHeader={true}>
                             <div className="h-32 lh-32 fs-12 fw-6 bcn-1 border-bottom flexbox w-100 cn-7">
@@ -769,12 +822,6 @@ export default function NodeDetails() {
                                 </div>
                             </div>
                         </CodeEditor.Header>
-                    )}
-                    {isReviewState && isShowWarning && (
-                        <CodeEditor.Warning
-                            className="ellipsis-right"
-                            text="Actual YAML has changed since you made the changes. Please check the diff carefully."
-                        />
                     )}
                 </CodeEditor>
                 <div className="bcn-0 border-top p-12 text-right" style={{ height: '60px' }}>
