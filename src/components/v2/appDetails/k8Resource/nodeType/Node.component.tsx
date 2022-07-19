@@ -189,7 +189,7 @@ function NodeComponent({
                             <span>{node.kind}</span>
                         </div>
                     )}
-                    <div className="row m-0 resource-row">
+                    <div className="node-row m-0 resource-row">
                         <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor content-space`}>
                             <div className="flex align-start">
                                 <div
@@ -322,8 +322,7 @@ function NodeComponent({
         <>
             {selectedNodes && (
                 <div
-                    className="container-fluid"
-                    style={{ paddingRight: 0, paddingLeft: 0, height: '600px', overflow: 'scroll' }}
+                    className="node-container-fluid"
                 >
                     {isPodAvailable ? (
                         <PodHeaderComponent callBack={setPodType} />
@@ -339,7 +338,7 @@ function NodeComponent({
                         </div>
                     )}
 
-                    <div className="row border-bottom fw-6 m-0">
+                    <div className="node-row border-bottom fw-6 m-0">
                         {tableHeader.map((cell, index) => {
                             return (
                                 <div
