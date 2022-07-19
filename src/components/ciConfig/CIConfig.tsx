@@ -640,10 +640,8 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                     options={targetPlatformList}
                                     className="basic-multi-select mb-4"
                                     classNamePrefix="select"
-                                    menuPortalTarget={document.body}
                                     onChange={handlePlatformChange}
                                     hideSelectedOptions={false}
-                                    menuShouldBlockScroll={true}
                                     noOptionsMessage={noMatchingPlatformOptions}
                                     onBlur={handleCreatableBlur}
                                     isValidNewOption={() => false}
