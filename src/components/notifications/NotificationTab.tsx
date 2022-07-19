@@ -518,6 +518,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                         {p.dest === "ses" ? <Email className="icon-dim-20 mr-5" /> : null}
                                         {p.dest === "slack" ? <Slack className="icon-dim-20 mr-5" /> : null}
                                         {p.dest === "email" ? <Email className="icon-dim-20 mr-5" /> : null}
+                                        {p.dest === "smtp" ? <Email className="icon-dim-20 mr-5" /> : null}
                                         {p.recipient ? p.recipient : p.name}
                                     </div>
                                 })}
