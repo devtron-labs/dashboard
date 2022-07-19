@@ -1,17 +1,18 @@
 import React from 'react'
-import './onboardingGuide.css'
-import HelmCollage from '../../assets/img/helm-collage.png'
-import DeployCICD from '../../assets/img/guide-onboard.png'
+import HelmSearch from '../../assets/img/guided-helm-search.png'
+import HelmInCluster from '../../assets/img/guided-helm-cluster.png'
+import ChartRepository from '../../assets/img/guided-chart-repository.png'
+import HelmCollage from '../../assets/img/guided-helm-collage.png'
 import { NavLink, useRouteMatch } from 'react-router-dom'
 import { URLS } from '../../config'
-import ReactGA from 'react-ga'
 import { ReactComponent as LeftIcon } from '../../assets/icons/ic-arrow-forward.svg'
+import './onboardingGuide.scss'
 
 function DeployManageGuide() {
     const match = useRouteMatch()
 
     return (
-        <div className="guide-container">
+        <div className="deploy-manage-container">
             <div className="flex h-300 guide-header">
                 <div className="bcn-0 deploy_arrow flex cursor">
                     <LeftIcon className="rotate icon-dim-24" style={{ ['--rotateBy' as any]: '180deg' }} />
@@ -23,10 +24,10 @@ function DeployManageGuide() {
             </div>
             <div className="bcn-0 guide-body flex">
                 <div className="deploy-manage-cards__wrap">
-                    <div className="guide-card guide-card__left flex w-400 br-4 en-2 bw-1 cursor">
+                    <div className="deploy-card bcn-0  flex w-400 br-4 en-2 bw-1 ">
                         <img
                             className=" bcn-1"
-                            src={HelmCollage}
+                            src={HelmSearch}
                             width="200"
                             height="150"
                             alt="Please connect cluster"
@@ -47,7 +48,7 @@ function DeployManageGuide() {
                             </NavLink>
                         </div>
                     </div>
-                    <div className="guide-card guide-card__right flex w-400 br-4 en-2 bw-1 cursor">
+                    <div className="deploy-card bcn-0 flex w-400 br-4 en-2 bw-1 ">
                         <img
                             className=" bcn-1"
                             src={HelmCollage}
@@ -71,10 +72,10 @@ function DeployManageGuide() {
                             </NavLink>
                         </div>
                     </div>
-                    <div className="guide-card guide-card__left flex w-400 br-4 en-2 bw-1 cursor">
+                    <div className="deploy-card bcn-0  flex w-400 br-4 en-2 bw-1 ">
                         <img
                             className=" bcn-1"
-                            src={HelmCollage}
+                            src={HelmInCluster}
                             width="200"
                             height="150"
                             alt="Please connect cluster"
@@ -95,10 +96,10 @@ function DeployManageGuide() {
                             </NavLink>
                         </div>
                     </div>
-                    <div className="guide-card guide-card__right flex w-400 br-4 en-2 bw-1 cursor">
+                    <div className="deploy-card bcn-0 flex w-400 br-4 en-2 bw-1 ">
                         <img
                             className=" bcn-1"
-                            src={HelmCollage}
+                            src={ChartRepository}
                             width="200"
                             height="150"
                             alt="Please connect cluster"

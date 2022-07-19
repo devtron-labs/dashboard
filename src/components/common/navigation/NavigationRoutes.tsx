@@ -254,7 +254,6 @@ export function RedirectWithSentry() {
 
 export function RedirectToAppList() {
     const { push } = useHistory()
-    const { pathname } = useLocation()
     const { serverMode } = useContext(mainContext)
     useEffect(() => {
         let baseUrl = `${URLS.APP}/${URLS.APP_LIST}`
