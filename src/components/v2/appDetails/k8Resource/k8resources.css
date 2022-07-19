@@ -1,9 +1,67 @@
-.k8-resources-node-tree{
+.k8-resources-node-tree {
     width: 270px;
     min-height: 532px;
     overflow-y: auto;
 }
-.resource-node-wrapper{
+
+.resource-node-wrapper {
     min-height: 600px;
     height: calc(100vh - 288px);
+}
+
+.flex-grow-1 {
+    flex-grow: 1 !important;
+}
+
+.node-container-fluid {
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: 0;
+    padding-left: 0;
+    height: '600px';
+    overflow: 'scroll';
+}
+
+.node-row {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.col-10 {
+    flex: 0 0 auto;
+    width: 83.33333333%;
+}
+
+.col-11 {
+    flex: 0 0 auto;
+    width: 91.66666667%;
+}
+
+.col-6 {
+    flex: 0 0 auto;
+    width: 50%;
+}
+
+.col-5 {
+    flex: 0 0 auto;
+    width: 41.66666667%;
+}
+
+.col-1 {
+    flex: 0 0 auto;
+    width: 8.33333333%;
+}
+
+.flex-row-reverse {
+    flex-direction: row-reverse !important;
+}
+
+.node-row > * {
+    box-sizing: border-box;
+    padding-right: calc(var(--bs-gutter-x) * 0.5);
+    padding-left: calc(var(--bs-gutter-x) * 0.5);
+    margin-top: var(--bs-gutter-y);
 }
