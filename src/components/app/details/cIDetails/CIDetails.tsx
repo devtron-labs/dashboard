@@ -1129,6 +1129,7 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
         isError: false,
     })
     const { appId } = useParams<{ appId: string }>()
+    const { push } = useHistory()
     async function callGetSecurityIssues() {
         try {
             const { result } = await getLastExecutionByArtifactId(appId, props.triggerHistory.artifactId)
@@ -1161,6 +1162,12 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
         }
     }, [props.triggerHistory.artifactId])
 
+    const redirectToCreate = () => {
+        const ciPipelineId = props?.triggerHistory?.ciPipelineId
+        if(!ciPipelineId)return
+        push(`${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${ciPipelineId}/${URLS.APP_CI_CONFIG}/${ciPipelineId}/build`)
+    }
+
     const severityCount = securityData.severityCount
     const total = severityCount.critical + severityCount.moderate + severityCount.low
 
@@ -1170,7 +1177,7 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
     if (securityData.isLoading) return <Progressing pageLoader />
     if (securityData.isError) return <Reload />
     if (props.triggerHistory.artifactId && !securityData.scanned) {
-        if (!securityData.scanEnabled) return <ScanDisabledView />
+        if (!securityData.scanEnabled) return <ScanDisabledView redirectToCreate={redirectToCreate}/>
         return <ImageNotScannedView />
     }
     if (props.triggerHistory.artifactId && securityData.scanned && !securityData.vulnerabilities.length)
