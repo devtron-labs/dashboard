@@ -646,6 +646,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                     onBlur={handleCreatableBlur}
                                     isValidNewOption={() => false}
                                     onKeyDown={handleKeyDown}
+                                    captureMenuScroll={false}
                                 />
                                 {showCustomPlatformWarning && (
                                     <span className="flexbox cy-7">
