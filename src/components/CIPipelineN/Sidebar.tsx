@@ -4,8 +4,6 @@ import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { TaskList } from './TaskList'
 import { ciPipelineContext } from './CIPipeline'
 import { FormType } from '../ciPipeline/types'
-import { Toggle } from '../common'
-import { string } from 'prop-types'
 
 export function Sidebar() {
     const {
@@ -28,11 +26,6 @@ export function Sidebar() {
     const changeTriggerType = (appCreationType: string): void => {
         const _formData = { ...formData }
         _formData.triggerType = appCreationType
-        setFormData(_formData)
-    }
-    const handleScanToggle = (e): void => {
-        const _formData = { ...formData }
-        _formData.scanEnabled = !_formData.scanEnabled
         setFormData(_formData)
     }
 
@@ -73,28 +66,6 @@ export function Sidebar() {
                             <RadioGroupItem value={TriggerType.Auto}>Automatically</RadioGroupItem>
                             <RadioGroupItem value={TriggerType.Manual}>Manually</RadioGroupItem>
                         </RadioGroup>
-                    </div>
-                </div>
-            )}
-            {activeStageName === BuildStageVariable.PostBuild && (
-                <div className="sidebar-action-container sidebar-action-container-border mr-20">
-                    <div
-                        className="en-2 bw-1 br-4 pt-10 pb-10 pl-12 pr-12"
-                        style={{ display: 'grid', gridTemplateColumns: 'auto 32px' }}
-                    >
-                        <div>
-                            <p className="fs-13 fw-6 cn-9 mb-4 ">Scan for vulnerabilities</p>
-                            <p className="ci-stage__description mb-0">
-                                Perform security scan after container image is built.
-                            </p>
-                        </div>
-                        <div className="mt-4" style={{ width: '32px', height: '20px' }}>
-                            <Toggle
-                                disabled={window._env_.FORCE_SECURITY_SCANNING && formData.scanEnabled}
-                                selected={formData.scanEnabled}
-                                onSelect={handleScanToggle}
-                            />
-                        </div>
                     </div>
                 </div>
             )}

@@ -34,7 +34,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             allDeploymentNodeMap: new Map(),
             showDeleteDialog: false,
             showCIMenu: false,
-            isGitOpsConfigAvailable: false,
             hostURLConfig: undefined,
             cIMenuPosition: {
                 top: 0,
@@ -52,10 +51,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     getWorkflows = () => {
         this.getHostURLConfig()
-        isGitopsConfigured().then((response) => {
-            const isGitOpsConfigAvailable = response.result && response.result.exists
-            this.setState({ isGitOpsConfigAvailable })
-        })
         getCreateWorkflows(this.props.match.params.appId)
             .then((result) => {
                 const allCINodeMap = new Map(
@@ -351,7 +346,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 <h1 className="form__title form__title--workflow-editor">Workflows</h1>
                 <p className="form__subtitle form__subtitle--workflow-editor">
                     Workflows consist of pipelines from build to deployment stages of an application. <br></br>
-                    <a className="learn-more__href" href="" target="blank" rel="noreferrer noopener">
+                    <a
+                        className="learn-more__href"
+                        href={DOCUMENTATION.APP_CREATE_WORKFLOW}
+                        target="blank"
+                        rel="noreferrer noopener"
+                    >
                         Learn about creating workflows
                     </a>
                 </p>
@@ -392,7 +392,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     history={this.props.history}
                     location={this.props.location}
                     match={this.props.match}
-                    isGitOpsConfigAvailable={this.state.isGitOpsConfigAvailable}
                     handleCDSelect={this.handleCDSelect}
                     handleCISelect={this.handleCISelect}
                     openEditWorkflow={this.openEditWorkflow}

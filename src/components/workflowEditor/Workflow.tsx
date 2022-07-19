@@ -7,11 +7,9 @@ import { RouteComponentProps } from 'react-router';
 import { NodeAttr } from '../../components/app/details/triggerView/types';
 import { PipelineSelect } from './PipelineSelect';
 import { WorkflowCreate } from '../app/details/triggerView/config';
-import { Link, NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import edit from '../../assets/icons/misc/editBlack.svg';
 import trash from '../../assets/icons/misc/delete.svg';
-import warn from '../../assets/icons/ic-warning.svg';
-import { CiPipeline } from '../app/details/triggerView/workflow.service';
 
 export interface WorkflowProps extends RouteComponentProps<{ appId: string, workflowId?: string, ciPipelineId?: string, cdPipelineId?: string }> {
     nodes: NodeAttr[];
@@ -21,7 +19,6 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string, work
     startY: number;
     width: number;
     height: number;
-    isGitOpsConfigAvailable: boolean;
     showDeleteDialog: (workflowId: number) => void;
     handleCDSelect: (workflowId: string | number, ciPipelineId: number | string, parentPipelineType: string, parentPipelineId: number | string) => void;
     openEditWorkflow: (event, workflowId: number) => string;
@@ -33,7 +30,6 @@ interface WorkflowState {
     top: number
     left: number;
     showCIMenu: boolean;
-    showGitOpsWarningModal: boolean;
 }
 
 export class Workflow extends Component<WorkflowProps, WorkflowState> {
@@ -44,12 +40,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             showCIMenu: false,
             top: 0,
             left: 0,
-            showGitOpsWarningModal: false
         }
-    }
-
-    toggleGitOpsWarningModal = () => {
-        this.setState({ showGitOpsWarningModal: !this.state.showGitOpsWarningModal });
     }
 
     setPosition = (top: number, left: number) => {
@@ -222,16 +213,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     render() {
         return <React.Fragment>
             {this.renderWorkflow()}
-            {this.state.showGitOpsWarningModal ? <ConfirmationDialog>
-                <ConfirmationDialog.Icon src={warn} />
-                <ConfirmationDialog.Body title="GitOps configuration required">
-                    <p className="">GitOps configuration is required to perform this action. Please configure GitOps and try again.</p>
-                </ConfirmationDialog.Body>
-                <ConfirmationDialog.ButtonGroup>
-                    <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={this.toggleGitOpsWarningModal}>Cancel</button>
-                    <NavLink className="cta sso__warn-button btn-confirm" to={`/global-config/gitops`}>Configure GitOps</NavLink>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog> : null}
         </React.Fragment>
     }
 }
