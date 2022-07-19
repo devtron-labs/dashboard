@@ -75,6 +75,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             showMaterialRegexModal: false,
             filteredCIPipelines: [],
             regex: '',
+            isRegex: false,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -222,7 +223,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     onSetRegexValue = () => {
-        console.log(this.state.workflowId, 'test')
         const ciPipeline = this.state.filteredCIPipelines?.find(
             (_ciPipeline) => _ciPipeline?.id == this.state.workflowId,
         )
@@ -256,12 +256,16 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             if (preserveMaterialSelection) {
                                 let selectMaterial = node.inputMaterialList.find((mat) => mat.isSelected)
                                 node.inputMaterialList = response.result.map((material) => {
+                                    this.setState({
+                                        isRegex: material.regex,
+                                    })
                                     return {
                                         ...material,
                                         isSelected: selectMaterial.id === material.id,
                                     }
                                 })
                             } else node.inputMaterialList = response.result
+
                             return node
                         } else return node
                     })

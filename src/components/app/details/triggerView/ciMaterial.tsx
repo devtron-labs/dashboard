@@ -36,6 +36,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             isChangeBranchClicked: false,
         }
     }
+
     renderMaterialSource(context) {
         let refreshMaterial = {
             refresh: context.refreshMaterial,
@@ -168,7 +169,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                             webhookPayloads={this.props.webhookPayloads}
                             isWebhookPayloadLoading={this.props.isWebhookPayloadLoading}
                             workflowId={this.props.workflowId}
-                            renderBranchRegexModal={this.renderBranchRegexModal}
                             onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
                             ciPipeline={this.state.selectedCIPipeline}
                             setBranchChanged={this.setBranchChanged}
@@ -363,9 +363,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         return (
             <TriggerViewContext.Consumer>
                 {(context) => {
-                    {
-                        console.log(this.props.material)
-                    }
                     return (
                         <VisibleModal className="" close={context.closeCIModal}>
                             <div

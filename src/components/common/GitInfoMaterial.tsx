@@ -24,7 +24,6 @@ export default function GitInfoMaterial({
     isWebhookPayloadLoading,
     hideWebhookModal,
     workflowId,
-    renderBranchRegexModal,
     onClickShowBranchRegexModal,
     ciPipeline,
     setBranchChanged,

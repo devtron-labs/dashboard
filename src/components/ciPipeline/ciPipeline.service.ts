@@ -297,28 +297,9 @@ function getSourceTypeAndValue(_material) {
     }
 
     if (_material.source.length > 1) {
-        let _value, isBranchRegex
         for (let _source of _material.source) {
             if (_source.type === SourceTypeMap.BranchRegex) {
-                if (!_value) {
-                    isBranchRegex = true
-                    continue
-                }
-
-                return {
-                    type: SourceTypeMap.BranchRegex,
-                    value: _value,
-                }
-            } else if (_source.type === SourceTypeMap.BranchFixed) {
-                if (!isBranchRegex) {
-                    _value = _source.value
-                    continue
-                }
-
-                return {
-                    type: SourceTypeMap.BranchRegex,
-                    value: _source.value,
-                }
+                return _source
             }
         }
     }
@@ -335,7 +316,6 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: G
             ciMaterialSet.add(mat.gitMaterialId)
 
             const sourceInfo = getSourceTypeAndValue(mat)
-            console.log(sourceInfo)
             return {
                 id: mat.id,
                 gitMaterialId: mat.gitMaterialId,

@@ -250,6 +250,7 @@ export interface TriggerViewState {
     showMaterialRegexModal: boolean
     filteredCIPipelines: any[]
     regex: string
+    isRegex: boolean
 }
 
 //-- begining of response type objects for trigger view
