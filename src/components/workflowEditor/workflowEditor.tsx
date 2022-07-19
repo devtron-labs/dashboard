@@ -346,7 +346,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 <h1 className="form__title form__title--workflow-editor">Workflows</h1>
                 <p className="form__subtitle form__subtitle--workflow-editor">
                     Workflows consist of pipelines from build to deployment stages of an application. <br></br>
-                    <a className="learn-more__href" href="" target="blank" rel="noreferrer noopener">
+                    <a
+                        className="learn-more__href"
+                        href={DOCUMENTATION.APP_CREATE_WORKFLOW}
+                        target="blank"
+                        rel="noreferrer noopener"
+                    >
                         Learn about creating workflows
                     </a>
                 </p>
