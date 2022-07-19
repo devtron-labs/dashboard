@@ -223,10 +223,9 @@ export default function App() {
                             <BreadcrumbStore>
                                 <Switch>
                                     <Route path={`/login`} component={Login} />
+                                    <Route path={`/${URLS.GUIDE}`} render={() => <DeployManageGuide />} />
                                     <Route path={'/'} render={() => <OnboardingGuide />} />
-                                    {/* <Route path={'/'} render={() => <DeployManageGuide />} /> */}
-
-                                    {/* <Route path="/" render={() => <NavigationRoutes />} /> */}
+                                    <Route path="/" render={() => <NavigationRoutes />} />
                                     <Redirect to={`${URLS.LOGIN_SSO}${location.search}`} />
                                 </Switch>
                                 <div id="full-screen-modal"></div>

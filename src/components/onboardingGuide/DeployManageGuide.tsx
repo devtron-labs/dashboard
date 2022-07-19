@@ -3,19 +3,26 @@ import HelmSearch from '../../assets/img/guided-helm-search.png'
 import HelmInCluster from '../../assets/img/guided-helm-cluster.png'
 import ChartRepository from '../../assets/img/guided-chart-repository.png'
 import HelmCollage from '../../assets/img/guided-helm-collage.png'
-import { NavLink, useRouteMatch } from 'react-router-dom'
+import { NavLink, useRouteMatch, useHistory } from 'react-router-dom'
 import { URLS } from '../../config'
-import { ReactComponent as LeftIcon } from '../../assets/icons/ic-arrow-forward.svg'
+import { ReactComponent as GoBack } from '../../assets/icons/ic-arrow-forward.svg'
 import './onboardingGuide.scss'
+import ReactGA from 'react-ga'
 
 function DeployManageGuide() {
     const match = useRouteMatch()
+    const history = useHistory()
+
+    const redirectToOnboardingPage = (url) => {
+        history.push(url)
+    }
 
     return (
         <div className="deploy-manage-container">
+            {console.log(window.location)}
             <div className="flex h-300 guide-header">
-                <div className="bcn-0 deploy_arrow flex cursor">
-                    <LeftIcon className="rotate icon-dim-24" style={{ ['--rotateBy' as any]: '180deg' }} />
+                <div className="bcn-0 deploy_arrow flex cursor" onClick={() => redirectToOnboardingPage('/')}>
+                    <GoBack className="rotate icon-dim-24" style={{ ['--rotateBy' as any]: '180deg' }} />
                 </div>
                 <div className="ml-32">
                     <h1 className="fw-6 mb-8">Deploy and manage helm apps</h1>
@@ -35,14 +42,19 @@ function DeployManageGuide() {
                         <div className="fw-6 fs-16 pl-20 pr-20">
                             3 helm applications found in default_cluster <br />
                             <NavLink
-                                to={`${match.url}/${URLS.GUIDE}`}
+                                to={`${window.location.host}/${match.url.split('guide')[0]}/${URLS.APP}/${
+                                    URLS.APP_LIST
+                                }`}
                                 activeClassName="active"
-                                // onClick={(event) => {
-                                //     ReactGA.event({
-                                //         category: 'Onboarding',
-                                //         action: 'Onboarding Guide Clicked',
-                                //     })
-                                // }}
+                                onClick={(event) => {
+                                    ReactGA.event({
+                                        category: 'Onboarding',
+                                        action: 'Onboarding Guide Clicked',
+                                    })
+                                    // redirectToOnboardingPage(
+                                    //     `${match.url.split('guide')[0]}/${URLS.APP}/${URLS.APP_LIST}`,
+                                    // )
+                                }}
                             >
                                 View applications
                             </NavLink>

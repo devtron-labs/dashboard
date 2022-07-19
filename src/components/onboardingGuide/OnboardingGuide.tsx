@@ -1,13 +1,19 @@
 import React from 'react'
 import HelmCollage from '../../assets/img/helm-collage.png'
 import DeployCICD from '../../assets/img/guide-onboard.png'
-import { NavLink, useRouteMatch } from 'react-router-dom'
+import { NavLink, useLocation, useRouteMatch, useHistory } from 'react-router-dom'
 import { URLS } from '../../config'
 import ReactGA from 'react-ga'
 import './onboardingGuide.scss'
 
 function OnboardingGuide() {
     const match = useRouteMatch()
+    const history = useHistory()
+    const location = useLocation()
+
+    const redirectToDeployGuide = (url) => {
+        history.push(url)
+    }
 
     return (
         <div className="guide-container">
@@ -19,9 +25,10 @@ function OnboardingGuide() {
                 <div className="guide-cards__wrap">
                     <div className="guide-card__left bcn-0 w-300 br-4 en-2 bw-1 cursor">
                         <NavLink
-                            to={`${match.url}/${URLS.GUIDE}`}
+                            to={`${match.path}/${URLS.GUIDE}`}
                             className="no-decor fw-6 cursor"
                             activeClassName="active"
+                            onClick={() => redirectToDeployGuide(`/${URLS.GUIDE}`)}
                         >
                             <img
                                 className="guide-card__img"
