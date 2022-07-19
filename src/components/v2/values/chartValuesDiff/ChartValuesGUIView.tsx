@@ -106,7 +106,7 @@ const updateYamlDocument = (
     } else {
         const { pathToSetIn, valueToSetIn } = getPathAndValueToSetIn(pathKey, valuesYamlDocument, _newValue)
 
-        if (typeof valueToSetIn !== 'undefined' && valueToSetIn !== null) {
+        if (typeof valueToSetIn !== 'undefined' && valueToSetIn !== null && valuesYamlDocument.contents) {
             valuesYamlDocument.setIn(pathToSetIn, valueToSetIn)
         }
     }

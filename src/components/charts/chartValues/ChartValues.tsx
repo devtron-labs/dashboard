@@ -8,7 +8,7 @@ import { ChartInstalledConfig, ChartKind } from '../../v2/values/chartValuesDiff
 
 export default function ChartValues() {
     const { chartId, chartValueId } = useParams<{ chartId: string; chartValueId: string }>()
-    const [loader, setLoader] = useState(false)
+    const [loader, setLoader] = useState(true)
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [appStoreApplicationName, setAppStoreApplicationName] = useState('')
     const [valueName, setValueName] = useState('')
@@ -34,7 +34,6 @@ export default function ChartValues() {
 
     async function getChartDetails() {
         try {
-            setLoader(true)
             const { result: chartVersionMinResult } = await getChartVersionsMin(chartId)
             setChartVersions(chartVersionMinResult)
 

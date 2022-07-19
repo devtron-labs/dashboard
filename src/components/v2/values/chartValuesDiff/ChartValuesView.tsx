@@ -108,7 +108,7 @@ function ChartValuesView({
     const validationRules = new ValidationRules()
 
     useEffect(() => {
-        if (isDeployChartView) {
+        if (isDeployChartView || isCreateValueView) {
             fetchProjectsAndEnvironments(serverMode, dispatch)
             const _fetchedReadMe = commonState.fetchedReadMe
             _fetchedReadMe.set(0, commonState.installedConfig.readme)
@@ -119,48 +119,9 @@ function ChartValuesView({
                     isLoading: false,
                     fetchedReadMe: _fetchedReadMe,
                     schemaJson: convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
-                    valuesYamlDocument: YAML.parseDocument(commonState.installedConfig.rawValues),
+                    valuesYamlDocument: YAML.parseDocument(commonState.installedConfig.rawValues || '')
                 },
             })
-        } else if (isCreateValueView) {
-            fetchProjectsAndEnvironments(serverMode, dispatch)
-            const _fetchedReadMe = commonState.fetchedReadMe
-            _fetchedReadMe.set(0, commonState.installedConfig.readme)
-
-            dispatch({
-                type: ChartValuesViewActionTypes.multipleOptions,
-                payload: {
-                    isLoading: false,
-                    fetchedReadMe: _fetchedReadMe,
-                    schemaJson: convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
-                    valuesYamlDocument: YAML.parseDocument(commonState.installedConfig.rawValues),
-                },
-            })
-        } else if (!isExternalApp && !isDeployChartView) {
-            fetchProjectsAndEnvironments(serverMode, dispatch)
-            dispatch({
-                type: ChartValuesViewActionTypes.multipleOptions,
-                payload: {
-                    modifiedValuesYaml: commonState.installedConfig.valuesOverrideYaml,
-                    schemaJson: convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
-                    valuesYamlDocument: YAML.parseDocument(commonState.installedConfig.valuesOverrideYaml),
-                    repoChartValue: {
-                        appStoreApplicationVersionId: commonState.installedConfig.appStoreVersion,
-                        chartRepoName: appDetails.appStoreChartName,
-                        chartId: commonState.installedConfig.appStoreId,
-                        chartName: appDetails.appStoreAppName,
-                        version: appDetails.appStoreAppVersion,
-                        deprecated: commonState.installedConfig.deprecated,
-                    },
-                    chartValues: {
-                        id: appDetails.appStoreInstalledAppVersionId,
-                        appStoreVersionId: commonState.installedConfig.appStoreVersion,
-                        kind: ChartKind.DEPLOYED,
-                    },
-                },
-            })
-            getChartValuesList(appDetails.appStoreChartId, setChartValuesList)
-            fetchChartVersionsData(appDetails.appStoreChartId, dispatch, appDetails.appStoreAppVersion)
         } else if (isExternalApp) {
             getReleaseInfo(appId)
                 .then((releaseInfoResponse: ReleaseInfoResponse) => {
@@ -192,6 +153,8 @@ function ChartValuesView({
                             name: _releaseInfo.deployedAppDetail.appName,
                         }
                         setChartValuesList([_chartValues])
+
+                        const _valuesYaml = YAML.stringify(JSON.parse(_releaseInfo.mergedValues))
                         dispatch({
                             type: ChartValuesViewActionTypes.multipleOptions,
                             payload: {
@@ -207,7 +170,8 @@ function ChartValuesView({
                                 selectedVersionUpdatePage: _chartVersionData,
                                 chartVersionsData: [_chartVersionData],
                                 chartValues: _chartValues,
-                                modifiedValuesYaml: YAML.stringify(JSON.parse(_releaseInfo.mergedValues)),
+                                modifiedValuesYaml: _valuesYaml,
+                                valuesYamlDocument: YAML.parseDocument(_valuesYaml || '')
                             },
                         })
                     }
@@ -222,6 +186,31 @@ function ChartValuesView({
                         },
                     })
                 })
+        } else {
+            fetchProjectsAndEnvironments(serverMode, dispatch)
+            dispatch({
+                type: ChartValuesViewActionTypes.multipleOptions,
+                payload: {
+                    modifiedValuesYaml: commonState.installedConfig.valuesOverrideYaml,
+                    schemaJson: convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
+                    valuesYamlDocument: YAML.parseDocument(commonState.installedConfig.valuesOverrideYaml || ''),
+                    repoChartValue: {
+                        appStoreApplicationVersionId: commonState.installedConfig.appStoreVersion,
+                        chartRepoName: appDetails.appStoreChartName,
+                        chartId: commonState.installedConfig.appStoreId,
+                        chartName: appDetails.appStoreAppName,
+                        version: appDetails.appStoreAppVersion,
+                        deprecated: commonState.installedConfig.deprecated,
+                    },
+                    chartValues: {
+                        id: appDetails.appStoreInstalledAppVersionId,
+                        appStoreVersionId: commonState.installedConfig.appStoreVersion,
+                        kind: ChartKind.DEPLOYED,
+                    },
+                },
+            })
+            getChartValuesList(appDetails.appStoreChartId, setChartValuesList)
+            fetchChartVersionsData(appDetails.appStoreChartId, dispatch, appDetails.appStoreAppVersion)
         }
 
         if (!isDeployChartView && !isCreateValueView) {
@@ -409,6 +398,7 @@ function ChartValuesView({
                     },
                     installedConfig: result,
                     modifiedValuesYaml: result?.valuesOverrideYaml,
+                    valuesYamlDocument: YAML.parseDocument(result?.valuesOverrideYaml || '')
                 },
             })
         } catch (e) {

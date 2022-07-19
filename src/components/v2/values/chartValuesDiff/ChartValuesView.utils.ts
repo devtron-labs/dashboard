@@ -225,7 +225,7 @@ export const getAndUpdateSchemaValue = (
     schemaJson: Map<string, any>,
     dispatch: (action: ChartValuesViewAction) => void,
 ): void => {
-    const parsedValuesYamlDocument = YAML.parseDocument(modifiedValuesYaml)
+    const parsedValuesYamlDocument = YAML.parseDocument(modifiedValuesYaml || '')
     const updatedSchemaJson = schemaJson
     for (let [key, value] of updatedSchemaJson) {
         const _value = parsedValuesYamlDocument.getIn(key.split('/')) ?? value.default
