@@ -1,7 +1,6 @@
 import React, { Fragment, useEffect } from 'react'
 import {
     StyledInput,
-    StyledTextarea,
     StyledSelect,
     RangeSlider,
     CheckboxWithTippy,
@@ -35,7 +34,7 @@ const getGUIWidget = (
             )
         case 'textArea':
             return (
-                <StyledTextarea
+                <StyledInput
                     {...props}
                     onBlur={(e) => {
                         callback(e.target.value)

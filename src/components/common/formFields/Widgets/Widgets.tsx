@@ -90,63 +90,35 @@ export const StyledInput = (props: StyledInputPropsType): JSX.Element => {
             isRequired={props.isRequired}
             errorMessage={props.errorMessage}
         >
-            <input
-                type={props.type === 'numberInput' ? 'number' : 'text'}
-                placeholder={props.placeholder && props.placeholder}
-                name={props.title?.replace(/\s/g, '_')}
-                className="form__input h-32"
-                value={inputValue}
-                onChange={onValueChange}
-                onBlur={onInputBlur}
-                autoComplete="off"
-                required={props.isRequired}
-                minLength={props.minLength}
-                maxLength={props.maxLength}
-                pattern={props.pattern}
-            />
-        </StyledField>
-    )
-}
-
-export const StyledTextarea = (props: StyledInputPropsType): JSX.Element => {
-    const [inputValue, setInputValue] = useState(props.value || '')
-
-    const onValueChange = (e) => {
-        setInputValue(e.target.value)
-
-        if (props.onChange) {
-            props.onChange(e)
-        }
-    }
-
-    const onInputBlur = (e) => {
-        setInputValue(e.target.value)
-
-        if (props.onBlur) {
-            props.onBlur(e)
-        }
-    }
-
-    return (
-        <StyledField
-            title={props.title}
-            description={props.description}
-            rootClassName={props.rootClassName}
-            isRequired={props.isRequired}
-            errorMessage={props.errorMessage}
-        >
-            <textarea
-                className="form__input form__textarea"
-                name={props.title?.replace(/\s/g, '_')}
-                value={inputValue}
-                placeholder={props.placeholder && props.placeholder}
-                onChange={onValueChange}
-                onBlur={onInputBlur}
-                autoComplete="off"
-                required={props.isRequired}
-                minLength={props.minLength}
-                maxLength={props.maxLength}
-            />
+            {props.type === 'textArea' ? (
+                <textarea
+                    className="form__input form__textarea"
+                    name={props.title?.replace(/\s/g, '_')}
+                    value={inputValue}
+                    placeholder={props.placeholder && props.placeholder}
+                    onChange={onValueChange}
+                    onBlur={onInputBlur}
+                    autoComplete="off"
+                    required={props.isRequired}
+                    minLength={props.minLength}
+                    maxLength={props.maxLength}
+                />
+            ) : (
+                <input
+                    type={props.type === 'numberInput' ? 'number' : 'text'}
+                    placeholder={props.placeholder && props.placeholder}
+                    name={props.title?.replace(/\s/g, '_')}
+                    className="form__input h-32"
+                    value={inputValue}
+                    onChange={onValueChange}
+                    onBlur={onInputBlur}
+                    autoComplete="off"
+                    required={props.isRequired}
+                    minLength={props.minLength}
+                    maxLength={props.maxLength}
+                    pattern={props.pattern}
+                />
+            )}
         </StyledField>
     )
 }

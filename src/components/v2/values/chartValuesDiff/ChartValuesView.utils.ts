@@ -227,15 +227,18 @@ export const getAndUpdateSchemaValue = (
 ): void => {
     const parsedValuesYamlDocument = YAML.parseDocument(modifiedValuesYaml || '')
     const updatedSchemaJson = schemaJson
-    for (let [key, value] of updatedSchemaJson) {
-        const _value = parsedValuesYamlDocument.getIn(key.split('/')) ?? value.default
-        value.value =
-            value['type'] === 'select'
-                ? value['enum']?.includes(_value)
-                    ? { label: _value, value: _value }
-                    : null
-                : _value
-        updatedSchemaJson.set(key, value)
+
+    if (updatedSchemaJson?.size && parsedValuesYamlDocument?.contents) {
+        for (let [key, value] of updatedSchemaJson) {
+            const _value = parsedValuesYamlDocument.getIn(key.split('/')) ?? value.default
+            value.value =
+                value['type'] === 'select'
+                    ? value['enum']?.includes(_value)
+                        ? { label: _value, value: _value }
+                        : null
+                    : _value
+            updatedSchemaJson.set(key, value)
+        }
     }
 
     dispatch({
