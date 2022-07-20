@@ -69,6 +69,7 @@ export default function CIConfig({ respondOnSuccess, ...rest }) {
             respondOnSuccess()
         } catch (err) {
             showError(err)
+            setLoading(false)
         }
     }
 
@@ -157,7 +158,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
     }
     const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>(_selectedPlatforms)
     const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(_customTargetPlatorm)
-    const [showCustmPlatformConfirmation, setShowCustmPlatformConfirmation] = useState<boolean>(false)
+    const [showCustomPlatformConfirmation, setShowCustomPlatformConfirmation] = useState<boolean>(false)
     useEffect(() => {
         let args = []
         if (ciConfig && ciConfig.dockerBuildConfig.args) {
@@ -199,8 +200,8 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             }
         }
         if (showCustomPlatformWarning) {
-            setShowCustmPlatformConfirmation(!showCustmPlatformConfirmation)
-            if (!showCustmPlatformConfirmation) {
+            setShowCustomPlatformConfirmation(!showCustomPlatformConfirmation)
+            if (!showCustomPlatformConfirmation) {
                 return
             }
         }
@@ -444,7 +445,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
     }
 
     const renderConfirmationModal = (): JSX.Element | null => {
-        if (!showCustmPlatformConfirmation) return null
+        if (!showCustomPlatformConfirmation) return null
         return (
             <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warningIconSrc} />
@@ -463,7 +464,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         type="button"
                         className="cta cancel"
                         onClick={(e) => {
-                            setShowCustmPlatformConfirmation(false)
+                            setShowCustomPlatformConfirmation(false)
                         }}
                     >
                         Go back
