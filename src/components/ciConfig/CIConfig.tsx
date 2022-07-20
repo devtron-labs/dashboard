@@ -17,7 +17,7 @@ import { NavLink } from 'react-router-dom'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
-import warningIconSrc from '../../assets/icons/ic-warning.svg'
+import warningIconSrc from '../../assets/icons/ic-warning-y6.svg'
 import './CIConfig.scss'
 import ReactSelect, { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
@@ -652,7 +652,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                 />
                                 {showCustomPlatformWarning && (
                                     <span className="flexbox cy-7">
-                                        <WarningIcon className="icon-dim-16 mr-5 mt-2" />
+                                        <WarningIcon className="warning-icon-y7 icon-dim-16 mr-5 mt-2" />
                                         You have entered a custom target platform, please ensure it is valid.
                                     </span>
                                 )}

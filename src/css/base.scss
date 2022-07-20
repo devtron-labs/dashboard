@@ -2020,3 +2020,7 @@ textarea {
 .basic-multi-select > .select__control--is-disabled {
     background-color: var(--N100) !important;
 }
+
+.warning-icon-y7 path:nth-child(2) {
+    fill: var(--Y700);
+}
