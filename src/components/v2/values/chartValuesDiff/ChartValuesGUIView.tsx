@@ -231,13 +231,13 @@ const ChartValuesGUIForm = (props: ChaartValuesGUIFormType): JSX.Element => {
                     <InfoIcon className="icon-dim-16" />
                 </span>
                 <span className="fs-12 cn-9 ml-10">
-                    This feature is in BETA. If you find an issue please report it&nbsp;
+                    This feature is in BETA. If you find an issue please&nbsp;
                     <a
                         className="cb-5 fw-6"
                         href="https://github.com/devtron-labs/devtron/issues/new/choose"
                         target="_blank"
                     >
-                        here.
+                        report it here.
                     </a>
                 </span>
             </div>

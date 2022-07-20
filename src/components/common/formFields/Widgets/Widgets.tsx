@@ -105,7 +105,6 @@ export const StyledInput = (props: StyledInputPropsType): JSX.Element => {
                 />
             ) : (
                 <input
-                    type={props.type === 'numberInput' ? 'number' : 'text'}
                     placeholder={props.placeholder && props.placeholder}
                     name={props.title?.replace(/\s/g, '_')}
                     className="form__input h-32"
@@ -114,9 +113,18 @@ export const StyledInput = (props: StyledInputPropsType): JSX.Element => {
                     onBlur={onInputBlur}
                     autoComplete="off"
                     required={props.isRequired}
-                    minLength={props.minLength}
-                    maxLength={props.maxLength}
-                    pattern={props.pattern}
+                    {...(props.type === 'numberInput'
+                        ? {
+                              type: 'number',
+                              min: props.minLength || 0,
+                              max: props.maxLength,
+                          }
+                        : {
+                              type: 'text',
+                              minLength: props.minLength,
+                              maxLength: props.maxLength,
+                              pattern: props.pattern,
+                          })}
                 />
             )}
         </StyledField>
@@ -184,7 +192,7 @@ export const RangeSlider = (props: SliderPropsType) => {
                 ref={sliderRef}
                 className="slider-input"
                 type="range"
-                min={props.sliderMin}
+                min={props.sliderMin || 0}
                 max={props.sliderMax}
                 value={sliderValue}
                 onChange={changeHandler}
@@ -200,7 +208,7 @@ export const RangeSlider = (props: SliderPropsType) => {
                     name={props.title.replace(/\s/g, '_')}
                     type="number"
                     autoComplete="off"
-                    min={props.sliderMin}
+                    min={props.sliderMin || 0}
                     max={props.sliderMax}
                     className="slider-input-box h-32 en-2 bw-1 left-radius-4"
                     value={sliderInputValue}

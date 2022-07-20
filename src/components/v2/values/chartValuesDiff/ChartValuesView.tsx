@@ -118,6 +118,7 @@ function ChartValuesView({
                 payload: {
                     isLoading: false,
                     fetchedReadMe: _fetchedReadMe,
+                    activeTab: !!commonState.installedConfig.valuesSchemaJson ? 'gui' : 'yaml',
                     schemaJson: convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
                     valuesYamlDocument: YAML.parseDocument(commonState.installedConfig.rawValues || ''),
                 },
@@ -136,6 +137,7 @@ function ChartValuesView({
                             releaseInfo: _releaseInfo,
                             installedAppInfo: _installedAppInfo,
                             fetchedReadMe: _fetchedReadMe,
+                            activeTab: !!_releaseInfo.valuesSchemaJson ? 'gui' : 'yaml',
                             schemaJson: convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson),
                         },
                     })
@@ -192,6 +194,7 @@ function ChartValuesView({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
                     modifiedValuesYaml: commonState.installedConfig.valuesOverrideYaml,
+                    activeTab: !!commonState.installedConfig.valuesSchemaJson ? 'gui' : 'yaml',
                     schemaJson: convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
                     valuesYamlDocument: YAML.parseDocument(commonState.installedConfig.valuesOverrideYaml || ''),
                     repoChartValue: {
@@ -878,7 +881,12 @@ function ChartValuesView({
             <RadioGroup
                 className="chart-values-view__tabs gui-yaml-switch"
                 name="yaml-mode"
-                initialTab={'yaml'}
+                initialTab={
+                    (isExternalApp && !!commonState.releaseInfo?.valuesSchemaJson) ||
+                    !!commonState.installedConfig?.valuesSchemaJson
+                        ? 'gui'
+                        : 'yaml'
+                }
                 disabled={isExternalApp && !commonState.installedAppInfo}
                 onChange={handleTabSwitch}
             >

@@ -323,11 +323,26 @@
             }
 
             .chart-values-view__gui-form {
-                width: 600px;
+                width: 100%;
+                max-width: 800px;
+                min-width: 600px;
                 padding: 52px 20px 20px;
 
                 label {
                     margin-bottom: 16px;
+                    min-width: 600px;
+
+                    .slider-input-box-container .slider-input {
+                        width: 100%;
+                    }
+                }
+
+                .styled-form-box {
+                    min-width: 600px;
+
+                    label {
+                        min-width: 568px;
+                    }
                 }
             }
         }
