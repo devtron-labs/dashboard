@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { showError, Progressing, ErrorScreenManager, ConfirmationDialog, VisibleModal } from '../../common'
+import { showError, Progressing, ErrorScreenManager, ConfirmationDialog } from '../../common'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
@@ -471,11 +471,9 @@ function ChartDeploymentHistory({
                             </button>
                         </Tippy>
                     )}
-                    {showDockerInfo && (
-                        <VisibleModal className="" close={closeDockerInfoTab}>
+                    {showDockerInfo && 
                             <DockerListModal dockerList={deployment.dockerImages} closeTab={closeDockerInfoTab} />
-                        </VisibleModal>
-                    )}
+                    }
                 </div>
             </div>
         )

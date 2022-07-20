@@ -1,13 +1,22 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ReactComponent as Close } from '../assets/icons/ic-close.svg'
 import docker from '../../../assets/icons/misc/docker.svg'
+import { useKeyDown, VisibleModal } from '../../common'
 
-export default function DockerListModal({ closeTab, dockerList }) {
+export default function DockerListModal({ closeTab, dockerList }:{ closeTab: () => void, dockerList: string[]}) {
+    const key = useKeyDown();
+    useEffect(() => {
+        if (key.join().includes('Escape')) {
+            closeTab()
+        }
+    }, [key.join()]);
+    
     return (
-        <div className="docker-wrapper" onClick={(e) => e.stopPropagation()}>
+        <VisibleModal className="">
+            <div className="docker-wrapper">
             <div className="docker-header flex-align-center fs-16 fw-6 pl-20 pr-20 pt-17 pb-17">
                 <span className='cn-9'>Deployed images</span>
-                <button type="button" className="transparent flex" onClick={() => closeTab()}>
+                <button type="button" className="transparent flex" onClick={closeTab}>
                     <Close />
                 </button>
             </div>
@@ -23,5 +32,7 @@ export default function DockerListModal({ closeTab, dockerList }) {
                 ))}
             </div>
         </div>
+        </VisibleModal>
+        
     )
 }
