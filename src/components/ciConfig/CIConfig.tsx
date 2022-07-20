@@ -53,9 +53,9 @@ export default function CIConfig({ respondOnSuccess, ...rest }) {
                 sortObjectArrayAlphabetically(sourceConfig.material, 'name')
             setSourceConfig(sourceConfig)
             setCIConfig(ciConfig)
-            setLoading(false)
         } catch (err) {
             showError(err)
+        } finally {
             setLoading(false)
         }
     }
@@ -357,7 +357,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         return (
             <components.MenuList {...props}>
                 <div className="cn-5 pl-12 pt-4 pb-4" style={{ fontStyle: 'italic' }}>
-                    Type to enter a custom value. Press Enter to accept.
+                    Type to enter a target platform. Press Enter to accept.
                 </div>
                 {props.children}
             </components.MenuList>
@@ -640,7 +640,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                     placeholder="Type to select or create"
                                     options={targetPlatformList}
                                     className="basic-multi-select mb-4"
-                                    classNamePrefix="select"
+                                    classNamePrefix="target-platform__select"
                                     onChange={handlePlatformChange}
                                     hideSelectedOptions={false}
                                     noOptionsMessage={noMatchingPlatformOptions}
