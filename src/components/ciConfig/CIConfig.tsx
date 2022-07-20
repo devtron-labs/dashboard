@@ -65,10 +65,10 @@ export default function CIConfig({ respondOnSuccess, ...rest }) {
             setLoading(true)
             const { result } = await getCIConfig(+appId)
             setCIConfig(result)
-            setLoading(false)
             respondOnSuccess()
         } catch (err) {
             showError(err)
+        } finally {
             setLoading(false)
         }
     }
