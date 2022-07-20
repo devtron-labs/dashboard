@@ -465,3 +465,7 @@
     background-color: var(--R100);
     border: solid 1px var(--R200);
 }
+
+.first-app-container {
+    margin-top: 60px;
+}

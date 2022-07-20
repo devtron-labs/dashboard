@@ -1,0 +1,43 @@
+.h-300 {
+    min-height: 300px;
+}
+
+.guide-body {
+    height: calc(100vh - 300px);
+}
+
+.guide-container {
+    .guide-cards__wrap {
+        display: grid;
+        grid-template-columns: 300px 300px;
+        grid-gap: 20px;
+        position: absolute;
+        top: -80px;
+    }
+
+    .guide-card__img {
+        width: 300px;
+        height: 210px;
+    }
+}
+
+.deploy-manage-container {
+    .deploy_arrow {
+        width: 56px;
+        height: 56px;
+        border: 1px solid var(--N200);
+        border-radius: 50%;
+    }
+
+    .deploy-manage-cards__wrap {
+        display: grid;
+        grid-template-columns: 400px 400px;
+        grid-gap: 20px;
+        position: absolute;
+        top: 240px;
+    }
+}
+
+.mt-120 {
+    margin-top: 120px;
+}
