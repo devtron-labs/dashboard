@@ -238,23 +238,24 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             setLoading(false)
         }
     }
-    function handleArgsChange(index, k, v) {
+
+    const handleArgsChange = (index, k, v): void => {
         setArgs((arr) => {
             arr[index] = { k: k, v: v, keyError: '', valueError: '' }
             return Array.from(arr)
         })
     }
 
-    function toggleCollapse() {
+    const toggleCollapse = (): void => {
         setIsCollapsed(!isCollapsed)
     }
 
-    function handleFileLocationChange(selectedMaterial) {
+    const handleFileLocationChange = (selectedMaterial): void => {
         setSelectedMaterial(selectedMaterial)
         repository.value = selectedMaterial.name
     }
 
-    function handleRegistryChange(selectedRegistry) {
+    const handleRegistryChange = (selectedRegistry): void => {
         setSelectedRegistry(selectedRegistry)
         registry.value = selectedRegistry.id
     }
@@ -275,7 +276,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         },
     }
 
-    const containerRegistryOption = (props) => {
+    const containerRegistryOption = (props): JSX.Element => {
         props.selectProps.styles.option = getCustomOptionSelectionStyle()
         return (
             <components.Option {...props}>
@@ -287,7 +288,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         )
     }
 
-    const containerRegistryMenuList = (props) => {
+    const containerRegistryMenuList = (props): JSX.Element => {
         return (
             <components.MenuList {...props}>
                 {props.children}
@@ -303,7 +304,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         )
     }
 
-    const containerRegistryControls = (props) => {
+    const containerRegistryControls = (props): JSX.Element => {
         let value = ''
         if (props.hasValue) {
             value = props.getValue()[0].registryType
@@ -316,7 +317,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         )
     }
 
-    const repositoryOption = (props) => {
+    const repositoryOption = (props): JSX.Element => {
         props.selectProps.styles.option = getCustomOptionSelectionStyle()
         return (
             <components.Option {...props}>
@@ -336,7 +337,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         )
     }
 
-    const repositoryControls = (props) => {
+    const repositoryControls = (props): JSX.Element => {
         let value = ''
         if (props.hasValue) {
             value = props.getValue()[0].url
@@ -394,7 +395,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             </div>
         )
     }
-    function handlePlatformChange(selectedValue): void {
+    const handlePlatformChange = (selectedValue): void => {
         setSelectedTargetPlatforms(selectedValue)
     }
 
@@ -419,7 +420,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         }),
     }
 
-    function handleCreatableBlur(event): void {
+    const handleCreatableBlur = (event): void => {
         if (event.target.value) {
             setSelectedTargetPlatforms([
                 ...selectedTargetPlatforms,
