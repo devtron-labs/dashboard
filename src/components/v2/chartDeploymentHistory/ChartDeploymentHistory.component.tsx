@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { showError, Progressing, ErrorScreenManager, ConfirmationDialog } from '../../common'
+import { showError, Progressing, ErrorScreenManager, ConfirmationDialog, VisibleModal } from '../../common'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
@@ -15,6 +15,7 @@ import MessageUI from '../common/message.ui'
 import { toast } from 'react-toastify'
 import { useHistory, useRouteMatch } from 'react-router'
 import CDEmptyState from '../../app/details/cdDetails/CDEmptyState'
+import DockerListModal from './DockerListModal'
 import {
     ChartDeploymentDetail,
     ChartDeploymentHistoryResponse,
@@ -52,6 +53,7 @@ function ChartDeploymentHistory({
     const [rollbackDialogTitle, setRollbackDialogTitle] = useState('Rollback')
     const [showRollbackConfirmation, setShowRollbackConfirmation] = useState(false)
     const [deploying, setDeploying] = useState(false)
+    const [showDockerInfo,setShowDockerInfo] = useState(false)
     const history = useHistory()
     const { url } = useRouteMatch()
 
@@ -418,6 +420,10 @@ function ChartDeploymentHistory({
         )
     }
 
+    const closeDockerInfoTab = () => {
+        setShowDockerInfo(false)
+    }
+
     function renderSelectedDeploymentDetailHeader() {
         const deployment = deploymentHistoryArr[selectedDeploymentHistoryIndex]
 
@@ -432,7 +438,7 @@ function ChartDeploymentHistory({
                                     Moment12HourFormat,
                                 )}
                             </time>
-                            {deployment.dockerImages.map((dockerImage, index) => {
+                            {deployment.dockerImages.slice(0, 3).map((dockerImage, index) => {
                                 return (
                                     <div key={index} className="app-commit__hash ml-10">
                                         <Tippy arrow={true} className="default-tt" content={dockerImage}>
@@ -444,6 +450,14 @@ function ChartDeploymentHistory({
                                     </div>
                                 )
                             })}
+                            {deployment.dockerImages.length > 3 && (
+                                <div onClick={() => setShowDockerInfo(true)} className="cursor anchor ml-10">
+                                    <span>
+                                        <span className="">{deployment.dockerImages.length - 3}</span>
+                                        <span className="ml-3">more</span>
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     </div>
                     {selectedDeploymentHistoryIndex !== 0 && (
@@ -456,6 +470,11 @@ function ChartDeploymentHistory({
                                 <span className="ml-4">Deploy</span>
                             </button>
                         </Tippy>
+                    )}
+                    {showDockerInfo && (
+                        <VisibleModal className="" close={closeDockerInfoTab}>
+                            <DockerListModal dockerList={deployment.dockerImages} closeTab={closeDockerInfoTab} />
+                        </VisibleModal>
                     )}
                 </div>
             </div>
