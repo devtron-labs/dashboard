@@ -27,7 +27,7 @@ export interface StyledFieldPropsType {
 }
 
 export interface StyledInputPropsType extends WidgetPropsType {
-    value: string
+    value: any
     pattern?: string
 }
 

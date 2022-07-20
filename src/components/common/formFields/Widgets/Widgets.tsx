@@ -64,7 +64,7 @@ export const StyledFormBox = (props: StyledFieldPropsType) => {
 }
 
 export const StyledInput = (props: StyledInputPropsType): JSX.Element => {
-    const [inputValue, setInputValue] = useState(props.value || '')
+    const [inputValue, setInputValue] = useState(props.value ?? '')
 
     const onValueChange = (e) => {
         setInputValue(e.target.value)
@@ -160,7 +160,7 @@ export const RangeSlider = (props: SliderPropsType) => {
 
         if (!e.target.value) {
             updateStates(`${props.value ?? props.sliderMin}`, props.value ? parseInt(props.value) : props.sliderMin)
-        } else if (props.sliderMin > 1 || value >= props.sliderMin) {
+        } else {
             updateStates(e.target.value, value)
         }
     }

@@ -110,6 +110,12 @@ function ChartValuesView({
     useEffect(() => {
         if (isDeployChartView || isCreateValueView) {
             fetchProjectsAndEnvironments(serverMode, dispatch)
+            getAndUpdateSchemaValue(
+                commonState.installedConfig.rawValues,
+                convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
+                dispatch,
+            )
+
             const _fetchedReadMe = commonState.fetchedReadMe
             _fetchedReadMe.set(0, commonState.installedConfig.readme)
 
@@ -119,8 +125,6 @@ function ChartValuesView({
                     isLoading: false,
                     fetchedReadMe: _fetchedReadMe,
                     activeTab: !!commonState.installedConfig.valuesSchemaJson ? 'gui' : 'yaml',
-                    schemaJson: convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
-                    valuesYamlDocument: YAML.parseDocument(commonState.installedConfig.rawValues || ''),
                 },
             })
         } else if (isExternalApp) {
@@ -138,7 +142,6 @@ function ChartValuesView({
                             installedAppInfo: _installedAppInfo,
                             fetchedReadMe: _fetchedReadMe,
                             activeTab: !!_releaseInfo.valuesSchemaJson ? 'gui' : 'yaml',
-                            schemaJson: convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson),
                         },
                     })
 
@@ -157,6 +160,11 @@ function ChartValuesView({
                         setChartValuesList([_chartValues])
 
                         const _valuesYaml = YAML.stringify(JSON.parse(_releaseInfo.mergedValues))
+                        getAndUpdateSchemaValue(
+                            _valuesYaml,
+                            convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson),
+                            dispatch,
+                        )
                         dispatch({
                             type: ChartValuesViewActionTypes.multipleOptions,
                             payload: {
@@ -173,7 +181,6 @@ function ChartValuesView({
                                 chartVersionsData: [_chartVersionData],
                                 chartValues: _chartValues,
                                 modifiedValuesYaml: _valuesYaml,
-                                valuesYamlDocument: YAML.parseDocument(_valuesYaml || ''),
                             },
                         })
                     }
@@ -190,13 +197,18 @@ function ChartValuesView({
                 })
         } else {
             fetchProjectsAndEnvironments(serverMode, dispatch)
+            getAndUpdateSchemaValue(
+                commonState.installedConfig.valuesOverrideYaml,
+                convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
+                dispatch,
+            )
+            getChartValuesList(appDetails.appStoreChartId, setChartValuesList)
+            fetchChartVersionsData(appDetails.appStoreChartId, dispatch, appDetails.appStoreAppVersion)
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
                     modifiedValuesYaml: commonState.installedConfig.valuesOverrideYaml,
                     activeTab: !!commonState.installedConfig.valuesSchemaJson ? 'gui' : 'yaml',
-                    schemaJson: convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
-                    valuesYamlDocument: YAML.parseDocument(commonState.installedConfig.valuesOverrideYaml || ''),
                     repoChartValue: {
                         appStoreApplicationVersionId: commonState.installedConfig.appStoreVersion,
                         chartRepoName: appDetails.appStoreChartName,
@@ -212,8 +224,6 @@ function ChartValuesView({
                     },
                 },
             })
-            getChartValuesList(appDetails.appStoreChartId, setChartValuesList)
-            fetchChartVersionsData(appDetails.appStoreChartId, dispatch, appDetails.appStoreAppVersion)
         }
 
         if (!isDeployChartView && !isCreateValueView) {
@@ -387,6 +397,11 @@ function ChartValuesView({
 
             getChartValuesList(_repoChartValue.chartId, setChartValuesList)
             fetchChartVersionsData(_repoChartValue.chartId, dispatch, _releaseInfo.deployedAppDetail.chartVersion)
+            getAndUpdateSchemaValue(
+                result?.valuesOverrideYaml,
+                convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson),
+                dispatch,
+            )
 
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
@@ -401,7 +416,6 @@ function ChartValuesView({
                     },
                     installedConfig: result,
                     modifiedValuesYaml: result?.valuesOverrideYaml,
-                    valuesYamlDocument: YAML.parseDocument(result?.valuesOverrideYaml || ''),
                 },
             })
         } catch (e) {
@@ -887,7 +901,7 @@ function ChartValuesView({
                         ? 'gui'
                         : 'yaml'
                 }
-                disabled={isExternalApp && !commonState.installedAppInfo}
+                disabled={false}
                 onChange={handleTabSwitch}
             >
                 <RadioGroup.Radio value="gui">GUI (Beta)</RadioGroup.Radio>
@@ -902,6 +916,7 @@ function ChartValuesView({
                     tippyContent={
                         'Manifest is generated only for apps linked to a helm chart. Link this app to a helm chart to view generated manifest.'
                     }
+                    isDisabled={isExternalApp && !commonState.installedAppInfo}
                 >
                     Manifest output
                 </RadioGroup.Radio>
