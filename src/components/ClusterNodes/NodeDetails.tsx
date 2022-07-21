@@ -51,15 +51,12 @@ export default function NodeDetails() {
     const [nodeDetail, setNodeDetail] = useState<NodeDetail>(null)
     const { clusterId, nodeName } = useParams<{ clusterId: string; nodeName: string }>()
     const [copied, setCopied] = useState(false)
-    const [manifest, setManifest] = useState('')
     const [modifiedManifest, setModifiedManifest] = useState('')
     const [cpuData, setCpuData] = useState<ResourceDetail>(null)
     const [memoryData, setMemoryData] = useState<ResourceDetail>(null)
     const [sortedPodList, setSortedPodList] = useState<PodType[]>(null)
-    const [podListOffset, setPodListOffset] = useState(0)
     const [sortByColumnName, setSortByColumnName] = useState<string>('name')
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
-    const pageSize = 10
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
     const [isShowWarning, setIsShowWarning] = useState(false)
@@ -508,7 +505,7 @@ export default function NodeDetails() {
                     <div>Capacity</div>
                 </div>
                 {cpuData && (
-                    <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
+                    <div className="resource-row hover-class border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
                         <Cpu className="mt-2 mb-2 icon-dim-18" />
                         <div>{cpuData.name || '-'}</div>
                         <div>{cpuData.requestPercentage || '-'}</div>
@@ -519,7 +516,7 @@ export default function NodeDetails() {
                     </div>
                 )}
                 {memoryData && (
-                    <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
+                    <div className="resource-row hover-class border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
                         <Memory className="mt-2 mb-2 icon-dim-18" />
                         <div>{memoryData.name || '-'}</div>
                         <div>{memoryData.requestPercentage || '-'}</div>
@@ -530,7 +527,7 @@ export default function NodeDetails() {
                     </div>
                 )}
                 {nodeDetail.resources.map((resource) => (
-                    <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
+                    <div className="resource-row hover-class border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
                         <Storage className="mt-2 mb-2 icon-dim-18" />
                         <div>{resource.name || '-'}</div>
                         <div>{resource.requestPercentage || '-'}</div>
@@ -541,20 +538,6 @@ export default function NodeDetails() {
                     </div>
                 ))}
             </div>
-        )
-    }
-
-    const renderPagination = (): JSX.Element => {
-        return (
-            nodeDetail.pods.length > pageSize && (
-                <Pagination
-                    size={nodeDetail.pods.length}
-                    pageSize={pageSize}
-                    offset={podListOffset}
-                    changePage={(pageNo: number) => setPodListOffset(pageSize * (pageNo - 1))}
-                    isPageSizeFix={true}
-                />
-            )
         )
     }
 
@@ -583,7 +566,6 @@ export default function NodeDetails() {
                           : b[columnName].localeCompare(a[columnName])
                   }
         setSortedPodList([...nodeDetail.pods].sort(comparatorMethod))
-        setPodListOffset(0)
     }
 
     const renderPodHeaderCell = (
@@ -614,72 +596,87 @@ export default function NodeDetails() {
     const renderPodList = (): JSX.Element | null => {
         if (!sortedPodList) return null
         return (
-            <div className="en-2 bw-1 br-4 bcn-0 mt-12 mb-20 pod-container">
-                <div className="fw-6 fs-14 cn-9 pr-20 pl-20 pt-12">Pods</div>
-                <div className="pods-grid">
-                    {renderPodHeaderCell('Namespace', 'namespace', 'string', 'pt-8 pr-8 pb-8 pl-20')}
-                    {renderPodHeaderCell('Pod', 'name', 'string', 'p-8')}
-                    {renderPodHeaderCell('CPU Requests', 'cpu.requestPercentage', 'number', 'p-8')}
-                    {renderPodHeaderCell('CPU Limit', 'cpu.limitPercentage', 'number', 'p-8')}
-                    {renderPodHeaderCell('Memory Requests', 'memory.requestPercentage', 'number', 'p-8')}
-                    {renderPodHeaderCell('Memory Limit', 'memory.limitPercentage', 'number', 'p-8')}
-                    {renderPodHeaderCell('Age', 'createdAt', 'string', 'pt-8 pr-20 pb-8 pl-8')}
-                    {sortedPodList.slice(podListOffset, podListOffset + pageSize).map((pod) => (
-                        <>
-                            <div className="border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9">{pod.namespace}</div>
-                            <div className="hover-trigger position-rel flexbox border-bottom-n1 p-8 fw-4 fs-13 cn-9">
-                                <>
-                                    <Tippy
-                                        className="default-tt"
-                                        arrow={false}
-                                        placement="top"
-                                        content={pod.name}
-                                        interactive={true}
-                                    >
-                                        <span
-                                            className="inline-block ellipsis-right lh-20"
-                                            style={{ maxWidth: 'calc(100% - 20px)' }}
-                                        >
-                                            {pod.name}
-                                        </span>
-                                    </Tippy>
-                                    <Tippy
-                                        className="default-tt"
-                                        arrow={false}
-                                        placement="bottom"
-                                        content={copied ? 'Copied!' : 'Copy'}
-                                        trigger="mouseenter click"
-                                        onShow={(instance) => {
-                                            setCopied(false)
-                                        }}
-                                        interactive={true}
-                                    >
-                                        <Clipboard
-                                            className="ml-5 mt-5 pointer hover-only icon-dim-14"
-                                            onClick={() => {
-                                                copyToClipboard(pod.name, () => {
-                                                    setCopied(true)
-                                                })
-                                            }}
-                                        />
-                                    </Tippy>
-                                </>
-                            </div>
-                            <div className="border-bottom-n1 p-8 fw-4 fs-13 cn-9">
-                                {pod.cpu.requestPercentage || '-'}
-                            </div>
-                            <div className="border-bottom-n1 p-8 fw-4 fs-13 cn-9">{pod.cpu.limitPercentage || '-'}</div>
-                            <div className="border-bottom-n1 p-8 fw-4 fs-13 cn-9">
-                                {pod.memory.requestPercentage || '-'}
-                            </div>
-                            <div className="border-bottom-n1 p-8 fw-4 fs-13 cn-9">
-                                {pod.memory.limitPercentage || '-'}
-                            </div>
-                            <div className="border-bottom-n1 pt-8 pr-20 pb-8 pl-8 fw-4 fs-13 cn-9">{pod.age}</div>
-                        </>
-                    ))}
+            <div className="pod-container">
+                <div className="position-sticky pod-container-header">
+                    <div className="en-2 bw-1 top-radius-4 bcn-0 no-bottom-border">
+                        <div className="fw-6 fs-14 cn-9 pr-20 pl-20 pt-12">Pods</div>
+                    </div>
                 </div>
-                {renderPagination()}
+                <div className="en-2 bw-1 br-4 no-top-radius no-top-border bcn-0 mb-20">
+                    <div className="pods-grid">
+                        <header className="bcn-0">
+                            {renderPodHeaderCell('Namespace', 'namespace', 'string', 'pt-8 pr-8 pb-8 pl-20')}
+                            {renderPodHeaderCell('Pod', 'name', 'string', 'p-8')}
+                            {renderPodHeaderCell('CPU Requests', 'cpu.requestPercentage', 'number', 'p-8')}
+                            {renderPodHeaderCell('CPU Limit', 'cpu.limitPercentage', 'number', 'p-8')}
+                            {renderPodHeaderCell('Memory Requests', 'memory.requestPercentage', 'number', 'p-8')}
+                            {renderPodHeaderCell('Memory Limit', 'memory.limitPercentage', 'number', 'p-8')}
+                            {renderPodHeaderCell('Age', 'createdAt', 'string', 'pt-8 pr-20 pb-8 pl-8')}
+                        </header>
+                        <main>
+                            {sortedPodList.map((pod) => (
+                                <div className="row-wrapper">
+                                    <div className="border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9">
+                                        {pod.namespace}
+                                    </div>
+                                    <div className="hover-trigger position-rel flexbox border-bottom-n1 p-8 fw-4 fs-13 cn-9">
+                                        <>
+                                            <Tippy
+                                                className="default-tt"
+                                                arrow={false}
+                                                placement="top"
+                                                content={pod.name}
+                                                interactive={true}
+                                            >
+                                                <span
+                                                    className="inline-block ellipsis-right lh-20"
+                                                    style={{ maxWidth: 'calc(100% - 20px)' }}
+                                                >
+                                                    {pod.name}
+                                                </span>
+                                            </Tippy>
+                                            <Tippy
+                                                className="default-tt"
+                                                arrow={false}
+                                                placement="bottom"
+                                                content={copied ? 'Copied!' : 'Copy'}
+                                                trigger="mouseenter click"
+                                                onShow={(instance) => {
+                                                    setCopied(false)
+                                                }}
+                                                interactive={true}
+                                            >
+                                                <Clipboard
+                                                    className="ml-5 mt-5 pointer hover-only icon-dim-14"
+                                                    onClick={() => {
+                                                        copyToClipboard(pod.name, () => {
+                                                            setCopied(true)
+                                                        })
+                                                    }}
+                                                />
+                                            </Tippy>
+                                        </>
+                                    </div>
+                                    <div className="border-bottom-n1 p-8 fw-4 fs-13 cn-9">
+                                        {pod.cpu.requestPercentage || '-'}
+                                    </div>
+                                    <div className="border-bottom-n1 p-8 fw-4 fs-13 cn-9">
+                                        {pod.cpu.limitPercentage || '-'}
+                                    </div>
+                                    <div className="border-bottom-n1 p-8 fw-4 fs-13 cn-9">
+                                        {pod.memory.requestPercentage || '-'}
+                                    </div>
+                                    <div className="border-bottom-n1 p-8 fw-4 fs-13 cn-9">
+                                        {pod.memory.limitPercentage || '-'}
+                                    </div>
+                                    <div className="border-bottom-n1 pt-8 pr-20 pb-8 pl-8 fw-4 fs-13 cn-9">
+                                        {pod.age}
+                                    </div>
+                                </div>
+                            ))}
+                        </main>
+                    </div>
+                </div>
             </div>
         )
     }

@@ -70,6 +70,14 @@
     .code-editor__header {
         height: 32px;
     }
+    .code-editor__warning {
+        color: var(--N900);
+        background-color: var(--Y100);
+
+        .code-editor__information-info-icon path:nth-child(2) {
+            fill: var(--Y700);
+        }
+    }
     .error-icon-white {
         path[fill='#F33E3E'] {
             fill: var(--N0);
@@ -127,9 +135,38 @@
             column-gap: 12px;
         }
         .pod-container {
+            .pod-container-header {
+                top: 76px;
+                z-index: 1;
+                padding-top: 12px;
+                background: var(--window-bg);
+            }
             .pods-grid {
                 display: grid;
-                grid-template-columns: minmax(150px, 300px) minmax(100px, auto) repeat(4, 100px) 75px;
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                grid-template-areas:
+                    'header'
+                    'main';
+                header {
+                    grid-area: header;
+                    display: grid;
+                    grid-template-columns: minmax(150px, 300px) minmax(100px, auto) repeat(4, 100px) 75px;
+                    position: sticky;
+                    top: 124px;
+                    z-index: 1;
+                }
+                main {
+                    grid-area: main;
+                    display: grid;
+                    grid-template-columns: minmax(150px, 300px) minmax(100px, auto) repeat(4, 100px) 75px;
+                }
+                .row-wrapper {
+                    display: contents;
+                }
+                .row-wrapper:hover > div {
+                    background-color: var(--N50);
+                }
             }
             .scrollable-pod-list {
                 max-height: 700px;
