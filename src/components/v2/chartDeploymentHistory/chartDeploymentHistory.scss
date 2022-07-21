@@ -67,3 +67,25 @@
         }
     }
 }
+
+.docker-wrapper {
+    background-color: white;
+    width: 600px;
+    max-height: 500px;
+    margin: auto;
+    border-radius: 0 0 8px 8px;
+
+    .docker-header {
+        height: 56px;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--N200);
+    }
+
+    .docker-body {
+        overflow-y: auto;
+        min-height: 0;
+        max-height: 444px;
+    }
+}
+
