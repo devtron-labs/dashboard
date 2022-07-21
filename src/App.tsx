@@ -223,8 +223,6 @@ export default function App() {
                             <BreadcrumbStore>
                                 <Switch>
                                     <Route path={`/login`} component={Login} />
-                                    <Route path={`/${URLS.GUIDE}`} render={() => <DeployManageGuide />} />
-                                    {/* <Route path={'/'} render={() => <OnboardingGuide />} /> */}
                                     <Route path="/" render={() => <NavigationRoutes />} />
                                     <Redirect to={`${URLS.LOGIN_SSO}${location.search}`} />
                                 </Switch>

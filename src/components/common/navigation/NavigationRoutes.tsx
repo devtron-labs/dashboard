@@ -14,6 +14,7 @@ import DevtronStackManager from '../../v2/devtronStackManager/DevtronStackManage
 import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import ClusterNodeContainer from '../../ClusterNodes/ClusterNodeContainer'
+import DeployManageGuide from '../../onboardingGuide/DeployManageGuide'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -23,6 +24,8 @@ const V2Details = lazy(() => import('../../v2/index'))
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'))
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
+const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
+
 export const mainContext = createContext(null)
 
 export default function NavigationRoutes() {
@@ -181,6 +184,8 @@ export default function NavigationRoutes() {
                                                 getCurrentServerInfo={getCurrentServerInfo}
                                             />
                                         </Route>
+                                        <Route path={`/${URLS.GUIDE}`} render={() => <DeployManageGuide />} />
+                                        <Route exact path={'/'} render={() => <OnboardingGuide />} />
                                         <Route>
                                             <RedirectWithSentry />
                                         </Route>
@@ -210,6 +215,7 @@ export function AppRouter() {
                     />
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage isV2={false} />} />
                     <Route path={`${path}/v2/:appId(\\d+)`} render={() => <AppDetailsPage isV2={true} />} />
+
                     <Route exact path="">
                         <RedirectToAppList />
                     </Route>
