@@ -135,7 +135,7 @@ const getFieldType = (type: string, renderType: string, containsEnum): string =>
 }
 
 const isFieldEnabled = (property: any, isChild: boolean): boolean => {
-    if (property.form && !property.properties) {
+    if (property.form && (isChild || !property.properties)) {
         return true
     } else if (!isChild && property.properties) {
         return Object.values(property.properties).some((_prop) => {
