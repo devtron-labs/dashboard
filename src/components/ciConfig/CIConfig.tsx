@@ -386,11 +386,6 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                 )}
                 <div className="flex left column w-100">
                     <components.Option className="w-100 option-label-padding" {...props} />
-                    {data.value === '*' && (
-                        <span className="fs-12 cn-6 ml-8 mb-4 mr-4">
-                            Allow access to existing and new apps for this project
-                        </span>
-                    )}
                 </div>
             </div>
         )
