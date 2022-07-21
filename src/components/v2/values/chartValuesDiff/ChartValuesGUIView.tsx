@@ -133,7 +133,7 @@ const renderChildGUIWidget = (
     if (_childProps.type === 'formBox' && _childProps.children) {
         return renderGUIWidget(_childProps, schemaJson, valuesYamlDocument, formValidationError, dispatch, true)
     } else {
-        if (isFieldHidden(_childProps, valuesYamlDocument)) {
+        if (isFieldHidden(_childProps, schemaJson)) {
             return null
         }
         const isRequired = isRequiredField(_childProps, true, schemaJson)
@@ -150,16 +150,38 @@ const renderChildGUIWidget = (
     }
 }
 
-const isFieldHidden = (props: any, valuesYamlDocument: YAML.Document.Parsed): boolean => {
-    if (!props.hidden) return false
+const checkIfChildIsHidden = (props: any, schemaJson: Map<string, any>) => {
+    const parent = schemaJson.get(props.parentRef)
+    const childPath = typeof props.hidden === 'object' ? props.hidden.path : props.hidden
+    const childPathKey = `${parent.parentRef ? parent.parentRef : parent.key}/${childPath}`
 
-    if (typeof props.hidden === 'object') {
-        return props.hidden.value === valuesYamlDocument.getIn(props.hidden.path?.split('/'))
-    } else if (typeof props.hidden === 'string') {
-        return !!valuesYamlDocument.getIn(props.hidden.split('/'))
+    if (parent.children.includes(childPathKey)) {
+        const _value = schemaJson.get(childPathKey).value
+        return typeof props.hidden === 'object' ? props.hidden.value === _value : !!_value
     }
 
-    return props.hidden
+    return parent.parentRef && checkIfChildIsHidden(parent, schemaJson)
+}
+
+const isFieldHidden = (props: any, schemaJson: Map<string, any>): boolean => {
+    if (typeof props.hidden !== 'object' && typeof props.hidden !== 'string') {
+        return props.hidden ?? false
+    }
+
+    if (typeof props.hidden === 'object') {
+        if (props.hidden.hasOwnProperty('condition')) {
+            const _path = props.hidden.path || props.hidden.value
+            if (_path && schemaJson.has(_path)) {
+                return props.hidden.condition === schemaJson.get(_path).value
+            }
+        }
+
+        return props.hidden.value === schemaJson.get(props.hidden.path)?.value
+    } else if (typeof props.hidden === 'string') {
+        return !!schemaJson.get(props.hidden)?.value
+    }
+
+    return props.parentRef && checkIfChildIsHidden(props, schemaJson)
 }
 
 const renderGUIWidget = (
@@ -170,7 +192,7 @@ const renderGUIWidget = (
     dispatch: React.Dispatch<ChartValuesViewAction>,
     fromParent?: boolean,
 ): JSX.Element | null => {
-    if (!isFieldHidden(props, valuesYamlDocument) && (!props.parentRef || fromParent)) {
+    if (!isFieldHidden(props, schemaJson) && (!props.parentRef || fromParent)) {
         if (props.type === 'formBox' && props.children) {
             return props.showField ? (
                 <StyledFormBox key={props.key} {...props}>

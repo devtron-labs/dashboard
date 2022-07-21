@@ -266,7 +266,8 @@ function ChartValuesView({
                         }
 
                         if (
-                            ((isExternalApp || !isDeployChartView) && commonState.installedConfig) ||
+                            ((isExternalApp || (!isDeployChartView && !isCreateValueView)) &&
+                                commonState.installedConfig) ||
                             (isDeployChartView && commonState.selectedEnvironment)
                         ) {
                             updateGeneratedManifest(
