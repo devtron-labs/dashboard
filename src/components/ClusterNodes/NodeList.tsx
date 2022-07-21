@@ -63,6 +63,7 @@ export default function NodeList() {
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [nodeListOffset, setNodeListOffset] = useState(0)
+    const [versionDiffType, setVersionDiffType] = useState(false)
     const pageSize = 15
 
     useEffect(() => {
@@ -130,12 +131,32 @@ export default function NodeList() {
                         _nodeErrors = Object.keys(response[1].result.nodeErrors || {})
 
                     if (response[1].result.nodeK8sVersions.length > 1) {
-                        _errorTitle = 'Version diff'
-                        _errorList.push({
-                            errorText: 'Major version diff identified among nodes. Current versions ',
-                            errorType: ERROR_TYPE.VERSION_ERROR,
-                            filterText: response[1].result.nodeK8sVersions,
-                        })
+                        let diffType = '',
+                            majorVersion,
+                            minorVersion
+                        for (let index = 0; index < response[1].result.nodeK8sVersions.length; index++) {
+                            const elementArr = response[1].result.nodeK8sVersions[index].split('.')
+                            if (!majorVersion) {
+                                majorVersion = elementArr[0]
+                            }
+                            if (!minorVersion) {
+                                minorVersion = elementArr[1]
+                            }
+                            if (majorVersion !== elementArr[0]) {
+                                diffType = 'Major'
+                                break
+                            } else if (diffType !== 'Minor' && minorVersion !== elementArr[1]) {
+                                diffType = 'Minor'
+                            }
+                        }
+                        if (diffType !== '') {
+                            _errorTitle = 'Version diff'
+                            _errorList.push({
+                                errorText: `${diffType} version diff identified among nodes. Current versions `,
+                                errorType: ERROR_TYPE.VERSION_ERROR,
+                                filterText: response[1].result.nodeK8sVersions,
+                            })
+                        }
                     }
 
                     if (_nodeErrors.length > 0) {
@@ -421,7 +442,7 @@ export default function NodeList() {
                     </div>
                 </div>
                 <div className="flexbox content-space pl-20 pr-20 pb-20">
-                    <div className="flexbox content-space mr-16 w-50 p-16 bcn-0 br-8">
+                    <div className="flexbox content-space mr-16 w-50 p-16 bcn-0 br-4 en-2 bw-1">
                         <div className="mr-16 w-25">
                             <div className="align-center fs-13 fw-4 cn-7">CPU Usage</div>
                             <div className="align-center fs-24 fw-4 cn-9">
@@ -446,7 +467,7 @@ export default function NodeList() {
                         </div>
                     </div>
 
-                    <div className="flexbox content-space w-50 p-16 bcn-0 br-8">
+                    <div className="flexbox content-space w-50 p-16 bcn-0 br-4 en-2 bw-1">
                         <div className="mr-16 w-25">
                             <div className="align-center fs-13 fw-4 cn-7">Memory Usage</div>
                             <div className="align-center fs-24 fw-4 cn-9">
@@ -593,7 +614,11 @@ export default function NodeList() {
             <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs={true} />
             <div className="node-list">
                 {renderClusterSummary()}
-                <div className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''}`}>
+                <div
+                    className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''} ${
+                        clusterErrorList?.length ? 'with-error-bar' : ''
+                    }`}
+                >
                     <div className="pl-20 pr-20">
                         <NodeListSearchFilter
                             defaultVersion={defaultVersion}

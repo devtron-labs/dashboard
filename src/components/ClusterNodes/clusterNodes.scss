@@ -15,11 +15,14 @@
 }
 .node-list {
     .list-min-height {
-        min-height: calc(100vh - 270px);
+        min-height: calc(100vh - 220px);
         &.no-result-container {
             overflow: hidden;
             display: grid;
             grid-template-rows: 32px;
+        }
+        &.with-error-bar {
+            min-height: calc(100vh - 270px);
         }
     }
     .search-wrapper {
