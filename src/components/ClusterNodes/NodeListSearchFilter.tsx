@@ -3,10 +3,20 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { Option, DropdownIndicator } from '../v2/common/ReactSelect.utils'
 import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
-import ReactSelect from 'react-select'
+import ReactSelect, { MultiValue } from 'react-select'
 import { OptionType } from '../app/types'
-import { NodeListSearchFliterType } from './types'
+import { ColumnMetadataType, NodeListSearchFliterType } from './types'
 import ColumnSelector from './ColumnSelector'
+
+const ColumnFilterContext = React.createContext(null)
+
+export function useColumnFilterContext() {
+    const context = React.useContext(ColumnFilterContext)
+    if (!context) {
+        throw new Error(`cannot be rendered outside the component`)
+    }
+    return context
+}
 
 export default function NodeListSearchFliter({
     defaultVersion,
@@ -25,6 +35,8 @@ export default function NodeListSearchFliter({
     const [searchApplied, setSearchApplied] = useState(false)
     const [openFilterPopup, setOpenFilterPopup] = useState(false)
     const [searchInputText, setSearchInputText] = useState('')
+    const [isMenuOpen, setMenuOpen] = useState(false)
+    const [selectedColumns, setSelectedColumns] = useState<MultiValue<ColumnMetadataType>>([])
 
     useEffect(() => {
         if (searchInputText !== searchText) {
@@ -189,7 +201,18 @@ export default function NodeListSearchFliter({
                 }}
             />
             <div className="border-left h-20 mt-6"></div>
-            <ColumnSelector appliedColumns={appliedColumns} setAppliedColumns={setAppliedColumns} />
+            <ColumnFilterContext.Provider
+                value={{
+                    appliedColumns,
+                    setAppliedColumns,
+                    isMenuOpen,
+                    setMenuOpen,
+                    selectedColumns,
+                    setSelectedColumns,
+                }}
+            >
+                <ColumnSelector />
+            </ColumnFilterContext.Provider>
         </div>
     )
 }
