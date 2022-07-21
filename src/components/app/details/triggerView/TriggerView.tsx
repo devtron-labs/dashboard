@@ -26,7 +26,6 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-error-excla
 import { getHostURLConfiguration } from '../../../../services/service'
 import { getCIWebhookRes } from './ciWebhook.service'
 import { workflow } from './workflow.data'
-import { node } from 'prop-types'
 
 export const TriggerViewContext = createContext({
     invalidateCache: false,
@@ -271,7 +270,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     })
                     return workflow
                 })
-
                 let showRegexModal = false
                 const selectedCIPipeline = this.state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
                 if (selectedCIPipeline?.ciMaterial) {
@@ -281,7 +279,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 return mat.source
                             }
                             let _value, isBranchRegex
-                            if (mat.source.length > 0) {
+                            if (mat.source.length === 2) {
                                 for (let _source of mat.source) {
                                     //checking if in ci material source is regex but value is not available
                                     if (_source.type === SourceTypeMap.BranchRegex) {
@@ -296,7 +294,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                             continue
                                         }
                                     }
+                                    isBranchRegex = false
                                 }
+                            } else if (mat.source.length === 1 && mat.source[0].type === SourceTypeMap.BranchRegex) {
+                                isBranchRegex = true
                             } else {
                                 isBranchRegex = false
                             }
