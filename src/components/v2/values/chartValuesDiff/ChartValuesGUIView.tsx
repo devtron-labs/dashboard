@@ -174,9 +174,9 @@ const isFieldHidden = (props: any, schemaJson: Map<string, any>): boolean => {
             if (_path && schemaJson.has(_path)) {
                 return props.hidden.condition === schemaJson.get(_path).value
             }
+        } else if (schemaJson.has(props.hidden.path)) {
+            return props.hidden.value === schemaJson.get(props.hidden.path).value
         }
-
-        return props.hidden.value === schemaJson.get(props.hidden.path)?.value
     } else if (typeof props.hidden === 'string') {
         return !!schemaJson.get(props.hidden)?.value
     }
