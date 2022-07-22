@@ -510,7 +510,9 @@ export default function NodeList() {
                     column.isSortingAllowed && handleSortClick(column)
                 }}
             >
-                <span className="inline-block ellipsis-right mw-85px ">{column.label}</span>
+                <Tippy className="default-tt" arrow={false} placement="top" content={column.label}>
+                    <span className="inline-block ellipsis-right mw-85px ">{column.label}</span>
+                </Tippy>
                 {column.isSortingAllowed && <Sort className="pointer icon-dim-14 position-rel sort-icon" />}
             </div>
         )

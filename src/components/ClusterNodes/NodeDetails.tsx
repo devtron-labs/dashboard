@@ -17,6 +17,7 @@ import { ReactComponent as Cpu } from '../../assets/icons/ic-cpu.svg'
 import { ReactComponent as Memory } from '../../assets/icons/ic-memory.svg'
 import { ReactComponent as Storage } from '../../assets/icons/ic-storage.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
+import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import PageHeader from '../common/header/PageHeader'
 import { useParams } from 'react-router'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
@@ -244,16 +245,7 @@ export default function NodeDetails() {
                             renderKeyValueLabel(label.key, label.value),
                         )}
                     </div>
-                    {nodeDetail.labels.length > 10 && (
-                        <div
-                            className="cb-5 pointer"
-                            onClick={() => {
-                                setShowAllLabel(!showAllLabel)
-                            }}
-                        >
-                            {showAllLabel ? 'Show less' : 'Show more'}
-                        </div>
-                    )}
+                    {nodeDetail.labels.length > 10 && renderShowAll(showAllLabel, setShowAllLabel)}
                 </>
             )
         }
@@ -266,20 +258,11 @@ export default function NodeDetails() {
             return (
                 <>
                     <div>
-                        {(showAllAnnotations ? nodeDetail.annotations : nodeDetail.annotations.splice(0, 10)).map(
+                        {(showAllAnnotations ? nodeDetail.annotations : nodeDetail.annotations.slice(0, 10)).map(
                             (annotation) => renderKeyValueLabel(annotation.key, annotation.value),
                         )}
                     </div>
-                    {nodeDetail.annotations.length > 10 && (
-                        <div
-                            className="cb-5 pointer"
-                            onClick={() => {
-                                setShowAllAnnotations(!showAllAnnotations)
-                            }}
-                        >
-                            {showAllAnnotations ? 'Show less' : 'Show more'}
-                        </div>
-                    )}
+                    {nodeDetail.annotations.length > 10 && renderShowAll(showAllAnnotations, setShowAllAnnotations)}
                 </>
             )
         }
@@ -329,19 +312,30 @@ export default function NodeDetails() {
                             {renderWithCopy(taint['effect'])}
                         </div>
                     ))}
-                    {nodeDetail.taints.length > 10 && (
-                        <div
-                            className="cb-5 pointer"
-                            onClick={() => {
-                                setShowAllTaints(!showAllTaints)
-                            }}
-                        >
-                            {showAllTaints ? 'Show less' : 'Show more'}
-                        </div>
-                    )}
+                    {nodeDetail.taints.length > 10 && renderShowAll(showAllTaints, setShowAllTaints)}
                 </div>
             )
         }
+    }
+
+    const renderShowAll = (
+        condition: boolean,
+        onClickHandler: React.Dispatch<React.SetStateAction<boolean>>,
+    ): JSX.Element => {
+        return (
+            <div
+                className="cb-5 pointer flexbox"
+                onClick={() => {
+                    onClickHandler(!condition)
+                }}
+            >
+                {condition ? 'Show less' : 'Show all'}
+                <Dropdown
+                    className="icon-dim-22 rotate show-more-dropdown fcb-5"
+                    style={{ ['--rotateBy' as any]: condition ? '180deg' : '0deg' }}
+                />
+            </div>
+        )
     }
 
     const renderLabelAnnotationTaint = (): JSX.Element => {
@@ -609,8 +603,8 @@ export default function NodeDetails() {
                             {renderPodHeaderCell('Pod', 'name', 'string', 'p-8')}
                             {renderPodHeaderCell('CPU Requests', 'cpu.requestPercentage', 'number', 'p-8')}
                             {renderPodHeaderCell('CPU Limit', 'cpu.limitPercentage', 'number', 'p-8')}
-                            {renderPodHeaderCell('Memory Requests', 'memory.requestPercentage', 'number', 'p-8')}
-                            {renderPodHeaderCell('Memory Limit', 'memory.limitPercentage', 'number', 'p-8')}
+                            {renderPodHeaderCell('Mem Requests', 'memory.requestPercentage', 'number', 'p-8')}
+                            {renderPodHeaderCell('Mem Limit', 'memory.limitPercentage', 'number', 'p-8')}
                             {renderPodHeaderCell('Age', 'createdAt', 'string', 'pt-8 pr-20 pb-8 pl-8')}
                         </header>
                         <main>
