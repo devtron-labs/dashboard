@@ -133,6 +133,9 @@
             display: grid;
             grid-template-columns: 20px minmax(auto, 200px) repeat(5, 100px);
             column-gap: 12px;
+            &:hover:not(:first-of-type) {
+                background-color: var(--N50);
+            }
         }
         .pod-container {
             .pod-container-header {

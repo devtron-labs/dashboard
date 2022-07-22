@@ -240,11 +240,9 @@ export default function NodeDetails() {
         } else {
             return (
                 <>
-                    <div>
-                        {(showAllLabel ? nodeDetail.labels : nodeDetail.labels.slice(0, 10)).map((label) =>
-                            renderKeyValueLabel(label.key, label.value),
-                        )}
-                    </div>
+                    {(showAllLabel ? nodeDetail.labels : nodeDetail.labels.slice(0, 10)).map((label) =>
+                        renderKeyValueLabel(label.key, label.value),
+                    )}
                     {nodeDetail.labels.length > 10 && renderShowAll(showAllLabel, setShowAllLabel)}
                 </>
             )
@@ -257,11 +255,9 @@ export default function NodeDetails() {
         } else {
             return (
                 <>
-                    <div>
-                        {(showAllAnnotations ? nodeDetail.annotations : nodeDetail.annotations.slice(0, 10)).map(
-                            (annotation) => renderKeyValueLabel(annotation.key, annotation.value),
-                        )}
-                    </div>
+                    {(showAllAnnotations ? nodeDetail.annotations : nodeDetail.annotations.slice(0, 10)).map(
+                        (annotation) => renderKeyValueLabel(annotation.key, annotation.value),
+                    )}
                     {nodeDetail.annotations.length > 10 && renderShowAll(showAllAnnotations, setShowAllAnnotations)}
                 </>
             )
@@ -499,7 +495,7 @@ export default function NodeDetails() {
                     <div>Capacity</div>
                 </div>
                 {cpuData && (
-                    <div className="resource-row hover-class border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
+                    <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
                         <Cpu className="mt-2 mb-2 icon-dim-18" />
                         <div>{cpuData.name || '-'}</div>
                         <div>{cpuData.requestPercentage || '-'}</div>
@@ -510,7 +506,7 @@ export default function NodeDetails() {
                     </div>
                 )}
                 {memoryData && (
-                    <div className="resource-row hover-class border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
+                    <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
                         <Memory className="mt-2 mb-2 icon-dim-18" />
                         <div>{memoryData.name || '-'}</div>
                         <div>{memoryData.requestPercentage || '-'}</div>
@@ -521,7 +517,7 @@ export default function NodeDetails() {
                     </div>
                 )}
                 {nodeDetail.resources.map((resource) => (
-                    <div className="resource-row hover-class border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
+                    <div className="resource-row border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
                         <Storage className="mt-2 mb-2 icon-dim-18" />
                         <div>{resource.name || '-'}</div>
                         <div>{resource.requestPercentage || '-'}</div>
@@ -547,10 +543,14 @@ export default function NodeDetails() {
             sortType === 'number'
                 ? (a, b) => {
                       const sortByColumnArr = columnName.split('.')
-                      let firstValue = a[sortByColumnArr[0]][sortByColumnArr[1]] || '0'
-                      let secondValue = b[sortByColumnArr[0]][sortByColumnArr[1]] || '0'
-                      firstValue = Number(firstValue.slice(0, -1))
-                      secondValue = Number(secondValue.slice(0, -1))
+                      let firstValue = 0,
+                          secondValue = 0
+                      if (a[sortByColumnArr[0]][sortByColumnArr[1]]) {
+                          firstValue = Number(a[sortByColumnArr[0]][sortByColumnArr[1]].slice(0, -1))
+                      }
+                      if (b[sortByColumnArr[0]][sortByColumnArr[1]]) {
+                          secondValue = Number(b[sortByColumnArr[0]][sortByColumnArr[1]].slice(0, -1))
+                      }
                       return _sortOrder === OrderBy.ASC ? firstValue - secondValue : secondValue - firstValue
                   }
                 : (a, b) => {
