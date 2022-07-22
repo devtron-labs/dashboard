@@ -93,7 +93,7 @@ export const StyledInput = (props: StyledInputPropsType): JSX.Element => {
             {props.type === 'textArea' ? (
                 <textarea
                     className="form__input form__textarea"
-                    name={props.title?.replace(/\s/g, '_')}
+                    name={props.title?.replace(/\s/g, '_') || 'textarea_widget'}
                     value={inputValue}
                     placeholder={props.placeholder && props.placeholder}
                     onChange={onValueChange}
@@ -106,7 +106,7 @@ export const StyledInput = (props: StyledInputPropsType): JSX.Element => {
             ) : (
                 <input
                     placeholder={props.placeholder && props.placeholder}
-                    name={props.title?.replace(/\s/g, '_')}
+                    name={props.title?.replace(/\s/g, '_') || 'input_widget'}
                     className="form__input h-32"
                     value={inputValue}
                     onChange={onValueChange}
@@ -190,6 +190,7 @@ export const RangeSlider = (props: SliderPropsType) => {
         return (
             <input
                 ref={sliderRef}
+                name={props.title?.replace(/\s/g, '_') || 'slider_widget'}
                 className="slider-input"
                 type="range"
                 min={props.sliderMin || 0}
@@ -205,7 +206,7 @@ export const RangeSlider = (props: SliderPropsType) => {
         return (
             <div className="slider-input-box-wrapper flex left ml-20">
                 <input
-                    name={props.title.replace(/\s/g, '_')}
+                    name={props.title?.replace(/\s/g, '_') || 'slider_widget_input_box'}
                     type="number"
                     autoComplete="off"
                     min={props.sliderMin || 0}
