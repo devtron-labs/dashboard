@@ -63,7 +63,6 @@ export default function NodeList() {
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [nodeListOffset, setNodeListOffset] = useState(0)
-    const [versionDiffType, setVersionDiffType] = useState(false)
     const pageSize = 15
 
     useEffect(() => {
