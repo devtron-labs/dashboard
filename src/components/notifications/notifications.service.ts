@@ -265,7 +265,7 @@ export function updateNotificationRecipients(
             } else
                 return {
                     configId: 0,
-                    dest: '',
+                    dest: emailChannel || '',
                     recipient: r.recipient,
                 }
         })
