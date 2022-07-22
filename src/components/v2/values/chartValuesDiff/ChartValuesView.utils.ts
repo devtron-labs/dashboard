@@ -2,6 +2,7 @@ import { getGeneratedHelmManifest } from '../common/chartValues.api'
 import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
 import YAML from 'yaml'
 import { showError } from '../../../common'
+import { Collection, YAMLMap } from 'yaml/types'
 
 export const getCommonSelectStyle = (styleOverrides = {}) => {
     return {
@@ -184,7 +185,9 @@ const getAvailalbePath = (parentPathKey: string[], valuesYamlDocument: YAML.Docu
             if (
                 typeof _valueInCurrentPath === 'undefined' ||
                 _valueInCurrentPath === null ||
-                (_valueInCurrentPath.items && !_valueInCurrentPath.items.length)
+                (_valueInCurrentPath instanceof Collection &&
+                    _valueInCurrentPath.items &&
+                    !_valueInCurrentPath.items.length)
             ) {
                 noValueInCurrentPath = true
             } else {
@@ -211,7 +214,7 @@ export const getPathAndValueToSetIn = (
     if (
         typeof parentValue === 'undefined' ||
         parentValue === null ||
-        (parentValue.items && !parentValue.items.length)
+        (parentValue instanceof Collection && parentValue.items && !parentValue.items.length)
     ) {
         const availablePath = getAvailalbePath(parentPathKey, valuesYamlDocument)
         const availablePathToSetIn = pathKey.slice(availablePath.length + 1)
