@@ -181,7 +181,11 @@ const getAvailalbePath = (parentPathKey: string[], valuesYamlDocument: YAML.Docu
         } else {
             const _currentPath = currentPath.concat(_pathKey)
             const _valueInCurrentPath = valuesYamlDocument.getIn(_currentPath)
-            if (typeof _valueInCurrentPath === 'undefined' || _valueInCurrentPath === null) {
+            if (
+                typeof _valueInCurrentPath === 'undefined' ||
+                _valueInCurrentPath === null ||
+                (_valueInCurrentPath.items && !_valueInCurrentPath.items.length)
+            ) {
                 noValueInCurrentPath = true
             } else {
                 currentPath = _currentPath
@@ -204,7 +208,11 @@ export const getPathAndValueToSetIn = (
         valueToSetIn
     const parentPathKey = pathKey.slice(0, pathKey.length - 1)
     const parentValue = valuesYamlDocument.getIn(parentPathKey)
-    if (typeof parentValue === 'undefined' || parentValue === null) {
+    if (
+        typeof parentValue === 'undefined' ||
+        parentValue === null ||
+        (parentValue.items && !parentValue.items.length)
+    ) {
         const availablePath = getAvailalbePath(parentPathKey, valuesYamlDocument)
         const availablePathToSetIn = pathKey.slice(availablePath.length + 1)
         valueToSetIn = { [availablePathToSetIn.join('.')]: _newValue }
@@ -214,7 +222,7 @@ export const getPathAndValueToSetIn = (
             ...(parentValue.items ? convertItemsToObj(parentValue.items) : parentValue),
             [pathKey[pathKey.length - 1]]: _newValue,
         }
-        pathToSetIn = parentPathKey.splice(0, 1)
+        pathToSetIn = parentPathKey
     }
 
     return { pathToSetIn, valueToSetIn }
