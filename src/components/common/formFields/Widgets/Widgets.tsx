@@ -17,8 +17,8 @@ import './Widgets.scss'
 
 const renderValidationErrorLabel = (message: string): JSX.Element => {
     return (
-        <div className="error-label flex left align-start fs-11 fw-4 mt-6">
-            <span className="error-label-icon icon-dim-16">
+        <div className="error-label flex left top flex-align-center fs-11 fw-4 mt-6">
+            <span className="error-label-icon icon-dim-16 mt-2">
                 <Error className="icon-dim-16" />
             </span>
             <span className="ml-4 cr-5">{message}</span>
@@ -28,8 +28,8 @@ const renderValidationErrorLabel = (message: string): JSX.Element => {
 
 const renderDescription = (description: string) => {
     return (
-        <div className="info-label flex left align-center fs-11 fw-4 mt-4">
-            <span className="info-label-icon icon-dim-16">
+        <div className="info-label flex left top flex-align-center fs-11 fw-4 mt-4">
+            <span className="info-label-icon icon-dim-16 mt-2">
                 <Info className="icon-dim-16" />
             </span>
             <span className="ml-4 cn-7">{description}</span>
