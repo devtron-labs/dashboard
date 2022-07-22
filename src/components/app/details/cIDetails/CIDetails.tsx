@@ -111,6 +111,7 @@ export default function CIDetails() {
     const [hasMore, setHasMore] = useState<boolean>(false)
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
+    const [hasMoreLoading,setHasMoreLoading] = useState<boolean>(false)
     const [pipelinesLoading, result, pipelinesError] = useAsync(() => getCIPipelines(+appId), [appId])
     const [loading, triggerHistoryResult, triggerHistoryError, reloadTriggerHistory, , dependencyState] = useAsync(
         () => getTriggerHistory(+pipelineId, pagination),
@@ -122,7 +123,7 @@ export default function CIDetails() {
     useInterval(pollHistory, 30000)
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
 
-    useEffect(() => {
+    useEffect(() => {     
         if (loading || !triggerHistoryResult) {
             setTriggerHistory(new Map())
         }
@@ -130,6 +131,7 @@ export default function CIDetails() {
             setHasMore(false)
         } else {
             setHasMore(true)
+            setHasMoreLoading(true)
         }
         const newTriggerHistory = (triggerHistoryResult?.result || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
@@ -170,8 +172,8 @@ export default function CIDetails() {
         }
         setTriggerHistory(mapByKey(result?.result || [], 'id'))
     }
-
-    if (loading || pipelinesLoading) return <Progressing pageLoader />
+    
+    if ((!hasMoreLoading && loading) || pipelinesLoading) return <Progressing pageLoader />
     const pipelines: CIPipeline[] = (result?.result || [])?.filter((pipeline) => pipeline.pipelineType !== 'EXTERNAL') // external pipelines not visible in dropdown
     const pipelinesMap = mapByKey(pipelines, 'id')
     const pipeline = pipelinesMap.get(+pipelineId)
@@ -261,7 +263,7 @@ export function DetectBottom({ callback }) {
         }
     }, [intersected])
 
-    return <span ref={target}></span>
+    return <span className='pb-5' ref={target}></span>
 }
 
 export const BuildCard: React.FC<{ triggerDetails: History }> = React.memo(({ triggerDetails }) => {
