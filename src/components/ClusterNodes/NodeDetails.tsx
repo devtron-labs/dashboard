@@ -324,7 +324,7 @@ export default function NodeDetails() {
     ): JSX.Element => {
         return (
             <div
-                className="cb-5 pointer flexbox"
+                className="cb-5 pointer flexbox fs-13 fw-6"
                 onClick={() => {
                     onClickHandler(!condition)
                 }}
