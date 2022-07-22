@@ -15,9 +15,9 @@
 
 .pipeline-list__row:hover {
     background-color: #edf1f5;
- }
+}
 
-.pipeline-list__row:hover .pipeline-list__hover{
+.pipeline-list__row:hover .pipeline-list__hover {
     visibility: visible;
 }
 
@@ -77,7 +77,7 @@
     padding: 10px;
 }
 
-.pipeline-list__hover{
+.pipeline-list__hover {
     width: 10%;
     visibility: hidden;
 }
@@ -170,6 +170,21 @@
 
 .ses-config-table__email {
     flex-basis: 40%;
+    font-weight: inherit;
+}
+
+.smtp-config-table__host {
+    flex-basis: 33%;
+    font-weight: inherit;
+}
+
+.smtp-config-table__port {
+    flex-basis: 5%;
+    font-weight: inherit;
+}
+
+.smtp-config-table__email {
+    flex-basis: 30%;
     font-weight: inherit;
 }
 
@@ -310,8 +325,38 @@
     stroke: var(--N400);
 }
 
-.select-button--pipeline-filter.loading-applist{
+.select-button--pipeline-filter.loading-applist {
     text-align: center;
     padding: 12px;
     font-size: 13px;
+}
+
+.no-border {
+    border: none;
+    display: inline-block;
+}
+
+.no-border .form__radio-item {
+    border: none;
+    margin: 10px 20px 0 0;
+}
+
+.no-border .form__radio-item .form__radio-item-content {
+    padding: 0;
+}
+
+.no-border .form__radio-item .form__radio-item-content .radio__title {
+    text-transform: none;
+}
+
+.smtp-protected-input .protected-input__toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.no-email-channel-warning path {
+    fill: var(--Y700);
 }
