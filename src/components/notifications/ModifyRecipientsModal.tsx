@@ -74,7 +74,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
         let set = new Set()
         let arrayWithouDuplicates = []
         for (let i = 0; i < oldRecipientList.length; i++) {
-            let uniqueValue = oldRecipientList[i].configId + oldRecipientList[i].name
+            let uniqueValue = `${oldRecipientList[i].configId}_${oldRecipientList[i].name}_${oldRecipientList[i].recipient}`
             if (set.has(uniqueValue)) continue
             set.add(uniqueValue)
             arrayWithouDuplicates.push(oldRecipientList[i])
