@@ -2,7 +2,7 @@ import { getGeneratedHelmManifest } from '../common/chartValues.api'
 import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
 import YAML from 'yaml'
 import { showError } from '../../../common'
-import { Collection, YAMLMap } from 'yaml/types'
+import { Collection } from 'yaml/types'
 
 export const getCommonSelectStyle = (styleOverrides = {}) => {
     return {
