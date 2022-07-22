@@ -300,17 +300,65 @@
         }
 
         .chart-values-view__gui-form-container {
-            padding: 20px;
             height: calc(100vh - 162px);
             border-bottom: 1px solid var(--N100);
             overflow: scroll;
 
+            &.values-update-view {
+                height: calc(100vh - 192px);
+            }
+
+            &.chart-values-view__full-mode {
+                height: calc(100vh - 130px);
+                border-bottom: none;
+            }
+
+            .gui-form-info {
+                position: absolute;
+                z-index: 1;
+                width: calc(100% - 301px);
+                padding: 6px 12px;
+                border-radius: 0;
+                border-bottom: 1px solid var(--B200);
+            }
+
             .chart-values-view__gui-form {
-                width: 600px;
+                width: 100%;
+                max-width: 800px;
+                min-width: 600px;
+                padding: 52px 20px 20px;
 
                 label {
                     margin-bottom: 16px;
+                    min-width: 600px;
+
+                    .slider-input-box-container .slider-input {
+                        width: 100%;
+                    }
                 }
+
+                .styled-form-box {
+                    min-width: 600px;
+
+                    label {
+                        min-width: 568px;
+                    }
+                }
+            }
+        }
+
+        .empty-state {
+            height: calc(100vh - 162px) !important;
+            border-bottom: 1px solid var(--N100);
+
+            .subtitle {
+                overflow-wrap: break-word;
+            }
+
+            svg {
+                width: 20px;
+                height: 20px;
+                max-height: none;
             }
         }
 
@@ -331,21 +379,6 @@
 
             .details-loader {
                 width: 100%;
-            }
-
-            .empty-state {
-                height: calc(100vh - 192px) !important;
-                border-bottom: 1px solid var(--N100);
-
-                .subtitle {
-                    overflow-wrap: break-word;
-                }
-
-                svg {
-                    width: 20px;
-                    height: 20px;
-                    max-height: none;
-                }
             }
 
             .code-editor-container {

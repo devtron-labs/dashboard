@@ -5,6 +5,7 @@ import { CheckboxProps } from "../Checkbox"
 interface WidgetPropsType {
     title: string
     description?: string
+    type?: string
     rootClassName?: string
     onChange?: (e) => void
     onBlur?: (e) => void
@@ -26,20 +27,21 @@ export interface StyledFieldPropsType {
 }
 
 export interface StyledInputPropsType extends WidgetPropsType {
-    value: string
+    value: any
     pattern?: string
 }
 
 export interface SliderPropsType extends WidgetPropsType {
-    unit: string
-    defaultValue?: number
-    onInput?: (e) => void
+    sliderMin: number
+    sliderMax: number
+    sliderUnit: string
+    value?: string
+    onInputValue?: (value: number) => void
     hideValueInput?: boolean
 }
 
 export interface CheckboxWithTippyProps extends CheckboxProps {
-    label: string
-    showTippy: boolean
+    title: string
     description: string
 }
 

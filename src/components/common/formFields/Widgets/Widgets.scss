@@ -12,6 +12,17 @@
     }
 }
 
+.styled-form-box {
+    > .styled-form-box:last-of-type {
+        margin-bottom: 0 !important;
+    }
+}
+
+.required-field::after {
+    content: ' *';
+    color: var(--R500);
+}
+
 .slider-input-box-container {
     .slider-input {
         -webkit-appearance: none;
