@@ -4,7 +4,7 @@ export enum CHECKBOX_VALUE {
     CHECKED = 'CHECKED',
     INTERMEDIATE = 'INTERMEDIATE',
 }
-interface CheckboxProps {
+export interface CheckboxProps {
     onChange: (event) => void
     isChecked: boolean
     value: 'CHECKED' | 'INTERMEDIATE'
