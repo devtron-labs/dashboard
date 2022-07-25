@@ -6,6 +6,7 @@ import { DeploymentHistoryParamsType, DeploymentTemplateList } from '../cd.type'
 import { getDeploymentHistoryList } from '../service'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../../config'
 import CDEmptyState from '../CDEmptyState'
+import { Progressing } from '../../../../common'
 
 interface TemplateConfiguration {
     setShowTemplate: (boolean) => void
@@ -55,6 +56,8 @@ export default function DeploymentHistoryConfigList({
         <>
             {!deploymentHistoryList && !deploymentListLoader ? (
                 <CDEmptyState />
+            ) : deploymentListLoader ? (
+                <Progressing pageLoader />
             ) : (
                 deploymentHistoryList &&
                 deploymentHistoryList.map((historicalComponent, index) => {

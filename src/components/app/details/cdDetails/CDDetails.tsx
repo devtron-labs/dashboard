@@ -290,6 +290,8 @@ const DeploymentCard: React.FC<{
     triggerDetails: History
 }> = ({ triggerDetails }) => {
     const { path } = useRouteMatch()
+    const { pathname } = useLocation()
+    const currentTab = pathname.split('/').pop()    
     const { triggerId, ...rest } = useParams<{ triggerId: string }>()
     return (
         <ConditionalWrap
@@ -305,7 +307,7 @@ const DeploymentCard: React.FC<{
             )}
         >
             <NavLink
-                to={generatePath(path, { ...rest, triggerId: triggerDetails.id })}
+                to={generatePath(path, { ...rest, triggerId: triggerDetails.id }) + "/" + currentTab}
                 className="w-100 ci-details__build-card"
                 activeClassName="active"
             >
