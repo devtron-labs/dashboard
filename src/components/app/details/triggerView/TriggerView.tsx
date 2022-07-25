@@ -279,7 +279,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 return mat.source
                             }
                             let _value, isBranchRegex
-                            if (mat.source.length === 2) {
+                            if (mat.source.length > 0) {
                                 for (let _source of mat.source) {
                                     //checking if in ci material source is regex but value is not available
                                     if (_source.type === SourceTypeMap.BranchRegex) {
@@ -294,7 +294,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                             continue
                                         }
                                     }
-                                    isBranchRegex = false
+                                    // isBranchRegex = false
                                 }
                             } else if (mat.source.length === 1 && mat.source[0].type === SourceTypeMap.BranchRegex) {
                                 isBranchRegex = true

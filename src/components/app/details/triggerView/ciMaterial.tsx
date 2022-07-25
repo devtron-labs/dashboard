@@ -212,8 +212,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 const regEx = _cm.source.find((_rc) => _rc.type === SourceTypeMap.BranchRegex)?.value
                 if (regEx) {
                     if (!regVal.match(regEx)) {
-                        this.setState({ isInvalidRegex: true })
-                        this.setState({ errorMessage: 'No matching value' })
+                        this.setState({ isInvalidRegex: true, errorMessage: 'No matching value' })
                         return
                     }
 
@@ -232,6 +231,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     toast.success('Updated Pipeline')
                     this.setState({ isInvalidRegex: false })
                     this.props.onCloseBranchRegexModal()
+                    // context.onClickCIMaterial(this.props.pipelineId, this.props.pipelineName)
                 }
             })
             .catch((error: ServerErrors) => {
@@ -246,6 +246,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 <button
                     className="cta"
                     onClick={(e) => {
+                        // e.stopPropagation()
+
                         this.onClickNextButton(context)
                     }}
                 >
