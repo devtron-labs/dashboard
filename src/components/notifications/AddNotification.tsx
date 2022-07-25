@@ -354,7 +354,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         let selectedChannels = []
         for (let index = 0; index < this.state.selectedChannels.length; index++) {
             const element = this.state.selectedChannels[index]
-            if (element.data.dest === 'ses' || element.data.dest === 'smtp') {
+            if (element.data.dest === 'ses' || element.data.dest === 'smtp' || element.data.dest === '') {
                 if (!this.state.emailAgentConfigId) {
                     toast.error(`Select ${this.state.selectedEmailAgent} Account`)
                     return
