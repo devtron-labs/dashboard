@@ -128,13 +128,13 @@ export default function NodeList() {
                     let _errorTitle = '',
                         _errorList = [],
                         _nodeErrors = Object.keys(response[1].result.nodeErrors || {})
-
-                    if (response[1].result.nodeK8sVersions.length > 1) {
+                    const _nodeK8sVersions = response[1].result.nodeK8sVersions
+                    if (_nodeK8sVersions.length > 1) {
                         let diffType = '',
                             majorVersion,
                             minorVersion
-                        for (let index = 0; index < response[1].result.nodeK8sVersions.length; index++) {
-                            const elementArr = response[1].result.nodeK8sVersions[index].split('.')
+                        for (let index = 0; index < _nodeK8sVersions.length; index++) {
+                            const elementArr = _nodeK8sVersions[index].split('.')
                             if (!majorVersion) {
                                 majorVersion = elementArr[0]
                             }
@@ -153,7 +153,7 @@ export default function NodeList() {
                             _errorList.push({
                                 errorText: `${diffType} version diff identified among nodes. Current versions `,
                                 errorType: ERROR_TYPE.VERSION_ERROR,
-                                filterText: response[1].result.nodeK8sVersions,
+                                filterText: _nodeK8sVersions,
                             })
                         }
                     }
