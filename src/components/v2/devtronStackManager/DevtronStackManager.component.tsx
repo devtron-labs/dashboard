@@ -20,13 +20,11 @@ import { ReactComponent as InstallIcon } from '../../../assets/icons/ic-arrow-fo
 import { ReactComponent as RetyrInstallIcon } from '../../../assets/icons/ic-arrow-clockwise.svg'
 import { ReactComponent as SuccessIcon } from '../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as UpToDateIcon } from '../../../assets/icons/ic-celebration.svg'
-import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
 import { ReactComponent as Info } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Note } from '../../../assets/icons/ic-note.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
-
 import { Checkbox, CHECKBOX_VALUE, Progressing, showError, ToastBody, VisibleModal } from '../../common'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
