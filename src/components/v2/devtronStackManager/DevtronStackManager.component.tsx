@@ -486,6 +486,7 @@ export const InstallationWrapper = ({
 
     const hidePrerequisiteConfirmationModal = (): void => {
         setShowPreRequisiteConfirmationModal(false)
+        setPreRequisiteChecked(false)
     }
 
     const renderPrerequisiteConfirmationModal = (): JSX.Element | null => {
