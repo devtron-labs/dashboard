@@ -365,70 +365,72 @@ function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfi
     }
     return (
         <div className={`app-metrics-graph__empty-state-wrapper bcn-0 w-100 pt-18 pb-18 pl-20 pr-20 ${addSpace}`}>
-            <div className='flex left w-100 lh-20'>
-            <span className="fs-14 fw-6 cn-7 flex left mr-16">
-                <GraphIcon className="mr-8 fcn-7 icon-dim-20" />
-                APPLICATION METRICS
-            </span>
-            {collapsed && !isLoading && (
+            <div className="flex left w-100 lh-20">
+                <span className="fs-14 fw-6 cn-7 flex left mr-16">
+                    <GraphIcon className="mr-8 fcn-7 icon-dim-20" />
+                    APPLICATION METRICS
+                </span>
+                {collapsed && !isLoading && (
                     <span className="fw-4 fs-13 cn-7">
-                    Unable to show metrics due to insufficient/incorrect configurations
-                </span>)}
-            <DropDownIcon
+                        Unable to show metrics due to insufficient/incorrect configurations
+                    </span>
+                )}
+                <DropDownIcon
                     style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
                     className="icon-dim-20 rotate pointer"
                     onClick={(e) => toggleCollapsed(not)}
                 />
             </div>
-            {!collapsed && ( isLoading ? (
-                <div style={{ height: '240px' }}>
-                    <Progressing pageLoader />
-                </div>
-            ) : (
-                <article className="app-metrics-graph__empty-state">
-                    <img src={HostErrorImage} alt="" className="w-100" />
-                    <div>
-                        <p className="fw-6 fs-14 cn-9">
-                            Unable to show metrics due to insufficient/incorrect configurations
-                        </p>
-                        {(!hostURLConfig || hostURLConfig.value !== window.location.origin) && (
-                            <>
-                                <p className="fw-4 fs-12 cn-7 mt-16 mb-0">
-                                    Host url is not configured or is incorrect. Reach out to your DevOps team
-                                    (super-admin) to configure host url.
-                                </p>
-                                <Link
-                                    to={`${URLS.GLOBAL_CONFIG_HOST_URL}`}
-                                    className="cta small text"
-                                    style={{ paddingLeft: '0' }}
-                                >
-                                    Review and update
-                                </Link>
-                            </>
-                        )}
-                        {(!isConfigured || !isHealthy) && (
-                            <>
-                                <p className="fw-4 fs-12 cn-7 mt-16 mb-0">{subtitle}</p>
-                                <a
-                                    className="learn-more__href cta small text pl-0"
-                                    href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
-                                    target="_blank"
-                                    style={{ paddingLeft: '0' }}
-                                >
-                                    See how to fix
-                                </a>
-                                <Link
-                                    to={`${URLS.GLOBAL_CONFIG_CLUSTER}`}
-                                    className="cta small text"
-                                    style={{ paddingLeft: '0' }}
-                                >
-                                    Review Configuration
-                                </Link>
-                            </>
-                        )}
+            {!collapsed &&
+                (isLoading ? (
+                    <div style={{ height: '240px' }}>
+                        <Progressing pageLoader />
                     </div>
-                </article>
-            ))}
+                ) : (
+                    <article className="app-metrics-graph__empty-state">
+                        <img src={HostErrorImage} alt="error" className="w-100" />
+                        <div>
+                            <p className="fw-6 fs-14 cn-9">
+                                Unable to show metrics due to insufficient/incorrect configurations
+                            </p>
+                            {(!hostURLConfig || hostURLConfig.value !== window.location.origin) && (
+                                <>
+                                    <p className="fw-4 fs-12 cn-7 mt-16 mb-0">
+                                        Host url is not configured or is incorrect. Reach out to your DevOps team
+                                        (super-admin) to configure host url.
+                                    </p>
+                                    <Link
+                                        to={URLS.GLOBAL_CONFIG_HOST_URL}
+                                        className="cta small text"
+                                        style={{ paddingLeft: '0' }}
+                                    >
+                                        Review and update
+                                    </Link>
+                                </>
+                            )}
+                            {(!isConfigured || !isHealthy) && (
+                                <>
+                                    <p className="fw-4 fs-12 cn-7 mt-16 mb-0">{subtitle}</p>
+                                    <a
+                                        className="learn-more__href cta small text pl-0"
+                                        href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
+                                        target="_blank"
+                                        style={{ paddingLeft: '0' }}
+                                    >
+                                        See how to fix
+                                    </a>
+                                    <Link
+                                        to={URLS.GLOBAL_CONFIG_CLUSTER}
+                                        className="cta small text"
+                                        style={{ paddingLeft: '0' }}
+                                    >
+                                        Review Configuration
+                                    </Link>
+                                </>
+                            )}
+                        </div>
+                    </article>
+                ))}
         </div>
     )
 }
