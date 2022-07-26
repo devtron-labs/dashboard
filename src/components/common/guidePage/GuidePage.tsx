@@ -2,8 +2,10 @@ import React from 'react'
 import { NavLink, useLocation, useRouteMatch, useHistory } from 'react-router-dom'
 import './guidePage.scss'
 import { URLS } from '../../../config'
+import SampleImage from '../../../assets/img/guide-sample-app.png'
+import CraeteApp from '../../../assets/img/guide-create-app.png'
 
-function GuidePage({ title, subTitle, leftImage, leftText, rightImage, rightText }) {
+function GuidePage({ title, subTitle, leftImage, leftText, rightImage, rightText, onClickLeftCardAction }) {
     const match = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -21,21 +23,10 @@ function GuidePage({ title, subTitle, leftImage, leftText, rightImage, rightText
             <div className="bcn-0 guide-body flex position-rel">
                 <div className="guide-cards__wrap">
                     <div className="guide-card__left bcn-0 w-300 br-4 en-2 bw-1 cursor">
-                        <NavLink
-                            to={`${match.path}/${URLS.GUIDE}`}
-                            className="no-decor fw-6 cursor"
-                            activeClassName="active"
-                            onClick={() => redirectToDeployGuide(`/${URLS.GUIDE}`)}
-                        >
-                            <img
-                                className="guide-card__img"
-                                src={leftImage}
-                                width="250"
-                                height="250"
-                                alt="Please connect cluster"
-                            />
+                        <div className="no-decor fw-6 cursor" onClick={onClickLeftCardAction}>
+                            <img className="guide-card__img" src={SampleImage} alt="Please connect cluster" />
                             <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">{leftText}</div>
-                        </NavLink>
+                        </div>
                     </div>
 
                     <div className="guide-card__right bcn-0 w-300 br-4 en-2 bw-1 cursor">
@@ -44,13 +35,7 @@ function GuidePage({ title, subTitle, leftImage, leftText, rightImage, rightText
                             className="no-decor fw-6 cursor"
                             activeClassName="active"
                         >
-                            <img
-                                className="guide-card__img"
-                                src={rightImage}
-                                width="250"
-                                height="250"
-                                alt="Please connect cluster"
-                            />
+                            <img className="guide-card__img" src={CraeteApp} alt="Please connect cluster" />
                             <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24">{rightText}</div>
                         </NavLink>
                     </div>

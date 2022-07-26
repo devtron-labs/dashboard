@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useContext, Fragment } from 'react'
 import { useLocation, useHistory, useParams } from 'react-router'
 import { Link, Switch, Route, NavLink } from 'react-router-dom'
-import { Progressing, Filter, showError, FilterOption, Modal, ErrorScreenManager, handleUTCTime } from '../../common'
+import {
+    Progressing,
+    Filter,
+    showError,
+    FilterOption,
+    Modal,
+    ErrorScreenManager,
+    handleUTCTime,
+    VisibleModal,
+} from '../../common'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ChartIcon } from '../../../assets/icons/ic-charts.svg'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
@@ -25,6 +34,12 @@ import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-fi
 import CreateApp from '../../../assets/img/guided-helm-collage.png'
 import SampleApp from '../../../assets/img/guide-sample-app.png'
 import GuidePage from '../../common/guidePage/GuidePage'
+import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import javaSprintbootGradle from '../../../assets/logo/java-springboot-gradle.png'
+import javaSprintbootMaven from '../../../assets/logo/java-springboot-maven.png'
+import golang from '../../../assets/logo/golang.png'
+import nodeJS from '../../../assets/logo/nodejs.png'
+import pythonDjango from '../../../assets/logo/python-django.png'
 
 export default function AppList() {
     const location = useLocation()
@@ -60,6 +75,10 @@ export default function AppList() {
     })
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
+
+    //sample app modal
+    const [showSampleAppModal, setShowSampleAppModal] = useState(false)
+    const [isSelectedCard, setIsSelectedCard] = useState(false)
 
     // on page load
     useEffect(() => {
@@ -904,16 +923,129 @@ export default function AppList() {
         )
     }
 
+    const onClickShowSampleAppModal = () => {
+        setShowSampleAppModal(true)
+    }
+
+    const onClickHideSampleAppModal = () => {
+        setShowSampleAppModal(false)
+    }
+
+    const SampleData = [
+        {
+            id: 1,
+            icon: 'javaSprintbootGradle',
+            title: 'Java-Springboot-Maven',
+            subtitle: 'A simple java, springboot, maven application',
+            isSelected: false,
+        },
+        {
+            id: 2,
+            icon: 'javaSprintbootMaven',
+            title: 'Java-Springboot-Gradle',
+            subtitle: 'A simple java, springboot, gradle application',
+            isSelected: false,
+        },
+        {
+            id: 3,
+            icon: 'pythonDjango',
+            title: 'Python-Django',
+            subtitle: 'Deploy a simple node.js application to explore Devtron',
+            isSelected: false,
+        },
+        {
+            id: 4,
+            icon: 'golang',
+            title: 'Golang-webapp',
+            subtitle: 'Deploy a simple node.js application to explore Devtron',
+            isSelected: false,
+        },
+        {
+            id: 5,
+            icon: 'nodeJS',
+            title: 'Nodejs-webapp',
+            subtitle: 'Deploy a simple node.js application to explore Devtron',
+            isSelected: false,
+        },
+        {
+            id: 6,
+            icon: '',
+            title: 'Reactjs frontend',
+            subtitle: 'Deploy a simple node.js application to explore Devtron',
+            isSelected: false,
+        },
+        {
+            id: 7,
+            icon: '',
+            title: 'AngularJS frontend',
+            subtitle: 'Deploy a simple node.js application to explore Devtron',
+            isSelected: false,
+        },
+    ]
+
+    const onClickSampleAppCard = (selectedCardId) => {
+        let isSelect
+        let selectedSampleApp = SampleData.filter((elm) => elm.id === selectedCardId)
+
+        console.log(selectedSampleApp)
+        console.log(selectedSampleApp)
+        selectedSampleApp[0].isSelected = !isSelect
+    }
+
     const renderFirstAppView = () => {
         return (
-            <GuidePage
-                title={'Create your first application'}
-                subTitle={'Tip: Create and deploy a sample application to quickly see Devtron in action.'}
-                leftImage={undefined}
-                leftText={' Deploy and manage helm applications'}
-                rightImage={undefined}
-                rightText={'Deploy custom applications using CI/CD pipelines'}
-            />
+            <>
+                <GuidePage
+                    title={'Create your first application'}
+                    subTitle={'Tip: Create and deploy a sample application to quickly see Devtron in action.'}
+                    leftImage={undefined}
+                    leftText={'Learn with a pre-configured sample application'}
+                    rightImage={undefined}
+                    rightText={'Create an application from scratch'}
+                    onClickLeftCardAction={onClickShowSampleAppModal}
+                />
+
+                {showSampleAppModal && (
+                    <div>
+                        <VisibleModal className="regenerate-token-modal">
+                            <div className="sample-card__create-app modal__body w-600 flex column p-0 mt-0 br-0">
+                                <div className="flex content-space w-100 pt-16 pb-16 pl-20 pr-20 border-bottom">
+                                    <h1 className="modal__title modal__title--benchmark fs-16">
+                                        Select application template
+                                    </h1>
+                                    <button type="button" className="transparent" onClick={onClickHideSampleAppModal}>
+                                        <Close className="icon-dim-24" />
+                                    </button>
+                                </div>
+
+                                <div className="pt-12 pb-12 w-100">
+                                    {SampleData.map((card, index) => {
+                                        return (
+                                            <div
+                                                className={`sample-card mt-8 mb-8 ml-20 mr-20 cursor ${
+                                                    card.isSelected ? 'bcb-1 eb-2 bw-1' : ''
+                                                }`}
+                                                key={`sample_${index}`}
+                                                onClick={() => onClickSampleAppCard(card.id)}
+                                            >
+                                                <img
+                                                    style={{ width: '150px', height: '80px' }}
+                                                    src={javaSprintbootGradle}
+                                                    alt={card.title}
+                                                />
+                                                <div className="flex column left pl-16">
+                                                    <h4 className="fs-14 fw-6 m-0 pb-4">{card.title} </h4>
+                                                    <p className="m-0"> {card.subtitle}</p>
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        </VisibleModal>
+                    </div>
+                )}
+            </>
             // <div className="first-app-container flex column">
             //     <h1 className="fw-6"></h1>
             //     <div className="cn-7 fs-14">

@@ -469,3 +469,14 @@
 .first-app-container {
     margin-top: 60px;
 }
+
+.sample-card {
+    display: grid;
+    grid-template-columns: 150px auto;
+}
+
+.sample-card:hover {
+    border: 1px solid var(--B300);
+    background-color: var(--B100);
+    border-radius: 4px;
+}
