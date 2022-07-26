@@ -444,23 +444,27 @@ export const InstallationWrapper = ({
     >([])
     useEffect(() => {
         if (releaseNotes) {
-            const _preRequisiteList = []
-            for (let index = 0; index < releaseNotes.length; index++) {
-                const element = releaseNotes[index]
-                if (serverInfo && serverInfo.currentVersion === element.releaseName) {
-                    break
-                }
-                if (element.prerequisite && element.prerequisiteMessage) {
-                    _preRequisiteList.push({
-                        version: element.releaseName,
-                        prerequisiteMessage: element.prerequisiteMessage,
-                        tagLink: element.tagLink,
-                    })
-                }
-            }
-            setPreRequisiteList(_preRequisiteList.reverse())
+            fetchPreRequisiteListFromReleaseNotes()
         }
     }, [releaseNotes])
+
+    const fetchPreRequisiteListFromReleaseNotes = () => {
+        const _preRequisiteList = []
+        for (let index = 0; index < releaseNotes.length; index++) {
+            const element = releaseNotes[index]
+            if (element.releaseName === serverInfo?.currentVersion) {
+                break
+            }
+            if (element.prerequisite && element.prerequisiteMessage) {
+                _preRequisiteList.push({
+                    version: element.releaseName,
+                    prerequisiteMessage: element.prerequisiteMessage,
+                    tagLink: element.tagLink,
+                })
+            }
+        }
+        setPreRequisiteList(_preRequisiteList.reverse())
+    }
 
     const handleActionButtonClick = () => {
         if (isActionTriggered) {
@@ -480,7 +484,11 @@ export const InstallationWrapper = ({
         setPreRequisiteChecked(!preRequisiteChecked)
     }
 
-    const renderConfirmationModal = (): JSX.Element | null => {
+    const hidePrerequisiteConfirmationModal = (): void => {
+        setShowPreRequisiteConfirmationModal(false)
+    }
+
+    const renderPrerequisiteConfirmationModal = (): JSX.Element | null => {
         if (!showPreRequisiteConfirmationModal) return null
         return (
             <VisibleModal className="transition-effect">
@@ -489,10 +497,7 @@ export const InstallationWrapper = ({
                         <div className="fw-6 fs-16 cn-9">
                             {`Pre-requisites for update to ${upgradeVersion.toLowerCase()}`}
                         </div>
-                        <CloseIcon
-                            className="pointer mt-2"
-                            onClick={() => setShowPreRequisiteConfirmationModal(false)}
-                        />
+                        <CloseIcon className="pointer mt-2" onClick={hidePrerequisiteConfirmationModal} />
                     </div>
                     <div className="p-20">
                         <div className="fw-6 fs-13 cn-9 mb-12">
@@ -635,7 +640,7 @@ export const InstallationWrapper = ({
                                 installationStatus === ModuleStatus.TIMEOUT ||
                                 installationStatus === ModuleStatus.UNKNOWN))) && <GetHelpCard />}
             </div>
-            {renderConfirmationModal()}
+            {renderPrerequisiteConfirmationModal()}
         </>
     )
 }
