@@ -504,7 +504,7 @@ export const InstallationWrapper = ({
                             <div className="fw-4 fs-13 cn-7 mb-12">
                                 <div>Pre-requisites for {preRequisite.version}:</div>
                                 <MarkDown
-                                    className="pre-requisite-mark-down"
+                                    className="pre-requisite-modal__mark-down"
                                     breaks={true}
                                     markdown={preRequisite.prerequisiteMessage}
                                 />
@@ -516,7 +516,7 @@ export const InstallationWrapper = ({
                         <div className="en-2 bw-1 flexbox content-space pt-8 pr-12 pb-8 pl-12 br-4">
                             <span className="cn-9 fs-13 fw-6">Facing issues?</span>
                             <a
-                                className="module-details__help-chat cb-5 flex left"
+                                className="pre-requisite-modal__help-chat fs-13 cb-5 flex left"
                                 href="https://discord.devtron.ai/"
                                 target="_blank"
                                 rel="noreferrer noopener"
