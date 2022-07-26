@@ -513,6 +513,17 @@ export const InstallationWrapper = ({
                                 </a>
                             </div>
                         ))}
+                        <div className="en-2 bw-1 flexbox content-space pt-8 pr-12 pb-8 pl-12 br-4">
+                            <span className="cn-9 fs-13 fw-6">Facing issues?</span>
+                            <a
+                                className="module-details__help-chat cb-5 flex left"
+                                href="https://discord.devtron.ai/"
+                                target="_blank"
+                                rel="noreferrer noopener"
+                            >
+                                <Chat className="icon-dim-20 mr-12" /> Chat with support
+                            </a>
+                        </div>
                     </div>
                     <div className="p-16 border-top flexbox content-space">
                         <Checkbox
