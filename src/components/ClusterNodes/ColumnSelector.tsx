@@ -4,6 +4,7 @@ import { Option } from '../common'
 import { COLUMN_METADATA, ColumnMetadataType } from './types'
 import { ReactComponent as Setting } from '../../assets/icons/ic-nav-gear.svg'
 import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
+import { useColumnFilterContext } from './NodeListSearchFilter'
 
 const ValueContainer = (props: any): JSX.Element => {
     const length = props.getValue().length
@@ -27,22 +28,18 @@ const ValueContainer = (props: any): JSX.Element => {
     )
 }
 
-export default function ColumnSelector({
-    appliedColumns,
-    setAppliedColumns,
-}: {
-    appliedColumns: MultiValue<ColumnMetadataType>
-    setAppliedColumns: React.Dispatch<React.SetStateAction<MultiValue<ColumnMetadataType>>>
-}) {
-    const [selectedColumns, setSelectedColumns] = useState<MultiValue<ColumnMetadataType>>([])
-    const [isMenuOpen, setMenuOpen] = useState(false)
-    const [columnOptions, setColumnOptions] = useState<MultiValue<ColumnMetadataType>>([])
-
-    useEffect(() => {
-        setColumnOptions(COLUMN_METADATA.filter((columnData) => !columnData.isDisabled))
-        setSelectedColumns(appliedColumns)
-    }, [])
-
+const MenuList = (props: any): JSX.Element => {
+    const {
+        selectedColumns,
+        setAppliedColumns,
+        setMenuOpen,
+    }: {
+        selectedColumns: MultiValue<ColumnMetadataType>
+        appliedColumns: MultiValue<ColumnMetadataType>
+        setAppliedColumns: React.Dispatch<React.SetStateAction<MultiValue<ColumnMetadataType>>>
+        isMenuOpen: boolean
+        setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
+    } = useColumnFilterContext()
     const handleApplySelectedColumns = (): void => {
         setMenuOpen(false)
         const _appliedColumns = [...selectedColumns].sort((a, b) => a['columnIndex'] - b['columnIndex'])
@@ -51,6 +48,38 @@ export default function ColumnSelector({
         }
         setAppliedColumns(_appliedColumns)
     }
+    return (
+        <components.MenuList {...props}>
+            {props.children}
+            <div className="flex react-select__bottom bcn-0 p-8">
+                <button className="flex cta apply-filter h-32 w-100" onClick={handleApplySelectedColumns}>
+                    Apply
+                </button>
+            </div>
+        </components.MenuList>
+    )
+}
+export default function ColumnSelector() {
+    const {
+        appliedColumns,
+        selectedColumns,
+        setSelectedColumns,
+        isMenuOpen,
+        setMenuOpen,
+    }: {
+        appliedColumns: MultiValue<ColumnMetadataType>
+        selectedColumns: MultiValue<ColumnMetadataType>
+        setSelectedColumns: React.Dispatch<React.SetStateAction<MultiValue<ColumnMetadataType>>>
+        isMenuOpen: boolean
+        setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
+    } = useColumnFilterContext()
+    const [columnOptions, setColumnOptions] = useState<MultiValue<ColumnMetadataType>>([])
+    const [columnFilterInput, setColumnFilterInput] = useState('')
+
+    useEffect(() => {
+        setColumnOptions(COLUMN_METADATA.filter((columnData) => !columnData.isDisabled))
+        setSelectedColumns(appliedColumns)
+    }, [])
 
     const handleMenuState = (menuOpenState: boolean): void => {
         if (menuOpenState) {
@@ -63,19 +92,6 @@ export default function ColumnSelector({
         handleMenuState(false)
         setSelectedColumns(appliedColumns)
     }
-
-    const MenuList = (props: any): JSX.Element => {
-        return (
-            <components.MenuList {...props}>
-                {props.children}
-                <div className="flex react-select__bottom bcn-0 p-8">
-                    <button className="flex cta apply-filter h-32 w-100" onClick={handleApplySelectedColumns}>
-                        Apply
-                    </button>
-                </div>
-            </components.MenuList>
-        )
-    }
     return (
         <ReactSelect
             menuIsOpen={isMenuOpen}
@@ -84,12 +100,18 @@ export default function ColumnSelector({
             options={columnOptions}
             onChange={setSelectedColumns}
             isMulti={true}
-            isSearchable={false}
             closeMenuOnSelect={false}
             hideSelectedOptions={false}
             onMenuOpen={() => handleMenuState(true)}
             onMenuClose={handleCloseFilter}
             blurInputOnSelect={false}
+            inputValue={columnFilterInput}
+            onBlur={() => {
+                setColumnFilterInput('')
+            }}
+            onInputChange={(value, action) => {
+                if (action.action === 'input-change') setColumnFilterInput(value)
+            }}
             autoFocus
             components={{
                 Option: Option,
