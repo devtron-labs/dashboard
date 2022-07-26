@@ -17,6 +17,10 @@ function AboutDevtronView({
     selectedTabIndex,
     isActionTriggered,
     handleActionTrigger,
+    showPreRequisiteConfirmationModal,
+    setShowPreRequisiteConfirmationModal,
+    preRequisiteChecked,
+    setPreRequisiteChecked,
 }: AboutDevtronViewType) {
     const aboutDevtronTabs: { name: string; link: string }[] = [
         { name: 'About', link: URLS.STACK_MANAGER_ABOUT },
@@ -119,9 +123,14 @@ function AboutDevtronView({
                         serverInfo={serverInfo}
                         upgradeVersion={releaseNotes[0]?.releaseName}
                         isActionTriggered={isActionTriggered}
+                        releaseNotes={releaseNotes}
                         updateActionTrigger={(isActionTriggered) =>
                             handleActionTrigger('serverAction', isActionTriggered)
                         }
+                        showPreRequisiteConfirmationModal={showPreRequisiteConfirmationModal}
+                        setShowPreRequisiteConfirmationModal={setShowPreRequisiteConfirmationModal}
+                        preRequisiteChecked={preRequisiteChecked}
+                        setPreRequisiteChecked={setPreRequisiteChecked}
                     />
                 )}
             </div>

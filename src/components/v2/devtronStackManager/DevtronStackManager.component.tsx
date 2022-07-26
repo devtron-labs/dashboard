@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
 import {
     ModuleDetailsCardType,
@@ -24,8 +24,10 @@ import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
 import { ReactComponent as Info } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
+import { ReactComponent as Note } from '../../../assets/icons/ic-note.svg'
+import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
 
-import { Progressing, showError, ToastBody } from '../../common'
+import { Checkbox, CHECKBOX_VALUE, Progressing, showError, ToastBody, VisibleModal } from '../../common'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
 import { URLS } from '../../../config'
@@ -429,91 +431,203 @@ export const InstallationWrapper = ({
     upgradeVersion,
     isUpgradeView,
     isActionTriggered,
+    releaseNotes,
     updateActionTrigger,
+    showPreRequisiteConfirmationModal,
+    setShowPreRequisiteConfirmationModal,
+    preRequisiteChecked,
+    setPreRequisiteChecked,
 }: InstallationWrapperType): JSX.Element => {
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const latestVersionAvailable = isLatestVersionAvailable(serverInfo?.currentVersion, upgradeVersion)
+    const [preRequisiteList, setPreRequisiteList] = useState<
+        { version: string; prerequisiteMessage: string; tagLink: string }[]
+    >([])
+    useEffect(() => {
+        if (releaseNotes) {
+            const _preRequisiteList = []
+            for (let index = 0; index < releaseNotes.length; index++) {
+                const element = releaseNotes[index]
+                if (serverInfo && serverInfo.currentVersion === element.releaseName) {
+                    break
+                }
+                if (element.prerequisite && element.prerequisiteMessage) {
+                    _preRequisiteList.push({
+                        version: element.releaseName,
+                        prerequisiteMessage: element.prerequisiteMessage,
+                        tagLink: element.tagLink,
+                    })
+                }
+            }
+            setPreRequisiteList(_preRequisiteList.reverse())
+        }
+    }, [releaseNotes])
 
     const handleActionButtonClick = () => {
         if (isActionTriggered) {
             return
         } else {
-            updateActionTrigger(true)
-            handleAction(moduleName, isUpgradeView, upgradeVersion, updateActionTrigger, history, location)
+            if (preRequisiteChecked || preRequisiteList.length === 0) {
+                setShowPreRequisiteConfirmationModal(false)
+                updateActionTrigger(true)
+                handleAction(moduleName, isUpgradeView, upgradeVersion, updateActionTrigger, history, location)
+            } else {
+                setShowPreRequisiteConfirmationModal(true)
+            }
         }
     }
 
+    const handlePrerequisiteCheckedChange = (): void => {
+        setPreRequisiteChecked(!preRequisiteChecked)
+    }
+
+    const renderConfirmationModal = (): JSX.Element | null => {
+        if (!showPreRequisiteConfirmationModal) return null
+        return (
+            <VisibleModal className="transition-effect">
+                <div className="modal__body upload-modal no-top-radius mt-0 p-0 w-600">
+                    <div className="flexbox content-space pl-20 pr-20 pt-16 pb-16 border-bottom">
+                        <div className="fw-6 fs-16 cn-9">
+                            {`Pre-requisites for update to ${upgradeVersion.toLowerCase()}`}
+                        </div>
+                        <CloseIcon
+                            className="pointer mt-2"
+                            onClick={() => setShowPreRequisiteConfirmationModal(false)}
+                        />
+                    </div>
+                    <div className="p-20">
+                        <div className="fw-6 fs-13 cn-9 mb-12">
+                            Please ensure you follow below pre-requisites steps in order.
+                        </div>
+                        {preRequisiteList.map((preRequisite) => (
+                            <div className="fw-4 fs-13 cn-7 mb-12">
+                                <div>Pre-requisites for {preRequisite.version}:</div>
+                                <MarkDown
+                                    className="pre-requisite-mark-down"
+                                    breaks={true}
+                                    markdown={preRequisite.prerequisiteMessage}
+                                />
+                                <a className="cb-5" href={preRequisite.tagLink} target="_blank">
+                                    View full release note
+                                </a>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="p-16 border-top flexbox content-space">
+                        <Checkbox
+                            isChecked={preRequisiteChecked}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={handlePrerequisiteCheckedChange}
+                        >
+                            <span className="mr-5 cn-9 fw-4 fs-13">
+                                I have completed all pre-requisite steps required for the upgrade
+                            </span>
+                        </Checkbox>
+                        <button
+                            onClick={handleActionButtonClick}
+                            disabled={!preRequisiteChecked}
+                            className="cta ml-12 no-decor"
+                        >
+                            Update
+                        </button>
+                    </div>
+                </div>
+            </VisibleModal>
+        )
+    }
+
     return (
-        <div className="module-details__install-wrapper">
-            {serverInfo?.installationType && serverInfo.installationType !== InstallationType.OSS_HELM ? (
-                <>
-                    {serverInfo.installationType === InstallationType.OSS_KUBECTL && (
-                        <NotSupportedNote isUpgradeView={isUpgradeView} />
-                    )}
-                    {serverInfo.installationType === InstallationType.ENTERPRISE && <ManagedByNote />}
-                </>
-            ) : (
-                <>
-                    {installationStatus !== ModuleStatus.INSTALLING &&
-                        installationStatus !== ModuleStatus.UPGRADING &&
-                        installationStatus !== ModuleStatus.INSTALLED &&
-                        (installationStatus !== ModuleStatus.HEALTHY ||
-                            (installationStatus === ModuleStatus.HEALTHY && latestVersionAvailable)) && (
-                            <button
-                                className="module-details__install-button cta flex mb-16"
-                                onClick={handleActionButtonClick}
-                            >
-                                {isActionTriggered && <Progressing />}
-                                {!isActionTriggered &&
-                                    (installationStatus === ModuleStatus.NOT_INSTALLED ||
-                                        (installationStatus === ModuleStatus.HEALTHY && latestVersionAvailable)) && (
-                                        <>
-                                            {isUpgradeView ? (
-                                                `Update to ${upgradeVersion.toLowerCase()}`
-                                            ) : (
+        <>
+            <div className="module-details__install-wrapper">
+                {serverInfo?.installationType && serverInfo.installationType !== InstallationType.OSS_HELM ? (
+                    <>
+                        {serverInfo.installationType === InstallationType.OSS_KUBECTL && (
+                            <NotSupportedNote isUpgradeView={isUpgradeView} />
+                        )}
+                        {serverInfo.installationType === InstallationType.ENTERPRISE && <ManagedByNote />}
+                    </>
+                ) : (
+                    <>
+                        {installationStatus !== ModuleStatus.INSTALLING &&
+                            installationStatus !== ModuleStatus.UPGRADING &&
+                            installationStatus !== ModuleStatus.INSTALLED &&
+                            (installationStatus !== ModuleStatus.HEALTHY ||
+                                (installationStatus === ModuleStatus.HEALTHY && latestVersionAvailable)) && (
+                                <>
+                                    <button
+                                        className="module-details__install-button cta flex mb-16"
+                                        onClick={handleActionButtonClick}
+                                    >
+                                        {isActionTriggered && <Progressing />}
+                                        {!isActionTriggered &&
+                                            (installationStatus === ModuleStatus.NOT_INSTALLED ||
+                                                (installationStatus === ModuleStatus.HEALTHY &&
+                                                    latestVersionAvailable)) && (
                                                 <>
-                                                    <InstallIcon className="module-details__install-icon icon-dim-16 mr-8" />
-                                                    Install
+                                                    {isUpgradeView ? (
+                                                        `Update to ${upgradeVersion.toLowerCase()}`
+                                                    ) : (
+                                                        <>
+                                                            <InstallIcon className="module-details__install-icon icon-dim-16 mr-8" />
+                                                            Install
+                                                        </>
+                                                    )}
                                                 </>
                                             )}
-                                        </>
+                                        {!isActionTriggered &&
+                                            (installationStatus === ModuleStatus.INSTALL_FAILED ||
+                                                installationStatus === ModuleStatus.UPGRADE_FAILED ||
+                                                installationStatus === ModuleStatus.TIMEOUT ||
+                                                installationStatus === ModuleStatus.UNKNOWN) && (
+                                                <>
+                                                    <RetyrInstallIcon className="module-details__retry-install-icon icon-dim-16 mr-8" />
+                                                    {`Retry ${isUpgradeView ? 'update' : 'install'}`}
+                                                </>
+                                            )}
+                                    </button>
+                                    {preRequisiteList.length > 0 && (
+                                        <div className="flexbox pt-10 pr-16 pb-10 pl-16 bcy-1 ey-2 bw-1 br-4">
+                                            <Note className="module-details__install-icon icon-dim-16 mt-4 mr-8" />
+                                            <div>
+                                                <div className="cn-9 fw-6 fs-13">Pre-requisites for this update</div>
+                                                <div
+                                                    className="cb-5 fw-6 fs-13 pointer"
+                                                    onClick={handleActionButtonClick}
+                                                >
+                                                    View details
+                                                </div>
+                                            </div>
+                                        </div>
                                     )}
-                                {!isActionTriggered &&
-                                    (installationStatus === ModuleStatus.INSTALL_FAILED ||
-                                        installationStatus === ModuleStatus.UPGRADE_FAILED ||
-                                        installationStatus === ModuleStatus.TIMEOUT ||
-                                        installationStatus === ModuleStatus.UNKNOWN) && (
-                                        <>
-                                            <RetyrInstallIcon className="module-details__retry-install-icon icon-dim-16 mr-8" />
-                                            {`Retry ${isUpgradeView ? 'update' : 'install'}`}
-                                        </>
-                                    )}
-                            </button>
+                                </>
+                            )}
+
+                        {((installationStatus !== ModuleStatus.NOT_INSTALLED &&
+                            installationStatus !== ModuleStatus.HEALTHY) ||
+                            (installationStatus === ModuleStatus.HEALTHY && !latestVersionAvailable)) && (
+                            <InstallationStatus
+                                installationStatus={installationStatus}
+                                appName={serverInfo?.releaseName}
+                                canViewLogs={canViewLogs}
+                                logPodName={logPodName}
+                                isUpgradeView={isUpgradeView}
+                                latestVersionAvailable={latestVersionAvailable}
+                            />
                         )}
-                    {((installationStatus !== ModuleStatus.NOT_INSTALLED &&
-                        installationStatus !== ModuleStatus.HEALTHY) ||
-                        (installationStatus === ModuleStatus.HEALTHY && !latestVersionAvailable)) && (
-                        <InstallationStatus
-                            installationStatus={installationStatus}
-                            appName={serverInfo?.releaseName}
-                            canViewLogs={canViewLogs}
-                            logPodName={logPodName}
-                            isUpgradeView={isUpgradeView}
-                            latestVersionAvailable={latestVersionAvailable}
-                        />
-                    )}
-                    {!isUpgradeView && installationStatus === ModuleStatus.INSTALLED && <ModuleUpdateNote />}
-                </>
-            )}
-            {serverInfo?.installationType &&
-                (serverInfo.installationType === InstallationType.OSS_KUBECTL ||
-                    (serverInfo.installationType === InstallationType.OSS_HELM &&
-                        (installationStatus === ModuleStatus.INSTALL_FAILED ||
-                            installationStatus === ModuleStatus.UPGRADE_FAILED ||
-                            installationStatus === ModuleStatus.TIMEOUT ||
-                            installationStatus === ModuleStatus.UNKNOWN))) && <GetHelpCard />}
-        </div>
+                        {!isUpgradeView && installationStatus === ModuleStatus.INSTALLED && <ModuleUpdateNote />}
+                    </>
+                )}
+                {serverInfo?.installationType &&
+                    (serverInfo.installationType === InstallationType.OSS_KUBECTL ||
+                        (serverInfo.installationType === InstallationType.OSS_HELM &&
+                            (installationStatus === ModuleStatus.INSTALL_FAILED ||
+                                installationStatus === ModuleStatus.UPGRADE_FAILED ||
+                                installationStatus === ModuleStatus.TIMEOUT ||
+                                installationStatus === ModuleStatus.UNKNOWN))) && <GetHelpCard />}
+            </div>
+            {renderConfirmationModal()}
+        </>
     )
 }
 
