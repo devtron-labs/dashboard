@@ -11,6 +11,7 @@
 
 .flex-grow-1 {
     flex-grow: 1 !important;
+    overflow-y: auto;
 }
 
 .node-container-fluid {
