@@ -296,7 +296,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                     }
                                     // isBranchRegex = false
                                 }
-                            } else if (mat.source.length === 1 && mat.source[0].type === SourceTypeMap.BranchRegex) {
+                            } else if (mat.source.length === 1 && mat.source[1].type === SourceTypeMap.BranchFixed) {
                                 isBranchRegex = true
                             } else {
                                 isBranchRegex = false
