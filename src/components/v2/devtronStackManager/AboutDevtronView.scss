@@ -82,3 +82,25 @@
         }
     }
 }
+
+.pre-requisite-modal__mark-down {
+    padding: 0;
+    blockquote {
+        padding: 0;
+        margin: 0;
+        font-size: 13px;
+        border: none;
+    }
+}
+
+.pre-requisite-modal__help-chat {
+    svg {
+        path:first-of-type {
+            stroke: var(--B500);
+        }
+
+        path:not(:first-of-type) {
+            fill: var(--B500);
+        }
+    }
+}

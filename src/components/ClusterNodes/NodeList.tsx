@@ -128,14 +128,34 @@ export default function NodeList() {
                     let _errorTitle = '',
                         _errorList = [],
                         _nodeErrors = Object.keys(response[1].result.nodeErrors || {})
-
-                    if (response[1].result.nodeK8sVersions.length > 1) {
-                        _errorTitle = 'Version diff'
-                        _errorList.push({
-                            errorText: 'Major version diff identified among nodes. Current versions ',
-                            errorType: ERROR_TYPE.VERSION_ERROR,
-                            filterText: response[1].result.nodeK8sVersions,
-                        })
+                    const _nodeK8sVersions = response[1].result.nodeK8sVersions
+                    if (_nodeK8sVersions.length > 1) {
+                        let diffType = '',
+                            majorVersion,
+                            minorVersion
+                        for (let index = 0; index < _nodeK8sVersions.length; index++) {
+                            const elementArr = _nodeK8sVersions[index].split('.')
+                            if (!majorVersion) {
+                                majorVersion = elementArr[0]
+                            }
+                            if (!minorVersion) {
+                                minorVersion = elementArr[1]
+                            }
+                            if (majorVersion !== elementArr[0]) {
+                                diffType = 'Major'
+                                break
+                            } else if (diffType !== 'Minor' && minorVersion !== elementArr[1]) {
+                                diffType = 'Minor'
+                            }
+                        }
+                        if (diffType !== '') {
+                            _errorTitle = 'Version diff'
+                            _errorList.push({
+                                errorText: `${diffType} version diff identified among nodes. Current versions `,
+                                errorType: ERROR_TYPE.VERSION_ERROR,
+                                filterText: _nodeK8sVersions,
+                            })
+                        }
                     }
 
                     if (_nodeErrors.length > 0) {
@@ -421,7 +441,7 @@ export default function NodeList() {
                     </div>
                 </div>
                 <div className="flexbox content-space pl-20 pr-20 pb-20">
-                    <div className="flexbox content-space mr-16 w-50 p-16 bcn-0 br-8">
+                    <div className="flexbox content-space mr-16 w-50 p-16 bcn-0 br-4 en-2 bw-1">
                         <div className="mr-16 w-25">
                             <div className="align-center fs-13 fw-4 cn-7">CPU Usage</div>
                             <div className="align-center fs-24 fw-4 cn-9">
@@ -446,7 +466,7 @@ export default function NodeList() {
                         </div>
                     </div>
 
-                    <div className="flexbox content-space w-50 p-16 bcn-0 br-8">
+                    <div className="flexbox content-space w-50 p-16 bcn-0 br-4 en-2 bw-1">
                         <div className="mr-16 w-25">
                             <div className="align-center fs-13 fw-4 cn-7">Memory Usage</div>
                             <div className="align-center fs-24 fw-4 cn-9">
@@ -490,7 +510,9 @@ export default function NodeList() {
                     column.isSortingAllowed && handleSortClick(column)
                 }}
             >
-                <span className="inline-block ellipsis-right mw-85px ">{column.label}</span>
+                <Tippy className="default-tt" arrow={false} placement="top" content={column.label}>
+                    <span className="inline-block ellipsis-right mw-85px ">{column.label}</span>
+                </Tippy>
                 {column.isSortingAllowed && <Sort className="pointer icon-dim-14 position-rel sort-icon" />}
             </div>
         )
@@ -593,7 +615,11 @@ export default function NodeList() {
             <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs={true} />
             <div className="node-list">
                 {renderClusterSummary()}
-                <div className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''}`}>
+                <div
+                    className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''} ${
+                        clusterErrorList?.length ? 'with-error-bar' : ''
+                    }`}
+                >
                     <div className="pl-20 pr-20">
                         <NodeListSearchFilter
                             defaultVersion={defaultVersion}
