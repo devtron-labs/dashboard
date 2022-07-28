@@ -193,7 +193,6 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     width: number
     height: number
     nodes: NodeAttr[]
-    onSetRegexValue: () => void
 }
 
 export interface TriggerViewRouterProps {

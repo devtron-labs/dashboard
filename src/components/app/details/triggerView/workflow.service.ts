@@ -419,8 +419,8 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
             downstreams: [`CI-${ciPipeline.id}`],
             type: 'GIT',
             icon: 'git',
-            branch: ciMaterial?.source?.[0]?.value ?? '',
-            sourceType: ciMaterial?.source?.[0]?.type ?? '',
+            branch: ciMaterial?.source?.value ?? '',
+            sourceType: ciMaterial?.source?.type ?? '',
             x: 0,
             y: 0,
         } as NodeAttr

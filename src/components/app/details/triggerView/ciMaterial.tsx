@@ -201,25 +201,40 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         const payload: any = {
             ciPipeline: this.state.selectedCIPipeline,
         }
-        payload.action = PatchAction.UPDATE_SOURCE
         payload.appId = +this.props.match.params.appId
         payload.appWorkflowId = +this.props.workflowId
-        payload.ciPipeline.postBuildStage = {}
-        payload.ciPipeline.preBuildStage = {}
+        // for (let _cm of payload.ciPipeline.ciMaterial) {
+        //     const regVal = this.state.regexValue[_cm.gitMaterialId]
+        //     if (regVal) {
+        //         const regEx = _cm.source.find((_rc) => _rc.type === SourceTypeMap.BranchRegex)?.value
+        //         if (regEx) {
+        //             if (!regVal.match(regEx)) {
+        //                 this.setState({ isInvalidRegex: true, errorMessage: 'No matching value' })
+        //                 return
+        //             }
+
+        //             _cm.source.push({
+        //                 type: SourceTypeMap.BranchFixed,
+        //                 value: regVal,
+        //             })
+        //         }
+        //     }
+        // }
         for (let _cm of payload.ciPipeline.ciMaterial) {
             const regVal = this.state.regexValue[_cm.gitMaterialId]
+
             if (regVal) {
-                const regEx = _cm.source.find((_rc) => _rc.type === SourceTypeMap.BranchRegex)?.value
+                const regEx = _cm.source.value
                 if (regEx) {
                     if (!regVal.match(regEx)) {
                         this.setState({ isInvalidRegex: true, errorMessage: 'No matching value' })
                         return
                     }
 
-                    _cm.source.push({
+                    _cm.source = {
                         type: SourceTypeMap.BranchFixed,
                         value: regVal,
-                    })
+                    }
                 }
             }
         }
@@ -278,20 +293,24 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         )
     }
 
-    getBranchRegex = (gitMaterialId: number) => {
+    getBranchRegexName = (gitMaterialId: number) => {
         if (Array.isArray(this.state.selectedCIPipeline?.ciMaterial)) {
             for (let _ciMaterial of this.state.selectedCIPipeline.ciMaterial) {
                 if (_ciMaterial.gitMaterialId === gitMaterialId) {
-                    for (let _source of _ciMaterial.source) {
-                        if (_source.type === SourceTypeMap.BranchRegex) {
-                            return _source.value
-                        }
+                    if (_ciMaterial.source.type === SourceTypeMap.BranchRegex) {
+                        return _ciMaterial.source.value
+                        //         return _source.value
+                        //     }
+                        // for (let _source of _ciMaterial.source) {
+                        //     if (_source.type === SourceTypeMap.BranchRegex) {
+                        //         return _source.value
+                        //     }
+                        // }
+                        // break
                     }
-                    break
                 }
             }
         }
-
         return ''
     }
 
@@ -336,7 +355,9 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                                             <div className="fw-6 fs-14">{mat.gitMaterialName}</div>
                                             <div className="pb-12">
                                                 Use branch name matching &nbsp;
-                                                <span className="fw-6">{this.getBranchRegex(mat.gitMaterialId)}</span>
+                                                <span className="fw-6">
+                                                    {this.getBranchRegexName(mat.gitMaterialId)}
+                                                </span>
                                             </div>
                                         </span>
                                     </div>
@@ -345,7 +366,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                                         placeholder="Enter branch name matching regex"
                                         className="form__input ml-36 w-95"
                                         name="name"
-                                        value={this.state.regexValue[mat.gitMaterialId]}
+                                        // value={this.state.regexValue[mat.gitMaterialId]}
+                                        value={mat.source.value}
                                         onChange={(e) => this.handleRegexInputValue(mat.gitMaterialId, e.target.value)}
                                         autoFocus
                                         autoComplete="off"

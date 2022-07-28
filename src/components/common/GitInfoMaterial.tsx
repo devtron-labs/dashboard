@@ -156,7 +156,8 @@ export default function GitInfoMaterial({
     const isBranchRegex = (material: CIMaterialType) => {
         for (let mat of ciPipeline.ciMaterial) {
             if (mat.gitMaterialId === material.gitMaterialId) {
-                return mat.source?.some((_source) => _source.type === SourceTypeMap.BranchRegex)
+                // return mat.source?.some((_source) => _source.type === SourceTypeMap.BranchRegex)
+                return mat.source?.type === SourceTypeMap.BranchRegex
             }
         }
 
@@ -164,8 +165,8 @@ export default function GitInfoMaterial({
     }
 
     const onClickChangebranch = (isBranchChangedClicked) => {
-        onClickShowBranchRegexModal()
         setBranchChanged()
+        onClickShowBranchRegexModal()
     }
 
     const renderBranchChangeHeader = (material: CIMaterialType) => {

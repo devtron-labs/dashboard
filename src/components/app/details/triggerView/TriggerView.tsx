@@ -221,17 +221,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onSetRegexValue = () => {
-        const ciPipeline = this.state.filteredCIPipelines?.find(
-            (_ciPipeline) => _ciPipeline?.id == this.state.workflowId,
-        )
-        for (let _cm of ciPipeline.ciMaterial) {
-            const regex = _cm.source.find((_rc) => _rc.type === SourceTypeMap.BranchRegex)?.value
-            this.setState({
-                regex: regex,
-            })
-        }
-    }
+    // onSetRegexValue = () => {
+    //     const ciPipeline = this.state.filteredCIPipelines?.find(
+    //         (_ciPipeline) => _ciPipeline?.id == this.state.workflowId,
+    //     )
+    //     for (let _cm of ciPipeline.ciMaterial) {
+    //         const regex = _cm.source.find((_rc) => _rc.type === SourceTypeMap.BranchRegex)?.value
+    //         this.setState({
+    //             regex: regex,
+    //         })
+    //     }
+    // }
 
     onClickCIMaterial(ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) {
         ReactGA.event({
@@ -255,6 +255,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             if (preserveMaterialSelection) {
                                 let selectMaterial = node.inputMaterialList.find((mat) => mat.isSelected)
                                 node.inputMaterialList = response.result.map((material) => {
+                                    console.log(material, 'mater')
                                     this.setState({
                                         isRegex: material.regex,
                                     })
@@ -271,43 +272,43 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     return workflow
                 })
                 let showRegexModal = false
-                const selectedCIPipeline = this.state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
-                if (selectedCIPipeline?.ciMaterial) {
-                    for (let mat of selectedCIPipeline.ciMaterial) {
-                        if (mat.gitMaterialId === response.result[0].gitMaterialId) {
-                            if (!Array.isArray(mat.source)) {
-                                return mat.source
-                            }
-                            let _value, isBranchRegex
-                            if (mat.source.length > 0) {
-                                for (let _source of mat.source) {
-                                    //checking if in ci material source is regex but value is not available
-                                    if (_source.type === SourceTypeMap.BranchRegex) {
-                                        if (!_value) {
-                                            isBranchRegex = true
-                                            continue
-                                        }
-                                    } else if (_source.type === SourceTypeMap.BranchFixed) {
-                                        //checking if in ci material source is fixed but value is available
-                                        if (!isBranchRegex) {
-                                            _value = _source.value
-                                            continue
-                                        }
-                                    }
-                                    // isBranchRegex = false
-                                }
-                            }
-                            //  else if (mat.source.length === 2 && mat.source[1].type === SourceTypeMap.BranchFixed) {
-                            //     isBranchRegex = true
-                            // }
-                            else {
-                                isBranchRegex = false
-                            }
-                            showRegexModal = isBranchRegex && !_value
-                            break
-                        }
-                    }
-                }
+                // const selectedCIPipeline = this.state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
+                // if (selectedCIPipeline?.ciMaterial) {
+                //     for (let mat of selectedCIPipeline.ciMaterial) {
+                //         if (mat.gitMaterialId === response.result[0].gitMaterialId) {
+                //             if (!Array.isArray(mat.source)) {
+                //                 return mat.source
+                //             }
+                //             let _value, isBranchRegex
+                //             if (mat.source.length > 0) {
+                //                 for (let _source of mat.source) {
+                //                     //checking if in ci material source is regex but value is not available
+                //                     if (_source.type === SourceTypeMap.BranchRegex) {
+                //                         if (!_value) {
+                //                             isBranchRegex = true
+                //                             continue
+                //                         }
+                //                     } else if (_source.type === SourceTypeMap.BranchFixed) {
+                //                         //checking if in ci material source is fixed but value is available
+                //                         if (!isBranchRegex) {
+                //                             _value = _source.value
+                //                             continue
+                //                         }
+                //                     }
+                //                     // isBranchRegex = false
+                //                 }
+                //             }
+                //             //  else if (mat.source.length === 2 && mat.source[1].type === SourceTypeMap.BranchFixed) {
+                //             //     isBranchRegex = true
+                //             // }
+                //             else {
+                //                 isBranchRegex = false
+                //             }
+                //             showRegexModal = isBranchRegex && !_value
+                //             break
+                //         }
+                //     }
+                // }
 
                 this.setState(
                     {
@@ -831,7 +832,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             history={this.props.history}
                             location={this.props.location}
                             match={this.props.match}
-                            onSetRegexValue={this.onSetRegexValue}
                         />
                     )
                 })}
