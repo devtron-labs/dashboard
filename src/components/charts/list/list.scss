@@ -524,11 +524,9 @@
 }
 
 .date-align-left--deprecate {
-    width: 200px;
+    width: 100%;
     min-height: 36px;
     opacity: 0.9;
-    border-radius: 4px;
-    border: solid 1px var(--N200);
     font-weight: normal;
 }
 
@@ -554,4 +552,22 @@
     padding: 8px 12px;
     background: #0066cc;
     color: white;
+}
+
+.filter-column-container {
+    max-height: 100%;
+    background: white;
+    flex-shrink: 0;
+    flex-basis: 240px;
+    border-right: 1px solid var(--N200);
+}
+
+.search-column {
+    display: block;
+    width: 100%;
+    height: 36px;
+    position: relative;
+    background: var(--N50);
+    border: 1px solid var(--N200);
+    border-radius: 4px;
 }

@@ -4,8 +4,11 @@ import ReactSelect, { components } from 'react-select';
 import { DropdownIndicator, ValueContainer } from './charts.util';
 import { Checkbox, Option, multiSelectStyles, } from '../common';
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg';
+import { ReactComponent as Grid } from '../../assets/icons/ic-grid-view.svg'
+import { ReactComponent as List } from '../../assets/icons/ic-list-view.svg'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import { QueryParams } from './charts.util';
+import { Accordian } from '../common/Accordian/Accordian';
 
 function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprecated, chartRepoList, setSelectedChartRepo, appStoreName, setAppStoreName, searchApplied }) {
     const match = useRouteMatch()
@@ -13,16 +16,13 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
     const location = useLocation()
     const { url } = match
 
-    const MenuList = (props) => {
-        return (
-            <components.MenuList {...props}>
-                {props.children}
-                <div className="chart-list-apply-filter flex bcn-0 pt-10 pb-10">
-                    <button type="button" className="cta flex cta--chart-store" disabled={false} onClick={(selected: any) => { handleFilterChanges(selectedChartRepo, "chart-repo") }}>Apply Filter</button>
-                </div>
-            </components.MenuList>
-        );
-    };
+    const handleSelection = (event) => {
+        const chartRepoList = selectedChartRepo.filter((e) => e != event)
+        setSelectedChartRepo(chartRepoList)
+        selectedChartRepo.length === chartRepoList.length
+            ? handleFilterChanges([event, ...selectedChartRepo], 'chart-repo')
+            : handleFilterChanges(chartRepoList, 'chart-repo')
+    }
 
     function handleFilterChanges(selected, key): void {
         const searchParams = new URLSearchParams(location.search);
@@ -60,11 +60,11 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
             history.push(`${url}?${qs}`);
         }
     }
-
-    return (<div className="flexbox flex-justify mt-16 ml-20 mr-20">
+   
+    return (<div className="filter-column-container pt-16 pl-12 pr-12">
         <form
             onSubmit={(e) => handleFilterChanges(e, "search")}
-            className="search position-rel" >
+            className="search-column position-rel mb-16" >
             <Search className="search__icon icon-dim-18" />
             <input type="text" placeholder="Search charts"
                 value={appStoreName}
@@ -74,10 +74,22 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
                 <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
             </button> : null}
         </form>
-        <div className="flex">
-            <ReactSelect
+        <div className='fs-12 fw-6 ml-8'>VIEW AS</div>
+        <div>
+            <div><Grid className='icon-dim-18 cb-5 mr-12'/>Grid view</div>
+            <div></div>
+        </div>
+        <div className='fs-12 h-36 pt-8 pb-8 fw-6 ml-8'>FILTERS</div>
+        <Checkbox rootClassName="cursor bcn-0 ml-10 mr-10 date-align-left--deprecate"
+                isChecked={includeDeprecated === 1}
+                value={"CHECKED"}
+                onChange={(event) => { let value = (includeDeprecated + 1) % 2; handleFilterChanges(value, "deprecated") }}>
+                <div className="ml-5"> Show deprecated charts</div>
+            </Checkbox>
+            <hr className='mt-4 mb-4'/>
+            {/* <ReactSelect
                 className="date-align-left fs-13"
-                placeholder="Repository : All"
+                placeholder="CATEGORY"
                 name="repository"
                 value={selectedChartRepo}
                 options={chartRepoList}
@@ -95,15 +107,9 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
                     ClearIndicator: null,
                     MenuList,
                 }}
-                styles={{ ...multiSelectStyles }} />
-            <Checkbox rootClassName="ml-16 mb-0 fs-14 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
-                isChecked={includeDeprecated === 1}
-                value={"CHECKED"}
-                onChange={(event) => { let value = (includeDeprecated + 1) % 2; handleFilterChanges(value, "deprecated") }}>
-                <div className="ml-5"> Show deprecated</div>
-            </Checkbox>
+                styles={{ ...multiSelectStyles }} /> */}
+                <Accordian header={'REPOSITORY'} options={chartRepoList} value={selectedChartRepo} onChange={handleSelection}/>
         </div>
-    </div>
     )
 }
 
