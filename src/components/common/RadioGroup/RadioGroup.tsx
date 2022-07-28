@@ -49,7 +49,7 @@ const RadioGroup: React.FC<RadioGroupInterface> & RadioGroupComposition = React.
     )
 })
 
-function Radio({ value, children, className = '', showTippy = false, tippyContent = '', canSelect = true }) {
+function Radio({ value, children, className = '', showTippy = false, tippyContent = '', canSelect = true, isDisabled = false }) {
     const { name, selected, select, disabled, onChange } = useRadioContext()
     return (
         <ConditionalWrap
@@ -73,7 +73,7 @@ function Radio({ value, children, className = '', showTippy = false, tippyConten
                         }
                         onChange(e)
                     }}
-                    disabled={disabled}
+                    disabled={isDisabled || disabled}
                 />
                 <span className="radio__item-label">{children}</span>
             </label>

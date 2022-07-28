@@ -1137,7 +1137,7 @@ const SyncError: React.FC<{ appStreamData: AppStreamData }> = ({ appStreamData }
                 )}
                 <DropDownIcon
                     style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
-                    className="icon-dim-24 rotate pointer"
+                    className="icon-dim-20 rotate pointer"
                     onClick={(e) => toggleCollapsed(not)}
                 />
             </div>

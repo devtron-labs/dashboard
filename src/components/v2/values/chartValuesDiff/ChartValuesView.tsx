@@ -70,9 +70,10 @@ import {
 } from './ChartValuesView.type'
 import { chartValuesReducer, initState } from './ChartValuesView.reducer'
 import { ValidationRules } from '../../../app/create/validationRules'
-import './ChartValuesView.scss'
-import { updateGeneratedManifest } from './ChartValuesView.utils'
+import { convertSchemaJsonToMap, getAndUpdateSchemaValue, updateGeneratedManifest } from './ChartValuesView.utils'
 import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
+import ChartValuesGUIForm from './ChartValuesGUIView'
+import './ChartValuesView.scss'
 
 function ChartValuesView({
     appId,
@@ -107,8 +108,14 @@ function ChartValuesView({
     const validationRules = new ValidationRules()
 
     useEffect(() => {
-        if (isDeployChartView) {
+        if (isDeployChartView || isCreateValueView) {
             fetchProjectsAndEnvironments(serverMode, dispatch)
+            getAndUpdateSchemaValue(
+                commonState.installedConfig.rawValues,
+                convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
+                dispatch,
+            )
+
             const _fetchedReadMe = commonState.fetchedReadMe
             _fetchedReadMe.set(0, commonState.installedConfig.readme)
 
@@ -117,43 +124,9 @@ function ChartValuesView({
                 payload: {
                     isLoading: false,
                     fetchedReadMe: _fetchedReadMe,
+                    activeTab: !!commonState.installedConfig.valuesSchemaJson ? 'gui' : 'yaml',
                 },
             })
-        } else if (isCreateValueView) {
-            fetchProjectsAndEnvironments(serverMode, dispatch)
-            const _fetchedReadMe = commonState.fetchedReadMe
-            _fetchedReadMe.set(0, commonState.installedConfig.readme)
-
-            dispatch({
-                type: ChartValuesViewActionTypes.multipleOptions,
-                payload: {
-                    isLoading: false,
-                    fetchedReadMe: _fetchedReadMe,
-                },
-            })
-        } else if (!isExternalApp && !isDeployChartView) {
-            fetchProjectsAndEnvironments(serverMode, dispatch)
-            dispatch({
-                type: ChartValuesViewActionTypes.multipleOptions,
-                payload: {
-                    modifiedValuesYaml: commonState.installedConfig.valuesOverrideYaml,
-                    repoChartValue: {
-                        appStoreApplicationVersionId: commonState.installedConfig.appStoreVersion,
-                        chartRepoName: appDetails.appStoreChartName,
-                        chartId: commonState.installedConfig.appStoreId,
-                        chartName: appDetails.appStoreAppName,
-                        version: appDetails.appStoreAppVersion,
-                        deprecated: commonState.installedConfig.deprecated,
-                    },
-                    chartValues: {
-                        id: appDetails.appStoreInstalledAppVersionId,
-                        appStoreVersionId: commonState.installedConfig.appStoreVersion,
-                        kind: ChartKind.DEPLOYED,
-                    },
-                },
-            })
-            getChartValuesList(appDetails.appStoreChartId, setChartValuesList)
-            fetchChartVersionsData(appDetails.appStoreChartId, dispatch, appDetails.appStoreAppVersion)
         } else if (isExternalApp) {
             getReleaseInfo(appId)
                 .then((releaseInfoResponse: ReleaseInfoResponse) => {
@@ -168,6 +141,7 @@ function ChartValuesView({
                             releaseInfo: _releaseInfo,
                             installedAppInfo: _installedAppInfo,
                             fetchedReadMe: _fetchedReadMe,
+                            activeTab: !!_releaseInfo.valuesSchemaJson ? 'gui' : 'yaml',
                         },
                     })
 
@@ -184,6 +158,13 @@ function ChartValuesView({
                             name: _releaseInfo.deployedAppDetail.appName,
                         }
                         setChartValuesList([_chartValues])
+
+                        const _valuesYaml = YAML.stringify(JSON.parse(_releaseInfo.mergedValues))
+                        getAndUpdateSchemaValue(
+                            _valuesYaml,
+                            convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson),
+                            dispatch,
+                        )
                         dispatch({
                             type: ChartValuesViewActionTypes.multipleOptions,
                             payload: {
@@ -199,7 +180,7 @@ function ChartValuesView({
                                 selectedVersionUpdatePage: _chartVersionData,
                                 chartVersionsData: [_chartVersionData],
                                 chartValues: _chartValues,
-                                modifiedValuesYaml: YAML.stringify(JSON.parse(_releaseInfo.mergedValues)),
+                                modifiedValuesYaml: _valuesYaml,
                             },
                         })
                     }
@@ -214,6 +195,35 @@ function ChartValuesView({
                         },
                     })
                 })
+        } else {
+            fetchProjectsAndEnvironments(serverMode, dispatch)
+            getAndUpdateSchemaValue(
+                commonState.installedConfig.valuesOverrideYaml,
+                convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
+                dispatch,
+            )
+            getChartValuesList(appDetails.appStoreChartId, setChartValuesList)
+            fetchChartVersionsData(appDetails.appStoreChartId, dispatch, appDetails.appStoreAppVersion)
+            dispatch({
+                type: ChartValuesViewActionTypes.multipleOptions,
+                payload: {
+                    modifiedValuesYaml: commonState.installedConfig.valuesOverrideYaml,
+                    activeTab: !!commonState.installedConfig.valuesSchemaJson ? 'gui' : 'yaml',
+                    repoChartValue: {
+                        appStoreApplicationVersionId: commonState.installedConfig.appStoreVersion,
+                        chartRepoName: appDetails.appStoreChartName,
+                        chartId: commonState.installedConfig.appStoreId,
+                        chartName: appDetails.appStoreAppName,
+                        version: appDetails.appStoreAppVersion,
+                        deprecated: commonState.installedConfig.deprecated,
+                    },
+                    chartValues: {
+                        id: appDetails.appStoreInstalledAppVersionId,
+                        appStoreVersionId: commonState.installedConfig.appStoreVersion,
+                        kind: ChartKind.DEPLOYED,
+                    },
+                },
+            })
         }
 
         if (!isDeployChartView && !isCreateValueView) {
@@ -256,7 +266,8 @@ function ChartValuesView({
                         }
 
                         if (
-                            ((isExternalApp || !isDeployChartView) && commonState.installedConfig) ||
+                            ((isExternalApp || (!isDeployChartView && !isCreateValueView)) &&
+                                commonState.installedConfig) ||
                             (isDeployChartView && commonState.selectedEnvironment)
                         ) {
                             updateGeneratedManifest(
@@ -296,12 +307,13 @@ function ChartValuesView({
     }, [commonState.chartValues])
 
     useEffect(() => {
-        if (
-            commonState.selectedVersionUpdatePage &&
-            commonState.selectedVersionUpdatePage.id &&
-            !commonState.fetchedReadMe.has(commonState.selectedVersionUpdatePage.id)
-        ) {
-            getChartRelatedReadMe(commonState.selectedVersionUpdatePage.id, commonState.fetchedReadMe, dispatch)
+        if (commonState.selectedVersionUpdatePage?.id) {
+            getChartRelatedReadMe(
+                commonState.selectedVersionUpdatePage.id,
+                commonState.fetchedReadMe,
+                commonState.modifiedValuesYaml,
+                dispatch,
+            )
         }
     }, [commonState.selectedVersionUpdatePage, commonState.isReadMeAvailable])
 
@@ -386,6 +398,11 @@ function ChartValuesView({
 
             getChartValuesList(_repoChartValue.chartId, setChartValuesList)
             fetchChartVersionsData(_repoChartValue.chartId, dispatch, _releaseInfo.deployedAppDetail.chartVersion)
+            getAndUpdateSchemaValue(
+                result?.valuesOverrideYaml,
+                convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson),
+                dispatch,
+            )
 
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
@@ -569,6 +586,26 @@ function ChartValuesView({
             })
             toast.error('Some required fields are missing')
             return
+        } else if (commonState.activeTab === 'gui' && commonState.schemaJson?.size) {
+            const requiredValues = [...commonState.schemaJson.values()].filter((_val) => _val.isRequired && !_val.value)
+            if (requiredValues.length > 0) {
+                const formErrors = {}
+                requiredValues.forEach((e) => {
+                    formErrors[e.key] = true
+                })
+
+                dispatch({
+                    type: ChartValuesViewActionTypes.formValidationError,
+                    payload: formErrors,
+                })
+                toast.error('Some required fields are missing')
+                return
+            } else {
+                dispatch({
+                    type: ChartValuesViewActionTypes.formValidationError,
+                    payload: {},
+                })
+            }
         }
 
         if (
@@ -755,7 +792,10 @@ function ChartValuesView({
                 }
             }
 
-            let chartValidationsPayload = {}
+            let _payload = {}
+            if (e.target.value === 'gui' && commonState.schemaJson) {
+                getAndUpdateSchemaValue(commonState.modifiedValuesYaml, commonState.schemaJson, dispatch)
+            }
 
             if (
                 commonState.invalidAppName ||
@@ -763,11 +803,12 @@ function ChartValuesView({
                 commonState.invalidaEnvironment ||
                 commonState.invalidProject
             ) {
-                chartValidationsPayload = {
+                _payload = {
                     invalidAppName: false,
                     invalidAppNameMessage: '',
                     invalidaEnvironment: false,
                     invalidProject: false,
+                    ..._payload,
                 }
             }
 
@@ -777,7 +818,7 @@ function ChartValuesView({
                     activeTab: e.target.value,
                     openReadMe: false,
                     openComparison: false,
-                    ...chartValidationsPayload,
+                    ..._payload,
                 },
             })
         }
@@ -855,10 +896,16 @@ function ChartValuesView({
             <RadioGroup
                 className="chart-values-view__tabs gui-yaml-switch"
                 name="yaml-mode"
-                initialTab={'yaml'}
-                disabled={isExternalApp && !commonState.installedAppInfo}
+                initialTab={
+                    (isExternalApp && !!commonState.releaseInfo?.valuesSchemaJson) ||
+                    !!commonState.installedConfig?.valuesSchemaJson
+                        ? 'gui'
+                        : 'yaml'
+                }
+                disabled={false}
                 onChange={handleTabSwitch}
             >
+                <RadioGroup.Radio value="gui">GUI (Beta)</RadioGroup.Radio>
                 <RadioGroup.Radio value="yaml">
                     <Edit className="icon-dim-12 mr-6" />
                     YAML
@@ -870,6 +917,7 @@ function ChartValuesView({
                     tippyContent={
                         'Manifest is generated only for apps linked to a helm chart. Link this app to a helm chart to view generated manifest.'
                     }
+                    isDisabled={isExternalApp && !commonState.installedAppInfo}
                 >
                     Manifest output
                 </RadioGroup.Radio>
@@ -1019,6 +1067,61 @@ function ChartValuesView({
         }
     }
 
+    const renderChartValuesEditor = () => {
+        return (
+            <div
+                className={`chart-values-view__editor ${
+                    commonState.openReadMe || commonState.openComparison ? 'chart-values-view__full-mode' : ''
+                }`}
+            >
+                {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
+                    <ErrorScreenWithInfo info={commonState.valuesEditorError} />
+                ) : (
+                    <ChartValuesEditor
+                        loading={
+                            commonState.fetchingValuesYaml ||
+                            (commonState.activeTab === 'manifest' && commonState.generatingManifest)
+                        }
+                        isExternalApp={isExternalApp}
+                        isDeployChartView={isDeployChartView}
+                        isCreateValueView={isCreateValueView}
+                        appId={appId}
+                        appName={
+                            isExternalApp
+                                ? commonState.releaseInfo.deployedAppDetail.appName
+                                : commonState.installedConfig.appName
+                        }
+                        valuesText={commonState.modifiedValuesYaml}
+                        defaultValuesText={
+                            isExternalApp
+                                ? YAML.stringify(JSON.parse(commonState.releaseInfo.mergedValues))
+                                : commonState.installedConfig?.valuesOverrideYaml
+                        }
+                        onChange={onEditorValueChange}
+                        repoChartValue={commonState.repoChartValue}
+                        showEditorHeader={commonState.openReadMe}
+                        hasChartChanged={hasChartChanged()}
+                        showInfoText={!commonState.openReadMe && !commonState.openComparison}
+                        manifestView={commonState.activeTab === 'manifest'}
+                        generatedManifest={commonState.generatedManifest}
+                        comparisonView={commonState.openComparison}
+                        chartValuesList={chartValuesList}
+                        deploymentHistoryList={commonState.deploymentHistoryArr}
+                        selectedChartValues={commonState.chartValues}
+                    />
+                )}
+                {!commonState.openComparison && !commonState.openReadMe && (
+                    <UpdateApplicationButton
+                        isUpdateInProgress={commonState.isUpdateInProgress}
+                        isDeleteInProgress={commonState.isDeleteInProgress}
+                        isDeployChartView={isDeployChartView}
+                        isCreateValueView={isCreateValueView}
+                        deployOrUpdateApplication={deployOrUpdateApplication}
+                    />
+                )}
+            </div>
+        )
+    }
     const handleValueNameChange = (newValueName: string) => {
         const validatedValueName = validationRules.appName(newValueName)
         if (!validatedValueName.isValid && commonState.invalidAppNameMessage !== validatedValueName.message) {
@@ -1076,31 +1179,27 @@ function ChartValuesView({
                         {!isExternalApp &&
                             ((!isDeployChartView && commonState.selectedProject) ||
                                 (isDeployChartView && serverMode === SERVER_MODE.FULL)) && (
-                                <>
-                                    <ChartProjectSelector
-                                        isDeployChartView={isDeployChartView}
-                                        selectedProject={commonState.selectedProject}
-                                        handleProjectSelection={handleProjectSelection}
-                                        projects={commonState.projects}
-                                        invalidProject={commonState.invalidProject}
-                                    />
-                                </>
+                                <ChartProjectSelector
+                                    isDeployChartView={isDeployChartView}
+                                    selectedProject={commonState.selectedProject}
+                                    handleProjectSelection={handleProjectSelection}
+                                    projects={commonState.projects}
+                                    invalidProject={commonState.invalidProject}
+                                />
                             )}
                         {(isDeployChartView ||
                             (!isDeployChartView && (isExternalApp || commonState.selectedEnvironment))) && (
-                            <>
-                                <ChartEnvironmentSelector
-                                    isExternal={isExternalApp}
-                                    isDeployChartView={isDeployChartView}
-                                    installedAppInfo={commonState.installedAppInfo}
-                                    releaseInfo={commonState.releaseInfo}
-                                    isUpdate={!!isUpdate}
-                                    selectedEnvironment={commonState.selectedEnvironment}
-                                    handleEnvironmentSelection={handleEnvironmentSelection}
-                                    environments={commonState.environments}
-                                    invalidaEnvironment={commonState.invalidaEnvironment}
-                                />
-                            </>
+                            <ChartEnvironmentSelector
+                                isExternal={isExternalApp}
+                                isDeployChartView={isDeployChartView}
+                                installedAppInfo={commonState.installedAppInfo}
+                                releaseInfo={commonState.releaseInfo}
+                                isUpdate={!!isUpdate}
+                                selectedEnvironment={commonState.selectedEnvironment}
+                                handleEnvironmentSelection={handleEnvironmentSelection}
+                                environments={commonState.environments}
+                                invalidaEnvironment={commonState.invalidaEnvironment}
+                            />
                         )}
                         <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
                         {!isDeployChartView && (
@@ -1153,57 +1252,23 @@ function ChartValuesView({
                         />
                     )}
                     {!commonState.openComparison && <div className="chart-values-view__vr-divider bcn-2" />}
-                    <div
-                        className={`chart-values-view__editor ${
-                            commonState.openReadMe || commonState.openComparison ? 'chart-values-view__full-mode' : ''
-                        }`}
-                    >
-                        {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
-                            <ErrorScreenWithInfo info={commonState.valuesEditorError} />
-                        ) : (
-                            <ChartValuesEditor
-                                loading={
-                                    commonState.fetchingValuesYaml ||
-                                    (commonState.activeTab === 'manifest' && commonState.generatingManifest)
-                                }
-                                isExternalApp={isExternalApp}
-                                isDeployChartView={isDeployChartView}
-                                isCreateValueView={isCreateValueView}
-                                appId={appId}
-                                appName={
-                                    isExternalApp
-                                        ? commonState.releaseInfo.deployedAppDetail.appName
-                                        : commonState.installedConfig.appName
-                                }
-                                valuesText={commonState.modifiedValuesYaml}
-                                defaultValuesText={
-                                    isExternalApp
-                                        ? YAML.stringify(JSON.parse(commonState.releaseInfo.mergedValues))
-                                        : commonState.installedConfig?.valuesOverrideYaml
-                                }
-                                onChange={onEditorValueChange}
-                                repoChartValue={commonState.repoChartValue}
-                                showEditorHeader={commonState.openReadMe}
-                                hasChartChanged={hasChartChanged()}
-                                showInfoText={!commonState.openReadMe && !commonState.openComparison}
-                                manifestView={commonState.activeTab === 'manifest'}
-                                generatedManifest={commonState.generatedManifest}
-                                comparisonView={commonState.openComparison}
-                                chartValuesList={chartValuesList}
-                                deploymentHistoryList={commonState.deploymentHistoryArr}
-                                selectedChartValues={commonState.chartValues}
-                            />
-                        )}
-                        {!commonState.openComparison && !commonState.openReadMe && (
-                            <UpdateApplicationButton
-                                isUpdateInProgress={commonState.isUpdateInProgress}
-                                isDeleteInProgress={commonState.isDeleteInProgress}
-                                isDeployChartView={isDeployChartView}
-                                isCreateValueView={isCreateValueView}
-                                deployOrUpdateApplication={deployOrUpdateApplication}
-                            />
-                        )}
-                    </div>
+                    {commonState.activeTab === 'gui' ? (
+                        <ChartValuesGUIForm
+                            schemaJson={commonState.schemaJson}
+                            valuesYamlDocument={commonState.valuesYamlDocument}
+                            fetchingSchemaJson={commonState.fetchingReadMe}
+                            openReadMe={commonState.openReadMe}
+                            isUpdateInProgress={commonState.isUpdateInProgress}
+                            isDeleteInProgress={commonState.isDeleteInProgress}
+                            isDeployChartView={isDeployChartView}
+                            isCreateValueView={isCreateValueView}
+                            deployOrUpdateApplication={deployOrUpdateApplication}
+                            dispatch={dispatch}
+                            formValidationError={commonState.formValidationError}
+                        />
+                    ) : (
+                        renderChartValuesEditor()
+                    )}
                 </div>
                 {commonState.showDeleteAppConfirmationDialog && (
                     <DeleteChartDialog

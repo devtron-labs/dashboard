@@ -100,7 +100,7 @@ function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId
         } else
             return {
                 configId: 0,
-                dest: '',
+                dest: p.data.dest || '',
                 recipient: p.data.recipient,
             }
     })
@@ -265,7 +265,7 @@ export function updateNotificationRecipients(
             } else
                 return {
                     configId: 0,
-                    dest: '',
+                    dest: emailChannel || '',
                     recipient: r.recipient,
                 }
         })
