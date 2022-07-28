@@ -72,6 +72,7 @@ export const URLS = {
     NODE_DETAILS: '/node-details',
     CHART: '/chart',
     PRESET_VALUES: '/preset-values',
+    DEPLOY_CHART: '/deploy-chart',
 }
 
 export enum APP_COMPOSE_STAGE {

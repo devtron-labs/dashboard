@@ -89,7 +89,7 @@ function ChartValuesView({
 }: ChartValuesViewType) {
     const history = useHistory()
     const { url } = useRouteMatch()
-    const { chartValueId } = useParams<{ chartValueId: string }>()
+    const { chartValueId, presetValueId } = useParams<{ chartValueId: string; presetValueId: string }>()
     const { serverMode } = useContext(mainContext)
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
@@ -98,7 +98,13 @@ function ChartValuesView({
         chartValuesReducer,
         initState(
             selectedVersionFromParent,
-            chartValuesFromParent,
+            presetValueId
+                ? {
+                      ...chartValuesFromParent,
+                      id: +presetValueId,
+                      kind: ChartKind.TEMPLATE,
+                  }
+                : chartValuesFromParent,
             installedConfigFromParent,
             chartVersionsDataFromParent,
         ),

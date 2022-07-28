@@ -1,16 +1,26 @@
 .preset-values-container {
-    margin: 20px 95px;
+    margin: auto;
+    padding: 20px;
+    width: 100%;
+    min-width: 960px;
+    max-width: 1024px;
+
     .margin-right-0 {
         margin-right: 0 !important;
     }
     .preset-values-row {
         display: grid;
-        grid-template-columns: 30px 200px auto 70px;
+        grid-template-columns: 30px minmax(185px, 307px) 100px 200px 180px 100px;
+        grid-column-gap: 16px;
         .action-icon {
             visibility: hidden;
         }
     }
     .preset-value-list {
+        height: calc(100vh - 235px);
+        min-height: 220px;
+        overflow-y: auto;
+
         .preset-values-row {
             &:hover {
                 background-color: var(--N50);
