@@ -74,12 +74,12 @@ export default function SavedValuesList() {
         }
     }
 
-    const redirectToChartValuePage = (chartValueId: number): void => {
-        history.push(`${URLS.CHARTS_DISCOVER}${URLS.CHART}/${chartId}${URLS.PRESET_VALUES}/${chartValueId}`)
-    }
-
-    const redirectToDeployChartPage = (chartValueId: number): void => {
-        history.push(`${URLS.CHARTS_DISCOVER}${URLS.CHART}/${chartId}${URLS.DEPLOY_CHART}/${chartValueId}`)
+    const redirectToChartValuePage = (chartValueId: number, toDeployChartView?: boolean): void => {
+        history.push(
+            `${URLS.CHARTS_DISCOVER}${URLS.CHART}/${chartId}${
+                toDeployChartView ? URLS.DEPLOY_CHART : URLS.PRESET_VALUES
+            }/${chartValueId}`,
+        )
     }
 
     const deleteChartValue = () => {
@@ -244,11 +244,11 @@ export default function SavedValuesList() {
                     ) : (
                         <>
                             <div className="preset-values-row fw-6 cn-7 fs-12 border-bottom text-uppercase pt-8 pr-20 pb-8 pl-20">
-                                <div className="preset-values-row-item" />
-                                <div className="preset-values-row-item">Name</div>
-                                <div className="preset-values-row-item">Version</div>
-                                <div className="preset-values-row-item">Last updated by</div>
-                                <div className="preset-values-row-item">Updated at</div>
+                                <div />
+                                <div>Name</div>
+                                <div>Version</div>
+                                <div>Last updated by</div>
+                                <div>Updated at</div>
                             </div>
                             <div className="preset-value-list">
                                 {filteredSavedValueList.map((chartData, index) => (
@@ -256,21 +256,19 @@ export default function SavedValuesList() {
                                         key={`saved-value-${index}`}
                                         className="preset-values-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pr-20 pb-12 pl-20"
                                     >
-                                        <div className="preset-values-row-item">
+                                        <div className="icon-dim-18">
                                             <File className="icon-dim-18 icon-n4 vertical-align-middle" />
                                         </div>
                                         <div
-                                            className="preset-values-row-item cb-5 pointer ellipsis-right"
+                                            className="cb-5 pointer ellipsis-right"
                                             onClick={() => redirectToChartValuePage(chartData.id)}
                                         >
                                             {chartData.name}
                                         </div>
-                                        <div className="preset-values-row-item">{chartData.chartVersion}</div>
-                                        <div className="preset-values-row-item">{chartData.updatedBy || '-'}</div>
-                                        <div className="preset-values-row-item">
-                                            {getUpdatedOnDateTime(chartData.updatedOn)}
-                                        </div>
-                                        <div className="preset-values-row-item flex right">
+                                        <div>{chartData.chartVersion}</div>
+                                        <div>{chartData.updatedBy || '-'}</div>
+                                        <div>{getUpdatedOnDateTime(chartData.updatedOn)}</div>
+                                        <div className="flex right">
                                             <Tippy
                                                 className="default-tt"
                                                 arrow={false}
@@ -279,7 +277,7 @@ export default function SavedValuesList() {
                                             >
                                                 <Launch
                                                     className="icon-dim-18 mr-16 vertical-align-middle pointer action-icon scn-6"
-                                                    onClick={() => redirectToDeployChartPage(chartData.id)}
+                                                    onClick={() => redirectToChartValuePage(chartData.id, true)}
                                                 />
                                             </Tippy>
                                             <Tippy
