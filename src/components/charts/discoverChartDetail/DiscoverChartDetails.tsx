@@ -212,7 +212,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
             </div>
             <Switch>
                 <Route
-                    path={`${URLS.CHARTS}/discover/chart/:chartId/deploy-chart/:presetValueId?`}
+                    path={`${URLS.CHARTS_DISCOVER}${URLS.CHART}/:chartId${URLS.DEPLOY_CHART}/:presetValueId?`}
                     render={(props) => {
                         return (
                             <div className="deploy-chart__container">
