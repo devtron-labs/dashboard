@@ -277,7 +277,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     for (let mat of selectedCIPipeline.ciMaterial) {
                         if (
                             mat.gitMaterialId === response.result[0].gitMaterialId &&
-                            mat.source.type === SourceTypeMap.BranchRegex
+                            mat.source.type === SourceTypeMap.BranchRegex && 
+                            !new RegExp(mat.source.regex).test(mat.source.value)
                         ) {
                             showRegexModal = true
                             break

@@ -94,6 +94,8 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
         <>
             <p className="cn-9 fw-6 fs-14 lh-1-43 mb-18">Select code source</p>
             {_materials.map((mat, index) => {
+                const isBranchRegex = mat.type === SourceTypeMap.BranchRegex
+                const isBranchFixed = mat.type === SourceTypeMap.BranchFixed
                 let selectedMaterial
 
                 if (props.ciPipelineSourceTypeOptions.length == 1) {
@@ -101,12 +103,14 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                 } else {
                     selectedMaterial =
                         props.ciPipelineSourceTypeOptions.find((i) =>
-                            i.value === SourceTypeMap.WEBHOOK ? i.isSelected : i.value === mat.type,
+                            i.value === SourceTypeMap.WEBHOOK
+                                ? i.isSelected
+                                : isBranchRegex
+                                ? i.value === SourceTypeMap.BranchRegex
+                                : i.value === mat.type,
                         ) || props.ciPipelineSourceTypeOptions[0]
                 }
                 let errorObj = props.validationRules?.sourceValue(mat.value)
-                const isBranchRegex = mat.type === SourceTypeMap.BranchRegex
-                const isBranchFixed = mat.type === SourceTypeMap.BranchFixed
                 return (
                     <div key={`source-material-${index}`}>
                         <div className="mt-20" key={mat.gitMaterialId}>

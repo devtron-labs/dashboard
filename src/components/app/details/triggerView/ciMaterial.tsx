@@ -216,6 +216,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     }
                     _cm.type = SourceTypeMap.BranchFixed
                     _cm.value = regVal
+                    _cm.regex = _cm.source.regex
 
                     delete _cm['source']
                 }
@@ -279,17 +280,9 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     getBranchRegexName = (gitMaterialId: number) => {
         if (Array.isArray(this.state.selectedCIPipeline?.ciMaterial)) {
             for (let _ciMaterial of this.state.selectedCIPipeline.ciMaterial) {
-                if (_ciMaterial.gitMaterialId === gitMaterialId) {
+                if (_ciMaterial.gitMaterialId === gitMaterialId && _ciMaterial.source) {
                     if (_ciMaterial.source.type === SourceTypeMap.BranchRegex) {
                         return _ciMaterial.source.regex
-                        //         return _source.value
-                        //     }
-                        // for (let _source of _ciMaterial.source) {
-                        //     if (_source.type === SourceTypeMap.BranchRegex) {
-                        //         return _source.value
-                        //     }
-                        // }
-                        // break
                     }
                 }
             }
