@@ -4,6 +4,8 @@ export interface SavedValueType {
     name: string
     chartVersion: string
     isLoading: boolean
+    updatedBy: string
+    updatedOn: string
 }
 
 export interface SavedValueListResponse extends ResponseType {
