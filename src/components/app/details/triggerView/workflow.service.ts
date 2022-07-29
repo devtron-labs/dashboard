@@ -57,7 +57,8 @@ export interface ExternalCiConfig {
 
 export interface Source {
     type: string
-    value: string
+    value?: string
+    regex?: string
 }
 
 export interface CiMaterial {
@@ -419,7 +420,7 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
             downstreams: [`CI-${ciPipeline.id}`],
             type: 'GIT',
             icon: 'git',
-            branch: ciMaterial?.source?.value ?? '',
+            branch: ciMaterial?.source?.value ?? (ciMaterial?.source?.regex || ''),
             sourceType: ciMaterial?.source?.type ?? '',
             x: 0,
             y: 0,

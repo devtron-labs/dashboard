@@ -199,46 +199,26 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     onClickNextButton = (context) => {
         const payload: any = {
-            ciPipeline: this.state.selectedCIPipeline,
+            ciPipelineMaterial: this.state.selectedCIPipeline?.ciMaterial,
         }
         payload.appId = +this.props.match.params.appId
-        payload.appWorkflowId = +this.props.workflowId
-        // for (let _cm of payload.ciPipeline.ciMaterial) {
-        //     const regVal = this.state.regexValue[_cm.gitMaterialId]
-        //     if (regVal) {
-        //         const regEx = _cm.source.find((_rc) => _rc.type === SourceTypeMap.BranchRegex)?.value
-        //         if (regEx) {
-        //             if (!regVal.match(regEx)) {
-        //                 this.setState({ isInvalidRegex: true, errorMessage: 'No matching value' })
-        //                 return
-        //             }
+        payload.id = +this.props.workflowId
+        if (payload.ciPipelineMaterial?.length) {
+            for (let _cm of payload.ciPipelineMaterial) {
+                const regVal = this.state.regexValue[_cm.gitMaterialId]
 
-        //             _cm.source.push({
-        //                 type: SourceTypeMap.BranchFixed,
-        //                 value: regVal,
-        //             })
-        //         }
-        //     }
-        // }
-        for (let _cm of payload.ciPipeline.ciMaterial) {
-            const regVal = this.state.regexValue[_cm.gitMaterialId]
-
-            if (regVal) {
-                const regEx = _cm.source.value
-                if (regEx) {
-                    if (!regVal.match(regEx)) {
+                if (regVal && _cm.regex) {
+                    const regExp = new RegExp(_cm.regex)
+                    if (!regExp.test(regVal)) {
                         this.setState({ isInvalidRegex: true, errorMessage: 'No matching value' })
                         return
                     }
-
-                    _cm.source = {
-                        type: SourceTypeMap.BranchFixed,
-                        value: regVal,
-                    }
+                    _cm.type = SourceTypeMap.BranchFixed
+                    _cm.value = regVal
+                    _cm = { ..._cm }
                 }
             }
         }
-        this.props.onShowCIModal()
 
         savePipeline(payload, true)
             .then((response) => {
@@ -247,6 +227,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     this.setState({ isInvalidRegex: false })
                     this.props.onCloseBranchRegexModal()
                     // context.onClickCIMaterial(this.props.pipelineId, this.props.pipelineName)
+                    this.props.onShowCIModal()
                 }
             })
             .catch((error: ServerErrors) => {
@@ -298,7 +279,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             for (let _ciMaterial of this.state.selectedCIPipeline.ciMaterial) {
                 if (_ciMaterial.gitMaterialId === gitMaterialId) {
                     if (_ciMaterial.source.type === SourceTypeMap.BranchRegex) {
-                        return _ciMaterial.source.value
+                        return _ciMaterial.source.regex
                         //         return _source.value
                         //     }
                         // for (let _source of _ciMaterial.source) {
@@ -366,8 +347,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                                         placeholder="Enter branch name matching regex"
                                         className="form__input ml-36 w-95"
                                         name="name"
-                                        // value={this.state.regexValue[mat.gitMaterialId]}
-                                        value={mat.source.value}
+                                        value={this.state.regexValue[mat.gitMaterialId]}
                                         onChange={(e) => this.handleRegexInputValue(mat.gitMaterialId, e.target.value)}
                                         autoFocus
                                         autoComplete="off"

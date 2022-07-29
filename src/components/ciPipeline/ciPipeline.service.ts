@@ -258,6 +258,9 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
             .filter((mat) => mat.isSelected)
             .map((mat) => {
                 let _value = mat.value
+                if (mat.type === SourceTypeMap.BranchRegex) {
+                    _value = ''
+                }
                 if (mat.type === SourceTypeMap.WEBHOOK) {
                     const _condition = {}
                     webhookConditionList.forEach((webhookCondition) => {
@@ -272,6 +275,7 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
                     source: {
                         type: mat.type,
                         value: _value,
+                        regex: mat.regex,
                     },
                 }
             }),
@@ -304,6 +308,7 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: G
                 value: mat.source.value,
                 isSelected: true,
                 gitHostId: gitHost ? gitHost.id : 0,
+                regex: mat.source.regex,
             }
         })
     }

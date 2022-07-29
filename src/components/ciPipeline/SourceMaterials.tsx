@@ -191,7 +191,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             placeholder="Enter branch regex"
                                             type="text"
                                             disabled={!props.handleSourceChange}
-                                            value={mat.value}
+                                            value={mat.regex}
                                             onChange={(event) => {
                                                 props?.handleSourceChange(event, mat.gitMaterialId)
                                             }}

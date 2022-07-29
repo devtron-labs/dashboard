@@ -330,6 +330,7 @@ export interface MaterialType {
     isSelected: boolean
     gitHostId: number
     gitProviderId: number
+    regex?: string
 }
 
 export interface Githost {
