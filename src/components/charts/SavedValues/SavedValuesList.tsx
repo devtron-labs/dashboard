@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useHistory, RouteComponentProps } from 'react-router'
-import { DOCUMENTATION, URLS } from '../../../config'
+import { DOCUMENTATION, Moment12HourFormat, URLS } from '../../../config'
 import emptyCustomChart from '../../../assets/img/app-not-configured.png'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
@@ -8,6 +8,7 @@ import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as Launch } from '../../../assets/icons/ic-nav-rocket.svg'
 import { BreadCrumb, ErrorScreenManager, Progressing, showError, useBreadcrumb, DeleteDialog } from '../../common'
 import { SavedValueType } from './types'
 import EmptyState from '../../EmptyState/EmptyState'
@@ -20,6 +21,8 @@ import {
 import './savedValues.scss'
 import PageHeader from '../../common/header/PageHeader'
 import { toast } from 'react-toastify'
+import moment from 'moment'
+import Tippy from '@tippyjs/react'
 
 export default function SavedValuesList() {
     const history: RouteComponentProps['history'] = useHistory()
@@ -71,8 +74,12 @@ export default function SavedValuesList() {
         }
     }
 
-    const redirectToChartValuePage = (chartValueId: number): void => {
-        history.push(`${URLS.CHARTS_DISCOVER}${URLS.CHART}/${chartId}${URLS.PRESET_VALUES}/${chartValueId}`)
+    const redirectToChartValuePage = (chartValueId: number, toDeployChartView?: boolean): void => {
+        history.push(
+            `${URLS.CHARTS_DISCOVER}${URLS.CHART}/${chartId}${
+                toDeployChartView ? URLS.DEPLOY_CHART : URLS.PRESET_VALUES
+            }/${chartValueId}`,
+        )
     }
 
     const deleteChartValue = () => {
@@ -216,6 +223,14 @@ export default function SavedValuesList() {
         setSelectedValue(clickedData)
     }
 
+    const getUpdatedOnDateTime = (updatedOn: string): string => {
+        if (updatedOn && !updatedOn.startsWith('0001-01-01')) {
+            return moment(updatedOn).format(Moment12HourFormat)
+        }
+
+        return '-'
+    }
+
     const renderSavedValuesList = (): JSX.Element => {
         return (
             <div className="preset-values-container">
@@ -228,40 +243,65 @@ export default function SavedValuesList() {
                         renderEmptyState('No matching preset values', 'We couldn’t find any matching results', true)
                     ) : (
                         <>
-                            <div className="preset-values-row fw-6 cn-7 fs-12 border-bottom text-uppercase pt-8 pr-16 pb-8 pl-16">
-                                <div className="pr-16"></div>
-                                <div className="pr-16">Name</div>
-                                <div className="pr-16">Version</div>
-                                <div className="pr-16"></div>
+                            <div className="preset-values-row fw-6 cn-7 fs-12 border-bottom text-uppercase pt-8 pr-20 pb-8 pl-20">
+                                <div />
+                                <div>Name</div>
+                                <div>Version</div>
+                                <div>Last updated by</div>
+                                <div>Updated at</div>
                             </div>
-                            <div
-                                className="preset-value-list"
-                                style={{ height: 'calc(100vh - 235px)', overflowY: 'auto' }}
-                            >
+                            <div className="preset-value-list">
                                 {filteredSavedValueList.map((chartData, index) => (
                                     <div
                                         key={`saved-value-${index}`}
-                                        className="preset-values-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pr-16 pb-12 pl-16"
+                                        className="preset-values-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pr-20 pb-12 pl-20"
                                     >
-                                        <div className="pr-16">
+                                        <div className="icon-dim-18">
                                             <File className="icon-dim-18 icon-n4 vertical-align-middle" />
                                         </div>
                                         <div
-                                            className="pr-16 cb-5 pointer ellipsis-right"
+                                            className="cb-5 pointer ellipsis-right"
                                             onClick={() => redirectToChartValuePage(chartData.id)}
                                         >
                                             {chartData.name}
                                         </div>
-                                        <div className="pr-16">{chartData.chartVersion}</div>
-                                        <div className="pr-16">
-                                            <Edit
-                                                className="icon-dim-18 mr-16 vertical-align-middle pointer action-icon"
-                                                onClick={() => redirectToChartValuePage(chartData.id)}
-                                            />
-                                            <Delete
-                                                className="icon-dim-18 vertical-align-middle pointer action-icon"
-                                                onClick={() => onDeleteButtonClick(chartData)}
-                                            />
+                                        <div>{chartData.chartVersion}</div>
+                                        <div>{chartData.updatedBy || '-'}</div>
+                                        <div>{getUpdatedOnDateTime(chartData.updatedOn)}</div>
+                                        <div className="flex right">
+                                            <Tippy
+                                                className="default-tt"
+                                                arrow={false}
+                                                placement="bottom"
+                                                content={'Use value to deploy'}
+                                            >
+                                                <Launch
+                                                    className="icon-dim-18 mr-16 vertical-align-middle pointer action-icon scn-6"
+                                                    onClick={() => redirectToChartValuePage(chartData.id, true)}
+                                                />
+                                            </Tippy>
+                                            <Tippy
+                                                className="default-tt"
+                                                arrow={false}
+                                                placement="bottom"
+                                                content={'Edit value'}
+                                            >
+                                                <Edit
+                                                    className="icon-dim-18 mr-16 vertical-align-middle pointer action-icon"
+                                                    onClick={() => redirectToChartValuePage(chartData.id)}
+                                                />
+                                            </Tippy>
+                                            <Tippy
+                                                className="default-tt"
+                                                arrow={false}
+                                                placement="bottom"
+                                                content={'Delete value'}
+                                            >
+                                                <Delete
+                                                    className="icon-dim-18 vertical-align-middle pointer action-icon"
+                                                    onClick={() => onDeleteButtonClick(chartData)}
+                                                />
+                                            </Tippy>
                                         </div>
                                     </div>
                                 ))}
