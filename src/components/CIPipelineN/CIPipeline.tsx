@@ -2,7 +2,7 @@ import React, { useState, useEffect, createContext } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ButtonWithLoader, ConditionalWrap, DeleteDialog, showError, VisibleModal } from '../common'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation, useHistory } from 'react-router'
-import { BuildStageVariable, BuildTabText, TriggerType, ViewType } from '../../config'
+import { BuildStageVariable, BuildTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
     deleteCIPipeline,
     getGlobalVariable,
@@ -491,7 +491,9 @@ export default function CIPipeline({
             _formDataErrorObj.name = validationRules.name(_formData.name)
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
             let valid = _formData.materials.reduce((isValid, mat) => {
-                isValid = isValid && validationRules.sourceValue(mat.value).isValid
+                isValid =
+                    isValid &&
+                    validationRules.sourceValue(mat.type === SourceTypeMap.BranchRegex ? mat.regex : mat.value).isValid
                 return isValid
             }, true)
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid && valid

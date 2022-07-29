@@ -203,19 +203,21 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         }
         payload.appId = +this.props.match.params.appId
         payload.id = +this.props.workflowId
+
         if (payload.ciPipelineMaterial?.length) {
             for (let _cm of payload.ciPipelineMaterial) {
                 const regVal = this.state.regexValue[_cm.gitMaterialId]
+                if (regVal && _cm.source.regex) {
+                    const regExp = new RegExp(_cm.source.regex)
 
-                if (regVal && _cm.regex) {
-                    const regExp = new RegExp(_cm.regex)
                     if (!regExp.test(regVal)) {
                         this.setState({ isInvalidRegex: true, errorMessage: 'No matching value' })
                         return
                     }
                     _cm.type = SourceTypeMap.BranchFixed
                     _cm.value = regVal
-                    _cm = { ..._cm }
+
+                    delete _cm['source']
                 }
             }
         }
@@ -226,7 +228,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     toast.success('Updated Pipeline')
                     this.setState({ isInvalidRegex: false })
                     this.props.onCloseBranchRegexModal()
-                    // context.onClickCIMaterial(this.props.pipelineId, this.props.pipelineName)
+                    context.onClickCIMaterial(this.props.pipelineId, this.props.pipelineName)
                     this.props.onShowCIModal()
                 }
             })
