@@ -307,7 +307,7 @@ export default function ChartGroupUpdate({}) {
 
 function ChartList({ availableCharts, selectedInstances, addChart, subtractChart, isGrid }) {
     return (
-        <div className={`chart-grid ${!isGrid ? 'list' : ''}`}>
+        <div className={`chart-grid ${!isGrid ? 'list-view' : ''}`}>
             {[...availableCharts.values()].map((chart: Chart, idx) => (
                 <ChartSelect
                     key={chart.id}

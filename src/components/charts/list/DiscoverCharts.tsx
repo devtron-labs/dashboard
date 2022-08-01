@@ -331,7 +331,7 @@ function DiscoverChartList() {
                                                         charts={state.charts}
                                                     />
                                                     {chartList.length ? (
-                                                        <div className={`chart-grid ${!isGrid ? 'list' : ''}`}>
+                                                        <div className={`chart-grid ${!isGrid ? 'list-view' : ''}`}>
                                                             {chartList
                                                                 .slice(0, showDeployModal ? 12 : chartList.length)
                                                                 .map((chart) => (
@@ -644,7 +644,7 @@ export function ChartGroupListMin({
                     </div>
                 </div>
             </div>
-            <div className={`chart-grid ${!isGrid ? 'list' : ''} chart-grid--chart-group-snapshot`}>
+            <div className={`chart-grid ${!isGrid ? 'list-view' : ''} chart-grid--chart-group-snapshot`}>
                 {chartGroups?.map((chartGroup, idx) => (
                     <ChartGroupCard key={idx} chartGroup={chartGroup} />
                 ))}
