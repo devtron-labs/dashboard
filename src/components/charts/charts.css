@@ -347,3 +347,21 @@
 .form__error.flex {
     display: flex;
 }
+
+.filter-tab {
+    overflow-y: auto;
+    height: calc(100% - 52px);
+}
+
+.chart-list-view {
+    max-width: 776px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.create-button {
+    color: var(--B500);
+    background: white;
+    border: 1px solid var(--N200);
+    cursor: pointer;
+}

@@ -17,6 +17,7 @@ interface AllChartSelectProps {
     addChart?: (chartId: number) => void;
     subtractChart?: (chartId: number) => void;
     selectChart?: (chartId: number) => void;
+    showDescription?: boolean;
 }
 
 interface Stepper extends AllChartSelectProps {
@@ -33,7 +34,7 @@ interface Checkbox extends AllChartSelectProps {
 
 export type ChartSelectProps = Stepper | Checkbox
 
-const ChartSelect: React.FC<ChartSelectProps> = ({ chart, selectChart, addChart, subtractChart, selectedCount = 0, showCheckBoxOnHoverOnly, onClick }) => {
+const ChartSelect: React.FC<ChartSelectProps> = ({ chart, selectChart, addChart, subtractChart, selectedCount = 0, showCheckBoxOnHoverOnly, onClick, showDescription }) => {
     const { serverMode } = useContext(mainContext);
 
     function handleImageError(e) {
@@ -42,47 +43,103 @@ const ChartSelect: React.FC<ChartSelectProps> = ({ chart, selectChart, addChart,
         target.src = placeHolder;
     }
 
-    let classes = `chart-grid-item chart-grid-item--discover white-card position-rel`;
-
+    let classes = `chart-grid-item ${showDescription ? '': 'chart-grid-item--discover' } white-card position-rel`;
+    
     return (
-        <div key={chart.id} className={`${classes} ${showCheckBoxOnHoverOnly ? 'show-checkbox-onhover' : ''} ${selectedCount > 0 ? 'chart-grid-item--selected' : ''}`} onClick={onClick ? e => onClick(chart.id) : noop}>
-            <div className="chart-grid-item__icon-wrapper">
-                <LazyImage className="chart-grid-item__icon" src={chart.icon} onError={handleImageError} />
+        <div
+            key={chart.id}
+            className={`${showDescription ? 'flex-list' : ''} ${classes} ${
+                showCheckBoxOnHoverOnly ? 'show-checkbox-onhover' : ''
+            } ${selectedCount > 0 ? 'chart-grid-item--selected' : ''}`}
+            onClick={onClick ? (e) => onClick(chart.id) : noop}
+        >
+            <div className={`${showDescription ? 'chart-list-item__icon-wrapper' : 'chart-grid-item__icon-wrapper'}`}>
+                <LazyImage
+                    className={`${showDescription ? 'list-icon' : ''} chart-grid-item__icon`}
+                    src={chart.icon}
+                    onError={handleImageError}
+                />
             </div>
-            {serverMode == SERVER_MODE.FULL && addChart && subtractChart
-                ? <div className={`chart-grid__check ${showCheckBoxOnHoverOnly ? 'chart-grid__check--hidden' : ''} devtron-stepper`}>
-                    <ConditionalWrap condition={selectedCount > 0}
-                        wrap={children => <Tippy className="default-tt" arrow={false} placement="top" content={"Remove charts from selection"}>
-                            {children}
-                        </Tippy>} >
-                        <button className={"devtron-stepper__item transparent p-0 cursor"}
+            {serverMode == SERVER_MODE.FULL && addChart && subtractChart ? (
+                <div
+                    className={`chart-grid__check ${
+                        showCheckBoxOnHoverOnly ? 'chart-grid__check--hidden' : ''
+                    } devtron-stepper`}
+                >
+                    <ConditionalWrap
+                        condition={selectedCount > 0}
+                        wrap={(children) => (
+                            <Tippy
+                                className="default-tt"
+                                arrow={false}
+                                placement="top"
+                                content={'Remove charts from selection'}
+                            >
+                                {children}
+                            </Tippy>
+                        )}
+                    >
+                        <button
+                            className={'devtron-stepper__item transparent p-0 cursor'}
                             disabled={selectedCount <= 0}
-                            onClick={e => { e.stopPropagation(); subtractChart(chart.id) }} >
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                subtractChart(chart.id)
+                            }}
+                        >
                             <Minus className="icon-dim-14" />
                         </button>
                     </ConditionalWrap>
-                    <div className="devtron-stepper__item" ><span>{selectedCount}</span></div>
-                    <ConditionalWrap condition={true}
-                        wrap={children => <Tippy className="default-tt" arrow={false} placement="top" content={"Add charts to deploy"}>
-                            {children}
-                        </Tippy>} >
-                        <button className={"devtron-stepper__item transparent p-0 cursor"} onClick={e => { e.stopPropagation(); addChart(chart.id) }} >
+                    <div className="devtron-stepper__item">
+                        <span>{selectedCount}</span>
+                    </div>
+                    <ConditionalWrap
+                        condition={true}
+                        wrap={(children) => (
+                            <Tippy
+                                className="default-tt"
+                                arrow={false}
+                                placement="top"
+                                content={'Add charts to deploy'}
+                            >
+                                {children}
+                            </Tippy>
+                        )}
+                    >
+                        <button
+                            className={'devtron-stepper__item transparent p-0 cursor'}
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                addChart(chart.id)
+                            }}
+                        >
                             <Add className="icon-dim-14" />
                         </button>
                     </ConditionalWrap>
                 </div>
-                : <input onClick={e => { e.stopPropagation(); selectChart(chart.id) }} type="checkbox" checked={selectedCount > 0} className={`chart-grid__check ${showCheckBoxOnHoverOnly ? 'chart-grid__check--hidden' : ''} icon-dim-24`} />
-            }
-            <div className="chart-grid-item__title ellipsis-right">
-                <span className="chart-grid-item__title-repo">{chart.chart_name}</span>
-                <span>/{chart.name}</span>
-            </div>
-            <div className="flex left">
-                <div className="chart-grid-item__chart-version mr-12">{chart.version}</div>
-                {
-                    chart.deprecated && 
-                        <DeprecatedWarn/>
-                }
+            ) : (
+                <input
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        selectChart(chart.id)
+                    }}
+                    type="checkbox"
+                    checked={selectedCount > 0}
+                    className={`chart-grid__check ${
+                        showCheckBoxOnHoverOnly ? 'chart-grid__check--hidden' : ''
+                    } icon-dim-24`}
+                />
+            )}
+            <div>
+                <div className="chart-grid-item__title ellipsis-right mb-4">
+                    <span className="chart-grid-item__title-repo">{chart.chart_name}</span>
+                    <span>/{chart.name}</span>
+                </div>
+                <div className="flex left">
+                    <div className="chart-grid-item__chart-version mr-12">{chart.version}</div>
+                    {chart.deprecated && <DeprecatedWarn />}
+                </div>
+                {showDescription && <div className="flex left fw-4 fs-13 lh-20 mt-8">{chart.description}</div>}
             </div>
         </div>
     )

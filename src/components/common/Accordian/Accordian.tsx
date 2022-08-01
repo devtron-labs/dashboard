@@ -1,28 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
 import { Checkbox } from '../formFields/Checkbox'
+import help from '../../../assets/icons/ic-help-green.svg'
 
 export function Accordian({ header, options, value, onChange }) {
     const [collapsed, setCollapse] = useState<boolean>(true)
-    const [showMore, setShowMore] = useState<boolean>(false)
-
-    const showdata = () => {
-        if (showMore) {
-            return options
-        }
-        return options.slice(0, 6)
-    }
-
-    const toggleAccordian = () => {
-        setCollapse(!collapsed)
-        if (collapsed) {
-            setShowMore(false)
-        }
-    }
 
     return (
         <div>
-            <div className="flex fs-12 fw-6 ml-8 md-8 content-space cursor" onClick={toggleAccordian}>
+            <div
+                className="flex fs-12 fw-6 ml-8 pb-12 pt-12 content-space cursor"
+                onClick={() => setCollapse(!collapsed)}
+            >
                 {header}
                 <Dropdown
                     className="icon-dim-24 rotate"
@@ -31,11 +20,20 @@ export function Accordian({ header, options, value, onChange }) {
             </div>
             {collapsed && (
                 <div>
-                    {showdata().map((e) => (
+                    <div className="pt-10 pb-10 pl-12 pr-12 br-4 bw-1 bcv-1 w-100 ev-2 flexbox">
+                        <img src={help} alt="add-worflow" className="icon-dim-16 fcv-5" />
+                        <span className="ml-10 fw-4 lh-18 fs-12 ">
+                            To install charts from your own chart repo,
+                            <a target="_blank" className="cursor onlink">
+                                Connect chart repository
+                            </a>
+                        </span>
+                    </div>
+                    {options.map((e) => (
                         <div className="position-rel flex left cursor">
                             <Checkbox
-                                rootClassName="cursor bcn-0 ml-10 mr-10 date-align-left--deprecate"
-                                isChecked={(value.filter((event) => event === e)).length}
+                                rootClassName="cursor bcn-0 ml-7 mb-0 mr-10 date-align-left--deprecate"
+                                isChecked={value.filter((event) => event === e).length}
                                 value={'CHECKED'}
                                 onChange={() => onChange(e)}
                             >
@@ -43,11 +41,6 @@ export function Accordian({ header, options, value, onChange }) {
                             </Checkbox>
                         </div>
                     ))}
-                    {options.length > 6 && !showMore && (
-                        <div className="flex pl-8 left cursor" onClick={() => setShowMore(true)}>
-                            Show more <Dropdown className="icon-dim-20" />
-                        </div>
-                    )}
                 </div>
             )}
         </div>

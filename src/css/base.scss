@@ -70,10 +70,19 @@ html {
     margin-bottom: 12px;
 }
 
+.chart-list-item__icon-wrapper {
+    height: 48px;
+    width: 48px;
+}
+
 .chart-grid-item__icon {
     object-fit: contain;
     max-width: 100%;
     max-height: 100%;
+}
+
+.chart-grid-item__icon.list-icon {
+    max-height: none;
 }
 
 a:hover {

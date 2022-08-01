@@ -18,11 +18,20 @@
     background-color: var(--window-bg);
 }
 
+.chart-grid.list {
+    grid-template-columns: none;
+}
+
 .chart-grid-item {
     display: block;
     padding: 16px;
     cursor: pointer;
     position: relative;
+}
+
+.chart-grid-item.flex-list {
+    display: grid;
+    grid-template-columns: 64px 1fr;
 }
 
 .chart-grid-item__flexbox {

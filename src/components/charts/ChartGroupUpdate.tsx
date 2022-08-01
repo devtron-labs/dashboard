@@ -52,6 +52,7 @@ export default function ChartGroupUpdate({}) {
     const { url } = match
     const [chartListLoading, setChartListLoading] = useState(true)
     const chartList: Chart[] = Array.from(state.availableCharts.values())
+    const [isGrid, setGrid] = useState<boolean>(true)
 
     const { breadcrumbs } = useBreadcrumb(
         {
@@ -213,60 +214,58 @@ export default function ChartGroupUpdate({}) {
                     when={isLeavingPageNotAllowed.current}
                     message={'Your changes will be lost. Do you want to leave without saving?'}
                 />
-                {state.loading || chartListLoading ? <Progressing pageLoader /> : null}
 
-                {!state.loading && !chartListLoading && (
+                {!state.loading ? (
                     <div className={`chart-group--details-body summary-show`}>
-                        <div className="details">
-                            {typeof state.configureChartIndex === 'number' ? (
-                                <AdvancedConfig
-                                    chart={state.charts[state.configureChartIndex]}
-                                    index={state.configureChartIndex}
-                                    getChartVersionsAndValues={getChartVersionsAndValues}
-                                    fetchChartValues={fetchChartValues}
-                                    handleChartValueChange={handleChartValueChange}
-                                    handleChartVersionChange={handleChartVersionChange}
-                                    createChartValues={createChartValues}
-                                    discardValuesYamlChanges={discardValuesYamlChanges}
-                                />
-                            ) : !chartList.length ? (
-                                <>
-                                    <ChartHeaderFilters
-                                        chartRepoList={state.chartRepos}
-                                        setSelectedChartRepo={setSelectedChartRepo}
-                                        searchApplied={searchApplied}
-                                        appStoreName={appStoreName}
-                                        includeDeprecated={includeDeprecated}
-                                        selectedChartRepo={selectedChartRepo}
-                                        setAppStoreName={setAppStoreName}
-                                        handleCloseFilter={handleCloseFilter}
+                        {typeof state.configureChartIndex != 'number' ? (
+                            <ChartHeaderFilters
+                                chartRepoList={state.chartRepos}
+                                setSelectedChartRepo={setSelectedChartRepo}
+                                searchApplied={searchApplied}
+                                appStoreName={appStoreName}
+                                includeDeprecated={includeDeprecated}
+                                selectedChartRepo={selectedChartRepo}
+                                setAppStoreName={setAppStoreName}
+                                handleCloseFilter={handleCloseFilter}
+                                isGrid={isGrid}
+                                setGrid={setGrid}
+                            />
+                        ) : null}
+                        {chartListLoading ? (
+                            <Progressing pageLoader />
+                        ) : (
+                            <div className="details">
+                                {typeof state.configureChartIndex === 'number' ? (
+                                    <AdvancedConfig
+                                        chart={state.charts[state.configureChartIndex]}
+                                        index={state.configureChartIndex}
+                                        getChartVersionsAndValues={getChartVersionsAndValues}
+                                        fetchChartValues={fetchChartValues}
+                                        handleChartValueChange={handleChartValueChange}
+                                        handleChartVersionChange={handleChartVersionChange}
+                                        createChartValues={createChartValues}
+                                        discardValuesYamlChanges={discardValuesYamlChanges}
                                     />
-                                    <ChartEmptyState
-                                        onClickViewChartButton={handleViewAllCharts}
-                                        heightToDeduct={150}
-                                    />
-                                </>
-                            ) : (
-                                <>
-                                    <ChartHeaderFilters
-                                        chartRepoList={state.chartRepos}
-                                        setSelectedChartRepo={setSelectedChartRepo}
-                                        searchApplied={searchApplied}
-                                        appStoreName={appStoreName}
-                                        includeDeprecated={includeDeprecated}
-                                        selectedChartRepo={selectedChartRepo}
-                                        setAppStoreName={setAppStoreName}
-                                        handleCloseFilter={handleCloseFilter}
-                                    />
-                                    <ChartList
-                                        availableCharts={state.availableCharts}
-                                        addChart={addChart}
-                                        subtractChart={subtractChart}
-                                        selectedInstances={state.selectedInstances}
-                                    />
-                                </>
-                            )}
-                        </div>
+                                ) : !chartList.length ? (
+                                    <>
+                                        <ChartEmptyState
+                                            onClickViewChartButton={handleViewAllCharts}
+                                            heightToDeduct={150}
+                                        />
+                                    </>
+                                ) : (
+                                    <div className={`${!isGrid ? 'chart-list-view ' : ''}`}>
+                                        <ChartList
+                                            availableCharts={state.availableCharts}
+                                            addChart={addChart}
+                                            subtractChart={subtractChart}
+                                            selectedInstances={state.selectedInstances}
+                                            isGrid={isGrid}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         <div className="summary">
                             <MultiChartSummary
                                 charts={state.charts}
@@ -287,6 +286,8 @@ export default function ChartGroupUpdate({}) {
                             />
                         </div>
                     </div>
+                ) : (
+                    <Progressing pageLoader />
                 )}
             </div>
             {chartDetailsUpdate && (
@@ -304,9 +305,9 @@ export default function ChartGroupUpdate({}) {
     )
 }
 
-function ChartList({ availableCharts, selectedInstances, addChart, subtractChart }) {
+function ChartList({ availableCharts, selectedInstances, addChart, subtractChart, isGrid }) {
     return (
-        <div className="chart-grid">
+        <div className={`chart-grid ${!isGrid ? 'list' : ''}`}>
             {[...availableCharts.values()].map((chart: Chart, idx) => (
                 <ChartSelect
                     key={chart.id}
@@ -315,6 +316,7 @@ function ChartList({ availableCharts, selectedInstances, addChart, subtractChart
                     addChart={addChart}
                     subtractChart={subtractChart}
                     showCheckBoxOnHoverOnly={false}
+                    showDescription={!isGrid}
                 />
             ))}
         </div>

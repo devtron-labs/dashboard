@@ -40,6 +40,7 @@ import PageHeader from '../../common/header/PageHeader'
 import emptyImage from '../../../assets/img/empty-noresult@2x.png'
 import SavedValuesList from '../SavedValues/SavedValuesList'
 import ChartValues from '../chartValues/ChartValues'
+import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-forward.svg';
 
 interface EmptyCharts {
     title?: string
@@ -109,6 +110,7 @@ function DiscoverChartList() {
     const chartList: Chart[] = Array.from(state.availableCharts.values())
     const isLeavingPageNotAllowed = useRef(false)
     const [showChartGroupModal, toggleChartGroupModal] = useState(false)
+    const [isGrid, setGrid] = useState<boolean>(true)
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
     }, true)
@@ -201,7 +203,7 @@ function DiscoverChartList() {
                 {chartList.length > 0 && serverMode == SERVER_MODE.FULL && state.charts.length === 0 && (
                     <button
                         type="button"
-                        className="cta flex h-32 lh-n"
+                        className="create-button fw-6 fs-13 br-4 pr-12 pl-12 scb-5 flex h-32 lh-n"
                         onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}
                     >
                         <Add className="icon-dim-18 mr-5" />
@@ -243,11 +245,7 @@ function DiscoverChartList() {
         <>
             <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''} chart-store-header`}>
                 <ConditionalWrap condition={state.charts.length > 0} wrap={(children) => <div>{children}</div>}>
-                    <PageHeader
-                        isBreadcrumbs={true}
-                        breadCrumbs={renderBreadcrumbs}
-                        renderActionButtons={renderCreateGroupButton}
-                    />
+                    <PageHeader isBreadcrumbs={true} breadCrumbs={renderBreadcrumbs} />
                 </ConditionalWrap>
 
                 <Prompt
@@ -266,6 +264,8 @@ function DiscoverChartList() {
                                 selectedChartRepo={selectedChartRepo}
                                 setAppStoreName={setAppStoreName}
                                 handleCloseFilter={handleCloseFilter}
+                                isGrid={isGrid}
+                                setGrid={setGrid}
                             />
                         )}
                         {state.loading || chartListLoading ? (
@@ -317,27 +317,21 @@ function DiscoverChartList() {
                                                     />
                                                 </>
                                             ) : (
-                                                <div>
+                                                <div className={`${!isGrid ? 'chart-list-view ' : ''}`}>
                                                     {serverMode == SERVER_MODE.FULL && (
                                                         <ChartGroupListMin
                                                             chartGroups={state.chartGroups.slice(0, 4)}
                                                             showChartGroupModal={showChartGroupModal}
                                                             toggleChartGroupModal={toggleChartGroupModal}
+                                                            isGrid={isGrid}
+                                                            renderCreateGroupButton={renderCreateGroupButton}
                                                         />
                                                     )}
                                                     <ChartListHeader
-                                                        chartRepoList={state.chartRepos}
-                                                        setSelectedChartRepo={setSelectedChartRepo}
                                                         charts={state.charts}
-                                                        searchApplied={searchApplied}
-                                                        appStoreName={appStoreName}
-                                                        includeDeprecated={includeDeprecated}
-                                                        selectedChartRepo={selectedChartRepo}
-                                                        setAppStoreName={setAppStoreName}
-                                                        handleCloseFilter={handleCloseFilter}
                                                     />
                                                     {chartList.length ? (
-                                                        <div className="chart-grid">
+                                                        <div className={`chart-grid ${!isGrid ? 'list' : ''}`}>
                                                             {chartList
                                                                 .slice(0, showDeployModal ? 12 : chartList.length)
                                                                 .map((chart) => (
@@ -351,6 +345,7 @@ function DiscoverChartList() {
                                                                             state.charts.length === 0
                                                                         }
                                                                         addChart={addChart}
+                                                                        showDescription={!isGrid}
                                                                         subtractChart={subtractChart}
                                                                         onClick={(chartId) =>
                                                                             state.charts.length === 0
@@ -377,115 +372,109 @@ function DiscoverChartList() {
                                         </div>
                                     </>
                                 )}
-                                <aside className={`summary`}>
-                                    <MultiChartSummary
-                                        charts={state.charts}
-                                        configureChartIndex={state.configureChartIndex}
-                                        configureChart={configureChart}
-                                        chartListing={chartListing}
-                                        getChartVersionsAndValues={getChartVersionsAndValues}
-                                        handleChartValueChange={
-                                            typeof state.configureChartIndex === 'number'
-                                                ? null
-                                                : handleChartValueChange
-                                        }
-                                        handleChartVersionChange={
-                                            typeof state.configureChartIndex === 'number'
-                                                ? null
-                                                : handleChartVersionChange
-                                        }
-                                        removeChart={removeChart}
-                                    />
-                                    <div
-                                        className={`flex left deployment-buttons ${
-                                            state.advanceVisited ? 'deployment-buttons--advanced' : ''
-                                        }`}
-                                    >
-                                        {state.advanceVisited && (
-                                            <div>
-                                                <label>Project*</label>
-                                                <Select
-                                                    rootClassName={`${project.error ? 'popup-button--error' : ''}`}
-                                                    value={project.id}
-                                                    onChange={(e) => setProject({ id: e.target.value, error: '' })}
-                                                >
-                                                    <Select.Button>
-                                                        {project.id && projectsMap.has(project.id)
-                                                            ? projectsMap.get(project.id).name
-                                                            : 'Select project'}
-                                                    </Select.Button>
-                                                    {state.projects?.map((project) => (
-                                                        <Select.Option key={project.id} value={project.id}>
-                                                            {project.name}
-                                                        </Select.Option>
-                                                    ))}
-                                                </Select>
-                                                {project.error && (
-                                                    <span className="form__error flex left">
-                                                        <WarningIcon className="mr-5 icon-dim-16" />
-                                                        {project.error}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        )}
-                                        {!state.advanceVisited && (
-                                            <ConditionalWrap
-                                                condition={state.charts.length === 0}
-                                                wrap={(children) => (
-                                                    <Tippy
-                                                        className="default-tt"
-                                                        arrow={false}
-                                                        placement="top"
-                                                        content="Add charts to deploy"
-                                                    >
-                                                        <div>{children}</div>
-                                                    </Tippy>
-                                                )}
-                                            >
-                                                <button
-                                                    type="button"
-                                                    disabled={state.charts.length === 0}
-                                                    onClick={() => configureChart(0)}
-                                                    className="cta cancel ellipsis-right"
-                                                >
-                                                    Advanced Options
-                                                </button>
-                                            </ConditionalWrap>
-                                        )}
-                                        <ConditionalWrap
-                                            condition={state.charts.length === 0}
-                                            wrap={(children) => (
-                                                <Tippy
-                                                    className="default-tt"
-                                                    arrow={false}
-                                                    placement="top"
-                                                    content="Add charts to deploy"
-                                                >
-                                                    <div>{children}</div>
-                                                </Tippy>
-                                            )}
-                                        >
-                                            <button
-                                                type="button"
-                                                disabled={state.charts.length === 0}
-                                                onClick={
-                                                    state.advanceVisited ? handleInstall : () => toggleDeployModal(true)
-                                                }
-                                                className="cta ellipsis-right"
-                                            >
-                                                {installing ? (
-                                                    <Progressing />
-                                                ) : state.advanceVisited ? (
-                                                    'Deploy charts'
-                                                ) : (
-                                                    'Deploy to...'
-                                                )}
-                                            </button>
-                                        </ConditionalWrap>
-                                    </div>
-                                </aside>
                             </>
                         )}
+                        <aside className={`summary`}>
+                            <MultiChartSummary
+                                charts={state.charts}
+                                configureChartIndex={state.configureChartIndex}
+                                configureChart={configureChart}
+                                chartListing={chartListing}
+                                getChartVersionsAndValues={getChartVersionsAndValues}
+                                handleChartValueChange={
+                                    typeof state.configureChartIndex === 'number' ? null : handleChartValueChange
+                                }
+                                handleChartVersionChange={
+                                    typeof state.configureChartIndex === 'number' ? null : handleChartVersionChange
+                                }
+                                removeChart={removeChart}
+                            />
+                            <div
+                                className={`flex left deployment-buttons ${
+                                    state.advanceVisited ? 'deployment-buttons--advanced' : ''
+                                }`}
+                            >
+                                {state.advanceVisited && (
+                                    <div>
+                                        <label>Project*</label>
+                                        <Select
+                                            rootClassName={`${project.error ? 'popup-button--error' : ''}`}
+                                            value={project.id}
+                                            onChange={(e) => setProject({ id: e.target.value, error: '' })}
+                                        >
+                                            <Select.Button>
+                                                {project.id && projectsMap.has(project.id)
+                                                    ? projectsMap.get(project.id).name
+                                                    : 'Select project'}
+                                            </Select.Button>
+                                            {state.projects?.map((project) => (
+                                                <Select.Option key={project.id} value={project.id}>
+                                                    {project.name}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                        {project.error && (
+                                            <span className="form__error flex left">
+                                                <WarningIcon className="mr-5 icon-dim-16" />
+                                                {project.error}
+                                            </span>
+                                        )}
+                                    </div>
+                                )}
+                                {!state.advanceVisited && (
+                                    <ConditionalWrap
+                                        condition={state.charts.length === 0}
+                                        wrap={(children) => (
+                                            <Tippy
+                                                className="default-tt"
+                                                arrow={false}
+                                                placement="top"
+                                                content="Add charts to deploy"
+                                            >
+                                                <div>{children}</div>
+                                            </Tippy>
+                                        )}
+                                    >
+                                        <button
+                                            type="button"
+                                            disabled={state.charts.length === 0}
+                                            onClick={() => configureChart(0)}
+                                            className="cta cancel ellipsis-right"
+                                        >
+                                            Advanced Options
+                                        </button>
+                                    </ConditionalWrap>
+                                )}
+                                <ConditionalWrap
+                                    condition={state.charts.length === 0}
+                                    wrap={(children) => (
+                                        <Tippy
+                                            className="default-tt"
+                                            arrow={false}
+                                            placement="top"
+                                            content="Add charts to deploy"
+                                        >
+                                            <div>{children}</div>
+                                        </Tippy>
+                                    )}
+                                >
+                                    <button
+                                        type="button"
+                                        disabled={state.charts.length === 0}
+                                        onClick={state.advanceVisited ? handleInstall : () => toggleDeployModal(true)}
+                                        className="cta ellipsis-right"
+                                    >
+                                        {installing ? (
+                                            <Progressing />
+                                        ) : state.advanceVisited ? (
+                                            'Deploy charts'
+                                        ) : (
+                                            'Deploy to...'
+                                        )}
+                                    </button>
+                                </ConditionalWrap>
+                            </div>
+                        </aside>
                     </div>
                 ) : (
                     <Progressing pageLoader />
@@ -544,22 +533,14 @@ export default function DiscoverCharts() {
 }
 
 function ChartListHeader({
-    setSelectedChartRepo,
-    setAppStoreName,
-    chartRepoList,
-    appStoreName,
-    charts,
-    selectedChartRepo,
-    includeDeprecated,
-    searchApplied,
-    handleCloseFilter,
+    charts
 }) {
     return (
         <div>
             <h3 className="chart-grid__title pl-20 pr-20 pt-16">
                 {charts.length === 0 ? 'All Charts' : 'Select Charts'}
             </h3>
-            <h5 className="form__subtitle pl-20">
+            <h5 className="form__subtitle mt-4 pl-20">
                 Select chart to deploy. &nbsp;
                 <a
                     className="learn-more__href"
@@ -626,10 +607,14 @@ export function ChartGroupListMin({
     chartGroups,
     toggleChartGroupModal,
     showChartGroupModal,
+    isGrid,
+    renderCreateGroupButton,
 }: {
     chartGroups
     showChartGroupModal?: boolean
     toggleChartGroupModal?: React.Dispatch<React.SetStateAction<boolean>>
+    isGrid?: boolean
+    renderCreateGroupButton?: () => JSX.Element
 }) {
     const history = useHistory()
     const match = useRouteMatch()
@@ -639,20 +624,27 @@ export function ChartGroupListMin({
         )
     }
     return (
-        <div className="chart-group" style={{ minHeight: '280px' }}>
+        <div className="chart-group">
             <div className="chart-group__header">
-                <div className="flexbox">
+                <div className="">
                     <h2 className="chart-grid__title">Chart Groups</h2>
-                    <button
-                        type="button"
-                        className="chart-group__view-all"
-                        onClick={(e) => history.push(match.url + '/group')}
-                    >
-                        View All
-                    </button>
+                    <p className="mb-16 mt-4">
+                        Use chart groups to preconfigure and deploy frequently used charts together. Learn more about
+                        chart groups
+                    </p>
+                    <div className="flex content-space">
+                        {renderCreateGroupButton()}
+                        <div
+                            className="cb-5 fw-6 fs-13 flex pr-16 scb-5 cursor"
+                            onClick={(e) => history.push(match.url + '/group')}
+                        >
+                            View all chart groups
+                            <Next className="ml-8 sicon-dim-16" />
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div className="chart-grid chart-grid--chart-group-snapshot">
+            <div className={`chart-grid ${!isGrid ? 'list' : ''} chart-grid--chart-group-snapshot`}>
                 {chartGroups?.map((chartGroup, idx) => (
                     <ChartGroupCard key={idx} chartGroup={chartGroup} />
                 ))}
