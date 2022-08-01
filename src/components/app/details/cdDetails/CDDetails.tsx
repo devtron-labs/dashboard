@@ -186,8 +186,7 @@ export default function CDDetails() {
     }
 
     if (loading || (loadingDeploymentHistory && triggerHistory.size === 0)) return <Progressing pageLoader />
-    if (result && !Array.isArray(result[0].result))
-        return <AppNotConfigured />
+    if (result && !Array.isArray(result[0].result)) return <AppNotConfigured />
     if (result && !Array.isArray(result[1]?.pipelines)) return <AppNotConfigured />
     if (!result || dependencyState[2] !== envId) return null
 
@@ -291,7 +290,7 @@ const DeploymentCard: React.FC<{
 }> = ({ triggerDetails }) => {
     const { path } = useRouteMatch()
     const { pathname } = useLocation()
-    const currentTab = pathname.split('/').pop()    
+    const currentTab = pathname.split('/').pop()
     const { triggerId, ...rest } = useParams<{ triggerId: string }>()
     return (
         <ConditionalWrap
@@ -307,7 +306,7 @@ const DeploymentCard: React.FC<{
             )}
         >
             <NavLink
-                to={generatePath(path, { ...rest, triggerId: triggerDetails.id }) + "/" + currentTab}
+                to={generatePath(path, { ...rest, triggerId: triggerDetails.id }) + '/' + currentTab}
                 className="w-100 ci-details__build-card"
                 activeClassName="active"
             >
@@ -330,7 +329,7 @@ const DeploymentCard: React.FC<{
                         <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format(Moment12HourFormat)}</div>
                         <div className="flex left cn-7 fs-12">
                             <div className="capitalize">
-                                {['pre', 'post'].includes(triggerDetails.stage.toLowerCase())
+                                {['pre', 'post'].includes(triggerDetails.stage?.toLowerCase())
                                     ? `${triggerDetails.stage}-deploy`
                                     : triggerDetails.stage}
                             </div>
@@ -492,14 +491,14 @@ const TriggerOutput: React.FC<{
     const timeout = useMemo(() => {
         if (!triggerDetails) return null // no interval
         if (
-            statusSet.has(triggerDetails.status.toLowerCase()) ||
+            statusSet.has(triggerDetails.status?.toLowerCase()) ||
             (triggerDetails.podStatus && statusSet.has(triggerDetails.podStatus.toLowerCase()))
         ) {
             // 10s because progressing
             return 10000
         } else if (triggerDetails.podStatus && terminalStatus.has(triggerDetails.podStatus.toLowerCase())) {
             return null
-        } else if (terminalStatus.has(triggerDetails.status.toLowerCase())) {
+        } else if (terminalStatus.has(triggerDetails.status?.toLowerCase())) {
             return null
         }
         return 30000 // 30s for normal

@@ -1,6 +1,6 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
-import { useParams, useLocation, useRouteMatch, useHistory } from 'react-router';
-import { NavLink, Link, Route, Switch } from 'react-router-dom';
+import React, { useState, useEffect, lazy, Suspense } from 'react'
+import { useParams, useLocation, useRouteMatch, useHistory } from 'react-router'
+import { NavLink, Link, Route, Switch } from 'react-router-dom'
 import {
     URLS,
     getAppComposeURL,
@@ -8,7 +8,7 @@ import {
     isCIPipelineCreated,
     ViewType,
     isCDPipelineCreated,
-} from '../../../../config';
+} from '../../../../config'
 import {
     ErrorBoundary,
     Progressing,
@@ -18,26 +18,26 @@ import {
     ConfirmationDialog,
     useAsync,
     ErrorScreenManager,
-} from '../../../common';
-import { getAppConfigStatus, getAppOtherEnvironment, getWorkflowList } from '../../../../services/service';
-import { deleteApp } from './appConfig.service';
-import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg';
-import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg';
-import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg';
-import warn from '../../../../assets/icons/ic-warning.svg';
-import { toast } from 'react-toastify';
-import './appConfig.scss';
-import { DOCUMENTATION } from '../../../../config';
-import { AppOtherEnvironment } from '../../../../services/service.types';
-import AppConfigurationCheckBox from './AppConfigurationCheckBox';
+} from '../../../common'
+import { getAppConfigStatus, getAppOtherEnvironment, getWorkflowList } from '../../../../services/service'
+import { deleteApp } from './appConfig.service'
+import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg'
+import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg'
+import warn from '../../../../assets/icons/ic-warning.svg'
+import { toast } from 'react-toastify'
+import './appConfig.scss'
+import { DOCUMENTATION } from '../../../../config'
+import { AppOtherEnvironment } from '../../../../services/service.types'
+import AppConfigurationCheckBox from './AppConfigurationCheckBox'
 
-const MaterialList = lazy(() => import('../../../material/MaterialList'));
-const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'));
-const DeploymentConfig = lazy(() => import('../../../deploymentConfig/DeploymentConfig'));
-const ConfigMap = lazy(() => import('../../../configMaps/ConfigMap'));
-const Secret = lazy(() => import('../../../secrets/Secret'));
-const WorkflowEdit = lazy(() => import('../../../workflowEditor/workflowEditor'));
-const EnvironmentOverride = lazy(() => import('../../../EnvironmentOverride/EnvironmentOverride'));
+const MaterialList = lazy(() => import('../../../material/MaterialList'))
+const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'))
+const DeploymentConfig = lazy(() => import('../../../deploymentConfig/DeploymentConfig'))
+const ConfigMap = lazy(() => import('../../../configMaps/ConfigMap'))
+const Secret = lazy(() => import('../../../secrets/Secret'))
+const WorkflowEdit = lazy(() => import('../../../workflowEditor/workflowEditor'))
+const EnvironmentOverride = lazy(() => import('../../../EnvironmentOverride/EnvironmentOverride'))
 
 export enum STAGE_NAME {
     LOADING = 'LOADING',
@@ -50,29 +50,29 @@ export enum STAGE_NAME {
     CHART_ENV_CONFIG = 'CHART_ENV_CONFIG',
 }
 
-type StageNames = keyof typeof STAGE_NAME | 'WORKFLOW' | 'CONFIGMAP' | 'SECRETS' | 'ENV_OVERRIDE';
+type StageNames = keyof typeof STAGE_NAME | 'WORKFLOW' | 'CONFIGMAP' | 'SECRETS' | 'ENV_OVERRIDE'
 export interface AppConfigState {
-    view: string;
-    stattusCode: number;
-    stageName: StageNames;
-    isUnlocked: any;
-    appName: string;
-    isCiPipeline: boolean;
-    isCDPipeline: boolean;
-    showDeleteConfirm: boolean;
-    navItems: CustomNavItemsType[];
-    maximumAllowedUrl: string;
-    canDeleteApp: boolean;
+    view: string
+    stattusCode: number
+    stageName: StageNames
+    isUnlocked: any
+    appName: string
+    isCiPipeline: boolean
+    isCDPipeline: boolean
+    showDeleteConfirm: boolean
+    navItems: CustomNavItemsType[]
+    maximumAllowedUrl: string
+    canDeleteApp: boolean
 }
 
 export interface AppStageUnlockedType {
-    material: boolean;
-    dockerBuildConfig: boolean;
-    deploymentTemplate: boolean;
-    workflowEditor: boolean;
-    configmap: boolean;
-    secret: boolean;
-    envOverride: boolean;
+    material: boolean
+    dockerBuildConfig: boolean
+    deploymentTemplate: boolean
+    workflowEditor: boolean
+    configmap: boolean
+    secret: boolean
+    envOverride: boolean
 }
 //stage: last configured stage
 function isUnlocked(stage: string): AppStageUnlockedType {
@@ -118,33 +118,33 @@ function isUnlocked(stage: string): AppStageUnlockedType {
             stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
             stage === STAGE_NAME.CD_PIPELINE ||
             stage === STAGE_NAME.CHART_ENV_CONFIG,
-    };
+    }
 }
 
 function getCompletedStep(isUnlocked: AppStageUnlockedType): number {
     if (isUnlocked.workflowEditor) {
-        return 3;
+        return 3
     } else if (isUnlocked.deploymentTemplate) {
-        return 2;
+        return 2
     } else if (isUnlocked.dockerBuildConfig) {
-        return 1;
+        return 1
     } else {
-        return 0;
+        return 0
     }
 }
 export interface CustomNavItemsType {
-    title: string;
-    href: string;
-    stage: string;
-    isLocked: boolean;
-    supportDocumentURL: string;
-    flowCompletionPercent: number;
-    currentStep: number;
+    title: string
+    href: string
+    stage: string
+    isLocked: boolean
+    supportDocumentURL: string
+    flowCompletionPercent: number
+    currentStep: number
 }
 
 function getNavItems(isUnlocked: AppStageUnlockedType, appId: number): { navItems } {
-    const completedSteps = getCompletedStep(isUnlocked);
-    const completedPercent = completedSteps * 25;
+    const completedSteps = getCompletedStep(isUnlocked)
+    const completedPercent = completedSteps * 25
     let navItems = [
         {
             title: 'Git Repository',
@@ -206,16 +206,16 @@ function getNavItems(isUnlocked: AppStageUnlockedType, appId: number): { navItem
             stage: 'ENV_OVERRIDE',
             isLocked: !isUnlocked.envOverride,
         },
-    ];
+    ]
 
-    return { navItems };
+    return { navItems }
 }
 
 export default function AppConfig() {
-    const { appId } = useParams<{ appId }>();
-    const match = useRouteMatch();
-    const location = useLocation();
-    const history = useHistory();
+    const { appId } = useParams<{ appId }>()
+    const match = useRouteMatch()
+    const location = useLocation()
+    const history = useHistory()
 
     const [state, setState] = useState<AppConfigState>({
         view: ViewType.LOADING,
@@ -229,7 +229,7 @@ export default function AppConfig() {
         navItems: [],
         maximumAllowedUrl: '',
         canDeleteApp: false,
-    });
+    })
 
     useEffect(() => {
         Promise.all([getAppConfigStatus(+appId), getWorkflowList(appId)])
@@ -237,17 +237,17 @@ export default function AppConfig() {
                 let lastConfiguredStage = configStatusRes.result
                     .slice()
                     .reverse()
-                    .find((stage) => stage.status);
-                let lastConfiguredStageName = lastConfiguredStage.stageName;
-                let configs = isUnlocked(lastConfiguredStageName);
-                let { navItems } = getNavItems(configs, appId);
-                let index = navItems.findIndex((item) => item.isLocked);
+                    .find((stage) => stage.status)
+                let lastConfiguredStageName = lastConfiguredStage?.stageName
+                let configs = isUnlocked(lastConfiguredStageName)
+                let { navItems } = getNavItems(configs, appId)
+                let index = navItems.findIndex((item) => item.isLocked)
                 if (index < 0) {
-                    index = 4;
+                    index = 4
                 }
-                let redirectUrl = navItems[index - 1].href;
-                let isCiPipeline = isCIPipelineCreated(configStatusRes.result);
-                let isCDPipeline = isCDPipelineCreated(configStatusRes.result);
+                let redirectUrl = navItems[index - 1].href
+                let isCiPipeline = isCIPipelineCreated(configStatusRes.result)
+                let isCDPipeline = isCDPipelineCreated(configStatusRes.result)
 
                 setState({
                     view: ViewType.FORM,
@@ -261,40 +261,40 @@ export default function AppConfig() {
                     navItems,
                     maximumAllowedUrl: redirectUrl,
                     canDeleteApp: workflowRes.result.workflows.length === 0,
-                });
+                })
                 if (location.pathname === match.url) {
-                    history.replace(redirectUrl);
+                    history.replace(redirectUrl)
                 }
             })
             .catch((errors) => {
-                showError(errors);
-                setState({ ...state, view: ViewType.ERROR, stattusCode: errors.code });
-            });
-    }, [appId]);
+                showError(errors)
+                setState({ ...state, view: ViewType.ERROR, stattusCode: errors.code })
+            })
+    }, [appId])
 
     function reloadWorkflows() {
         getWorkflowList(appId).then((response) => {
             setState({
                 ...state,
                 canDeleteApp: response.result.workflows.length === 0,
-            });
-        });
+            })
+        })
     }
     function redirectToWorkflowEditor() {
-        return getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR);
+        return getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR)
     }
 
     async function deleteAppHandler() {
         deleteApp(appId)
             .then((response) => {
                 if (response.code === 200) {
-                    toast.success('Application Deleted!!!');
-                    history.push(`${URLS.APP}`);
+                    toast.success('Application Deleted!!!')
+                    history.push(`${URLS.APP}`)
                 }
             })
             .catch((error) => {
-                showError(error);
-            });
+                showError(error)
+            })
     }
 
     function respondOnSuccess() {
@@ -303,16 +303,16 @@ export default function AppConfig() {
                 let lastConfiguredStage = configStatusRes.result
                     .slice()
                     .reverse()
-                    .find((stage) => stage.status);
-                let configs = isUnlocked(lastConfiguredStage.stageName);
-                let { navItems } = getNavItems(configs, appId);
-                let index = navItems.findIndex((item) => item.isLocked);
+                    .find((stage) => stage.status)
+                let configs = isUnlocked(lastConfiguredStage.stageName)
+                let { navItems } = getNavItems(configs, appId)
+                let index = navItems.findIndex((item) => item.isLocked)
                 if (index < 0) {
-                    index = 4;
+                    index = 4
                 }
-                let redirectUrl = navItems[index - 1].href;
-                let isCiPipeline = isCIPipelineCreated(configStatusRes.result);
-                let isCDPipeline = isCDPipelineCreated(configStatusRes.result);
+                let redirectUrl = navItems[index - 1].href
+                let isCiPipeline = isCIPipelineCreated(configStatusRes.result)
+                let isCDPipeline = isCDPipelineCreated(configStatusRes.result)
 
                 setState((state) => ({
                     ...state,
@@ -322,15 +322,15 @@ export default function AppConfig() {
                     isCDPipeline,
                     navItems,
                     maximumAllowedUrl: redirectUrl,
-                }));
+                }))
             })
             .catch((errors) => {
-                showError(errors);
-            });
+                showError(errors)
+            })
     }
 
     function showDeleteConfirmation() {
-        setState((state) => ({ ...state, showDeleteConfirm: true }));
+        setState((state) => ({ ...state, showDeleteConfirm: true }))
     }
 
     function renderDeleteDialog() {
@@ -341,7 +341,7 @@ export default function AppConfig() {
                         title={`Delete '${state.appName}'?`}
                         delete={deleteAppHandler}
                         closeDelete={() => {
-                            setState((state) => ({ ...state, showDeleteConfirm: false }));
+                            setState((state) => ({ ...state, showDeleteConfirm: false }))
                         }}
                     >
                         <DeleteDialog.Description>
@@ -351,7 +351,7 @@ export default function AppConfig() {
                             <p className="fs-13 cn-7 lh-1-54">Deleted applications cannot be restored.</p>
                         </DeleteDialog.Description>
                     </DeleteDialog>
-                );
+                )
             else {
                 return (
                     <ConfirmationDialog>
@@ -365,7 +365,7 @@ export default function AppConfig() {
                                 type="button"
                                 className="cta cancel"
                                 onClick={(e) => {
-                                    setState((state) => ({ ...state, showDeleteConfirm: false }));
+                                    setState((state) => ({ ...state, showDeleteConfirm: false }))
                                 }}
                             >
                                 Cancel
@@ -379,14 +379,14 @@ export default function AppConfig() {
                             </Link>
                         </ConfirmationDialog.ButtonGroup>
                     </ConfirmationDialog>
-                );
+                )
             }
         }
-        return null;
+        return null
     }
 
-    if (state.view === ViewType.LOADING) return <Progressing pageLoader />;
-    else if (state.view === ViewType.ERROR) return <ErrorScreenManager code={state.stattusCode} />;
+    if (state.view === ViewType.LOADING) return <Progressing pageLoader />
+    else if (state.view === ViewType.ERROR) return <ErrorScreenManager code={state.stattusCode} />
     else
         return (
             <>
@@ -416,7 +416,7 @@ export default function AppConfig() {
                 </div>
                 {renderDeleteDialog()}
             </>
-        );
+        )
 }
 
 const NextButton: React.FC<{ isCiPipeline: boolean; navItems; currentStageName; isDisabled }> = ({
@@ -425,9 +425,9 @@ const NextButton: React.FC<{ isCiPipeline: boolean; navItems; currentStageName; 
     currentStageName,
     isDisabled,
 }) => {
-    const history = useHistory();
-    let index = navItems.findIndex((item) => item.stage === currentStageName);
-    let nextUrl = navItems[index + 1].href;
+    const history = useHistory()
+    let index = navItems.findIndex((item) => item.stage === currentStageName)
+    let nextUrl = navItems[index + 1].href
     if (!isCiPipeline) {
         return (
             <div className="app-compose__next-section">
@@ -436,27 +436,27 @@ const NextButton: React.FC<{ isCiPipeline: boolean; navItems; currentStageName; 
                     disabled={isDisabled}
                     className="cta align-right flex"
                     onClick={(event) => {
-                        history.push(nextUrl);
+                        history.push(nextUrl)
                     }}
                 >
                     <span className="mr-5">Next </span>
                     <Next className="icon-dim-18" />
                 </button>
             </div>
-        );
+        )
     }
-    return null;
-};
+    return null
+}
 
 interface NavigationType {
-    navItems: CustomNavItemsType[];
-    deleteApp: () => void;
-    isCDPipeline: boolean;
+    navItems: CustomNavItemsType[]
+    deleteApp: () => void
+    isCDPipeline: boolean
 }
 
 function Navigation({ navItems, deleteApp, isCDPipeline }: NavigationType) {
-    const location = useLocation();
-    const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href) >= 0)[0];
+    const location = useLocation()
+    const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href) >= 0)[0]
     return (
         <>
             {!isCDPipeline && <AppConfigurationCheckBox selectedNav={selectedNav} />}
@@ -466,7 +466,7 @@ function Navigation({ navItems, deleteApp, isCDPipeline }: NavigationType) {
                         <NavLink
                             key={item.title}
                             onClick={(event) => {
-                                if (item.isLocked) event.preventDefault();
+                                if (item.isLocked) event.preventDefault()
                             }}
                             className={'app-compose__nav-item'}
                             to={item.href}
@@ -474,26 +474,26 @@ function Navigation({ navItems, deleteApp, isCDPipeline }: NavigationType) {
                             {item.title}
                             {item.isLocked && <Lock className="app-compose__nav-icon icon-dim-20 mt-10" />}
                         </NavLink>
-                    );
+                    )
                 } else {
-                    return <EnvironmentOverrideRouter key={item.title} />;
+                    return <EnvironmentOverrideRouter key={item.title} />
                 }
             })}
             <button type="button" className="cta delete cta-delete-app mt-8" onClick={deleteApp}>
                 Delete Application
             </button>
         </>
-    );
+    )
 }
 
 interface AppComposeRouterType {
-    isUnlocked: AppStageUnlockedType;
-    navItems: CustomNavItemsType[];
-    respondOnSuccess: () => void;
-    isCiPipeline: boolean;
-    getWorkflows: () => void;
-    maxAllowedUrl: string;
-    isCDPipeline: boolean;
+    isUnlocked: AppStageUnlockedType
+    navItems: CustomNavItemsType[]
+    respondOnSuccess: () => void
+    isCiPipeline: boolean
+    getWorkflows: () => void
+    maxAllowedUrl: string
+    isCDPipeline: boolean
 }
 
 function AppComposeRouter({
@@ -505,7 +505,7 @@ function AppComposeRouter({
     maxAllowedUrl,
     isCDPipeline,
 }: AppComposeRouterType) {
-    const { path } = useRouteMatch();
+    const { path } = useRouteMatch()
 
     return (
         <ErrorBoundary>
@@ -584,7 +584,7 @@ function AppComposeRouter({
                 </Switch>
             </Suspense>
         </ErrorBoundary>
-    );
+    )
 }
 
 const EnvironmentOverrideDropdown = (
@@ -592,24 +592,22 @@ const EnvironmentOverrideDropdown = (
     environmentsLoading: boolean,
     url: string,
 ) => {
-    if (environmentsLoading) return null;
+    if (environmentsLoading) return null
 
     if (Array.isArray(environmentResult?.result)) {
-        const environments = environmentResult.result.sort((a, b) =>
-            a.environmentName.localeCompare(b.environmentName),
-        );
+        const environments = environmentResult.result.sort((a, b) => a.environmentName.localeCompare(b.environmentName))
         return (
             <div>
                 {environments.map((env) => {
-                    let LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}`;
+                    let LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}`
                     return (
                         <NavLink key={env.environmentId} className="app-compose__nav-item" to={LINK}>
                             {env.environmentName}
                         </NavLink>
-                    );
+                    )
                 })}
             </div>
-        );
+        )
     } else {
         return (
             <div className="bcn-1 mt-8 pt-8 pb-8 pl-12 pr-12 cn-7">
@@ -624,26 +622,26 @@ const EnvironmentOverrideDropdown = (
                     Learn more
                 </a>
             </div>
-        );
+        )
     }
-};
+}
 
 function EnvironmentOverrideRouter() {
-    const { pathname } = useLocation();
-    const { appId } = useParams<{ appId }>();
-    const [collapsed, toggleCollapsed] = useState(false);
-    const previousPathName = usePrevious(pathname);
+    const { pathname } = useLocation()
+    const { appId } = useParams<{ appId }>()
+    const [collapsed, toggleCollapsed] = useState(false)
+    const previousPathName = usePrevious(pathname)
     const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(
         () => getAppOtherEnvironment(appId),
         [appId],
         !!appId,
-    );
-    const { url, path } = useRouteMatch();
+    )
+    const { url, path } = useRouteMatch()
     useEffect(() => {
         if (previousPathName && previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) {
-            reloadEnvironments();
+            reloadEnvironments()
         }
-    }, [pathname]);
+    }, [pathname])
 
     return (
         <div className="flex column left environment-routes-container top">
@@ -660,5 +658,5 @@ function EnvironmentOverrideRouter() {
                 </div>
             )}
         </div>
-    );
+    )
 }
