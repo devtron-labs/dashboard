@@ -9,7 +9,7 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
     return (
         <div>
             <div
-                className="flex fs-12 fw-6 ml-8 pb-12 pt-12 content-space cursor"
+                className="flex fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8 content-space cursor"
                 onClick={() => setCollapse(!collapsed)}
             >
                 {header}
@@ -34,7 +34,7 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
                     {options.map((e) => (
                         <div className="position-rel flex left cursor">
                             <Checkbox
-                                rootClassName="cursor bcn-0 ml-7 mb-0 mr-10 date-align-left--deprecate"
+                                rootClassName="cursor bcn-0 ml-7 h-32 fs-13 mb-0 mr-10"
                                 isChecked={value.filter((event) => event === e).length}
                                 value={'CHECKED'}
                                 onChange={() => onChange(e)}

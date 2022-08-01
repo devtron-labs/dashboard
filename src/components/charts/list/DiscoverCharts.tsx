@@ -114,7 +114,7 @@ function DiscoverChartList() {
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
     }, true)
-
+    
     useEffect(() => {
         if (!state.loading) {
             initialiseFromQueryParams(state.chartRepos)
@@ -203,7 +203,7 @@ function DiscoverChartList() {
                 {chartList.length > 0 && serverMode == SERVER_MODE.FULL && state.charts.length === 0 && (
                     <button
                         type="button"
-                        className="create-button cursor cb-5 fw-6 fs-13 br-4 pr-12 pl-12 scb-5 flex h-32 lh-n"
+                        className="create-button cursor cb-5 fw-6 fs-13 br-4 pr-12 pl-12 fcb-5 flex h-32 lh-n"
                         onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}
                     >
                         <Add className="icon-dim-18 mr-5" />
@@ -254,7 +254,7 @@ function DiscoverChartList() {
                 />
                 {!state.loading ? (
                     <div className="discover-charts__body">
-                        {typeof state.configureChartIndex != 'number' && (chartList.length || searchApplied) && (
+                        {typeof state.configureChartIndex != 'number' && (chartList.length || searchApplied || selectedChartRepo.length > 0) && (
                             <ChartHeaderFilter
                                 chartRepoList={state.chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
@@ -272,7 +272,7 @@ function DiscoverChartList() {
                             <Progressing pageLoader />
                         ) : (
                             <>
-                                {!chartList.length && !searchApplied ? (
+                                {!(chartList.length || searchApplied || selectedChartRepo.length > 0) ? (
                                     <div className="w-100" style={{ overflow: 'auto' }}>
                                         {typeof state.configureChartIndex === 'number' ? (
                                             <AdvancedConfig
@@ -318,7 +318,7 @@ function DiscoverChartList() {
                                                 </>
                                             ) : (
                                                 <div className={`${!isGrid ? 'chart-list-view ' : ''}`}>
-                                                    {serverMode == SERVER_MODE.FULL && (
+                                                    {serverMode == SERVER_MODE.FULL && !searchApplied && (
                                                         <ChartGroupListMin
                                                             chartGroups={state.chartGroups.slice(0, 4)}
                                                             showChartGroupModal={showChartGroupModal}
@@ -540,7 +540,7 @@ function ChartListHeader({
             <h3 className="chart-grid__title pl-20 pr-20 pt-16">
                 {charts.length === 0 ? 'All Charts' : 'Select Charts'}
             </h3>
-            <h5 className="form__subtitle mt-4 pl-20">
+            <p className="mb-0 mt-4 pl-20">
                 Select chart to deploy. &nbsp;
                 <a
                     className="learn-more__href"
@@ -550,7 +550,7 @@ function ChartListHeader({
                 >
                     Learn more about deploying charts
                 </a>
-            </h5>
+            </p>
         </div>
     )
 }
@@ -635,7 +635,7 @@ export function ChartGroupListMin({
                     <div className="flex content-space">
                         {renderCreateGroupButton()}
                         <div
-                            className="cb-5 fw-6 fs-13 flex pr-16 scb-5 cursor"
+                            className="cb-5 fw-6 fs-13 flex pr-16 fcb-5 cursor"
                             onClick={(e) => history.push(match.url + '/group')}
                         >
                             View all chart groups

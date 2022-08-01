@@ -350,7 +350,8 @@
 
 .filter-tab {
     overflow-y: auto;
-    height: calc(100% - 52px);
+    overflow-x: hidden;
+    height: calc(100% - 64px);
 }
 
 .chart-list-view {

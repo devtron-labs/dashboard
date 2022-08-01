@@ -68,7 +68,7 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
    
     return (
         <div className="filter-column-container">
-            <div className="mb-12 pl-12 pr-12 pt-16">
+            <div className="pb-12 pl-12 pr-12 pt-16">
                 <form onSubmit={(e) => handleFilterChanges(e, 'search')} className="search-column position-rel">
                     <Search className="search__icon icon-dim-18" />
                     <input
@@ -92,27 +92,27 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
                 </form>
             </div>
             <div className="pl-12 pr-12 filter-tab">
-                <div className="fs-12 fw-6 ml-8 pb-8 pt-8">VIEW AS</div>
+                <div className="fs-12 fw-6 ml-8 cn-6 pb-8 pt-8">VIEW AS</div>
                 <div className="cursor">
                     <div
                         onClick={() => setGrid(true)}
-                        className={`flex left pt-8 pb-8 pl-10 ${isGrid ? 'cb-5 bcb-1 scb-5' : ''}`}
+                        className={`flex left pt-8 pb-8 pl-10 fs-13 ${isGrid ? 'cb-5 bcb-1 scb-5' : ''}`}
                     >
-                        <Grid className="icon-dim-18 mr-12" />
+                        <Grid className="icon-dim-20 mr-12" />
                         Grid view
                     </div>
                     <div
                         onClick={() => setGrid(false)}
-                        className={`flex left pt-8 pb-8 pl-10 ${!isGrid ? 'cb-5 bcb-1 scb-5' : ''}`}
+                        className={`flex left pt-8 pb-8 fs-13 pl-10 ${!isGrid ? 'cb-5 bcb-1 scb-5' : ''}`}
                     >
-                        <List className="icon-dim-18 mr-12" />
+                        <List className="icon-dim-20 mr-12" />
                         List view (Detail)
                     </div>
                 </div>
-                <hr className="mt-0 mb-0" />
-                <div className="fs-12 h-36 pt-8 pb-8 fw-6 ml-8">FILTERS</div>
+                <hr className="mt-8 mb-8" />
+                <div className="fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8">FILTERS</div>
                 <Checkbox
-                    rootClassName="cursor bcn-0 ml-7 mr-10 mb-0 date-align-left--deprecate"
+                    rootClassName="cursor fs-13 bcn-0 ml-7 mr-10 mb-0 date-align-left--deprecate"
                     isChecked={includeDeprecated === 1}
                     value={'CHECKED'}
                     onChange={(event) => {
@@ -122,7 +122,7 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
                 >
                     <div className="ml-5"> Show deprecated charts</div>
                 </Checkbox>
-                <hr className="mt-0 mb-0" />
+                <hr className="mt-8 mb-8" />
                 <Accordian
                     header={'REPOSITORY'}
                     options={chartRepoList}
