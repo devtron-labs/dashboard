@@ -183,17 +183,15 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         if (payload.ciPipelineMaterial?.length) {
             for (let _cm of payload.ciPipelineMaterial) {
                 const regVal = this.state.regexValue[_cm.gitMaterialId]
-                if (regVal && _cm.source.regex) {
-                    const regExp = new RegExp(_cm.source.regex)
-
+                if (regVal && _cm.regex || _cm.source.regex) {
+                    const regExp = new RegExp(_cm.regex || _cm.source.regex)
                     if (!regExp.test(regVal)) {
                         this.setState({ isInvalidRegex: true, errorMessage: 'No matching value' })
                         return
                     }
                     _cm.type = SourceTypeMap.BranchFixed
                     _cm.value = regVal
-                    _cm.regex = _cm.source.regex
-
+                    _cm.regex = _cm.regex || _cm.source.regex
                     delete _cm['source']
                 }
             }
