@@ -111,6 +111,7 @@ function DiscoverChartList() {
     const isLeavingPageNotAllowed = useRef(false)
     const [showChartGroupModal, toggleChartGroupModal] = useState(false)
     const [isGrid, setGrid] = useState<boolean>(true)
+    const noChartAvailable : boolean   = chartList.length > 0 || searchApplied || selectedChartRepo.length > 0
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
     }, true)
@@ -254,7 +255,7 @@ function DiscoverChartList() {
                 />
                 {!state.loading ? (
                     <div className="discover-charts__body">
-                        {typeof state.configureChartIndex != 'number' && (chartList.length || searchApplied || selectedChartRepo.length > 0) && (
+                        {typeof state.configureChartIndex != 'number' && noChartAvailable && (
                             <ChartHeaderFilter
                                 chartRepoList={state.chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
@@ -272,7 +273,7 @@ function DiscoverChartList() {
                             <Progressing pageLoader />
                         ) : (
                             <>
-                                {!(chartList.length || searchApplied || selectedChartRepo.length > 0) ? (
+                                {!noChartAvailable ? (
                                     <div className="w-100" style={{ overflow: 'auto' }}>
                                         {typeof state.configureChartIndex === 'number' ? (
                                             <AdvancedConfig
@@ -318,18 +319,18 @@ function DiscoverChartList() {
                                                 </>
                                             ) : (
                                                 <div className={`${!isGrid ? 'chart-list-view ' : ''}`}>
-                                                    {serverMode == SERVER_MODE.FULL && !searchApplied && selectedChartRepo.length === 0 && (
-                                                        <ChartGroupListMin
-                                                            chartGroups={state.chartGroups.slice(0, 4)}
-                                                            showChartGroupModal={showChartGroupModal}
-                                                            toggleChartGroupModal={toggleChartGroupModal}
-                                                            isGrid={isGrid}
-                                                            renderCreateGroupButton={renderCreateGroupButton}
-                                                        />
-                                                    )}
-                                                    <ChartListHeader
-                                                        charts={state.charts}
-                                                    />
+                                                    {serverMode == SERVER_MODE.FULL &&
+                                                        !searchApplied &&
+                                                        selectedChartRepo.length === 0 && (
+                                                            <ChartGroupListMin
+                                                                chartGroups={state.chartGroups.slice(0, isGrid ? 5 : 1)}
+                                                                showChartGroupModal={showChartGroupModal}
+                                                                toggleChartGroupModal={toggleChartGroupModal}
+                                                                isGrid={isGrid}
+                                                                renderCreateGroupButton={renderCreateGroupButton}
+                                                            />
+                                                        )}
+                                                    <ChartListHeader charts={state.charts} />
                                                     {chartList.length ? (
                                                         <div className={`chart-grid ${!isGrid ? 'list-view' : ''}`}>
                                                             {chartList
