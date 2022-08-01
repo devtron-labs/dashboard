@@ -360,8 +360,6 @@
 }
 
 .create-button {
-    color: var(--B500);
     background: white;
     border: 1px solid var(--N200);
-    cursor: pointer;
 }

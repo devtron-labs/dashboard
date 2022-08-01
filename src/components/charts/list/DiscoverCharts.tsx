@@ -203,7 +203,7 @@ function DiscoverChartList() {
                 {chartList.length > 0 && serverMode == SERVER_MODE.FULL && state.charts.length === 0 && (
                     <button
                         type="button"
-                        className="create-button fw-6 fs-13 br-4 pr-12 pl-12 scb-5 flex h-32 lh-n"
+                        className="create-button cursor cb-5 fw-6 fs-13 br-4 pr-12 pl-12 scb-5 flex h-32 lh-n"
                         onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}
                     >
                         <Add className="icon-dim-18 mr-5" />
