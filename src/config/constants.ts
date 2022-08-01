@@ -77,6 +77,7 @@ export const Routes = {
     ENVIRONMENT_LIST_MIN_HELM_PROJECTS: 'env/autocomplete/helm',
 
     REFRESH_MATERIAL: 'app/ci-pipeline/refresh-material',
+    MATERIAL_BY_COMMIT_HASH: 'app/commit-info',
     APPLICATIONS: 'api/v1/applications',
     API_TOKEN: 'api-token',
     USER_CREATE: 'user/create',

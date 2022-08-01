@@ -1,5 +1,5 @@
 import React, { Component, createContext } from 'react';
-import { getCDMaterialList, getRollbackMaterialList, triggerCDNode, getCIMaterialList, triggerCINode, getWorkflowStatus, refreshGitMaterial, CDModalTab } from '../../service';
+import { getCDMaterialList, getRollbackMaterialList, triggerCDNode, getCIMaterialList, triggerCINode, getWorkflowStatus, refreshGitMaterial, CDModalTab, fetchGitMaterialByCommitHash } from '../../service';
 import { ServerErrors } from '../../../../modals/commonTypes';
 import { ErrorScreenManager, Progressing, showError } from '../../../common';
 import { getTriggerWorkflows } from './workflow.service';
@@ -30,6 +30,7 @@ export const TriggerViewContext = createContext({
     selectMaterial: (materialId) => { },
     toggleChanges: (materialId: string, hash: string) => { },
     toggleInvalidateCache: () => { },
+    fetchMaterialByCommit: (ciNodeId: number, pipelineName: string, materialId: number, commitHash: string) => { },
 });
 
 const TIME_STAMP_ORDER = {
@@ -67,6 +68,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.onClickCDMaterial = this.onClickCDMaterial.bind(this);
         this.changeTab = this.changeTab.bind(this);
         this.toggleInvalidateCache = this.toggleInvalidateCache.bind(this);
+        this.fetchMaterialByCommit = this.fetchMaterialByCommit.bind(this)
     }
 
     componentWillUnmount() {
@@ -113,6 +115,86 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
         }
     }
+
+    fetchMaterialByCommit(ciNodeId: number, pipelineName: string, gitMaterialId: number, commitHash = null) {
+      if (commitHash) {
+          // fetchGitMaterialByCommitHash(gitMaterialId.toString(), commitHash)
+          //     .then((response) => {
+          //       let state = { ...this.state };
+          //       state.code = response.code;
+          //       state.ciNodeId = + ciNodeId;
+          //       let workflowId;
+          //       let workflows = this.state.workflows.map((workflow) => {
+          //           workflow.nodes.map((node) => {
+          //               if (node.type === 'CI' && +node.id == state.ciNodeId) {
+          //                   workflowId = workflow.id;
+          //                       let selectMaterial = node.inputMaterialList.find((mat) => mat.isSelected);
+          //                       node.inputMaterialList = [node.inputMaterialList[0]]
+          //                       // node.inputMaterialList = response.result.map((material) => {
+          //                       //     return {
+          //                       //         ...material,
+          //                       //         isSelected: selectMaterial.id === material.id
+          //                       //     }
+          //                       // })
+          //                   return node;
+          //               }
+          //               else return node;
+          //           })
+          //           return workflow;
+          //       })
+
+          //       this.setState({
+          //           workflows: workflows,
+          //           ciNodeId: +ciNodeId,
+          //           ciPipelineName: pipelineName,
+          //           materialType: 'inputMaterialList',
+          //           showCIModal: true,
+          //           workflowId: workflowId,
+          //       }, () => {
+          //           this.getWorkflowStatus();
+          //           this.preventBodyScroll(true);
+          //       });
+          //     })
+          //     .catch((error: ServerErrors) => {
+          //         showError(error)
+          //     })
+          let state = { ...this.state };
+                state.code = 200;
+                state.ciNodeId = + ciNodeId;
+                let workflowId;
+                let workflows = this.state.workflows.map((workflow) => {
+                    workflow.nodes.map((node) => {
+                        if (node.type === 'CI' && +node.id == state.ciNodeId) {
+                            workflowId = workflow.id;
+                                node.inputMaterialList = node.inputMaterialList.map((material) => {
+                                  if(material.isSelected){
+                                    material.history =[material.history[0]]
+                                  }
+                                    return material
+                                })
+                            return node;
+                        }
+                        else return node;
+                    })
+                    return workflow;
+                })
+
+                this.setState({
+                    workflows: workflows,
+                    ciNodeId: +ciNodeId,
+                    ciPipelineName: pipelineName,
+                    materialType: 'inputMaterialList',
+                    showCIModal: true,
+                    workflowId: workflowId,
+                }, () => {
+                    this.getWorkflowStatus();
+                    this.preventBodyScroll(true);
+                });
+      } else {
+          this.onClickCIMaterial(ciNodeId.toString(), pipelineName, true)
+      }
+    }
+
     //NOTE: GIT MATERIAL ID
     refreshMaterial(ciNodeId: number, pipelineName: string, gitMaterialId: number) {
         let { workflows } = { ...this.state };
@@ -596,7 +678,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             this.setState({ webhhookTimeStampOrder: TIME_STAMP_ORDER.DESCENDING })
         }
     }
-    
+
     toggleWebhookModal = (id, webhhookTimeStampOrder) => {
         this.setState({ isWebhookPayloadLoading: true })
         getCIWebhookRes(id, this.state.webhhookTimeStampOrder).then((result) => {
@@ -726,6 +808,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 selectMaterial: this.selectMaterial,
                 toggleChanges: this.toggleChanges,
                 toggleInvalidateCache: this.toggleInvalidateCache,
+                fetchMaterialByCommit: this.fetchMaterialByCommit,
             }} >
                 {this.renderHostErrorMessage()}
                 {this.renderWorkflow()}

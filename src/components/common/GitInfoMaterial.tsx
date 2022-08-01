@@ -7,6 +7,8 @@ import CiWebhookModal from '../app/details/triggerView/CiWebhookDebuggingModal';
 import { ReactComponent as Back } from '../../assets/icons/ic-back.svg';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as Right } from '../../assets/icons/ic-arrow-left.svg';
+import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
+import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
 
 export default function GitInfoMaterial({
@@ -24,6 +26,9 @@ export default function GitInfoMaterial({
     hideWebhookModal,
     workflowId,
 }) {
+  const [noResults, setNoResults] = useState(false)
+  const [searchText, setSearchText] = useState('')
+  const [searchApplied, setSearchApplied] = useState(false)
     function renderMaterialHeader(material: CIMaterialType) {
         return (
             <div className="trigger-modal__header">
@@ -75,6 +80,53 @@ export default function GitInfoMaterial({
             </div>
         );
     }
+    const handleFilterChanges = (_searchText: string): void => {
+      //const _filteredData = clusterList.filter((cluster) => cluster.name.indexOf(_searchText) >= 0)
+      //setFilteredClusterList(_filteredData)
+      //setNoResults(_filteredData.length === 0)
+      context.fetchMaterialByCommit(pipelineId, title, selectedMaterial.gitMaterialId, _searchText)
+  }
+
+  const clearSearch = (): void => {
+      if (searchApplied) {
+          handleFilterChanges('')
+          setSearchApplied(false)
+      }
+      setSearchText('')
+  }
+
+  const handleFilterKeyPress = (event): void => {
+      const theKeyCode = event.key
+      if (theKeyCode === 'Enter') {
+          handleFilterChanges(event.target.value)
+          setSearchApplied(true)
+      } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
+          clearSearch()
+      }
+  }
+
+  const renderSearch = (): JSX.Element => {
+      return (
+          <div className="search position-rel mt-12 en-2 bw-1 br-4 h-32" style={{ marginRight: '20px' }}>
+              <Search className="search__icon icon-dim-18" />
+              <input
+                  type="text"
+                  placeholder="Search clusters"
+                  value={searchText}
+                  className="search__input"
+                  onChange={(event) => {
+                      setSearchText(event.target.value)
+                  }}
+                  onKeyDown={handleFilterKeyPress}
+              />
+              {searchApplied && (
+                  <button className="search__clear-button" type="button" onClick={clearSearch}>
+                      <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                  </button>
+              )}
+          </div>
+      )
+  }
 
     function renderMaterialHistory(context, material: CIMaterialType) {
         let anyCommit = material.history && material.history.length > 0;
@@ -106,7 +158,10 @@ export default function GitInfoMaterial({
         } else
             return (
                 <div className="select-material select-material--trigger-view">
-                    <div className="material-list__title pb-0">Select Material</div>
+                    <div className="flexbox content-space">
+                        <div className="material-list__title mt-4">Select Material</div>
+                        {renderSearch()}
+                    </div>
                     {material.type === SourceTypeMap.WEBHOOK && (
                         <div className="cn-7 fs-12 fw-0 pl-20 flex left">
                             Showing results matching &nbsp;
