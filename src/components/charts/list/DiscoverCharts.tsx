@@ -318,7 +318,7 @@ function DiscoverChartList() {
                                                 </>
                                             ) : (
                                                 <div className={`${!isGrid ? 'chart-list-view ' : ''}`}>
-                                                    {serverMode == SERVER_MODE.FULL && !searchApplied && (
+                                                    {serverMode == SERVER_MODE.FULL && !searchApplied && selectedChartRepo.length === 0 && (
                                                         <ChartGroupListMin
                                                             chartGroups={state.chartGroups.slice(0, 4)}
                                                             showChartGroupModal={showChartGroupModal}
