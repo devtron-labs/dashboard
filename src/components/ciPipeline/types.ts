@@ -331,6 +331,7 @@ export interface MaterialType {
     gitHostId: number
     gitProviderId: number
     regex?: string
+    isRegex: boolean
 }
 
 export interface Githost {

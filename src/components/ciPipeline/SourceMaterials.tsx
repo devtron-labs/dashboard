@@ -94,8 +94,8 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
         <>
             <p className="cn-9 fw-6 fs-14 lh-1-43 mb-18">Select code source</p>
             {_materials.map((mat, index) => {
-                const isBranchRegex = mat.type === SourceTypeMap.BranchRegex
-                const isBranchFixed = mat.type === SourceTypeMap.BranchFixed
+                const isBranchRegex = mat.type === SourceTypeMap.BranchRegex || mat.isRegex
+                const isBranchFixed = mat.type === SourceTypeMap.BranchFixed && !mat.isRegex
                 let selectedMaterial
 
                 if (props.ciPipelineSourceTypeOptions.length == 1) {

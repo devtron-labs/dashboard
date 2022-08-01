@@ -82,7 +82,7 @@ export interface CIMaterialState {
     isInvalidRegex: boolean
     errorMessage: string
     selectedCIPipeline?: any
-    isChangeBranchClicked: boolean
+    isChangeBranchClicked: number
 }
 
 export interface NodeAttr {

@@ -309,6 +309,7 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: G
                 isSelected: true,
                 gitHostId: gitHost ? gitHost.id : 0,
                 regex: mat.source.regex,
+                isRegex: mat.isRegex,
             }
         })
     }
@@ -329,6 +330,7 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: G
                 isSelected: true,
                 gitHostId: mat.gitHostId,
                 gitProviderId: mat.gitProviderId,
+                isRegex: mat.isRegex,
             })
         }
     }

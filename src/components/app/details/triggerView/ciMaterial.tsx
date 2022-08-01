@@ -9,20 +9,13 @@ import Tippy from '@tippyjs/react'
 import { MaterialHistory, CIMaterialType } from '../../details/triggerView/MaterialHistory'
 import { MaterialSource } from '../../details/triggerView/MaterialSource'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
-import { ReactComponent as GitLab } from '../../../../assets/icons/git/gitlab.svg'
-import { ReactComponent as Git } from '../../../../assets/icons/git/git.svg'
-import { ReactComponent as GitHub } from '../../../../assets/icons/git/github.svg'
-import { ReactComponent as BitBucket } from '../../../../assets/icons/git/bitbucket.svg'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import RightArrow from '../../../../assets/icons/ic-arrow-forward.svg'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
-import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
 import { getCIPipeline, saveCIPipeline, savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { SourceTypeMap } from '../../../../config'
 import { getCIMaterialList } from '../../service'
 import { toast } from 'react-toastify'
 import { ServerErrors } from '../../../../modals/commonTypes'
 import { PatchAction } from '../../../ciPipeline/types'
+import BranchRegexModal from './BranchRegexModal'
 
 export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     constructor(props) {
@@ -33,7 +26,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             isInvalidRegex: false,
             errorMessage: '',
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.workflowId),
-            isChangeBranchClicked: false,
+            isChangeBranchClicked: 0,
         }
     }
 
@@ -138,9 +131,9 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         )
     }
 
-    setBranchChanged = () => {
+    setShowBranchChanged = () => {
         this.setState({
-            isChangeBranchClicked: true,
+            isChangeBranchClicked: 1,
         })
     }
 
@@ -171,30 +164,13 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                             workflowId={this.props.workflowId}
                             onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
                             ciPipeline={this.state.selectedCIPipeline}
-                            setBranchChanged={this.setBranchChanged}
+                            setShowBranchChanged={this.setShowBranchChanged}
                         />
                     </div>
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(context, canTrigger)}
                 </>
             )
         }
-    }
-
-    renderBranchRegexMaterialHeader(close) {
-        return (
-            <div className="trigger-modal__header">
-                <h1 className="modal__title flex left fs-16">{this.props.title}</h1>
-                <button
-                    type="button"
-                    className="transparent"
-                    onClick={() => {
-                        close()
-                    }}
-                >
-                    <Close className="" />
-                </button>
-            </div>
-        )
     }
 
     onClickNextButton = (context) => {
@@ -239,24 +215,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             })
     }
 
-    renderMaterialRegexFooterNextButton = (material, context) => {
-        return (
-            <div className="trigger-modal__trigger flex right">
-                <button
-                    className="cta"
-                    onClick={(e) => {
-                        // e.stopPropagation()
-
-                        this.onClickNextButton(context)
-                    }}
-                >
-                    Next
-                    <img className="icon-dim-16 ml-8 scn-0" src={RightArrow} />
-                </button>
-            </div>
-        )
-    }
-
     handleRegexInputValue = (id, value) => {
         this.setState((prevState) => {
             return {
@@ -266,96 +224,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 },
             }
         })
-    }
-
-    renderValidationErrorLabel = (message?: string): JSX.Element => {
-        return (
-            <div className="error-label flex left align-start fs-11 fw-4 mt-6 ml-36">
-                <Error className="icon-dim-16" />
-                <div className="ml-4 cr-5">{message}</div>
-            </div>
-        )
-    }
-
-    getBranchRegexName = (gitMaterialId: number) => {
-        if (Array.isArray(this.state.selectedCIPipeline?.ciMaterial)) {
-            for (let _ciMaterial of this.state.selectedCIPipeline.ciMaterial) {
-                if (_ciMaterial.gitMaterialId === gitMaterialId && _ciMaterial.source) {
-                    if (_ciMaterial.source.type === SourceTypeMap.BranchRegex) {
-                        return _ciMaterial.source.regex
-                    }
-                }
-            }
-        }
-        return ''
-    }
-
-    renderBranchRegexModal = (material, context) => {
-        return (
-            <>
-                <div>{this.renderBranchRegexMaterialHeader(context.closeCIModal)}</div>
-
-                <div className="select-material--regex-body m-20 fs-13">
-                    <div className="flex left">
-                        {this.state.isChangeBranchClicked && (
-                            <div onClick={this.props.onShowCIModal}>
-                                <LeftIcon className="rotate icon-dim-20 mr-16 cursor" />
-                            </div>
-                        )}
-
-                        <div>
-                            <h4 className="mb-0 fw-6 ">Set a primary branch</h4>
-                            <p className="mt-4">
-                                Primary branch will be used to trigger automatic builds on every commit. This can be
-                                changed later.
-                            </p>
-                        </div>
-                    </div>
-
-                    {material &&
-                        material.map((mat, index) => {
-                            return (
-                                <div className="border-bottom pb-20 pt-20" key={`regex_${index}`}>
-                                    <div className="flex left">
-                                        <span className="mr-14">
-                                            {mat.gitMaterialUrl.includes('gitlab') ? <GitLab /> : null}
-                                            {mat.gitMaterialUrl.includes('github') ? <GitHub /> : null}
-                                            {mat.gitMaterialUrl.includes('bitbucket') ? <BitBucket /> : null}
-                                            {mat.gitMaterialUrl.includes('gitlab') ||
-                                            mat.gitMaterialUrl.includes('github') ||
-                                            mat.gitMaterialUrl.includes('bitbucket') ? null : (
-                                                <Git />
-                                            )}
-                                        </span>
-                                        <span>
-                                            <div className="fw-6 fs-14">{mat.gitMaterialName}</div>
-                                            <div className="pb-12">
-                                                Use branch name matching &nbsp;
-                                                <span className="fw-6">
-                                                    {this.getBranchRegexName(mat.gitMaterialId)}
-                                                </span>
-                                            </div>
-                                        </span>
-                                    </div>
-                                    <input
-                                        tabIndex={1}
-                                        placeholder="Enter branch name matching regex"
-                                        className="form__input ml-36 w-95"
-                                        name="name"
-                                        value={this.state.regexValue[mat.gitMaterialId]}
-                                        onChange={(e) => this.handleRegexInputValue(mat.gitMaterialId, e.target.value)}
-                                        autoFocus
-                                        autoComplete="off"
-                                    />
-                                    {this.state.isInvalidRegex &&
-                                        this.renderValidationErrorLabel(this.state.errorMessage)}
-                                </div>
-                            )
-                        })}
-                </div>
-                {this.props.showWebhookModal ? null : this.renderMaterialRegexFooterNextButton(material, context)}
-            </>
-        )
     }
 
     render() {
@@ -370,8 +238,25 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                                     e.stopPropagation()
                                 }}
                             >
-                                {this.props.showMaterialRegexModal &&
-                                    this.renderBranchRegexModal(this.props.material, context)}
+                                {
+                                    this.props.showMaterialRegexModal && (
+                                        <BranchRegexModal
+                                            material={this.props.material}
+                                            selectedCIPipeline={this.state.selectedCIPipeline}
+                                            showWebhookModal={this.props.showWebhookModal}
+                                            title={this.props.title}
+                                            isChangeBranchClicked={this.state.isChangeBranchClicked}
+                                            isInvalidRegex={this.state.isInvalidRegex}
+                                            context={context}
+                                            onClickNextButton={this.onClickNextButton}
+                                            onShowCIModal={this.props.onShowCIModal}
+                                            handleRegexInputValue={this.handleRegexInputValue}
+                                            regexValue={this.state.regexValue}
+                                            errorMessage={this.state.errorMessage}
+                                        />
+                                    )
+                                    // this.renderBranchRegexModal(this.props.material, context)
+                                }
                                 {this.props.showCIModal && this.renderCIModal(context)}
                             </div>
                         </VisibleModal>

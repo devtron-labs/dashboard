@@ -26,7 +26,7 @@ export default function GitInfoMaterial({
     workflowId,
     onClickShowBranchRegexModal,
     ciPipeline,
-    setBranchChanged,
+    setShowBranchChanged,
 }) {
     function renderMaterialHeader() {
         return (
@@ -156,8 +156,7 @@ export default function GitInfoMaterial({
     const isBranchRegex = (material: CIMaterialType) => {
         for (let mat of ciPipeline.ciMaterial) {
             if (mat.gitMaterialId === material.gitMaterialId) {
-                // return mat.source?.some((_source) => _source.type === SourceTypeMap.BranchRegex)
-                return mat.source?.type === SourceTypeMap.BranchRegex
+                return mat.source?.type === SourceTypeMap.BranchRegex || mat.isRegex
             }
         }
 
@@ -165,8 +164,8 @@ export default function GitInfoMaterial({
     }
 
     const onClickChangebranch = (isBranchChangedClicked) => {
-        setBranchChanged()
-        onClickShowBranchRegexModal()
+        setShowBranchChanged()
+        onClickShowBranchRegexModal(isBranchChangedClicked)
     }
 
     const renderBranchChangeHeader = (material: CIMaterialType) => {

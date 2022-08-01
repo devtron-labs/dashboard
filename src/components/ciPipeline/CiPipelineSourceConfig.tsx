@@ -6,15 +6,25 @@ import { SourceTypeMap } from '../../config'
 import { getWebhookEventsForEventId } from '../../services/service'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
 
+export interface CIPipelineSourceConfigInterface {
+    sourceType
+    sourceValue
+    showTooltip?: boolean
+    showIcons?: boolean
+    baseText?: string
+    regex?: string
+}
+
 export function CiPipelineSourceConfig({
     sourceType,
     sourceValue,
     showTooltip,
     showIcons = true,
     baseText = undefined,
-}) {
+    regex,
+}: CIPipelineSourceConfigInterface) {
     let _isWebhook = sourceType === SourceTypeMap.WEBHOOK
-    let _isRegex = sourceType === SourceTypeMap.BranchRegex
+    let _isRegex = sourceType === SourceTypeMap.BranchRegex || !!regex
 
     const [sourceValueBase, setSourceValueBase] = useState(_isWebhook ? '' : sourceValue)
     const [sourceValueAdv, setSourceValueAdv] = useState(_isWebhook ? '' : sourceValue)
@@ -96,7 +106,7 @@ export function CiPipelineSourceConfig({
                             <div>
                                 {!baseText && (
                                     <div className="flex left">
-                                        <div className="ellipsis-right">{sourceValueBase}</div>{' '}
+                                        <div className="ellipsis-right">{sourceValueBase}</div>
                                         <Info className="icon-dim-12 fcn-5 ml-4" />
                                     </div>
                                 )}
