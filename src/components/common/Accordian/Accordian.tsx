@@ -3,7 +3,7 @@ import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-dow
 import { Checkbox } from '../formFields/Checkbox'
 import help from '../../../assets/icons/ic-help-green.svg'
 
-export function Accordian({ header, options, value, onChange }) {
+export function Accordian({ header, options, value, onChange, onClickViewChartButton }) {
     const [collapsed, setCollapse] = useState<boolean>(true)
 
     return (
@@ -24,7 +24,7 @@ export function Accordian({ header, options, value, onChange }) {
                         <img src={help} alt="add-worflow" className="icon-dim-16 fcv-5" />
                         <span className="ml-10 fw-4 lh-18 fs-12 ">
                             To install charts from your own chart repo,
-                            <a target="_blank" className="cursor onlink">
+                            <a target="_blank" onClick={onClickViewChartButton} className="cursor onlink">
                                 Connect chart repository
                             </a>
                         </span>

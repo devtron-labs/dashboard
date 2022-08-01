@@ -9,6 +9,7 @@ import { ReactComponent as List } from '../../assets/icons/ic-list-view.svg'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import { QueryParams } from './charts.util';
 import { Accordian } from '../common/Accordian/Accordian';
+import { URLS } from '../../config';
 
 function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprecated, chartRepoList, setSelectedChartRepo, appStoreName, setAppStoreName, searchApplied, isGrid, setGrid }) {
     const match = useRouteMatch()
@@ -22,6 +23,10 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
         selectedChartRepo.length === chartRepoList.length
             ? handleFilterChanges([event, ...selectedChartRepo], 'chart-repo')
             : handleFilterChanges(chartRepoList, 'chart-repo')
+    }
+
+    const handleViewAllCharts = () => {
+        history.push(`${match.url.split('/chart-store')[0]}${URLS.GLOBAL_CONFIG_CHART}`)
     }
 
     function handleFilterChanges(selected, key): void {
@@ -123,6 +128,7 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
                     options={chartRepoList}
                     value={selectedChartRepo}
                     onChange={handleSelection}
+                    onClickViewChartButton={handleViewAllCharts}
                 />
             </div>
         </div>
