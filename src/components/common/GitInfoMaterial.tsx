@@ -169,7 +169,6 @@ export default function GitInfoMaterial({
                     </div>
                 ) : (
                     <>
-                        {' '}
                         {material.type === SourceTypeMap.WEBHOOK && (
                             <div className="cn-7 fs-12 fw-0 pl-20 flex left">
                                 Showing results matching &nbsp;
