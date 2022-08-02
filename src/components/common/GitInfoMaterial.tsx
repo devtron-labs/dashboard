@@ -137,7 +137,7 @@ export default function GitInfoMaterial({
         return (
             <div className="select-material select-material--trigger-view">
                 <div className="flexbox content-space">
-                    <div className="material-list__title mt-4">Select Material</div>
+                    <div className="material-list__title mt-4">Select commit to build</div>
                     {!material.isRepoError && !material.isBranchError && renderSearch()}
                 </div>
                 {material.isMaterialLoading ||
