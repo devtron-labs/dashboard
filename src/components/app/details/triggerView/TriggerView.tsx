@@ -1,10 +1,10 @@
 import React, { Component, createContext } from 'react';
 import { getCDMaterialList, getRollbackMaterialList, triggerCDNode, getCIMaterialList, triggerCINode, getWorkflowStatus, refreshGitMaterial, CDModalTab, fetchGitMaterialByCommitHash } from '../../service';
 import { ServerErrors } from '../../../../modals/commonTypes';
-import { ErrorScreenManager, Progressing, showError } from '../../../common';
+import { createGitCommitUrl, ErrorScreenManager, ISTTimeModal, Progressing, showError } from '../../../common';
 import { getTriggerWorkflows } from './workflow.service';
 import { Workflow } from './workflow/Workflow';
-import { NodeAttr, TriggerViewProps, TriggerViewState, CDMdalTabType } from './types';
+import { NodeAttr, TriggerViewProps, TriggerViewState, CDMdalTabType, WorkflowType } from './types';
 import { CIMaterial } from './ciMaterial';
 import { CDMaterial } from './cdMaterial';
 import { URLS, ViewType, SourceTypeMap } from '../../../../config';
@@ -16,6 +16,7 @@ import { getLastExecutionByArtifactAppEnv } from '../../../../services/service';
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg';
 import { getHostURLConfiguration } from '../../../../services/service';
 import { getCIWebhookRes } from './ciWebhook.service'
+import { CIMaterialType } from './MaterialHistory';
 
 export const TriggerViewContext = createContext({
     invalidateCache: false,
@@ -116,80 +117,73 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }
     }
 
-    fetchMaterialByCommit(ciNodeId: number, pipelineName: string, gitMaterialId: number, commitHash = null) {
+    fetchCommitHistoryFromDB(ciNodeId: number, pipelineName: string, ciPipelineMaterialId: number, commitHash: string,workflows: WorkflowType[], workflowId: number, _selectedMaterial: CIMaterialType){
+      fetchGitMaterialByCommitHash(ciPipelineMaterialId.toString(), commitHash)
+          .then((response) => {
+              const _result = response.result
+              if (_result) {
+                  _selectedMaterial.history = [
+                      {
+                          commitURL: _selectedMaterial.gitURL
+                              ? createGitCommitUrl(_selectedMaterial.gitURL, _result.Commit)
+                              : '',
+                          commit: _result.Commit || '',
+                          author: _result.Author || '',
+                          date: _result.Date ? ISTTimeModal(_result.Date, false) : '',
+                          message: _result.Message || '',
+                          changes: _result.Changes || [],
+                          showChanges: true,
+                          webhookData: _result.WebhookData,
+                          isSelected: true,
+                      },
+                  ]
+              } else {
+                _selectedMaterial.history =[]
+              }
+              this.setState({
+                  workflows: workflows,
+              })
+          })
+          .catch((error: ServerErrors) => {
+              showError(error)
+          })
+    }
+
+    fetchMaterialByCommit(ciNodeId: number, pipelineName: string, ciPipelineMaterialId: number, commitHash = null) {
       if (commitHash) {
-          // fetchGitMaterialByCommitHash(gitMaterialId.toString(), commitHash)
-          //     .then((response) => {
-          //       let state = { ...this.state };
-          //       state.code = response.code;
-          //       state.ciNodeId = + ciNodeId;
-          //       let workflowId;
-          //       let workflows = this.state.workflows.map((workflow) => {
-          //           workflow.nodes.map((node) => {
-          //               if (node.type === 'CI' && +node.id == state.ciNodeId) {
-          //                   workflowId = workflow.id;
-          //                       let selectMaterial = node.inputMaterialList.find((mat) => mat.isSelected);
-          //                       node.inputMaterialList = [node.inputMaterialList[0]]
-          //                       // node.inputMaterialList = response.result.map((material) => {
-          //                       //     return {
-          //                       //         ...material,
-          //                       //         isSelected: selectMaterial.id === material.id
-          //                       //     }
-          //                       // })
-          //                   return node;
-          //               }
-          //               else return node;
-          //           })
-          //           return workflow;
-          //       })
-
-          //       this.setState({
-          //           workflows: workflows,
-          //           ciNodeId: +ciNodeId,
-          //           ciPipelineName: pipelineName,
-          //           materialType: 'inputMaterialList',
-          //           showCIModal: true,
-          //           workflowId: workflowId,
-          //       }, () => {
-          //           this.getWorkflowStatus();
-          //           this.preventBodyScroll(true);
-          //       });
-          //     })
-          //     .catch((error: ServerErrors) => {
-          //         showError(error)
-          //     })
-          let state = { ...this.state };
-                state.code = 200;
-                state.ciNodeId = + ciNodeId;
-                let workflowId;
-                let workflows = this.state.workflows.map((workflow) => {
-                    workflow.nodes.map((node) => {
-                        if (node.type === 'CI' && +node.id == state.ciNodeId) {
-                            workflowId = workflow.id;
-                                node.inputMaterialList = node.inputMaterialList.map((material) => {
-                                  if(material.isSelected){
-                                    material.history =[material.history[0]]
-                                  }
-                                    return material
-                                })
-                            return node;
-                        }
-                        else return node;
-                    })
-                    return workflow;
-                })
-
-                this.setState({
-                    workflows: workflows,
-                    ciNodeId: +ciNodeId,
-                    ciPipelineName: pipelineName,
-                    materialType: 'inputMaterialList',
-                    showCIModal: true,
-                    workflowId: workflowId,
-                }, () => {
-                    this.getWorkflowStatus();
-                    this.preventBodyScroll(true);
-                });
+          let state = { ...this.state }
+          state.ciNodeId = +ciNodeId
+          let workflowId
+          let _selectedMaterial
+          let workflows = this.state.workflows.map((workflow) => {
+              workflow.nodes.map((node) => {
+                  if (node.type === 'CI' && +node.id == state.ciNodeId) {
+                      workflowId = workflow.id
+                      node.inputMaterialList = node.inputMaterialList.map((material) => {
+                          if (material.isSelected) {
+                              _selectedMaterial = material
+                          }
+                          return material
+                      })
+                      return node
+                  } else return node
+              })
+              return workflow
+          })
+          const commitInLocalHistory = _selectedMaterial.history.find((material) => material.commit === commitHash)
+          if (commitInLocalHistory) {
+              _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: true }]
+          } else {
+              this.fetchCommitHistoryFromDB(
+                  ciNodeId,
+                  pipelineName,
+                  ciPipelineMaterialId,
+                  commitHash,
+                  workflows,
+                  workflowId,
+                  _selectedMaterial,
+              )
+          }
       } else {
           this.onClickCIMaterial(ciNodeId.toString(), pipelineName, true)
       }

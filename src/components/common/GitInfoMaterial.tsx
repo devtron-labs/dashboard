@@ -84,7 +84,7 @@ export default function GitInfoMaterial({
       //const _filteredData = clusterList.filter((cluster) => cluster.name.indexOf(_searchText) >= 0)
       //setFilteredClusterList(_filteredData)
       //setNoResults(_filteredData.length === 0)
-      context.fetchMaterialByCommit(pipelineId, title, selectedMaterial.gitMaterialId, _searchText)
+      context.fetchMaterialByCommit(pipelineId, title, selectedMaterial.id, _searchText)
   }
 
   const clearSearch = (): void => {

@@ -306,16 +306,7 @@ export function refreshGitMaterial(gitMaterialId: string) {
 
 export function fetchGitMaterialByCommitHash(gitMaterialId: string, commitHash: string) {
     const URL = `${Routes.MATERIAL_BY_COMMIT_HASH}/${gitMaterialId}/${commitHash}`
-    return get(URL).then((response) => {
-        return {
-            code: response.code,
-            result: {
-                message: response.result.message || '',
-                errorMsg: response.result.errorMsg || '',
-                lastFetchTime: response.result.lastFetchTime ? handleUTCTime(response.result.lastFetchTime, true) : '',
-            },
-        }
-    })
+    return get(URL)
 }
 
 export const getCDTriggerStatus = (appId) => {
