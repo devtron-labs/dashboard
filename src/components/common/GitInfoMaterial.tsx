@@ -29,9 +29,12 @@ export default function GitInfoMaterial({
   const [searchText, setSearchText] = useState('')
   const [searchApplied, setSearchApplied] = useState(false)
   useEffect(() => {
-    if (selectedMaterial?.searchText !== searchText) {
-        setSearchText(selectedMaterial.searchText)
+    if(!selectedMaterial || !selectedMaterial.searchText){
+      setSearchText('')
+    } else if(selectedMaterial.searchText !== searchText){
+      setSearchText(selectedMaterial.searchText)
     }
+
   }, [selectedMaterial])
 
     function renderMaterialHeader(material: CIMaterialType) {
