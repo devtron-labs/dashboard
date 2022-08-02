@@ -636,7 +636,7 @@ export function ChartGroupListMin({
                     <div className="flex content-space">
                         {renderCreateGroupButton()}
                         <div
-                            className="cb-5 fw-6 fs-13 flex pr-16 fcb-5 cursor"
+                            className="cb-5 fw-6 fs-13 flex fcb-5 cursor"
                             onClick={(e) => history.push(match.url + '/group')}
                         >
                             View all chart groups
