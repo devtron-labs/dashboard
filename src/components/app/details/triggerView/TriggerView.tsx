@@ -117,7 +117,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }
     }
 
-    fetchCommitHistoryFromDB(ciNodeId: number, pipelineName: string, ciPipelineMaterialId: number, commitHash: string,workflows: WorkflowType[], workflowId: number, _selectedMaterial: CIMaterialType){
+    fetchCommitHistoryFromDB(ciPipelineMaterialId: number, commitHash: string,workflows: WorkflowType[], _selectedMaterial: CIMaterialType){
       fetchGitMaterialByCommitHash(ciPipelineMaterialId.toString(), commitHash)
           .then((response) => {
               const _result = response.result
@@ -137,8 +137,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                           isSelected: true,
                       },
                   ]
+                  _selectedMaterial.isMaterialLoading = false
               } else {
-                _selectedMaterial.history =[]
+                  _selectedMaterial.history = []
+                  _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.gitMaterialName}’`
+                  _selectedMaterial.noSearchResult = true
+                  _selectedMaterial.isMaterialLoading = false
               }
               this.setState({
                   workflows: workflows,
@@ -161,6 +165,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                       workflowId = workflow.id
                       node.inputMaterialList = node.inputMaterialList.map((material) => {
                           if (material.isSelected) {
+                              material.isMaterialLoading = true
+                              material.searchText = commitHash
                               _selectedMaterial = material
                           }
                           return material
@@ -173,16 +179,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
           const commitInLocalHistory = _selectedMaterial.history.find((material) => material.commit === commitHash)
           if (commitInLocalHistory) {
               _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: true }]
+              _selectedMaterial.isMaterialLoading = false
           } else {
-              this.fetchCommitHistoryFromDB(
-                  ciNodeId,
-                  pipelineName,
-                  ciPipelineMaterialId,
-                  commitHash,
-                  workflows,
-                  workflowId,
-                  _selectedMaterial,
-              )
+              this.fetchCommitHistoryFromDB(ciPipelineMaterialId, commitHash, workflows, _selectedMaterial)
           }
       } else {
           this.onClickCIMaterial(ciNodeId.toString(), pipelineName, true)
@@ -521,6 +520,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
                         return {
                             ...material,
+                            searchText: material.searchText || '',
                             isSelected: material.id == materialId
                         }
                     })

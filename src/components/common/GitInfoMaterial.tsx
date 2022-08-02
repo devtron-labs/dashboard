@@ -26,9 +26,14 @@ export default function GitInfoMaterial({
     hideWebhookModal,
     workflowId,
 }) {
-  const [noResults, setNoResults] = useState(false)
   const [searchText, setSearchText] = useState('')
   const [searchApplied, setSearchApplied] = useState(false)
+  useEffect(() => {
+    if (selectedMaterial.searchText !== searchText) {
+        setSearchText(selectedMaterial.searchText)
+    }
+  }, [selectedMaterial])
+
     function renderMaterialHeader(material: CIMaterialType) {
         return (
             <div className="trigger-modal__header">
@@ -81,9 +86,6 @@ export default function GitInfoMaterial({
         );
     }
     const handleFilterChanges = (_searchText: string): void => {
-      //const _filteredData = clusterList.filter((cluster) => cluster.name.indexOf(_searchText) >= 0)
-      //setFilteredClusterList(_filteredData)
-      //setNoResults(_filteredData.length === 0)
       context.fetchMaterialByCommit(pipelineId, title, selectedMaterial.id, _searchText)
   }
 
@@ -130,7 +132,7 @@ export default function GitInfoMaterial({
 
     function renderMaterialHistory(context, material: CIMaterialType) {
         let anyCommit = material.history && material.history.length > 0;
-        if (material.isMaterialLoading || material.isRepoError || material.isBranchError || !anyCommit) {
+        if (material.isMaterialLoading || material.isRepoError || material.isBranchError || material.noSearchResult || !anyCommit) {
             //Error or Empty State
             return (
                 <div className="select-material select-material--trigger-view">
@@ -151,6 +153,9 @@ export default function GitInfoMaterial({
                                 context.onClickCIMaterial(pipelineId, pipelineName);
                             }}
                             anyCommit={anyCommit}
+                            noSearchResults={material.noSearchResult}
+                            noSearchResultsMsg={material.noSearchResultsMsg}
+                            clearSearch={clearSearch}
                         />
                     </div>
                 </div>
