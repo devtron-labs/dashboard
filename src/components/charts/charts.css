@@ -163,7 +163,8 @@
 }
 
 .chart-grid--chart-group-snapshot {
-    min-height: 232px;
+    height: 232px;
+    overflow: hidden;
 }
 
 .chart-group__view-all {
