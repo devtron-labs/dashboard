@@ -150,6 +150,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
           })
           .catch((error: ServerErrors) => {
               showError(error)
+              _selectedMaterial.isMaterialLoading = false
           })
     }
 
