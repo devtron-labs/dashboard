@@ -39,6 +39,8 @@ export class Workflow extends Component<WorkflowProps> {
                 url={node.url}
                 downstreams={node.downstreams}
                 sourceType={node.sourceType}
+                regex={node.regex}
+                isRegex={node.isRegex}
             />
         )
     }

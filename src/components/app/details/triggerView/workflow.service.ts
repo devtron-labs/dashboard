@@ -66,6 +66,7 @@ export interface CiMaterial {
     gitMaterialId: number
     id: number
     gitMaterialName: string
+    isRegex?: boolean
 }
 
 export interface CiScript {
@@ -404,6 +405,13 @@ function toWorkflowType(workflow: Workflow): WorkflowType {
     } as WorkflowType
 }
 
+const getStaticCurrentBranchName = (ciMaterial) => {
+    if (window.location.href.includes('trigger')) {
+        return ciMaterial?.source?.value || ciMaterial?.source?.regex || ''
+    }
+    return ciMaterial?.source?.regex || ciMaterial?.source?.value || ''
+}
+
 function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions): NodeAttr {
     let sourceNodes = (ciPipeline?.ciMaterial ?? []).map((ciMaterial) => {
         let materialName = ciMaterial.gitMaterialName || ''
@@ -420,10 +428,12 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
             downstreams: [`CI-${ciPipeline.id}`],
             type: 'GIT',
             icon: 'git',
-            branch: ciMaterial?.source?.value ?? (ciMaterial?.source?.regex || ''),
+            branch: getStaticCurrentBranchName(ciMaterial),
             sourceType: ciMaterial?.source?.type ?? '',
             x: 0,
             y: 0,
+            regex: ciMaterial?.source?.regex,
+            isRegex: ciMaterial?.isRegex,
         } as NodeAttr
     })
     let trigger = ciPipeline.isManual ? TriggerType.Manual.toLocaleLowerCase() : TriggerType.Auto.toLocaleLowerCase()

@@ -83,6 +83,7 @@ export interface CIMaterialState {
     errorMessage: string
     selectedCIPipeline?: any
     isChangeBranchClicked: number
+    loader: boolean
 }
 
 export interface NodeAttr {
@@ -125,6 +126,8 @@ export interface NodeAttr {
     parentPipelineId?: string
     parentPipelineType?: string
     parentEnvironmentName?: string
+    isRegex?: boolean
+    regex?: string
 }
 
 export interface DownStreams {
@@ -249,7 +252,6 @@ export interface TriggerViewState {
     showMaterialRegexModal: boolean
     filteredCIPipelines: any[]
     regex: string
-    isRegex: boolean
 }
 
 //-- begining of response type objects for trigger view

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { CIMaterialProps, CIMaterialState } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/appstatus/unknown.svg'
-import { VisibleModal, ButtonWithLoader, Checkbox, showError } from '../../../common'
+import { VisibleModal, ButtonWithLoader, Checkbox, showError, Progressing } from '../../../common'
 import { EmptyStateCIMaterial } from './EmptyStateCIMaterial'
 import { TriggerViewContext } from './TriggerView'
 import Tippy from '@tippyjs/react'
@@ -27,6 +27,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             errorMessage: '',
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.workflowId),
             isChangeBranchClicked: 0,
+            loader: false,
         }
     }
 
@@ -43,48 +44,10 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     material={this.props.material}
                     selectMaterial={context.selectMaterial}
                     refreshMaterial={refreshMaterial}
+                    regex={this.state.regexValue}
                 />
             </div>
         )
-    }
-
-    renderMaterialHistory(context, material: CIMaterialType) {
-        let anyCommit = material.history && material.history.length > 0
-        if (material.isMaterialLoading || material.isRepoError || material.isBranchError || !anyCommit) {
-            //Error or Empty State
-            return (
-                <div className="select-material select-material--trigger-view">
-                    <div className="select-material__empty-state-container">
-                        <EmptyStateCIMaterial
-                            isRepoError={material.isRepoError}
-                            isBranchError={material.isBranchError}
-                            gitMaterialName={material.gitMaterialName}
-                            sourceValue={material.value}
-                            repoErrorMsg={material.repoErrorMsg}
-                            branchErrorMsg={material.branchErrorMsg}
-                            repoUrl={material.gitURL}
-                            isMaterialLoading={material.isMaterialLoading}
-                            onRetry={(e) => {
-                                e.stopPropagation()
-                                context.onClickCIMaterial(this.props.pipelineId, this.props.pipelineName)
-                            }}
-                            anyCommit={anyCommit}
-                        />
-                    </div>
-                </div>
-            )
-        } else
-            return (
-                <div className="select-material select-material--trigger-view">
-                    <div className="material-list__title"> Select Material </div>
-                    <MaterialHistory
-                        material={material}
-                        pipelineName={this.props.pipelineName}
-                        selectCommit={context.selectCommit}
-                        toggleChanges={context.toggleChanges}
-                    />
-                </div>
-            )
     }
 
     renderMaterialStartBuild = (context, canTrigger) => {
@@ -174,6 +137,9 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     onClickNextButton = (context) => {
+        this.setState({
+            loader: true,
+        })
         const payload: any = {
             ciPipelineMaterial: this.state.selectedCIPipeline?.ciMaterial,
         }
@@ -183,7 +149,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         if (payload.ciPipelineMaterial?.length) {
             for (let _cm of payload.ciPipelineMaterial) {
                 const regVal = this.state.regexValue[_cm.gitMaterialId]
-                if (regVal && _cm.regex || _cm.source.regex) {
+                if ((regVal && _cm.regex) || _cm.source.regex) {
                     const regExp = new RegExp(_cm.regex || _cm.source.regex)
                     if (!regExp.test(regVal)) {
                         this.setState({ isInvalidRegex: true, errorMessage: 'No matching value' })
@@ -211,6 +177,9 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 showError(error)
                 this.setState({ isInvalidRegex: true })
             })
+            .finally(() => {
+                this.setState({ loader: false })
+            })
     }
 
     handleRegexInputValue = (id, value) => {
@@ -236,25 +205,22 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                                     e.stopPropagation()
                                 }}
                             >
-                                {
-                                    this.props.showMaterialRegexModal && (
-                                        <BranchRegexModal
-                                            material={this.props.material}
-                                            selectedCIPipeline={this.state.selectedCIPipeline}
-                                            showWebhookModal={this.props.showWebhookModal}
-                                            title={this.props.title}
-                                            isChangeBranchClicked={this.state.isChangeBranchClicked}
-                                            isInvalidRegex={this.state.isInvalidRegex}
-                                            context={context}
-                                            onClickNextButton={this.onClickNextButton}
-                                            onShowCIModal={this.props.onShowCIModal}
-                                            handleRegexInputValue={this.handleRegexInputValue}
-                                            regexValue={this.state.regexValue}
-                                            errorMessage={this.state.errorMessage}
-                                        />
-                                    )
-                                    // this.renderBranchRegexModal(this.props.material, context)
-                                }
+                                {this.props.showMaterialRegexModal && (
+                                    <BranchRegexModal
+                                        material={this.props.material}
+                                        selectedCIPipeline={this.state.selectedCIPipeline}
+                                        showWebhookModal={this.props.showWebhookModal}
+                                        title={this.props.title}
+                                        isChangeBranchClicked={this.state.isChangeBranchClicked}
+                                        isInvalidRegex={this.state.isInvalidRegex}
+                                        context={context}
+                                        onClickNextButton={this.onClickNextButton}
+                                        onShowCIModal={this.props.onShowCIModal}
+                                        handleRegexInputValue={this.handleRegexInputValue}
+                                        regexValue={this.state.regexValue}
+                                        errorMessage={this.state.errorMessage}
+                                    />
+                                )}
                                 {this.props.showCIModal && this.renderCIModal(context)}
                             </div>
                         </VisibleModal>

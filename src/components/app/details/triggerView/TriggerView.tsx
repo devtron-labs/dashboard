@@ -74,7 +74,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             showMaterialRegexModal: false,
             filteredCIPipelines: [],
             regex: '',
-            isRegex: false,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -221,18 +220,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    // onSetRegexValue = () => {
-    //     const ciPipeline = this.state.filteredCIPipelines?.find(
-    //         (_ciPipeline) => _ciPipeline?.id == this.state.workflowId,
-    //     )
-    //     for (let _cm of ciPipeline.ciMaterial) {
-    //         const regex = _cm.source.find((_rc) => _rc.type === SourceTypeMap.BranchRegex)?.value
-    //         this.setState({
-    //             regex: regex,
-    //         })
-    //     }
-    // }
-
     onClickCIMaterial(ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) {
         ReactGA.event({
             category: 'Trigger View',
@@ -251,20 +238,28 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 let workflows = this.state.workflows.map((workflow) => {
                     workflow.nodes.map((node) => {
                         if (node.type === 'CI' && +node.id == state.ciNodeId) {
+                            const selectedCIPipeline = state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
+                            if (selectedCIPipeline?.ciMaterial) {
+                                for (let mat of selectedCIPipeline.ciMaterial) {
+                                    let gitMaterial = response.result.find(
+                                        (_mat) => _mat.gitMaterialId === mat.gitMaterialId,
+                                    )
+                                    if (mat.isRegex && gitMaterial) {
+                                        node.branch = gitMaterial.value
+                                        node.isRegex = !!gitMaterial.regex
+                                    }
+                                }
+                            }
                             workflowId = workflow.id
                             if (preserveMaterialSelection) {
                                 let selectMaterial = node.inputMaterialList.find((mat) => mat.isSelected)
                                 node.inputMaterialList = response.result.map((material) => {
-                                    this.setState({
-                                        isRegex: material.regex,
-                                    })
                                     return {
                                         ...material,
                                         isSelected: selectMaterial.id === material.id,
                                     }
                                 })
                             } else node.inputMaterialList = response.result
-
                             return node
                         } else return node
                     })
@@ -272,18 +267,27 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 })
 
                 let showRegexModal = false
-                const selectedCIPipeline = this.state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
+                const selectedCIPipeline = state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
                 if (selectedCIPipeline?.ciMaterial) {
                     for (let mat of selectedCIPipeline.ciMaterial) {
-                        if (
-                            mat.gitMaterialId === response.result[0].gitMaterialId &&
-                            mat.source &&
-                            mat.source.type === SourceTypeMap.BranchRegex &&
-                            !new RegExp(mat.source.regex).test(mat.source.value)
-                        ) {
-                            showRegexModal = true
-                            break
-                        }
+                        response.result.map((_mat) => {
+                            if (
+                                _mat.gitMaterialId === mat.gitMaterialId &&
+                                mat.isRegex &&
+                                !new RegExp(mat.source.regex).test(_mat.value)
+                            ) {
+                                showRegexModal = true
+                            }
+                        })
+                        // break
+                        // if (
+                        //     mat.gitMaterialId === response.result[0].gitMaterialId &&
+                        //     mat.isRegex &&
+                        //     !new RegExp(mat.source.regex).test(mat.source.value)
+                        // ) {
+                        //     showRegexModal = true
+                        //     break
+                        // }
                     }
                 }
 

@@ -13,6 +13,7 @@ interface MaterialSourceProps {
         title: string
         refresh: (pipelineId: number, title: string, gitMaterialId: number) => void
     }
+    regex?: any
 }
 export class MaterialSource extends Component<MaterialSourceProps> {
     renderMaterialUpdateInfo(material) {
@@ -70,7 +71,6 @@ export class MaterialSource extends Component<MaterialSourceProps> {
             <>
                 {this.props.material.map((material, index) => {
                     let selectedClass = material.isSelected ? 'material-selected' : ''
-
                     return (
                         <div
                             key={index}
@@ -89,6 +89,7 @@ export class MaterialSource extends Component<MaterialSourceProps> {
                                     sourceType={material.type}
                                     sourceValue={material.value}
                                     showTooltip={true}
+                                    regex={material.regex}
                                 />
                             </div>
                             {this.props.refreshMaterial ? (

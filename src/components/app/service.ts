@@ -181,7 +181,6 @@ export const getCIMaterialList = (params) => {
                       gitURL: material.gitMaterialUrl || '',
                       lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
                       isMaterialLoading: false,
-                      regex: material.regex,
                       history: material.history
                           ? material.history.map((history, indx) => {
                                 return {

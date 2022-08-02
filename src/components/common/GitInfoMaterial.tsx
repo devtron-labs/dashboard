@@ -87,6 +87,7 @@ export default function GitInfoMaterial({
             return (
                 <div className="select-material select-material--trigger-view">
                     <div className="select-material__empty-state-container flex">
+                        {!!material.regex && renderBranchChangeHeader(material)}
                         <EmptyStateCIMaterial
                             isRepoError={material.isRepoError}
                             isBranchError={material.isBranchError}
@@ -171,7 +172,7 @@ export default function GitInfoMaterial({
     const renderBranchChangeHeader = (material: CIMaterialType) => {
         return (
             isBranchRegex(material) && (
-                <div className="fs-13" style={{ background: 'var(--window-bg)' }}>
+                <div className="fs-13 w-100" style={{ background: 'var(--window-bg)' }}>
                     <div className=" fw-6 flex content-space pl-20 pr-20 pt-16 pb-16">
                         <div className="flex">
                             <Branch className="hw-100 mr-8" />
