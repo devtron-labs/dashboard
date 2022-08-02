@@ -23,9 +23,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
         this.state = {
             regexValue: {},
-            isInvalidRegex: false,
             errorMessage: '',
-            selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.workflowId),
+            selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             isChangeBranchClicked: 0,
             loader: false,
         }
@@ -44,7 +43,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     material={this.props.material}
                     selectMaterial={context.selectMaterial}
                     refreshMaterial={refreshMaterial}
-                    regex={this.state.regexValue}
                 />
             </div>
         )
@@ -149,17 +147,29 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         if (payload.ciPipelineMaterial?.length) {
             for (let _cm of payload.ciPipelineMaterial) {
                 const regVal = this.state.regexValue[_cm.gitMaterialId]
-                if ((regVal && _cm.regex) || _cm.source.regex) {
-                    const regExp = new RegExp(_cm.regex || _cm.source.regex)
-                    if (!regExp.test(regVal)) {
-                        this.setState({ isInvalidRegex: true, errorMessage: 'No matching value' })
+                if (regVal?.value && _cm.source.regex) {
+                    const regExp = new RegExp(_cm.source.regex)
+                    if (!regExp.test(regVal.value)) {
+                        const _regexVal = {
+                            ...this.state.regexValue,
+                            [_cm.gitMaterialId]: { value: regVal.value, isInvalid: true },
+                        }
+                        this.setState({
+                            regexValue: _regexVal,
+                        })
                         return
                     }
+
                     _cm.type = SourceTypeMap.BranchFixed
-                    _cm.value = regVal
-                    _cm.regex = _cm.regex || _cm.source.regex
-                    delete _cm['source']
+                    _cm.value = regVal.value
+                    _cm.regex = _cm.source.regex
+                } else {
+                    _cm.type = _cm.source.type
+                    _cm.value = _cm.source.value
+                    _cm.regex = _cm.source.regex
                 }
+
+                delete _cm['source']
             }
         }
 
@@ -167,7 +177,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             .then((response) => {
                 if (response) {
                     toast.success('Updated Pipeline')
-                    this.setState({ isInvalidRegex: false })
                     this.props.onCloseBranchRegexModal()
                     context.onClickCIMaterial(this.props.pipelineId, this.props.pipelineName)
                     this.props.onShowCIModal()
@@ -175,7 +184,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             })
             .catch((error: ServerErrors) => {
                 showError(error)
-                this.setState({ isInvalidRegex: true })
             })
             .finally(() => {
                 this.setState({ loader: false })
@@ -187,7 +195,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             return {
                 regexValue: {
                     ...prevState.regexValue,
-                    [id]: value,
+                    [id]: { value, isInvalid: false },
                 },
             }
         })
@@ -220,7 +228,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                                         showWebhookModal={this.props.showWebhookModal}
                                         title={this.props.title}
                                         isChangeBranchClicked={this.state.isChangeBranchClicked}
-                                        isInvalidRegex={this.state.isInvalidRegex}
                                         context={context}
                                         onClickNextButton={this.onClickNextButton}
                                         onShowCIModal={this.props.onShowCIModal}

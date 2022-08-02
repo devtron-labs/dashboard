@@ -110,7 +110,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                 : i.value === mat.type,
                         ) || props.ciPipelineSourceTypeOptions[0]
                 }
-                let errorObj = props.validationRules?.sourceValue(mat.value)
+                let errorObj = props.validationRules?.sourceValue(isBranchRegex ? mat.regex : mat.value)
                 return (
                     <div key={`source-material-${index}`}>
                         <div className="mt-20" key={mat.gitMaterialId}>
@@ -177,7 +177,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                 autoFocus={true}
                                             />
                                         </div>
-                                        {props.showError && !errorObj.isValid ? (
+                                        {!errorObj.isValid ? (
                                             <span className="form__error ci-error ">
                                                 <img src={error} className="form__icon" />
                                                 {props.validationRules?.sourceValue(_materials[index].value).message}
@@ -209,10 +209,10 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             }}
                                             autoFocus={true}
                                         />
-                                        {props.showError && !errorObj.isValid ? (
+                                        {!errorObj.isValid ? (
                                             <span className="form__error ci-error ">
                                                 <img src={error} className="form__icon" />
-                                                {props.validationRules?.sourceValue(_materials[index].value).message}
+                                                {props.validationRules?.sourceValue(_materials[index].regex).message}
                                             </span>
                                         ) : (
                                             <div className="h-18"></div>
@@ -222,7 +222,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             </div>
                         </div>
                         {isBranchRegex && (
-                            <div className={`${props.showError && !errorObj.isValid ? 'mt-16' : ''}`}>
+                            <div className={`${!errorObj.isValid ? 'mt-16' : ''}`}>
                                 <InfoColourBar
                                     message={
                                         'Branch - Regex allows you to easily switch between branches matching the configured regex before triggering the build pipeline.'

@@ -73,7 +73,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             webhhookTimeStampOrder: 'DESC',
             showMaterialRegexModal: false,
             filteredCIPipelines: [],
-            regex: '',
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -270,15 +269,16 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 const selectedCIPipeline = state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
                 if (selectedCIPipeline?.ciMaterial) {
                     for (let mat of selectedCIPipeline.ciMaterial) {
-                        response.result.map((_mat) => {
-                            if (
+                        showRegexModal = response.result.some((_mat) => {
+                            return (
                                 _mat.gitMaterialId === mat.gitMaterialId &&
                                 mat.isRegex &&
                                 !new RegExp(mat.source.regex).test(_mat.value)
-                            ) {
-                                showRegexModal = true
-                            }
+                            )
                         })
+                        if (showRegexModal) {
+                            break
+                        }
                     }
                 }
 
@@ -741,7 +741,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         onClickShowBranchRegexModal={this.onClickShowBranchRegexModal}
                         showCIModal={this.state.showCIModal}
                         onShowCIModal={this.onShowCIModal}
-                        regex={this.state.regex}
                     />
                 </>
             )

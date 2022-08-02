@@ -375,7 +375,6 @@ export default function CIPipeline({
             })
             .catch((error: ServerErrors) => {
                 showError(error)
-
                 setLoadingData(false)
             })
     }

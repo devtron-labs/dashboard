@@ -15,7 +15,6 @@ function BranchRegexModal({
     showWebhookModal,
     title,
     isChangeBranchClicked,
-    isInvalidRegex,
     context,
     onClickNextButton,
     onShowCIModal,
@@ -78,6 +77,7 @@ function BranchRegexModal({
             </div>
         )
     }
+
     return (
         <div>
             {' '}
@@ -103,6 +103,7 @@ function BranchRegexModal({
 
                     {material &&
                         material.map((mat, index) => {
+                            const _regexValue = regexValue[mat.gitMaterialId]
                             return (
                                 mat.regex && (
                                     <div className="border-bottom pb-20 pt-20" key={`regex_${index}`}>
@@ -132,12 +133,12 @@ function BranchRegexModal({
                                             placeholder="Enter branch name matching regex"
                                             className="form__input ml-36 w-95"
                                             name="name"
-                                            value={regexValue[mat.gitMaterialId]}
+                                            value={_regexValue?.value}
                                             onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value)}
                                             autoFocus
                                             autoComplete="off"
                                         />
-                                        {isInvalidRegex && renderValidationErrorLabel(errorMessage)}
+                                        {_regexValue?.isInvalid && renderValidationErrorLabel(errorMessage)}
                                     </div>
                                 )
                             )

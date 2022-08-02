@@ -13,7 +13,6 @@ interface MaterialSourceProps {
         title: string
         refresh: (pipelineId: number, title: string, gitMaterialId: number) => void
     }
-    regex?: any
 }
 export class MaterialSource extends Component<MaterialSourceProps> {
     renderMaterialUpdateInfo(material) {
