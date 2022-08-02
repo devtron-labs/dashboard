@@ -97,6 +97,10 @@ export default function GitInfoMaterial({
       setSearchText('')
   }
 
+  const handleInputChange = (event): void => {
+    setSearchText(event.target.value)
+  }
+
   const handleFilterKeyPress = (event): void => {
       const theKeyCode = event.key
       if (theKeyCode === 'Enter') {
@@ -116,9 +120,7 @@ export default function GitInfoMaterial({
                   placeholder="Search clusters"
                   value={searchText}
                   className="search__input"
-                  onChange={(event) => {
-                      setSearchText(event.target.value)
-                  }}
+                  onChange={handleInputChange}
                   onKeyDown={handleFilterKeyPress}
               />
               {searchApplied && (
