@@ -198,8 +198,11 @@ export default function ChartGroupUpdate({}) {
         )
     }
 
-    function handleViewAllCharts() {
-        history.push(`${url}?${QueryParams.IncludeDeprecated}=1`)
+    function handleViewAllCharts(viewAllCharts: boolean = false) {
+        const searchParams = new URLSearchParams(location.search)
+        const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
+        let qs = chartRepoId ? `&${QueryParams.ChartRepoId}=${chartRepoId}` : ''
+        viewAllCharts ? history.push(`${url}?${QueryParams.IncludeDeprecated}=1`) : history.push(`${url}?${qs}`)
     }
 
     return (
@@ -249,7 +252,7 @@ export default function ChartGroupUpdate({}) {
                                 ) : !chartList.length ? (
                                     <>
                                         <ChartEmptyState
-                                            onClickViewChartButton={handleViewAllCharts}
+                                            onClickViewChartButton={() => handleViewAllCharts(true)}
                                             heightToDeduct={150}
                                         />
                                     </>

@@ -233,13 +233,13 @@ function DiscoverChartList() {
         )
     }
 
-    const clearSearch = () => {
+    const clearSearch = (viewAllCharts: boolean = false) => {
         const searchParams = new URLSearchParams(location.search)
         const includeDeprecate = searchParams.get(QueryParams.IncludeDeprecated)
         const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
         let qs = includeDeprecate ? `&${QueryParams.IncludeDeprecated}=${includeDeprecate}` : ''
         qs += chartRepoId ? `&${QueryParams.ChartRepoId}=${chartRepoId}` : ''
-        history.push(`${url}?${qs}`)
+        viewAllCharts ? history.push(url) : history.push(`${url}?${qs}`)
     }
 
     return (
@@ -363,7 +363,7 @@ function DiscoverChartList() {
                                                             title={'No matching charts'}
                                                             removeLearnMore={true}
                                                             image={emptyImage}
-                                                            onClickViewChartButton={clearSearch}
+                                                            onClickViewChartButton={() => clearSearch(true)}
                                                             subTitle={`We couldn't find any matching results`}
                                                             styles={{ height: '300px', justifyContent: 'center' }}
                                                         />
