@@ -27,7 +27,7 @@ function BranchRegexModal({
         if (Array.isArray(selectedCIPipeline?.ciMaterial)) {
             for (let _ciMaterial of selectedCIPipeline.ciMaterial) {
                 if (_ciMaterial.gitMaterialId === gitMaterialId && _ciMaterial.source) {
-                    if (_ciMaterial.source.type === SourceTypeMap.BranchRegex) {
+                    if (_ciMaterial.source?.type === SourceTypeMap.BranchRegex) {
                         return _ciMaterial.source.regex
                     }
                 }
@@ -132,7 +132,7 @@ function BranchRegexModal({
                                             placeholder="Enter branch name matching regex"
                                             className="form__input ml-36 w-95"
                                             name="name"
-                                            value={regexValue[mat.gitMaterialId] || mat.value}
+                                            value={regexValue[mat.gitMaterialId]}
                                             onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value)}
                                             autoFocus
                                             autoComplete="off"

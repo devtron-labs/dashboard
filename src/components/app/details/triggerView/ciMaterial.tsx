@@ -197,6 +197,14 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         return (
             <TriggerViewContext.Consumer>
                 {(context) => {
+                    let regexValue: Record<number, string> = undefined
+                    if (
+                        Object.entries(this.state.regexValue).length === 0 &&
+                        this.state.regexValue.constructor === Object
+                    ) {
+                        regexValue = {}
+                        this.props.material.forEach((mat, index) => (regexValue[mat.gitMaterialId] = mat.value))
+                    }
                     return (
                         <VisibleModal className="" close={context.closeCIModal}>
                             <div
@@ -217,7 +225,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                                         onClickNextButton={this.onClickNextButton}
                                         onShowCIModal={this.props.onShowCIModal}
                                         handleRegexInputValue={this.handleRegexInputValue}
-                                        regexValue={this.state.regexValue}
+                                        regexValue={regexValue || this.state.regexValue}
                                         errorMessage={this.state.errorMessage}
                                     />
                                 )}

@@ -36,11 +36,11 @@ export function Build({
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
     const validationRules = new ValidationRules()
 
-    const handleSourceChange = (event, gitMaterialId: number, type): void => {
+    const handleSourceChange = (event, gitMaterialId: number, sourceType: string): void => {
         const _formData = { ...formData }
         const allMaterials = _formData.materials.map((mat) => {
             if (mat.gitMaterialId === gitMaterialId) {
-                if (type === SourceTypeMap.BranchRegex) {
+                if (sourceType === SourceTypeMap.BranchRegex) {
                     return {
                         ...mat,
                         regex: event.target.value,

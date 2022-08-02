@@ -4,7 +4,6 @@ export class ValidationRules {
     appName = (value: string): { isValid: boolean; message: string } => {
         let re = PATTERNS.APP_NAME
         let regExp = new RegExp(re)
-        console.log(regExp, 'create app')
         let test = regExp.test(value)
         if (value.length === 0) return { isValid: false, message: 'Please provide app name' }
         if (value.length < 3) return { isValid: false, message: 'Atleast 3 characters required' }

@@ -279,15 +279,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 showRegexModal = true
                             }
                         })
-                        // break
-                        // if (
-                        //     mat.gitMaterialId === response.result[0].gitMaterialId &&
-                        //     mat.isRegex &&
-                        //     !new RegExp(mat.source.regex).test(mat.source.value)
-                        // ) {
-                        //     showRegexModal = true
-                        //     break
-                        // }
                     }
                 }
 
