@@ -140,7 +140,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                   _selectedMaterial.isMaterialLoading = false
               } else {
                   _selectedMaterial.history = []
-                  _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.gitMaterialName}’`
+                  _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.value}’`
                   _selectedMaterial.noSearchResult = true
                   _selectedMaterial.isMaterialLoading = false
               }

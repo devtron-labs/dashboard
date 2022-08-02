@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png';
 import EmptyStateImage from '../../../../assets/img/app-not-deployed.png';
 import EmptyState from '../../../EmptyState/EmptyState';
+import NoResults from '../../../../assets/img/empty-noresult@2x.png'
 
 interface EmptyStateCIMaterialProps {
   isRepoError: boolean;
@@ -42,7 +43,7 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
     }
     else if (this.props.noSearchResults)  {
       return {
-        img: <img src={ErrorImage} alt="no commits found" className="empty-state__img--ci-material" />,
+        img: <img src={NoResults} alt="no commits found" className="empty-state__img--ci-material" />,
         title: <h1 className="empty__title" style={{wordBreak: 'break-all'}}>{this.props.noSearchResultsMsg}</h1>,
         subtitle: `Please check the commit hash and try again. Make sure you enter the complete commit hash.`,
         cta: <button type="button" className="cta ghosted small" onClick={this.props.clearSearch}>Clear search</button>,
