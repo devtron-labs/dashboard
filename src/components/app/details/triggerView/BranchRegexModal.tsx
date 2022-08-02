@@ -20,7 +20,6 @@ function BranchRegexModal({
     onShowCIModal,
     handleRegexInputValue,
     regexValue,
-    errorMessage,
 }) {
     const getBranchRegexName = (gitMaterialId: number) => {
         if (Array.isArray(selectedCIPipeline?.ciMaterial)) {
@@ -138,7 +137,7 @@ function BranchRegexModal({
                                             autoFocus
                                             autoComplete="off"
                                         />
-                                        {_regexValue?.isInvalid && renderValidationErrorLabel(errorMessage)}
+                                        {_regexValue?.isInvalid && renderValidationErrorLabel('Branch name does not match the regex.')}
                                     </div>
                                 )
                             )

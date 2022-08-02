@@ -23,7 +23,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
         this.state = {
             regexValue: {},
-            errorMessage: '',
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             isChangeBranchClicked: 0,
             loader: false,
@@ -139,14 +138,16 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             loader: true,
         })
         const payload: any = {
-            ciPipelineMaterial: this.state.selectedCIPipeline?.ciMaterial,
+            appId: +this.props.match.params.appId,
+            id: +this.props.workflowId,
+            ciPipelineMaterial: [],
         }
-        payload.appId = +this.props.match.params.appId
-        payload.id = +this.props.workflowId
 
-        if (payload.ciPipelineMaterial?.length) {
-            for (let _cm of payload.ciPipelineMaterial) {
+        // Populate the ciPipelineMaterial with flatten object
+        if (this.state.selectedCIPipeline?.ciMaterial?.length) {
+            for (let _cm of this.state.selectedCIPipeline.ciMaterial) {
                 const regVal = this.state.regexValue[_cm.gitMaterialId]
+                let _updatedCM
                 if (regVal?.value && _cm.source.regex) {
                     const regExp = new RegExp(_cm.source.regex)
                     if (!regExp.test(regVal.value)) {
@@ -160,16 +161,24 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         return
                     }
 
-                    _cm.type = SourceTypeMap.BranchFixed
-                    _cm.value = regVal.value
-                    _cm.regex = _cm.source.regex
+                    _updatedCM = {
+                        ..._cm,
+                        type: SourceTypeMap.BranchFixed,
+                        value: regVal.value,
+                        regex: _cm.source.regex,
+                    }
                 } else {
-                    _cm.type = _cm.source.type
-                    _cm.value = _cm.source.value
-                    _cm.regex = _cm.source.regex
+                    // To maintain the flatten object structure supported by API for unchanged values
+                    // as during update/next click it uses the fetched ciMaterial structure i.e. containing source
+                    _updatedCM = {
+                        ..._cm,
+                        ..._cm.source,
+                    }
                 }
 
-                delete _cm['source']
+                // Deleting as it's not required in the request payload
+                delete _updatedCM['source']
+                payload.ciPipelineMaterial.push(_updatedCM)
             }
         }
 
@@ -205,13 +214,25 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         return (
             <TriggerViewContext.Consumer>
                 {(context) => {
-                    let regexValue: Record<number, string> = undefined
+                    let regexValue: Record<
+                        number,
+                        {
+                            value: string
+                            isInvalid: boolean
+                        }
+                    > = undefined
                     if (
                         Object.entries(this.state.regexValue).length === 0 &&
                         this.state.regexValue.constructor === Object
                     ) {
                         regexValue = {}
-                        this.props.material.forEach((mat, index) => (regexValue[mat.gitMaterialId] = mat.value))
+                        this.props.material.forEach(
+                            (mat, index) =>
+                                (regexValue[mat.gitMaterialId] = {
+                                    value: mat.value,
+                                    isInvalid: mat.regex && !new RegExp(mat.regex).test(mat.value),
+                                }),
+                        )
                     }
                     return (
                         <VisibleModal className="" close={context.closeCIModal}>
@@ -233,7 +254,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                                         onShowCIModal={this.props.onShowCIModal}
                                         handleRegexInputValue={this.handleRegexInputValue}
                                         regexValue={regexValue || this.state.regexValue}
-                                        errorMessage={this.state.errorMessage}
                                     />
                                 )}
                                 {this.props.showCIModal && this.renderCIModal(context)}

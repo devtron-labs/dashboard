@@ -78,7 +78,6 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
 
 export interface CIMaterialState {
     regexValue: Record<number, { value: string; isInvalid: boolean }>
-    errorMessage: string
     selectedCIPipeline?: any
     isChangeBranchClicked: number
     loader: boolean
