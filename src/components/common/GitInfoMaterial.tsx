@@ -117,7 +117,7 @@ export default function GitInfoMaterial({
               <Search className="search__icon icon-dim-18" />
               <input
                   type="text"
-                  placeholder="Search clusters"
+                  placeholder="Search by commit hash"
                   value={searchText}
                   className="search__input"
                   onChange={handleInputChange}
