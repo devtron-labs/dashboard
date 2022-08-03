@@ -7,6 +7,8 @@ import CiWebhookModal from '../app/details/triggerView/CiWebhookDebuggingModal';
 import { ReactComponent as Back } from '../../assets/icons/ic-back.svg';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as Right } from '../../assets/icons/ic-arrow-left.svg';
+import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
+import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
 
 export default function GitInfoMaterial({
@@ -24,6 +26,17 @@ export default function GitInfoMaterial({
     hideWebhookModal,
     workflowId,
 }) {
+  const [searchText, setSearchText] = useState('')
+  const [searchApplied, setSearchApplied] = useState(false)
+  useEffect(() => {
+    if(!selectedMaterial || !selectedMaterial.searchText){
+      setSearchText('')
+    } else if(selectedMaterial.searchText !== searchText){
+      setSearchText(selectedMaterial.searchText)
+    }
+
+  }, [selectedMaterial])
+
     function renderMaterialHeader(material: CIMaterialType) {
         return (
             <div className="trigger-modal__header">
@@ -75,13 +88,66 @@ export default function GitInfoMaterial({
             </div>
         );
     }
+    const handleFilterChanges = (_searchText: string): void => {
+      context.getMaterialByCommit(pipelineId, title, selectedMaterial.id, _searchText)
+  }
+
+  const clearSearch = (): void => {
+      if (searchApplied) {
+          handleFilterChanges('')
+          setSearchApplied(false)
+      }
+      setSearchText('')
+  }
+
+  const handleInputChange = (event): void => {
+    setSearchText(event.target.value)
+  }
+
+  const handleFilterKeyPress = (event): void => {
+      const theKeyCode = event.key
+      if (theKeyCode === 'Enter') {
+          handleFilterChanges(event.target.value)
+          setSearchApplied(true)
+      } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
+          clearSearch()
+      }
+  }
+
+  const renderSearch = (): JSX.Element => {
+      return (
+          <div className="search position-rel mt-12 en-2 bw-1 br-4 h-32" style={{ marginRight: '20px' }}>
+              <Search className="search__icon icon-dim-18" />
+              <input
+                  type="text"
+                  placeholder="Search by commit hash"
+                  value={searchText}
+                  className="search__input"
+                  onChange={handleInputChange}
+                  onKeyDown={handleFilterKeyPress}
+              />
+              {searchApplied && (
+                  <button className="search__clear-button" type="button" onClick={clearSearch}>
+                      <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                  </button>
+              )}
+          </div>
+      )
+  }
 
     function renderMaterialHistory(context, material: CIMaterialType) {
-        let anyCommit = material.history && material.history.length > 0;
-        if (material.isMaterialLoading || material.isRepoError || material.isBranchError || !anyCommit) {
-            //Error or Empty State
-            return (
-                <div className="select-material select-material--trigger-view">
+        let anyCommit = material.history && material.history.length > 0
+        return (
+            <div className="select-material select-material--trigger-view">
+                <div className="flexbox content-space position-sticky" style={{ backgroundColor: "var(--window-bg)", top: 0 }}>
+                    <div className="material-list__title mt-4">Select commit to build</div>
+                    {!material.isRepoError && !material.isBranchError && renderSearch()}
+                </div>
+                {material.isMaterialLoading ||
+                material.isRepoError ||
+                material.isBranchError ||
+                material.noSearchResult ||
+                !anyCommit ? (
                     <div className="select-material__empty-state-container flex">
                         <EmptyStateCIMaterial
                             isRepoError={material.isRepoError}
@@ -93,44 +159,48 @@ export default function GitInfoMaterial({
                             branchErrorMsg={material.branchErrorMsg}
                             repoUrl={material.gitURL}
                             isMaterialLoading={material.isMaterialLoading}
-                            toggleWebHookModal={()=> toggleWebhookModal(material.id)}
+                            toggleWebHookModal={() => toggleWebhookModal(material.id)}
                             onRetry={(e) => {
-                                e.stopPropagation();
-                                context.onClickCIMaterial(pipelineId, pipelineName);
+                                e.stopPropagation()
+                                context.onClickCIMaterial(pipelineId, pipelineName)
                             }}
                             anyCommit={anyCommit}
+                            noSearchResults={material.noSearchResult}
+                            noSearchResultsMsg={material.noSearchResultsMsg}
+                            clearSearch={clearSearch}
                         />
                     </div>
-                </div>
-            );
-        } else
-            return (
-                <div className="select-material select-material--trigger-view">
-                    <div className="material-list__title pb-0">Select Material</div>
-                    {material.type === SourceTypeMap.WEBHOOK && (
-                        <div className="cn-7 fs-12 fw-0 pl-20 flex left">
-                            Showing results matching &nbsp;
-                            <CiPipelineSourceConfig
-                                sourceType={material.type}
-                                sourceValue={material.value}
-                                showTooltip={true}
-                                baseText="configured filters"
-                                showIcons={false}
-                            />
-                            .
-                            <span className="learn-more__href cursor" onClick={() => toggleWebhookModal(material.id)}>
-                                View all incoming webhook payloads
-                            </span>
-                        </div>
-                    )}
-                    <MaterialHistory
-                        material={material}
-                        pipelineName={pipelineName}
-                        selectCommit={context.selectCommit}
-                        toggleChanges={context.toggleChanges}
-                    />
-                </div>
-            );
+                ) : (
+                    <>
+                        {material.type === SourceTypeMap.WEBHOOK && (
+                            <div className="cn-7 fs-12 fw-0 pl-20 flex left">
+                                Showing results matching &nbsp;
+                                <CiPipelineSourceConfig
+                                    sourceType={material.type}
+                                    sourceValue={material.value}
+                                    showTooltip={true}
+                                    baseText="configured filters"
+                                    showIcons={false}
+                                />
+                                .
+                                <span
+                                    className="learn-more__href cursor"
+                                    onClick={() => toggleWebhookModal(material.id)}
+                                >
+                                    View all incoming webhook payloads
+                                </span>
+                            </div>
+                        )}
+                        <MaterialHistory
+                            material={material}
+                            pipelineName={pipelineName}
+                            selectCommit={context.selectCommit}
+                            toggleChanges={context.toggleChanges}
+                        />
+                    </>
+                )}
+            </div>
+        )
     }
 
     const renderWebhookModal = (context) => {
