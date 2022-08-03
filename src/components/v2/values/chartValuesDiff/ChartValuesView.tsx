@@ -89,7 +89,7 @@ function ChartValuesView({
 }: ChartValuesViewType) {
     const history = useHistory()
     const { url } = useRouteMatch()
-    const { chartValueId } = useParams<{ chartValueId: string }>()
+    const { chartValueId, presetValueId } = useParams<{ chartValueId: string; presetValueId: string }>()
     const { serverMode } = useContext(mainContext)
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
@@ -98,7 +98,13 @@ function ChartValuesView({
         chartValuesReducer,
         initState(
             selectedVersionFromParent,
-            chartValuesFromParent,
+            presetValueId
+                ? {
+                      ...chartValuesFromParent,
+                      id: +presetValueId,
+                      kind: ChartKind.TEMPLATE,
+                  }
+                : chartValuesFromParent,
             installedConfigFromParent,
             chartVersionsDataFromParent,
         ),
@@ -124,7 +130,10 @@ function ChartValuesView({
                 payload: {
                     isLoading: false,
                     fetchedReadMe: _fetchedReadMe,
-                    activeTab: !!commonState.installedConfig.valuesSchemaJson ? 'gui' : 'yaml',
+                    activeTab:
+                        !commonState.installedConfig.valuesSchemaJson || presetValueId || isCreateValueView
+                            ? 'yaml'
+                            : 'gui',
                 },
             })
         } else if (isExternalApp) {
@@ -141,7 +150,8 @@ function ChartValuesView({
                             releaseInfo: _releaseInfo,
                             installedAppInfo: _installedAppInfo,
                             fetchedReadMe: _fetchedReadMe,
-                            activeTab: !!_releaseInfo.valuesSchemaJson ? 'gui' : 'yaml',
+                            activeTab:
+                                !_releaseInfo.valuesSchemaJson || presetValueId || isCreateValueView ? 'yaml' : 'gui',
                         },
                     })
 
@@ -208,7 +218,10 @@ function ChartValuesView({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
                     modifiedValuesYaml: commonState.installedConfig.valuesOverrideYaml,
-                    activeTab: !!commonState.installedConfig.valuesSchemaJson ? 'gui' : 'yaml',
+                    activeTab:
+                        !commonState.installedConfig.valuesSchemaJson || presetValueId || isCreateValueView
+                            ? 'yaml'
+                            : 'gui',
                     repoChartValue: {
                         appStoreApplicationVersionId: commonState.installedConfig.appStoreVersion,
                         chartRepoName: appDetails.appStoreChartName,
@@ -897,8 +910,10 @@ function ChartValuesView({
                 className="chart-values-view__tabs gui-yaml-switch"
                 name="yaml-mode"
                 initialTab={
-                    (isExternalApp && !!commonState.releaseInfo?.valuesSchemaJson) ||
-                    !!commonState.installedConfig?.valuesSchemaJson
+                    presetValueId || isCreateValueView
+                        ? 'yaml'
+                        : (isExternalApp && !!commonState.releaseInfo?.valuesSchemaJson) ||
+                          !!commonState.installedConfig?.valuesSchemaJson
                         ? 'gui'
                         : 'yaml'
                 }
