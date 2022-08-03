@@ -304,7 +304,7 @@ export default function AppConfig() {
                     .slice()
                     .reverse()
                     .find((stage) => stage.status)
-                let configs = isUnlocked(lastConfiguredStage.stageName)
+                let configs = isUnlocked(lastConfiguredStage?.stageName)
                 let { navItems } = getNavItems(configs, appId)
                 let index = navItems.findIndex((item) => item.isLocked)
                 if (index < 0) {
