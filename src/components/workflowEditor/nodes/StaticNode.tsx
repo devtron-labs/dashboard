@@ -16,6 +16,7 @@ export interface StaticNodeProps {
     downstreams: any[]
     sourceType: string
     regex?: string
+    primaryBranchAfterRegex?: string
 }
 
 export class StaticNode extends Component<StaticNodeProps> {
@@ -30,6 +31,7 @@ export class StaticNode extends Component<StaticNodeProps> {
                         sourceValue={this.props.branch}
                         showTooltip={true}
                         regex={this.props.regex}
+                        primaryBranchAfterRegex={this.props.primaryBranchAfterRegex}
                     />
                 </div>
             </div>

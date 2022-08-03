@@ -73,6 +73,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             webhhookTimeStampOrder: 'DESC',
             showMaterialRegexModal: false,
             filteredCIPipelines: [],
+            isChangeBranchClicked: false,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -701,8 +702,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
-    onClickShowBranchRegexModal = () => {
-        this.setState({ showCIModal: false }, () => this.setState({ showMaterialRegexModal: true }))
+    onClickShowBranchRegexModal = (isChangedBranch = false) => {
+        this.setState({ showCIModal: false }, () =>
+            this.setState({ showMaterialRegexModal: true, isChangeBranchClicked: isChangedBranch }),
+        )
     }
 
     renderCIMaterial = () => {
@@ -741,6 +744,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         onClickShowBranchRegexModal={this.onClickShowBranchRegexModal}
                         showCIModal={this.state.showCIModal}
                         onShowCIModal={this.onShowCIModal}
+                        isChangeBranchClicked={this.state.isChangeBranchClicked}
                     />
                 </>
             )

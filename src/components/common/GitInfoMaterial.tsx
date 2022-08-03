@@ -26,7 +26,6 @@ export default function GitInfoMaterial({
     workflowId,
     onClickShowBranchRegexModal,
     ciPipeline,
-    setShowBranchChanged,
 }) {
     function renderMaterialHeader() {
         return (
@@ -77,6 +76,35 @@ export default function GitInfoMaterial({
                     refreshMaterial={refreshMaterial}
                 />
             </div>
+        )
+    }
+
+    const isBranchRegex = (material: CIMaterialType) => {
+        if (ciPipeline) {
+            for (let mat of ciPipeline.ciMaterial) {
+                if (mat.gitMaterialId === material.gitMaterialId) {
+                    return mat.source?.type === SourceTypeMap.BranchRegex || mat.isRegex
+                }
+            }
+        }
+        return false
+    }
+
+    const renderBranchChangeHeader = (material: CIMaterialType) => {
+        return (
+            isBranchRegex(material) && (
+                <div className="fs-13 w-100" style={{ background: 'var(--window-bg)' }}>
+                    <div className=" fw-6 flex content-space pl-20 pr-20 pt-16 pb-16">
+                        <div className="flex">
+                            <Branch className="hw-100 mr-8" />
+                            {material.value}
+                        </div>
+                        <div className="cb-5 cursor" onClick={() => onClickChangebranch(true)}>
+                            Change branch
+                        </div>
+                    </div>
+                </div>
+            )
         )
     }
 
@@ -154,37 +182,8 @@ export default function GitInfoMaterial({
         )
     }
 
-    const isBranchRegex = (material: CIMaterialType) => {
-        for (let mat of ciPipeline.ciMaterial) {
-            if (mat.gitMaterialId === material.gitMaterialId) {
-                return mat.source?.type === SourceTypeMap.BranchRegex || mat.isRegex
-            }
-        }
-
-        return false
-    }
-
     const onClickChangebranch = (isBranchChangedClicked) => {
-        setShowBranchChanged()
         onClickShowBranchRegexModal(isBranchChangedClicked)
-    }
-
-    const renderBranchChangeHeader = (material: CIMaterialType) => {
-        return (
-            isBranchRegex(material) && (
-                <div className="fs-13 w-100" style={{ background: 'var(--window-bg)' }}>
-                    <div className=" fw-6 flex content-space pl-20 pr-20 pt-16 pb-16">
-                        <div className="flex">
-                            <Branch className="hw-100 mr-8" />
-                            {material.value}
-                        </div>
-                        <div className="cb-5 cursor" onClick={() => onClickChangebranch(true)}>
-                            Change branch
-                        </div>
-                    </div>
-                </div>
-            )
-        )
     }
 
     return (

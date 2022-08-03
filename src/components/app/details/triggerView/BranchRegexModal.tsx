@@ -19,6 +19,7 @@ function BranchRegexModal({
     onShowCIModal,
     handleRegexInputValue,
     regexValue,
+    onCloseBranchRegexModal,
 }) {
     const getBranchRegexName = (gitMaterialId: number) => {
         if (Array.isArray(selectedCIPipeline?.ciMaterial)) {
@@ -75,16 +76,20 @@ function BranchRegexModal({
         )
     }
 
+    const onClickBackArrow = () => {
+        onCloseBranchRegexModal()
+        onShowCIModal()
+    }
+
     return (
         <div>
-            {' '}
             <>
                 <div>{renderBranchRegexMaterialHeader(context.closeCIModal)}</div>
 
                 <div className="select-material--regex-body m-20 fs-13">
                     <div className="flex left">
-                        {isChangeBranchClicked === 1 && (
-                            <div onClick={onShowCIModal}>
+                        {isChangeBranchClicked && (
+                            <div onClick={onClickBackArrow}>
                                 <LeftIcon className="rotate icon-dim-20 mr-16 cursor" />
                             </div>
                         )}
@@ -131,12 +136,16 @@ function BranchRegexModal({
                                             className="form__input ml-36 w-95"
                                             name="name"
                                             value={_regexValue?.value}
-                                            onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value)}
+                                            onChange={(e) =>
+                                                handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)
+                                            }
                                             autoFocus
                                             autoComplete="off"
                                         />
-                                        {_regexValue?.isInvalid &&
+                                        {_regexValue?.value &&
+                                            _regexValue.isInvalid &&
                                             renderValidationErrorLabel('Branch name does not match the regex.')}
+                                        {!_regexValue?.value && renderValidationErrorLabel('This is a required field')}
                                     </div>
                                 )
                             )

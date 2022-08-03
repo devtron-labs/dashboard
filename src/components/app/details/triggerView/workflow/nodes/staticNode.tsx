@@ -18,7 +18,7 @@ export interface StaticNodeProps {
     sourceType: string
     regex?: string
     isRegex?: boolean
-    primaryBranchAfterRegex: string
+    primaryBranchAfterRegex?: string
 }
 
 export class StaticNode extends Component<StaticNodeProps> {

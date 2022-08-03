@@ -69,17 +69,17 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     onClickWebhookTimeStamp: () => void
     webhhookTimeStampOrder: string
     showMaterialRegexModal: boolean
-    onCloseBranchRegexModal: () => void
+    onCloseBranchRegexModal?: () => void
     filteredCIPipelines: any[]
     onClickShowBranchRegexModal: () => void
     showCIModal: boolean
     onShowCIModal: () => void
+    isChangeBranchClicked: boolean
 }
 
 export interface CIMaterialState {
     regexValue: Record<number, { value: string; isInvalid: boolean }>
     selectedCIPipeline?: any
-    isChangeBranchClicked: number
     loader: boolean
 }
 
@@ -249,6 +249,7 @@ export interface TriggerViewState {
     webhhookTimeStampOrder: string
     showMaterialRegexModal: boolean
     filteredCIPipelines: any[]
+    isChangeBranchClicked: boolean
 }
 
 //-- begining of response type objects for trigger view

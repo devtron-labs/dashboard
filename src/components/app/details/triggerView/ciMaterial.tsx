@@ -3,28 +3,24 @@ import { CIMaterialProps, CIMaterialState } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/appstatus/unknown.svg'
 import { VisibleModal, ButtonWithLoader, Checkbox, showError, Progressing } from '../../../common'
-import { EmptyStateCIMaterial } from './EmptyStateCIMaterial'
 import { TriggerViewContext } from './TriggerView'
 import Tippy from '@tippyjs/react'
-import { MaterialHistory, CIMaterialType } from '../../details/triggerView/MaterialHistory'
 import { MaterialSource } from '../../details/triggerView/MaterialSource'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
-import { getCIPipeline, saveCIPipeline, savePipeline } from '../../../ciPipeline/ciPipeline.service'
+import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { SourceTypeMap } from '../../../../config'
-import { getCIMaterialList } from '../../service'
 import { toast } from 'react-toastify'
 import { ServerErrors } from '../../../../modals/commonTypes'
-import { PatchAction } from '../../../ciPipeline/types'
 import BranchRegexModal from './BranchRegexModal'
 
 export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     constructor(props) {
         super(props)
+        debugger
 
         this.state = {
             regexValue: {},
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
-            isChangeBranchClicked: 0,
             loader: false,
         }
     }
@@ -91,12 +87,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         )
     }
 
-    setShowBranchChanged = () => {
-        this.setState({
-            isChangeBranchClicked: 1,
-        })
-    }
-
     renderCIModal(context) {
         let selectedMaterial = this.props.material.find((mat) => mat.isSelected)
         let commitInfo = this.props.material.find((mat) => mat.history)
@@ -124,12 +114,26 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                             workflowId={this.props.workflowId}
                             onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
                             ciPipeline={this.state.selectedCIPipeline}
-                            setShowBranchChanged={this.setShowBranchChanged}
                         />
                     </div>
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(context, canTrigger)}
                 </>
             )
+        }
+    }
+
+    isRegexValueInvalid = (_cm): boolean => {
+        const regExp = new RegExp(_cm.source.regex)
+        const regVal = this.state.regexValue[_cm.gitMaterialId]
+        if (!regExp.test(regVal.value)) {
+            const _regexVal = {
+                ...this.state.regexValue,
+                [_cm.gitMaterialId]: { value: regVal.value, isInvalid: true },
+            }
+            this.setState({
+                regexValue: _regexVal,
+            })
+            return
         }
     }
 
@@ -149,17 +153,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 const regVal = this.state.regexValue[_cm.gitMaterialId]
                 let _updatedCM
                 if (regVal?.value && _cm.source.regex) {
-                    const regExp = new RegExp(_cm.source.regex)
-                    if (!regExp.test(regVal.value)) {
-                        const _regexVal = {
-                            ...this.state.regexValue,
-                            [_cm.gitMaterialId]: { value: regVal.value, isInvalid: true },
-                        }
-                        this.setState({
-                            regexValue: _regexVal,
-                        })
-                        return
-                    }
+                    this.isRegexValueInvalid(_cm)
 
                     _updatedCM = {
                         ..._cm,
@@ -199,12 +193,12 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             })
     }
 
-    handleRegexInputValue = (id, value) => {
+    handleRegexInputValue = (id, value, mat) => {
         this.setState((prevState) => {
             return {
                 regexValue: {
                     ...prevState.regexValue,
-                    [id]: { value, isInvalid: false },
+                    [id]: { value, isInvalid: mat.regex && !new RegExp(mat.regex).test(value) },
                 },
             }
         })
@@ -248,12 +242,13 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                                         selectedCIPipeline={this.state.selectedCIPipeline}
                                         showWebhookModal={this.props.showWebhookModal}
                                         title={this.props.title}
-                                        isChangeBranchClicked={this.state.isChangeBranchClicked}
+                                        isChangeBranchClicked={this.props.isChangeBranchClicked}
                                         context={context}
                                         onClickNextButton={this.onClickNextButton}
                                         onShowCIModal={this.props.onShowCIModal}
                                         handleRegexInputValue={this.handleRegexInputValue}
                                         regexValue={regexValue || this.state.regexValue}
+                                        onCloseBranchRegexModal={this.props.onCloseBranchRegexModal}
                                     />
                                 )}
                                 {this.props.showCIModal && this.renderCIModal(context)}

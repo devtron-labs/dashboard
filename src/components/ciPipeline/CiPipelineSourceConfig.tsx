@@ -24,7 +24,7 @@ export function CiPipelineSourceConfig({
     showIcons = true,
     baseText = undefined,
     regex,
-    isRegex = false,
+    isRegex,
     primaryBranchAfterRegex,
 }: CIPipelineSourceConfigInterface) {
     let _isWebhook = sourceType === SourceTypeMap.WEBHOOK
@@ -80,12 +80,10 @@ export function CiPipelineSourceConfig({
     const rendeRegexSourceVal = () => {
         return (
             <>
-                {regex && (
-                    <>
-                        <div className="fw-6">Regex</div>
-                        <p>{regex}</p>
-                    </>
-                )}
+                <>
+                    <div className="fw-6">Regex</div>
+                    <p>{regex}</p>
+                </>
 
                 {window.location.href.includes('trigger') && (
                     <>
