@@ -139,7 +139,7 @@ export default function GitInfoMaterial({
         let anyCommit = material.history && material.history.length > 0
         return (
             <div className="select-material select-material--trigger-view">
-                <div className="flexbox content-space">
+                <div className="flexbox content-space position-sticky" style={{ backgroundColor: "var(--window-bg)", top: 0 }}>
                     <div className="material-list__title mt-4">Select commit to build</div>
                     {!material.isRepoError && !material.isBranchError && renderSearch()}
                 </div>
