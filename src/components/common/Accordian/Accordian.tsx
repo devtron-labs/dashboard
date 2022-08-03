@@ -6,7 +6,7 @@ import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 export function Accordian({ header, options, value, onChange, onClickViewChartButton }) {
     const [collapsed, setCollapse] = useState<boolean>(true)
 
-    const toggleDropdown = ():void => {
+    const toggleDropdown = (): void => {
         setCollapse(!collapsed)
     }
 

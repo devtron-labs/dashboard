@@ -1,66 +1,75 @@
-import React, { useContext } from 'react';
-import Tippy from '@tippyjs/react';
-import { Chart } from '../charts.types';
-import placeHolder from '../../../assets/icons/ic-plc-chart.svg';
-import { LazyImage, noop, ConditionalWrap } from '../../common';
-import { ReactComponent as Minus } from '../../../assets/icons/ic-minus.svg';
-import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg';
-import { SERVER_MODE } from '../../../config';
-import { DeprecatedWarn } from "../../common/DeprecatedUpdateWarn";
-import { mainContext } from '../../common/navigation/NavigationRoutes';
+import React, { useContext } from 'react'
+import Tippy from '@tippyjs/react'
+import { Chart } from '../charts.types'
+import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
+import { LazyImage, noop, ConditionalWrap } from '../../common'
+import { ReactComponent as Minus } from '../../../assets/icons/ic-minus.svg'
+import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
+import { SERVER_MODE } from '../../../config'
+import { DeprecatedWarn } from '../../common/DeprecatedUpdateWarn'
+import { mainContext } from '../../common/navigation/NavigationRoutes'
 
 interface AllChartSelectProps {
-    chart: Chart;
-    selectedCount?: number;
-    showCheckBoxOnHoverOnly: boolean;
-    onClick?: (chartId: number) => void;
-    addChart?: (chartId: number) => void;
-    subtractChart?: (chartId: number) => void;
-    selectChart?: (chartId: number) => void;
-    showDescription?: boolean;
+    chart: Chart
+    selectedCount?: number
+    showCheckBoxOnHoverOnly: boolean
+    onClick?: (chartId: number) => void
+    addChart?: (chartId: number) => void
+    subtractChart?: (chartId: number) => void
+    selectChart?: (chartId: number) => void
+    showDescription?: boolean
 }
 
 interface Stepper extends AllChartSelectProps {
-    addChart: (chartId: number) => void;
-    subtractChart: (chartId: number) => void;
-    selectChart?: never;
+    addChart: (chartId: number) => void
+    subtractChart: (chartId: number) => void
+    selectChart?: never
 }
 
 interface Checkbox extends AllChartSelectProps {
-    addChart?: never;
-    subtractChart?: never;
-    selectChart: (chartId: number) => void;
+    addChart?: never
+    subtractChart?: never
+    selectChart: (chartId: number) => void
 }
 
 export type ChartSelectProps = Stepper | Checkbox
 
-const ChartSelect: React.FC<ChartSelectProps> = ({ chart, selectChart, addChart, subtractChart, selectedCount = 0, showCheckBoxOnHoverOnly, onClick, showDescription }) => {
-    const { serverMode } = useContext(mainContext);
+const ChartSelect: React.FC<ChartSelectProps> = ({
+    chart,
+    selectChart,
+    addChart,
+    subtractChart,
+    selectedCount = 0,
+    showCheckBoxOnHoverOnly,
+    onClick,
+    showDescription,
+}) => {
+    const { serverMode } = useContext(mainContext)
 
-    function handleImageError(e):void {
-        const target = e.target as HTMLImageElement;
-        target.onerror = null;
-        target.src = placeHolder;
+    function handleImageError(e): void {
+        const target = e.target as HTMLImageElement
+        target.onerror = null
+        target.src = placeHolder
     }
 
-    let classes = `chart-grid-item ${showDescription ? '': 'chart-grid-item--discover' } white-card position-rel`;
-    
-    const addchartTab = (e):void => {
+    let classes = `chart-grid-item ${showDescription ? '' : 'chart-grid-item--discover'} white-card position-rel`
+
+    const addchartTab = (e): void => {
         e.stopPropagation()
         addChart(chart.id)
     }
 
-    const removeChartTab = (e):void => {
+    const removeChartTab = (e): void => {
         e.stopPropagation()
         subtractChart(chart.id)
     }
 
-    const selectChartTab = (e):void => {
+    const selectChartTab = (e): void => {
         e.stopPropagation()
         selectChart(chart.id)
     }
 
-    const onClickChartSelect = ():void => {
+    const onClickChartSelect = (): void => {
         onClick(chart.id)
     }
 
@@ -122,10 +131,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({ chart, selectChart, addChart,
                             </Tippy>
                         )}
                     >
-                        <button
-                            className={'devtron-stepper__item transparent p-0 cursor'}
-                            onClick={addchartTab}
-                        >
+                        <button className={'devtron-stepper__item transparent p-0 cursor'} onClick={addchartTab}>
                             <Add className="icon-dim-14" />
                         </button>
                     </ConditionalWrap>
@@ -154,6 +160,5 @@ const ChartSelect: React.FC<ChartSelectProps> = ({ chart, selectChart, addChart,
         </div>
     )
 }
-
 
 export default React.memo(ChartSelect)

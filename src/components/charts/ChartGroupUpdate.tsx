@@ -116,30 +116,30 @@ export default function ChartGroupUpdate({}) {
         }
     }, [location.search, state.loading])
 
-    function reloadCallback(event) {
+    function reloadCallback(event): void {
         event.preventDefault()
         if (isLeavingPageNotAllowed.current) {
             event.returnValue = 'Your changes will be lost. Do you want to leave without deploying?'
         }
     }
 
-    function redirectToGroupDetail() {
+    function redirectToGroupDetail(): void {
         let url = `${URLS.CHARTS}/discover/group/${groupId}`
         history.push(url)
     }
 
-    function closeChartGroupModal(props) {
+    function closeChartGroupModal(props): void {
         if (props?.name) {
             updateChartGroupNameAndDescription(props.name, props?.description || '')
         }
         setChartDetailsUpdate(false)
     }
 
-    function handleCloseFilter():void {
+    function handleCloseFilter(): void {
         setSelectedChartRepo(appliedChartRepoFilter)
     }
 
-    function initialiseFromQueryParams(chartRepoList) {
+    function initialiseFromQueryParams(chartRepoList): void {
         let searchParams = new URLSearchParams(location.search)
         let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId)
         let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated)
@@ -198,8 +198,8 @@ export default function ChartGroupUpdate({}) {
         )
     }
 
-    function handleViewAllCharts():void {
-        history.push(`${url}?${QueryParams.IncludeDeprecated}=1`) 
+    function handleViewAllCharts(): void {
+        history.push(`${url}?${QueryParams.IncludeDeprecated}=1`)
     }
 
     return (

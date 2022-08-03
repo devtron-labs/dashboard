@@ -1,23 +1,34 @@
-import React from 'react';
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg';
-import ReactSelect, { components } from 'react-select';
-import { DropdownIndicator, ValueContainer } from './charts.util';
-import { Checkbox, Option, multiSelectStyles, } from '../common';
-import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg';
+import React from 'react'
+import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
+import ReactSelect, { components } from 'react-select'
+import { DropdownIndicator, ValueContainer } from './charts.util'
+import { Checkbox, Option, multiSelectStyles } from '../common'
+import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Grid } from '../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as List } from '../../assets/icons/ic-list-view.svg'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
-import { QueryParams } from './charts.util';
-import { Accordian } from '../common/Accordian/Accordian';
-import { URLS } from '../../config';
+import { QueryParams } from './charts.util'
+import { Accordian } from '../common/Accordian/Accordian'
+import { URLS } from '../../config'
 
-function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprecated, chartRepoList, setSelectedChartRepo, appStoreName, setAppStoreName, searchApplied, isGrid, setIsGrid }) {
+function ChartHeaderFilter({
+    selectedChartRepo,
+    handleCloseFilter,
+    includeDeprecated,
+    chartRepoList,
+    setSelectedChartRepo,
+    appStoreName,
+    setAppStoreName,
+    searchApplied,
+    isGrid,
+    setIsGrid,
+}) {
     const match = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
     const { url } = match
 
-    const handleSelection = (event):void => {
+    const handleSelection = (event): void => {
         const chartRepoList = selectedChartRepo.filter((e) => e != event)
         setSelectedChartRepo(chartRepoList)
         selectedChartRepo.length === chartRepoList.length
@@ -25,64 +36,68 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
             : handleFilterChanges(chartRepoList, 'chart-repo')
     }
 
-    const handleViewAllCharts = () => {
+    const handleViewAllCharts = (): void => {
         history.push(`${match.url.split('/chart-store')[0]}${URLS.GLOBAL_CONFIG_CHART}`)
     }
 
     function handleFilterChanges(selected, key): void {
-        const searchParams = new URLSearchParams(location.search);
-        const app = searchParams.get(QueryParams.AppStoreName);
-        const deprecate = searchParams.get(QueryParams.IncludeDeprecated);
-        const chartRepoId = searchParams.get(QueryParams.ChartRepoId);
+        const searchParams = new URLSearchParams(location.search)
+        const app = searchParams.get(QueryParams.AppStoreName)
+        const deprecate = searchParams.get(QueryParams.IncludeDeprecated)
+        const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
 
-        if (key == "chart-repo") {
-            let chartRepoId = selected?.map((e) => { return e.value }).join(",");
-            let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`;
-            if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
-            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
+        if (key == 'chart-repo') {
+            let chartRepoId = selected
+                ?.map((e) => {
+                    return e.value
+                })
+                .join(',')
+            let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`
+            if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`
+            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
             history.push(`${url}?${qs}`)
-        };
+        }
 
-        if (key == "deprecated") {
-            let qs = `${QueryParams.IncludeDeprecated}=${selected}`;
-            if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`;
+        if (key == 'deprecated') {
+            let qs = `${QueryParams.IncludeDeprecated}=${selected}`
+            if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-            history.push(`${url}?${qs}`);
+            history.push(`${url}?${qs}`)
         }
 
-        if (key == "search") {
-            selected.preventDefault();
-            let qs = `${QueryParams.AppStoreName}=${appStoreName}`;
-            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-            if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
-            history.push(`${url}?${qs}`);
+        if (key == 'search') {
+            selected.preventDefault()
+            let qs = `${QueryParams.AppStoreName}=${appStoreName}`
+            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
+            if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+            history.push(`${url}?${qs}`)
         }
 
-        if (key == "clear") {
-            let qs: string = "";
-            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`;
-            if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`;
-            history.push(`${url}?${qs}`);
+        if (key == 'clear') {
+            let qs: string = ''
+            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
+            if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+            history.push(`${url}?${qs}`)
         }
     }
 
-    const setStore = (event):void => {
+    const setStore = (event): void => {
         setAppStoreName(event.target.value)
     }
 
-    const clearFilterChange = (e):void => {
+    const clearFilterChange = (e): void => {
         handleFilterChanges(e, 'clear')
     }
 
-    const setGrid = ():void => {
+    const setGrid = (): void => {
         setIsGrid(true)
     }
 
-    const setList = ():void => {
+    const setList = (): void => {
         setIsGrid(false)
     }
 
-    const toggleDeprecated = ():void => {
+    const toggleDeprecated = (): void => {
         let value = (includeDeprecated + 1) % 2
         handleFilterChanges(value, 'deprecated')
     }
@@ -90,7 +105,10 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
     return (
         <div className="filter-column-container">
             <div className="pb-12 pl-12 pr-12 pt-16">
-                <form onSubmit={(e) => handleFilterChanges(e, 'search')} className="bcn-0 position-rel block en-2 bw-1 br-4 h-36 w-100 position-rel">
+                <form
+                    onSubmit={(e) => handleFilterChanges(e, 'search')}
+                    className="bcn-0 position-rel block en-2 bw-1 br-4 h-36 w-100 position-rel"
+                >
                     <Search className="search__icon icon-dim-18" />
                     <input
                         type="text"
@@ -100,11 +118,7 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
                         onChange={setStore}
                     />
                     {searchApplied && (
-                        <button
-                            className="search__clear-button"
-                            type="button"
-                            onClick={clearFilterChange}
-                        >
+                        <button className="search__clear-button" type="button" onClick={clearFilterChange}>
                             <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                         </button>
                     )}
