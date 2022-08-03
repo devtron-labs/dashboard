@@ -304,7 +304,7 @@ export function refreshGitMaterial(gitMaterialId: string) {
     })
 }
 
-export function fetchGitMaterialByCommitHash(gitMaterialId: string, commitHash: string) {
+export function getGitMaterialByCommitHash(gitMaterialId: string, commitHash: string) {
     return get(`${Routes.COMMIT_INFO}/${gitMaterialId}/${commitHash}`)
 }
 

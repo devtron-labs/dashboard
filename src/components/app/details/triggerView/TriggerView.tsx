@@ -1,5 +1,5 @@
 import React, { Component, createContext } from 'react';
-import { getCDMaterialList, getRollbackMaterialList, triggerCDNode, getCIMaterialList, triggerCINode, getWorkflowStatus, refreshGitMaterial, CDModalTab, fetchGitMaterialByCommitHash } from '../../service';
+import { getCDMaterialList, getRollbackMaterialList, triggerCDNode, getCIMaterialList, triggerCINode, getWorkflowStatus, refreshGitMaterial, CDModalTab, getGitMaterialByCommitHash } from '../../service';
 import { ServerErrors } from '../../../../modals/commonTypes';
 import { createGitCommitUrl, ErrorScreenManager, ISTTimeModal, Progressing, showError } from '../../../common';
 import { getTriggerWorkflows } from './workflow.service';
@@ -117,8 +117,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }
     }
 
-    fetchCommitHistoryFromDB(ciPipelineMaterialId: number, commitHash: string,workflows: WorkflowType[], _selectedMaterial: CIMaterialType){
-      fetchGitMaterialByCommitHash(ciPipelineMaterialId.toString(), commitHash)
+    getCommitHistory(ciPipelineMaterialId: number, commitHash: string,workflows: WorkflowType[], _selectedMaterial: CIMaterialType){
+      getGitMaterialByCommitHash(ciPipelineMaterialId.toString(), commitHash)
           .then((response) => {
               const _result = response.result
               if (_result) {
@@ -181,7 +181,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
               _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: true }]
               _selectedMaterial.isMaterialLoading = false
           } else {
-              this.fetchCommitHistoryFromDB(ciPipelineMaterialId, commitHash, workflows, _selectedMaterial)
+              this.getCommitHistory(ciPipelineMaterialId, commitHash, workflows, _selectedMaterial)
           }
       } else {
           this.onClickCIMaterial(ciNodeId.toString(), pipelineName, true)
