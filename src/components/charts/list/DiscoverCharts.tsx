@@ -204,7 +204,7 @@ function DiscoverChartList() {
                 {chartList.length > 0 && serverMode == SERVER_MODE.FULL && state.charts.length === 0 && (
                     <button
                         type="button"
-                        className="create-button cursor cb-5 fw-6 fs-13 br-4 pr-12 pl-12 fcb-5 flex h-32 lh-n"
+                        className="bcn-0 en-2 bw-1 cursor cb-5 fw-6 fs-13 br-4 pr-12 pl-12 fcb-5 flex h-32 lh-n"
                         onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}
                     >
                         <Add className="icon-dim-18 mr-5" />
@@ -619,6 +619,11 @@ export function ChartGroupListMin({
             <EmptyChartGroup showChartGroupModal={showChartGroupModal} toggleChartGroupModal={toggleChartGroupModal} />
         )
     }
+
+    const redirectToGroup = () => {
+        history.push(match.url + '/group')
+    }
+
     return (
         <div className="chart-group">
             <div className="chart-group__header">
@@ -632,7 +637,7 @@ export function ChartGroupListMin({
                         {renderCreateGroupButton()}
                         <div
                             className="cb-5 fw-6 fs-13 flex fcb-5 cursor"
-                            onClick={(e) => history.push(match.url + '/group')}
+                            onClick={redirectToGroup}
                         >
                             View all chart groups
                             <Next className="ml-8 sicon-dim-16" />

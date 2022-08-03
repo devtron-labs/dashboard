@@ -360,8 +360,3 @@
     margin-left: auto;
     margin-right: auto;
 }
-
-.create-button {
-    background: white;
-    border: 1px solid var(--N200);
-}
