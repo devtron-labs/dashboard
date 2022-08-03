@@ -154,7 +154,7 @@ function DiscoverChartList() {
         }
     }
 
-    function redirectToConfigure() {
+    function redirectToConfigure():void {
         configureChart(0)
         toggleDeployModal(false)
     }
@@ -190,11 +190,11 @@ function DiscoverChartList() {
         setChartListloading(false)
     }
 
-    function handleViewAllCharts() {
+    function handleViewAllCharts():void {
         history.push(`${match.url.split('/chart-store')[0]}${URLS.GLOBAL_CONFIG_CHART}`)
     }
 
-    function handleCloseFilter() {
+    function handleCloseFilter():void {
         setSelectedChartRepo(appliedChartRepoFilter)
     }
 
@@ -233,7 +233,7 @@ function DiscoverChartList() {
         )
     }
 
-    const clearSearch = () => {
+    const clearSearch = ():void => {
         history.push(url)
     }
 

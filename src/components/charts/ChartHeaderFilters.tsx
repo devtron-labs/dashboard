@@ -17,7 +17,7 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
     const location = useLocation()
     const { url } = match
 
-    const handleSelection = (event) => {
+    const handleSelection = (event):void => {
         const chartRepoList = selectedChartRepo.filter((e) => e != event)
         setSelectedChartRepo(chartRepoList)
         selectedChartRepo.length === chartRepoList.length
@@ -66,23 +66,23 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
         }
     }
 
-    const setStore = (event) => {
+    const setStore = (event):void => {
         setAppStoreName(event.target.value)
     }
 
-    const clearFilterChange = (e) => {
+    const clearFilterChange = (e):void => {
         handleFilterChanges(e, 'clear')
     }
 
-    const setGrid = () => {
+    const setGrid = ():void => {
         setIsGrid(true)
     }
 
-    const setList = () => {
+    const setList = ():void => {
         setIsGrid(false)
     }
 
-    const toggleDeprecated = () => {
+    const toggleDeprecated = ():void => {
         let value = (includeDeprecated + 1) % 2
         handleFilterChanges(value, 'deprecated')
     }

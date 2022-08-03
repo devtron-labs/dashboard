@@ -37,7 +37,7 @@ export type ChartSelectProps = Stepper | Checkbox
 const ChartSelect: React.FC<ChartSelectProps> = ({ chart, selectChart, addChart, subtractChart, selectedCount = 0, showCheckBoxOnHoverOnly, onClick, showDescription }) => {
     const { serverMode } = useContext(mainContext);
 
-    function handleImageError(e) {
+    function handleImageError(e):void {
         const target = e.target as HTMLImageElement;
         target.onerror = null;
         target.src = placeHolder;
@@ -45,22 +45,22 @@ const ChartSelect: React.FC<ChartSelectProps> = ({ chart, selectChart, addChart,
 
     let classes = `chart-grid-item ${showDescription ? '': 'chart-grid-item--discover' } white-card position-rel`;
     
-    const addchartTab = (e) => {
+    const addchartTab = (e):void => {
         e.stopPropagation()
         addChart(chart.id)
     }
 
-    const removeChartTab = (e) => {
+    const removeChartTab = (e):void => {
         e.stopPropagation()
         subtractChart(chart.id)
     }
 
-    const selectChartTab = (e) => {
+    const selectChartTab = (e):void => {
         e.stopPropagation()
         selectChart(chart.id)
     }
 
-    const onClickChartSelect = () => {
+    const onClickChartSelect = ():void => {
         onClick(chart.id)
     }
 

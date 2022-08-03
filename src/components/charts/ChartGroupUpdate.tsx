@@ -135,7 +135,7 @@ export default function ChartGroupUpdate({}) {
         setChartDetailsUpdate(false)
     }
 
-    function handleCloseFilter() {
+    function handleCloseFilter():void {
         setSelectedChartRepo(appliedChartRepoFilter)
     }
 
@@ -198,7 +198,7 @@ export default function ChartGroupUpdate({}) {
         )
     }
 
-    function handleViewAllCharts() {
+    function handleViewAllCharts():void {
         history.push(`${url}?${QueryParams.IncludeDeprecated}=1`) 
     }
 
