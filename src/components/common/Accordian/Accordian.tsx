@@ -32,15 +32,15 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
                             </a>
                         </span>
                     </div>
-                    {options.map((e) => (
+                    {options.map((option) => (
                         <div className="position-rel flex left cursor">
                             <Checkbox
                                 rootClassName="cursor bcn-0 ml-7 h-32 fs-13 mb-0 mr-10"
-                                isChecked={value.filter((event) => event === e).length}
+                                isChecked={value.filter((event) => event === option).length}
                                 value={'CHECKED'}
-                                onChange={() => onChange(e)}
+                                onChange={() => onChange(option)}
                             >
-                                <div className="ml-5">{e.label}</div>
+                                <div className="ml-5">{option.label}</div>
                             </Checkbox>
                         </div>
                     ))}
