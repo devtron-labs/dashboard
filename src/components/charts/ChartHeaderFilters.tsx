@@ -11,7 +11,7 @@ import { QueryParams } from './charts.util';
 import { Accordian } from '../common/Accordian/Accordian';
 import { URLS } from '../../config';
 
-function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprecated, chartRepoList, setSelectedChartRepo, appStoreName, setAppStoreName, searchApplied, isGrid, setGrid }) {
+function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprecated, chartRepoList, setSelectedChartRepo, appStoreName, setAppStoreName, searchApplied, isGrid, setIsGrid }) {
     const match = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -65,44 +65,63 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
             history.push(`${url}?${qs}`);
         }
     }
-   
+
+    const setStore = (event) => {
+        setAppStoreName(event.target.value)
+    }
+
+    const clearFilterChange = (e) => {
+        handleFilterChanges(e, 'clear')
+    }
+
+    const setGrid = () => {
+        setIsGrid(true)
+    }
+
+    const setList = () => {
+        setIsGrid(false)
+    }
+
+    const toggleDeprecated = () => {
+        let value = (includeDeprecated + 1) % 2
+        handleFilterChanges(value, 'deprecated')
+    }
+
     return (
         <div className="filter-column-container">
             <div className="pb-12 pl-12 pr-12 pt-16">
-                <form onSubmit={(e) => handleFilterChanges(e, 'search')} className="search-column position-rel">
+                <form onSubmit={(e) => handleFilterChanges(e, 'search')} className="bcn-0 position-rel block en-2 bw-1 br-4 h-36 w-100 position-rel">
                     <Search className="search__icon icon-dim-18" />
                     <input
                         type="text"
                         placeholder="Search charts"
                         value={appStoreName}
                         className="search__input bcn-0"
-                        onChange={(event) => {
-                            setAppStoreName(event.target.value)
-                        }}
+                        onChange={setStore}
                     />
-                    {searchApplied ? (
+                    {searchApplied && (
                         <button
                             className="search__clear-button"
                             type="button"
-                            onClick={(e) => handleFilterChanges(e, 'clear')}
+                            onClick={clearFilterChange}
                         >
                             <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                         </button>
-                    ) : null}
+                    )}
                 </form>
             </div>
             <div className="pl-12 pr-12 filter-tab">
                 <div className="fs-12 fw-6 ml-8 cn-6 pb-8 pt-8">VIEW AS</div>
                 <div className="cursor">
                     <div
-                        onClick={() => setGrid(true)}
+                        onClick={setGrid}
                         className={`flex left pt-8 pb-8 pl-10 fs-13 ${isGrid ? 'cb-5 bcb-1 scb-5' : ''}`}
                     >
                         <Grid className="icon-dim-20 mr-12" />
                         Grid view
                     </div>
                     <div
-                        onClick={() => setGrid(false)}
+                        onClick={setList}
                         className={`flex left pt-8 pb-8 fs-13 pl-10 ${!isGrid ? 'cb-5 bcb-1 scb-5' : ''}`}
                     >
                         <List className="icon-dim-20 mr-12" />
@@ -115,10 +134,7 @@ function ChartHeaderFilter({ selectedChartRepo, handleCloseFilter, includeDeprec
                     rootClassName="cursor fs-13 bcn-0 ml-7 mr-10 mb-0 date-align-left--deprecate"
                     isChecked={includeDeprecated === 1}
                     value={'CHECKED'}
-                    onChange={(event) => {
-                        let value = (includeDeprecated + 1) % 2
-                        handleFilterChanges(value, 'deprecated')
-                    }}
+                    onChange={toggleDeprecated}
                 >
                     <div className="ml-5"> Show deprecated charts</div>
                 </Checkbox>

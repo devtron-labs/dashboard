@@ -6,12 +6,13 @@ import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 export function Accordian({ header, options, value, onChange, onClickViewChartButton }) {
     const [collapsed, setCollapse] = useState<boolean>(true)
 
+    const toggleDropdown = () => {
+        setCollapse(!collapsed)
+    }
+
     return (
         <div>
-            <div
-                className="flex fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8 content-space cursor"
-                onClick={() => setCollapse(!collapsed)}
-            >
+            <div className="flex fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8 content-space cursor" onClick={toggleDropdown}>
                 {header}
                 <Dropdown
                     className="icon-dim-24 rotate"

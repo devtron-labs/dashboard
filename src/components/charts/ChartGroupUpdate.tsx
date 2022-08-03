@@ -52,7 +52,7 @@ export default function ChartGroupUpdate({}) {
     const { url } = match
     const [chartListLoading, setChartListLoading] = useState(true)
     const chartList: Chart[] = Array.from(state.availableCharts.values())
-    const [isGrid, setGrid] = useState<boolean>(true)
+    const [isGrid, setIsGrid] = useState<boolean>(true)
 
     const { breadcrumbs } = useBreadcrumb(
         {
@@ -198,11 +198,8 @@ export default function ChartGroupUpdate({}) {
         )
     }
 
-    function handleViewAllCharts(viewAllCharts: boolean = false) {
-        const searchParams = new URLSearchParams(location.search)
-        const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
-        let qs = chartRepoId ? `&${QueryParams.ChartRepoId}=${chartRepoId}` : ''
-        viewAllCharts ? history.push(`${url}?${QueryParams.IncludeDeprecated}=1`) : history.push(`${url}?${qs}`)
+    function handleViewAllCharts() {
+        history.push(`${url}?${QueryParams.IncludeDeprecated}=1`) 
     }
 
     return (
@@ -231,7 +228,7 @@ export default function ChartGroupUpdate({}) {
                                 setAppStoreName={setAppStoreName}
                                 handleCloseFilter={handleCloseFilter}
                                 isGrid={isGrid}
-                                setGrid={setGrid}
+                                setIsGrid={setIsGrid}
                             />
                         ) : null}
                         {chartListLoading ? (
@@ -252,7 +249,7 @@ export default function ChartGroupUpdate({}) {
                                 ) : !chartList.length ? (
                                     <>
                                         <ChartEmptyState
-                                            onClickViewChartButton={() => handleViewAllCharts(true)}
+                                            onClickViewChartButton={handleViewAllCharts}
                                             heightToDeduct={150}
                                         />
                                     </>

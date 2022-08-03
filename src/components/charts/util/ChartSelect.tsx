@@ -45,6 +45,21 @@ const ChartSelect: React.FC<ChartSelectProps> = ({ chart, selectChart, addChart,
 
     let classes = `chart-grid-item ${showDescription ? '': 'chart-grid-item--discover' } white-card position-rel`;
     
+    const addchartTab = (e) => {
+        e.stopPropagation()
+        addChart(chart.id)
+    }
+
+    const removeChartTab = (e) => {
+        e.stopPropagation()
+        subtractChart(chart.id)
+    }
+
+    const selectChartTab = (e) => {
+        e.stopPropagation()
+        selectChart(chart.id)
+    }
+
     return (
         <div
             key={chart.id}
@@ -82,10 +97,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({ chart, selectChart, addChart,
                         <button
                             className={'devtron-stepper__item transparent p-0 cursor'}
                             disabled={selectedCount <= 0}
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                subtractChart(chart.id)
-                            }}
+                            onClick={removeChartTab}
                         >
                             <Minus className="icon-dim-14" />
                         </button>
@@ -108,10 +120,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({ chart, selectChart, addChart,
                     >
                         <button
                             className={'devtron-stepper__item transparent p-0 cursor'}
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                addChart(chart.id)
-                            }}
+                            onClick={addchartTab}
                         >
                             <Add className="icon-dim-14" />
                         </button>
@@ -119,10 +128,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({ chart, selectChart, addChart,
                 </div>
             ) : (
                 <input
-                    onClick={(e) => {
-                        e.stopPropagation()
-                        selectChart(chart.id)
-                    }}
+                    onClick={selectChartTab}
                     type="checkbox"
                     checked={selectedCount > 0}
                     className={`chart-grid__check ${

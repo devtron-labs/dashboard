@@ -110,7 +110,7 @@ function DiscoverChartList() {
     const chartList: Chart[] = Array.from(state.availableCharts.values())
     const isLeavingPageNotAllowed = useRef(false)
     const [showChartGroupModal, toggleChartGroupModal] = useState(false)
-    const [isGrid, setGrid] = useState<boolean>(true)
+    const [isGrid, setIsGrid] = useState<boolean>(true)
     const noChartAvailable : boolean   = chartList.length > 0 || searchApplied || selectedChartRepo.length > 0
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
@@ -233,13 +233,8 @@ function DiscoverChartList() {
         )
     }
 
-    const clearSearch = (viewAllCharts: boolean = false) => {
-        const searchParams = new URLSearchParams(location.search)
-        const includeDeprecate = searchParams.get(QueryParams.IncludeDeprecated)
-        const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
-        let qs = includeDeprecate ? `&${QueryParams.IncludeDeprecated}=${includeDeprecate}` : ''
-        qs += chartRepoId ? `&${QueryParams.ChartRepoId}=${chartRepoId}` : ''
-        viewAllCharts ? history.push(url) : history.push(`${url}?${qs}`)
+    const clearSearch = () => {
+        history.push(url)
     }
 
     return (
@@ -266,7 +261,7 @@ function DiscoverChartList() {
                                 setAppStoreName={setAppStoreName}
                                 handleCloseFilter={handleCloseFilter}
                                 isGrid={isGrid}
-                                setGrid={setGrid}
+                                setIsGrid={setIsGrid}
                             />
                         )}
                         {state.loading || chartListLoading ? (
@@ -363,7 +358,7 @@ function DiscoverChartList() {
                                                             title={'No matching charts'}
                                                             removeLearnMore={true}
                                                             image={emptyImage}
-                                                            onClickViewChartButton={() => clearSearch(true)}
+                                                            onClickViewChartButton={clearSearch}
                                                             subTitle={`We couldn't find any matching results`}
                                                             styles={{ height: '300px', justifyContent: 'center' }}
                                                         />
