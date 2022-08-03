@@ -180,6 +180,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             .then((response) => {
                 if (response) {
                     toast.success('Updated Pipeline')
+                    this.props.getWorkflows()
                     this.props.onCloseBranchRegexModal()
                     context.onClickCIMaterial(this.props.pipelineId, this.props.pipelineName)
                     this.props.onShowCIModal()

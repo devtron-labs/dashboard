@@ -88,6 +88,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     componentDidMount() {
         this.getHostURLConfig()
+        this.getWorkflows()
+    }
+
+    getWorkflows = () => {
         getTriggerWorkflows(this.props.match.params.appId)
             .then((result) => {
                 const _filteredCIPipelines = result.filteredCIPipelines || []
@@ -745,6 +749,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         showCIModal={this.state.showCIModal}
                         onShowCIModal={this.onShowCIModal}
                         isChangeBranchClicked={this.state.isChangeBranchClicked}
+                        getWorkflows={this.getWorkflows}
                     />
                 </>
             )

@@ -75,6 +75,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     showCIModal: boolean
     onShowCIModal: () => void
     isChangeBranchClicked: boolean
+    getWorkflows: () => void
 }
 
 export interface CIMaterialState {
