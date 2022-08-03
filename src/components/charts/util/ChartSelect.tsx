@@ -60,13 +60,17 @@ const ChartSelect: React.FC<ChartSelectProps> = ({ chart, selectChart, addChart,
         selectChart(chart.id)
     }
 
+    const onClickChartSelect = () => {
+        onClick(chart.id)
+    }
+
     return (
         <div
             key={chart.id}
             className={`${showDescription ? 'flex-list' : ''} ${classes} ${
                 showCheckBoxOnHoverOnly ? 'show-checkbox-onhover' : ''
             } ${selectedCount > 0 ? 'chart-grid-item--selected' : ''}`}
-            onClick={onClick ? (e) => onClick(chart.id) : noop}
+            onClick={onClick ? onClickChartSelect : noop}
         >
             <div className={`${showDescription ? 'chart-list-item__icon-wrapper' : 'chart-grid-item__icon-wrapper'}`}>
                 <LazyImage
