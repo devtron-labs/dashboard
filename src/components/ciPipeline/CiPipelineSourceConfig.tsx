@@ -13,6 +13,8 @@ export interface CIPipelineSourceConfigInterface {
     showIcons?: boolean
     baseText?: string
     regex?: any
+    isRegex?: boolean
+    primaryBranchAfterRegex?: string
 }
 
 export function CiPipelineSourceConfig({
@@ -22,9 +24,11 @@ export function CiPipelineSourceConfig({
     showIcons = true,
     baseText = undefined,
     regex,
+    isRegex = false,
+    primaryBranchAfterRegex,
 }: CIPipelineSourceConfigInterface) {
     let _isWebhook = sourceType === SourceTypeMap.WEBHOOK
-    let _isRegex = sourceType === SourceTypeMap.BranchRegex || !!regex
+    let _isRegex = sourceType === SourceTypeMap.BranchRegex || !!regex || isRegex
 
     const [sourceValueBase, setSourceValueBase] = useState(_isWebhook ? '' : sourceValue)
     const [sourceValueAdv, setSourceValueAdv] = useState(_isWebhook ? '' : sourceValue)
@@ -76,12 +80,17 @@ export function CiPipelineSourceConfig({
     const rendeRegexSourceVal = () => {
         return (
             <>
-                <div className="fw-6">Regex</div>
-                <p>{regex}</p>
-                {sourceValueAdv && (
+                {regex && (
+                    <>
+                        <div className="fw-6">Regex</div>
+                        <p>{regex}</p>
+                    </>
+                )}
+
+                {window.location.href.includes('trigger') && (
                     <>
                         <div className="fw-6">Primary Branch</div>
-                        <p>{sourceValueAdv}</p>
+                        <p>{primaryBranchAfterRegex ? primaryBranchAfterRegex : 'Not set'}</p>
                     </>
                 )}
             </>

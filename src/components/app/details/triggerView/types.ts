@@ -125,6 +125,7 @@ export interface NodeAttr {
     parentEnvironmentName?: string
     isRegex?: boolean
     regex?: string
+    primaryBranchAfterRegex?: string
 }
 
 export interface DownStreams {

@@ -65,7 +65,7 @@ export function Build({
             return {
                 ...mat,
                 type: gitMaterialId === mat.gitMaterialId ? selectedSource.value : mat.type,
-                value: '',
+                // value: '',
             }
         })
         _formData.materials = allMaterials

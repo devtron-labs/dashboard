@@ -434,6 +434,7 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
             y: 0,
             regex: ciMaterial?.source?.regex,
             isRegex: ciMaterial?.isRegex,
+            primaryBranchAfterRegex: ciMaterial?.source?.value,
         } as NodeAttr
     })
     let trigger = ciPipeline.isManual ? TriggerType.Manual.toLocaleLowerCase() : TriggerType.Auto.toLocaleLowerCase()

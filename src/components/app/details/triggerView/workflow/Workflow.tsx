@@ -41,6 +41,7 @@ export class Workflow extends Component<WorkflowProps> {
                 sourceType={node.sourceType}
                 regex={node.regex}
                 isRegex={node.isRegex}
+                primaryBranchAfterRegex={node.primaryBranchAfterRegex}
             />
         )
     }
