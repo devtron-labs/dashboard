@@ -22,6 +22,7 @@ interface SourceMaterialsProps {
     ciPipelineSourceTypeOptions: CiPipelineSourceTypeOption[]
     canEditPipeline: boolean
     webhookData?: WebhookCIProps
+    isAdvanced?: boolean
 }
 
 export interface WebhookCIProps {
@@ -141,6 +142,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                         className="workflow-ci__source"
                                         placeholder="Source Type"
                                         isSearchable={false}
+                                        menuPortalTarget={props.isAdvanced ? document.getElementById('visible-modal'):null}
                                         options={props.ciPipelineSourceTypeOptions}
                                         value={selectedMaterial}
                                         closeMenuOnSelect={false}
