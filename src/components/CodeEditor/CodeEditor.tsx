@@ -11,13 +11,13 @@ import ReactGA from 'react-ga';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import 'monaco-editor';
 // @ts-ignore
-import 'monaco-yaml/lib/esm/monaco.contribution';
+// import 'monaco-yaml/lib/esm/monaco.contribution';
 // @ts-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import EditorWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worker';
 // @ts-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import YamlWorker from 'worker-loader!monaco-yaml/lib/esm/yaml.worker';
+import YamlWorker from 'worker-loader!monaco-yaml/yaml.worker';
 import { MODES } from '../../../src/config/constants';
 import { cleanKubeManifest } from '../../../src/util/Util';
 

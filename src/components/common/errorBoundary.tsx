@@ -57,7 +57,7 @@ export default class ErrorBoundary extends Component<{}, errorBoundaryState> {
                 </div>
             )
         } else {
-            return this.props.children
+            return <>{this.props.children}</>
         }
     }
 }
