@@ -86,6 +86,7 @@ export interface Chart {
     valuesYaml?: string;
     appStoreApplicationVersionId?: number;
     deprecated: boolean;
+    description?: string;
 }
 
 export interface ProjectType {
