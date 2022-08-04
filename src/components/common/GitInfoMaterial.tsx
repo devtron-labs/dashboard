@@ -8,7 +8,8 @@ import { ReactComponent as Back } from '../../assets/icons/ic-back.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Right } from '../../assets/icons/ic-arrow-left.svg'
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
-import { ReactComponent as Branch } from '../../assets/icons/ic-git-branch.svg'
+import { ReactComponent as BranchRegex } from '../../assets/icons/ic-git-branch.svg'
+import { ReactComponent as BranchFixed } from '../../assets/icons/misc/branch.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
@@ -57,7 +58,7 @@ export default function GitInfoMaterial({
                                 className="rotate icon-dim-24 ml-16 mr-16"
                                 style={{ ['--rotateBy' as any]: '-180deg' }}
                             />
-                            <span className="fs-16"> All incoming webhook payloads </span>{' '}
+                            <span className="fs-16"> All incoming webhook payloads </span>
                         </>
                     ) : null}
                 </h1>
@@ -104,32 +105,42 @@ export default function GitInfoMaterial({
         return false
     }
 
+    const showBranchRegexModal = () => {
+        onClickChangebranch(true)
+    }
+
     const renderBranchChangeHeader = (material: CIMaterialType) => {
         const isNoError = !material.isRepoError && !material.isBranchError
         return (
             isBranchRegex(material) && (
                 <div className="fs-13 lh-20" style={{ background: 'var(--window-bg)' }}>
                     <div
-                        className={` fw-6 flex cursor ${
+                        className={` fw-6 flex ${material.regex ? 'cursor' : ''} ${
                             !isNoError ? 'content-space w-100' : 'left'
                         } pl-20 pr-20 pt-12 pb-12 cn-9`}
-                        onClick={() => onClickChangebranch(true)}
+                        onClick={material.regex && showBranchRegexModal}
                     >
-                        <div className="flex">
-                            <Branch className="hw-100 mr-8" />
+                        <div className="flex icon-color-n9">
+                            {material.regex ? (
+                                <BranchRegex className="w-100 mr-8" />
+                            ) : (
+                                <BranchFixed className="icon-dim-16 mr-8" />
+                            )}
                             {material.value}
                         </div>
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="top"
-                            content={'Change branch'}
-                            interactive={true}
-                        >
-                            <button type="button" className="transparent flexbox">
-                                <Edit className="icon-dim-16" />
-                            </button>
-                        </Tippy>
+                        {material.regex && (
+                            <Tippy
+                                className="default-tt"
+                                arrow={false}
+                                placement="top"
+                                content={'Change branch'}
+                                interactive={true}
+                            >
+                                <button type="button" className="transparent flexbox">
+                                    <Edit className="icon-dim-16" />
+                                </button>
+                            </Tippy>
+                        )}
                     </div>
                 </div>
             )
@@ -190,14 +201,9 @@ export default function GitInfoMaterial({
                     className="flex content-space position-sticky"
                     style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
                 >
-                    {!!material.regex && renderBranchChangeHeader(material)}
+                    {renderBranchChangeHeader(material)}
 
-                    {!material.isRepoError && !material.isBranchError && (
-                        <>
-                            {!material.regex && <div className="material-list__title cn-9">Select commit to build</div>}
-                            {renderSearch()}
-                        </>
-                    )}
+                    {!material.isRepoError && !material.isBranchError && <>{renderSearch()}</>}
                 </div>
                 {material.isMaterialLoading ||
                 material.isRepoError ||

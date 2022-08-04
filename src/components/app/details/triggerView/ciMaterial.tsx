@@ -175,11 +175,12 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     handleRegexInputValue = (id, value, mat) => {
+        const isValid = new RegExp(mat.regex).test(value)
         this.setState((prevState) => {
             return {
                 regexValue: {
                     ...prevState.regexValue,
-                    [id]: { value, isInvalid: mat.regex && !new RegExp(mat.regex).test(value) },
+                    [id]: { value, isInvalid: mat.regex && !isValid },
                 },
             }
         })

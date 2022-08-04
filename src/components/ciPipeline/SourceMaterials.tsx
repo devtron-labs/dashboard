@@ -90,6 +90,8 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
         )
     }
 
+    const isMulti = _materials.length > 1
+
     return (
         <>
             <p className="cn-9 fw-6 fs-14 lh-1-43 mb-18">Select code source</p>
