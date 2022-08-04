@@ -260,8 +260,7 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
                 let _value = mat.value
                 if (mat.type === SourceTypeMap.BranchRegex) {
                     _value = ''
-                }
-                if (mat.type === SourceTypeMap.WEBHOOK) {
+                } else if (mat.type === SourceTypeMap.WEBHOOK) {
                     const _condition = {}
                     webhookConditionList.forEach((webhookCondition) => {
                         _condition[webhookCondition.selectorId] = webhookCondition.value

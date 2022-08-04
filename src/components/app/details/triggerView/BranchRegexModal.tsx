@@ -108,7 +108,7 @@ function BranchRegexModal({
                 </div>
                 {material &&
                     material.map((mat, index) => {
-                        const _regexValue = regexValue[mat.gitMaterialId]
+                        const _regexValue = regexValue[mat.gitMaterialId] || {}
                         return (
                             mat.regex && (
                                 <div className="border-bottom pb-20 pt-20" key={`regex_${index}`}>
@@ -134,19 +134,19 @@ function BranchRegexModal({
                                         </span>
                                     </div>
                                     <input
-                                        tabIndex={1}
+                                        tabIndex={index}
                                         placeholder="Enter branch name matching regex"
                                         className="form__input ml-36 w-95"
                                         name="name"
-                                        value={_regexValue?.value}
+                                        value={_regexValue.value}
                                         onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)}
                                         autoFocus
                                         autoComplete="off"
                                     />
-                                    {_regexValue?.value &&
+                                    {_regexValue.value &&
                                         _regexValue.isInvalid &&
                                         renderValidationErrorLabel('Branch name does not match the regex.')}
-                                    {!_regexValue?.value && renderValidationErrorLabel('This is a required field')}
+                                    {!_regexValue.value && renderValidationErrorLabel('This is a required field')}
                                     {!showWebhookModal &&
                                         renderMaterialRegexFooterNextButton(context, mat.gitMaterialId)}
                                 </div>

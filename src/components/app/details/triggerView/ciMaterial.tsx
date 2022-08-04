@@ -16,11 +16,29 @@ import BranchRegexModal from './BranchRegexModal'
 export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     constructor(props) {
         super(props)
+        let regexValue: Record<
+            number,
+            {
+                value: string
+                isInvalid: boolean
+            }
+        > = {}
+        this.props.material.forEach(
+            (mat, index) =>
+                (regexValue[mat.gitMaterialId] = {
+                    value: mat.value,
+                    isInvalid: mat.regex && !new RegExp(mat.regex).test(mat.value),
+                }),
+        )
         this.state = {
-            regexValue: {},
+            regexValue: regexValue,
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             loader: false,
         }
+    }
+
+    onClickStopPropagation = (e): void => {
+        e.stopPropagation()
     }
 
     renderMaterialStartBuild = (context, canTrigger) => {
@@ -28,9 +46,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             <div className="trigger-modal__trigger">
                 <Checkbox
                     isChecked={context.invalidateCache}
-                    onClick={(e) => {
-                        e.stopPropagation()
-                    }}
+                    onClick={this.onClickStopPropagation}
                     rootClassName="form__checkbox-label--ignore-cache mb-0"
                     value={'CHECKED'}
                     onChange={context.toggleInvalidateCache}
@@ -177,12 +193,13 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     handleRegexInputValue = (id, value, mat) => {
         const isValid = new RegExp(mat.regex).test(value)
         this.setState((prevState) => {
-            return {
+            let rt = {
                 regexValue: {
                     ...prevState.regexValue,
                     [id]: { value, isInvalid: mat.regex && !isValid },
                 },
             }
+            return rt
         })
     }
 
@@ -190,34 +207,9 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         return (
             <TriggerViewContext.Consumer>
                 {(context) => {
-                    let regexValue: Record<
-                        number,
-                        {
-                            value: string
-                            isInvalid: boolean
-                        }
-                    > = undefined
-                    if (
-                        Object.entries(this.state.regexValue).length === 0 &&
-                        this.state.regexValue.constructor === Object
-                    ) {
-                        regexValue = {}
-                        this.props.material.forEach(
-                            (mat, index) =>
-                                (regexValue[mat.gitMaterialId] = {
-                                    value: mat.value,
-                                    isInvalid: mat.regex && !new RegExp(mat.regex).test(mat.value),
-                                }),
-                        )
-                    }
                     return (
                         <VisibleModal className="" close={context.closeCIModal}>
-                            <div
-                                className="modal-body--ci-material h-100"
-                                onClick={(e) => {
-                                    e.stopPropagation()
-                                }}
-                            >
+                            <div className="modal-body--ci-material h-100" onClick={this.onClickStopPropagation}>
                                 {this.props.showMaterialRegexModal && (
                                     <BranchRegexModal
                                         material={this.props.material}
@@ -229,7 +221,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                                         onClickNextButton={this.onClickNextButton}
                                         onShowCIModal={this.props.onShowCIModal}
                                         handleRegexInputValue={this.handleRegexInputValue}
-                                        regexValue={regexValue || this.state.regexValue}
+                                        regexValue={this.state.regexValue}
                                         onCloseBranchRegexModal={this.props.onCloseBranchRegexModal}
                                     />
                                 )}
