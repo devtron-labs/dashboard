@@ -89,6 +89,7 @@ export class MaterialSource extends Component<MaterialSourceProps> {
                                     sourceValue={material.value}
                                     showTooltip={true}
                                     regex={material.regex}
+                                    primaryBranchAfterRegex={material.value}
                                 />
                             </div>
                             {this.props.refreshMaterial ? (

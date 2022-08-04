@@ -12,6 +12,7 @@ import { ReactComponent as Branch } from '../../assets/icons/ic-git-branch.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
+import Tippy from '@tippyjs/react'
 
 export default function GitInfoMaterial({
     context,
@@ -107,22 +108,28 @@ export default function GitInfoMaterial({
         const isNoError = !material.isRepoError && !material.isBranchError
         return (
             isBranchRegex(material) && (
-                <div className="fs-13 w-100" style={{ background: 'var(--window-bg)' }}>
-                    <div className={` fw-6 flex ${!isNoError ? 'content-space' : 'left'} pl-20 pr-20 pt-16 pb-16 cn-9`}>
+                <div className="fs-13 lh-20" style={{ background: 'var(--window-bg)' }}>
+                    <div
+                        className={` fw-6 flex cursor ${
+                            !isNoError ? 'content-space w-100' : 'left'
+                        } pl-20 pr-20 pt-12 pb-12 cn-9`}
+                        onClick={() => onClickChangebranch(true)}
+                    >
                         <div className="flex">
                             <Branch className="hw-100 mr-8" />
                             {material.value}
                         </div>
-
-                        <div className="cb-5 cursor ml-8" onClick={() => onClickChangebranch(true)}>
-                            {!isNoError ? (
-                                'Change branch'
-                            ) : (
-                                <button type="button" className="transparent flexbox">
-                                    <Edit className="icon-dim-16" />
-                                </button>
-                            )}
-                        </div>
+                        <Tippy
+                            className="default-tt"
+                            arrow={false}
+                            placement="top"
+                            content={'Change branch'}
+                            interactive={true}
+                        >
+                            <button type="button" className="transparent flexbox">
+                                <Edit className="icon-dim-16" />
+                            </button>
+                        </Tippy>
                     </div>
                 </div>
             )
@@ -156,7 +163,7 @@ export default function GitInfoMaterial({
 
     const renderSearch = (): JSX.Element => {
         return (
-            <div className="search position-rel mt-12 en-2 bw-1 br-4 h-32" style={{ marginRight: '20px' }}>
+            <div className="search position-rel en-2 bw-1 br-4 h-32">
                 <Search className="search__icon icon-dim-18" />
                 <input
                     type="text"
@@ -180,14 +187,14 @@ export default function GitInfoMaterial({
         return (
             <div className="select-material select-material--trigger-view">
                 <div
-                    className="flexbox content-space position-sticky"
+                    className="flex content-space position-sticky"
                     style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
                 >
                     {!!material.regex && renderBranchChangeHeader(material)}
 
                     {!material.isRepoError && !material.isBranchError && (
                         <>
-                            {!material.regex && <div className="material-list__title mt-4">Select commit to build</div>}
+                            {!material.regex && <div className="material-list__title cn-9">Select commit to build</div>}
                             {renderSearch()}
                         </>
                     )}

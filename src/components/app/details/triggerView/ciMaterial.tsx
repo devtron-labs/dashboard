@@ -212,7 +212,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     return (
                         <VisibleModal className="" close={context.closeCIModal}>
                             <div
-                                className="modal-body--ci-material"
+                                className="modal-body--ci-material h-100"
                                 onClick={(e) => {
                                     e.stopPropagation()
                                 }}
