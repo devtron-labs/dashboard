@@ -23,7 +23,7 @@ export enum ModuleActions {
 export enum InstallationType {
     OSS_KUBECTL = 'oss_kubectl',
     OSS_HELM = 'oss_helm',
-    ENTERPRISE = 'enterprise'
+    ENTERPRISE = 'enterprise',
 }
 
 export interface StackDetailsType {
@@ -106,7 +106,12 @@ export interface InstallationWrapperType {
     upgradeVersion: string
     isUpgradeView?: boolean
     isActionTriggered: boolean
+    releaseNotes?: ReleaseNotes[]
     updateActionTrigger: (isActionTriggered: boolean) => void
+    showPreRequisiteConfirmationModal?: boolean
+    setShowPreRequisiteConfirmationModal?: React.Dispatch<React.SetStateAction<boolean>>
+    preRequisiteChecked?: boolean
+    setPreRequisiteChecked?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface ModuleDetailsInfo {
@@ -132,6 +137,10 @@ export interface AboutDevtronViewType {
     selectedTabIndex: number
     isActionTriggered: boolean
     handleActionTrigger: (actionName: string, actionState: boolean) => void
+    showPreRequisiteConfirmationModal?: boolean
+    setShowPreRequisiteConfirmationModal?: React.Dispatch<React.SetStateAction<boolean>>
+    preRequisiteChecked?: boolean
+    setPreRequisiteChecked?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface ModuleInfo {
@@ -174,6 +183,9 @@ export interface ReleaseNotes {
     createdAt: string
     publishedAt: string
     body: string
+    prerequisite: boolean
+    prerequisiteMessage: string
+    tagLink: string
 }
 
 export interface ReleaseNotesResponse extends ResponseType {

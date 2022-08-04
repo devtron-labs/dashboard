@@ -64,6 +64,8 @@ export default function DevtronStackManager({
     const stackManagerRef = useRef<HTMLElement>()
     const queryParams = new URLSearchParams(location.search)
 
+    const [showPreRequisiteConfirmationModal, setShowPreRequisiteConfirmationModal] = useState<boolean>(false)
+    const [preRequisiteChecked, setPreRequisiteChecked] = useState<boolean>(false)
     useEffect(() => {
         getModuleDetails()
     }, [])
@@ -393,6 +395,10 @@ export default function DevtronStackManager({
                         handleTabChange={handleTabChange}
                         isActionTriggered={actionTriggered.serverAction}
                         handleActionTrigger={handleActionTrigger}
+                        showPreRequisiteConfirmationModal={showPreRequisiteConfirmationModal}
+                        setShowPreRequisiteConfirmationModal={setShowPreRequisiteConfirmationModal}
+                        preRequisiteChecked={preRequisiteChecked}
+                        setPreRequisiteChecked={setPreRequisiteChecked}
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_ABOUT_RELEASES}>
@@ -406,6 +412,10 @@ export default function DevtronStackManager({
                         handleTabChange={handleTabChange}
                         isActionTriggered={actionTriggered.serverAction}
                         handleActionTrigger={handleActionTrigger}
+                        showPreRequisiteConfirmationModal={showPreRequisiteConfirmationModal}
+                        setShowPreRequisiteConfirmationModal={setShowPreRequisiteConfirmationModal}
+                        preRequisiteChecked={preRequisiteChecked}
+                        setPreRequisiteChecked={setPreRequisiteChecked}
                     />
                 </Route>
                 <Redirect to={URLS.STACK_MANAGER_DISCOVER_MODULES} />

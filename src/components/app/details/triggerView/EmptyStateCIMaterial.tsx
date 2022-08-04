@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png';
 import EmptyStateImage from '../../../../assets/img/app-not-deployed.png';
 import EmptyState from '../../../EmptyState/EmptyState';
+import NoResults from '../../../../assets/img/empty-noresult@2x.png'
 
 interface EmptyStateCIMaterialProps {
   isRepoError: boolean;
@@ -15,7 +16,10 @@ interface EmptyStateCIMaterialProps {
   onRetry: (...args) => void;
   anyCommit: boolean;
   isWebHook?: boolean;
+  noSearchResults?: boolean
+  noSearchResultsMsg?: string
   toggleWebHookModal?: () => void;
+  clearSearch?: () => void
 }
 
 export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
@@ -37,6 +41,14 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
         cta: null,
       }
     }
+    else if (this.props.noSearchResults)  {
+      return {
+        img: <img src={NoResults} alt="no commits found" className="empty-state__img--ci-material" />,
+        title: <h1 className="empty__title" style={{wordBreak: 'break-all'}}>{this.props.noSearchResultsMsg}</h1>,
+        subtitle: `Please check the commit hash and try again. Make sure you enter the complete commit hash.`,
+        cta: <button type="button" className="cta ghosted small" onClick={this.props.clearSearch}>Clear search</button>,
+      }
+    }
     else if (!this.props.anyCommit) {
       return {
         img: <img src={EmptyStateImage} alt="no commits found" className="empty-state__img--ci-material" />,
@@ -44,7 +56,8 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
         subtitle: `We could not find any matching data for provided configurations`,
         cta: null,
       }
-    } else {
+    }
+    else {
       return {
         img: <img src={ErrorImage} alt="no commits found" className="empty-state__img--ci-material" />,
         title: <h1 className="empty__title">Failed to fetch</h1>,
