@@ -61,7 +61,12 @@ function BranchRegexModal({
                     }}
                 >
                     Save {!isChangeBranchClicked && '& Next'}
-                    <LeftIcon style={{ ['--rotateBy' as any]: '180deg' }} className="rotate icon-dim-16 ml-8 scn-0 " />
+                    {!isChangeBranchClicked && (
+                        <LeftIcon
+                            style={{ ['--rotateBy' as any]: '180deg' }}
+                            className="rotate icon-dim-16 ml-8 scn-0 "
+                        />
+                    )}
                 </button>
             </div>
         )
