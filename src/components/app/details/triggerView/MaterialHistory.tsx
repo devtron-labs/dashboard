@@ -40,6 +40,7 @@ export interface CIMaterialType {
     searchText?: string
     noSearchResultsMsg?: string
     noSearchResult?: boolean
+    isRegex: boolean
 }
 
 export interface MaterialHistoryProps {
@@ -50,6 +51,12 @@ export interface MaterialHistoryProps {
 }
 
 export class MaterialHistory extends Component<MaterialHistoryProps> {
+    onClickMaterialHistory = (e, _commitId) => {
+        e.stopPropagation()
+        if (this.props.selectCommit) {
+            this.props.selectCommit(this.props.material.id.toString(), _commitId)
+        }
+    }
     render() {
         return (
             <>
@@ -66,12 +73,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                         <div
                             key={_commitId}
                             className={`${classes} `}
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                if (this.props.selectCommit) {
-                                    this.props.selectCommit(this.props.material.id.toString(), _commitId)
-                                }
-                            }}
+                            onClick={(e) => this.onClickMaterialHistory(e, _commitId)}
                         >
                             <GitCommitInfoGeneric
                                 materialUrl={this.props.material.gitURL}

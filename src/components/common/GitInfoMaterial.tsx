@@ -98,7 +98,7 @@ export default function GitInfoMaterial({
         if (ciPipeline) {
             for (let mat of ciPipeline.ciMaterial) {
                 if (mat.gitMaterialId === material.gitMaterialId) {
-                    return mat.source?.type === SourceTypeMap.BranchRegex || mat.isRegex
+                    return mat.source?.type === SourceTypeMap.BranchRegex || mat.isRegex || mat.regex
                 }
             }
         }
@@ -112,38 +112,36 @@ export default function GitInfoMaterial({
     const renderBranchChangeHeader = (material: CIMaterialType) => {
         const isNoError = !material.isRepoError && !material.isBranchError
         return (
-            isBranchRegex(material) && (
-                <div className="fs-13 lh-20" style={{ background: 'var(--window-bg)' }}>
-                    <div
-                        className={` fw-6 flex ${material.regex ? 'cursor' : ''} ${
-                            !isNoError ? 'content-space w-100' : 'left'
-                        } pl-20 pr-20 pt-12 pb-12 cn-9`}
-                        onClick={material.regex && showBranchRegexModal}
-                    >
-                        <div className="flex icon-color-n9">
-                            {material.regex ? (
-                                <BranchRegex className="w-100 mr-8" />
-                            ) : (
-                                <BranchFixed className="icon-dim-16 mr-8" />
-                            )}
-                            {material.value}
-                        </div>
-                        {material.regex && (
-                            <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="top"
-                                content={'Change branch'}
-                                interactive={true}
-                            >
-                                <button type="button" className="transparent flexbox">
-                                    <Edit className="icon-dim-16" />
-                                </button>
-                            </Tippy>
+            <div className="fs-13 lh-20" style={{ background: 'var(--window-bg)' }}>
+                <div
+                    className={` fw-6 flex ${material.regex ? 'cursor' : ''} ${
+                        !isNoError ? 'content-space w-100' : 'left'
+                    } pl-20 pr-20 pt-12 pb-12 cn-9`}
+                    onClick={material.regex && showBranchRegexModal}
+                >
+                    <div className="flex icon-color-n9">
+                        {material.regex ? (
+                            <BranchRegex className="w-100 mr-8" />
+                        ) : (
+                            <BranchFixed className="icon-dim-16 mr-8" />
                         )}
+                        {material.value}
                     </div>
+                    {material.regex && (
+                        <Tippy
+                            className="default-tt"
+                            arrow={false}
+                            placement="top"
+                            content={'Change branch'}
+                            interactive={true}
+                        >
+                            <button type="button" className="transparent flexbox">
+                                <Edit className="icon-dim-16" />
+                            </button>
+                        </Tippy>
+                    )}
                 </div>
-            )
+            </div>
         )
     }
     const handleFilterChanges = (_searchText: string): void => {

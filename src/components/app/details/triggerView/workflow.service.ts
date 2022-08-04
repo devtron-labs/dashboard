@@ -1,188 +1,19 @@
 import { getCIConfig, getCDConfig, getWorkflowList } from '../../../../services/service'
-import { WorkflowType, NodeAttr } from './types'
+import {
+    WorkflowType,
+    NodeAttr,
+    CdPipeline,
+    CdPipelineResult,
+    CiPipeline,
+    CiPipelineResult,
+    Workflow,
+    WorkflowResult,
+    PipelineType,
+} from './types'
 import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config'
 import { TriggerType, TriggerTypeMap, DEFAULT_STATUS } from '../../../../config'
 import { isEmpty } from '../../../common'
 import { CINode } from '../../../workflowEditor/nodes/CINode'
-
-enum PipelineType {
-    CI_PIPELINE = 'CI_PIPELINE',
-    CD_PIPELINE = 'CD_PIPELINE',
-}
-
-export interface Task {
-    name?: string
-    type?: string
-    cmd?: string
-    args?: Array<string>
-}
-
-//Start Workflow Response
-export interface Tree {
-    id: number
-    appWorkflowId: number
-    type: PipelineType
-    componentId: number
-    parentId: number
-    parentType: PipelineType
-}
-
-export interface Workflow {
-    id: number
-    name: string
-    appId: number
-    tree?: Tree[]
-}
-
-export interface WorkflowResult {
-    appId: number
-    appName: string
-    workflows: Workflow[]
-}
-//End Workflow Response
-
-//Start CI Response
-export interface DockerBuildConfig {
-    gitMaterialId: number
-    dockerfileRelativePath: string
-    args?: Map<string, string>
-}
-
-export interface ExternalCiConfig {
-    id: number
-    webhookUrl: string
-    payload: string
-    accessKey: string
-}
-
-export interface Source {
-    type: string
-    value?: string
-    regex?: string
-}
-
-export interface CiMaterial {
-    source: Source
-    gitMaterialId: number
-    id: number
-    gitMaterialName: string
-    isRegex?: boolean
-}
-
-export interface CiScript {
-    id: number
-    index: number
-    name: string
-    script: string
-    outputLocation?: string
-}
-
-export interface CiPipeline {
-    isManual: boolean
-    dockerArgs?: Map<string, string>
-    isExternal: boolean
-    parentCiPipeline: number
-    parentAppId: number
-    externalCiConfig: ExternalCiConfig
-    ciMaterial?: CiMaterial[]
-    name?: string
-    id?: number
-    active?: boolean
-    linkedCount: number
-    scanEnabled: boolean
-    deleted?: boolean
-    version?: string
-    beforeDockerBuild?: Array<Task>
-    afterDockerBuild?: Array<Task>
-    appWorkflowId?: number
-    beforeDockerBuildScripts?: Array<CiScript>
-    afterDockerBuildScripts?: Array<CiScript>
-}
-
-export interface Material {
-    gitMaterialId: number
-    materialName: string
-}
-
-export interface CiPipelineResult {
-    id?: number
-    appId?: number
-    dockerRegistry?: string
-    dockerRepository?: string
-    dockerBuildConfig?: DockerBuildConfig
-    ciPipelines?: CiPipeline[]
-    appName?: string
-    version?: string
-    materials: Material[]
-    scanEnabled: boolean
-    appWorkflowId?: number
-    beforeDockerBuild?: Array<Task>
-    afterDockerBuild?: Array<Task>
-}
-//End CI Response
-
-//Start CD response
-export interface Strategy {
-    deploymentTemplate: string
-    config: any
-    default?: boolean
-}
-
-export interface CDStage {
-    status: string
-    name: string
-    triggerType: 'AUTOMATIC' | 'MANUAL'
-    config: string
-}
-
-export interface CDStageConfigMapSecretNames {
-    configMaps: any[]
-    secrets: any[]
-}
-
-export interface CdPipeline {
-    id: number
-    environmentId: number
-    environmentName?: string
-    ciPipelineId: number
-    triggerType: 'AUTOMATIC' | 'MANUAL'
-    name: string
-    strategies?: Strategy[]
-    namespace?: string
-    appWorkflowId?: number
-    deploymentTemplate?: string
-    preStage?: CDStage
-    postStage?: CDStage
-    preStageConfigMapSecretNames?: CDStageConfigMapSecretNames
-    postStageConfigMapSecretNames?: CDStageConfigMapSecretNames
-    runPreStageInEnv?: boolean
-    runPostStageInEnv?: boolean
-    isClusterCdActive?: boolean
-    parentPipelineId?: number
-    parentPipelineType?: string
-}
-
-export interface CdPipelineResult {
-    pipelines?: CdPipeline[]
-    appId: number
-}
-
-//End CD response
-
-type PartialNodeAttr = Partial<NodeAttr>
-
-export interface FullNode {
-    node: PartialNodeAttr
-    hasPre: true
-    hasPost: true
-}
-
-export interface WorkflowDisplay {
-    id: number
-    name: string
-    nodes: Array<NodeAttr>
-    type: string
-}
 
 export const getTriggerWorkflows = (
     appId,
