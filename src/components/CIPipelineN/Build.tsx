@@ -61,11 +61,16 @@ export function Build({
     const selectSourceType = (selectedSource: CiPipelineSourceTypeOption, gitMaterialId: number): void => {
         // update source type in material
         const _formData = { ...formData }
+        const isMulti = formData.materials.length > 1
+        let isVal
+        if (!isMulti) {
+            isVal = ''
+        }
         const allMaterials = _formData.materials.map((mat) => {
             return {
                 ...mat,
                 type: gitMaterialId === mat.gitMaterialId ? selectedSource.value : mat.type,
-                // value: '',
+                value: isVal,
             }
         })
         _formData.materials = allMaterials

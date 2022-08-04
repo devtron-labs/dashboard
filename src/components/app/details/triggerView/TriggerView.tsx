@@ -8,12 +8,13 @@ import {
     getWorkflowStatus,
     refreshGitMaterial,
     CDModalTab,
+    getGitMaterialByCommitHash,
 } from '../../service'
 import { ServerErrors } from '../../../../modals/commonTypes'
-import { ErrorScreenManager, Progressing, showError } from '../../../common'
+import { createGitCommitUrl, ErrorScreenManager, ISTTimeModal, Progressing, showError } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { NodeAttr, TriggerViewProps, TriggerViewState, CDMdalTabType } from './types'
+import { NodeAttr, TriggerViewProps, TriggerViewState, CDMdalTabType, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
 import { CDMaterial } from './cdMaterial'
 import { URLS, ViewType, SourceTypeMap } from '../../../../config'
@@ -25,6 +26,8 @@ import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { getHostURLConfiguration } from '../../../../services/service'
 import { getCIWebhookRes } from './ciWebhook.service'
+import { CIMaterialType } from './MaterialHistory'
+
 import { workflow } from './workflow.data'
 
 export const TriggerViewContext = createContext({
@@ -40,6 +43,7 @@ export const TriggerViewContext = createContext({
     selectMaterial: (materialId) => {},
     toggleChanges: (materialId: string, hash: string) => {},
     toggleInvalidateCache: () => {},
+    getMaterialByCommit: (ciNodeId: number, pipelineName: string, materialId: number, commitHash: string) => {},
 })
 
 const TIME_STAMP_ORDER = {
@@ -80,6 +84,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.onClickCDMaterial = this.onClickCDMaterial.bind(this)
         this.changeTab = this.changeTab.bind(this)
         this.toggleInvalidateCache = this.toggleInvalidateCache.bind(this)
+        this.getMaterialByCommit = this.getMaterialByCommit.bind(this)
     }
 
     componentWillUnmount() {
@@ -135,6 +140,83 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 })
         }
     }
+
+    getCommitHistory(
+        ciPipelineMaterialId: number,
+        commitHash: string,
+        workflows: WorkflowType[],
+        _selectedMaterial: CIMaterialType,
+    ) {
+        getGitMaterialByCommitHash(ciPipelineMaterialId.toString(), commitHash)
+            .then((response) => {
+                const _result = response.result
+                if (_result) {
+                    _selectedMaterial.history = [
+                        {
+                            commitURL: _selectedMaterial.gitURL
+                                ? createGitCommitUrl(_selectedMaterial.gitURL, _result.Commit)
+                                : '',
+                            commit: _result.Commit || '',
+                            author: _result.Author || '',
+                            date: _result.Date ? ISTTimeModal(_result.Date, false) : '',
+                            message: _result.Message || '',
+                            changes: _result.Changes || [],
+                            showChanges: true,
+                            webhookData: _result.WebhookData,
+                            isSelected: true,
+                        },
+                    ]
+                    _selectedMaterial.isMaterialLoading = false
+                } else {
+                    _selectedMaterial.history = []
+                    _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.value}’`
+                    _selectedMaterial.noSearchResult = true
+                    _selectedMaterial.isMaterialLoading = false
+                }
+                this.setState({
+                    workflows: workflows,
+                })
+            })
+            .catch((error: ServerErrors) => {
+                showError(error)
+                _selectedMaterial.isMaterialLoading = false
+                this.setState({
+                    workflows: workflows,
+                })
+            })
+    }
+
+    getMaterialByCommit(ciNodeId: number, pipelineName: string, ciPipelineMaterialId: number, commitHash = null) {
+        if (commitHash) {
+            let _selectedMaterial
+            let workflows = this.state.workflows.map((workflow) => {
+                workflow.nodes.map((node) => {
+                    if (node.type === 'CI' && +node.id == this.state.ciNodeId) {
+                        node.inputMaterialList = node.inputMaterialList.map((material) => {
+                            if (material.isSelected) {
+                                material.isMaterialLoading = true
+                                material.searchText = commitHash
+                                _selectedMaterial = material
+                            }
+                            return material
+                        })
+                        return node
+                    } else return node
+                })
+                return workflow
+            })
+            const commitInLocalHistory = _selectedMaterial.history.find((material) => material.commit === commitHash)
+            if (commitInLocalHistory) {
+                _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: true }]
+                _selectedMaterial.isMaterialLoading = false
+            } else {
+                this.getCommitHistory(ciPipelineMaterialId, commitHash, workflows, _selectedMaterial)
+            }
+        } else {
+            this.onClickCIMaterial(ciNodeId.toString(), pipelineName, true)
+        }
+    }
+
     //NOTE: GIT MATERIAL ID
     refreshMaterial(ciNodeId: number, pipelineName: string, gitMaterialId: number) {
         let { workflows } = { ...this.state }
@@ -524,6 +606,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
                         return {
                             ...material,
+                            searchText: material.searchText || '',
                             isSelected: material.id == materialId,
                         }
                     })
@@ -864,6 +947,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         selectMaterial: this.selectMaterial,
                         toggleChanges: this.toggleChanges,
                         toggleInvalidateCache: this.toggleInvalidateCache,
+                        getMaterialByCommit: this.getMaterialByCommit,
                     }}
                 >
                     {this.renderHostErrorMessage()}

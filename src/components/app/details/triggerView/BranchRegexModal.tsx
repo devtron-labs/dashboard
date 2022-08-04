@@ -55,12 +55,12 @@ function BranchRegexModal({
         return (
             <div className="trigger-modal__trigger flex right">
                 <button
-                    className="cta flex"
+                    className="cta flex mr-20"
                     onClick={(e) => {
                         onClickNextButton(context)
                     }}
                 >
-                    Save & Next
+                    Save {!isChangeBranchClicked && '& Next'}
                     <LeftIcon style={{ ['--rotateBy' as any]: '180deg' }} className="rotate icon-dim-16 ml-8 scn-0 " />
                 </button>
             </div>
@@ -82,27 +82,26 @@ function BranchRegexModal({
     }
 
     return (
-        <div>
-            <>
-                <div>{renderBranchRegexMaterialHeader(context.closeCIModal)}</div>
+        <>
+            <div>{renderBranchRegexMaterialHeader(context.closeCIModal)}</div>
 
-                <div className="select-material--regex-body m-20 fs-13">
-                    <div className="flex left">
-                        {isChangeBranchClicked && (
-                            <div onClick={onClickBackArrow}>
-                                <LeftIcon className="rotate icon-dim-20 mr-16 cursor" />
-                            </div>
-                        )}
-
-                        <div>
-                            <h4 className="mb-0 fw-6 ">Set a primary branch</h4>
-                            <p className="mt-4">
-                                Primary branch will be used to trigger automatic builds on every commit. This can be
-                                changed later.
-                            </p>
+            <div className="select-material--regex-body m-20 fs-13">
+                <div className="flex left">
+                    {isChangeBranchClicked && (
+                        <div onClick={onClickBackArrow}>
+                            <LeftIcon className="rotate icon-dim-20 mr-16 cursor" />
                         </div>
-                    </div>
+                    )}
 
+                    <div>
+                        <h4 className="mb-0 fw-6 ">Set a primary branch</h4>
+                        <p className="mt-4">
+                            Primary branch will be used to trigger automatic builds on every commit. This can be changed
+                            later.
+                        </p>
+                    </div>
+                </div>
+                <div className="mb-32">
                     {material &&
                         material.map((mat, index) => {
                             const _regexValue = regexValue[mat.gitMaterialId]
@@ -152,8 +151,8 @@ function BranchRegexModal({
                         })}
                 </div>
                 {showWebhookModal ? null : renderMaterialRegexFooterNextButton(context)}
-            </>
-        </div>
+            </div>
+        </>
     )
 }
 

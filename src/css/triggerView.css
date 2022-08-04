@@ -108,7 +108,8 @@
 }
 
 .select-material--regex-body {
-    height: calc(100vh - 104px);
+    height: calc(100vh - 108px);
+    overflow: auto;
 }
 
 .select-material__empty-state-container {
@@ -338,6 +339,7 @@
     position: absolute;
     width: 100%;
     bottom: 0px;
+    z-index: 2;
 }
 
 .trigger-modal__trigger.trigger-modal__trigger--empty-state {

@@ -16,31 +16,11 @@ import BranchRegexModal from './BranchRegexModal'
 export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     constructor(props) {
         super(props)
-        debugger
-
         this.state = {
             regexValue: {},
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             loader: false,
         }
-    }
-
-    renderMaterialSource(context) {
-        let refreshMaterial = {
-            refresh: context.refreshMaterial,
-            title: this.props.title,
-            pipelineId: this.props.pipelineId,
-        }
-        return (
-            <div className="material-list">
-                <div className="material-list__title material-list__title--border-bottom">Material Source</div>
-                <MaterialSource
-                    material={this.props.material}
-                    selectMaterial={context.selectMaterial}
-                    refreshMaterial={refreshMaterial}
-                />
-            </div>
-        )
     }
 
     renderMaterialStartBuild = (context, canTrigger) => {

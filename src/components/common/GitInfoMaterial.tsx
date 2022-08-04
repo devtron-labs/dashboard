@@ -9,6 +9,9 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Right } from '../../assets/icons/ic-arrow-left.svg'
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
 import { ReactComponent as Branch } from '../../assets/icons/ic-git-branch.svg'
+import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
+import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
+import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
 
 export default function GitInfoMaterial({
     context,
@@ -27,6 +30,16 @@ export default function GitInfoMaterial({
     onClickShowBranchRegexModal,
     ciPipeline,
 }) {
+    const [searchText, setSearchText] = useState('')
+    const [searchApplied, setSearchApplied] = useState(false)
+    useEffect(() => {
+        if (!selectedMaterial || !selectedMaterial.searchText) {
+            setSearchText('')
+        } else if (selectedMaterial.searchText !== searchText) {
+            setSearchText(selectedMaterial.searchText)
+        }
+    }, [selectedMaterial])
+
     function renderMaterialHeader() {
         return (
             <div className="trigger-modal__header">
@@ -69,7 +82,7 @@ export default function GitInfoMaterial({
         }
         return (
             <div className="material-list">
-                <div className="material-list__title material-list__title--border-bottom">Material Source</div>
+                <div className="material-list__title material-list__title--border-bottom">Git Repository</div>
                 <MaterialSource
                     material={material}
                     selectMaterial={context.selectMaterial}
@@ -91,31 +104,100 @@ export default function GitInfoMaterial({
     }
 
     const renderBranchChangeHeader = (material: CIMaterialType) => {
+        const isNoError = !material.isRepoError && !material.isBranchError
         return (
             isBranchRegex(material) && (
                 <div className="fs-13 w-100" style={{ background: 'var(--window-bg)' }}>
-                    <div className=" fw-6 flex content-space pl-20 pr-20 pt-16 pb-16">
+                    <div className={` fw-6 flex ${!isNoError ? 'content-space' : 'left'} pl-20 pr-20 pt-16 pb-16 cn-9`}>
                         <div className="flex">
                             <Branch className="hw-100 mr-8" />
                             {material.value}
                         </div>
-                        <div className="cb-5 cursor" onClick={() => onClickChangebranch(true)}>
-                            Change branch
+
+                        <div className="cb-5 cursor ml-8" onClick={() => onClickChangebranch(true)}>
+                            {!isNoError ? (
+                                'Change branch'
+                            ) : (
+                                <button type="button" className="transparent flexbox">
+                                    <Edit className="icon-dim-16" />
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
             )
         )
     }
+    const handleFilterChanges = (_searchText: string): void => {
+        context.getMaterialByCommit(pipelineId, title, selectedMaterial.id, _searchText)
+    }
+
+    const clearSearch = (): void => {
+        if (searchApplied) {
+            handleFilterChanges('')
+            setSearchApplied(false)
+        }
+        setSearchText('')
+    }
+
+    const handleInputChange = (event): void => {
+        setSearchText(event.target.value)
+    }
+
+    const handleFilterKeyPress = (event): void => {
+        const theKeyCode = event.key
+        if (theKeyCode === 'Enter') {
+            handleFilterChanges(event.target.value)
+            setSearchApplied(true)
+        } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
+            clearSearch()
+        }
+    }
+
+    const renderSearch = (): JSX.Element => {
+        return (
+            <div className="search position-rel mt-12 en-2 bw-1 br-4 h-32" style={{ marginRight: '20px' }}>
+                <Search className="search__icon icon-dim-18" />
+                <input
+                    type="text"
+                    placeholder="Search by commit hash"
+                    value={searchText}
+                    className="search__input"
+                    onChange={handleInputChange}
+                    onKeyDown={handleFilterKeyPress}
+                />
+                {searchApplied && (
+                    <button className="search__clear-button" type="button" onClick={clearSearch}>
+                        <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                    </button>
+                )}
+            </div>
+        )
+    }
 
     function renderMaterialHistory(context, material: CIMaterialType) {
         let anyCommit = material.history && material.history.length > 0
-        if (material.isMaterialLoading || material.isRepoError || material.isBranchError || !anyCommit) {
-            //Error or Empty State
-            return (
-                <div className="select-material select-material--trigger-view">
+        return (
+            <div className="select-material select-material--trigger-view">
+                <div
+                    className="flexbox content-space position-sticky"
+                    style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
+                >
+                    {!!material.regex && renderBranchChangeHeader(material)}
+
+                    {!material.isRepoError && !material.isBranchError && (
+                        <>
+                            {!material.regex && <div className="material-list__title mt-4">Select commit to build</div>}
+                            {renderSearch()}
+                        </>
+                    )}
+                </div>
+                {material.isMaterialLoading ||
+                material.isRepoError ||
+                material.isBranchError ||
+                material.noSearchResult ||
+                !anyCommit ? (
                     <div className="select-material__empty-state-container flex">
-                        {!!material.regex && renderBranchChangeHeader(material)}
                         <EmptyStateCIMaterial
                             isRepoError={material.isRepoError}
                             isBranchError={material.isBranchError}
@@ -132,38 +214,42 @@ export default function GitInfoMaterial({
                                 context.onClickCIMaterial(pipelineId, pipelineName)
                             }}
                             anyCommit={anyCommit}
+                            noSearchResults={material.noSearchResult}
+                            noSearchResultsMsg={material.noSearchResultsMsg}
+                            clearSearch={clearSearch}
                         />
                     </div>
-                </div>
-            )
-        } else
-            return (
-                <div className="select-material select-material--trigger-view">
-                    {renderBranchChangeHeader(material)}
-                    {material.type === SourceTypeMap.WEBHOOK && (
-                        <div className="cn-7 fs-12 fw-0 pl-20 flex left">
-                            Showing results matching &nbsp;
-                            <CiPipelineSourceConfig
-                                sourceType={material.type}
-                                sourceValue={material.value}
-                                showTooltip={true}
-                                baseText="configured filters"
-                                showIcons={false}
-                            />
-                            .
-                            <span className="learn-more__href cursor" onClick={() => toggleWebhookModal(material.id)}>
-                                View all incoming webhook payloads
-                            </span>
-                        </div>
-                    )}
-                    <MaterialHistory
-                        material={material}
-                        pipelineName={pipelineName}
-                        selectCommit={context.selectCommit}
-                        toggleChanges={context.toggleChanges}
-                    />
-                </div>
-            )
+                ) : (
+                    <>
+                        {material.type === SourceTypeMap.WEBHOOK && (
+                            <div className="cn-7 fs-12 fw-0 pl-20 flex left">
+                                Showing results matching &nbsp;
+                                <CiPipelineSourceConfig
+                                    sourceType={material.type}
+                                    sourceValue={material.value}
+                                    showTooltip={true}
+                                    baseText="configured filters"
+                                    showIcons={false}
+                                />
+                                .
+                                <span
+                                    className="learn-more__href cursor"
+                                    onClick={() => toggleWebhookModal(material.id)}
+                                >
+                                    View all incoming webhook payloads
+                                </span>
+                            </div>
+                        )}
+                        <MaterialHistory
+                            material={material}
+                            pipelineName={pipelineName}
+                            selectCommit={context.selectCommit}
+                            toggleChanges={context.toggleChanges}
+                        />
+                    </>
+                )}
+            </div>
+        )
     }
 
     const renderWebhookModal = (context) => {

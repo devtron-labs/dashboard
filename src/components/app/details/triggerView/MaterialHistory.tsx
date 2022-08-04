@@ -37,6 +37,9 @@ export interface CIMaterialType {
     branchErrorMsg?: string
     isMaterialLoading?: boolean
     regex: string
+    searchText?: string
+    noSearchResultsMsg?: string
+    noSearchResult?: boolean
 }
 
 export interface MaterialHistoryProps {
