@@ -162,7 +162,6 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                 top: 'auto',
                                             }),
                                         }}
-                                        menuPortalTarget={document.getElementById('visible-modal')}
                                     />
                                 </div>
                                 {mat.type !== SourceTypeMap.WEBHOOK ? (

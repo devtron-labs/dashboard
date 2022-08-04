@@ -879,7 +879,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         <React.Fragment>
             <Select
                 value={permission.team}
-                menuShouldBlockScroll={true}
                 name="team"
                 isMulti={false}
                 placeholder="Select project"
@@ -891,7 +890,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 )?.map((project) => ({ label: project.name, value: project.name }))}
                 className="basic-multi-select"
                 classNamePrefix="select"
-                menuPortalTarget={document.body}
                 onChange={handleDirectPermissionChange}
                 components={{
                     ClearIndicator: null,
@@ -936,9 +934,8 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         filterOption={customFilter}
                         className="basic-multi-select cluster-select"
                         classNamePrefix="select"
-                        menuPortalTarget={document.body}
                         hideSelectedOptions={false}
-                        menuShouldBlockScroll={true}
+                        menuPlacement='auto'
                         styles={{
                             ...tempMultiSelectStyles,
                             option: (base, state) => ({
@@ -979,11 +976,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         placeholder="Select environments"
                         options={[allEnvironmentsOption, ...environments]}
                         className="basic-multi-select"
+                        menuPlacement='auto'
                         classNamePrefix="select"
-                        menuPortalTarget={document.body}
                         hideSelectedOptions={false}
                         styles={tempMultiSelectStyles}
-                        menuShouldBlockScroll={true}
                         components={{
                             ClearIndicator: null,
                             ValueContainer,
@@ -1031,11 +1027,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     options={[allApplicationsOption, ...applications]}
                     className="basic-multi-select"
                     classNamePrefix="select"
-                    menuPortalTarget={document.body}
                     onChange={handleDirectPermissionChange}
                     hideSelectedOptions={false}
                     inputValue={appInput}
-                    menuShouldBlockScroll={true}
+                    menuPlacement='auto'
                     onBlur={() => {
                         setAppInput('')
                     }}
@@ -1058,11 +1053,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 }))}
                 className="basic-multi-select"
                 classNamePrefix="select"
-                menuPortalTarget={document.body}
                 formatOptionLabel={formatOptionLabel}
                 onChange={handleDirectPermissionChange}
                 isDisabled={!permission.team}
-                menuShouldBlockScroll={true}
+                menuPlacement='auto'
                 styles={{
                     ...tempMultiSelectStyles,
                     option: (base, state) => ({
@@ -1197,15 +1191,14 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
                         options={chartGroupEditOptions}
                         className="basic-multi-select"
                         classNamePrefix="select"
-                        menuPortalTarget={document.body}
                         onChange={handleChartEditChange}
+                        menuPlacement='auto'
                         components={{
                             ClearIndicator: null,
                             IndicatorSeparator: null,
                             Option,
                         }}
                         styles={{ ...tempMultiSelectStyles }}
-                        menuShouldBlockScroll={true}
                     />
                 </div>
                 {chartPermission.action === ActionTypes.UPDATE && (
@@ -1227,7 +1220,6 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
                         }}
                         closeMenuOnSelect={false}
                         name="entityName"
-                        menuPortalTarget={document.body}
                         options={chartGroupsList?.map((chartGroup) => ({
                             label: chartGroup.name,
                             value: chartGroup.name,
@@ -1238,7 +1230,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
                         className="mt-8 mb-8"
                         classNamePrefix="select"
                         hideSelectedOptions={false}
-                        menuShouldBlockScroll={true}
+                        menuPlacement='auto'
                         components={{
                             ClearIndicator: null,
                             IndicatorSeparator: null,
