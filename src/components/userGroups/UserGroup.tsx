@@ -897,6 +897,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     Option: singleOption,
                     ValueContainer: projectValueContainer,
                 }}
+                menuPlacement='auto'
                 styles={{
                     ...tempMultiSelectStyles,
                     control: (base, state) => ({
