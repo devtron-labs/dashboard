@@ -93,16 +93,15 @@ export default function GitInfoMaterial({
     }
 
     const showBranchRegexModal = () => {
-        material.regex && onClickChangebranch(true)
+        onClickChangebranch(true)
     }
 
     const renderBranchChangeHeader = (material: CIMaterialType) => {
-        const isNoError = !material.isRepoError && !material.isBranchError
         return (
             <div
                 className={`fs-13 lh-20 pl-20 pr-20 pt-12 pb-12 fw-6 flex ${material.regex ? 'cursor' : ''} cn-9`}
                 style={{ background: 'var(--window-bg)' }}
-                onClick={showBranchRegexModal}
+                onClick={material.regex && showBranchRegexModal}
             >
                 <BranchFixed className=" mr-8 icon-color-n9" />
                 <div className="ellipsis-right"> {material?.value}</div>

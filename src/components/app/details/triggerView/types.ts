@@ -453,3 +453,17 @@ export interface WorkflowDisplay {
     nodes: Array<NodeAttr>
     type: string
 }
+
+export interface BranchRegexModalProps {
+    material
+    selectedCIPipeline
+    showWebhookModal: boolean
+    title: string
+    isChangeBranchClicked: boolean
+    context
+    onClickNextButton: (context) => void
+    onShowCIModal: () => void
+    handleRegexInputValue: (id, value, mat) => void
+    regexValue
+    onCloseBranchRegexModal
+}

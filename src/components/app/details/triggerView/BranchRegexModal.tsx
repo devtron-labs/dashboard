@@ -7,6 +7,7 @@ import { SourceTypeMap } from '../../../../config'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
+import { BranchRegexModalProps } from './types'
 
 function BranchRegexModal({
     material,
@@ -20,7 +21,7 @@ function BranchRegexModal({
     handleRegexInputValue,
     regexValue,
     onCloseBranchRegexModal,
-}) {
+}: BranchRegexModalProps) {
     const getBranchRegexName = (gitMaterialId: number) => {
         if (Array.isArray(selectedCIPipeline?.ciMaterial)) {
             for (let _ciMaterial of selectedCIPipeline.ciMaterial) {
