@@ -13,7 +13,6 @@ export const styles = {
     menu: (base, state) => {
         return ({
             ...base,
-            top: `0px`,
             backgroundColor: state.Selected ? "white" : "white"
         })
     },
