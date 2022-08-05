@@ -5,7 +5,6 @@ import { ReactComponent as Question } from '../../../../assets/icons/appstatus/u
 import { VisibleModal, ButtonWithLoader, Checkbox, showError, Progressing } from '../../../common'
 import { TriggerViewContext } from './TriggerView'
 import Tippy from '@tippyjs/react'
-import { MaterialSource } from '../../details/triggerView/MaterialSource'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { SourceTypeMap } from '../../../../config'
@@ -174,7 +173,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         savePipeline(payload, true)
             .then((response) => {
                 if (response) {
-                    toast.success('Updated Pipeline')
                     this.props.getWorkflows()
                     this.props.onCloseBranchRegexModal()
                     context.onClickCIMaterial(this.props.pipelineId, this.props.pipelineName)
