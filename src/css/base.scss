@@ -1813,6 +1813,14 @@ button.anchor {
     line-height: normal !important;
 }
 
+.h-8 {
+    height: 8px;
+}
+
+.h-18 {
+    height: 18px;
+}
+
 .h-20 {
     height: 20px !important;
 }
@@ -1825,17 +1833,6 @@ button.anchor {
     height: 32px !important;
 }
 
-.h-44 {
-    height: 44px !important;
-}
-
-.h-48 {
-    height: 48px !important;
-}
-
-.h-60 {
-    height: 60px !important;
-}
 .h-36 {
     height: 36px !important;
 }
@@ -1844,16 +1841,20 @@ button.anchor {
     height: 44px !important;
 }
 
+.h-48 {
+    height: 48px !important;
+}
+
+.h-44 {
+    height: 44px !important;
+}
+
+.h-60 {
+    height: 60px !important;
+}
+
 .fw-n {
     font-weight: normal !important;
-}
-
-.h-8 {
-    height: 8px;
-}
-
-.h-20 {
-    height: 20px;
 }
 
 .hide-section {

@@ -9,7 +9,7 @@ import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { DropdownIndicator } from '../charts/charts.util'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outline-purple.svg'
 import { ConfigureWebhook } from './ConfigureWebhook'
-import { MaterialType, CiPipelineSourceTypeOption, Githost, SourceMaterialsProps } from './types'
+import { SourceMaterialsProps } from './types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { reactSelectStyles } from '../CIPipelineN/ciPipeline.utils'
@@ -89,8 +89,6 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
             </div>
         )
     }
-
-    const isMulti = _materials.length > 1
 
     return (
         <>

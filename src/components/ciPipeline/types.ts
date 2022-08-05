@@ -234,7 +234,7 @@ export interface FormType {
 
 interface ErrorObj {
     isValid: boolean
-    message: string
+    message: string | null
 }
 export interface TaskErrorObj {
     isValid: boolean
@@ -398,10 +398,19 @@ export enum VariableFieldType {
     Output = 'outputVariables',
 }
 
+export interface ValidationRulesType {
+    name: (value: string) => ErrorObj
+    requiredField: (value: string) => ErrorObj
+    inputVariable: (value: object, availableInputVariables: Map<string, boolean>) => ErrorObj
+    outputVariable: (value: object, availableInputVariables: Map<string, boolean>) => ErrorObj
+    conditionDetail: (value: object) => ErrorObj
+    sourceValue: (value: string) => ErrorObj
+    mountPathMap: (value: object) => ErrorObj
+}
 export interface SourceMaterialsProps {
     materials: MaterialType[]
     showError: boolean
-    validationRules?
+    validationRules?: ValidationRulesType
     selectSourceType?: (event, gitMaterialId) => void
     handleSourceChange?: (event, gitMaterialId: number, type: string) => void
     includeWebhookEvents: boolean

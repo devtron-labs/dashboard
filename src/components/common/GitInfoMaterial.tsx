@@ -13,6 +13,7 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
 import Tippy from '@tippyjs/react'
+import { noop } from '../common'
 
 export default function GitInfoMaterial({
     context,
@@ -21,7 +22,6 @@ export default function GitInfoMaterial({
     pipelineId,
     pipelineName,
     selectedMaterial,
-    commitInfo,
     showWebhookModal,
     toggleWebhookModal,
     webhookPayloads,
@@ -29,7 +29,6 @@ export default function GitInfoMaterial({
     hideWebhookModal,
     workflowId,
     onClickShowBranchRegexModal,
-    ciPipeline,
 }) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
@@ -43,16 +42,17 @@ export default function GitInfoMaterial({
         }
     }, [selectedMaterial])
 
+    const onClickCloseButton = (): void => {
+        context.closeCIModal()
+        hideWebhookModal()
+    }
+
     function renderMaterialHeader() {
-        const onClickCloseButton = () => {
-            context.closeCIModal()
-            hideWebhookModal()
-        }
         return (
             <div className="trigger-modal__header">
                 <h1 className="modal__title flex left fs-16">
                     {showWebhookModal ? (
-                        <button type="button" className="transparent flex" onClick={() => hideWebhookModal()}>
+                        <button type="button" className="transparent flex" onClick={hideWebhookModal}>
                             <Back className="mr-16" />
                         </button>
                     ) : null}
@@ -92,16 +92,16 @@ export default function GitInfoMaterial({
         )
     }
 
-    const showBranchRegexModal = () => {
+    const showBranchRegexModal = (): void => {
         onClickChangebranch(true)
     }
 
-    const renderBranchChangeHeader = (material: CIMaterialType) => {
+    const renderBranchChangeHeader = (material: CIMaterialType): JSX.Element => {
         return (
             <div
                 className={`fs-13 lh-20 pl-20 pr-20 pt-12 pb-12 fw-6 flex ${material.regex ? 'cursor' : ''} cn-9`}
                 style={{ background: 'var(--window-bg)' }}
-                onClick={material.regex && showBranchRegexModal}
+                onClick={material.regex ? showBranchRegexModal : noop}
             >
                 <BranchFixed className=" mr-8 icon-color-n9" />
                 <div className="ellipsis-right"> {material?.value}</div>

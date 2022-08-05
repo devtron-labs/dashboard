@@ -41,6 +41,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         e.stopPropagation()
     }
 
+    onClickTrigger = (): void => {}
     renderMaterialStartBuild = (context, canTrigger) => {
         return (
             <div className="trigger-modal__trigger">
@@ -97,7 +98,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         <GitInfoMaterial
                             context={context}
                             material={this.props.material}
-                            commitInfo={commitInfo}
                             title={this.props.title}
                             pipelineId={this.props.pipelineId}
                             pipelineName={this.props.pipelineName}
@@ -109,7 +109,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                             isWebhookPayloadLoading={this.props.isWebhookPayloadLoading}
                             workflowId={this.props.workflowId}
                             onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
-                            ciPipeline={this.state.selectedCIPipeline}
                         />
                     </div>
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(context, canTrigger)}

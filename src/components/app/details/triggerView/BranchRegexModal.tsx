@@ -22,7 +22,7 @@ function BranchRegexModal({
     regexValue,
     onCloseBranchRegexModal,
 }: BranchRegexModalProps) {
-    const getBranchRegexName = (gitMaterialId: number) => {
+    const getBranchRegexName = (gitMaterialId: number): string => {
         if (Array.isArray(selectedCIPipeline?.ciMaterial)) {
             for (let _ciMaterial of selectedCIPipeline.ciMaterial) {
                 if (
@@ -96,7 +96,7 @@ function BranchRegexModal({
         )
     }
 
-    const onClickBackArrow = () => {
+    const onClickBackArrow = (): void => {
         onCloseBranchRegexModal()
         onShowCIModal()
     }
@@ -120,51 +120,50 @@ function BranchRegexModal({
                         </p>
                     </div>
                 </div>
-                {material &&
-                    material.map((mat, index) => {
-                        const _regexValue = regexValue[mat.gitMaterialId] || {}
-                        return (
-                            mat.regex && (
-                                <div className="border-bottom pb-20 pt-20" key={`regex_${index}`}>
-                                    <div className="flex left">
-                                        <span className="mr-14">
-                                            {mat.gitMaterialUrl.includes('gitlab') ? <GitLab /> : null}
-                                            {mat.gitMaterialUrl.includes('github') ? <GitHub /> : null}
-                                            {mat.gitMaterialUrl.includes('bitbucket') ? <BitBucket /> : null}
-                                            {mat.gitMaterialUrl.includes('gitlab') ||
-                                            mat.gitMaterialUrl.includes('github') ||
-                                            mat.gitMaterialUrl.includes('bitbucket') ? null : (
-                                                <Git />
-                                            )}
-                                        </span>
-                                        <span>
-                                            <div className="fw-6 fs-14">{mat.gitMaterialName}</div>
-                                            <div className="pb-12">
-                                                Use branch name matching&nbsp;
-                                                <span className="fw-6">
-                                                    {getBranchRegexName(mat.gitMaterialId) || mat.regex}
-                                                </span>
-                                            </div>
-                                        </span>
-                                    </div>
-                                    <input
-                                        tabIndex={index}
-                                        placeholder="Enter branch name matching regex"
-                                        className="form__input ml-36 w-95"
-                                        name="name"
-                                        value={_regexValue.value}
-                                        onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)}
-                                        autoFocus
-                                        autoComplete="off"
-                                    />
-                                    {_regexValue.value &&
-                                        _regexValue.isInvalid &&
-                                        renderValidationErrorLabel('Branch name does not match the regex.')}
-                                    {!_regexValue.value && renderValidationErrorLabel('This is a required field')}
+                {material?.map((mat, index) => {
+                    const _regexValue = regexValue[mat.gitMaterialId] || {}
+                    return (
+                        mat.regex && (
+                            <div className="border-bottom pb-20 pt-20" key={`regex_${index}`}>
+                                <div className="flex left">
+                                    <span className="mr-14">
+                                        {mat.gitMaterialUrl.includes('gitlab') ? <GitLab /> : null}
+                                        {mat.gitMaterialUrl.includes('github') ? <GitHub /> : null}
+                                        {mat.gitMaterialUrl.includes('bitbucket') ? <BitBucket /> : null}
+                                        {mat.gitMaterialUrl.includes('gitlab') ||
+                                        mat.gitMaterialUrl.includes('github') ||
+                                        mat.gitMaterialUrl.includes('bitbucket') ? null : (
+                                            <Git />
+                                        )}
+                                    </span>
+                                    <span>
+                                        <div className="fw-6 fs-14">{mat.gitMaterialName}</div>
+                                        <div className="pb-12">
+                                            Use branch name matching&nbsp;
+                                            <span className="fw-6">
+                                                {getBranchRegexName(mat.gitMaterialId) || mat.regex}
+                                            </span>
+                                        </div>
+                                    </span>
                                 </div>
-                            )
+                                <input
+                                    tabIndex={index}
+                                    placeholder="Enter branch name matching regex"
+                                    className="form__input ml-36 w-95"
+                                    name="name"
+                                    value={_regexValue.value}
+                                    onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)}
+                                    autoFocus
+                                    autoComplete="off"
+                                />
+                                {_regexValue.value &&
+                                    _regexValue.isInvalid &&
+                                    renderValidationErrorLabel('Branch name does not match the regex.')}
+                                {!_regexValue.value && renderValidationErrorLabel('This is a required field')}
+                            </div>
                         )
-                    })}
+                    )
+                })}
             </div>
             {!showWebhookModal && renderMaterialRegexFooterNextButton(context)}
         </>

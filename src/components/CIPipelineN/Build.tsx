@@ -108,7 +108,7 @@ export function Build({
     const getSelectedWebhookEvent = (material) => {
         const _materialValue = JSON.parse(material.value)
         const _selectedEventId = _materialValue?.eventId
-        return formData.webhookEvents.find((we) => we.id === _selectedEventId)
+        return _selectedEventId && formData.webhookEvents.find((we) => we.id === _selectedEventId)
     }
 
     const addWebhookCondition = (): void => {
@@ -310,9 +310,7 @@ export function Build({
                     >
                         <BugScanner />
                         <div>
-                            <p className="fs-13 lh-20 fw-6 cn-9" style={{ marginBottom: '4px' }}>
-                                Scan for vulnerabilities
-                            </p>
+                            <p className="fs-13 lh-20 fw-6 cn-9 mb-4">Scan for vulnerabilities</p>
                             <p className="fs-13 lh-18 mb-0 fs-12">
                                 Perform security scan after container image is built.
                             </p>
