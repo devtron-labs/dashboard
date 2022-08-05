@@ -163,7 +163,8 @@
 }
 
 .chart-grid--chart-group-snapshot {
-    min-height: 232px;
+    height: 232px;
+    overflow: hidden;
 }
 
 .chart-group__view-all {
@@ -346,4 +347,16 @@
 
 .form__error.flex {
     display: flex;
+}
+
+.filter-tab {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100% - 64px);
+}
+
+.chart-list-view {
+    max-width: 776px;
+    margin-left: auto;
+    margin-right: auto;
 }

@@ -40,6 +40,7 @@ import PageHeader from '../../common/header/PageHeader'
 import emptyImage from '../../../assets/img/empty-noresult@2x.png'
 import SavedValuesList from '../SavedValues/SavedValuesList'
 import ChartValues from '../chartValues/ChartValues'
+import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-forward.svg'
 
 interface EmptyCharts {
     title?: string
@@ -109,6 +110,8 @@ function DiscoverChartList() {
     const chartList: Chart[] = Array.from(state.availableCharts.values())
     const isLeavingPageNotAllowed = useRef(false)
     const [showChartGroupModal, toggleChartGroupModal] = useState(false)
+    const [isGrid, setIsGrid] = useState<boolean>(true)
+    const noChartAvailable: boolean = chartList.length > 0 || searchApplied || selectedChartRepo.length > 0
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
     }, true)
@@ -120,7 +123,7 @@ function DiscoverChartList() {
         }
     }, [location.search, state.loading])
 
-    function reloadCallback(event) {
+    function reloadCallback(event): void {
         event.preventDefault()
         if (isLeavingPageNotAllowed.current) {
             event.returnValue = 'Your changes will be lost. Do you want to reload without deploying?'
@@ -151,12 +154,12 @@ function DiscoverChartList() {
         }
     }
 
-    function redirectToConfigure() {
+    function redirectToConfigure(): void {
         configureChart(0)
         toggleDeployModal(false)
     }
 
-    function initialiseFromQueryParams(chartRepoList) {
+    function initialiseFromQueryParams(chartRepoList): void {
         let searchParams = new URLSearchParams(location.search)
         let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId)
         let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated)
@@ -187,11 +190,11 @@ function DiscoverChartList() {
         setChartListloading(false)
     }
 
-    function handleViewAllCharts() {
+    function handleViewAllCharts(): void {
         history.push(`${match.url.split('/chart-store')[0]}${URLS.GLOBAL_CONFIG_CHART}`)
     }
 
-    function handleCloseFilter() {
+    function handleCloseFilter(): void {
         setSelectedChartRepo(appliedChartRepoFilter)
     }
 
@@ -201,7 +204,7 @@ function DiscoverChartList() {
                 {chartList.length > 0 && serverMode == SERVER_MODE.FULL && state.charts.length === 0 && (
                     <button
                         type="button"
-                        className="cta flex h-32 lh-n"
+                        className="bcn-0 en-2 bw-1 cursor cb-5 fw-6 fs-13 br-4 pr-12 pl-12 fcb-5 flex h-32 lh-n"
                         onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}
                     >
                         <Add className="icon-dim-18 mr-5" />
@@ -230,130 +233,142 @@ function DiscoverChartList() {
         )
     }
 
-    const clearSearch = () => {
-        const searchParams = new URLSearchParams(location.search)
-        const includeDeprecate = searchParams.get(QueryParams.IncludeDeprecated)
-        const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
-        let qs = includeDeprecate ? `&${QueryParams.IncludeDeprecated}=${includeDeprecate}` : ''
-        qs += chartRepoId ? `&${QueryParams.ChartRepoId}=${chartRepoId}` : ''
-        history.push(`${url}?${qs}`)
+    const clearSearch = (): void => {
+        history.push(url)
     }
 
     return (
         <>
             <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''} chart-store-header`}>
                 <ConditionalWrap condition={state.charts.length > 0} wrap={(children) => <div>{children}</div>}>
-                    <PageHeader
-                        isBreadcrumbs={true}
-                        breadCrumbs={renderBreadcrumbs}
-                        renderActionButtons={renderCreateGroupButton}
-                    />
+                    <PageHeader isBreadcrumbs={true} breadCrumbs={renderBreadcrumbs} />
                 </ConditionalWrap>
 
                 <Prompt
                     when={isLeavingPageNotAllowed.current}
                     message={'Your changes will be lost. Do you want to leave without deploying?'}
                 />
-                {state.loading || chartListLoading ? <Progressing pageLoader /> : null}
-
-                {!state.loading && !chartListLoading ? (
+                {!state.loading ? (
                     <div className="discover-charts__body">
-                        {!chartList.length && !searchApplied ? (
-                            <div className="w-100" style={{ overflow: 'auto' }}>
-                                {typeof state.configureChartIndex === 'number' ? (
-                                    <AdvancedConfig
-                                        chart={state.charts[state.configureChartIndex]}
-                                        index={state.configureChartIndex}
-                                        handleValuesYaml={handleValuesYaml}
-                                        getChartVersionsAndValues={getChartVersionsAndValues}
-                                        fetchChartValues={fetchChartValues}
-                                        handleChartValueChange={handleChartValueChange}
-                                        handleChartVersionChange={handleChartVersionChange}
-                                        handleEnvironmentChange={handleEnvironmentChange}
-                                        handleNameChange={handleNameChange}
-                                        discardValuesYamlChanges={discardValuesYamlChanges}
-                                    />
-                                ) : (
-                                    <ChartEmptyState
-                                        title={'No charts available right now'}
-                                        subTitle={
-                                            'The connected chart repositories are syncing or no charts are available.'
-                                        }
-                                        onClickViewChartButton={handleViewAllCharts}
-                                        buttonText={'View connected chart repositories'}
-                                    />
-                                )}
-                            </div>
+                        {typeof state.configureChartIndex != 'number' && noChartAvailable && (
+                            <ChartHeaderFilter
+                                chartRepoList={state.chartRepos}
+                                setSelectedChartRepo={setSelectedChartRepo}
+                                searchApplied={searchApplied}
+                                appStoreName={appStoreName}
+                                includeDeprecated={includeDeprecated}
+                                selectedChartRepo={selectedChartRepo}
+                                setAppStoreName={setAppStoreName}
+                                handleCloseFilter={handleCloseFilter}
+                                isGrid={isGrid}
+                                setIsGrid={setIsGrid}
+                            />
+                        )}
+                        {state.loading || chartListLoading ? (
+                            <Progressing pageLoader />
                         ) : (
-                            <div className="discover-charts__body-details">
-                                {typeof state.configureChartIndex === 'number' ? (
-                                    <>
-                                        <AdvancedConfig
-                                            chart={state.charts[state.configureChartIndex]}
-                                            index={state.configureChartIndex}
-                                            handleValuesYaml={handleValuesYaml}
-                                            getChartVersionsAndValues={getChartVersionsAndValues}
-                                            fetchChartValues={fetchChartValues}
-                                            handleChartValueChange={handleChartValueChange}
-                                            handleChartVersionChange={handleChartVersionChange}
-                                            handleEnvironmentChange={handleEnvironmentChange}
-                                            handleNameChange={handleNameChange}
-                                            discardValuesYamlChanges={discardValuesYamlChanges}
-                                        />{' '}
-                                    </>
+                            <>
+                                {!noChartAvailable ? (
+                                    <div className="w-100" style={{ overflow: 'auto' }}>
+                                        {typeof state.configureChartIndex === 'number' ? (
+                                            <AdvancedConfig
+                                                chart={state.charts[state.configureChartIndex]}
+                                                index={state.configureChartIndex}
+                                                handleValuesYaml={handleValuesYaml}
+                                                getChartVersionsAndValues={getChartVersionsAndValues}
+                                                fetchChartValues={fetchChartValues}
+                                                handleChartValueChange={handleChartValueChange}
+                                                handleChartVersionChange={handleChartVersionChange}
+                                                handleEnvironmentChange={handleEnvironmentChange}
+                                                handleNameChange={handleNameChange}
+                                                discardValuesYamlChanges={discardValuesYamlChanges}
+                                            />
+                                        ) : (
+                                            <ChartEmptyState
+                                                title={'No charts available right now'}
+                                                subTitle={
+                                                    'The connected chart repositories are syncing or no charts are available.'
+                                                }
+                                                onClickViewChartButton={handleViewAllCharts}
+                                                buttonText={'View connected chart repositories'}
+                                            />
+                                        )}
+                                    </div>
                                 ) : (
                                     <>
-                                        {serverMode == SERVER_MODE.FULL && (
-                                            <ChartGroupListMin
-                                                chartGroups={state.chartGroups.slice(0, 4)}
-                                                showChartGroupModal={showChartGroupModal}
-                                                toggleChartGroupModal={toggleChartGroupModal}
-                                            />
-                                        )}
-                                        <ChartListHeader
-                                            chartRepoList={state.chartRepos}
-                                            setSelectedChartRepo={setSelectedChartRepo}
-                                            charts={state.charts}
-                                            searchApplied={searchApplied}
-                                            appStoreName={appStoreName}
-                                            includeDeprecated={includeDeprecated}
-                                            selectedChartRepo={selectedChartRepo}
-                                            setAppStoreName={setAppStoreName}
-                                            handleCloseFilter={handleCloseFilter}
-                                        />
-                                        {chartList.length ? (
-                                            <div className="chart-grid">
-                                                {chartList
-                                                    .slice(0, showDeployModal ? 12 : chartList.length)
-                                                    .map((chart) => (
-                                                        <ChartSelect
-                                                            key={chart.id}
-                                                            chart={chart}
-                                                            selectedCount={state.selectedInstances[chart.id]?.length}
-                                                            showCheckBoxOnHoverOnly={state.charts.length === 0}
-                                                            addChart={addChart}
-                                                            subtractChart={subtractChart}
-                                                            onClick={(chartId) =>
-                                                                state.charts.length === 0
-                                                                    ? history.push(`${url}/chart/${chart.id}`)
-                                                                    : selectChart(chartId)
-                                                            }
+                                        <div className="discover-charts__body-details">
+                                            {typeof state.configureChartIndex === 'number' ? (
+                                                <>
+                                                    <AdvancedConfig
+                                                        chart={state.charts[state.configureChartIndex]}
+                                                        index={state.configureChartIndex}
+                                                        handleValuesYaml={handleValuesYaml}
+                                                        getChartVersionsAndValues={getChartVersionsAndValues}
+                                                        fetchChartValues={fetchChartValues}
+                                                        handleChartValueChange={handleChartValueChange}
+                                                        handleChartVersionChange={handleChartVersionChange}
+                                                        handleEnvironmentChange={handleEnvironmentChange}
+                                                        handleNameChange={handleNameChange}
+                                                        discardValuesYamlChanges={discardValuesYamlChanges}
+                                                    />
+                                                </>
+                                            ) : (
+                                                <div className={`${!isGrid ? 'chart-list-view ' : ''}`}>
+                                                    {serverMode == SERVER_MODE.FULL &&
+                                                        !searchApplied &&
+                                                        selectedChartRepo.length === 0 && (
+                                                            <ChartGroupListMin
+                                                                chartGroups={state.chartGroups.slice(0, isGrid ? 5 : 1)}
+                                                                showChartGroupModal={showChartGroupModal}
+                                                                toggleChartGroupModal={toggleChartGroupModal}
+                                                                isGrid={isGrid}
+                                                                renderCreateGroupButton={renderCreateGroupButton}
+                                                            />
+                                                        )}
+                                                    <ChartListHeader charts={state.charts} />
+                                                    {chartList.length ? (
+                                                        <div className={`chart-grid ${!isGrid ? 'list-view' : ''}`}>
+                                                            {chartList
+                                                                .slice(0, showDeployModal ? 12 : chartList.length)
+                                                                .map((chart) => (
+                                                                    <ChartSelect
+                                                                        key={chart.id}
+                                                                        chart={chart}
+                                                                        selectedCount={
+                                                                            state.selectedInstances[chart.id]?.length
+                                                                        }
+                                                                        showCheckBoxOnHoverOnly={
+                                                                            state.charts.length === 0
+                                                                        }
+                                                                        addChart={addChart}
+                                                                        showDescription={!isGrid}
+                                                                        subtractChart={subtractChart}
+                                                                        onClick={(chartId) =>
+                                                                            state.charts.length === 0
+                                                                                ? history.push(
+                                                                                      `${url}/chart/${chart.id}`,
+                                                                                  )
+                                                                                : selectChart(chartId)
+                                                                        }
+                                                                    />
+                                                                ))}
+                                                        </div>
+                                                    ) : (
+                                                        <EmptyChartGroup
+                                                            title={'No matching charts'}
+                                                            removeLearnMore={true}
+                                                            image={emptyImage}
+                                                            onClickViewChartButton={clearSearch}
+                                                            subTitle={`We couldn't find any matching results`}
+                                                            styles={{ height: '300px', justifyContent: 'center' }}
                                                         />
-                                                    ))}
-                                            </div>
-                                        ) : (
-                                            <EmptyChartGroup
-                                                title={'No matching charts'}
-                                                removeLearnMore={true}
-                                                image={emptyImage}
-                                                onClickViewChartButton={clearSearch}
-                                                subTitle={`We couldn't find any matching results`}
-                                                styles={{ height: '300px', justifyContent: 'center' }}
-                                            />
-                                        )}
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
                                     </>
                                 )}
-                            </div>
+                            </>
                         )}
                         <aside className={`summary`}>
                             <MultiChartSummary
@@ -457,7 +472,9 @@ function DiscoverChartList() {
                             </div>
                         </aside>
                     </div>
-                ) : null}
+                ) : (
+                    <Progressing pageLoader />
+                )}
             </div>
             {showDeployModal ? (
                 <ChartGroupBasicDeploy
@@ -511,23 +528,13 @@ export default function DiscoverCharts() {
     )
 }
 
-function ChartListHeader({
-    setSelectedChartRepo,
-    setAppStoreName,
-    chartRepoList,
-    appStoreName,
-    charts,
-    selectedChartRepo,
-    includeDeprecated,
-    searchApplied,
-    handleCloseFilter,
-}) {
+function ChartListHeader({ charts }) {
     return (
         <div>
             <h3 className="chart-grid__title pl-20 pr-20 pt-16">
                 {charts.length === 0 ? 'All Charts' : 'Select Charts'}
             </h3>
-            <h5 className="form__subtitle pl-20">
+            <p className="mb-0 mt-4 pl-20">
                 Select chart to deploy. &nbsp;
                 <a
                     className="learn-more__href"
@@ -537,17 +544,7 @@ function ChartListHeader({
                 >
                     Learn more about deploying charts
                 </a>
-            </h5>
-            <ChartHeaderFilter
-                chartRepoList={chartRepoList}
-                setSelectedChartRepo={setSelectedChartRepo}
-                searchApplied={searchApplied}
-                appStoreName={appStoreName}
-                includeDeprecated={includeDeprecated}
-                selectedChartRepo={selectedChartRepo}
-                setAppStoreName={setAppStoreName}
-                handleCloseFilter={handleCloseFilter}
-            />
+            </p>
         </div>
     )
 }
@@ -604,10 +601,14 @@ export function ChartGroupListMin({
     chartGroups,
     toggleChartGroupModal,
     showChartGroupModal,
+    isGrid,
+    renderCreateGroupButton,
 }: {
     chartGroups
     showChartGroupModal?: boolean
     toggleChartGroupModal?: React.Dispatch<React.SetStateAction<boolean>>
+    isGrid?: boolean
+    renderCreateGroupButton?: () => JSX.Element
 }) {
     const history = useHistory()
     const match = useRouteMatch()
@@ -616,21 +617,30 @@ export function ChartGroupListMin({
             <EmptyChartGroup showChartGroupModal={showChartGroupModal} toggleChartGroupModal={toggleChartGroupModal} />
         )
     }
+
+    const redirectToGroup = () => {
+        history.push(match.url + '/group')
+    }
+
     return (
-        <div className="chart-group" style={{ minHeight: '280px' }}>
+        <div className="chart-group">
             <div className="chart-group__header">
-                <div className="flexbox">
+                <div className="">
                     <h2 className="chart-grid__title">Chart Groups</h2>
-                    <button
-                        type="button"
-                        className="chart-group__view-all"
-                        onClick={(e) => history.push(match.url + '/group')}
-                    >
-                        View All
-                    </button>
+                    <p className="mb-16 mt-4">
+                        Use chart groups to preconfigure and deploy frequently used charts together. Learn more about
+                        chart groups
+                    </p>
+                    <div className="flex content-space">
+                        {renderCreateGroupButton()}
+                        <div className="cb-5 fw-6 fs-13 flex fcb-5 cursor" onClick={redirectToGroup}>
+                            View all chart groups
+                            <Next className="ml-8 sicon-dim-16" />
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div className="chart-grid chart-grid--chart-group-snapshot">
+            <div className={`chart-grid ${!isGrid ? 'list-view' : ''} chart-grid--chart-group-snapshot`}>
                 {chartGroups?.map((chartGroup, idx) => (
                     <ChartGroupCard key={idx} chartGroup={chartGroup} />
                 ))}
