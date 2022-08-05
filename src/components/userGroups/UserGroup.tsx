@@ -647,7 +647,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     const { environmentsList, projectsList, appsList, envClustersList, appsListHelmApps } = useUserGroupContext()
     const projectId =
         permission.team && serverMode !== SERVER_MODE.EA_ONLY && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
-            ? projectsList.find((project) => project.name === permission.team.value).id
+            ? projectsList.find((project) => project.name === permission.team.value)?.id
             : null
     const possibleRoles = [ActionTypes.VIEW, ActionTypes.TRIGGER, ActionTypes.ADMIN, ActionTypes.MANAGER]
     const possibleRolesHelmApps = [ActionTypes.VIEW, ActionTypes.EDIT, ActionTypes.ADMIN]
