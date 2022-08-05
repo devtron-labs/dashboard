@@ -22,6 +22,7 @@ interface SourceMaterialsProps {
     ciPipelineSourceTypeOptions: CiPipelineSourceTypeOption[]
     canEditPipeline: boolean
     webhookData?: WebhookCIProps
+    isAdvanced?: boolean
 }
 
 export interface WebhookCIProps {
@@ -79,7 +80,6 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                 {props.includeWebhookEvents && !isMultiGit && _materials[0].gitHostId > 0 && (
                     <div className="bcv-1 p-8 br-4 ml-8 mr-8 mb-4 mt-8 ">
                         <span className="flex left">
-                            {' '}
                             <Info className="icon-dim-20 mr-8 fcv-5" />
                             If you want to trigger CI using any other mechanism,
                         </span>
@@ -141,6 +141,9 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                         className="workflow-ci__source"
                                         placeholder="Source Type"
                                         isSearchable={false}
+                                        menuPortalTarget={
+                                            props.isAdvanced ? null : document.getElementById('visible-modal')
+                                        }
                                         options={props.ciPipelineSourceTypeOptions}
                                         value={selectedMaterial}
                                         closeMenuOnSelect={false}
@@ -162,7 +165,6 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                 top: 'auto',
                                             }),
                                         }}
-                                        menuPortalTarget={document.getElementById('visible-modal')}
                                     />
                                 </div>
                                 {mat.type !== SourceTypeMap.WEBHOOK ? (
