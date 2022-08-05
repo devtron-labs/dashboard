@@ -24,10 +24,12 @@ function BranchRegexModal({
     const getBranchRegexName = (gitMaterialId: number) => {
         if (Array.isArray(selectedCIPipeline?.ciMaterial)) {
             for (let _ciMaterial of selectedCIPipeline.ciMaterial) {
-                if (_ciMaterial.gitMaterialId === gitMaterialId && _ciMaterial.source) {
-                    if (_ciMaterial.source?.type === SourceTypeMap.BranchRegex) {
-                        return _ciMaterial.source.regex
-                    }
+                if (
+                    _ciMaterial.gitMaterialId === gitMaterialId &&
+                    _ciMaterial.source &&
+                    _ciMaterial.source?.type === SourceTypeMap.BranchRegex
+                ) {
+                    return _ciMaterial.source.regex
                 }
             }
         }
@@ -52,6 +54,7 @@ function BranchRegexModal({
     }
 
     const renderMaterialRegexFooterNextButton = (context, materialId) => {
+        const isDisabled = !regexValue[materialId]?.value || regexValue[materialId]?.isInvalid
         return (
             <div className="trigger-modal__trigger flex right">
                 <button
@@ -59,13 +62,13 @@ function BranchRegexModal({
                     onClick={(e) => {
                         onClickNextButton(context)
                     }}
-                    disabled={!regexValue[materialId]?.value}
+                    disabled={isDisabled}
                 >
                     Save {!isChangeBranchClicked && '& Next'}
                     {!isChangeBranchClicked && (
                         <LeftIcon
                             style={{ ['--rotateBy' as any]: '180deg' }}
-                            className="rotate icon-dim-16 ml-8 scn-0 "
+                            className={`rotate icon-dim-16 ml-8 ${isDisabled ? 'scn-4' : 'scn-0'}`}
                         />
                     )}
                 </button>

@@ -43,6 +43,10 @@ export default function GitInfoMaterial({
     }, [selectedMaterial])
 
     function renderMaterialHeader() {
+        const onClickCloseButton = () => {
+            context.closeCIModal()
+            hideWebhookModal()
+        }
         return (
             <div className="trigger-modal__header">
                 <h1 className="modal__title flex left fs-16">
@@ -62,15 +66,8 @@ export default function GitInfoMaterial({
                         </>
                     ) : null}
                 </h1>
-                <button
-                    type="button"
-                    className="transparent"
-                    onClick={() => {
-                        context.closeCIModal()
-                        hideWebhookModal()
-                    }}
-                >
-                    <Close className="" />
+                <button type="button" className="transparent" onClick={onClickCloseButton}>
+                    <Close />
                 </button>
             </div>
         )
@@ -92,17 +89,6 @@ export default function GitInfoMaterial({
                 />
             </div>
         )
-    }
-
-    const isBranchRegex = (material: CIMaterialType) => {
-        if (ciPipeline) {
-            for (let mat of ciPipeline.ciMaterial) {
-                if (mat.gitMaterialId === material.gitMaterialId) {
-                    return mat.source?.type === SourceTypeMap.BranchRegex || mat.isRegex || mat.regex
-                }
-            }
-        }
-        return false
     }
 
     const showBranchRegexModal = () => {
