@@ -244,7 +244,7 @@ const getStaticCurrentBranchName = (ciMaterial) => {
 }
 
 function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions): NodeAttr {
-    let sourceNodes = (ciPipeline?.ciMaterial ?? []).map((ciMaterial) => {
+    let sourceNodes = (ciPipeline?.ciMaterial ?? []).map((ciMaterial, index) => {
         let materialName = ciMaterial.gitMaterialName || ''
         return {
             parents: [],
@@ -255,7 +255,7 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
             isRoot: true,
             isGitSource: true,
             url: '',
-            id: `GIT-${materialName}`,
+            id: `GIT-${materialName}-${index}`,
             downstreams: [`CI-${ciPipeline.id}`],
             type: 'GIT',
             icon: 'git',

@@ -8,7 +8,6 @@ import { ReactComponent as Back } from '../../assets/icons/ic-back.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Right } from '../../assets/icons/ic-arrow-left.svg'
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
-import { ReactComponent as BranchRegex } from '../../assets/icons/ic-git-branch.svg'
 import { ReactComponent as BranchFixed } from '../../assets/icons/misc/branch.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
@@ -37,8 +36,10 @@ export default function GitInfoMaterial({
     useEffect(() => {
         if (!selectedMaterial || !selectedMaterial.searchText) {
             setSearchText('')
+            setSearchApplied(false)
         } else if (selectedMaterial.searchText !== searchText) {
             setSearchText(selectedMaterial.searchText)
+            setSearchApplied(true)
         }
     }, [selectedMaterial])
 
@@ -92,41 +93,32 @@ export default function GitInfoMaterial({
     }
 
     const showBranchRegexModal = () => {
-        onClickChangebranch(true)
+        material.regex && onClickChangebranch(true)
     }
 
     const renderBranchChangeHeader = (material: CIMaterialType) => {
         const isNoError = !material.isRepoError && !material.isBranchError
         return (
-            <div className="fs-13 lh-20" style={{ background: 'var(--window-bg)' }}>
-                <div
-                    className={` fw-6 flex ${material.regex ? 'cursor' : ''} ${
-                        !isNoError ? 'content-space w-100' : 'left'
-                    } pl-20 pr-20 pt-12 pb-12 cn-9`}
-                    onClick={material.regex && showBranchRegexModal}
-                >
-                    <div className="flex icon-color-n9">
-                        {material.regex ? (
-                            <BranchRegex className="w-100 mr-8" />
-                        ) : (
-                            <BranchFixed className="icon-dim-16 mr-8" />
-                        )}
-                        {material.value}
-                    </div>
-                    {material.regex && (
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="top"
-                            content={'Change branch'}
-                            interactive={true}
-                        >
-                            <button type="button" className="transparent flexbox">
-                                <Edit className="icon-dim-16" />
-                            </button>
-                        </Tippy>
-                    )}
-                </div>
+            <div
+                className={`fs-13 lh-20 pl-20 pr-20 pt-12 pb-12 fw-6 flex ${material.regex ? 'cursor' : ''} cn-9`}
+                style={{ background: 'var(--window-bg)' }}
+                onClick={showBranchRegexModal}
+            >
+                <BranchFixed className=" mr-8 icon-color-n9" />
+                <div className="ellipsis-right"> {material?.value}</div>
+                {material.regex && (
+                    <Tippy
+                        className="default-tt"
+                        arrow={false}
+                        placement="top"
+                        content={'Change branch'}
+                        interactive={true}
+                    >
+                        <button type="button" className="transparent flexbox">
+                            <Edit className="icon-dim-16" />
+                        </button>
+                    </Tippy>
+                )}
             </div>
         )
     }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ReactComponent as GitLab } from '../../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../../../assets/icons/git/github.svg'
@@ -53,8 +53,18 @@ function BranchRegexModal({
         )
     }
 
-    const renderMaterialRegexFooterNextButton = (context, materialId) => {
-        const isDisabled = !regexValue[materialId]?.value || regexValue[materialId]?.isInvalid
+    const renderMaterialRegexFooterNextButton = (context) => {
+        let _isDisabled = true
+
+        for (let index = 0; index < material.length; index++) {
+            const selectedMaterial = material[index]
+            const _regexValue = regexValue[selectedMaterial.gitMaterialId] || {}
+            _isDisabled = _regexValue.isInvalid
+            if (_isDisabled) {
+                break
+            }
+        }
+
         return (
             <div className="trigger-modal__trigger flex right">
                 <button
@@ -62,13 +72,13 @@ function BranchRegexModal({
                     onClick={(e) => {
                         onClickNextButton(context)
                     }}
-                    disabled={isDisabled}
+                    disabled={_isDisabled}
                 >
                     Save {!isChangeBranchClicked && '& Next'}
                     {!isChangeBranchClicked && (
                         <LeftIcon
                             style={{ ['--rotateBy' as any]: '180deg' }}
-                            className={`rotate icon-dim-16 ml-8 ${isDisabled ? 'scn-4' : 'scn-0'}`}
+                            className={`rotate icon-dim-16 ml-8 ${_isDisabled ? 'scn-4' : 'scn-0'}`}
                         />
                     )}
                 </button>
@@ -150,13 +160,12 @@ function BranchRegexModal({
                                         _regexValue.isInvalid &&
                                         renderValidationErrorLabel('Branch name does not match the regex.')}
                                     {!_regexValue.value && renderValidationErrorLabel('This is a required field')}
-                                    {!showWebhookModal &&
-                                        renderMaterialRegexFooterNextButton(context, mat.gitMaterialId)}
                                 </div>
                             )
                         )
                     })}
             </div>
+            {!showWebhookModal && renderMaterialRegexFooterNextButton(context)}
         </>
     )
 }
