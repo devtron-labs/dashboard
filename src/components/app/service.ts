@@ -6,7 +6,7 @@ import moment from 'moment-timezone'
 import { ServerErrors } from '../../modals/commonTypes'
 import { History } from './details/cIDetails/types'
 import { AppDetails } from './types'
-import { CDMdalTabType } from './details/triggerView/types'
+import { CDModalTabType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
 
 let stageMap = {
@@ -16,8 +16,8 @@ let stageMap = {
 }
 
 export const CDModalTab = {
-    Security: <CDMdalTabType>'SECURITY',
-    Changes: <CDMdalTabType>'CHANGES',
+    Security: <CDModalTabType>'SECURITY',
+    Changes: <CDModalTabType>'CHANGES',
 }
 
 export const getAppList = (request, options?) => {

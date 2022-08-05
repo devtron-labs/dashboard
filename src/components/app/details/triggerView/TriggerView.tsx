@@ -14,7 +14,15 @@ import { ServerErrors } from '../../../../modals/commonTypes'
 import { createGitCommitUrl, ErrorScreenManager, ISTTimeModal, Progressing, showError } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { NodeAttr, TriggerViewProps, TriggerViewState, CDMdalTabType, WorkflowType } from './types'
+import {
+    NodeAttr,
+    TriggerViewProps,
+    TriggerViewState,
+    CDModalTabType,
+    WorkflowType,
+    CIMaterialType,
+    CiPipeline,
+} from './types'
 import { CIMaterial } from './ciMaterial'
 import { CDMaterial } from './cdMaterial'
 import { URLS, ViewType, SourceTypeMap } from '../../../../config'
@@ -26,7 +34,6 @@ import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { getHostURLConfiguration } from '../../../../services/service'
 import { getCIWebhookRes } from './ciWebhook.service'
-import { CIMaterialType } from './MaterialHistory'
 
 import { workflow } from './workflow.data'
 
@@ -99,7 +106,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     getWorkflows = () => {
         getTriggerWorkflows(this.props.match.params.appId)
             .then((result) => {
-                const _filteredCIPipelines = result.filteredCIPipelines || []
+                const _filteredCIPipelines: CiPipeline[] = result.filteredCIPipelines || []
                 let wf = result.workflows || []
                 this.setState({ workflows: wf, view: ViewType.FORM, filteredCIPipelines: _filteredCIPipelines }, () => {
                     this.getWorkflowStatus()
@@ -679,7 +686,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     //TODO: refactor
-    changeTab(materialIndex, artifactId: number, tab: CDMdalTabType): void {
+    changeTab(materialIndex, artifactId: number, tab: CDModalTabType): void {
         if (tab === CDModalTab.Changes) {
             let workflows = this.state.workflows.map((workflow) => {
                 let nodes = workflow.nodes.map((node) => {

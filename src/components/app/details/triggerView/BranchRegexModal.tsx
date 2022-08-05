@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { ReactComponent as GitLab } from '../../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../../../assets/icons/git/bitbucket.svg'
 import { SourceTypeMap } from '../../../../config'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
+import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
-import { BranchRegexModalProps } from './types'
+import { BranchRegexModalProps, CIMaterialType } from './types'
 
 function BranchRegexModal({
     material,
@@ -28,7 +28,7 @@ function BranchRegexModal({
                 if (
                     _ciMaterial.gitMaterialId === gitMaterialId &&
                     _ciMaterial.source &&
-                    _ciMaterial.source?.type === SourceTypeMap.BranchRegex
+                    _ciMaterial.source.type === SourceTypeMap.BranchRegex
                 ) {
                     return _ciMaterial.source.regex
                 }
@@ -48,7 +48,7 @@ function BranchRegexModal({
                         close()
                     }}
                 >
-                    <Close />
+                    <CloseIcon />
                 </button>
             </div>
         )
@@ -120,7 +120,7 @@ function BranchRegexModal({
                         </p>
                     </div>
                 </div>
-                {material?.map((mat, index) => {
+                {material?.map((mat: CIMaterialType, index) => {
                     const _regexValue = regexValue[mat.gitMaterialId] || {}
                     return (
                         mat.regex && (

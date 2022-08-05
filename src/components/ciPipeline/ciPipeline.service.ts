@@ -9,11 +9,9 @@ const emptyStepsData = () => {
 }
 
 export function savePipeline(request, isRegexMaterial = false): Promise<any> {
-    let url
+    let url = Routes.CI_PIPELINE_PATCH
     if (isRegexMaterial) {
-        url = `${Routes.CI_PIPELINE_PATCH}/regex`
-    } else {
-        url = `${Routes.CI_PIPELINE_PATCH}`
+        url += '/regex'
     }
     return post(url, request)
 }
