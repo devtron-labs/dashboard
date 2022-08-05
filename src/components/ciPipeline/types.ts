@@ -418,6 +418,7 @@ export interface SourceMaterialsProps {
     canEditPipeline: boolean
     webhookData?: WebhookCIProps
     isBranchRegex?: (material) => boolean
+    isAdvanced?: boolean
 }
 
 export interface WebhookCIProps {

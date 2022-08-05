@@ -88,7 +88,6 @@ function GroupPermission({
                 formatOptionLabel={formatChartGroupOptionLabel}
                 closeMenuOnSelect={false}
                 isMulti
-                menuPortalTarget={document.body}
                 name="groups"
                 options={availableGroups}
                 hideSelectedOptions={false}
