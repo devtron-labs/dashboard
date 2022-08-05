@@ -110,9 +110,10 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     async function fetchVersions() {
         setLoading(true)
         try {
-            const { result } = await getChartVersionsMin(chartId)
+            let { result } = await getChartVersionsMin(chartId)
+            result=[]
             setChartVersions(result)
-            selectVersion(result[0].id)
+            selectVersion(result[0]?.id)
         } catch (err) {
             showError(err)
         } finally {

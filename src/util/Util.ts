@@ -38,3 +38,20 @@ export const decode = (data) => {
             return agg
         }, {})
 }
+
+export const replaceLastOddBackslash = (str: string): string=>{
+  let countBackSlash = 0
+  const strArr = str.split('')
+  for (let index = strArr.length-1; index >=0; index--) {
+    const char = strArr[index];
+    if(char === '\\'){
+      countBackSlash++
+    } else{
+      break
+    }
+  }
+  if(countBackSlash%2!==0){
+    str+='\\'
+  }
+  return str
+}

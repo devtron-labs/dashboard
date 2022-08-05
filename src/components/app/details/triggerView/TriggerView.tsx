@@ -691,7 +691,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 nd = this.state.workflows[i].nodes.find(node => +node.id == this.state.ciNodeId && node.type === 'CI');
                 if (nd) break;
             }
-            let material = nd[this.state.materialType] || [];
+            let material = nd?.[this.state.materialType] || [];
             return <CIMaterial
                 workflowId={this.state.workflowId}
                 history={this.props.history}
