@@ -156,10 +156,12 @@ export default function AppPermissions({
             roleFilters.forEach((element) => {
                 if (element.entity === EntityTypes.DIRECT) {
                     const projectId = projectsMap.get(element.team)?.id
-                    if (!element['accessType']) {
-                        uniqueProjectIdsDevtronApps.push(projectId)
-                    } else if (element['accessType'] === ACCESS_TYPE_MAP.HELM_APPS) {
-                        projectId && uniqueProjectIdsHelmApps.push(projectId)
+                    if (typeof projectId !== 'undefined' && projectId != null) {
+                        if (!element['accessType']) {
+                            uniqueProjectIdsDevtronApps.push(projectId)
+                        } else if (element['accessType'] === ACCESS_TYPE_MAP.HELM_APPS) {
+                            uniqueProjectIdsHelmApps.push(projectId)
+                        }
                     }
                 }
             })

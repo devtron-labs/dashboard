@@ -886,7 +886,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 options={(serverMode === SERVER_MODE.EA_ONLY
                     ? [{ name: HELM_APP_UNASSIGNED_PROJECT }]
                     : permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
-                    ? [{ name: HELM_APP_UNASSIGNED_PROJECT }, ...projectsList]
+                    ? [{ name: HELM_APP_UNASSIGNED_PROJECT }, ...(projectsList || [])]
                     : projectsList
                 )?.map((project) => ({ label: project.name, value: project.name }))}
                 className="basic-multi-select"
