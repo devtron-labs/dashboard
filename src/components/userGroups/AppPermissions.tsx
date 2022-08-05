@@ -180,7 +180,7 @@ export default function AppPermissions({
                 const projectId =
                     serverMode !== SERVER_MODE.EA_ONLY &&
                     directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT &&
-                    projectsMap.get(directRolefilter.team).id
+                    projectsMap.get(directRolefilter.team)?.id
                 if (!directRolefilter['accessType']) {
                     directRolefilter['accessType'] = ACCESS_TYPE_MAP.DEVTRON_APPS
                 }
