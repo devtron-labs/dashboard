@@ -829,7 +829,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <div className="form__row">
                     <label className="form__label form__label--sentence bold">Select Configmap and Secrets</label>
                     <ReactSelect
-                        menuPortalTarget={document.getElementById('visible-modal')}
+                        menuPortalTarget={this.state.isAdvanced ? null : document.getElementById('visible-modal')}
                         closeMenuOnScroll={true}
                         isMulti={true}
                         placeholder="Select Configmap and Secrets"
@@ -1033,7 +1033,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <div className={`w-50`}>
                         <div className="form__label">Deploy to environment</div>
                         <ReactSelect
-                            menuPortalTarget={document.getElementById('visible-modal')}
+                            menuPortalTarget={this.state.isAdvanced ? null : document.getElementById('visible-modal')}
                             closeMenuOnScroll={true}
                             isDisabled={!!this.props.match.params.cdPipelineId}
                             placeholder="Select Environment"
