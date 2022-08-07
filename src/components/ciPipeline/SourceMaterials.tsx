@@ -153,7 +153,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             }),
                                         }}
                                     />
-                                    <div className="h-18" />
+                                    <div className="h-18"></div>
                                 </div>
                                 {isBranchFixed && (
                                     <div className="w-50 ml-8 left">
@@ -184,7 +184,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                 {props.validationRules?.sourceValue(_materials[index].value).message}
                                             </span>
                                         ) : (
-                                            <div className="h-18" />
+                                            <div className="h-18"></div>
                                         )}
                                     </div>
                                 )}
@@ -216,7 +216,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                 {props.validationRules?.sourceValue(_materials[index].regex).message}
                                             </span>
                                         ) : (
-                                            <div className="h-18" />
+                                            <div className="h-18"></div>
                                         )}
                                     </div>
                                 )}

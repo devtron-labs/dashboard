@@ -1,7 +1,55 @@
 import React, { Component } from 'react'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { SourceTypeMap } from '../../../../config'
-import { CommitHistory, MaterialHistoryProps } from './types'
+
+export interface WebhookData {
+    id: number
+    eventActionType: string
+    data: any
+}
+
+export interface CommitHistory {
+    author: string
+    commitURL: string
+    changes: string[]
+    commit: string
+    date: string
+    message: string
+    isSelected: boolean
+    showChanges: boolean
+    webhookData: WebhookData
+}
+
+export interface CIMaterialType {
+    id: number
+    gitMaterialName: string
+    gitMaterialId: number
+    gitURL: string
+    type: string
+    value: string
+    active: boolean
+    history: CommitHistory[]
+    isSelected: boolean
+    lastFetchTime: string
+    isRepoError?: boolean
+    repoErrorMsg?: string
+    isBranchError?: boolean
+    branchErrorMsg?: string
+    isMaterialLoading?: boolean
+    regex: string
+    searchText?: string
+    noSearchResultsMsg?: string
+    noSearchResult?: boolean
+    isRegex: boolean
+}
+
+export interface MaterialHistoryProps {
+    material: CIMaterialType
+    pipelineName: string
+    selectCommit?: (materialId: string, commit: string) => void
+    toggleChanges: (materialId: string, commit: string) => void
+}
+
 export class MaterialHistory extends Component<MaterialHistoryProps> {
     onClickMaterialHistory = (e, _commitId) => {
         e.stopPropagation()
@@ -12,7 +60,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
     render() {
         return (
             <>
-                {this.props.material.history.map((history: CommitHistory) => {
+                {this.props.material.history.map((history) => {
                     let classes = `material-history mt-12 ${history.isSelected ? 'material-history-selected' : ''}`
                     if (this.props.selectCommit) {
                         classes = `${classes}`

@@ -14,15 +14,7 @@ import { ServerErrors } from '../../../../modals/commonTypes'
 import { createGitCommitUrl, ErrorScreenManager, ISTTimeModal, Progressing, showError } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import {
-    NodeAttr,
-    TriggerViewProps,
-    TriggerViewState,
-    CDModalTabType,
-    WorkflowType,
-    CIMaterialType,
-    CiPipeline,
-} from './types'
+import { NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
 import { CDMaterial } from './cdMaterial'
 import { URLS, ViewType, SourceTypeMap } from '../../../../config'
@@ -36,6 +28,7 @@ import { getHostURLConfiguration } from '../../../../services/service'
 import { getCIWebhookRes } from './ciWebhook.service'
 
 import { workflow } from './workflow.data'
+import { CIMaterialType } from './MaterialHistory'
 
 export const TriggerViewContext = createContext({
     invalidateCache: false,
@@ -106,7 +99,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     getWorkflows = () => {
         getTriggerWorkflows(this.props.match.params.appId)
             .then((result) => {
-                const _filteredCIPipelines: CiPipeline[] = result.filteredCIPipelines || []
+                const _filteredCIPipelines = result.filteredCIPipelines || []
                 let wf = result.workflows || []
                 this.setState({ workflows: wf, view: ViewType.FORM, filteredCIPipelines: _filteredCIPipelines }, () => {
                     this.getWorkflowStatus()
@@ -688,7 +681,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     //TODO: refactor
-    changeTab(materialIndex, artifactId: number, tab: CDModalTabType): void {
+    changeTab(materialIndex, artifactId: number, tab): void {
         if (tab === CDModalTab.Changes) {
             let workflows = this.state.workflows.map((workflow) => {
                 let nodes = workflow.nodes.map((node) => {

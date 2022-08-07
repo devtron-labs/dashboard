@@ -2,11 +2,11 @@ import React, { Component } from 'react'
 import { TriggerStatus } from '../../../../config'
 import { TriggerViewContext } from '../../TriggerView'
 import { RouteComponentProps } from 'react-router'
+import { CIMaterialType } from '../../MaterialHistory'
 import { Link } from 'react-router-dom'
 import { DEFAULT_STATUS, URLS } from '../../../../../../config'
 import link from '../../../../../../assets/icons/ic-link.svg'
 import Tippy from '@tippyjs/react'
-import { CIMaterialType } from '../../types'
 
 export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string }> {
     x: number

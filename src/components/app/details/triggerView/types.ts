@@ -1,6 +1,7 @@
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../../../services/service.types'
-export type CDModalTabType = 'SECURITY' | 'CHANGES'
+import { CIMaterialType } from './MaterialHistory'
+export type CDMdalTabType = 'SECURITY' | 'CHANGES'
 
 export interface CDMaterialProps {
     material: CDMaterialType[]
@@ -9,7 +10,7 @@ export interface CDMaterialProps {
     envName: string
     redirectToCD?: () => void
     stageType: string
-    changeTab?: (materrialId: string | number, artifactId: number, tab: CDModalTabType) => void
+    changeTab?: (materrialId: string | number, artifactId: number, tab: CDMdalTabType) => void
     triggerDeploy: (stageType: string) => void
     selectImage: (index: number, materialType: string) => void
     toggleSourceInfo: (materialIndex: number) => void
@@ -30,7 +31,7 @@ export interface CDMaterialType {
         tag: string
         webhookData: string
     }[]
-    tab: CDModalTabType
+    tab: CDMdalTabType
     scanEnabled: boolean
     scanned: boolean
     vulnerabilitiesLoading: boolean
@@ -77,17 +78,8 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     getWorkflows: () => void
 }
 
-export interface RegexValueType
-    extends Record<
-        number,
-        {
-            value: string
-            isInvalid: boolean
-        }
-    > {}
-
 export interface CIMaterialState {
-    regexValue: RegexValueType
+    regexValue: Record<number, { value: string; isInvalid: boolean }>
     selectedCIPipeline?: any
     loader: boolean
 }
@@ -339,7 +331,7 @@ export interface Source {
     regex?: string
 }
 
-export interface SelectedCIMaterial {
+export interface CiMaterial {
     source: Source
     gitMaterialId: number
     id: number
@@ -357,17 +349,17 @@ export interface CiScript {
 
 export interface CiPipeline {
     isManual: boolean
-    linkedCount: number
-    scanEnabled: boolean
+    dockerArgs?: Map<string, string>
     isExternal: boolean
     parentCiPipeline: number
     parentAppId: number
     externalCiConfig: ExternalCiConfig
-    dockerArgs?: Map<string, string>
-    ciMaterial?: SelectedCIMaterial[]
+    ciMaterial?: CiMaterial[]
     name?: string
     id?: number
     active?: boolean
+    linkedCount: number
+    scanEnabled: boolean
     deleted?: boolean
     version?: string
     beforeDockerBuild?: Array<Task>
@@ -474,53 +466,4 @@ export interface BranchRegexModalProps {
     handleRegexInputValue: (id, value, mat) => void
     regexValue
     onCloseBranchRegexModal
-}
-
-export interface WebhookData {
-    id: number
-    eventActionType: string
-    data: any
-}
-
-export interface CommitHistory {
-    author: string
-    commitURL: string
-    changes: string[]
-    commit: string
-    date: string
-    message: string
-    isSelected: boolean
-    showChanges: boolean
-    webhookData: WebhookData
-}
-
-export interface CIMaterialType {
-    id: number
-    gitMaterialName: string
-    gitMaterialId: number
-    gitURL: string
-    type: string
-    value: string
-    active: boolean
-    history: CommitHistory[]
-    isSelected: boolean
-    lastFetchTime: string
-    isRepoError?: boolean
-    repoErrorMsg?: string
-    isBranchError?: boolean
-    branchErrorMsg?: string
-    isMaterialLoading?: boolean
-    regex: string
-    searchText?: string
-    noSearchResultsMsg?: string
-    noSearchResult?: boolean
-    isRegex: boolean
-    gitMaterialUrl?: string
-}
-
-export interface MaterialHistoryProps {
-    material: CIMaterialType
-    pipelineName: string
-    selectCommit?: (materialId: string, commit: string) => void
-    toggleChanges: (materialId: string, commit: string) => void
 }

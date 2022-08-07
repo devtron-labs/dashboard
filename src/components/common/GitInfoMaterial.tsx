@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { SourceTypeMap } from '../../config'
-import { MaterialHistory } from '../app/details/triggerView/MaterialHistory'
+import { MaterialHistory, CIMaterialType } from '../app/details/triggerView/MaterialHistory'
 import { MaterialSource } from '../app/details/triggerView/MaterialSource'
 import { EmptyStateCIMaterial } from '../app/details/triggerView//EmptyStateCIMaterial'
 import CiWebhookModal from '../app/details/triggerView/CiWebhookDebuggingModal'
@@ -14,7 +14,6 @@ import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
 import Tippy from '@tippyjs/react'
 import { noop } from '../common'
-import { CIMaterialType } from '../app/details/triggerView/types'
 
 export default function GitInfoMaterial({
     context,
@@ -100,7 +99,7 @@ export default function GitInfoMaterial({
     const renderBranchChangeHeader = (material: CIMaterialType): JSX.Element => {
         return (
             <div
-                className={`fs-13 lh-20 fw-6 flex ${material.regex ? 'cursor' : ''} cn-9`}
+                className={`fs-13 lh-20 pl-20 pr-20 pt-12 pb-12 fw-6 flex ${material.regex ? 'cursor' : ''} cn-9`}
                 style={{ background: 'var(--window-bg)' }}
                 onClick={material.regex ? showBranchRegexModal : noop}
             >
@@ -114,7 +113,9 @@ export default function GitInfoMaterial({
                         content={'Change branch'}
                         interactive={true}
                     >
-                        <Edit className="icon-dim-16" />
+                        <button type="button" className="transparent flexbox">
+                            <Edit className="icon-dim-16" />
+                        </button>
                     </Tippy>
                 )}
             </div>
@@ -148,7 +149,7 @@ export default function GitInfoMaterial({
 
     const renderSearch = (): JSX.Element => {
         return (
-            <div className="search position-rel en-2 bw-1 br-4 h-32 ml-20">
+            <div className="search position-rel en-2 bw-1 br-4 h-32">
                 <Search className="search__icon icon-dim-18" />
                 <input
                     type="text"
@@ -172,10 +173,11 @@ export default function GitInfoMaterial({
         return (
             <div className="select-material select-material--trigger-view">
                 <div
-                    className="flex content-space position-sticky pl-20 pt-12"
+                    className="flex content-space position-sticky"
                     style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
                 >
                     {renderBranchChangeHeader(material)}
+
                     {!material.isRepoError && !material.isBranchError && <>{renderSearch()}</>}
                 </div>
                 {material.isMaterialLoading ||
@@ -240,15 +242,17 @@ export default function GitInfoMaterial({
 
     const renderWebhookModal = (context) => {
         return (
-            <CiWebhookModal
-                context={context}
-                webhookPayloads={webhookPayloads}
-                ciPipelineMaterialId={material[0].id}
-                ciPipelineId={pipelineId}
-                isWebhookPayloadLoading={isWebhookPayloadLoading}
-                hideWebhookModal={hideWebhookModal}
-                workflowId={workflowId}
-            />
+            <div>
+                <CiWebhookModal
+                    context={context}
+                    webhookPayloads={webhookPayloads}
+                    ciPipelineMaterialId={material[0].id}
+                    ciPipelineId={pipelineId}
+                    isWebhookPayloadLoading={isWebhookPayloadLoading}
+                    hideWebhookModal={hideWebhookModal}
+                    workflowId={workflowId}
+                />
+            </div>
         )
     }
 
