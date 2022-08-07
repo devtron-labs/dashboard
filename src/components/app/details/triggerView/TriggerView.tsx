@@ -131,20 +131,22 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.props.match.params.appId !== prevProps.match.params.appId) {
-            getTriggerWorkflows(this.props.match.params.appId)
-                .then((result) => {
-                    let wf = result.workflows || []
-                    this.setState({ workflows: wf }, () => {
-                        this.getWorkflowStatus()
-                        this.timerRef = setInterval(() => {
-                            this.getWorkflowStatus()
-                        }, 30000)
-                    })
-                })
-                .catch((errors: ServerErrors) => {
-                    showError(errors)
-                    this.setState({ code: errors.code })
-                })
+            this.getWorkflows()
+            //     getTriggerWorkflows(this.props.match.params.appId)
+            //         .then((result) => {
+            //             let wf = result.workflows || []
+            //             this.setState({ workflows: wf }, () => {
+            //                 this.getWorkflowStatus()
+            //                 this.timerRef = setInterval(() => {
+            //                     this.getWorkflowStatus()
+            //                 }, 30000)
+            //             })
+            //         })
+            //         .catch((errors: ServerErrors) => {
+            //             showError(errors)
+            //             this.setState({ code: errors.code })
+            //         })
+            // }
         }
     }
 
