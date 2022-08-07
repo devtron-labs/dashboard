@@ -130,7 +130,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     onClickNextButton = (context) => {
-        this.props.setLoader(true)
         const payload: any = {
             appId: +this.props.match.params.appId,
             id: +this.props.workflowId,
