@@ -78,6 +78,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             showMaterialRegexModal: false,
             filteredCIPipelines: [],
             isChangeBranchClicked: false,
+            loader: false,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -125,21 +126,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     componentDidUpdate(prevProps, prevState) {
         if (this.props.match.params.appId !== prevProps.match.params.appId) {
             this.getWorkflows()
-            //     getTriggerWorkflows(this.props.match.params.appId)
-            //         .then((result) => {
-            //             let wf = result.workflows || []
-            //             this.setState({ workflows: wf }, () => {
-            //                 this.getWorkflowStatus()
-            //                 this.timerRef = setInterval(() => {
-            //                     this.getWorkflowStatus()
-            //                 }, 30000)
-            //             })
-            //         })
-            //         .catch((errors: ServerErrors) => {
-            //             showError(errors)
-            //             this.setState({ code: errors.code })
-            //         })
-            // }
         }
     }
 
@@ -309,6 +295,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     onClickCIMaterial(ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) {
+        this.setState({ loader: true })
+
         ReactGA.event({
             category: 'Trigger View',
             action: 'Select Material Clicked',
@@ -390,6 +378,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             .catch((errors: ServerErrors) => {
                 showError(errors)
                 this.setState({ code: errors.code })
+            })
+            .finally(() => {
+                this.setState({ loader: false })
             })
     }
 
@@ -797,6 +788,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         )
     }
 
+    setLoader = (isLoader) => {
+        this.setState({
+            loader: isLoader,
+        })
+    }
+
     renderCIMaterial = () => {
         if ((this.state.ciNodeId && this.state.showCIModal) || this.state.showMaterialRegexModal) {
             let nd: NodeAttr
@@ -835,6 +832,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         onShowCIModal={this.onShowCIModal}
                         isChangeBranchClicked={this.state.isChangeBranchClicked}
                         getWorkflows={this.getWorkflows}
+                        loader={this.state.loader}
+                        setLoader={this.setLoader}
                     />
                 </>
             )

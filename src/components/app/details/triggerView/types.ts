@@ -76,12 +76,13 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     onShowCIModal: () => void
     isChangeBranchClicked: boolean
     getWorkflows: () => void
+    loader: boolean
+    setLoader: (isLoading) => void
 }
 
 export interface CIMaterialState {
     regexValue: Record<number, { value: string; isInvalid: boolean }>
     selectedCIPipeline?: any
-    loader: boolean
 }
 
 export interface NodeAttr {
@@ -251,6 +252,7 @@ export interface TriggerViewState {
     showMaterialRegexModal: boolean
     filteredCIPipelines: any[]
     isChangeBranchClicked: boolean
+    loader: boolean
 }
 
 //-- begining of response type objects for trigger view

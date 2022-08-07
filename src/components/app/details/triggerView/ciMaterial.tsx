@@ -8,7 +8,6 @@ import Tippy from '@tippyjs/react'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { SourceTypeMap } from '../../../../config'
-import { toast } from 'react-toastify'
 import { ServerErrors } from '../../../../modals/commonTypes'
 import BranchRegexModal from './BranchRegexModal'
 
@@ -32,7 +31,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         this.state = {
             regexValue: regexValue,
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
-            loader: false,
         }
     }
 
@@ -132,9 +130,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     onClickNextButton = (context) => {
-        this.setState({
-            loader: true,
-        })
+        this.props.setLoader(true)
         const payload: any = {
             appId: +this.props.match.params.appId,
             id: +this.props.workflowId,
@@ -182,9 +178,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             .catch((error: ServerErrors) => {
                 showError(error)
             })
-            .finally(() => {
-                this.setState({ loader: false })
-            })
     }
 
     handleRegexInputValue = (id, value, mat) => {
@@ -200,30 +193,44 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         })
     }
 
+    renderCIMaterialModal = (context) => {
+        return (
+            <div className="modal-body--ci-material h-100" onClick={this.onClickStopPropagation}>
+                {this.props.loader ? (
+                    <div style={{ height: '100vh' }}>
+                        <Progressing pageLoader />
+                    </div>
+                ) : (
+                    <>
+                        {this.props.showMaterialRegexModal && (
+                            <BranchRegexModal
+                                material={this.props.material}
+                                selectedCIPipeline={this.state.selectedCIPipeline}
+                                showWebhookModal={this.props.showWebhookModal}
+                                title={this.props.title}
+                                isChangeBranchClicked={this.props.isChangeBranchClicked}
+                                context={context}
+                                onClickNextButton={this.onClickNextButton}
+                                onShowCIModal={this.props.onShowCIModal}
+                                handleRegexInputValue={this.handleRegexInputValue}
+                                regexValue={this.state.regexValue}
+                                onCloseBranchRegexModal={this.props.onCloseBranchRegexModal}
+                            />
+                        )}
+                        {this.props.showCIModal && this.renderCIModal(context)}
+                    </>
+                )}
+            </div>
+        )
+    }
+
     render() {
         return (
             <TriggerViewContext.Consumer>
                 {(context) => {
                     return (
                         <VisibleModal className="" close={context.closeCIModal}>
-                            <div className="modal-body--ci-material h-100" onClick={this.onClickStopPropagation}>
-                                {this.props.showMaterialRegexModal && (
-                                    <BranchRegexModal
-                                        material={this.props.material}
-                                        selectedCIPipeline={this.state.selectedCIPipeline}
-                                        showWebhookModal={this.props.showWebhookModal}
-                                        title={this.props.title}
-                                        isChangeBranchClicked={this.props.isChangeBranchClicked}
-                                        context={context}
-                                        onClickNextButton={this.onClickNextButton}
-                                        onShowCIModal={this.props.onShowCIModal}
-                                        handleRegexInputValue={this.handleRegexInputValue}
-                                        regexValue={this.state.regexValue}
-                                        onCloseBranchRegexModal={this.props.onCloseBranchRegexModal}
-                                    />
-                                )}
-                                {this.props.showCIModal && this.renderCIModal(context)}
-                            </div>
+                            {this.renderCIMaterialModal(context)}
                         </VisibleModal>
                     )
                 }}
