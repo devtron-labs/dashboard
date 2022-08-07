@@ -63,6 +63,10 @@ if (
         tracesSampleRate: Number(window._env_.SENTRY_TRACES_SAMPLE_RATE) || 0.2,
         ...(process.env.REACT_APP_GIT_SHA ? { release: `dashboard@${process.env.REACT_APP_GIT_SHA}` } : {}),
         environment: window._env_ && window._env_.SENTRY_ENV ? window._env_.SENTRY_ENV : 'staging',
+        ignoreErrors: [
+            /^Error: write data discarded, use flow control to avoid losing data$/,
+            /^TypeError: Failed to update a ServiceWorker*$/,
+        ],
     })
 }
 
