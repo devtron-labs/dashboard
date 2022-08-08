@@ -94,7 +94,7 @@ export default function UserForm({
     function validateForm(): boolean {
         if (emailState.emails.length === 0) {
             setEmailState((emailState) => ({ ...emailState, emailError: 'Emails are mandatory.' }));
-            toast.warning('Emails are mandatory.')
+            toast.error('Some required fields are missing')
             return false;
         }
 
