@@ -68,13 +68,13 @@ if (
             if (
                 error &&
                 ((error['code'] && (error['code'] === 401 || error['code'] === 403 || error['code'] === 504)) ||
-                    (error['message'] &&
-                        error['message'].indexOf(
+                    (error['name'] &&
+                        error['name'].indexOf(
                             'Error: write data discarded, use flow control to avoid losing data',
                         ) >= 0) ||
-                    error['message'].indexOf('TypeError: Failed to update a ServiceWorker') >= 0 ||
-                    error['message'].indexOf('TypeError: ServiceWorker') >= 0 ||
-                    error['message'].indexOf('Error: Loading CSS chunk') >= 0)
+                    error['name'].indexOf('TypeError: Failed to update a ServiceWorker') >= 0 ||
+                    error['name'].indexOf('TypeError: ServiceWorker') >= 0 ||
+                    error['name'].indexOf('Error: Loading CSS chunk') >= 0)
             ) {
                 return null
             }
