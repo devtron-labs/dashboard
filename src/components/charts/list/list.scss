@@ -18,11 +18,21 @@
     background-color: var(--window-bg);
 }
 
+.chart-grid.list-view {
+    grid-template-columns: none;
+    grid-gap: 12px;
+}
+
 .chart-grid-item {
     display: block;
     padding: 16px;
     cursor: pointer;
     position: relative;
+}
+
+.chart-grid-item.flex-list {
+    display: grid;
+    grid-template-columns: 64px 1fr;
 }
 
 .chart-grid-item__flexbox {
@@ -524,11 +534,9 @@
 }
 
 .date-align-left--deprecate {
-    width: 200px;
+    width: 100%;
     min-height: 36px;
     opacity: 0.9;
-    border-radius: 4px;
-    border: solid 1px var(--N200);
     font-weight: normal;
 }
 
@@ -554,4 +562,12 @@
     padding: 8px 12px;
     background: #0066cc;
     color: white;
+}
+
+.filter-column-container {
+    max-height: 100%;
+    background: white;
+    flex-shrink: 0;
+    flex-basis: 240px;
+    border-right: 1px solid var(--N200);
 }

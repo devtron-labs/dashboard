@@ -191,6 +191,7 @@ export function Build({
                     ciPipelineSourceTypeOptions={formData.ciPipelineSourceTypeOptions}
                     webhookData={_webhookData}
                     canEditPipeline={formData.ciPipelineEditable}
+                    isAdvanced={isAdvanced}
                 />
             </>
         )
