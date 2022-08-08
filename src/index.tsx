@@ -64,19 +64,27 @@ if (
         ...(process.env.REACT_APP_GIT_SHA ? { release: `dashboard@${process.env.REACT_APP_GIT_SHA}` } : {}),
         environment: window._env_ && window._env_.SENTRY_ENV ? window._env_.SENTRY_ENV : 'staging',
         beforeSend(event, hint) {
-            const error = hint.originalException
-            if (
-                error &&
-                ((error['code'] && (error['code'] === 401 || error['code'] === 403 || error['code'] === 504)) ||
-                    (error['name'] &&
-                        error['name'].indexOf(
-                            'Error: write data discarded, use flow control to avoid losing data',
-                        ) >= 0) ||
-                    error['name'].indexOf('TypeError: Failed to update a ServiceWorker') >= 0 ||
-                    error['name'].indexOf('TypeError: ServiceWorker') >= 0 ||
-                    error['name'].indexOf('Error: Loading CSS chunk') >= 0)
-            ) {
-                return null
+            const errorList = event.exception.values
+            for (let index = 0; index < errorList.length; index++) {
+                const error = errorList[index]
+                if (
+                    error &&
+                    ((error['type'] &&
+                        (error['type'] === '[401]' ||
+                            error['type'] === '[403]' ||
+                            error['code'] === '[504]' ||
+                            error['code'] === '[503]' ||
+                            error['code'] === '[404]')) ||
+                        (error['value'] &&
+                            error['value'].indexOf(
+                                'Error: write data discarded, use flow control to avoid losing data',
+                            ) >= 0) ||
+                        error['value'].indexOf('TypeError: Failed to update a ServiceWorker') >= 0 ||
+                        error['value'].indexOf('TypeError: ServiceWorker') >= 0 ||
+                        error['value'].indexOf('Error: Loading CSS chunk') >= 0)
+                ) {
+                    return null
+                }
             }
             return event
         },
