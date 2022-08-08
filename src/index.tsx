@@ -66,10 +66,13 @@ if (
         ignoreErrors: [
             /^Error: write data discarded, use flow control to avoid losing data$/,
             /^TypeError: Failed to update a ServiceWorker*$/,
+            /^TypeError: ServiceWorker*$/,
+            /^Error: Loading CSS chunk*$/
         ],
         beforeSend(event, hint) {
-          const error = hint.originalException;
-          console.log('beforeSendError',error)
+          if(hint.originalException?.['code']===403 || hint.originalException?.['code']===401 || hint.originalException?.['code']===504){
+            return null
+          }
           return event;
         },
     })
