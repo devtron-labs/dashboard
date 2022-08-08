@@ -467,6 +467,7 @@
     right: 0;
     background: var(--N000);
     top: 0;
+    max-width: 840px;
 }
 
 .modal-body--ci-material {

@@ -18,6 +18,8 @@ export interface CDMaterialProps {
   parentPipelineId?: string;
   parentPipelineType?: string;
   parentEnvironmentName?: string;
+  buildUsingPresetRegistry?: boolean
+  presetImageDeleted?: boolean
 }
 
 export interface CDMaterialType {

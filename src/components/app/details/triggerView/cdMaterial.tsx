@@ -179,14 +179,14 @@ export class CDMaterial extends Component<CDMaterialProps> {
       </div>
       <div className="trigger-modal__body">
         {
-           <InfoColourBar
 
+           <InfoColourBar
            message={
             <div><span className='fw-6'>Images stored in Devtron demo registry are deleted after 24 hours.</span> Some images shown below may not be available to deploy.
              Please build and deploy a new image to ensure successful deployment.</div>
            }
            iconClass="warning-icon"
-           classname="warn"
+           classname="warn ml-20 mr-20 mt-16 mb-16 w-800-px"
            Icon={Warn}
        />
         }
