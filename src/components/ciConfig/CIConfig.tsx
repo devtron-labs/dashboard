@@ -27,6 +27,9 @@ import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { OptionType } from '../app/types'
+import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
+import { PresetRegistry } from '../../config/constantMessaging'
 
 export default function CIConfig({ respondOnSuccess, ...rest }) {
     const [dockerRegistries, setDockerRegistries] = useState(null)
@@ -474,6 +477,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
     }
 
     const { repository, dockerfile, registry, repository_name, key, value } = state
+    const isPresetRegistry: boolean = selectedRegistry?.id === PresetRegistry.PresetContainer
     return (
         <>
             <div className="form__app-compose">
@@ -487,9 +491,8 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                             className="learn-more__href"
                             href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
                         >
-                            {' '}
                             Learn more
-                        </a>{' '}
+                        </a>
                     </span>
                 </p>
                 <div className="white-card white-card__docker-config">
@@ -525,7 +528,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         </div>
                         <div className="form__field">
                             <label htmlFor="" className="form__label">
-                                Container Repository{' '}
+                                Container Repository
                                 {selectedRegistry && REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.desiredFormat}
                             </label>
                             <input
@@ -551,8 +554,31 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                             )}
                         </div>
                     </div>
-                    <div className="fs-14 fw-6 pb-16">Docker file location</div>
-                    <div className="mb-4 form-row__docker">
+                    {isPresetRegistry && (
+                        <InfoColourBar
+                            title="Devtron Labs is a preset system registry."
+                            message={
+                                <ul className="pl-18">
+                                    <li>Please use this registry only for non-prod applications.</li>
+                                    <li>
+                                        Images saved in the repository are publically accessible and will be deleted
+                                        after 24 hours.
+                                    </li>
+                                    <li>
+                                        The duration at which images are deleted may vary as per Devtron’s discretion.
+                                    </li>
+                                </ul>
+                            }
+                            iconClass="warning-icon"
+                            classname="warn"
+                            Icon={Warn}
+                        />
+                    )}
+
+                    <div className={`fs-14 fw-6 pb-16 ${isPresetRegistry ? 'pt-16 mt-4' : ''}`}>
+                        Docker file location
+                    </div>
+                    <div className="form-row__docker">
                         <div className="form__field">
                             <label className="form__label">Select repository containing docker file</label>
                             <ReactSelect

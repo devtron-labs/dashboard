@@ -12,6 +12,8 @@ import { EmptyStateCdMaterial } from './EmptyStateCdMaterial';
 import { getCDModalHeader, CDButtonLabelMap } from './config';
 import { CDModalTab } from '../../service';
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric';
+import InfoColourBar from '../../../common/infocolourBar/InfoColourbar';
+import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 
 export class CDMaterial extends Component<CDMaterialProps> {
 
@@ -123,10 +125,10 @@ export class CDMaterial extends Component<CDMaterialProps> {
 
         <div className="material-history__top" style={{ 'cursor': `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
           onClick={(event) => { event.stopPropagation(); if (!mat.vulnerable) this.props.selectImage(index, this.props.materialType) }}>
-          <div>  
+          <div>
            <div className="commit-hash commit-hash--docker"><img src={docker} alt="" className="commit-hash__icon" />{mat.image}</div>
            {this.props.stageType !== 'CD' && mat.latest  ? <span className="last-deployed-status">Last Run</span> : null}
-         </div>  
+         </div>
           {this.props.materialType === "none" ? null : <div className="material-history__info">
             <span className="trigger-modal__small-text">Deployed at:</span> <span>{mat.deployedTime}</span>
           </div>}
@@ -176,6 +178,18 @@ export class CDMaterial extends Component<CDMaterialProps> {
         <button type="button" className="transparent" onClick={(e) => this.props.closeCDModal()}><img alt="close" src={close} /></button>
       </div>
       <div className="trigger-modal__body">
+        {
+           <InfoColourBar
+
+           message={
+            <div><span className='fw-6'>Images stored in Devtron demo registry are deleted after 24 hours.</span> Some images shown below may not be available to deploy.
+             Please build and deploy a new image to ensure successful deployment.</div>
+           }
+           iconClass="warning-icon"
+           classname="warn"
+           Icon={Warn}
+       />
+        }
         <div className="material-list__title">Select Image</div>
         {this.renderMaterial()}
       </div>
@@ -194,7 +208,7 @@ export class CDMaterial extends Component<CDMaterialProps> {
   }
 
   render() {
-    let header = getCDModalHeader(this.props.stageType, this.props.envName);    
+    let header = getCDModalHeader(this.props.stageType, this.props.envName);
     return <VisibleModal className="" close={this.props.closeCDModal}>
       <div className="modal-body--cd-material" onClick={(e) => e.stopPropagation()}>
         {this.props.material.length > 0 ? this.renderCDModal()

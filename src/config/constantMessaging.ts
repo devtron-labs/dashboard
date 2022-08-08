@@ -36,5 +36,9 @@ export const enum DeleteComponentsName {
     SMTPConfigurationTab = 'smtp',
     Project = 'project',
 }
+//Preset-container-registry
+export const enum PresetRegistry {
+    PresetContainer = 'devtron-preset-container-registry',
+}
 
 //DELETE COMPONENT ENDS
