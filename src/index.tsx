@@ -63,8 +63,8 @@ if (
         tracesSampleRate: Number(window._env_.SENTRY_TRACES_SAMPLE_RATE) || 0.2,
         ...(process.env.REACT_APP_GIT_SHA ? { release: `dashboard@${process.env.REACT_APP_GIT_SHA}` } : {}),
         environment: window._env_ && window._env_.SENTRY_ENV ? window._env_.SENTRY_ENV : 'staging',
-        beforeSend(event, hint) {
-            const errorList = event.exception.values
+        beforeSend(event) {
+            const errorList = event?.exception?.values || []
             for (let index = 0; index < errorList.length; index++) {
                 const error = errorList[index]
                 if (
@@ -75,12 +75,11 @@ if (
                             error['type'] === '[504]' ||
                             error['type'] === '[503]')) ||
                         (error['value'] &&
-                            error['value'].indexOf(
-                                'Error: write data discarded, use flow control to avoid losing data',
-                            ) >= 0) ||
-                        error['value'].indexOf('TypeError: Failed to update a ServiceWorker') >= 0 ||
+                            error['value'].indexOf('write data discarded, use flow control to avoid losing data') >=
+                                0) ||
+                        error['value'].indexOf('Failed to update a ServiceWorker') >= 0 ||
                         error['value'].indexOf('TypeError: ServiceWorker') >= 0 ||
-                        error['value'].indexOf('Error: Loading CSS chunk') >= 0)
+                        error['value'].indexOf('Loading CSS chunk') >= 0)
                 ) {
                     return null
                 }
