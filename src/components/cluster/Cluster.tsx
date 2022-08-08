@@ -843,6 +843,11 @@ function Environment({
         }
     }
 
+    const clusterDelete = (): void => {
+        setDeleting(true)
+        handleClose(false)
+    }
+
     return (
         <VisibleModal className="environment-create-modal" close={handleClose}>
             <form className="environment-create-body" onClick={(e) => e.stopPropagation()} onSubmit={handleOnSubmit}>
@@ -937,7 +942,7 @@ function Environment({
                 </div>
                 {confirmation && (
                     <DeleteComponent
-                        setDeleting={setDeleting}
+                        setDeleting={clusterDelete}
                         deleteComponent={deleteEnvironment}
                         payload={getEnvironmentPayload()}
                         title={state.environment_name.value}
