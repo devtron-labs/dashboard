@@ -73,8 +73,7 @@ if (
                         (error['type'] === '[401]' ||
                             error['type'] === '[403]' ||
                             error['type'] === '[504]' ||
-                            error['type'] === '[503]' ||
-                            error['type'] === '[404]')) ||
+                            error['type'] === '[503]')) ||
                         (error['value'] &&
                             error['value'].indexOf(
                                 'Error: write data discarded, use flow control to avoid losing data',
