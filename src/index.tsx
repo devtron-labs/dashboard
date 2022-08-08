@@ -69,7 +69,7 @@ if (
         ],
         beforeSend(event, hint) {
           const error = hint.originalException;
-          console.log(error)
+          console.log('beforeSendError',error)
           return event;
         },
     })
