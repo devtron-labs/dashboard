@@ -126,6 +126,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     componentDidUpdate(prevProps, prevState) {
         if (this.props.match.params.appId !== prevProps.match.params.appId) {
             this.getWorkflows()
+
+        }
+        else if(this.props.location.search !== prevProps.location.search && !this.props.location.search.includes('ci-modal')){
+           this.setState({
+             showCIModal: false,
+             showMaterialRegexModal: false
+           })
         }
     }
 
@@ -371,6 +378,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     () => {
                         this.getWorkflowStatus()
                         this.preventBodyScroll(true)
+                        this.props.history.push(`${this.props.match.url}?ci-modal`)
                     },
                 )
             })
