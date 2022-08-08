@@ -67,6 +67,11 @@ if (
             /^Error: write data discarded, use flow control to avoid losing data$/,
             /^TypeError: Failed to update a ServiceWorker*$/,
         ],
+        beforeSend(event, hint) {
+          const error = hint.originalException;
+          console.log(error)
+          return event;
+        },
     })
 }
 
