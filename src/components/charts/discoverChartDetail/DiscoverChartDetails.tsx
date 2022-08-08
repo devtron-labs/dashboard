@@ -112,7 +112,6 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         setLoading(true)
         try {
             let { result } = await getChartVersionsMin(chartId)
-            result=[]
             if(result?.length){
               setChartVersions(result)
               selectVersion(result[0].id)
