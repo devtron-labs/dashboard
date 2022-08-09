@@ -21,6 +21,8 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 import { ServerError } from '../../modals/commonTypes';
 import DeleteComponent from '../../util/DeleteComponent';
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
+import { AuthenticationType } from '../cluster/cluster.type';
+import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 
 export default function GitProvider({ ...props }) {
     const [loading, result, error, reload] = useAsync(getGitProviderList);
@@ -589,18 +591,24 @@ function GitForm({
                                         name="auth"
                                         value={value}
                                         checked={value === state.auth.value}
-                                    />{' '}
+                                    />
                                     {Lable}
                                 </label>
                             </Tippy>
                         </div>
                     ))}
                 </div>
-                <div className="flex fs-12 left pt-4 mb-20" style={{ color: '#6b778c' }}>
+                <div className="flex fs-12 left pt-4 mb-16" style={{ color: '#6b778c' }}>
                     <Warn className="icon-dim-16 mr-4 " />
                     Once configured, authentication type cannot be switched from HTTPS (user auth/anonymous) to SSH or
                     vice versa.
                 </div>
+                {state.auth.value === AuthenticationType.ANONYMOUS && (
+                    <div className="pt-10 pb-10 pl-16 pr-16 fs-13 br-4 bw-1 bcb-1 lh-20 cn-9 w-100 eb-2 flexbox mb-40">
+                        <Info className="icon-dim-20 mr-10 " />
+                        Applications using ‘anonymous’ git accounts, will be able to access only ‘public repositories’ from the git account.
+                    </div>
+                )}
                 {state.auth.error && <div className="form__error">{state.auth.error}</div>}
                 {state.auth.value === 'USERNAME_PASSWORD' && (
                     <div className="form__row form__row--two-third">
