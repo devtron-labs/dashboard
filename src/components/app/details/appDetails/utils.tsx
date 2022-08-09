@@ -13,7 +13,6 @@ import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron
 import { ChartTypes, AppMetricsTabType, SecurityVulnerabilititesProps, StatusType, StatusTypes } from './appDetails.type';
 import CreatableSelect from 'react-select/creatable';
 import { DayPickerRangeControllerPresets } from '../../../common';
-import { node } from 'prop-types';
 
 export function getAggregator(nodeType: NodeType): AggregationKeys {
     switch (nodeType) {
