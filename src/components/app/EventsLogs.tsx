@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react'
-import { Progressing, showError, useKeyDown, useAsync, useSearchString, useSize } from '../common';
+import { Progressing, showError, useKeyDown, useAsync, useSearchString } from '../common';
 import InfoIcon from '../../assets/icons/appstatus/info-filled.svg'
 import { Spinner } from 'patternfly-react';
 import LogViewer from '../LogViewer/LogViewer'
@@ -23,6 +23,7 @@ import { TerminalView } from '../terminal';
 import { SocketConnectionType } from './details/appDetails/AppDetails';
 import MonacoEditor from 'react-monaco-editor';
 import { editor } from 'monaco-editor';
+import { AutoSizer } from 'react-virtualized'
 import { getSelectedNodeItems } from './details/appDetails/utils';
 import { defaultProps } from 'recompose';
 
@@ -147,8 +148,6 @@ export const NodeManifestView: React.FC<NodeManifestViewProps> = ({ nodeName, no
     const node = searchParams?.kind && nodes.nodes[searchParams.kind].has(nodeName) ? nodes.nodes[searchParams.kind].get(nodeName) : null
     const [loadingManifest, manifestResult, error, reload] = useAsync(() => getNodeStatus({ ...node, appName: appName, envName: environmentName }), [node, searchParams?.kind], !!nodeName && !!node && !!searchParams.kind)
     const [manifest, setManifest] = useState(null)
-    const { height, width } = useSize()
-
     editor.defineTheme('vs-dark--dt', {
         base: 'vs-dark',
         inherit: true,
@@ -193,32 +192,34 @@ export const NodeManifestView: React.FC<NodeManifestViewProps> = ({ nodeName, no
         <NoEvents title="Manifest not available" />
     </div>
 
-    return <div style={{
-        gridColumn: '1 / span 2',
-    }}>
-        <MonacoEditor language={'yaml'}
-            value={YamljsParser.stringify(manifest, { indent: 2 })}
-            theme={'vs-dark--dt'}
-            options={{
-                selectOnLineNumbers: true,
-                roundedSelection: false,
-                readOnly: true,
-                automaticLayout: false,
-                scrollBeyondLastLine: false,
-                minimap: {
-                    enabled: false
-                },
-                scrollbar: {
-                    alwaysConsumeMouseWheel: false,
-                    vertical: 'auto'
-                }
-            }}
-            onChange={() => { }}
-            editorDidMount={() => { }}
-            height={height - 75}
-            width={width}
-        />
-    </div>
+    return <AutoSizer>
+        {({ height, width }) => <div style={{
+            gridColumn: '1 / span 2',
+        }}>
+            <MonacoEditor language={'yaml'}
+                value={YamljsParser.stringify(manifest, { indent: 2 })}
+                theme={'vs-dark--dt'}
+                options={{
+                    selectOnLineNumbers: true,
+                    roundedSelection: false,
+                    readOnly: true,
+                    automaticLayout: false,
+                    scrollBeyondLastLine: false,
+                    minimap: {
+                        enabled: false
+                    },
+                    scrollbar: {
+                        alwaysConsumeMouseWheel: false,
+                        vertical: 'auto'
+                    }
+                }}
+                onChange={() => { }}
+                editorDidMount={() => { }}
+                height={height - 75}
+                width={width}
+            />
+        </div>}
+    </AutoSizer>
 }
 
 export const EventsView: React.FC<{ nodeName: string; appDetails: AppDetails, nodes: AggregatedNodes }> = ({ nodeName, appDetails, nodes }) => {
