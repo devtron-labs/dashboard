@@ -353,7 +353,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     for (let mat of selectedCIPipeline.ciMaterial) {
                         showRegexModal = response.result.some((_mat) => {
                             return (
-                                _mat.gitMaterialId === mat.gitMaterialId && mat.isRegex && !mat.source.value
+                                _mat.gitMaterialId === mat.gitMaterialId && mat.isRegex && !_mat.value
                                 // !new RegExp(mat.source.regex).test(_mat.value)
                             )
                         })
@@ -363,8 +363,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     }
                 }
 
-                this.setState(
-                    {
+                this.setState({
                         workflows: workflows,
                         ciNodeId: +ciNodeId,
                         ciPipelineName: ciPipelineName,

@@ -169,9 +169,9 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             .then((response) => {
                 if (response) {
                     this.props.getWorkflows()
-                    this.props.onCloseBranchRegexModal()
+                    // this.props.onCloseBranchRegexModal()
                     context.onClickCIMaterial(this.props.pipelineId, this.props.pipelineName)
-                    this.props.onShowCIModal()
+                    // this.props.onShowCIModal()
                 }
             })
             .catch((error: ServerErrors) => {
