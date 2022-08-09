@@ -210,7 +210,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             }}
                                             autoFocus={true}
                                         />
-                                        {!errorObj.isValid ? (
+                                        {errorObj && !errorObj.isValid ? (
                                             <span className="form__error ci-error ">
                                                 <img src={error} className="form__icon" />
                                                 {props.validationRules?.sourceValue(_materials[index].regex).message}
@@ -223,7 +223,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             </div>
                         </div>
                         {isBranchRegex && (
-                            <div className={`${!errorObj.isValid ? 'mt-16' : ''}`}>
+                            <div className={`${errorObj && !errorObj.isValid ? 'mt-16' : ''}`}>
                                 <InfoColourBar
                                     message= 'Branch - Regex allows you to easily switch between branches matching the configured regex before triggering the build pipeline.'
                                     classname={'info_bar'}
