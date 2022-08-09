@@ -116,7 +116,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
               setChartVersions(result)
               selectVersion(result[0].id)
             } else{
-              toast.error('Some Error Occurred. Please try reloading the page');
+              toast.error('Some error occurred. Please try reloading the page');
             }
         } catch (err) {
             showError(err)
