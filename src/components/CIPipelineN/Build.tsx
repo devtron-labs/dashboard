@@ -61,16 +61,12 @@ export function Build({
     const selectSourceType = (selectedSource: CiPipelineSourceTypeOption, gitMaterialId: number): void => {
         // update source type in material
         const _formData = { ...formData }
-        const isMulti = formData.materials.length > 1
-        let isVal
-        if (!isMulti) {
-            isVal = ''
-        }
+        let isPrevWebhook = _formData.ciPipelineSourceTypeOptions.find(sto => sto.isSelected)?.value === SourceTypeMap.WEBHOOK
         const allMaterials = _formData.materials.map((mat) => {
             return {
                 ...mat,
                 type: gitMaterialId === mat.gitMaterialId ? selectedSource.value : mat.type,
-                value: isVal,
+                value: isPrevWebhook && selectedSource.value !== SourceTypeMap.WEBHOOK ? '' : mat.value
             }
         })
         _formData.materials = allMaterials
