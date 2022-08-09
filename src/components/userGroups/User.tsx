@@ -29,6 +29,7 @@ import './UserGroup.scss';
 import AppPermissions from './AppPermissions';
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config';
 import { mainContext } from '../common/navigation/NavigationRoutes';
+import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 
 const CreatableChipStyle = {
     multiValue: (base, state) => {
@@ -93,6 +94,7 @@ export default function UserForm({
     function validateForm(): boolean {
         if (emailState.emails.length === 0) {
             setEmailState((emailState) => ({ ...emailState, emailError: 'Emails are mandatory.' }));
+            toast.error('Some required fields are missing')
             return false;
         }
 
@@ -336,7 +338,12 @@ export default function UserForm({
                         onKeyDown={handleKeyDown}
                         onChange={handleEmailChange}
                     />
-                    {emailState.emailError && <label className="form__error">{emailState.emailError}</label>}
+                    {emailState.emailError && (
+                        <label className="form__error">
+                            <Error className="form__icon form__icon--error" />
+                            {emailState.emailError}
+                        </label>
+                    )}
                 </div>
             )}
             {superAdmin && <SuperAdmin superAdmin={localSuperAdmin} setSuperAdmin={setSuperAdmin} />}
