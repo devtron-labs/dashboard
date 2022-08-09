@@ -32,7 +32,6 @@
         "react-router-dom": "^5.3.0",
         "react-select": "^5.2.2",
         "react-toastify": "^8.2.0",
-        "react-virtualized": "^9.22.3",
         "recharts": "^2.1.9",
         "rxjs": "^7.5.4",
         "xterm": "^4.19.0",

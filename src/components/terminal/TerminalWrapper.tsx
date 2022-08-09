@@ -6,11 +6,10 @@ import { AppDetails } from '../app/types';
 import SockJS from 'sockjs-client';
 import CopyToast, { handleSelectionChange } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CopyToast';
 import moment, { duration } from 'moment';
-import { AutoSizer } from 'react-virtualized'
 import { FitAddon } from 'xterm-addon-fit';
 import * as XtermWebfont from 'xterm-webfont';
 import { SocketConnectionType } from '../app/details/appDetails/AppDetails';
-import { useThrottledEffect } from '../common';
+import { useSize, useThrottledEffect } from '../common';
 import ReactGA from 'react-ga';
 import './terminal.css';
 
@@ -271,8 +270,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         if (this.props.socketConnection !== "CONNECTED") {
             statusBarClasses = `${statusBarClasses} bcr-7 pod-readyState--show`;
         }
-        return <AutoSizer>
-            {({ height, width }) => <div className={"terminal-view pt-24"} style={{ overflow: 'auto' }}>
+        return <div className={"terminal-view pt-24"} style={{ overflow: 'auto' }}>
                 <p style={{ zIndex: 11, textTransform: 'capitalize' }} className={statusBarClasses} >
                     <span className={this.props.socketConnection === 'CONNECTING' ? "loading-dots" : ''}>
                         {this.props.socketConnection.toLowerCase()}
@@ -285,7 +283,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                     </button>
                     </>}
                 </p>
-                <TerminalContent height={height} width={width} fitAddon={self._fitAddon} />
+                <TerminalContent fitAddon={self._fitAddon} />
                 <Scroller style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: '10' }}
                     scrollToBottom={this.scrollToBottom}
                     scrollToTop={this.scrollToTop}
@@ -296,21 +294,20 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                     {this.props.socketConnection}
                 </p>}
                 <CopyToast showCopyToast={this.state.popupText} />
-            </div>}        
-        </AutoSizer>
+            </div>
     }
 }
 
 
 function TerminalContent(props) {
-
+    const { height, width } = useSize()
     useThrottledEffect(() => {
         if (props.fitAddon) {
             props.fitAddon.fit();
         }
     },
         100,
-        [props.height, props.width],
+        [height, width],
     );
-    return <div id="terminal" style={{ width: props.width, height: props.height - 110 }}></div>
+    return <div id="terminal" style={{ width: width, height: height - 110 }}></div>
 }

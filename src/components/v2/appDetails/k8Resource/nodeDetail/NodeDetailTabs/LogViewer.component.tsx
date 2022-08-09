@@ -4,7 +4,6 @@ import { FitAddon } from 'xterm-addon-fit';
 import CopyToast, { handleSelectionChange } from './CopyToast';
 import * as XtermWebfont from 'xterm-webfont';
 import { SearchAddon } from 'xterm-addon-search';
-import { AutoSizer } from 'react-virtualized';
 import '../../../../../../../node_modules/xterm/css/xterm.css';
 import './nodeDetailTab.scss';
 import { Subject } from '../../../../../../util/Subject';
@@ -32,7 +31,6 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
     const fitAddon = useRef<FitAddon>(null);
     const searchAddon = useRef<SearchAddon>(null);
     const webFontAddon = useRef(null);
-
     const [popupText, setPopupText] = useState<boolean>(false);
 
     useEffect(() => {
@@ -88,7 +86,7 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
             },
         });
         terminal.current.attachCustomKeyEventHandler(handleKeyPress);
-        handleSelectionChange(terminal.current,setPopupText);
+        handleSelectionChange(terminal.current, setPopupText);
         fitAddon.current = new FitAddon();
         webFontAddon.current = new XtermWebfont();
 
@@ -127,13 +125,9 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
 
     return (
         <>
-            <AutoSizer>
-                {({ height, width }) => (
-                    <div style={{ height, width }} id="xterm-logs">
-                        <CopyToast showCopyToast={popupText} />
-                    </div>
-                )}
-            </AutoSizer>
+            <div className='w-100 h-100' id="xterm-logs">
+                <CopyToast showCopyToast={popupText} />
+            </div>
             <Scroller
                 scrollToBottom={scrollToBottom}
                 scrollToTop={scrollToTop}
