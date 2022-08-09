@@ -1,8 +1,7 @@
 import { getGeneratedHelmManifest } from '../common/chartValues.api'
 import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
-import YAML from 'yaml'
+import YAML, { isCollection } from 'yaml'
 import { showError } from '../../../common'
-import { Collection } from 'yaml/types'
 
 export const getCommonSelectStyle = (styleOverrides = {}) => {
     return {
@@ -185,7 +184,7 @@ const getAvailalbePath = (parentPathKey: string[], valuesYamlDocument: YAML.Docu
             if (
                 typeof _valueInCurrentPath === 'undefined' ||
                 _valueInCurrentPath === null ||
-                (_valueInCurrentPath instanceof Collection &&
+                (isCollection(_valueInCurrentPath) &&
                     _valueInCurrentPath.items &&
                     !_valueInCurrentPath.items.length)
             ) {
@@ -214,7 +213,7 @@ export const getPathAndValueToSetIn = (
     if (
         typeof parentValue === 'undefined' ||
         parentValue === null ||
-        (parentValue instanceof Collection && parentValue.items && !parentValue.items.length)
+        (isCollection(parentValue) && parentValue.items && !parentValue.items.length)
     ) {
         const availablePath = getAvailalbePath(parentPathKey, valuesYamlDocument)
         const availablePathToSetIn = pathKey.slice(availablePath.length + 1)
@@ -222,7 +221,7 @@ export const getPathAndValueToSetIn = (
         pathToSetIn = pathKey.slice(0, availablePath.length + 1)
     } else if (typeof parentValue === 'object') {
         valueToSetIn = {
-            ...(parentValue.items ? convertItemsToObj(parentValue.items) : parentValue),
+            ...(parentValue['items'] ? convertItemsToObj(parentValue['items']) : parentValue),
             [pathKey[pathKey.length - 1]]: _newValue,
         }
         pathToSetIn = parentPathKey
