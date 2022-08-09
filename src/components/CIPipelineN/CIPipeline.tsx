@@ -492,7 +492,7 @@ export default function CIPipeline({
             let valid = _formData.materials.reduce((isValid, mat) => {
                 isValid =
                     isValid &&
-                    validationRules.sourceValue(mat.isRegex ? mat.regex : mat.value).isValid
+                    validationRules.sourceValue( mat.regex || mat.value).isValid
                 return isValid
             }, true)
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid && valid
