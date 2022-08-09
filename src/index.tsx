@@ -73,12 +73,11 @@ if (
                             error['type'] === '[504]' ||
                             error['type'] === '[503]')) ||
                         (error['value'] &&
-                            error['value'].indexOf('write data discarded, use flow control to avoid losing data') >=
-                                0) ||
-                        error['value'].indexOf('Failed to update a ServiceWorker') >= 0 ||
-                        error['value'].indexOf('TypeError: ServiceWorker') >= 0 ||
-                        error['value'].indexOf('Loading CSS chunk') >= 0 ||
-                        error['value'].indexOf(`Unexpected token '<'`) >= 0)
+                            (error['value'].includes('write data discarded, use flow control to avoid losing data') ||
+                                error['value'].includes('Failed to update a ServiceWorker') ||
+                                error['value'].includes('TypeError: ServiceWorker') ||
+                                error['value'].includes('Loading CSS chunk') ||
+                                error['value'].includes(`Unexpected token '<'`))))
                 ) {
                     return null
                 }
