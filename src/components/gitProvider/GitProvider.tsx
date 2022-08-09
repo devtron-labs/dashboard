@@ -23,6 +23,7 @@ import DeleteComponent from '../../util/DeleteComponent';
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
 import { AuthenticationType } from '../cluster/cluster.type';
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
+import InfoColourBar from '../common/infocolourBar/InfoColourbar';
 
 export default function GitProvider({ ...props }) {
     const [loading, result, error, reload] = useAsync(getGitProviderList);
@@ -604,10 +605,12 @@ function GitForm({
                     vice versa.
                 </div>
                 {state.auth.value === AuthenticationType.ANONYMOUS && (
-                    <div className="pt-10 pb-10 pl-16 pr-16 fs-13 br-4 bw-1 bcb-1 lh-20 cn-9 w-100 eb-2 flexbox mb-40">
-                        <Info className="icon-dim-20 mr-10 " />
-                        Applications using ‘anonymous’ git accounts, will be able to access only ‘public repositories’ from the git account.
-                    </div>
+                    <InfoColourBar
+                        message="Applications using ‘anonymous’ git accounts, will be able to access only ‘public repositories’ from the git account."
+                        classname="info_bar cn-9 mb-40 lh-20"
+                        Icon={Info}
+                        iconClass="icon-dim-20"
+                    />
                 )}
                 {state.auth.error && <div className="form__error">{state.auth.error}</div>}
                 {state.auth.value === 'USERNAME_PASSWORD' && (

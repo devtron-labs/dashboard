@@ -21,6 +21,7 @@ import {deleteMaterial} from './material.service';
 import { DeleteComponentsName, DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE, DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE } from '../../config/constantMessaging';
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 import { AuthenticationType } from '../cluster/cluster.type';
+import InfoColourBar from '../common/infocolourBar/InfoColourbar';
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
 
     constructor(props) {
@@ -186,11 +187,12 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
 
             </div>
             {this.props.material.gitProvider?.authMode === AuthenticationType.ANONYMOUS && (
-                <div className="pt-10 pb-10 pl-16 pr-16 fs-13 br-4 bw-1 bcb-1 lh-20 w-100 eb-2 cn-9 flexbox mb-20">
-                    <Info className="icon-dim-20 mr-10 " />
-                    This git account has anonymous read access. Only public repositories can be accessed 
-                    with anonymous authentication.
-                </div>
+                <InfoColourBar
+                    message="This git account has anonymous read access. Only public repositories can be accessed with anonymous authentication."
+                    classname="info_bar cn-9 mb-20 lh-20"
+                    Icon={Info}
+                    iconClass="icon-dim-20"
+                />
             )}
             <label className="form__row">
                 <Checkbox
