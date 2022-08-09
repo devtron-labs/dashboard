@@ -104,6 +104,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 let wf = result.workflows || []
                 this.setState({ workflows: wf, view: ViewType.FORM, filteredCIPipelines: _filteredCIPipelines }, () => {
                     this.getWorkflowStatus()
+                    this.timerRef && clearInterval(this.timerRef)
                     this.timerRef = setInterval(() => {
                         this.getWorkflowStatus()
                     }, 30000)

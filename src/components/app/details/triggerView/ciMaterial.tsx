@@ -91,7 +91,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         if (this.props.material.length > 0) {
             return (
                 <>
-                    <div>
                         <GitInfoMaterial
                             context={context}
                             material={this.props.material}
@@ -107,7 +106,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                             workflowId={this.props.workflowId}
                             onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
                         />
-                    </div>
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(context, canTrigger)}
                 </>
             )
@@ -169,9 +167,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             .then((response) => {
                 if (response) {
                     this.props.getWorkflows()
-                    // this.props.onCloseBranchRegexModal()
                     context.onClickCIMaterial(this.props.pipelineId, this.props.pipelineName)
-                    // this.props.onShowCIModal()
                 }
             })
             .catch((error: ServerErrors) => {
