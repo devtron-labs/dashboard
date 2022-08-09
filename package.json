@@ -35,11 +35,11 @@
         "react-virtualized": "^9.22.3",
         "recharts": "^2.1.9",
         "rxjs": "^7.5.4",
-        "xterm": "4.18.0",
-        "xterm-addon-fit": "0.5.0",
-        "xterm-addon-search": "0.8.2",
+        "xterm": "^4.19.0",
+        "xterm-addon-fit": "^0.5.0",
+        "xterm-addon-search": "^0.9.0",
         "xterm-webfont": "^2.0.0",
-        "yaml": "^1.7.2",
+        "yaml": "^2.1.1",
         "yamljs": "^0.3.0"
     },
     "scripts": {
