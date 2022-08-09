@@ -79,7 +79,8 @@ if (
                                 0) ||
                         error['value'].indexOf('Failed to update a ServiceWorker') >= 0 ||
                         error['value'].indexOf('TypeError: ServiceWorker') >= 0 ||
-                        error['value'].indexOf('Loading CSS chunk') >= 0)
+                        error['value'].indexOf('Loading CSS chunk') >= 0 ||
+                        error['value'].indexOf(`Unexpected token '<'`) >= 0)
                 ) {
                     return null
                 }
