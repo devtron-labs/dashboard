@@ -36,12 +36,10 @@ const root = document.getElementById('root')
 if (
     process.env.NODE_ENV === 'production' &&
     window._env_ &&
-    (window._env_.SENTRY_ERROR_ENABLED || window._env_.SENTRY_PERFORMANCE_ENABLED)
+    (window._env_.SENTRY_ERROR_ENABLED)
 ) {
     const integrationArr = []
-    if (window._env_.SENTRY_ERROR_ENABLED) {
-        integrationArr.push(new CaptureConsole({ levels: ['error'] }))
-    }
+    integrationArr.push(new CaptureConsole({ levels: ['error'] }))
     if (window._env_.SENTRY_PERFORMANCE_ENABLED) {
         integrationArr.push(new BrowserTracing())
     }
