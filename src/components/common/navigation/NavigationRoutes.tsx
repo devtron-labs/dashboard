@@ -7,7 +7,7 @@ import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
 import ReactGA from 'react-ga'
 import { Security } from '../../security/Security'
-import { dashboardLoggedIn, getVersionConfig } from '../../../services/service'
+import { dashboardLoggedIn, getLoginCount, getVersionConfig } from '../../../services/service'
 import Reload from '../../Reload/Reload'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import DevtronStackManager from '../../v2/devtronStackManager/DevtronStackManager'
@@ -45,6 +45,15 @@ export default function NavigationRoutes() {
     useEffect(() => {
         const loginInfo = getLoginInfo()
         if (!loginInfo) return
+        // let payload = {
+        //     // email: loginInfo['email'],
+        //     key: 'login-count',
+        //     email: 'admin@gmail.com',
+        //     value: 0,
+        // }
+        // getLoginCount(payload).then((res) => {
+        //     console.log(res)
+        // })
         if (process.env.NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {

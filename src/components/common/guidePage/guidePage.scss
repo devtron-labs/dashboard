@@ -21,6 +21,15 @@
     }
 }
 
+.token-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.token__dont-show {
+    background: transparent;
+}
+
 .deploy-manage-container {
     .deploy_arrow {
         width: 56px;

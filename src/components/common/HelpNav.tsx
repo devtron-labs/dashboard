@@ -7,6 +7,7 @@ import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Chat } from '../../assets/icons/ic-chat-circle-dots.svg'
 import { InstallationType, ServerInfo } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { NavLink } from 'react-router-dom'
+import { ReactComponent as GettingStarted } from '../../assets/icons/ic-onboarding.svg'
 
 export interface HelpNavType {
     className: string
@@ -19,6 +20,12 @@ export interface HelpNavType {
 function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchingServerInfo }: HelpNavType) {
     const HelpOptions = [
         {
+            name: 'Getting started',
+            link: DOCUMENTATION.HOME_PAGE,
+            icon: GettingStarted,
+            showSeparator: true,
+        },
+        {
             name: 'View documentation',
             link: DOCUMENTATION.HOME_PAGE,
             icon: File,
@@ -28,6 +35,7 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
             name: 'Chat with support',
             link: 'https://discord.devtron.ai/',
             icon: Chat,
+            showSeparator: true,
         },
         {
             name: 'Join discord community',

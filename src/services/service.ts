@@ -385,3 +385,7 @@ export function dashboardAccessed() {
 export function dashboardLoggedIn() {
   return get(Routes.DASHBOARD_LOGGEDIN);
 }
+
+export function getLoginCount(payload) {
+  return post('attributes/user/get', payload)
+}
