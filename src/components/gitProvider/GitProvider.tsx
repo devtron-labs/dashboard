@@ -21,6 +21,9 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 import { ServerError } from '../../modals/commonTypes';
 import DeleteComponent from '../../util/DeleteComponent';
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
+import { AuthenticationType } from '../cluster/cluster.type';
+import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
+import InfoColourBar from '../common/infocolourBar/InfoColourbar';
 
 export default function GitProvider({ ...props }) {
     const [loading, result, error, reload] = useAsync(getGitProviderList);
@@ -594,18 +597,26 @@ function GitForm({
                                         name="auth"
                                         value={value}
                                         checked={value === state.auth.value}
-                                    />{' '}
+                                    />
                                     {Lable}
                                 </label>
                             </Tippy>
                         </div>
                     ))}
                 </div>
-                <div className="flex fs-12 left pt-4 mb-20" style={{ color: '#6b778c' }}>
+                <div className="flex fs-12 left pt-4 mb-16" style={{ color: '#6b778c' }}>
                     <Warn className="icon-dim-16 mr-4 " />
                     Once configured, authentication type cannot be switched from HTTPS (user auth/anonymous) to SSH or
                     vice versa.
                 </div>
+                {state.auth.value === AuthenticationType.ANONYMOUS && (
+                    <InfoColourBar
+                        message="Applications using ‘anonymous’ git accounts, will be able to access only ‘public repositories’ from the git account."
+                        classname="info_bar cn-9 mb-40 lh-20"
+                        Icon={Info}
+                        iconClass="icon-dim-20"
+                    />
+                )}
                 {state.auth.error && <div className="form__error">{state.auth.error}</div>}
                 {state.auth.value === 'USERNAME_PASSWORD' && (
                     <div className="form__row form__row--two-third">

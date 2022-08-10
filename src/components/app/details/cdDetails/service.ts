@@ -9,7 +9,6 @@ import {
     DeploymentHistorySingleValue,
     DeploymentHistory,
 } from './cd.type'
-import { string } from 'prop-types'
 import { decode } from '../../../../util/Util'
 
 export interface DeploymentHistoryResult extends ResponseType {
