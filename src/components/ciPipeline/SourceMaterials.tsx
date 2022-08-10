@@ -32,7 +32,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                 {props.includeWebhookEvents && isMultiGit && (
                     <div className="flex top bcv-1 p-8 br-4 ml-8 mt-8 mb-4 mr-8">
                         <Info className="icon-dim-20 fcv-5" />
-                        <div className='ml-8'>
+                        <div className="ml-8">
                             If you need webhook based CI for apps with multiple code sources,
                             <a
                                 className="learn-more__href ml-4"
@@ -129,7 +129,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                         className="workflow-ci__source"
                                         placeholder="Source Type"
                                         isSearchable={false}
-                                        menuPortalTarget={null}
+                                        menuPortalTarget={document.getElementById('visible-modal')}
                                         options={props.ciPipelineSourceTypeOptions}
                                         value={selectedMaterial}
                                         closeMenuOnSelect={false}
@@ -149,6 +149,10 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             menu: (base, state) => ({
                                                 ...base,
                                                 top: 'auto',
+                                            }),
+                                            menuList: (base, state) => ({
+                                                ...base,
+                                                zIndex: '99',
                                             }),
                                         }}
                                     />
