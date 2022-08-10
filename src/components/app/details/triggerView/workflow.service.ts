@@ -70,7 +70,8 @@ export function processWorkflow(
         .forEach((workflow) => {
             let wf = toWorkflowType(workflow)
             workflows.push(wf)
-            ;(workflow.tree ?? [])
+            let _wfTree = workflow.tree ?? []
+            _wfTree
                 .sort((a, b) => a.id - b.id)
                 .forEach((branch) => {
                     if (branch.type == PipelineType.CI_PIPELINE) {
