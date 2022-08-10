@@ -117,7 +117,7 @@ export function CiPipelineSourceConfig({
                             <div>
                                 {!baseText && (
                                     <div className="flex left">
-                                        <div className="ellipsis-right">{sourceValue}</div>
+                                        <div className="ellipsis-right">{sourceValueBase}</div>
                                         <Info className="icon-dim-12 fcn-5 ml-4" />
                                     </div>
                                 )}

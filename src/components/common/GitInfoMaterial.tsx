@@ -104,7 +104,7 @@ export default function GitInfoMaterial({
                 onClick={material.regex ? showBranchRegexModal : noop}
             >
                 <BranchFixed className=" mr-8 icon-color-n9" />
-                <div className="ellipsis-right"> {material?.value}</div>
+                {showWebhookModal ? 'Select commit to build' : <div className="ellipsis-right"> {material?.value}</div>}
                 {material.regex && (
                     <Tippy
                         className="default-tt"
@@ -170,16 +170,20 @@ export default function GitInfoMaterial({
 
     function renderMaterialHistory(context, material: CIMaterialType) {
         let anyCommit = material.history && material.history.length > 0
+        const isWebhook = material.type === SourceTypeMap.WEBHOOK
         return (
             <div className="select-material select-material--trigger-view">
-                <div
-                    className="flex content-space position-sticky"
-                    style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
-                >
-                    {renderBranchChangeHeader(material)}
+                {!isWebhook && (
+                    <div
+                        className="flex content-space position-sticky"
+                        style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
+                    >
+                        {renderBranchChangeHeader(material)}
 
-                    {!material.isRepoError && !material.isBranchError && <>{renderSearch()}</>}
-                </div>
+                        {!material.isRepoError && !material.isBranchError && <>{renderSearch()}</>}
+                    </div>
+                )}
+
                 {material.isMaterialLoading ||
                 material.isRepoError ||
                 material.isBranchError ||
@@ -189,7 +193,7 @@ export default function GitInfoMaterial({
                         <EmptyStateCIMaterial
                             isRepoError={material.isRepoError}
                             isBranchError={material.isBranchError}
-                            isWebHook={material.type === SourceTypeMap.WEBHOOK}
+                            isWebHook={isWebhook}
                             gitMaterialName={material.gitMaterialName}
                             sourceValue={material.value}
                             repoErrorMsg={material.repoErrorMsg}
