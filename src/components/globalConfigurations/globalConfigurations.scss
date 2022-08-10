@@ -151,6 +151,11 @@
     }
 }
 
+.no-grid-column {
+    grid-template-columns: none;
+    padding-left: 24px;
+}
+
 .list__add-item {
     color: var(--B500);
     font-weight: 600;

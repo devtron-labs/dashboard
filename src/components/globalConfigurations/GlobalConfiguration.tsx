@@ -454,7 +454,7 @@ function Logo({ src = '', style = {}, className = '', children = null }) {
 function Title({ title = '', subtitle = '', style = {}, className = '', tag = '', ...props }) {
     return (
         <div className="flex column left">
-            <div className={`list__title ${className}`}>
+            <div className={`list__title ${className}`} style={style}>
                 {title} {tag && <span className="tag">{tag}</span>}
             </div>
             {subtitle && <div className={`list__subtitle ${className}`}>{subtitle}</div>}

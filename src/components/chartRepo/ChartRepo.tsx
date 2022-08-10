@@ -94,10 +94,10 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
 
     return (
         <article className={`collapsed-list clear-both ${id ? 'collapsed-list--chart' : 'collapsed-list--git'} collapsed-list--${id ? 'update' : 'create'}`}>
-            <List onClick={setToggleCollapse}>
-                <List.Logo>{id ? <div className={`${url} list__logo`}><Helm className="icon-dim-24 fcb-5 vertical-align-middle " /></div> : <Add className="icon-dim-24 fcb-5 vertical-align-middle" />}</List.Logo>
-                <div className="flex left ml-8">
-                    <List.Title title={id && !collapsed ? 'Edit repository' : name || "Add repository"} subtitle={collapsed ? url : null} />
+            <List onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column':''}`}>
+                <List.Logo>{id ? <div className={`${url} list__logo`}><Helm className="icon-dim-24 fcb-5 vertical-align-middle " /></div> : collapsed && <Add className="icon-dim-24 fcb-5 vertical-align-middle" />}</List.Logo>
+                <div className="flex left">
+                    <List.Title style={{color: !id && !collapsed ? 'var(--N900)': ''}} title={id && !collapsed ? 'Edit repository' : name || "Add repository"} subtitle={collapsed ? url : null} />
                     {id &&
                         <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable chart repository' : 'Enable chart repository'}>
                             <span style={{ marginLeft: 'auto' }}>
