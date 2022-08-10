@@ -70,35 +70,35 @@ export function processWorkflow(
         .forEach((workflow) => {
             let wf = toWorkflowType(workflow)
             workflows.push(wf)
-            workflow.tree ??
-                []
-                    .sort((a, b) => a.id - b.id)
-                    .forEach((branch) => {
-                        if (branch.type == PipelineType.CI_PIPELINE) {
-                            let ciNode = ciMap.get(String(branch.componentId))
-                            if (!ciNode) {
-                                return
-                            }
-                            wf.nodes.push(ciNode)
-                        } else {
-                            let cdPipeline = cdMap.get(branch.componentId)
-                            if (!cdPipeline) {
-                                return
-                            }
-                            let cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId)
-                            let parentType = branch.parentType == PipelineType.CI_PIPELINE ? 'CI' : 'CD'
-                            let type = cdNode.preNode ? 'PRECD' : 'CD'
-                            wf.nodes
-                                .filter((n) => n.id == String(branch.parentId) && n.type == parentType)
-                                .forEach((node) => {
-                                    ;(node.postNode ? node.postNode : node).downstreams.push(
-                                        type + '-' + branch.componentId,
-                                    )
-                                    node.downstreamNodes.push(cdNode)
-                                })
-                            wf.nodes.push(cdNode)
+            let _wfTree = workflow.tree ?? []
+            _wfTree
+                .sort((a, b) => a.id - b.id)
+                .forEach((branch) => {
+                    if (branch.type == PipelineType.CI_PIPELINE) {
+                        let ciNode = ciMap.get(String(branch.componentId))
+                        if (!ciNode) {
+                            return
                         }
-                    })
+                        wf.nodes.push(ciNode)
+                    } else {
+                        let cdPipeline = cdMap.get(branch.componentId)
+                        if (!cdPipeline) {
+                            return
+                        }
+                        let cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId)
+                        let parentType = branch.parentType == PipelineType.CI_PIPELINE ? 'CI' : 'CD'
+                        let type = cdNode.preNode ? 'PRECD' : 'CD'
+                        wf.nodes
+                            .filter((n) => n.id == String(branch.parentId) && n.type == parentType)
+                            .forEach((node) => {
+                                ;(node.postNode ? node.postNode : node).downstreams.push(
+                                    type + '-' + branch.componentId,
+                                )
+                                node.downstreamNodes.push(cdNode)
+                            })
+                        wf.nodes.push(cdNode)
+                    }
+                })
         })
 
     if (dimensions.type == WorkflowDimensionType.TRIGGER) {
