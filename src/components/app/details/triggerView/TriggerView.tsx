@@ -102,6 +102,21 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             .then((result) => {
                 const _filteredCIPipelines = result.filteredCIPipelines || []
                 let wf = result.workflows || []
+                if (this.state.showCIModal) {
+                    wf.forEach((w) =>
+                        w.nodes.forEach((n) => {
+                            if (+n.id === this.state.ciNodeId) {
+                                this.state.workflows.forEach((sw) =>
+                                    sw.nodes.forEach((sn) => {
+                                        if (+sn.id === this.state.ciNodeId) {
+                                            n.inputMaterialList = sn.inputMaterialList
+                                        }
+                                    }),
+                                )
+                            }
+                        }),
+                    )
+                }
                 this.setState({ workflows: wf, view: ViewType.FORM, filteredCIPipelines: _filteredCIPipelines }, () => {
                     this.getWorkflowStatus()
                     this.timerRef && clearInterval(this.timerRef)
@@ -302,7 +317,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     onClickCIMaterial(ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) {
         this.setState({ loader: true })
-
         ReactGA.event({
             category: 'Trigger View',
             action: 'Select Material Clicked',
@@ -364,7 +378,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     }
                 }
 
-                this.setState({
+                this.setState(
+                    {
                         workflows: workflows,
                         ciNodeId: +ciNodeId,
                         ciPipelineName: ciPipelineName,
@@ -808,8 +823,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     break
                 }
             }
-            let material = nd[this.state.materialType] || []
-
+            let material = nd?.[this.state.materialType] || []
             return (
                 <>
                     <CIMaterial
@@ -854,7 +868,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 })
                 if (node) break
             }
-            let material = node[this.state.materialType] || []
+            let material = node?.[this.state.materialType] || []
 
             const redirectToCDDetails = () => {
                 this.props.history.push(

@@ -83,7 +83,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     renderCIModal(context) {
         let selectedMaterial = this.props.material.find((mat) => mat.isSelected)
-        let commitInfo = this.props.material.find((mat) => mat.history)
         let canTrigger = this.props.material.reduce((isValid, mat) => {
             isValid = isValid && !mat.isMaterialLoading && !!mat.history.find((history) => history.isSelected)
             return isValid
@@ -91,21 +90,21 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         if (this.props.material.length > 0) {
             return (
                 <>
-                        <GitInfoMaterial
-                            context={context}
-                            material={this.props.material}
-                            title={this.props.title}
-                            pipelineId={this.props.pipelineId}
-                            pipelineName={this.props.pipelineName}
-                            selectedMaterial={selectedMaterial}
-                            showWebhookModal={this.props.showWebhookModal}
-                            hideWebhookModal={this.props.hideWebhookModal}
-                            toggleWebhookModal={this.props.toggleWebhookModal}
-                            webhookPayloads={this.props.webhookPayloads}
-                            isWebhookPayloadLoading={this.props.isWebhookPayloadLoading}
-                            workflowId={this.props.workflowId}
-                            onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
-                        />
+                    <GitInfoMaterial
+                        context={context}
+                        material={this.props.material}
+                        title={this.props.title}
+                        pipelineId={this.props.pipelineId}
+                        pipelineName={this.props.pipelineName}
+                        selectedMaterial={selectedMaterial}
+                        showWebhookModal={this.props.showWebhookModal}
+                        hideWebhookModal={this.props.hideWebhookModal}
+                        toggleWebhookModal={this.props.toggleWebhookModal}
+                        webhookPayloads={this.props.webhookPayloads}
+                        isWebhookPayloadLoading={this.props.isWebhookPayloadLoading}
+                        workflowId={this.props.workflowId}
+                        onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
+                    />
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(context, canTrigger)}
                 </>
             )
