@@ -13,6 +13,7 @@ import { SourceMaterialsProps } from './types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { reactSelectStyles } from '../CIPipelineN/ciPipeline.utils'
+import DiscoverChartDetails from '../charts/discoverChartDetail/DiscoverChartDetails'
 
 export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) {
     const isMultiGit = props.materials.length > 1
@@ -29,19 +30,19 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
             <components.MenuList {..._props}>
                 {_props.children}
                 {props.includeWebhookEvents && isMultiGit && (
-                    <div className="bcv-1 p-8 br-4 ml-8 mt-8 pt-8 mb-4 mr-8">
-                        <span className="">
-                            <Info className="icon-dim-20 mr-8 fcv-5" /> If you need webhook based CI for apps with
-                            multiple code sources,
-                        </span>
-                        <a
-                            className="learn-more__href ml-4"
-                            href="https://github.com/devtron-labs/devtron/issues"
-                            target="_blank"
-                            rel="noreferrer noopener"
-                        >
-                            Create a github issue
-                        </a>
+                    <div className="flex top bcv-1 p-8 br-4 ml-8 mt-8 mb-4 mr-8">
+                        <Info className="icon-dim-20 fcv-5" />
+                        <div className='ml-8'>
+                            If you need webhook based CI for apps with multiple code sources,
+                            <a
+                                className="learn-more__href ml-4"
+                                href="https://github.com/devtron-labs/devtron/issues"
+                                target="_blank"
+                                rel="noreferrer noopener"
+                            >
+                                Create a github issue
+                            </a>
+                        </div>
                     </div>
                 )}
                 {props.includeWebhookEvents && !isMultiGit && !_materials[0].gitHostId && (
@@ -128,9 +129,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                         className="workflow-ci__source"
                                         placeholder="Source Type"
                                         isSearchable={false}
-                                        menuPortalTarget={
-                                            props.isAdvanced ? null : document.getElementById('visible-modal')
-                                        }
+                                        menuPortalTarget={null}
                                         options={props.ciPipelineSourceTypeOptions}
                                         value={selectedMaterial}
                                         closeMenuOnSelect={false}
@@ -225,7 +224,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                         {isBranchRegex && (
                             <div className={`${errorObj && !errorObj.isValid ? 'mt-16' : ''}`}>
                                 <InfoColourBar
-                                    message= 'Branch - Regex allows you to easily switch between branches matching the configured regex before triggering the build pipeline.'
+                                    message="Branch - Regex allows you to easily switch between branches matching the configured regex before triggering the build pipeline."
                                     classname={'info_bar'}
                                     Icon={InfoIcon}
                                 />

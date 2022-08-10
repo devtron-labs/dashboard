@@ -112,7 +112,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         }
     }
 
-    isRegexValueInvalid = (_cm): boolean => {
+    isRegexValueInvalid = (_cm): void => {
         const regExp = new RegExp(_cm.source.regex)
         const regVal = this.state.regexValue[_cm.gitMaterialId]
         if (!regExp.test(regVal.value)) {
@@ -123,7 +123,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             this.setState({
                 regexValue: _regexVal,
             })
-            return
         }
     }
 
