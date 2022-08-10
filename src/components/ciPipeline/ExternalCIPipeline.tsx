@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { getInitDataWithCIPipeline, saveCIPipeline, deleteCIPipeline, getPipelineMetaConfiguration } from './ciPipeline.service';
-import { TriggerType, ViewType } from '../../config';
+import { SourceTypeMap, TriggerType, ViewType } from '../../config';
 import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, ExternalCIPipelineState } from './types';
 import { Progressing,  CopyButton, showError, ConditionalWrap, DeleteDialog, VisibleModal } from '../common';
@@ -87,7 +87,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
                     form: {
                         ...this.state.form,
                         materials: response.result.materials,
-                        ciPipelineSourceTypeOptions: response.result.ciPipelineSourceTypeOptions
+                        ciPipelineSourceTypeOptions: response.result.ciPipelineSourceTypeOptions.filter((_option) => _option.value !== SourceTypeMap.BranchRegex)
                     },
                     gitMaterials: response.result.gitMaterials,
                     loadingData: false,
@@ -115,7 +115,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
         let allMaterials = this.state.form.materials.map((mat) => {
             return {
                 ...mat,
-                type: (gitMaterialId === mat.gitMaterialId) ? event.target.value : mat.type,
+                type: (gitMaterialId === mat.gitMaterialId) ? event.value : mat.type,
             }
         })
         form.materials = allMaterials;
