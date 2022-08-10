@@ -88,9 +88,13 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
         update()
     }, [enabled])
 
+    const setToggleCollapse = () => {
+        toggleCollapse(false)
+    }
+
     return (
         <article className={`collapsed-list clear-both ${id ? 'collapsed-list--chart' : 'collapsed-list--git'} collapsed-list--${id ? 'update' : 'create'}`}>
-            <List onClick={e => toggleCollapse(t => !t)}>
+            <List onClick={setToggleCollapse}>
                 <List.Logo>{id ? <div className={`${url} list__logo`}><Helm className="icon-dim-24 fcb-5 vertical-align-middle " /></div> : <Add className="icon-dim-24 fcb-5 vertical-align-middle" />}</List.Logo>
                 <div className="flex left ml-8">
                     <List.Title title={id && !collapsed ? 'Edit repository' : name || "Add repository"} subtitle={collapsed ? url : null} />

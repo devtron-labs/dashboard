@@ -212,13 +212,17 @@ function CollapsedList({
         update();
     }, [enabled]);
 
+    const setToggleCollapse = () => {
+        toggleCollapse(false)
+    }
+
     return (
         <article
             className={`collapsed-list ${id ? 'collapsed-list--chart' : 'collapsed-list--git dashed'} collapsed-list--${
                 id ? 'update' : 'create'
             }`}
         >
-            <List onClick={(e) => toggleCollapse(false)}>
+            <List onClick={setToggleCollapse}>
                 <List.Logo>
                     {id ? (
                         <div className="">

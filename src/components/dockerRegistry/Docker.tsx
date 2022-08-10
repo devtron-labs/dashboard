@@ -84,9 +84,14 @@ function CollapsedList({
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true);
+
+    const setToggleCollapse = () => {
+        toggleCollapse(false)
+    }
+    
     return (
         <article className={`collapsed-list collapsed-list--docker collapsed-list--${id ? 'update' : 'create dashed'}`}>
-            <List onClick={(e) => toggleCollapse((t) => !t)}>
+            <List onClick={setToggleCollapse}>
                 {id ? (
                     <List.Logo>
                         {' '}
