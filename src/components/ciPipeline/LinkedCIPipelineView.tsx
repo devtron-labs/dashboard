@@ -167,7 +167,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         return <>
             <div className="flex left pt-15 pb-15 pl-20 pr-20">
                 <h2 className="fs-16 fw-6 m-0">Linked build pipeline</h2>
-                <button type="button" className="transparent ml-auto" onClick={this.props.close}>
+                <button type="button" className="transparent ml-auto" onClick={() => this.props.close()}>
                     <Close className="icon-dim-24" />
                 </button>
             </div>

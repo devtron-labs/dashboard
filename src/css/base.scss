@@ -278,6 +278,10 @@ a:focus {
     width: 90%;
 }
 
+.w-95 {
+    width: 95% !important;
+}
+
 .w-100 {
     width: 100%;
 }
@@ -1809,6 +1813,14 @@ button.anchor {
     line-height: normal !important;
 }
 
+.h-8 {
+    height: 8px;
+}
+
+.h-18 {
+    height: 18px;
+}
+
 .h-20 {
     height: 20px !important;
 }
@@ -1821,17 +1833,6 @@ button.anchor {
     height: 32px !important;
 }
 
-.h-44 {
-    height: 44px !important;
-}
-
-.h-48 {
-    height: 48px !important;
-}
-
-.h-60 {
-    height: 60px !important;
-}
 .h-36 {
     height: 36px !important;
 }
@@ -1840,16 +1841,20 @@ button.anchor {
     height: 44px !important;
 }
 
+.h-48 {
+    height: 48px !important;
+}
+
+.h-44 {
+    height: 44px !important;
+}
+
+.h-60 {
+    height: 60px !important;
+}
+
 .fw-n {
     font-weight: normal !important;
-}
-
-.h-8 {
-    height: 8px;
-}
-
-.h-20 {
-    height: 20px;
 }
 
 .hide-section {
@@ -2032,4 +2037,10 @@ textarea {
 
 .warning-icon-y7 path:nth-child(2) {
     fill: var(--Y700);
+}
+
+.icon-color-n9 {
+    path:nth-child(2) {
+        fill: var(--N900);
+    }
 }

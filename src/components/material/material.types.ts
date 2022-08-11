@@ -8,7 +8,7 @@ export interface MaterialListProps extends RouteComponentProps<{ appId: string; 
 export interface GitMaterialType {
     id?: number;
     name?: string;
-    gitProvider: { id: number; name: string; url?: string };
+    gitProvider: { id: number; name: string; url?: string; authMode?: string };
     url: string;
     checkoutPath: string;
     active: boolean;
