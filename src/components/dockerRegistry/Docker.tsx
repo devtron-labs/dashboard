@@ -89,6 +89,11 @@ function CollapsedList({
         toggleCollapse(false)
     }
     
+    const closeDropdown = (e) => {
+        e.stopPropagation()
+        toggleCollapse((t) => !t)
+    }
+
     return (
         <article className={`collapsed-list collapsed-list--docker collapsed-list--${id ? 'update' : 'create dashed'}`}>
             <List onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column' : ''}`}>
@@ -113,10 +118,7 @@ function CollapsedList({
                 </div>
                 {id && (
                     <List.DropDown
-                        onClick={(e) => {
-                            e.stopPropagation()
-                            toggleCollapse((t) => !t)
-                        }}
+                        onClick={closeDropdown}
                         className="rotate"
                         style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }}
                     />

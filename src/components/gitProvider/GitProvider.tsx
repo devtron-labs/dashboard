@@ -219,6 +219,11 @@ function CollapsedList({
         toggleCollapse(false)
     }
 
+    const closeDropdown = (e) => {
+        e.stopPropagation()
+        toggleCollapse((t) => !t)
+    }
+
     return (
         <article
             className={`collapsed-list ${id ? 'collapsed-list--chart' : 'collapsed-list--git dashed'} collapsed-list--${
@@ -268,10 +273,7 @@ function CollapsedList({
                 </div>
                 {id && (
                     <List.DropDown
-                        onClick={(e) => {
-                            e.stopPropagation()
-                            toggleCollapse((t) => !t)
-                        }}
+                        onClick={closeDropdown}
                         className="rotate"
                         style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }}
                     />
