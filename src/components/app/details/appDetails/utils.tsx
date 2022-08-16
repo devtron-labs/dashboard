@@ -162,7 +162,7 @@ const throughputAndLatencySelectStyle = {
     }),
     menu: (base, state) => ({
         ...base,
-        width: '150px'
+        width: 'auto'
     }),
     valueContainer: base => ({
         ...base,
@@ -172,8 +172,6 @@ const throughputAndLatencySelectStyle = {
     }),
     singleValue: base => ({
         ...base,
-        position: 'relative',
-        top: '9px',
         maxWidth: '77px',
     }),
     dropdownIndicator: base => ({
