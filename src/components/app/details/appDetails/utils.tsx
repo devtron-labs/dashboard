@@ -172,8 +172,6 @@ const throughputAndLatencySelectStyle = {
     }),
     singleValue: base => ({
         ...base,
-        position: 'relative',
-        top: '9px',
         maxWidth: '77px',
     }),
     dropdownIndicator: base => ({
@@ -206,7 +204,7 @@ export function ThroughputSelect(props) {
 }
 
 export function LatencySelect(props) {
-    return <CreatableSelect className=""
+    return <CreatableSelect className="mr-5"
         placeholder="Latency"
         value={{ label: props.latency, value: props.latency }}
         options={[
