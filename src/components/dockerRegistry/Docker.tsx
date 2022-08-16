@@ -84,15 +84,25 @@ function CollapsedList({
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true);
+
+    const setToggleCollapse = () => {
+        toggleCollapse(false)
+    }
+    
+    const closeDropdown = (e) => {
+        e.stopPropagation()
+        toggleCollapse((t) => !t)
+    }
+
     return (
         <article className={`collapsed-list collapsed-list--docker collapsed-list--${id ? 'update' : 'create dashed'}`}>
-            <List onClick={(e) => toggleCollapse((t) => !t)}>
-                {id ? (
+            <List onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column' : ''}`}>
+                {id && (
                     <List.Logo>
-                        {' '}
                         <div className={'registry-icon ' + registryType}></div>
                     </List.Logo>
-                ) : (
+                )}
+                {!id && collapsed && (
                     <List.Logo>
                         <Add className="icon-dim-24 fcb-5 vertical-align-middle" />
                     </List.Logo>
@@ -100,6 +110,7 @@ function CollapsedList({
 
                 <div className="flex left">
                     <List.Title
+                        style={{ color: !id && !collapsed ? 'var(--N900)' : '' }}
                         title={id || 'Add Container Registry'}
                         subtitle={registryUrl}
                         tag={isDefault ? 'DEFAULT' : ''}
@@ -107,10 +118,7 @@ function CollapsedList({
                 </div>
                 {id && (
                     <List.DropDown
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            toggleCollapse((t) => !t);
-                        }}
+                        onClick={closeDropdown}
                         className="rotate"
                         style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }}
                     />
@@ -138,7 +146,7 @@ function CollapsedList({
                 />
             )}
         </article>
-    );
+    )
 }
 
 function DockerForm({

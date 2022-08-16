@@ -215,15 +215,24 @@ function CollapsedList({
         update();
     }, [enabled]);
 
+    const setToggleCollapse = () => {
+        toggleCollapse(false)
+    }
+
+    const closeDropdown = (e) => {
+        e.stopPropagation()
+        toggleCollapse((t) => !t)
+    }
+
     return (
         <article
             className={`collapsed-list ${id ? 'collapsed-list--chart' : 'collapsed-list--git dashed'} collapsed-list--${
                 id ? 'update' : 'create'
             }`}
         >
-            <List onClick={(e) => toggleCollapse((t) => !t)}>
+            <List onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column' : ''}`}>
                 <List.Logo>
-                    {id ? (
+                    {id && (
                         <div className="">
                             <span className="mr-8">
                                 {url.includes('gitlab') ? <GitLab /> : null}
@@ -236,12 +245,12 @@ function CollapsedList({
                                 )}
                             </span>
                         </div>
-                    ) : (
-                        <Add className="icon-dim-24 fcb-5 vertical-align-middle" />
                     )}
+                    {!id && collapsed && <Add className="icon-dim-24 fcb-5 vertical-align-middle" />}
                 </List.Logo>
                 <div className="flex left">
                     <List.Title
+                        style={{ color: !id && !collapsed ? 'var(--N900)' : '' }}
                         title={id && !collapsed ? 'Edit git account' : name || 'Add git account'}
                         subtitle={collapsed ? url : null}
                     />
@@ -264,10 +273,7 @@ function CollapsedList({
                 </div>
                 {id && (
                     <List.DropDown
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            toggleCollapse((t) => !t);
-                        }}
+                        onClick={closeDropdown}
                         className="rotate"
                         style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }}
                     />
@@ -300,7 +306,7 @@ function CollapsedList({
                 />
             )}
         </article>
-    );
+    )
 }
 
 function GitForm({
