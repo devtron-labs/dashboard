@@ -204,7 +204,7 @@ export function ThroughputSelect(props) {
 }
 
 export function LatencySelect(props) {
-    return <CreatableSelect className="mr-5"
+    return <CreatableSelect className=""
         placeholder="Latency"
         value={{ label: props.latency, value: props.latency }}
         options={[
