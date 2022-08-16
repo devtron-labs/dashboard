@@ -986,9 +986,6 @@ export default function AppList() {
     const onClickSampleAppCard = (selectedCardId) => {
         let isSelect
         let selectedSampleApp = SampleData.filter((elm) => elm.id === selectedCardId)
-
-        console.log(selectedSampleApp)
-        console.log(selectedSampleApp)
         selectedSampleApp[0].isSelected = !isSelect
     }
 

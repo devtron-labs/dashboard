@@ -1,19 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { NavLink, useLocation, useRouteMatch, useHistory } from 'react-router-dom'
 import './guidePage.scss'
 import { URLS } from '../../../config'
 import SampleImage from '../../../assets/img/guide-sample-app.png'
 import CreateApp from '../../../assets/img/guide-create-app.png'
-import Tippy from '@tippyjs/react'
-import GettingToast from '../../../assets/img/lifebuoy.png'
+// import Tippy from '@tippyjs/react'
+// import GettingToast from '../../../assets/img/lifebuoy.png'
+import GettingStarted from '../gettingStartedCard/GettingStarted'
 
 function GuidePage({ title, subTitle, leftImage, leftText, rightImage, rightText, onClickLeftCardAction }) {
     const match = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
+    const [showHelpCard, setShowHelpCard] = useState(true)
 
     const redirectToDeployGuide = (url) => {
         history.push(url)
+    }
+
+    const hideGettingStartedCard = () => {
+        setShowHelpCard(!showHelpCard)
     }
 
     return (
@@ -22,7 +28,7 @@ function GuidePage({ title, subTitle, leftImage, leftText, rightImage, rightText
                 <h1 className="fw-6 mb-8">{title}</h1>
                 <p className="fs-14 cn-7">{subTitle}</p>
             </div>
-            <Tippy
+            {/* <Tippy
                 className="default-tt br-8 w-300 fs-13 p-20 m-auto"
                 arrow={true}
                 placement="top-end"
@@ -38,7 +44,15 @@ function GuidePage({ title, subTitle, leftImage, leftText, rightImage, rightText
                     </div>
                 }
                 visible={true}
-            />
+            /> */}
+            {showHelpCard && (
+                <GettingStarted
+                    className={'w-300'}
+                    showHelpCard={false}
+                    setShowHelpCard={setShowHelpCard}
+                    hideGettingStartedCard={hideGettingStartedCard}
+                />
+            )}
             <div className="bcn-0 guide-body flex position-rel">
                 <div className="guide-cards__wrap">
                     <div className="guide-card__left bcn-0 w-300 br-4 en-2 bw-1 cursor">

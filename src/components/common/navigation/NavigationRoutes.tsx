@@ -45,15 +45,15 @@ export default function NavigationRoutes() {
     useEffect(() => {
         const loginInfo = getLoginInfo()
         if (!loginInfo) return
-        // let payload = {
-        //     // email: loginInfo['email'],
-        //     key: 'login-count',
-        //     email: 'admin@gmail.com',
-        //     value: 0,
-        // }
-        // getLoginCount(payload).then((res) => {
-        //     console.log(res)
-        // })
+        let payload = {
+            // email: loginInfo['email'],
+            key: 'login-count',
+            email: 'admin@gmail.com',
+            // value: 0,
+        }
+        getLoginCount(payload).then((response) => {
+            console.log(response.result)
+        })
         if (process.env.NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
