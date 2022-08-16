@@ -225,9 +225,9 @@ function CollapsedList({
                 id ? 'update' : 'create'
             }`}
         >
-            <List onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column':''}`} >
+            <List onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column' : ''}`}>
                 <List.Logo>
-                    {id ? (
+                    {id && (
                         <div className="">
                             <span className="mr-8">
                                 {url.includes('gitlab') ? <GitLab /> : null}
@@ -240,13 +240,12 @@ function CollapsedList({
                                 )}
                             </span>
                         </div>
-                    ) : (
-                        collapsed && <Add className="icon-dim-24 fcb-5 vertical-align-middle" />
                     )}
+                    {!id && collapsed && <Add className="icon-dim-24 fcb-5 vertical-align-middle" />}
                 </List.Logo>
                 <div className="flex left">
-                    <List.Title 
-                        style={{color: !id && !collapsed ? 'var(--N900)': ''}}
+                    <List.Title
+                        style={{ color: !id && !collapsed ? 'var(--N900)' : '' }}
                         title={id && !collapsed ? 'Edit git account' : name || 'Add git account'}
                         subtitle={collapsed ? url : null}
                     />
@@ -270,8 +269,8 @@ function CollapsedList({
                 {id && (
                     <List.DropDown
                         onClick={(e) => {
-                            e.stopPropagation();
-                            toggleCollapse((t) => !t);
+                            e.stopPropagation()
+                            toggleCollapse((t) => !t)
                         }}
                         className="rotate"
                         style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }}
@@ -305,7 +304,7 @@ function CollapsedList({
                 />
             )}
         </article>
-    );
+    )
 }
 
 function GitForm({
