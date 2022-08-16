@@ -68,7 +68,7 @@ export function SourceInfo({ appDetails, setDetailed = null, environments, showC
                             </div>
                             <div className="flex left">
                                 {message && <span className="ellipsis-right  select-material--w450">{message}</span>}
-                                {message.length > 73 && <span className='cb-5'>more</span>}
+                                {message?.length > 73 && <span className='cb-5'>more</span>}
                             </div>
                         </div>
                     </div>
