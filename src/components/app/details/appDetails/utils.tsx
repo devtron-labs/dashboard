@@ -162,7 +162,7 @@ const throughputAndLatencySelectStyle = {
     }),
     menu: (base, state) => ({
         ...base,
-        width: '150px'
+        width: 'auto'
     }),
     valueContainer: base => ({
         ...base,

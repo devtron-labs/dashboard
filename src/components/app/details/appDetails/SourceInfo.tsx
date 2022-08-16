@@ -66,7 +66,10 @@ export function SourceInfo({ appDetails, setDetailed = null, environments, showC
                                     className={`fa fa-angle-right fw-6 fs-14 app-summary__status-name f-${status.toLowerCase()}`}
                                 ></span>
                             </div>
-                            {message && <span className="ellipsis-right w-100">{message}</span>}
+                            <div className="flex left">
+                                {message && <span className="ellipsis-right  select-material--w450">{message}</span>}
+                                {message.length > 73 && <span className='cb-5'>more</span>}
+                            </div>
                         </div>
                     </div>
                 )}
