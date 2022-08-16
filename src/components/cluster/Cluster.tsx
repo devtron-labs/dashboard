@@ -595,12 +595,10 @@ function ClusterForm({
     return (
         <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
             <div className="flex left mb-20">
-                {id ? (
-                    <Pencil color="#363636" className="icon-dim-24 vertical-align-middle" />
-                ) : (
-                    <Add className="icon-dim-24 fcb-5 vertical-align-middle" />
+                {id && (
+                    <Pencil color="#363636" className="icon-dim-24 vertical-align-middle mr-8" />
                 )}
-                <span className={`${!id ? 'cb-5' : ''} fw-6 fs-14 ml-8`}>{clusterTitle()}</span>
+                <span className="fw-6 fs-14 cn-9">{clusterTitle()}</span>
             </div>
             <div className="form__row">
                 <CustomInput

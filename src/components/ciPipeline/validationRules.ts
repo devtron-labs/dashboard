@@ -85,6 +85,8 @@ export class ValidationRules {
     sourceValue = (value: string): { message: string | null; isValid: boolean } => {
         if (!value) {
             return { message: `This is required`, isValid: false }
+        } else if (value === '*') {
+            return { message: 'This is not a valid regular expression.', isValid: false }
         } else {
             return { message: null, isValid: true }
         }
