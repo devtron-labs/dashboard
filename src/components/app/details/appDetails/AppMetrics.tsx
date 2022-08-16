@@ -300,7 +300,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                     <div className={`app-metrics-graph chart`}>
                         <div className="app-metrics-graph__title flexbox flex-justify">
                             <div className='flexbox'>
-                                <h3 className="app-details-graph__title flexbox mt-0 ml-0 mb-0 mr-5">Latency</h3>
+                                <h3 className="app-details-graph__title flexbox m-0">Latency</h3>
                                 <h3 className="app-details-graph__title flexbox m-0">
                                     <LatencySelect latency={selectedLatency} handleLatencyChange={handleLatencyChange} />
                                 </h3>
