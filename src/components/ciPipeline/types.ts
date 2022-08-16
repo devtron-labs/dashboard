@@ -234,7 +234,7 @@ export interface FormType {
 
 interface ErrorObj {
     isValid: boolean
-    message: string
+    message: string | null
 }
 export interface TaskErrorObj {
     isValid: boolean
@@ -330,6 +330,8 @@ export interface MaterialType {
     isSelected: boolean
     gitHostId: number
     gitProviderId: number
+    regex?: string
+    isRegex: boolean
 }
 
 export interface Githost {
@@ -394,4 +396,38 @@ export interface PluginDetailType {
 export enum VariableFieldType {
     Input = 'inputVariables',
     Output = 'outputVariables',
+}
+
+export interface ValidationRulesType {
+    name: (value: string) => ErrorObj
+    requiredField: (value: string) => ErrorObj
+    inputVariable: (value: object, availableInputVariables: Map<string, boolean>) => ErrorObj
+    outputVariable: (value: object, availableInputVariables: Map<string, boolean>) => ErrorObj
+    conditionDetail: (value: object) => ErrorObj
+    sourceValue: (value: string) => ErrorObj
+    mountPathMap: (value: object) => ErrorObj
+}
+export interface SourceMaterialsProps {
+    materials: MaterialType[]
+    showError: boolean
+    validationRules?: ValidationRulesType
+    selectSourceType?: (event, gitMaterialId) => void
+    handleSourceChange?: (event, gitMaterialId: number, type: string) => void
+    includeWebhookEvents: boolean
+    ciPipelineSourceTypeOptions: CiPipelineSourceTypeOption[]
+    canEditPipeline: boolean
+    webhookData?: WebhookCIProps
+    isBranchRegex?: (material) => boolean
+    isAdvanced?: boolean
+}
+
+export interface WebhookCIProps {
+    webhookConditionList: any
+    gitHost: Githost
+    getSelectedWebhookEvent: (material: any) => any
+    addWebhookCondition: () => void
+    deleteWebhookCondition: (index: number) => void
+    onWebhookConditionSelectorChange: (index: number, selectorId: number) => void
+    onWebhookConditionSelectorValueChange: (index: number, value: string) => void
+    copyToClipboard: (text: string, callback) => void
 }
