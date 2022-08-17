@@ -10,18 +10,16 @@ import './onboardingGuide.scss'
 import ReactGA from 'react-ga'
 
 function DeployManageGuide() {
-    const match = useRouteMatch()
     const history = useHistory()
 
-    const redirectToOnboardingPage = (url) => {
-        history.push(url)
+    const redirectToOnboardingPage = () => {
+        history.push('/')
     }
 
     return (
         <div className="deploy-manage-container">
-            {console.log(window.location)}
             <div className="flex h-300 guide-header">
-                <div className="bcn-0 deploy_arrow flex cursor" onClick={() => redirectToOnboardingPage('/')}>
+                <div className="bcn-0 deploy_arrow flex cursor" onClick={() => redirectToOnboardingPage()}>
                     <GoBack className="rotate icon-dim-24" style={{ ['--rotateBy' as any]: '180deg' }} />
                 </div>
                 <div className="ml-32">
@@ -42,18 +40,13 @@ function DeployManageGuide() {
                         <div className="fw-6 fs-16 pl-20 pr-20">
                             3 helm applications found in default_cluster <br />
                             <NavLink
-                                to={`${window.location.host}/${match.url.split('guide')[0]}/${URLS.APP}/${
-                                    URLS.APP_LIST
-                                }`}
+                            to = {`${URLS.APP}/${URLS.APP_LIST}`}
                                 activeClassName="active"
                                 onClick={(event) => {
                                     ReactGA.event({
                                         category: 'Onboarding',
                                         action: 'Onboarding Guide Clicked',
                                     })
-                                    // redirectToOnboardingPage(
-                                    //     `${match.url.split('guide')[0]}/${URLS.APP}/${URLS.APP_LIST}`,
-                                    // )
                                 }}
                             >
                                 View applications
@@ -71,14 +64,8 @@ function DeployManageGuide() {
                         <div className="fw-6 fs-16 pl-20 pr-20">
                             I want to deploy popular helm charts <br />
                             <NavLink
-                                to={`${match.url}/${URLS.GUIDE}`}
+                                to={`${URLS.CHARTS_DISCOVER}`}
                                 activeClassName="active"
-                                // onClick={(event) => {
-                                //     ReactGA.event({
-                                //         category: 'Onboarding',
-                                //         action: 'Onboarding Guide Clicked',
-                                //     })
-                                // }}
                             >
                                 Browse helm charts
                             </NavLink>
@@ -95,14 +82,8 @@ function DeployManageGuide() {
                         <div className="fw-6 fs-16 pl-20 pr-20">
                             I have helm applications in other clusters <br />
                             <NavLink
-                                to={`${match.url}/${URLS.GUIDE}`}
+                                to={`${URLS.GLOBAL_CONFIG_CLUSTER}`}
                                 activeClassName="active"
-                                // onClick={(event) => {
-                                //     ReactGA.event({
-                                //         category: 'Onboarding',
-                                //         action: 'Onboarding Guide Clicked',
-                                //     })
-                                // }}
                             >
                                 Connect a cluster
                             </NavLink>
@@ -119,24 +100,14 @@ function DeployManageGuide() {
                         <div className="fw-6 fs-16 pl-20 pr-20">
                             I want to connect my own chart repository <br />
                             <NavLink
-                                to={`${match.url}/${URLS.GUIDE}`}
+                                to={`${URLS.GLOBAL_CONFIG_CHART}`}
                                 activeClassName="active"
-                                // onClick={(event) => {
-                                //     ReactGA.event({
-                                //         category: 'Onboarding',
-                                //         action: 'Onboarding Guide Clicked',
-                                //     })
-                                // }}
                             >
                                 Connect chart repository
                             </NavLink>
                         </div>
                     </div>
                 </div>
-                {/* <div className="fs-14 mt-20">
-                    <div className="cb-5  fw-6">Skip and explore Devtron on your own</div>
-                    <div className="cn-7">Tip: You can return here anytime from the Help menu</div>
-                </div> */}
             </div>
         </div>
     )

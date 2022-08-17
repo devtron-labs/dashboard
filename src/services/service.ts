@@ -1,4 +1,4 @@
-import { get, post } from './api';
+import { get, post, put } from './api';
 import { ACCESS_TYPE_MAP, Routes } from '../config';
 import { sortCallback } from '../components/common/helpers/util';
 import moment from 'moment';
@@ -388,4 +388,8 @@ export function dashboardLoggedIn() {
 
 export function getLoginCount(payload) {
   return post('attributes/user/get', payload)
+}
+
+export function updateLoginCount(payload) {
+    return put('attributes/user/update', payload)
 }

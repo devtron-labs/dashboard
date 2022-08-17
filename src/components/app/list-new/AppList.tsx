@@ -992,15 +992,7 @@ export default function AppList() {
     const renderFirstAppView = () => {
         return (
             <>
-                <GuidePage
-                    title={'Create your first application'}
-                    subTitle={'Tip: Create and deploy a sample application to quickly see Devtron in action.'}
-                    leftImage={undefined}
-                    leftText={'Learn with a pre-configured sample application'}
-                    rightImage={undefined}
-                    rightText={'Create an application from scratch'}
-                    onClickLeftCardAction={onClickShowSampleAppModal}
-                />
+                <GuidePage openDevtronAppCreateModel={openDevtronAppCreateModel} />
 
                 {showSampleAppModal && (
                     <div>
@@ -1043,50 +1035,6 @@ export default function AppList() {
                     </div>
                 )}
             </>
-            // <div className="first-app-container flex column">
-            //     <h1 className="fw-6"></h1>
-            //     <div className="cn-7 fs-14">
-
-            //     </div>
-            //     <div className="bcn-0 guide-body flex position-rel">
-            //         <div className="guide-cards__wrap">
-            //             <div className="guide-card__left bcn-0 w-300 br-4 en-2 bw-1 cursor">
-            //                 <NavLink
-            //                     to={``}
-            //                     className="no-decor fw-6 cursor"
-            //                     activeClassName="active"
-            //                     // onClick={() => redirectToDeployGuide(`/${URLS.GUIDE}`)}
-            //                 >
-            //                     <img
-            //                         className="guide-card__img"
-            //                         src={CreateApp}
-            //                         width="250"
-            //                         height="250"
-            //                         alt="Please connect cluster"
-            //                     />
-            //                     <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
-            //                         Deploy and manage helm applications
-            //                     </div>
-            //                 </NavLink>
-            //             </div>
-
-            //             <div className="guide-card__right bcn-0 w-300 br-4 en-2 bw-1 cursor">
-            //                 <NavLink to={``} className="no-decor fw-6 cursor" activeClassName="active">
-            //                     <img
-            //                         className="guide-card__img"
-            //                         src={SampleApp}
-            //                         width="250"
-            //                         height="250"
-            //                         alt="Please connect cluster"
-            //                     />
-            //                     <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24">
-            //                         Deploy custom applications using CI/CD pipelines
-            //                     </div>
-            //                 </NavLink>
-            //             </div>
-            //         </div>
-            //     </div>
-            // </div>
         )
     }
     return (
@@ -1107,8 +1055,8 @@ export default function AppList() {
                     {renderMasterFilters()}
                     {renderAppliedFilters()}
                     {renderAppTabs()}
-                    {/* {serverMode == SERVER_MODE.FULL && renderAppCreateRouter()}
-                    {params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.FULL && (
+                    {serverMode == SERVER_MODE.FULL && renderAppCreateRouter()}
+                    {/*  {params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.FULL && (
                         <DevtronAppListContainer
                             payloadParsedFromUrl={parsedPayloadOnUrlChange}
                             appCheckListRes={appCheckListRes}

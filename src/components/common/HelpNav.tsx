@@ -19,12 +19,12 @@ export interface HelpNavType {
 
 function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchingServerInfo }: HelpNavType) {
     const HelpOptions = [
-        {
-            name: 'Getting started',
-            link: DOCUMENTATION.HOME_PAGE,
-            icon: GettingStarted,
-            showSeparator: true,
-        },
+        // {
+        //     name: 'Getting started',
+        //     link: '/',
+        //     icon: GettingStarted,
+        //     showSeparator: true,
+        // },
         {
             name: 'View documentation',
             link: DOCUMENTATION.HOME_PAGE,
@@ -53,6 +53,13 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
     return (
         <div className="transparent-div" onClick={() => setShowHelpCard(!showHelpCard)}>
             <div className={`help-card pt-4 pb-4 ${className}`}>
+                <div className="help-card__option">
+                    <NavLink to={`/`} className="no-decor help-card__link flex left cn-9" activeClassName="active">
+                        <GettingStarted />
+                        <div className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
+                    </NavLink>
+                </div>
+
                 {HelpOptions.map((option) => {
                     return (
                         <Fragment key={option.name}>

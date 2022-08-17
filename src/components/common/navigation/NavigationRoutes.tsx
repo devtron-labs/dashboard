@@ -7,7 +7,7 @@ import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
 import ReactGA from 'react-ga'
 import { Security } from '../../security/Security'
-import { dashboardLoggedIn, getLoginCount, getVersionConfig } from '../../../services/service'
+import { dashboardLoggedIn, getLoginCount, getVersionConfig, updateLoginCount } from '../../../services/service'
 import Reload from '../../Reload/Reload'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import DevtronStackManager from '../../v2/devtronStackManager/DevtronStackManager'
@@ -41,19 +41,12 @@ export default function NavigationRoutes() {
             fetchingServerInfo: false,
         },
     )
+   const [isHelpGettingStartedClicked, setIsHelpGettingStartedClicked ] = useState(false)
+   const [loginCount, setLoginCount] = useState(0)
 
     useEffect(() => {
         const loginInfo = getLoginInfo()
-        if (!loginInfo) return
-        let payload = {
-            // email: loginInfo['email'],
-            key: 'login-count',
-            email: 'admin@gmail.com',
-            // value: 0,
-        }
-        getLoginCount(payload).then((response) => {
-            console.log(response.result)
-        })
+
         if (process.env.NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
@@ -87,6 +80,26 @@ export default function NavigationRoutes() {
                 })
             }
         }
+
+        //For first time user(with superadmin permission)
+
+        if (!loginInfo) return
+        let payload = {
+            key: 'login-count',
+            emailId: loginInfo ? loginInfo['email'] || loginInfo['sub'] : '',
+        }
+        getLoginCount(payload).then((response) => {
+            console.log(response)
+            setLoginCount(response.result)
+        })
+
+        // let updatedPayload = {
+        //     key: 'login-count',
+        //     emailId: loginInfo['email'],
+        //     value: loginCount,
+        // }
+        // updateLoginCount(updatedPayload)
+
         if (typeof Storage !== 'undefined') {
             if (localStorage.isDashboardLoggedIn) return
             dashboardLoggedIn()
@@ -115,6 +128,10 @@ export default function NavigationRoutes() {
         getServerMode()
         getCurrentServerInfo()
     }, [])
+
+    const showCloseButtonAfterGettingStartedClicked = () => {
+      setIsHelpGettingStartedClicked(true)
+    }
 
     const getCurrentServerInfo = async (section?: string) => {
         if (
@@ -150,7 +167,7 @@ export default function NavigationRoutes() {
         return <Reload />
     } else {
         return (
-            <mainContext.Provider value={{ serverMode, setServerMode, setPageOverflowEnabled }}>
+            <mainContext.Provider value={{ serverMode, setServerMode, setPageOverflowEnabled, isHelpGettingStartedClicked, showCloseButtonAfterGettingStartedClicked }}>
                 <main>
                     <Navigation
                         history={history}
