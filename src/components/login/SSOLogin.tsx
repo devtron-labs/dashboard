@@ -40,7 +40,7 @@ enum SSOProvider {
 const ssoMap = {
     google: "https://dexidp.io/docs/connectors/google/",
     github: "https://dexidp.io/docs/connectors/github/",
-    gitlab:"https://dexidp.io/docs/connectors/gitlab/",
+    gitlab: "https://dexidp.io/docs/connectors/gitlab/",
     microsoft: "https://dexidp.io/docs/connectors/microsoft/",
     ldap: "https://dexidp.io/docs/connectors/ldap/",
     oidc: "https://dexidp.io/docs/connectors/oidc/",
