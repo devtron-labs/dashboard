@@ -17,6 +17,7 @@ import { ReactComponent as Microsoft } from '../../assets/icons/ic-microsoft.svg
 import { ReactComponent as LDAP } from '../../assets/icons/ic-ldap.svg'
 import { ReactComponent as OIDC } from '../../assets/icons/ic-oidc.svg'
 import { ReactComponent as Openshift } from '../../assets/icons/ic-openshift.svg'
+import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import warn from '../../assets/icons/ic-warning.svg';
 import './login.css';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
@@ -29,6 +30,7 @@ export const SwitchItemValues = {
 enum SSOProvider {
     google = "google",
     github = "github",
+    gitlab = "gitlab",
     microsoft = "microsoft",
     ldap = "ldap",
     oidc = "oidc",
@@ -38,6 +40,7 @@ enum SSOProvider {
 const ssoMap = {
     google: "https://dexidp.io/docs/connectors/google/",
     github: "https://dexidp.io/docs/connectors/github/",
+    gitlab:"https://dexidp.io/docs/connectors/gitlab/",
     microsoft: "https://dexidp.io/docs/connectors/microsoft/",
     ldap: "https://dexidp.io/docs/connectors/ldap/",
     oidc: "https://dexidp.io/docs/connectors/oidc/",
@@ -48,6 +51,7 @@ const SSOTabIcons: React.FC<{ SSOName: string }> = ({ SSOName }) => {
     switch (SSOName) {
         case "Google": return <Google />
         case "GitHub": return <GitHub />
+        case "GitLab": return <GitLab />
         case "Microsoft": return <Microsoft />
         case "LDAP": return <LDAP />
         case "OIDC": return <OIDC />
@@ -360,6 +364,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let SSOLoginTabsArr = [
             { provider: SSOProvider.google, SSOName: "Google" },
             { provider: SSOProvider.github, SSOName: "GitHub" },
+            { provider: SSOProvider.gitlab, SSOName: "GitLab" },
             { provider: SSOProvider.microsoft, SSOName: "Microsoft" },
             { provider: SSOProvider.ldap, SSOName: "LDAP" },
             { provider: SSOProvider.oidc, SSOName: "OIDC" },
