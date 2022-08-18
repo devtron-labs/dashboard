@@ -1,16 +1,21 @@
 import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { get, post } from '../../services/api'
-import { CiPipelineSourceTypeBaseOptions } from './ciPipeline.util'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
+import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { MaterialType, Githost, PatchAction, ScriptType, PluginType, BuildStageType, RefVariableType } from './types'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
 }
 
-export function savePipeline(request): Promise<any> {
-    const URL = `${Routes.CI_PIPELINE}`
-    return post(URL, request)
+export function savePipeline(request, isRegexMaterial = false): Promise<any> {
+    let url
+    if (isRegexMaterial) {
+        url = `${Routes.CI_PIPELINE_PATCH}/regex`
+    } else {
+        url = `${Routes.CI_PIPELINE_PATCH}`
+    }
+    return post(url, request)
 }
 
 export function getCIPipelineNameSuggestion(appId: string | number): Promise<any> {
@@ -50,7 +55,7 @@ export function getInitData(appId: string | number, includeWebhookData: boolean 
     })
 }
 
-function getCIPipeline(appId: string, ciPipelineId: string): Promise<any> {
+export function getCIPipeline(appId: string, ciPipelineId: string): Promise<any> {
     const URL = `${Routes.CI_CONFIG_GET}/${appId}/${ciPipelineId}`
     return get(URL)
 }
@@ -253,7 +258,9 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
             .filter((mat) => mat.isSelected)
             .map((mat) => {
                 let _value = mat.value
-                if (mat.type === SourceTypeMap.WEBHOOK) {
+                if (mat.type === SourceTypeMap.BranchRegex) {
+                    _value = ''
+                } else if (mat.type === SourceTypeMap.WEBHOOK) {
                     const _condition = {}
                     webhookConditionList.forEach((webhookCondition) => {
                         _condition[webhookCondition.selectorId] = webhookCondition.value
@@ -267,6 +274,7 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
                     source: {
                         type: mat.type,
                         value: _value,
+                        regex: mat.regex,
                     },
                 }
             }),
@@ -287,6 +295,7 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
 function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: Githost): MaterialType[] {
     let materials: MaterialType[] = []
     const ciMaterialSet = new Set()
+
     if (ciPipeline) {
         materials = ciPipeline.ciMaterial?.map((mat) => {
             ciMaterialSet.add(mat.gitMaterialId)
@@ -298,6 +307,8 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: G
                 value: mat.source.value,
                 isSelected: true,
                 gitHostId: gitHost ? gitHost.id : 0,
+                regex: mat.source.regex,
+                isRegex: mat.isRegex,
             }
         }) || []
     }
@@ -318,6 +329,7 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: G
                 isSelected: true,
                 gitHostId: mat.gitHostId,
                 gitProviderId: mat.gitProviderId,
+                isRegex: mat.isRegex,
             })
         }
     }
@@ -475,7 +487,6 @@ export function createWebhookConditionList(materialJsonValue: string) {
     }
 
     const _materialValue = JSON.parse(materialJsonValue)
-    const _selectedEventId = _materialValue.eventId
     const _selectedEventCondition = _materialValue.condition
 
     if (!_selectedEventCondition || Object.keys(_selectedEventCondition).length == 0) {

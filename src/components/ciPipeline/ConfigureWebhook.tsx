@@ -94,4 +94,4 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
             }
         </div>
     </>
-} 
+}

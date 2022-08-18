@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react'
-import { ViewType } from '../../config'
+import { SourceTypeMap, ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
-import { SourceMaterials, WebhookCIProps } from '../ciPipeline/SourceMaterials'
+import { SourceMaterials } from '../ciPipeline/SourceMaterials'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { Progressing, Toggle } from '../common'
+import { Progressing, showError, Toggle } from '../common'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ciPipelineContext } from './CIPipeline'
-import { CiPipelineSourceTypeOption, FormErrorObjectType, FormType } from '../ciPipeline/types'
+import { CiPipelineSourceTypeOption, FormErrorObjectType, FormType, WebhookCIProps } from '../ciPipeline/types'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -36,10 +36,16 @@ export function Build({
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
     const validationRules = new ValidationRules()
 
-    const handleSourceChange = (event, gitMaterialId: number): void => {
+    const handleSourceChange = (event, gitMaterialId: number, sourceType: string): void => {
         const _formData = { ...formData }
         const allMaterials = _formData.materials.map((mat) => {
             if (mat.gitMaterialId === gitMaterialId) {
+                if (sourceType === SourceTypeMap.BranchRegex) {
+                    return {
+                        ...mat,
+                        regex: event.target.value,
+                    }
+                }
                 return {
                     ...mat,
                     value: event.target.value,
@@ -55,11 +61,12 @@ export function Build({
     const selectSourceType = (selectedSource: CiPipelineSourceTypeOption, gitMaterialId: number): void => {
         // update source type in material
         const _formData = { ...formData }
+        let isPrevWebhook = _formData.ciPipelineSourceTypeOptions.find(sto => sto.isSelected)?.value === SourceTypeMap.WEBHOOK
         const allMaterials = _formData.materials.map((mat) => {
             return {
                 ...mat,
                 type: gitMaterialId === mat.gitMaterialId ? selectedSource.value : mat.type,
-                value: '',
+                value: isPrevWebhook && selectedSource.value !== SourceTypeMap.WEBHOOK ? '' : mat.value
             }
         })
         _formData.materials = allMaterials
@@ -96,8 +103,8 @@ export function Build({
     }
     const getSelectedWebhookEvent = (material) => {
         const _materialValue = JSON.parse(material.value)
-        const _selectedEventId = _materialValue.eventId
-        return formData.webhookEvents.find((we) => we.id === _selectedEventId)
+        const _selectedEventId = _materialValue?.eventId
+        return _selectedEventId && formData.webhookEvents.find((we) => we.id === _selectedEventId)
     }
 
     const addWebhookCondition = (): void => {
@@ -300,7 +307,7 @@ export function Build({
                     >
                         <BugScanner />
                         <div>
-                            <p className="fs-13 lh-20 fw-6 cn-9" style={{'marginBottom': '4px'}}>Scan for vulnerabilities</p>
+                            <p className="fs-13 lh-20 fw-6 cn-9 mb-4">Scan for vulnerabilities</p>
                             <p className="fs-13 lh-18 mb-0 fs-12">
                                 Perform security scan after container image is built.
                             </p>
@@ -312,12 +319,11 @@ export function Build({
                                 onSelect={handleScanToggle}
                             />
                         </div>
-                        </div>
+                    </div>
                 </div>
             </>
         )
     }
-
     return pageState === ViewType.LOADING.toString() ? (
         <div style={{ minHeight: '200px' }} className="flex">
             <Progressing pageLoader />
