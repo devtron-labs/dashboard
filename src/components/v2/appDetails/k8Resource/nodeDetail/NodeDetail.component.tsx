@@ -57,8 +57,8 @@ function NodeDetailComponent({ logSearchTerms, setLogSearchTerms }: LogSearchTer
         return tab.name.toLowerCase() === params.nodeType + '/...' + params.podName.slice(-6);
     });
     const isDeleted = (currentTab && currentTab[0] ? currentTab[0].isDeleted : false)
-    || appDetails.resourceTree.nodes.findIndex((node) => node.name === params.podName && node.kind.toLowerCase() === params.nodeType) >= 0 ? false : true
-    
+    || appDetails.resourceTree.nodes?.findIndex((node) => node.name === params.podName && node.kind.toLowerCase() === params.nodeType) >= 0 ? false : true
+
     return (
         <React.Fragment>
             <div className="pl-20 bcn-0 flex left top w-100 pr-20 ">

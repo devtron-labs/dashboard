@@ -23,6 +23,7 @@ import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancel
 import MessageUI, { MsgUIType } from '../../../../common/message.ui';
 import { Option } from '../../../../common/ReactSelect.utils';
 import { AppDetailsTabs } from '../../../appDetails.store';
+import { replaceLastOddBackslash } from '../../../../../../util/Util';
 
 const subject: Subject<string> = new Subject();
 const commandLineParser = require('command-line-parser');
@@ -208,10 +209,11 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
     const handleLogsSearch = (e) => {
         e.preventDefault();
         if (e.key === 'Enter' || e.keyCode === 13) {
-            handleSearchTextChange(e.target.value as string);
-            const { length, [length - 1]: highlightString } = e.target.value.split(' ');
+            const str = replaceLastOddBackslash(e.target.value)
+            handleSearchTextChange(str);
+            const { length, [length - 1]: highlightString } = str.split(' ');
             setHighlightString(highlightString);
-            handleCurrentSearchTerm(e.target.value as string);
+            handleCurrentSearchTerm(str);
         }
     };
 
@@ -286,7 +288,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
             },
         ]
     }
- 
+
     return isDeleted ? (
         <div>
             <MessageUI msg="This resource no longer exists" size={32} />
@@ -330,7 +332,7 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                         {isLogAnalyzer && podContainerOptions.podOptions.length > 0 && (
                             <React.Fragment>
                                 <div className="cn-6 ml-8 mr-10 ">Pods</div>
-                                <div className="cn-6 flex left"> 
+                                <div className="cn-6 flex left">
                                     <div style={{ width: '200px' }}>
                                         <Select
                                             placeholder="Select Pod"
@@ -656,7 +658,7 @@ function getPodContainerOptions(
 
         //build container Options
         let _allSelectedPods = getSelectedPodList(logState.selectedPodOption);
-        const containers = (_allSelectedPods[0].containers ?? []).sort();
+        const containers = (_allSelectedPods[0]?.containers ?? []).sort();
         const containerOptions = containers.map((_container, index) => {
             return { name: _container, selected: index == 0 };
         });

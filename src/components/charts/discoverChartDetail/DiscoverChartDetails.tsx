@@ -21,6 +21,7 @@ import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
 import { ChartInstalledConfig, ChartKind } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
 import ChartVersionSelectorModal from './ChartVersionSelectorModal'
 import { ChartValuesType } from '../charts.types'
+import { toast } from 'react-toastify'
 
 const DiscoverDetailsContext = React.createContext(null)
 
@@ -110,9 +111,13 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     async function fetchVersions() {
         setLoading(true)
         try {
-            const { result } = await getChartVersionsMin(chartId)
-            setChartVersions(result)
-            selectVersion(result[0].id)
+            let { result } = await getChartVersionsMin(chartId)
+            if(result?.length){
+              setChartVersions(result)
+              selectVersion(result[0].id)
+            } else{
+              toast.error('Some error occurred. Please try reloading the page');
+            }
         } catch (err) {
             showError(err)
         } finally {

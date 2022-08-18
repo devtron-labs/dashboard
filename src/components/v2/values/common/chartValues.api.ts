@@ -21,16 +21,17 @@ export async function fetchChartVersionsData(
         const { result } = await getChartVersionsMin(id)
         const _currentVersion =
             (currentChartVersion && result.find((e) => e.version === currentChartVersion)) || result[0]
-
-        dispatch({
-            type: ChartValuesViewActionTypes.multipleOptions,
-            payload: {
-                isLoading: false,
-                chartVersionsData: result,
-                selectedVersion: _currentVersion.id,
-                selectedVersionUpdatePage: _currentVersion,
-            },
-        })
+        if (_currentVersion) {
+            dispatch({
+                type: ChartValuesViewActionTypes.multipleOptions,
+                payload: {
+                    isLoading: false,
+                    chartVersionsData: result,
+                    selectedVersion: _currentVersion.id,
+                    selectedVersionUpdatePage: _currentVersion,
+                },
+            })
+        }
     } catch (err) {
         showError(err)
         dispatch({
