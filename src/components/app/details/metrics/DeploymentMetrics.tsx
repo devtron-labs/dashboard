@@ -212,8 +212,8 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
 
     handleDatesChange({ startDate, endDate }): void {
         this.setState({
-            startDate: startDate.set({ hour: 0, minute: 0, seconds: 0 }),
-            endDate: endDate.set({ hour: 23, minute: 59, seconds: 59, milliseconds: 999 }),
+            startDate: startDate?.set({ hour: 0, minute: 0, seconds: 0 }),
+            endDate: endDate?.set({ hour: 23, minute: 59, seconds: 59, milliseconds: 999 }),
         })
     }
 

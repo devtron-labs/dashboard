@@ -4,6 +4,7 @@ import { Progressing } from '../../common';
 import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg';
 import './filter.css';
 import Tippy from '@tippyjs/react';
+import { replaceLastOddBackslash } from '../../../util/Util';
 
 export class Filter extends Component<FilterProps, FilterState>{
     node;
@@ -26,7 +27,7 @@ export class Filter extends Component<FilterProps, FilterState>{
     componentWillReceiveProps(nextProps) {
         let _searchKey = this._getSearchKey();
         let list = JSON.parse(JSON.stringify(nextProps.list));
-        let filteredList = list.filter(item => item[_searchKey].search(this.state.searchStr.toLocaleLowerCase()) != -1);
+        let filteredList = list.filter(item => item[_searchKey].search(replaceLastOddBackslash(this.state.searchStr).toLocaleLowerCase()) != -1);
         this.setState({ list, filteredList });
     }
 
@@ -42,7 +43,7 @@ export class Filter extends Component<FilterProps, FilterState>{
         let _searchKey = this._getSearchKey();
         let searchStr = event.target.value;
         let filteredList = this.state.list.filter((item) => {
-            if (item[_searchKey].search(searchStr.toLocaleLowerCase()) != -1) {
+            if (item[_searchKey].search(replaceLastOddBackslash(searchStr).toLocaleLowerCase()) != -1) {
                 return {
                     key: item.key,
                     label: item.label,
@@ -63,7 +64,7 @@ export class Filter extends Component<FilterProps, FilterState>{
                 isSaved: (event.target.value == item.key) ? !item.isSaved : item.isSaved
             }
         })
-        let searchStr = this.state.searchStr;
+        let searchStr = replaceLastOddBackslash(this.state.searchStr);
         let filteredList = list.filter(item => item.label.search(searchStr.toLocaleLowerCase()) != -1)
         this.setState({ list, filteredList: filteredList });
     }
@@ -129,7 +130,7 @@ export class Filter extends Component<FilterProps, FilterState>{
             filterOptions = [<p key={"none"} className="filter__no-result">{this.state.searchStr.length ? "No Matching Results" : "No Filters Found"}</p>]
         }
 
-        
+
         return <div className="filter" >
             {
                 (!this.props.isDisabled || !this.props.disableTooltipMessage) &&
