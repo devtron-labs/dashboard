@@ -205,7 +205,7 @@ export default function CIDetails() {
                     {!!pipeline && (
                         <>
                             <div />
-                            {pipeline?.parentCiPipeline ? (
+                            {pipeline.parentCiPipeline ? (
                                 <LinkedCIPipelineView pipeline={pipeline} />
                             ) : (
                                 !loading && triggerHistory?.size === 0 && <NoTriggersView />
