@@ -1,6 +1,7 @@
 import { getGeneratedHelmManifest } from '../common/chartValues.api'
 import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
-import YAML, { isCollection } from 'yaml'
+import YAML from 'yaml'
+import { Collection } from 'yaml/types'
 import { showError } from '../../../common'
 
 export const getCommonSelectStyle = (styleOverrides = {}) => {
@@ -57,8 +58,8 @@ const generateManifestGenerationKey = (
     return isCreateValueView
         ? `0_${valueName}_${commonState.chartValues?.id}_default_${commonState.selectedVersionUpdatePage?.id}`
         : isExternalApp
-        ? `${commonState.releaseInfo.deployedAppDetail.environmentDetail.namespace}_${commonState.releaseInfo.deployedAppDetail.appName}_${commonState.chartValues?.id}_${commonState.selectedVersionUpdatePage?.id}`
-        : `${commonState.selectedEnvironment.value}_${appName}_${commonState.chartValues?.id}_${commonState.selectedEnvironment.namespace}_${commonState.selectedVersionUpdatePage?.id}`
+            ? `${commonState.releaseInfo.deployedAppDetail.environmentDetail.namespace}_${commonState.releaseInfo.deployedAppDetail.appName}_${commonState.chartValues?.id}_${commonState.selectedVersionUpdatePage?.id}`
+            : `${commonState.selectedEnvironment.value}_${appName}_${commonState.chartValues?.id}_${commonState.selectedEnvironment.namespace}_${commonState.selectedVersionUpdatePage?.id}`
 }
 
 export const updateGeneratedManifest = (
@@ -184,7 +185,7 @@ const getAvailalbePath = (parentPathKey: string[], valuesYamlDocument: YAML.Docu
             if (
                 typeof _valueInCurrentPath === 'undefined' ||
                 _valueInCurrentPath === null ||
-                (isCollection(_valueInCurrentPath) &&
+                (_valueInCurrentPath instanceof Collection &&
                     _valueInCurrentPath.items &&
                     !_valueInCurrentPath.items.length)
             ) {
@@ -213,7 +214,7 @@ export const getPathAndValueToSetIn = (
     if (
         typeof parentValue === 'undefined' ||
         parentValue === null ||
-        (isCollection(parentValue) && parentValue.items && !parentValue.items.length)
+        (parentValue instanceof Collection && parentValue.items && !parentValue.items.length)
     ) {
         const availablePath = getAvailalbePath(parentPathKey, valuesYamlDocument)
         const availablePathToSetIn = pathKey.slice(availablePath.length + 1)
