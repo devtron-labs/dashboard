@@ -1,12 +1,8 @@
-.h-300 {
-    min-height: 300px;
-}
-
 .onboarding-body {
     height: calc(100vh - 300px);
 }
 
-.guide-container {
+.onboarding-container {
     .onboarding-cards__wrap {
         display: grid;
         grid-template-columns: 300px 300px 300px;
@@ -15,7 +11,7 @@
         top: -80px;
     }
 
-    .guide-card__img {
+    .onboarding-card__img {
         width: 300px;
         height: 210px;
     }
@@ -36,8 +32,4 @@
         position: absolute;
         top: 240px;
     }
-}
-
-.mt-120 {
-    margin-top: 120px;
 }

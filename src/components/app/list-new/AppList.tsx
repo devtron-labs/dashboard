@@ -918,66 +918,6 @@ export default function AppList({isSuperAdmin} : AppListProps) {
         )
     }
 
-    const onClickShowSampleAppModal = () => {
-        setShowSampleAppModal(true)
-    }
-
-    const onClickHideSampleAppModal = () => {
-        setShowSampleAppModal(false)
-    }
-
-    const SampleData = [
-        {
-            id: 1,
-            icon: 'javaSprintbootGradle',
-            title: 'Java-Springboot-Maven',
-            subtitle: 'A simple java, springboot, maven application',
-            isSelected: false,
-        },
-        {
-            id: 2,
-            icon: 'javaSprintbootMaven',
-            title: 'Java-Springboot-Gradle',
-            subtitle: 'A simple java, springboot, gradle application',
-            isSelected: false,
-        },
-        {
-            id: 3,
-            icon: 'pythonDjango',
-            title: 'Python-Django',
-            subtitle: 'Deploy a simple node.js application to explore Devtron',
-            isSelected: false,
-        },
-        {
-            id: 4,
-            icon: 'golang',
-            title: 'Golang-webapp',
-            subtitle: 'Deploy a simple node.js application to explore Devtron',
-            isSelected: false,
-        },
-        {
-            id: 5,
-            icon: 'nodeJS',
-            title: 'Nodejs-webapp',
-            subtitle: 'Deploy a simple node.js application to explore Devtron',
-            isSelected: false,
-        },
-        {
-            id: 6,
-            icon: '',
-            title: 'Reactjs frontend',
-            subtitle: 'Deploy a simple node.js application to explore Devtron',
-            isSelected: false,
-        },
-        {
-            id: 7,
-            icon: '',
-            title: 'AngularJS frontend',
-            subtitle: 'Deploy a simple node.js application to explore Devtron',
-            isSelected: false,
-        },
-    ]
-
     const renderFirstAppView = () => {
         return <GuidePage openDevtronAppCreateModel={openDevtronAppCreateModel} />
     }
