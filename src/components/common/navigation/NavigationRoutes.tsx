@@ -213,7 +213,7 @@ export default function NavigationRoutes() {
                         getCurrentServerInfo={getCurrentServerInfo}
                     />
                     {loginCount < 5 && showGettingStartedCard && (
-                      <div className={loginCount < 5 ? 'block' : 'hide-section'}>
+                      // <div className={loginCount < 5 ? 'block' : 'hide-section'}>
                         <GettingStarted
                             className={'w-300'}
                             showHelpCard={false}
@@ -221,7 +221,7 @@ export default function NavigationRoutes() {
                             hideGettingStartedCard={hideGettingStartedCard}
                             loginCount={loginCount}
                         />
-                        </div>
+                        // </div>
                     )}
 
                     {serverMode && (
