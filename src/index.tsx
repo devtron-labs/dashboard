@@ -36,12 +36,10 @@ const root = document.getElementById('root')
 if (
     process.env.NODE_ENV === 'production' &&
     window._env_ &&
-    (window._env_.SENTRY_ERROR_ENABLED || window._env_.SENTRY_PERFORMANCE_ENABLED)
+    (window._env_.SENTRY_ERROR_ENABLED)
 ) {
     const integrationArr = []
-    if (window._env_.SENTRY_ERROR_ENABLED) {
-        integrationArr.push(new CaptureConsole({ levels: ['error'] }))
-    }
+    integrationArr.push(new CaptureConsole({ levels: ['error'] }))
     if (window._env_.SENTRY_PERFORMANCE_ENABLED) {
         integrationArr.push(new BrowserTracing())
     }
@@ -63,6 +61,30 @@ if (
         tracesSampleRate: Number(window._env_.SENTRY_TRACES_SAMPLE_RATE) || 0.2,
         ...(process.env.REACT_APP_GIT_SHA ? { release: `dashboard@${process.env.REACT_APP_GIT_SHA}` } : {}),
         environment: window._env_ && window._env_.SENTRY_ENV ? window._env_.SENTRY_ENV : 'staging',
+        beforeSend(event) {
+            const errorList = event?.exception?.values || []
+            for (let index = 0; index < errorList.length; index++) {
+                const error = errorList[index]
+                if (
+                    error &&
+                    ((error['type'] &&
+                        (error['type'] === '[401]' ||
+                            error['type'] === '[403]' ||
+                            error['type'] === '[504]' ||
+                            error['type'] === '[503]' ||
+                            error['type'] === 'ChunkLoadError')) ||
+                        (error['value'] &&
+                            (error['value'].includes('write data discarded, use flow control to avoid losing data') ||
+                                error['value'].includes('Failed to update a ServiceWorker') ||
+                                error['value'].includes('TypeError: ServiceWorker') ||
+                                error['value'].includes('Loading CSS chunk') ||
+                                error['value'].includes(`Unexpected token '<'`))))
+                ) {
+                    return null
+                }
+            }
+            return event
+        },
     })
 }
 
