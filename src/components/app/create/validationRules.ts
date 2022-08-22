@@ -12,7 +12,7 @@ export class ValidationRules {
             return {
                 isValid: false,
                 message:
-                    "Min 3 characters; Start and end with lowercase; Use (a-z), (0-9), (-), (.); Do not use 'spaces'",
+                    "Min 3 chars; Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-), (.); Do not use 'spaces'",
             }
         else return { isValid: true, message: '' }
     }
