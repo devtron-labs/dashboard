@@ -14,7 +14,6 @@ import {
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ChartIcon } from '../../../assets/icons/ic-charts.svg'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
-import InstallDevtronFullImage from '../../../assets/img/install-devtron-full@2x.png'
 import EmptyState from '../../EmptyState/EmptyState'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
 import { ServerErrors } from '../../../modals/commonTypes'
@@ -31,17 +30,13 @@ import '../list/list.css'
 import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
 import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
-import CreateApp from '../../../assets/img/guided-helm-collage.png'
-import SampleApp from '../../../assets/img/guide-sample-app.png'
 import GuidePage from '../../common/guidePage/GuidePage'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import javaSprintbootGradle from '../../../assets/logo/java-springboot-gradle.png'
-import javaSprintbootMaven from '../../../assets/logo/java-springboot-maven.png'
-import golang from '../../../assets/logo/golang.png'
-import nodeJS from '../../../assets/logo/nodejs.png'
-import pythonDjango from '../../../assets/logo/python-django.png'
 
-export default function AppList() {
+export interface AppListProps {
+  isSuperAdmin: boolean
+}
+
+export default function AppList({isSuperAdmin} : AppListProps) {
     const location = useLocation()
     const history = useHistory()
     const params = useParams<{ appType: string }>()
@@ -983,59 +978,8 @@ export default function AppList() {
         },
     ]
 
-    const onClickSampleAppCard = (selectedCardId) => {
-        let isSelect
-        let selectedSampleApp = SampleData.filter((elm) => elm.id === selectedCardId)
-        selectedSampleApp[0].isSelected = !isSelect
-    }
-
     const renderFirstAppView = () => {
-        return (
-            <>
-                <GuidePage openDevtronAppCreateModel={openDevtronAppCreateModel} />
-
-                {showSampleAppModal && (
-                    <div>
-                        <VisibleModal className="regenerate-token-modal">
-                            <div className="sample-card__create-app modal__body w-600 flex column p-0 mt-0 br-0">
-                                <div className="flex content-space w-100 pt-16 pb-16 pl-20 pr-20 border-bottom">
-                                    <h1 className="modal__title modal__title--benchmark fs-16">
-                                        Select application template
-                                    </h1>
-                                    <button type="button" className="transparent" onClick={onClickHideSampleAppModal}>
-                                        <Close className="icon-dim-24" />
-                                    </button>
-                                </div>
-
-                                <div className="pt-12 pb-12 w-100">
-                                    {SampleData.map((card, index) => {
-                                        return (
-                                            <div
-                                                className={`sample-card mt-8 mb-8 ml-20 mr-20 cursor ${
-                                                    card.isSelected ? 'bcb-1 eb-2 bw-1' : ''
-                                                }`}
-                                                key={`sample_${index}`}
-                                                onClick={() => onClickSampleAppCard(card.id)}
-                                            >
-                                                <img
-                                                    style={{ width: '150px', height: '80px' }}
-                                                    src={javaSprintbootGradle}
-                                                    alt={card.title}
-                                                />
-                                                <div className="flex column left pl-16">
-                                                    <h4 className="fs-14 fw-6 m-0 pb-4">{card.title} </h4>
-                                                    <p className="m-0"> {card.subtitle}</p>
-                                                </div>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            </div>
-                        </VisibleModal>
-                    </div>
-                )}
-            </>
-        )
+        return <GuidePage openDevtronAppCreateModel={openDevtronAppCreateModel} />
     }
     return (
         <div>
@@ -1056,48 +1000,53 @@ export default function AppList() {
                     {renderAppliedFilters()}
                     {renderAppTabs()}
                     {serverMode == SERVER_MODE.FULL && renderAppCreateRouter()}
-                    {/*  {params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.FULL && (
-                        <DevtronAppListContainer
-                            payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                            appCheckListRes={appCheckListRes}
-                            clearAllFilters={removeAllFilters}
-                            sortApplicationList={sortApplicationList}
-                            updateLastDataSync={updateLastDataSync}
-                        />
-                    )}
-                    {params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.EA_ONLY && (
-                        <div style={{ height: 'calc(100vh - 250px)' }}>
-                            <EAEmptyState
-                                title={'Create, build, deploy and debug custom apps'}
-                                msg={
-                                    'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'
-                                }
-                                stateType={EAEmptyStateType.DEVTRONAPPS}
-                                knowMoreLink={DOCUMENTATION.HOME_PAGE}
-                            />
-                        </div>
-                    )}
-                    {params.appType == AppListConstants.AppType.HELM_APPS && (
+                    {!(dataStateType == AppListViewType.NO_RESULT) && isSuperAdmin ? renderFirstAppView() :
                         <>
-                            <HelmAppList
-                                serverMode={serverMode}
-                                payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                                sortApplicationList={sortApplicationList}
-                                clearAllFilters={removeAllFilters}
-                                fetchingExternalApps={fetchingExternalApps}
-                                setFetchingExternalAppsState={setFetchingExternalAppsState}
-                                updateLastDataSync={updateLastDataSync}
-                                setShowPulsatingDotState={setShowPulsatingDotState}
-                                masterFilters={masterFilters}
-                            />
-                            {fetchingExternalApps && (
-                                <div className="mt-16">
-                                    <Progressing size={32} />
-                                </div>
+                            {params.appType == AppListConstants.AppType.DEVTRON_APPS &&
+                                serverMode == SERVER_MODE.FULL && (
+                                    <DevtronAppListContainer
+                                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                                        appCheckListRes={appCheckListRes}
+                                        clearAllFilters={removeAllFilters}
+                                        sortApplicationList={sortApplicationList}
+                                        updateLastDataSync={updateLastDataSync}
+                                    />
+                                )}
+                            {params.appType == AppListConstants.AppType.DEVTRON_APPS &&
+                                serverMode == SERVER_MODE.EA_ONLY && (
+                                    <div style={{ height: 'calc(100vh - 250px)' }}>
+                                        <EAEmptyState
+                                            title={'Create, build, deploy and debug custom apps'}
+                                            msg={
+                                                'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'
+                                            }
+                                            stateType={EAEmptyStateType.DEVTRONAPPS}
+                                            knowMoreLink={DOCUMENTATION.HOME_PAGE}
+                                        />
+                                    </div>
+                                )}
+                            {params.appType == AppListConstants.AppType.HELM_APPS && (
+                                <>
+                                    <HelmAppList
+                                        serverMode={serverMode}
+                                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                                        sortApplicationList={sortApplicationList}
+                                        clearAllFilters={removeAllFilters}
+                                        fetchingExternalApps={fetchingExternalApps}
+                                        setFetchingExternalAppsState={setFetchingExternalAppsState}
+                                        updateLastDataSync={updateLastDataSync}
+                                        setShowPulsatingDotState={setShowPulsatingDotState}
+                                        masterFilters={masterFilters}
+                                    />
+                                    {fetchingExternalApps && (
+                                        <div className="mt-16">
+                                            <Progressing size={32} />
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </>
-                    )} */}
-                    {renderFirstAppView()}
+                    }
                 </>
             )}
         </div>

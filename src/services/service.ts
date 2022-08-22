@@ -386,10 +386,30 @@ export function dashboardLoggedIn() {
   return get(Routes.DASHBOARD_LOGGEDIN);
 }
 
-export function getLoginCount(payload) {
-  return post('attributes/user/get', payload)
+export interface LoginCountType extends ResponseType {
+  result?: LoginCount
 }
 
-export function updateLoginCount(payload) {
-    return put('attributes/user/update', payload)
+export interface LoginCount {
+    emailId: string
+    key: string
+    value: string
+}
+
+export function getLoginData() : Promise<LoginCountType>  {
+  return get(`attributes/user/get?key=login-count`)
+}
+
+export function updateLoginCount(payload): Promise<ResponseType>  {
+    return post('attributes/user/update', payload)
+}
+interface UserRole extends ResponseType {
+  result?: {
+      roles: string[];
+      superAdmin: boolean;
+  };
+}
+
+export function getUserRole(): Promise<UserRole> {
+  return get(`user/check/roles`);
 }

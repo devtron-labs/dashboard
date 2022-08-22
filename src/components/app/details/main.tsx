@@ -19,6 +19,7 @@ import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.sv
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import PageHeader from '../../common/header/PageHeader'
+import { AppDetailsProps, AppHeaderType } from './triggerView/types'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -29,13 +30,13 @@ const IndexComponent = lazy(() => import('../../v2/index'))
 const CDDetails = lazy(() => import('./cdDetails/CDDetails'))
 const TestRunList = lazy(() => import('./testViewer/TestRunList'))
 
-export default function AppDetailsPage({ isV2 }) {
+export default function AppDetailsPage({ isV2, setIsGettingStartedClicked }: AppDetailsProps) {
     const { path } = useRouteMatch()
     const { appId } = useParams<{ appId }>()
 
     return (
         <div className="app-details-page">
-            {!isV2 && <AppHeader />}
+            {!isV2 && <AppHeader setIsGettingStartedClicked={setIsGettingStartedClicked} />}
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
@@ -76,7 +77,7 @@ export default function AppDetailsPage({ isV2 }) {
     )
 }
 
-export function AppHeader() {
+export function AppHeader({setIsGettingStartedClicked}: AppHeaderType) {
     const { appId } = useParams<{ appId }>()
     const match = useRouteMatch()
     const history = useHistory()
@@ -367,6 +368,7 @@ export function AppHeader() {
                 TippyIcon={Info}
                 onClickTippybutton={handleInfoModal}
                 tippyMessage={'About app'}
+                setIsGettingStartedClicked={setIsGettingStartedClicked}
             />
             {showInfoModal && renderInfoModal()}
         </>

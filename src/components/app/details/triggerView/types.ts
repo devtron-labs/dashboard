@@ -1,3 +1,4 @@
+import React from 'react'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../../../services/service.types'
 import { CIMaterialType } from './MaterialHistory'
@@ -468,4 +469,12 @@ export interface BranchRegexModalProps {
     handleRegexInputValue: (id, value, mat) => void
     regexValue
     onCloseBranchRegexModal
+}
+export interface AppDetailsProps {
+    isV2: boolean
+    setIsGettingStartedClicked: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface AppHeaderType {
+    setIsGettingStartedClicked: React.Dispatch<React.SetStateAction<boolean>>
 }

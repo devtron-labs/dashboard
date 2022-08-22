@@ -257,7 +257,7 @@
     display: grid;
     grid-template-rows: 36px 36px 1px 36px 1px 36px 1px 36px auto;
     align-items: center;
-
+    z-index: var(--modal-index);
     .help-card__option {
         padding: 6px 12px;
         height: 36px;

@@ -1,12 +1,17 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import HelmCollage from '../../assets/img/helm-collage.png'
 import DeployCICD from '../../assets/img/guide-onboard.png'
-import { NavLink, useLocation, useRouteMatch, useHistory } from 'react-router-dom'
+import { NavLink, useRouteMatch, useHistory } from 'react-router-dom'
 import { DOCUMENTATION, URLS } from '../../config'
 import './onboardingGuide.scss'
 import PreviewImage from '../../assets/img/ic-preview.png'
+import { getAppList } from '../app/service'
 
-function OnboardingGuide() {
+export interface OnboardingGuide {
+  onClickSetActionButtonToTrue: () => void
+}
+
+function OnboardingGuide({onClickSetActionButtonToTrue}) {
     const match = useRouteMatch()
     const history = useHistory()
 
@@ -20,7 +25,7 @@ function OnboardingGuide() {
                 <h1 className="fw-6 mb-8">What will you use devtron for?</h1>
                 <p className="fs-14 cn-7">This will help us in guiding you towards relevant product features</p>
             </div>
-            <div className="bcn-0 guide-body flex position-rel cn-9">
+            <div className="bcn-0 onboarding-body flex position-rel cn-9">
                 <div className="onboarding-cards__wrap">
                     <div className="guide-card__left bcn-0 w-300 br-4 en-2 bw-1 cursor">
                         <a
@@ -75,7 +80,7 @@ function OnboardingGuide() {
                     </div>
                 </div>
                 <div className="fs-14 mt-120 flex column">
-                    <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="cb-5 fw-6 cursor mb-8">
+                    <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="cb-5 fw-6 cursor mb-8" onClick={onClickSetActionButtonToTrue}>
                         Skip and explore Devtron on your own
                     </NavLink>
                     <div className="cn-7">Tip: You can return here anytime from the Help menu</div>

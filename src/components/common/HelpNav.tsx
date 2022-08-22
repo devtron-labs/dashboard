@@ -7,7 +7,7 @@ import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Chat } from '../../assets/icons/ic-chat-circle-dots.svg'
 import { InstallationType, ServerInfo } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { NavLink } from 'react-router-dom'
-import { ReactComponent as GettingStarted } from '../../assets/icons/ic-onboarding.svg'
+import { ReactComponent as GettingStartedIcon } from '../../assets/icons/ic-onboarding.svg'
 
 export interface HelpNavType {
     className: string
@@ -15,16 +15,11 @@ export interface HelpNavType {
     setShowHelpCard: React.Dispatch<React.SetStateAction<boolean>>
     serverInfo: ServerInfo
     fetchingServerInfo: boolean
+    setIsGettingStartedClicked: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchingServerInfo }: HelpNavType) {
+function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchingServerInfo, setIsGettingStartedClicked }: HelpNavType) {
     const HelpOptions = [
-        // {
-        //     name: 'Getting started',
-        //     link: '/',
-        //     icon: GettingStarted,
-        //     showSeparator: true,
-        // },
         {
             name: 'View documentation',
             link: DOCUMENTATION.HOME_PAGE,
@@ -50,13 +45,17 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
         },
     ]
 
+    const onClickGettingStarted = () => {
+      setIsGettingStartedClicked(true)
+    }
+
     return (
         <div className="transparent-div" onClick={() => setShowHelpCard(!showHelpCard)}>
             <div className={`help-card pt-4 pb-4 ${className}`}>
-                <div className="help-card__option">
-                    <NavLink to={`/`} className="no-decor help-card__link flex left cn-9" activeClassName="active">
-                        <GettingStarted />
-                        <div className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
+                <div className="help-card__option" onClick={onClickGettingStarted}>
+                    <NavLink to={`/`} className="no-decor help-card__link flex left cn-9" activeClassName="active" >
+                        <GettingStartedIcon />
+                        <div  className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
                     </NavLink>
                 </div>
 

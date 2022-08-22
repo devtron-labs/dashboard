@@ -1,21 +1,13 @@
 import React, { useState } from 'react'
-import { useLocation, useRouteMatch, useHistory } from 'react-router-dom'
 import './guidePage.scss'
 import CreateApp from '../../../assets/img/guide-create-app.png'
 import PreviewImage from '../../../assets/img/ic-preview.png'
-import GettingStarted from '../gettingStartedCard/GettingStarted'
 import { DOCUMENTATION } from '../../../config'
 export interface GuidedPageType {
     openDevtronAppCreateModel: (event) => void
 }
 
 function GuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
-    const [showHelpCard, setShowHelpCard] = useState(true)
-
-    const hideGettingStartedCard = () => {
-        setShowHelpCard(!showHelpCard)
-    }
-
     const renderSubTitle = () => {
         return (
             <>
@@ -38,31 +30,7 @@ function GuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
                 <h1 className="fw-6 mb-8">Create your first application</h1>
                 <p className="fs-14 cn-7">{renderSubTitle()}</p>
             </div>
-            {/* <Tippy
-                className="default-tt br-8 w-300 fs-13 p-20 m-auto"
-                arrow={true}
-                placement="top-end"
-                content={
-                    <div>
-                        <img className="token-icon mb-12" src={GettingToast} alt="getting started icon" />
-                        <div className="flex column left fw-6">Getting started</div>
-                        <div>You can always access the Getting Started guide from here.</div>
-                        <div className="mt-12">
-                            <button className="cn-9 fw-6 br-4 mr-16">Okay</button>
-                            <button className="br-4 token__dont-show en-0 bw-1">Don't show again</button>
-                        </div>
-                    </div>
-                }
-                visible={true}
-            /> */}
-            {showHelpCard && (
-                <GettingStarted
-                    className={'w-300'}
-                    showHelpCard={false}
-                    setShowHelpCard={setShowHelpCard}
-                    hideGettingStartedCard={hideGettingStartedCard}
-                />
-            )}
+
             <div className="guide-body flex position-rel">
                 <div className="guide-cards__wrap">
                     <div className="guide-card__left bcn-0 w-300 br-4 en-2 bw-1 cursor">

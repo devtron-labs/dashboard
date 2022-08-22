@@ -136,17 +136,6 @@ export function deleteGroup(groupId: number) {
     return trash(`user/role/group/${groupId}`);
 }
 
-interface UserRole extends ResponseType {
-    result?: {
-        roles: string[];
-        superAdmin: boolean;
-    };
-}
-
-export function getUserRole(): Promise<UserRole> {
-    return get(`user/check/roles`);
-}
-
 export function getEnvironmentListHelmApps(): Promise<any> {
     return get(Routes.ENVIRONMENT_LIST_MIN_HELM_PROJECTS);
 }
