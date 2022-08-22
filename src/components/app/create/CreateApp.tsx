@@ -37,6 +37,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             code: 0,
             projects: [],
             disableForm: false,
+            appNameErrors: false,
             showErrors: false,
             form: {
                 appId: 0,
@@ -113,7 +114,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         let { form, isValid } = { ...this.state };
         form.appName = event.target.value;
         isValid.appName = this.rules.appName(event.target.value).isValid;
-        this.setState({ form, isValid });
+        this.setState({ form, isValid, appNameErrors: true });
     }
 
     handleProject(item: number): void {
@@ -143,7 +144,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         if (!validForm) {
             return;
         }
-        this.setState({ showErrors: true });
+        this.setState({ showErrors: true, appNameErrors: true });
         let allKeys = Object.keys(this.state.isValid);
         let isFormValid = allKeys.reduce((valid, key) => {
             valid = valid && this.state.isValid[key] && validForm;
@@ -186,6 +187,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             isValid,
                             disableForm: false,
                             showErrors: false,
+                            appNameErrors: false,
                             labels: {
                                 ...this.state.labels,
                                 tags: response.result?.labels?.tags,
@@ -205,7 +207,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 } else {
                     showError(errors);
                 }
-                this.setState({ disableForm: false, showErrors: false });
+                this.setState({ disableForm: false, showErrors: false, appNameErrors: false });
             });
     }
 
@@ -270,6 +272,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             this.rules.cloneApp(this.state.form.cloneId),
         ];
         let showError = this.state.showErrors;
+        let appNameErrors = this.state.appNameErrors;
         if (this.state.view === ViewType.LOADING) {
             return (
                 <DialogForm
@@ -337,7 +340,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                 required
                             />
                             <span className="form__error">
-                                {showError && !this.state.isValid.appName ? (
+                                {appNameErrors && !this.state.isValid.appName ? (
                                     <>
                                         <Error className="form__icon form__icon--error" />
                                         {errorObject[0].message} <br />
