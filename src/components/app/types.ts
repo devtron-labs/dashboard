@@ -21,6 +21,7 @@ export interface AddNewAppState {
     code: number;
     disableForm: boolean;
     projects: { id: number; name: string }[];
+    appNameErrors: boolean
     showErrors: boolean;
     form: {
         appName: string;
