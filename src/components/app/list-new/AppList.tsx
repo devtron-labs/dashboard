@@ -1000,7 +1000,7 @@ export default function AppList({isSuperAdmin} : AppListProps) {
                     {renderAppliedFilters()}
                     {renderAppTabs()}
                     {serverMode == SERVER_MODE.FULL && renderAppCreateRouter()}
-                    {!(dataStateType == AppListViewType.NO_RESULT) && isSuperAdmin ? renderFirstAppView() :
+                    {(dataStateType == AppListViewType.NO_RESULT) && isSuperAdmin ? renderFirstAppView() :
                         <>
                             {params.appType == AppListConstants.AppType.DEVTRON_APPS &&
                                 serverMode == SERVER_MODE.FULL && (
