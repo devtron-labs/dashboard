@@ -87,7 +87,7 @@ export class ValidationRules {
             return { message: `This is required`, isValid: false }
         } else {
             try {
-                const regEx = new RegExp(value)
+                new RegExp(value)
                 return { message: null, isValid: true }
             } catch (err) {
                 return { message: 'This is not a valid regular expression.', isValid: false }
