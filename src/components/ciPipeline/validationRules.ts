@@ -83,13 +83,15 @@ export class ValidationRules {
     }
 
     sourceValue = (value: string): { message: string | null; isValid: boolean } => {
-      const re = new RegExp('^[A-Za-z0-9-.]$')
         if (!value) {
             return { message: `This is required`, isValid: false }
-        }  else if (!re.test(value)) {
-            return { message: 'This is not a valid regular expression.', isValid: false }
         } else {
-            return { message: null, isValid: true }
+            try {
+                const regEx = new RegExp(value)
+                return { message: null, isValid: true }
+            } catch (err) {
+                return { message: 'This is not a valid regular expression.', isValid: false }
+            }
         }
     }
 
