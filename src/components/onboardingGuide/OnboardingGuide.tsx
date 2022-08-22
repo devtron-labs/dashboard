@@ -20,27 +20,27 @@ function OnboardingGuide({onClickSetActionButtonToTrue}) {
     }
 
     return (
-        <div className="guide-container">
-            <div className="flex h-300 guide-header column">
+        <div className="onboarding-container">
+            <div className="flex h-300 onboarding-header column">
                 <h1 className="fw-6 mb-8">What will you use devtron for?</h1>
                 <p className="fs-14 cn-7">This will help us in guiding you towards relevant product features</p>
             </div>
             <div className="bcn-0 onboarding-body flex position-rel cn-9">
                 <div className="onboarding-cards__wrap">
-                    <div className="guide-card__left bcn-0 w-300 br-4 en-2 bw-1 cursor">
+                    <div className="bcn-0 w-300 br-4 en-2 bw-1 cursor">
                         <a
                             className="learn-more__href cn-9"
                             href={DOCUMENTATION.PREVIEW_DEVTRON}
                             rel="noreferrer noopener"
                             target="_blank"
                         >
-                            <img className="guide-card__img" src={PreviewImage} width="250" height="250" />
+                            <img className="onboarding-card__img" src={PreviewImage} width="250" height="250" />
                             <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
                                 Explore a preconfigured Demo at <span className="cb-5">preview.devtron.ai</span>
                             </div>
                         </a>
                     </div>
-                    <div className="guide-card__left bcn-0 w-300 br-4 en-2 bw-1 cursor">
+                    <div className="onboarding-card__left bcn-0 w-300 br-4 en-2 bw-1 cursor">
                         <NavLink
                             to={`${match.path}/${URLS.GUIDE}`}
                             className="no-decor fw-6 cursor cn-9"
@@ -48,7 +48,7 @@ function OnboardingGuide({onClickSetActionButtonToTrue}) {
                             onClick={() => redirectToDeployGuide(`/${URLS.GUIDE}`)}
                         >
                             <img
-                                className="guide-card__img"
+                                className="onboarding-card__img"
                                 src={HelmCollage}
                                 width="250"
                                 height="250"
@@ -60,14 +60,14 @@ function OnboardingGuide({onClickSetActionButtonToTrue}) {
                         </NavLink>
                     </div>
 
-                    <div className="guide-card__right bcn-0 w-300 br-4 en-2 bw-1 cursor">
+                    <div className="bcn-0 w-300 br-4 en-2 bw-1 cursor">
                         <NavLink
                             to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`}
                             className="no-decor fw-6 cursor cn-9"
                             activeClassName="active"
                         >
                             <img
-                                className="guide-card__img"
+                                className="onboarding-card__img"
                                 src={DeployCICD}
                                 width="250"
                                 height="250"
