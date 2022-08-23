@@ -1,5 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
-import { AppDetails, Node, EnvDetails, EnvType, NodeType, iNode, PodMetaData } from './appDetails.type';
+import { AppDetails, Node, EnvDetails, EnvType, NodeType, iNode, PodMetaData, AppType } from './appDetails.type';
 
 let _appDetailsSubject: BehaviorSubject<AppDetails> = new BehaviorSubject({} as AppDetails);
 let _nodesSubject: BehaviorSubject<Array<Node>> = new BehaviorSubject([] as Node[]);
@@ -55,7 +55,7 @@ const IndexStore = {
         return _envDetailsSubject.asObservable();
     },
 
-    publishAppDetails: (data: AppDetails) => {
+    publishAppDetails: (data: AppDetails, appType: AppType) => {
 
         const _nodes = data.resourceTree?.nodes || [];
 
@@ -63,7 +63,7 @@ const IndexStore = {
 
         getiNodesByRootNodeWithChildNodes(_nodes, _nodes.filter(_n => (_n.parentRefs ?? []).length == 0).map(_n => _n as iNode), podMetadata)
 
-        _appDetailsSubject.next({ ...data });
+        _appDetailsSubject.next({ ...data, appType });
 
         _nodesSubject.next([..._nodes]);
 

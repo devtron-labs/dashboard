@@ -88,7 +88,7 @@ function ExternalAppDetail({appId, appName}) {
         isAPICallInProgress = true;
         getAppDetail(appId)
             .then((appDetailResponse: HelmAppDetailResponse) => {
-                IndexStore.publishAppDetails(_convertToGenericAppDetailModel(appDetailResponse.result));
+                IndexStore.publishAppDetails(_convertToGenericAppDetailModel(appDetailResponse.result), AppType.EXTERNAL_HELM_CHART);
 
                 if (appDetailResponse.result?.appDetail.environmentDetails.clusterId) {
                     Promise.all([
