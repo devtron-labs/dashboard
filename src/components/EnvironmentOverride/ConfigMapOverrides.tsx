@@ -2,10 +2,10 @@ import React, { useEffect, useState, useReducer, useRef, memo } from 'react'
 import { overRideConfigMap, deleteConfigMap } from './service'
 import { getAppChartRefForAppAndEnv, getEnvironmentConfigs } from '../../services/service'
 import { useParams } from 'react-router'
-import addIcon from '../../assets/icons/ic-add.svg'
-import fileIcon from '../../assets/icons/ic-file.svg'
-import keyIcon from '../../assets/icons/ic-key.svg'
-import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
+import { ReactComponent as FileIcon } from '../../assets/icons/ic-file.svg'
+import { ReactComponent as KeyIcon } from '../../assets/icons/ic-key.svg'
+import { ReactComponent as ArrowTriangle } from '../../assets/icons/ic-chevron-down.svg'
 import {
     showError,
     Progressing,
@@ -101,7 +101,6 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
 
     return (
         <section className="config-map-overrides">
-            <label className="form__label bold">ConfigMaps</label>
             <ConfigMapContext.Provider value={{ configmapList, id: configmapList.id, reload }}>
                 {configData.map(({ name, defaultData, data }) => (
                     <ListComponent
@@ -120,19 +119,27 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
 export function ListComponent({ name = '', type, label = '', appChartRef, reload = null }) {
     const [isCollapsed, toggleCollapse] = useState(true)
     return (
-        <div className="white-card white-card--list">
+        <div className={`white-card white-card--list ${name ? '' : 'en-3 bw-1 dashed'}`}>
             <div className="environment-override-list pointer left flex" onClick={(e) => toggleCollapse(!isCollapsed)}>
-                <img src={name ? (type === 'config-map' ? fileIcon : keyIcon) : addIcon} alt="list-icon icon" />
+                {name ? (
+                    type === 'config-map' ? (
+                        <FileIcon className="icon-dim-24" />
+                    ) : (
+                        <KeyIcon className="icon-dim-24" />
+                    )
+                ) : (
+                    <AddIcon className="icon-dim-24 fcb-5" />
+                )}
                 <div className={`flex left ${!name ? 'fw-5 fs-14 cb-5' : 'fw-5 fs-14 cn-9'}`}>
                     {name || `Add ${type === 'secret' ? 'Secret' : 'ConfigMap'}`}
                 </div>
                 {label && <div className="flex tag">{label}</div>}
-                <img
-                    className={`pointer rotate`}
-                    style={{ ['--rotateBy' as any]: `${Number(!isCollapsed) * 180}deg` }}
-                    src={arrowTriangle}
-                    alt="arrow"
-                />
+                {name && (
+                    <ArrowTriangle
+                        className="icon-dim-24 rotate ml-auto"
+                        style={{ ['--rotateBy' as any]: `${Number(!isCollapsed) * 180}deg` }}
+                    />
+                )}
             </div>
             {!isCollapsed && type !== 'config-map' && (
                 <OverrideSecretForm name={name} appChartRef={appChartRef} toggleCollapse={toggleCollapse} />

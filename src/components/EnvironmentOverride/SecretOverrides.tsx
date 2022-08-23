@@ -99,9 +99,6 @@ export default function SecretOverrides({ parentState, setParentState, ...props 
 
     return (
         <section className="secret-overrides">
-            <label htmlFor="" className="form__label bold">
-                Secrets
-            </label>
             <SecretContext.Provider value={{ secrets, id, reload }}>
                 {secrets &&
                     Array.from(secrets)

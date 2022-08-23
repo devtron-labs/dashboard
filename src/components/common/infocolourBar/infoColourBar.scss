@@ -1,6 +1,7 @@
 .info_text .success {
     background-color: var(--G100);
 }
+
 .warn {
     background: var(--Y100);
     border: solid var(--Y200);
@@ -17,4 +18,9 @@
 .info_bar {
     background-color: var(--B100);
     border: 1px solid var(--B200);
+}
+
+.question-bar {
+    background-color: var(--V100);
+    border: 1px solid var(--V200);
 }

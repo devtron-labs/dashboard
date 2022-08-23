@@ -24,12 +24,14 @@ import { deleteApp } from './appConfig.service';
 import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg';
 import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg';
+import { ReactComponent as Help } from '../../../../assets/icons/ic-help.svg';
 import warn from '../../../../assets/icons/ic-warning.svg';
 import { toast } from 'react-toastify';
 import './appConfig.scss';
 import { DOCUMENTATION } from '../../../../config';
-import { AppOtherEnvironment } from '../../../../services/service.types';
+import { AppEnvironment, AppOtherEnvironment } from '../../../../services/service.types';
 import AppConfigurationCheckBox from './AppConfigurationCheckBox';
+import InfoColourBar from '../../../common/infocolourBar/InfoColourbar';
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'));
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'));
@@ -165,7 +167,7 @@ function getNavItems(isUnlocked: AppStageUnlockedType, appId: number): { navItem
             currentStep: completedSteps,
         },
         {
-            title: 'Deployment Template',
+            title: 'Base Deployment Template',
             href: `/app/${appId}/edit/deployment-template`,
             stage: STAGE_NAME.DEPLOYMENT_TEMPLATE,
             isLocked: !isUnlocked.deploymentTemplate,
@@ -392,9 +394,8 @@ export default function AppConfig() {
             <>
                 <div className="app-compose">
                     <div
-                        className={`app-compose__nav flex column left top position-rel ${
-                            state.isCDPipeline ? 'hide-app-config-help' : ''
-                        }`}
+                        className={`app-compose__nav flex column left top position-rel ${state.isCDPipeline ? 'hide-app-config-help' : ''
+                            }`}
                     >
                         <Navigation
                             deleteApp={showDeleteConfirmation}
@@ -468,7 +469,7 @@ function Navigation({ navItems, deleteApp, isCDPipeline }: NavigationType) {
                             onClick={(event) => {
                                 if (item.isLocked) event.preventDefault();
                             }}
-                            className={'app-compose__nav-item'}
+                            className={'app-compose__nav-item cursor'}
                             to={item.href}
                         >
                             {item.title}
@@ -505,7 +506,7 @@ function AppComposeRouter({
     maxAllowedUrl,
     isCDPipeline,
 }: AppComposeRouterType) {
-    const { path } = useRouteMatch();
+    const { path } = useRouteMatch()
 
     return (
         <ErrorBoundary>
@@ -584,71 +585,35 @@ function AppComposeRouter({
                 </Switch>
             </Suspense>
         </ErrorBoundary>
-    );
+    )
 }
 
-const EnvironmentOverrideDropdown = (
-    environmentResult: AppOtherEnvironment,
-    environmentsLoading: boolean,
-    url: string,
-) => {
-    if (environmentsLoading) return null;
+const EnvOverridesHelpNote = () => {
+    return (
+        <div>
+            Environment overrides allow you to manage environment specific configurations after you’ve created
+            deployment pipelines. &nbsp;
+            <a
+                className="learn-more__href"
+                href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE}
+                rel="noreferrer noopener"
+                target="_blank"
+            >
+                Learn more
+            </a>
+        </div>
+    )
+}
 
-    if (Array.isArray(environmentResult?.result)) {
-        const environments = environmentResult.result.sort((a, b) =>
-            a.environmentName.localeCompare(b.environmentName),
-        );
-        return (
-            <div>
-                {environments.map((env) => {
-                    let LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}`;
-                    return (
-                        <NavLink key={env.environmentId} className="app-compose__nav-item" to={LINK}>
-                            {env.environmentName}
-                        </NavLink>
-                    );
-                })}
-            </div>
-        );
-    } else {
-        return (
-            <div className="bcn-1 mt-8 pt-8 pb-8 pl-12 pr-12 cn-7">
-                Environment overrides allow you to manage environment specific configurations after you’ve created
-                deployment pipelines. &nbsp;
-                <a
-                    className="learn-more__href"
-                    href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE}
-                    rel="noreferrer noopener"
-                    target="_blank"
-                >
-                    Learn more
-                </a>
-            </div>
-        );
-    }
-};
+const EnvOverrideRoute = ({ envOverride, url }: { envOverride: AppEnvironment; url: string }) => {
+    const [collapsed, toggleCollapsed] = useState(true)
 
-function EnvironmentOverrideRouter() {
-    const { pathname } = useLocation();
-    const { appId } = useParams<{ appId }>();
-    const [collapsed, toggleCollapsed] = useState(false);
-    const previousPathName = usePrevious(pathname);
-    const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(
-        () => getAppOtherEnvironment(appId),
-        [appId],
-        !!appId,
-    );
-    const { url, path } = useRouteMatch();
-    useEffect(() => {
-        if (previousPathName && previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) {
-            reloadEnvironments();
-        }
-    }, [pathname]);
+    const LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}`
 
     return (
-        <div className="flex column left environment-routes-container top">
-            <div className="app-compose__nav-item flex" onClick={(e) => toggleCollapsed(!collapsed)}>
-                Environment Overrides
+        <div className="flex column left environment-route-wrapper top">
+            <div className={`app-compose__nav-item flex cursor ${collapsed ? 'fw-4' : 'fw-6'}`} onClick={(e) => toggleCollapsed(!collapsed)}>
+                {envOverride.environmentName}
                 <Dropdown
                     className="icon-dim-24 rotate"
                     style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }}
@@ -656,9 +621,81 @@ function EnvironmentOverrideRouter() {
             </div>
             {!collapsed && (
                 <div className="environment-routes">
-                    {EnvironmentOverrideDropdown(environmentResult, environmentsLoading, url)}
+                    <NavLink className="app-compose__nav-item cursor" to={`${LINK}/deployment-template`}>
+                        Deployment template
+                    </NavLink>
+                    <NavLink className="app-compose__nav-item cursor" to={`${LINK}/configmap`}>
+                        ConfigMaps
+                    </NavLink>
+                    <NavLink className="app-compose__nav-item cursor" to={`${LINK}/secrets`}>
+                        Secrets
+                    </NavLink>
                 </div>
             )}
         </div>
-    );
+    )
+}
+
+const EnvironmentOverrides = ({
+    environmentResult,
+    environmentsLoading,
+    url,
+}: {
+    environmentResult: AppOtherEnvironment
+    environmentsLoading: boolean
+    url: string
+}) => {
+    if (environmentsLoading) return null
+
+    if (Array.isArray(environmentResult?.result)) {
+        const environments = environmentResult.result.sort((a, b) => a.environmentName.localeCompare(b.environmentName))
+        return (
+            <div className="w-100">
+                {environments.map((env) => {
+                    return <EnvOverrideRoute envOverride={env} url={url} />
+                })}
+            </div>
+        )
+    } else {
+        return (
+            <InfoColourBar
+                classname="question-bar no-env-overrides"
+                message={<EnvOverridesHelpNote />}
+                Icon={Help}
+                iconClass="fcv-5"
+                iconSize="icon-dim-16"
+            />
+        )
+    }
+}
+
+function EnvironmentOverrideRouter() {
+    const { pathname } = useLocation()
+    const { appId } = useParams<{ appId }>()
+    const previousPathName = usePrevious(pathname)
+    const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(
+        () => getAppOtherEnvironment(appId),
+        [appId],
+        !!appId,
+    )
+    const { url, path } = useRouteMatch()
+    useEffect(() => {
+        if (previousPathName && previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) {
+            reloadEnvironments()
+        }
+    }, [pathname])
+
+    return (
+        <div>
+            <div className="en-1 bw-1 mt-8 mb-8" />
+            <div className="flex column left environment-routes-container top">
+                <div className="app-compose__nav-item flex text-uppercase fs-12 cn-6">Environment Overrides</div>
+                <EnvironmentOverrides
+                    environmentsLoading={environmentsLoading}
+                    environmentResult={environmentResult}
+                    url={url}
+                />
+            </div>
+        </div>
+    )
 }
