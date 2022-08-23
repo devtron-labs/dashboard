@@ -7,7 +7,7 @@ import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
 import ReactGA from 'react-ga'
 import { Security } from '../../security/Security'
-import { dashboardLoggedIn, getLoginData, getUserRole, getVersionConfig, updateLoginCount } from '../../../services/service'
+import { dashboardLoggedIn, getAppListMin, getLoginData, getUserRole, getVersionConfig, updateLoginCount } from '../../../services/service'
 import Reload from '../../Reload/Reload'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import DevtronStackManager from '../../v2/devtronStackManager/DevtronStackManager'
@@ -27,7 +27,6 @@ const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfigu
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
-
 export const mainContext = createContext(null)
 
 export default function NavigationRoutes() {
@@ -50,6 +49,7 @@ export default function NavigationRoutes() {
   const [showHelpCard, setShowHelpCard] = useState(true)
   const [isGettingStartedClicked, setIsGettingStartedClicked] = useState(false)
   const [showGettingStartedCard, setShowGettingStartedCrad] = useState(true)
+  const [appListCount, setAppListCount] = useState(0)
 
   const hideGettingStartedCard = () => {
     setShowGettingStartedCrad(false)
@@ -60,6 +60,7 @@ export default function NavigationRoutes() {
           getUserRole().then((response) => {
               setSuperAdmin(response.result?.superAdmin)
           })
+
       } catch (err) {
           showError(err)
       }
@@ -67,7 +68,10 @@ export default function NavigationRoutes() {
 
     useEffect(() => {
         const loginInfo = getLoginInfo()
-
+        getAppListMin().then((response) =>{
+          console.log(response.result.length)
+          setAppListCount(response.result?.length)
+        })
         if (process.env.NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
@@ -263,7 +267,7 @@ export default function NavigationRoutes() {
                                                 getCurrentServerInfo={getCurrentServerInfo}
                                             />
                                         </Route>
-                                        {(showOnboardingPage || isGettingStartedClicked) && (
+                                        {(showOnboardingPage || isGettingStartedClicked) && appListCount !== 0 && (
                                             <>
                                                 <Route path={`/${URLS.GUIDE}`} render={() => <DeployManageGuide />} />
                                                 {
