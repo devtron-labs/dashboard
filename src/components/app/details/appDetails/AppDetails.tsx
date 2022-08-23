@@ -70,6 +70,7 @@ import { ExternalLink, ExternalLinksAndToolsType, OptionTypeWithIcon } from '../
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab';
 import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
+import { AppType } from '../../../v2/appDetails/appDetails.type';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -185,7 +186,7 @@ export const Details: React.FC<{
     async function callAppDetailsAPI() {
         try {
             const response = await appDetailsAPI(params.appId, params.envId, 25000);
-            IndexStore.publishAppDetails(response.result)
+            IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
             setAppDetailsResult(response)
             if (response.result?.clusterId) {
                 Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId)])
