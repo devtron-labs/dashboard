@@ -16,6 +16,13 @@ function DeployManageGuide() {
         history.push('/')
     }
 
+    const onClickViewApplication = () => {
+        ReactGA.event({
+            category: 'Onboarding',
+            action: 'Onboarding Guide Clicked',
+        })
+    }
+
     return (
         <div className="deploy-manage-container">
             <div className="flex h-300 guide-header">
@@ -40,14 +47,9 @@ function DeployManageGuide() {
                         <div className="fw-6 fs-16 pl-20 pr-20">
                             3 helm applications found in default_cluster <br />
                             <NavLink
-                            to = {`${URLS.APP}/${URLS.APP_LIST}`}
+                                to={`${URLS.APP}/${URLS.APP_LIST}`}
                                 activeClassName="active"
-                                onClick={(event) => {
-                                    ReactGA.event({
-                                        category: 'Onboarding',
-                                        action: 'Onboarding Guide Clicked',
-                                    })
-                                }}
+                                onClick={onClickViewApplication}
                             >
                                 View applications
                             </NavLink>
@@ -63,10 +65,7 @@ function DeployManageGuide() {
                         />
                         <div className="fw-6 fs-16 pl-20 pr-20">
                             I want to deploy popular helm charts <br />
-                            <NavLink
-                                to={`${URLS.CHARTS_DISCOVER}`}
-                                activeClassName="active"
-                            >
+                            <NavLink to={`${URLS.CHARTS_DISCOVER}`} activeClassName="active">
                                 Browse helm charts
                             </NavLink>
                         </div>
@@ -81,10 +80,7 @@ function DeployManageGuide() {
                         />
                         <div className="fw-6 fs-16 pl-20 pr-20">
                             I have helm applications in other clusters <br />
-                            <NavLink
-                                to={`${URLS.GLOBAL_CONFIG_CLUSTER}`}
-                                activeClassName="active"
-                            >
+                            <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} activeClassName="active">
                                 Connect a cluster
                             </NavLink>
                         </div>
@@ -99,10 +95,7 @@ function DeployManageGuide() {
                         />
                         <div className="fw-6 fs-16 pl-20 pr-20">
                             I want to connect my own chart repository <br />
-                            <NavLink
-                                to={`${URLS.GLOBAL_CONFIG_CHART}`}
-                                activeClassName="active"
-                            >
+                            <NavLink to={`${URLS.GLOBAL_CONFIG_CHART}`} activeClassName="active">
                                 Connect chart repository
                             </NavLink>
                         </div>
