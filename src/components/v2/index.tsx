@@ -8,7 +8,7 @@ import AppHeaderComponent from './headers/AppHeader.component';
 import ChartHeaderComponent from './headers/ChartHeader.component';
 import { getInstalledAppDetail, getInstalledChartDetail } from './appDetails/appDetails.api';
 import AppDetailsComponent from './appDetails/AppDetails.component';
-import { EnvType } from './appDetails/appDetails.type';
+import { AppType, EnvType } from './appDetails/appDetails.type';
 import IndexStore from './appDetails/index.store';
 import ErrorImage from './assets/icons/ic-404-error.png';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil';
@@ -76,10 +76,11 @@ function RouterComponent({ envType }) {
 
             if (envType === EnvType.CHART) {
                 response = await getInstalledChartDetail(+params.appId, +params.envId);
+                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART);
             } else {
                 response = await getInstalledAppDetail(+params.appId, +params.envId);
+                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP);
             }
-            IndexStore.publishAppDetails(response.result);
 
             if (response.result?.clusterId) {
                 Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId)])

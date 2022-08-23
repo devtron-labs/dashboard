@@ -188,7 +188,7 @@ export const FullRoutes = {
 
 export const PATTERNS = {
     STRING: /[A-Za-z0-9]+$/,
-    APP_NAME: '^[a-z0-9][a-z0-9-.]*[a-z0-9]$/*',
+    APP_NAME: '^[a-z][a-z0-9-.]*[a-z0-9]$/*',
     CD_PIPELINE_NAME: `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`,
     CONFIG_MAP_AND_SECRET_KEY: /^[-._a-zA-Z0-9]+$/,
     CONFIGMAP_AND_SECRET_NAME: /^[a-z0-9][a-z0-9-.]*[a-z0-9]$/,
