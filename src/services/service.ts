@@ -2,7 +2,7 @@ import { get, post } from './api';
 import { ACCESS_TYPE_MAP, Routes } from '../config';
 import { sortCallback } from '../components/common/helpers/util';
 import moment from 'moment';
-import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions, ClusterEnvironmentDetailList, EnvironmentListHelmResponse, ClusterListResponse } from './service.types';
+import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions, ClusterEnvironmentDetailList, EnvironmentListHelmResponse, ClusterListResponse, LoginCountType } from './service.types';
 import { Chart } from '../components/charts/charts.types';
 import { fetchWithFullRoute } from './fetchWithFullRoute';
 
@@ -386,22 +386,13 @@ export function dashboardLoggedIn() {
   return get(Routes.DASHBOARD_LOGGEDIN);
 }
 
-export interface LoginCountType extends ResponseType {
-  result?: LoginCount
-}
-
-export interface LoginCount {
-    emailId: string
-    key: string
-    value: string
-}
 
 export function getLoginData() : Promise<LoginCountType>  {
-  return get(`attributes/user/get?key=login-count`)
+  return get(`${Routes.ATTRIBUTES_USER}/${Routes.GET}?key=login-count`)
 }
 
 export function updateLoginCount(payload): Promise<ResponseType>  {
-    return post('attributes/user/update', payload)
+    return post(`${Routes.ATTRIBUTES_USER}/${Routes.UPDATE}`, payload)
 }
 interface UserRole extends ResponseType {
   result?: {
@@ -411,5 +402,5 @@ interface UserRole extends ResponseType {
 }
 
 export function getUserRole(): Promise<UserRole> {
-  return get(`user/check/roles`);
+  return get(Routes.USER_CHECK_RULE);
 }

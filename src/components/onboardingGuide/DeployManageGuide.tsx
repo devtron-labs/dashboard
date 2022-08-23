@@ -19,7 +19,7 @@ function DeployManageGuide() {
     return (
         <div className="deploy-manage-container">
             <div className="flex h-300 guide-header">
-                <div className="bcn-0 deploy_arrow flex cursor" onClick={() => redirectToOnboardingPage()}>
+                <div className="bcn-0 deploy_arrow flex cursor" onClick={redirectToOnboardingPage}>
                     <GoBack className="rotate icon-dim-24" style={{ ['--rotateBy' as any]: '180deg' }} />
                 </div>
                 <div className="ml-32">

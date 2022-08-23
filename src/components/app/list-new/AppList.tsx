@@ -78,7 +78,7 @@ export default function AppList({isSuperAdmin} : AppListProps) {
     // on page load
     useEffect(() => {
         let _currentTab =
-            params.appType == AppListConstants.AppType.DEVTRON_APPS
+            params.appType === AppListConstants.AppType.DEVTRON_APPS
                 ? AppListConstants.AppTabs.DEVTRON_APPS
                 : AppListConstants.AppTabs.HELM_APPS
         setCurrentTab(_currentTab)
@@ -103,7 +103,7 @@ export default function AppList({isSuperAdmin} : AppListProps) {
                 setEnvironmentListRes(initData.environmentListRes)
                 setMasterFilters(initData.filters)
                 setDataStateType(AppListViewType.LIST)
-                if (serverMode == SERVER_MODE.EA_ONLY) {
+                if (serverMode === SERVER_MODE.EA_ONLY) {
                     applyClusterSelectionFilterOnPageLoadIfSingle(initData.filters.clusters, _currentTab)
                 }
             })
@@ -918,32 +918,32 @@ export default function AppList({isSuperAdmin} : AppListProps) {
         )
     }
 
-    const renderFirstAppView = () => {
+    const renderFirstAppView = (): JSX.Element => {
         return <GuidePage openDevtronAppCreateModel={openDevtronAppCreateModel} />
     }
     return (
         <div>
-            {dataStateType == AppListViewType.LOADING && (
+            {dataStateType === AppListViewType.LOADING && (
                 <div className="loading-wrapper">
                     <Progressing pageLoader />
                 </div>
             )}
-            {dataStateType == AppListViewType.ERROR && (
+            {dataStateType === AppListViewType.ERROR && (
                 <div className="loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )}
-            {dataStateType == AppListViewType.LIST && (
+            {dataStateType === AppListViewType.LIST && (
                 <>
                     {renderPageHeader()}
                     {renderMasterFilters()}
                     {renderAppliedFilters()}
                     {renderAppTabs()}
-                    {serverMode == SERVER_MODE.FULL && renderAppCreateRouter()}
-                    {(dataStateType == AppListViewType.NO_RESULT) && isSuperAdmin ? renderFirstAppView() :
+                    {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
+                    {(dataStateType === AppListViewType.NO_RESULT) && isSuperAdmin ? renderFirstAppView() :
                         <>
-                            {params.appType == AppListConstants.AppType.DEVTRON_APPS &&
-                                serverMode == SERVER_MODE.FULL && (
+                            {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
+                                serverMode === SERVER_MODE.FULL && (
                                     <DevtronAppListContainer
                                         payloadParsedFromUrl={parsedPayloadOnUrlChange}
                                         appCheckListRes={appCheckListRes}
@@ -952,20 +952,18 @@ export default function AppList({isSuperAdmin} : AppListProps) {
                                         updateLastDataSync={updateLastDataSync}
                                     />
                                 )}
-                            {params.appType == AppListConstants.AppType.DEVTRON_APPS &&
-                                serverMode == SERVER_MODE.EA_ONLY && (
+                            {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
+                                serverMode === SERVER_MODE.EA_ONLY && (
                                     <div style={{ height: 'calc(100vh - 250px)' }}>
                                         <EAEmptyState
-                                            title={'Create, build, deploy and debug custom apps'}
-                                            msg={
-                                                'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'
-                                            }
+                                            title='Create, build, deploy and debug custom apps'
+                                            msg='Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'
                                             stateType={EAEmptyStateType.DEVTRONAPPS}
                                             knowMoreLink={DOCUMENTATION.HOME_PAGE}
                                         />
                                     </div>
                                 )}
-                            {params.appType == AppListConstants.AppType.HELM_APPS && (
+                            {params.appType === AppListConstants.AppType.HELM_APPS && (
                                 <>
                                     <HelmAppList
                                         serverMode={serverMode}

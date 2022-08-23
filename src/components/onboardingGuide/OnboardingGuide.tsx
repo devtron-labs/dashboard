@@ -15,8 +15,8 @@ function OnboardingGuide({onClickSetActionButtonToTrue}) {
     const match = useRouteMatch()
     const history = useHistory()
 
-    const redirectToDeployGuide = (url) => {
-        history.push(url)
+    const redirectToDeployGuide = () => {
+        history.push(`/${URLS.GUIDE}`)
     }
 
     return (
@@ -45,7 +45,7 @@ function OnboardingGuide({onClickSetActionButtonToTrue}) {
                             to={`${match.path}/${URLS.GUIDE}`}
                             className="no-decor fw-6 cursor cn-9"
                             activeClassName="active"
-                            onClick={() => redirectToDeployGuide(`/${URLS.GUIDE}`)}
+                            onClick={redirectToDeployGuide}
                         >
                             <img
                                 className="onboarding-card__img"

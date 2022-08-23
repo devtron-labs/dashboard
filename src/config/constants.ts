@@ -4,8 +4,11 @@ export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
 export const DEFAULTK8SVERSION = 'v1.16.0'
 
 export const Routes = {
+    GET: 'get',
+    UPDATE: 'update',
     LOGIN: 'api/v1/session',
     SOURCE_CONFIG_GET: 'app/get',
+    USER_CHECK_RULE:'user/check/roles',
 
     CHART_REFERENCES_MIN: 'chartref/autocomplete',
     CI_CONFIG_GET: 'app/ci-pipeline',
@@ -110,6 +113,7 @@ export const Routes = {
     APP_CREATE_SECRET: 'config/global/cs',
     WORKFLOW: 'app/app-wf',
 
+    ATTRIBUTES_USER: 'attributes/user',
     APP_WORKFLOW_STATUS: 'app/workflow/status',
     APP_CREATE_ENV_SECRET: 'config/environment/cs',
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
