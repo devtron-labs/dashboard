@@ -605,10 +605,17 @@ const EnvOverridesHelpNote = () => {
     )
 }
 
-const EnvOverrideRoute = ({ envOverride, url }: { envOverride: AppEnvironment; url: string }) => {
-    const [collapsed, toggleCollapsed] = useState(true)
-
+const EnvOverrideRoute = ({ envOverride }: { envOverride: AppEnvironment }) => {
+    const { url } = useRouteMatch()
+    const location = useLocation()
     const LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}`
+    const [collapsed, toggleCollapsed] = useState(location.pathname.includes(`${LINK}/`) ? false : true)
+
+    useEffect(() => {
+        if (!location.pathname.includes(`${LINK}/`) && !collapsed) {
+            toggleCollapsed(true)
+        }
+    }, [location.pathname])
 
     return (
         <div className="flex column left environment-route-wrapper top">
@@ -639,20 +646,18 @@ const EnvOverrideRoute = ({ envOverride, url }: { envOverride: AppEnvironment; u
 const EnvironmentOverrides = ({
     environmentResult,
     environmentsLoading,
-    url,
 }: {
     environmentResult: AppOtherEnvironment
     environmentsLoading: boolean
-    url: string
 }) => {
     if (environmentsLoading) return null
 
     if (Array.isArray(environmentResult?.result)) {
         const environments = environmentResult.result.sort((a, b) => a.environmentName.localeCompare(b.environmentName))
         return (
-            <div className="w-100">
+            <div className="w-100" style={{ height: 'calc(100% - 60px)' }}>
                 {environments.map((env) => {
-                    return <EnvOverrideRoute envOverride={env} url={url} />
+                    return <EnvOverrideRoute envOverride={env} />
                 })}
             </div>
         )
@@ -678,7 +683,6 @@ function EnvironmentOverrideRouter() {
         [appId],
         !!appId,
     )
-    const { url, path } = useRouteMatch()
     useEffect(() => {
         if (previousPathName && previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) {
             reloadEnvironments()
@@ -686,14 +690,13 @@ function EnvironmentOverrideRouter() {
     }, [pathname])
 
     return (
-        <div>
+        <div className="h-100 overflow-hidden">
             <div className="en-1 bw-1 mt-8 mb-8" />
-            <div className="flex column left environment-routes-container top">
-                <div className="app-compose__nav-item flex text-uppercase fs-12 cn-6">Environment Overrides</div>
+            <div className="app-compose__nav-item flex text-uppercase fs-12 cn-6">Environment Overrides</div>
+            <div className="flex column left environment-routes-container top overflow-scroll">
                 <EnvironmentOverrides
                     environmentsLoading={environmentsLoading}
                     environmentResult={environmentResult}
-                    url={url}
                 />
             </div>
         </div>

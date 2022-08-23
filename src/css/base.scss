@@ -2044,3 +2044,11 @@ textarea {
         fill: var(--N900);
     }
 }
+
+.overflow-hidden {
+    overflow: hidden !important;
+}
+
+.overflow-scroll {
+    overflow: scroll !important;
+}
