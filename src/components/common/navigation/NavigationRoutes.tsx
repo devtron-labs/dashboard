@@ -131,7 +131,6 @@ export default function NavigationRoutes() {
             if (count < 5) {
                 const updatedPayload = {
                     key: 'login-count',
-                    // value: `${count + 1}`,
                     value: `${count + 1}`,
                 }
                 updateLoginCount(updatedPayload)
@@ -237,7 +236,7 @@ export default function NavigationRoutes() {
                     />
                     {showGettingStartedCard && loginCount > 0 && loginCount < 5 && getExpired() && (
                         <GettingStartedCard
-                            className={'w-300'}
+                            className='w-300'
                             showHelpCard={false}
                             hideGettingStartedCard={hideGettingStartedCard}
                             loginCount={loginCount}
@@ -249,7 +248,6 @@ export default function NavigationRoutes() {
                                 showOnboardingPage ? 'main__onboarding-page' : 'main'
                             }`}
                         >
-                            {/* {console.log(showOnboardingPage, appListCount < 1, 'isGettingStartedClicked', isGettingStartedClicked)} */}
                             <Suspense fallback={<Progressing pageLoader />}>
                                 <ErrorBoundary>
                                     <Switch>
@@ -289,7 +287,7 @@ export default function NavigationRoutes() {
                                         </Route>
                                         {(showOnboardingPage || appListCount === 0) && (
                                             <>
-                                                <Route path={`/${URLS.GUIDE}`} render={() => <DeployManageGuide />} />
+                                                <Route path={`/${URLS.GUIDE}`} component={DeployManageGuide} />
 
                                                 <Route
                                                     exact

@@ -65,7 +65,7 @@ function DeployManageGuide() {
                         />
                         <div className="fw-6 fs-16 pl-20 pr-20">
                             I want to deploy popular helm charts <br />
-                            <NavLink to={`${URLS.CHARTS_DISCOVER}`} activeClassName="active">
+                            <NavLink to={URLS.CHARTS_DISCOVER} activeClassName="active">
                                 Browse helm charts
                             </NavLink>
                         </div>
@@ -80,7 +80,7 @@ function DeployManageGuide() {
                         />
                         <div className="fw-6 fs-16 pl-20 pr-20">
                             I have helm applications in other clusters <br />
-                            <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} activeClassName="active">
+                            <NavLink to={URLS.GLOBAL_CONFIG_CLUSTER} activeClassName="active">
                                 Connect a cluster
                             </NavLink>
                         </div>
@@ -95,7 +95,7 @@ function DeployManageGuide() {
                         />
                         <div className="fw-6 fs-16 pl-20 pr-20">
                             I want to connect my own chart repository <br />
-                            <NavLink to={`${URLS.GLOBAL_CONFIG_CHART}`} activeClassName="active">
+                            <NavLink to={URLS.GLOBAL_CONFIG_CHART} activeClassName="active">
                                 Connect chart repository
                             </NavLink>
                         </div>
