@@ -1,34 +1,26 @@
-import React, { lazy, Suspense, useRef, useState, useEffect } from 'react'
-import { Route, Switch, Redirect } from 'react-router-dom'
-import { useHistory, useLocation } from 'react-router'
-import { URLS } from './config'
-import { toast } from 'react-toastify'
-import 'patternfly/dist/css/patternfly.css'
-import 'patternfly/dist/css/patternfly-additions.css'
-import 'patternfly/dist/css/rcue.css'
-import 'patternfly/dist/css/rcue-additions.css'
-import 'patternfly-react/dist/css/patternfly-react.css'
-import 'react-toastify/dist/ReactToastify.css'
-import './css/base.scss'
-import './css/formulae.scss'
-import './css/forms.scss'
-import 'tippy.js/dist/tippy.css'
-import {
-    useOnline,
-    BreadcrumbStore,
-    ToastBody,
-    ToastBody3 as UpdateToast,
-    Progressing,
-    showError,
-    ErrorBoundary,
-} from './components/common'
-import * as serviceWorker from './serviceWorker'
-import Hotjar from './components/Hotjar/Hotjar'
-import { validateToken } from './services/service'
-import Reload from './components/Reload/Reload'
+import React, { lazy, Suspense, useRef, useState, useEffect } from 'react';
+import { Route, Switch, Redirect } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router';
+import { URLS } from './config';
+import { toast } from 'react-toastify';
+import "patternfly/dist/css/patternfly.css";
+import "patternfly/dist/css/patternfly-additions.css";
+import "patternfly/dist/css/rcue.css";
+import "patternfly/dist/css/rcue-additions.css";
+import "patternfly-react/dist/css/patternfly-react.css";
+import 'react-toastify/dist/ReactToastify.css';
+import './css/base.scss';
+import './css/formulae.scss';
+import './css/forms.scss';
+import 'tippy.js/dist/tippy.css';
+import { useOnline, BreadcrumbStore, ToastBody, ToastBody3 as UpdateToast, Progressing, showError, getLoginInfo, ErrorBoundary } from './components/common';
+import * as serviceWorker from './serviceWorker';
+import Hotjar from './components/Hotjar/Hotjar';
+import { validateToken } from './services/service';
+import Reload from './components/Reload/Reload';
 
-const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
-const Login = lazy(() => import('./components/login/Login'))
+const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'));
+const Login = lazy(() => import('./components/login/Login'));
 
 toast.configure({
 	autoClose: 3000,
@@ -107,6 +99,7 @@ export default function App() {
 		validation()
 	}, [])
 
+
 	async function update() {
 		if (!navigator.serviceWorker) return
 		try {
@@ -134,6 +127,8 @@ export default function App() {
 	}
 
 	useEffect(() => {
+
+
 		if (!navigator.serviceWorker) return
 		function onUpdate(reg) {
 			const updateToastBody = <UpdateToast onClick={e => update()} text="You are viewing an outdated version of Devtron UI." buttonText="Reload" />
