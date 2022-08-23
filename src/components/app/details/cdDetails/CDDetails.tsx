@@ -28,7 +28,7 @@ import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './servic
 import EmptyState from '../../../EmptyState/EmptyState'
 import { cancelPrePostCdTrigger } from '../../service'
 import { Scroller } from '../cIDetails/CIDetails'
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga4'
 import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg'
 import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-fullscreen.svg'
 import TippyHeadless from '@tippyjs/react/headless'

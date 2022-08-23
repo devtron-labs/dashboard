@@ -7,7 +7,7 @@ import { ReactComponent as Help } from '../../../../assets/icons/ic-info-outline
 import { ReactComponent as Fail } from '../../../../assets/icons/ic-error-exclamation.svg';
 import { Pagination, Progressing } from '../../../common';
 import { ViewType } from '../../../../config';
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 
 export interface DeploymentTableCellType {
     value: number;

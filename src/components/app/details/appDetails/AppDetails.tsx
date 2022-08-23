@@ -46,7 +46,7 @@ import { ReactComponent as AlertTriangle } from '../../../../assets/icons/ic-ale
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg';
 import { ReactComponent as ForwardArrow } from '../../../../assets/icons/ic-arrow-forward.svg'
 import Tippy from '@tippyjs/react';
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 import Select, { components } from 'react-select';
 import { SourceInfo } from './SourceInfo'
 import {
@@ -384,7 +384,7 @@ export const Details: React.FC<{
                             environmentName={appDetails.environmentName}
                         />
                     )}
-                    {showScanDetailsModal && 
+                    {showScanDetailsModal &&
                         <ScanDetailsModal
                             showAppInfo={false}
                             uniqueId={{
@@ -907,7 +907,7 @@ export function AppNotConfigured({
         <section className="app-not-configured w-100" style={style}>
             <img src={image || AppNotConfiguredIcon} />
             <h3 className="mb-8 mt-20 fs-16 fw-600 w-300">{title || 'Finish configuring this application'}</h3>
-                <p className="mb-20 fs-13 w-300"> {subtitle ? subtitle : 
+                <p className="mb-20 fs-13 w-300"> {subtitle ? subtitle :
                     <>This application is not fully configured. Complete the configuration, trigger a deployment and come
                     back here.
                     <a href="https://docs.devtron.ai/devtron/user-guide/creating-application" target="_blank">

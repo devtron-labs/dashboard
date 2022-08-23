@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 import { DropdownIcon, Page, Progressing } from '../../../common';
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails';
 import '../../../charts/modal/DeployChart.scss';

@@ -13,7 +13,7 @@ import { getChartValuesURL } from '../charts.helper';
 import { styles, menuList, DropdownIndicator } from '../charts.util';
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import AsyncSelect from 'react-select/async';
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 import ReactSelect, { components } from 'react-select';
 import './DeployChart.scss';
 import { ServerErrors } from '../../../modals/commonTypes';
