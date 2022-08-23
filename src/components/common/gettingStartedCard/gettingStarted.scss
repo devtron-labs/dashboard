@@ -3,3 +3,16 @@
     position: fixed;
     z-index: 6;
 }
+
+.arrow-up {
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 12px solid #2d3452;
+}
+
+.getting_tippy__position {
+  top: 42px;
+  right: 56px;
+}

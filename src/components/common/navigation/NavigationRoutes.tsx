@@ -7,7 +7,14 @@ import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
 import ReactGA from 'react-ga'
 import { Security } from '../../security/Security'
-import { dashboardLoggedIn, getAppListMin, getLoginData, getUserRole, getVersionConfig, updateLoginCount } from '../../../services/service'
+import {
+    dashboardLoggedIn,
+    getAppListMin,
+    getLoginData,
+    getUserRole,
+    getVersionConfig,
+    updateLoginCount,
+} from '../../../services/service'
 import Reload from '../../Reload/Reload'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import DevtronStackManager from '../../v2/devtronStackManager/DevtronStackManager'
@@ -16,7 +23,7 @@ import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.
 import ClusterNodeContainer from '../../ClusterNodes/ClusterNodeContainer'
 import DeployManageGuide from '../../onboardingGuide/DeployManageGuide'
 import { showError } from '../helpers/Helpers'
-import GettingStarted from '../gettingStartedCard/GettingStarted'
+import GettingStartedCard from '../gettingStartedCard/GettingStarted'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -27,6 +34,7 @@ const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfigu
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
+
 export const mainContext = createContext(null)
 
 export default function NavigationRoutes() {
@@ -42,35 +50,43 @@ export default function NavigationRoutes() {
             fetchingServerInfo: false,
         },
     )
-   const [isHelpGettingStartedClicked, setIsHelpGettingStartedClicked ] = useState(false)
-   const [loginCount, setLoginCount] = useState(0)
-  const [isSuperAdmin, setSuperAdmin] = useState(false)
-  const [actionTakenOnOnboarding, setActionTakenOnboarding] = useState(false)
-  const [showHelpCard, setShowHelpCard] = useState(true)
-  const [isGettingStartedClicked, setIsGettingStartedClicked] = useState(false)
-  const [showGettingStartedCard, setShowGettingStartedCrad] = useState(true)
-  const [appListCount, setAppListCount] = useState(0)
+    const [isHelpGettingStartedClicked, setIsHelpGettingStartedClicked] = useState(false)
+    const [loginCount, setLoginCount] = useState(0)
+    const [isSuperAdmin, setSuperAdmin] = useState(false)
+    const [actionTakenOnOnboarding, setActionTakenOnboarding] = useState(false)
+    const [isGettingStartedClicked, setIsGettingStartedButtonClicked] = useState(false)
+    const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
+    const [appListCount, setAppListCount] = useState(undefined)
+    const [expiryDate, setExpiryDate] = useState(0)
 
-  const hideGettingStartedCard = () => {
-    setShowGettingStartedCrad(false)
-  }
+    const hideGettingStartedCard = () => {
+        setShowGettingStartedCard(false)
+    }
 
-  useEffect(() => {
-      try {
-          getUserRole().then((response) => {
-              setSuperAdmin(response.result?.superAdmin)
-          })
 
-      } catch (err) {
-          showError(err)
-      }
-  }, [])
+    const showCloseButtonAfterGettingStartedClicked = () => {
+        setIsHelpGettingStartedClicked(true)
+    }
+
+    useEffect(() => {
+        const expDate = localStorage.getItem('clickedOkay')
+        setExpiryDate(+expDate)
+    }, [])
+
+    useEffect(() => {
+        try {
+            getUserRole().then((response) => {
+                setSuperAdmin(response.result?.superAdmin)
+            })
+        } catch (err) {
+            showError(err)
+        }
+    }, [])
 
     useEffect(() => {
         const loginInfo = getLoginInfo()
-        getAppListMin().then((response) =>{
-          console.log(response.result.length)
-          setAppListCount(response.result?.length)
+        getAppListMin().then((response) => {
+            setAppListCount(response.result?.length)
         })
         if (process.env.NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
@@ -106,22 +122,21 @@ export default function NavigationRoutes() {
             }
         }
 
-        //For the first time user(with superadmin permission)
-
+        //Only For the first time login user(with superadmin permission)
         if (!loginInfo) return
-        getLoginData().then((response)=> {
-            let count = parseInt(response.result.value)
-            setLoginCount(count)
+
+        getLoginData().then((response) => {
+            const count = response.result.value ? parseInt(response.result.value) : 0
+            setLoginCount(count || 1)
+            if (count < 5) {
+                const updatedPayload = {
+                    key: 'login-count',
+                    // value: `${count + 1}`,
+                    value: `${count + 1}`,
+                }
+                updateLoginCount(updatedPayload)
+            }
         })
-        let newCountForPayload = loginCount + 1
-
-        let updatedPayload = {
-            key: 'login-count',
-            value: newCountForPayload.toString(),
-        }
-
-        updateLoginCount(updatedPayload).then((response) => {
-      })
 
         if (typeof Storage !== 'undefined') {
             if (localStorage.isDashboardLoggedIn) return
@@ -151,10 +166,6 @@ export default function NavigationRoutes() {
         getServerMode()
         getCurrentServerInfo()
     }, [])
-
-    const showCloseButtonAfterGettingStartedClicked = () => {
-      setIsHelpGettingStartedClicked(true)
-    }
 
     const getCurrentServerInfo = async (section?: string) => {
         if (
@@ -189,12 +200,20 @@ export default function NavigationRoutes() {
     } else if (pageState === ViewType.ERROR) {
         return <Reload />
     } else {
+        const onClickSetActionButtonToTrue = () => {
+            setActionTakenOnboarding(true)
+        }
 
-      const onClickSetActionButtonToTrue = () => {
-         setActionTakenOnboarding(true)
-      }
+        const showOnboardingPage = isSuperAdmin && !actionTakenOnOnboarding
 
-      const showOnboardingPage = isSuperAdmin && !actionTakenOnOnboarding
+        const getExpired = (): boolean => {
+            // Render Getting started tippy card if the time gets expired
+            const now = new Date().valueOf()
+            if (now > expiryDate) {
+                return true
+            }
+            return false
+        }
 
         return (
             <mainContext.Provider
@@ -216,28 +235,31 @@ export default function NavigationRoutes() {
                         serverInfo={currentServerInfo.serverInfo}
                         getCurrentServerInfo={getCurrentServerInfo}
                     />
-                    {loginCount < 5 && showGettingStartedCard && (
-                        <GettingStarted
+                    {showGettingStartedCard && loginCount > 0 && loginCount < 5 && getExpired() && (
+                        <GettingStartedCard
                             className={'w-300'}
                             showHelpCard={false}
-                            setShowHelpCard={setShowHelpCard}
                             hideGettingStartedCard={hideGettingStartedCard}
                             loginCount={loginCount}
                         />
                     )}
-
                     {serverMode && (
                         <div
                             className={`main ${pageOverflowEnabled ? '' : 'main__overflow-disabled'} ${
                                 showOnboardingPage ? 'main__onboarding-page' : 'main'
                             }`}
                         >
+                            {/* {console.log(showOnboardingPage, appListCount < 1, 'isGettingStartedClicked', isGettingStartedClicked)} */}
                             <Suspense fallback={<Progressing pageLoader />}>
                                 <ErrorBoundary>
                                     <Switch>
                                         <Route
                                             path={URLS.APP}
-                                            render={() => <AppRouter isSuperAdmin={isSuperAdmin} />}
+                                            render={() => (
+                                                <AppRouter
+                                                    isSuperAdmin={isSuperAdmin}
+                                                />
+                                            )}
                                         />
                                         <Route path={URLS.CHARTS} render={() => <Charts />} />
                                         <Route
@@ -265,22 +287,19 @@ export default function NavigationRoutes() {
                                                 getCurrentServerInfo={getCurrentServerInfo}
                                             />
                                         </Route>
-                                        {(showOnboardingPage || isGettingStartedClicked) && appListCount !== 0 && (
+                                        {(showOnboardingPage || appListCount === 0) && (
                                             <>
                                                 <Route path={`/${URLS.GUIDE}`} render={() => <DeployManageGuide />} />
-                                                {
-                                                    <Route
-                                                        exact
-                                                        path={'/'}
-                                                        render={() => (
-                                                            <OnboardingGuide
-                                                                onClickSetActionButtonToTrue={
-                                                                    onClickSetActionButtonToTrue
-                                                                }
-                                                            />
-                                                        )}
-                                                    />
-                                                }
+
+                                                <Route
+                                                    exact
+                                                    path={'/'}
+                                                    render={() => (
+                                                        <OnboardingGuide
+                                                            onClickSetActionButtonToTrue={onClickSetActionButtonToTrue}
+                                                        />
+                                                    )}
+                                                />
                                             </>
                                         )}
 
@@ -298,25 +317,40 @@ export default function NavigationRoutes() {
     }
 }
 
-export interface AppRouterType{
-  isSuperAdmin?: boolean
-  setIsGettingStartedClicked?: React.Dispatch<React.SetStateAction<boolean>>
+export interface AppRouterType {
+    isSuperAdmin?: boolean
+    onClickShowGettingStartedCard?: () => void
 }
-export function AppRouter({isSuperAdmin, setIsGettingStartedClicked}: AppRouterType) {
+export function AppRouter({ isSuperAdmin, onClickShowGettingStartedCard }: AppRouterType) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     return (
         <ErrorBoundary>
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
-                    <Route path={`${path}/${URLS.APP_LIST}`} render={() => <AppListRouter isSuperAdmin={isSuperAdmin}/>} />
+                    <Route
+                        path={`${path}/${URLS.APP_LIST}`}
+                        render={() => <AppListRouter isSuperAdmin={isSuperAdmin} />}
+                    />
                     <Route path={`${path}/${URLS.EXTERNAL_APPS}/:appId/:appName`} render={() => <ExternalApps />} />
                     <Route
                         path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
                         render={(props) => <V2Details envType={EnvType.CHART} />}
                     />
-                    <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage isV2={false} setIsGettingStartedClicked={setIsGettingStartedClicked} />} />
-                    <Route path={`${path}/v2/:appId(\\d+)`} render={() => <AppDetailsPage isV2={true} setIsGettingStartedClicked={setIsGettingStartedClicked} />} />
+                    <Route
+                        path={`${path}/:appId(\\d+)`}
+                        render={() => (
+                            <AppDetailsPage
+                                isV2={false}
+                            />
+                        )}
+                    />
+                    <Route
+                        path={`${path}/v2/:appId(\\d+)`}
+                        render={() => (
+                            <AppDetailsPage isV2={true} />
+                        )}
+                    />
 
                     <Route exact path="">
                         <RedirectToAppList />
@@ -330,14 +364,14 @@ export function AppRouter({isSuperAdmin, setIsGettingStartedClicked}: AppRouterT
     )
 }
 
-export function AppListRouter({isSuperAdmin} : AppRouterType ) {
+export function AppListRouter({ isSuperAdmin }: AppRouterType) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     return (
         <ErrorBoundary>
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
-                    <Route path={`${path}/:appType`} render={() => <NewAppList isSuperAdmin = {isSuperAdmin}/>} />
+                    <Route path={`${path}/:appType`} render={() => <NewAppList isSuperAdmin={isSuperAdmin} />} />
                     <Route exact path="">
                         <RedirectToAppList />
                     </Route>

@@ -472,9 +472,4 @@ export interface BranchRegexModalProps {
 }
 export interface AppDetailsProps {
     isV2: boolean
-    setIsGettingStartedClicked: React.Dispatch<React.SetStateAction<boolean>>
-}
-
-export interface AppHeaderType {
-    setIsGettingStartedClicked: React.Dispatch<React.SetStateAction<boolean>>
 }

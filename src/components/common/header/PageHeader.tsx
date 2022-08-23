@@ -24,7 +24,6 @@ export interface PageHeaderType {
     renderActionButtons?: () => JSX.Element
     showCloseButton?: boolean
     onClose?: () => void
-    setIsGettingStartedClicked?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 function PageHeader({
@@ -42,7 +41,6 @@ function PageHeader({
     renderActionButtons,
     showCloseButton = false,
     onClose,
-    setIsGettingStartedClicked
 }: PageHeaderType) {
     const [showHelpCard, setShowHelpCard] = useState(false)
     const [showLogOutCard, setShowLogOutCard] = useState(false)
@@ -156,7 +154,6 @@ function PageHeader({
                     setShowHelpCard={setShowHelpCard}
                     serverInfo={currentServerInfo.serverInfo}
                     fetchingServerInfo={currentServerInfo.fetchingServerInfo}
-                    setIsGettingStartedClicked={setIsGettingStartedClicked}
                 />
             )}
             {showLogOutCard && (
