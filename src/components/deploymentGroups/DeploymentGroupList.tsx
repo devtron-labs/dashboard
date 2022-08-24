@@ -339,7 +339,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
 
 function NoDeploymentGroups() {
     return (
-        <div className="no-apps empty-state--no-deploymentgroup">
+        <div className="no-apps empty-state__no-deploymentgroup">
             <div className="empty">
                 <img src={noGroups} width="250" height="200" className="empty__img" alt="no apps found"></img>
                 <h1 className="empty__title" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
