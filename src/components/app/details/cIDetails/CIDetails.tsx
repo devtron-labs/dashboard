@@ -111,7 +111,7 @@ export default function CIDetails() {
     const [hasMore, setHasMore] = useState<boolean>(false)
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
-    const [hasMoreLoading,setHasMoreLoading] = useState<boolean>(false)
+    const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
     const [pipelinesLoading, result, pipelinesError] = useAsync(() => getCIPipelines(+appId), [appId])
     const [loading, triggerHistoryResult, triggerHistoryError, reloadTriggerHistory, , dependencyState] = useAsync(
         () => getTriggerHistory(+pipelineId, pagination),
@@ -123,7 +123,7 @@ export default function CIDetails() {
     useInterval(pollHistory, 30000)
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
 
-    useEffect(() => {     
+    useEffect(() => {
         if (loading || !triggerHistoryResult) {
             setTriggerHistory(new Map())
         }
@@ -172,7 +172,7 @@ export default function CIDetails() {
         }
         setTriggerHistory(mapByKey(result?.result || [], 'id'))
     }
-    
+
     if ((!hasMoreLoading && loading) || pipelinesLoading) return <Progressing pageLoader />
     const pipelines: CIPipeline[] = (result?.result || [])?.filter((pipeline) => pipeline.pipelineType !== 'EXTERNAL') // external pipelines not visible in dropdown
     const pipelinesMap = mapByKey(pipelines, 'id')
@@ -263,7 +263,7 @@ export function DetectBottom({ callback }) {
         }
     }, [intersected])
 
-    return <span className='pb-5' ref={target}></span>
+    return <span className="pb-5" ref={target}></span>
 }
 
 export const BuildCard: React.FC<{ triggerDetails: History }> = React.memo(({ triggerDetails }) => {
@@ -462,7 +462,7 @@ const Details: React.FC<BuildDetails> = ({
             return 10000
         } else if (triggerDetails.podStatus && terminalStatus.has(triggerDetails.podStatus.toLowerCase())) {
             return null
-        } else if (terminalStatus.has(triggerDetails.status.toLowerCase())) {
+        } else if (terminalStatus.has(triggerDetails.status?.toLowerCase())) {
             return null
         }
         return 30000 // 30s for normal
@@ -779,7 +779,7 @@ const HistoryLogs: React.FC<{
     return (
         <>
             <div className="trigger-outputs-container">
-                {pipeline.pipelineType === 'LINKED' ? (
+                {pipeline?.pipelineType === 'LINKED' ? (
                     <LinkedCIPipelineView pipeline={pipeline} />
                 ) : (
                     <Switch>
@@ -1166,8 +1166,10 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
 
     const redirectToCreate = () => {
         const ciPipelineId = props?.triggerHistory?.ciPipelineId
-        if(!ciPipelineId)return
-        push(`${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${ciPipelineId}/${URLS.APP_CI_CONFIG}/${ciPipelineId}/build`)
+        if (!ciPipelineId) return
+        push(
+            `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${ciPipelineId}/${URLS.APP_CI_CONFIG}/${ciPipelineId}/build`,
+        )
     }
 
     const severityCount = securityData.severityCount
@@ -1179,7 +1181,7 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
     if (securityData.isLoading) return <Progressing pageLoader />
     if (securityData.isError) return <Reload />
     if (props.triggerHistory.artifactId && !securityData.scanned) {
-        if (!securityData.scanEnabled) return <ScanDisabledView redirectToCreate={redirectToCreate}/>
+        if (!securityData.scanEnabled) return <ScanDisabledView redirectToCreate={redirectToCreate} />
         return <ImageNotScannedView />
     }
     if (props.triggerHistory.artifactId && securityData.scanned && !securityData.vulnerabilities.length)

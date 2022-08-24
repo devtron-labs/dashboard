@@ -54,7 +54,7 @@ export default function HelmAppList({
     const location = useLocation();
     const history = useHistory();
     const params = new URLSearchParams(location.search);
-    
+
     // component load
     useEffect(() => {
         init();
@@ -221,7 +221,7 @@ export default function HelmAppList({
         let _search = payloadParsedFromUrl.appNameSearch;
         let _sortBy = payloadParsedFromUrl.sortBy;
         let _sortOrder = payloadParsedFromUrl.sortOrder;
-        let _filteredHelmAppsList = [...devtronInstalledHelmAppsList, ...externalHelmAppsList];
+        let _filteredHelmAppsList = [...(devtronInstalledHelmAppsList || []), ...(externalHelmAppsList || [])]
 
         // apply project filter
         if (_projects?.length) {
@@ -579,7 +579,7 @@ export default function HelmAppList({
 
         history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}?${params.toString()}`);
     }
-    
+
     function renderPagination(): JSX.Element {
         return (
             filteredHelmAppsList.length > 20 &&

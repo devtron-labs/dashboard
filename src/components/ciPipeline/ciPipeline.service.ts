@@ -297,7 +297,7 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: G
     const ciMaterialSet = new Set()
 
     if (ciPipeline) {
-        materials = ciPipeline.ciMaterial.map((mat) => {
+        materials = ciPipeline.ciMaterial?.map((mat) => {
             ciMaterialSet.add(mat.gitMaterialId)
             return {
                 id: mat.id,
@@ -310,7 +310,7 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: G
                 regex: mat.source.regex,
                 isRegex: mat.isRegex,
             }
-        })
+        }) || []
     }
 
     if (ciPipeline.parentCiPipeline) {

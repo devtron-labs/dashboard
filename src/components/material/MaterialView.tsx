@@ -200,8 +200,23 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     value={"CHECKED"}
                     tabIndex={3}
                     onChange={this.props.handleCheckoutPathCheckbox}
-                    rootClassName="fs-14 cn-9 mb-8 flex left ">
-                    <span className="ml-12">Set Checkout Path (*Required If you’re using multiple Git Repositories)</span>
+                    rootClassName="fs-14 cn-9 mb-8 flex top">
+                    <div className="ml-12">
+                        <span className="mb-4 mt-4 flex left">
+                            Set clone directory
+                            <Tippy
+                                className="default-tt w-200"
+                                arrow={false}
+                                placement="bottom"
+                                content={'Devtron will create the directory and clone the code in it'}
+                            >
+                                <Question className="icon-dim-16 ml-4" />
+                            </Tippy>
+                        </span>
+                        <div className="fs-12 cn-7">
+                            Eg. If your app needs code from multiple git repositories for CI
+                        </div>
+                    </div>
                 </Checkbox>
                 {this.props.isChecked ?
                     <input className="form__input"
@@ -228,7 +243,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     <Question className="icon-dim-16 ml-4" />
                                 </Tippy>
                             </span>
-                            <div className=" fs-12" style={{ color: "#404040" }}>Use this to pull submodules recursively while building the code</div>
+                            <div className="fs-12 cn-7">Use this to pull submodules recursively while building the code</div>
                         </div>
                     </Checkbox>
                 </div>
