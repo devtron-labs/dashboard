@@ -274,7 +274,7 @@ export default function NavigationRoutes() {
                                                 getCurrentServerInfo={getCurrentServerInfo}
                                             />
                                         </Route>
-                                        {(!actionTakenOnOnboarding) || appListCount === 0 && (
+                                        {/* {(!actionTakenOnOnboarding) || appListCount === 0 && ( */}
                                             <>
                                                 <Route path={`/${URLS.GUIDE}`} component={DeployManageGuide} />
                                                 <Route
@@ -287,7 +287,7 @@ export default function NavigationRoutes() {
                                                     )}
                                                 />
                                             </>
-                                        )}
+                                        {/* )} */}
 
                                         <Route>
                                             <RedirectWithSentry />

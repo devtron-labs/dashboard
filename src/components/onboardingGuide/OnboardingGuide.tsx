@@ -5,6 +5,8 @@ import { NavLink, useRouteMatch, useHistory } from 'react-router-dom'
 import { DOCUMENTATION, URLS } from '../../config'
 import './onboardingGuide.scss'
 import PreviewImage from '../../assets/img/ic-preview.png'
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+
 export interface OnboardingGuideProps{
   setActionTakenOnboarding: (actionTaken: boolean) => void
 }
@@ -24,6 +26,9 @@ function OnboardingGuide({setActionTakenOnboarding}: OnboardingGuideProps) {
 
     return (
         <div className="onboarding-container">
+           <button type="button" className="w-100 flex right transparent p-20" onClick={() => {}}>
+                    <Close className="icon-dim-24" />
+                </button>
             <div className="flex h-300 onboarding-header column">
                 <h1 className="fw-6 mb-8">What will you use devtron for?</h1>
                 <p className="fs-14 cn-7">This will help us in guiding you towards relevant product features</p>
