@@ -67,8 +67,12 @@ export function SourceInfo({ appDetails, setDetailed = null, environments, showC
                                 ></span>
                             </div>
                             <div className="flex left">
-                                {message && <span className="ellipsis-right  select-material--w450">{message}</span>}
-                                {message?.length > 73 && <span className='cb-5'>more</span>}
+                                {message && <span className="select-material-message">{message.slice(0, 73)}</span>}
+                                {message?.length > 73 && (
+                                    <span>
+                                        ...<span className="cb-5 ml-4">more</span>
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </div>

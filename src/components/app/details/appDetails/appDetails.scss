@@ -1747,8 +1747,9 @@ table.resource-tree {
     height: 450px;
 }
 
-.select-material--w450 {
-    width: 450px;
+.select-material-message {
+    max-width: 450px;
+    white-space: nowrap;
 }
 
 .app-details-page-wrapper {
