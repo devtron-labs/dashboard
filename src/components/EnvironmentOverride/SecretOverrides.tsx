@@ -84,13 +84,14 @@ export default function SecretOverrides({ parentState, setParentState, ...props 
         }
     }, [loading])
 
-    if (loading && !result) return null
+    if (loading && !result) return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
     if (error) {
         setParentState('failed')
         showError(error)
         if (!result) return null
     }
-    if (parentState === 'loading' || !result) return null
+    if (parentState === 'loading' || !result) return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
+
     let {
         result: { configData, id },
     } = result

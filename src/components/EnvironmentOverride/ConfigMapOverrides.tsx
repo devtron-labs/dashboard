@@ -89,7 +89,7 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
             })
         } catch (error) {}
     }
-    if (parentState === 'loading' || !configmapList) return null
+    if (parentState === 'loading' || !configmapList) return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
 
     if (configmapLoading && !configmapList) {
         return null
