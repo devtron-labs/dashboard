@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { SourceTypeMap, URLS } from '../../config'
 import { components } from 'react-select'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import git from '../../assets/icons/git/git.svg'
@@ -13,9 +13,10 @@ import { SourceMaterialsProps } from './types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { reactSelectStyles } from '../CIPipelineN/ciPipeline.utils'
-import DiscoverChartDetails from '../charts/discoverChartDetail/DiscoverChartDetails'
 
 export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) {
+    const [isProviderChanged, setProviderChanged] = useState(false)
+    const { ciPipelineId } = useParams<{ ciPipelineId: string }>()
     const isMultiGit = props.materials.length > 1
     let _materials = props.materials
     let _webhookTypeMaterial = _materials.find((_material) => _material.type == SourceTypeMap.WEBHOOK)
@@ -96,9 +97,17 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
             {_materials.map((mat, index) => {
                 const isBranchRegex = mat.type === SourceTypeMap.BranchRegex || mat.isRegex
                 const isBranchFixed = mat.type === SourceTypeMap.BranchFixed && !mat.isRegex
+                const _selectedWebhookEvent =
+                    mat.type === SourceTypeMap.WEBHOOK && props.webhookData.getSelectedWebhookEvent(mat)
                 let selectedMaterial
 
-                if (props.ciPipelineSourceTypeOptions.length == 1) {
+                if (props.includeWebhookEvents && mat.type === SourceTypeMap.WEBHOOK && !_selectedWebhookEvent) {
+                    selectedMaterial = null
+
+                    if (!isProviderChanged) {
+                        setProviderChanged(true)
+                    }
+                } else if (props.ciPipelineSourceTypeOptions.length == 1) {
                     selectedMaterial = props.ciPipelineSourceTypeOptions[0]
                 } else {
                     selectedMaterial =
@@ -132,10 +141,13 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                         menuPortalTarget={document.getElementById('visible-modal')}
                                         options={props.ciPipelineSourceTypeOptions}
                                         value={selectedMaterial}
-                                        closeMenuOnSelect={false}
+                                        closeMenuOnSelect={true}
                                         onChange={(selected) => props?.selectSourceType(selected, mat.gitMaterialId)}
                                         isClearable={false}
-                                        isDisabled={!!mat.id}
+                                        isDisabled={
+                                            ciPipelineId !== '0' &&
+                                            (props.includeWebhookEvents ? !isProviderChanged : !!mat.id)
+                                        }
                                         isMulti={false}
                                         components={{
                                             DropdownIndicator,
@@ -170,7 +182,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                 placeholder="Eg. main"
                                                 type="text"
                                                 disabled={!props.handleSourceChange}
-                                                value={mat.value}
+                                                value={mat.value?.startsWith('{"eventId"') ? '' : mat.value}
                                                 onChange={(event) => {
                                                     props?.handleSourceChange(
                                                         event,
@@ -235,11 +247,11 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             </div>
                         )}
 
-                        {props.includeWebhookEvents && mat.type == SourceTypeMap.WEBHOOK && (
+                        {props.includeWebhookEvents && mat.type == SourceTypeMap.WEBHOOK && _selectedWebhookEvent && (
                             <ConfigureWebhook
                                 webhookConditionList={props.webhookData.webhookConditionList}
                                 gitHost={props.webhookData.gitHost}
-                                selectedWebhookEvent={props.webhookData.getSelectedWebhookEvent(mat)}
+                                selectedWebhookEvent={_selectedWebhookEvent}
                                 copyToClipboard={props.webhookData.copyToClipboard}
                                 addWebhookCondition={props.webhookData.addWebhookCondition}
                                 deleteWebhookCondition={props.webhookData.deleteWebhookCondition}

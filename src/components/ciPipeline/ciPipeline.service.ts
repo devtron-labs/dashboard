@@ -439,7 +439,7 @@ function parseCIResponse(
                 const _eventId = getEventIdFromMaterialValue(_materialValue)
                 const _webhookEvent = webhookEvents.find((i) => i.id === _eventId)
                 ciPipelineSourceTypeOptions.forEach((_ciPipelineSourceTypeOption) => {
-                    _ciPipelineSourceTypeOption.isSelected = _ciPipelineSourceTypeOption.label === _webhookEvent.name
+                    _ciPipelineSourceTypeOption.isSelected = _ciPipelineSourceTypeOption.label === _webhookEvent?.name
                 })
             }
         }
