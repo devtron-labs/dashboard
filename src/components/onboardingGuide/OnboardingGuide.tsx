@@ -5,18 +5,21 @@ import { NavLink, useRouteMatch, useHistory } from 'react-router-dom'
 import { DOCUMENTATION, URLS } from '../../config'
 import './onboardingGuide.scss'
 import PreviewImage from '../../assets/img/ic-preview.png'
-import { getAppList } from '../app/service'
-
-export interface OnboardingGuide {
-  onClickSetActionButtonToTrue: () => void
+export interface OnboardingGuideProps{
+  setActionTakenOnboarding: (actionTaken: boolean) => void
 }
-
-function OnboardingGuide({onClickSetActionButtonToTrue}) {
+function OnboardingGuide({setActionTakenOnboarding}: OnboardingGuideProps) {
     const match = useRouteMatch()
     const history = useHistory()
 
     const redirectToDeployGuide = () => {
         history.push(`/${URLS.GUIDE}`)
+    }
+
+    const onClickSetActionButtonToTrue = () => {
+      localStorage.setItem('actionTakenOnOnboarding', 'true')
+      let isActionTaken = localStorage.getItem('actionTakenOnOnboarding')
+      setActionTakenOnboarding(JSON.parse(isActionTaken))
     }
 
     return (
@@ -40,7 +43,7 @@ function OnboardingGuide({onClickSetActionButtonToTrue}) {
                             </div>
                         </a>
                     </div>
-                    <div className="onboarding-card__left bcn-0 w-300 br-4 en-2 bw-1 cursor">
+                    <div className="onboarding-card__left bcn-0 w-300 br-4 en-2 bw-1 cursor" onClick={onClickSetActionButtonToTrue}>
                         <NavLink
                             to={`${match.path}/${URLS.GUIDE}`}
                             className="no-decor fw-6 cursor cn-9"
@@ -60,7 +63,7 @@ function OnboardingGuide({onClickSetActionButtonToTrue}) {
                         </NavLink>
                     </div>
 
-                    <div className="bcn-0 w-300 br-4 en-2 bw-1 cursor">
+                    <div className="bcn-0 w-300 br-4 en-2 bw-1 cursor" onClick={onClickSetActionButtonToTrue}>
                         <NavLink
                             to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`}
                             className="no-decor fw-6 cursor cn-9"

@@ -45,7 +45,6 @@ export default function AppList({isSuperAdmin} : AppListProps) {
     const [lastDataSync, setLastDataSync] = useState(false)
     const [fetchingNamespaces, setFetchingNamespaces] = useState(false)
     const [fetchingNamespacesErrored, setFetchingNamespacesErrored] = useState(false)
-
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({})
     const [currentTab, setCurrentTab] = useState(undefined)
     const [showCreateNewAppSelectionModal, setShowCreateNewAppSelectionModal] = useState(false)
@@ -68,10 +67,6 @@ export default function AppList({isSuperAdmin} : AppListProps) {
     })
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
-
-    //sample app modal
-    const [showSampleAppModal, setShowSampleAppModal] = useState(false)
-    const [isSelectedCard, setIsSelectedCard] = useState(false)
 
     // on page load
     useEffect(() => {

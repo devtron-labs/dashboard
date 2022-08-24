@@ -6,7 +6,7 @@ import { ReactComponent as Discord } from '../../assets/icons/ic-discord-fill.sv
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Chat } from '../../assets/icons/ic-chat-circle-dots.svg'
 import { InstallationType, ServerInfo } from '../v2/devtronStackManager/DevtronStackManager.type'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useHistory } from 'react-router-dom'
 import { ReactComponent as GettingStartedIcon } from '../../assets/icons/ic-onboarding.svg'
 
 export interface HelpNavType {
@@ -18,6 +18,8 @@ export interface HelpNavType {
 }
 
 function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchingServerInfo }: HelpNavType) {
+  const history = useHistory()
+
     const HelpOptions = [
         {
             name: 'View documentation',
@@ -44,12 +46,16 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
         },
     ]
 
+    const onClickGettingStarted = () => {
+      localStorage.setItem('actionTakenOnOnboarding', 'false')
+      history.push('/')
+    }
 
     return (
         <div className="transparent-div" onClick={() => setShowHelpCard(!showHelpCard)}>
             <div className={`help-card pt-4 pb-4 ${className}`}>
-                <div className="help-card__option" >
-                    <NavLink to={`/`} className="no-decor help-card__link flex left cn-9" activeClassName="active" >
+                <div className="help-card__option" onClick={onClickGettingStarted}>
+                    <NavLink to={`/`} className="no-decor help-card__link flex left cn-9" activeClassName="active" onClick={onClickGettingStarted}>
                         <GettingStartedIcon />
                         <div  className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
                     </NavLink>

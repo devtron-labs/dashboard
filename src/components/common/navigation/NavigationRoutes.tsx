@@ -54,7 +54,6 @@ export default function NavigationRoutes() {
     const [loginCount, setLoginCount] = useState(0)
     const [isSuperAdmin, setSuperAdmin] = useState(false)
     const [actionTakenOnOnboarding, setActionTakenOnboarding] = useState(false)
-    const [isGettingStartedClicked, setIsGettingStartedButtonClicked] = useState(false)
     const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
     const [appListCount, setAppListCount] = useState(undefined)
     const [expiryDate, setExpiryDate] = useState(0)
@@ -62,7 +61,6 @@ export default function NavigationRoutes() {
     const hideGettingStartedCard = () => {
         setShowGettingStartedCard(false)
     }
-
 
     const showCloseButtonAfterGettingStartedClicked = () => {
         setIsHelpGettingStartedClicked(true)
@@ -199,11 +197,6 @@ export default function NavigationRoutes() {
     } else if (pageState === ViewType.ERROR) {
         return <Reload />
     } else {
-        const onClickSetActionButtonToTrue = () => {
-            setActionTakenOnboarding(true)
-        }
-
-        const showOnboardingPage = isSuperAdmin && !actionTakenOnOnboarding
 
         const getExpired = (): boolean => {
             // Render Getting started tippy card if the time gets expired
@@ -236,7 +229,7 @@ export default function NavigationRoutes() {
                     />
                     {showGettingStartedCard && loginCount > 0 && loginCount < 5 && getExpired() && (
                         <GettingStartedCard
-                            className='w-300'
+                            className="w-300"
                             showHelpCard={false}
                             hideGettingStartedCard={hideGettingStartedCard}
                             loginCount={loginCount}
@@ -245,7 +238,7 @@ export default function NavigationRoutes() {
                     {serverMode && (
                         <div
                             className={`main ${pageOverflowEnabled ? '' : 'main__overflow-disabled'} ${
-                                showOnboardingPage ? 'main__onboarding-page' : 'main'
+                                !actionTakenOnOnboarding ? 'main__onboarding-page' : 'main'
                             }`}
                         >
                             <Suspense fallback={<Progressing pageLoader />}>
@@ -253,11 +246,7 @@ export default function NavigationRoutes() {
                                     <Switch>
                                         <Route
                                             path={URLS.APP}
-                                            render={() => (
-                                                <AppRouter
-                                                    isSuperAdmin={isSuperAdmin}
-                                                />
-                                            )}
+                                            render={() => <AppRouter isSuperAdmin={isSuperAdmin} />}
                                         />
                                         <Route path={URLS.CHARTS} render={() => <Charts />} />
                                         <Route
@@ -285,16 +274,15 @@ export default function NavigationRoutes() {
                                                 getCurrentServerInfo={getCurrentServerInfo}
                                             />
                                         </Route>
-                                        {(showOnboardingPage || appListCount === 0) && (
+                                        {(!actionTakenOnOnboarding) || appListCount === 0 && (
                                             <>
                                                 <Route path={`/${URLS.GUIDE}`} component={DeployManageGuide} />
-
                                                 <Route
                                                     exact
                                                     path={'/'}
                                                     render={() => (
                                                         <OnboardingGuide
-                                                            onClickSetActionButtonToTrue={onClickSetActionButtonToTrue}
+                                                        setActionTakenOnboarding={setActionTakenOnboarding}
                                                         />
                                                     )}
                                                 />
