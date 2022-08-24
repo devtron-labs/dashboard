@@ -9,25 +9,13 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { OpaqueModal } from '../common'
 
 export interface OnboardingGuideProps {
-    setActionTakenOnboarding: (actionTaken: boolean) => void
     loginCount: number
     isSuperAdmin: boolean
     serverMode: string
-    devtronHelmCount: number
 }
-function OnboardingGuide({ setActionTakenOnboarding, isSuperAdmin, loginCount, serverMode, devtronHelmCount }: OnboardingGuideProps) {
+function OnboardingGuide({loginCount, serverMode }: OnboardingGuideProps) {
     const match = useRouteMatch()
     const history = useHistory()
-
-    const redirectToDeployGuide = () => {
-        history.push(`/${URLS.GUIDE}`)
-    }
-
-    const onClickSetActionButtonToTrue = () => {
-        localStorage.setItem('actionTakenOnOnboarding', 'true')
-        let isActionTaken = localStorage.getItem('actionTakenOnOnboarding')
-        setActionTakenOnboarding(JSON.parse(isActionTaken))
-    }
 
     const onClickCloseButton = () => {
         history.goBack()
@@ -44,7 +32,7 @@ function OnboardingGuide({ setActionTakenOnboarding, isSuperAdmin, loginCount, s
     return (
         <OpaqueModal>
             <div className="onboarding-container h-100">
-                <div className='onboarding-header bcn-1'>
+                <div className="bc-window bcn-1">
                     {loginCount > 1 && (
                         <button
                             type="button"
@@ -75,15 +63,11 @@ function OnboardingGuide({ setActionTakenOnboarding, isSuperAdmin, loginCount, s
                                 </div>
                             </a>
                         </div>
-                        <div
-                            className="onboarding-card__left bcn-0 w-300 br-4 en-2 bw-1 cursor"
-                            onClick={onClickSetActionButtonToTrue}
-                        >
+                        <div className="onboarding-card__left bcn-0 w-300 br-4 en-2 bw-1 cursor">
                             <NavLink
                                 to={`${match.path}/${URLS.GUIDE}`}
                                 className="no-decor fw-6 cursor cn-9"
                                 activeClassName="active"
-                                onClick={redirectToDeployGuide}
                             >
                                 <img
                                     className="onboarding-card__img"
@@ -98,7 +82,7 @@ function OnboardingGuide({ setActionTakenOnboarding, isSuperAdmin, loginCount, s
                             </NavLink>
                         </div>
 
-                        <div className="bcn-0 w-300 br-4 en-2 bw-1 cursor" onClick={onClickSetActionButtonToTrue}>
+                        <div className="bcn-0 w-300 br-4 en-2 bw-1 cursor">
                             <NavLink
                                 to={redirectDeployCardToCICD()}
                                 className="no-decor fw-6 cursor cn-9"
@@ -118,11 +102,7 @@ function OnboardingGuide({ setActionTakenOnboarding, isSuperAdmin, loginCount, s
                         </div>
                     </div>
                     <div className="fs-14 mt-120 flex column">
-                        <NavLink
-                            to={`${URLS.APP}/${URLS.APP_LIST}`}
-                            className="cb-5 fw-6 cursor mb-8"
-                            onClick={onClickSetActionButtonToTrue}
-                        >
+                        <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="cb-5 fw-6 cursor mb-8">
                             Skip and explore Devtron on your own
                         </NavLink>
                         <div className="cn-7">Tip: You can return here anytime from the Help menu</div>

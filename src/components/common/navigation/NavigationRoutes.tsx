@@ -22,7 +22,7 @@ import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.typ
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import ClusterNodeContainer from '../../ClusterNodes/ClusterNodeContainer'
 import DeployManageGuide from '../../onboardingGuide/DeployManageGuide'
-import { showError } from '../helpers/Helpers'
+import { showError, useAsync } from '../helpers/Helpers'
 import GettingStartedCard from '../gettingStartedCard/GettingStarted'
 import { getDevtronInstalledHelmApps } from '../../app/list-new/AppListService'
 
@@ -53,12 +53,12 @@ export default function NavigationRoutes() {
     )
     const [isHelpGettingStartedClicked, setIsHelpGettingStartedClicked] = useState(false)
     const [loginCount, setLoginCount] = useState(0)
-    const [isSuperAdmin, setSuperAdmin] = useState(false)
-    const [actionTakenOnOnboarding, setActionTakenOnboarding] = useState(false)
     const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
-    const [appListCount, setAppListCount] = useState(undefined)
     const [expiryDate, setExpiryDate] = useState(0)
-    const [devtronHelmCount, setDevtronHelmCount] = useState(0)
+    const [isSuperAdmin, setSuperAdmin] = useState(false)
+    const [appListCount, setAppListCount] = useState(0)
+    const [loginLoader, setLoginLoader] = useState(true)
+
     const hideGettingStartedCard = () => {
         setShowGettingStartedCard(false)
     }
@@ -67,29 +67,32 @@ export default function NavigationRoutes() {
         setIsHelpGettingStartedClicked(true)
     }
 
+    const getInit = () => {
+        Promise.all([getUserRole(), getAppListMin()]).then(
+            (response) => {
+                setSuperAdmin(response[0].result.superAdmin)
+                setAppListCount(response[1].result.length)
+                setLoginLoader(false)
+            },
+            (err) => {
+                setLoginLoader(false)
+                showError(err)
+            },
+        )
+    }
+
+    useEffect(() => {
+        getInit()
+    }, [])
+
     useEffect(() => {
         const expDate = localStorage.getItem('clickedOkay')
         setExpiryDate(+expDate)
     }, [])
 
     useEffect(() => {
-        try {
-            getUserRole().then((response) => {
-                setSuperAdmin(response.result?.superAdmin)
-            })
-        } catch (err) {
-            showError(err)
-        }
-    }, [])
-
-    useEffect(() => {
         const loginInfo = getLoginInfo()
-        getAppListMin().then((response) => {
-            setAppListCount(response.result?.length)
-        })
-        getDevtronInstalledHelmApps('').then((response) => {
-            setDevtronHelmCount(response.result.helmApps.length)
-        })
+
         if (process.env.NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
@@ -128,15 +131,16 @@ export default function NavigationRoutes() {
         if (!loginInfo) return
 
         getLoginData().then((response) => {
-            const count = response.result.value ? parseInt(response.result.value) : 0
+            const count = response.result?.value ? parseInt(response.result.value) : 0
             setLoginCount(count || 1)
-            if (count < 5) {
-                const updatedPayload = {
-                    key: 'login-count',
-                    value: `${count + 1}`,
-                }
-                updateLoginCount(updatedPayload)
+            // if (count < 5) {
+            const updatedPayload = {
+                key: 'login-count',
+                // value: `${count + 1}`,
+                value: `1`,
             }
+            updateLoginCount(updatedPayload)
+            // }
             if (!count) {
                 history.push('/')
             }
@@ -199,7 +203,7 @@ export default function NavigationRoutes() {
         }
     }
 
-    if (pageState === ViewType.LOADING) {
+    if (pageState === ViewType.LOADING || loginLoader) {
         return <Progressing pageLoader />
     } else if (pageState === ViewType.ERROR) {
         return <Reload />
@@ -243,11 +247,7 @@ export default function NavigationRoutes() {
                         />
                     )}
                     {serverMode && (
-                        <div
-                            className={`main ${pageOverflowEnabled ? '' : 'main__overflow-disabled'} ${
-                                !actionTakenOnOnboarding ? 'main__onboarding-page' : 'main'
-                            }`}
-                        >
+                        <div className={`main ${pageOverflowEnabled ? '' : 'main__overflow-disabled'}`}>
                             <Suspense fallback={<Progressing pageLoader />}>
                                 <ErrorBoundary>
                                     <Switch>
@@ -281,20 +281,23 @@ export default function NavigationRoutes() {
                                                 getCurrentServerInfo={getCurrentServerInfo}
                                             />
                                         </Route>
-                                        <Route path={`/${URLS.GUIDE}`}>
-                                            <DeployManageGuide devtronHelmCount={devtronHelmCount}/>
-                                        </Route>
-                                        <Route exact path={'/'}>
+                                        <Route exact path={`/${URLS.GETTING_STARTED}`}>
                                             <OnboardingGuide
-                                                setActionTakenOnboarding={setActionTakenOnboarding}
                                                 loginCount={loginCount}
                                                 isSuperAdmin={isSuperAdmin}
                                                 serverMode={serverMode}
-                                                devtronHelmCount={devtronHelmCount}
                                             />
                                         </Route>
+
+                                        <Route path={`/${URLS.GETTING_STARTED}/${URLS.GUIDE}`}>
+                                            <DeployManageGuide />
+                                        </Route>
+
+                                        {/* <Route exact path={'/'}>
+                                          <RedirectUserToOnboarding isFirstLoginUser={isFirstLoginUser}/>
+                                        </Route> */}
                                         <Route>
-                                            <RedirectWithSentry />
+                                            <RedirectUserToOnboarding isFirstLoginUser={ isSuperAdmin && appListCount !== 0}  />
                                         </Route>
                                     </Switch>
                                 </ErrorBoundary>
@@ -380,6 +383,20 @@ export function RedirectWithSentry() {
     useEffect(() => {
         if (pathname && pathname !== '/') Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
         push(`${URLS.APP}/${URLS.APP_LIST}`)
+    }, [])
+    return null
+}
+
+export function RedirectUserToOnboarding({ isFirstLoginUser }) {
+    const { push } = useHistory()
+    const { pathname } = useLocation()
+    useEffect(() => {
+      if (pathname && pathname !== '/') Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
+        if (isFirstLoginUser) {
+            push(`${URLS.GETTING_STARTED}`)
+        } else {
+            push(`${URLS.APP}/${URLS.APP_LIST}`)
+        }
     }, [])
     return null
 }
