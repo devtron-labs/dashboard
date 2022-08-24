@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import HelmCollage from '../../assets/img/helm-collage.png'
 import DeployCICD from '../../assets/img/guide-onboard.png'
 import { NavLink, useRouteMatch, useHistory } from 'react-router-dom'
-import { DOCUMENTATION, URLS } from '../../config'
+import { DOCUMENTATION, SERVER_MODE, URLS } from '../../config'
 import './onboardingGuide.scss'
 import PreviewImage from '../../assets/img/ic-preview.png'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -12,8 +12,10 @@ export interface OnboardingGuideProps {
     setActionTakenOnboarding: (actionTaken: boolean) => void
     loginCount: number
     isSuperAdmin: boolean
+    serverMode: string
+    devtronHelmCount: number
 }
-function OnboardingGuide({ setActionTakenOnboarding, isSuperAdmin, loginCount }: OnboardingGuideProps) {
+function OnboardingGuide({ setActionTakenOnboarding, isSuperAdmin, loginCount, serverMode, devtronHelmCount }: OnboardingGuideProps) {
     const match = useRouteMatch()
     const history = useHistory()
 
@@ -31,18 +33,32 @@ function OnboardingGuide({ setActionTakenOnboarding, isSuperAdmin, loginCount }:
         history.goBack()
     }
 
+    const redirectDeployCardToCICD = () : string => {
+      if (serverMode === SERVER_MODE.FULL) {
+       return `${URLS.APP}/${URLS.APP_LIST}`
+    } else {
+      return `${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`
+    }
+    }
+
     return (
         <OpaqueModal>
-            <div className="onboarding-container">
-                {loginCount > 1 && (
-                    <button type="button" className="w-100 flex right transparent p-20" onClick={onClickCloseButton}>
-                        <Close className="icon-dim-24" />
-                    </button>
-                )}
+            <div className="onboarding-container h-100">
+                <div className='onboarding-header bcn-1'>
+                    {loginCount > 1 && (
+                        <button
+                            type="button"
+                            className="w-100 flex right transparent p-20"
+                            onClick={onClickCloseButton}
+                        >
+                            <Close className="icon-dim-24" />
+                        </button>
+                    )}
 
-                <div className="flex h-300 onboarding-header column">
-                    <h1 className="fw-6 mb-8">What will you use devtron for?</h1>
-                    <p className="fs-14 cn-7">This will help us in guiding you towards relevant product features</p>
+                    <div className="flex h-300  column">
+                        <h1 className="fw-6 mb-8">What will you use devtron for?</h1>
+                        <p className="fs-14 cn-7">This will help us in guiding you towards relevant product features</p>
+                    </div>
                 </div>
                 <div className="bcn-0 onboarding-body flex position-rel cn-9">
                     <div className="onboarding-cards__wrap">
@@ -84,7 +100,7 @@ function OnboardingGuide({ setActionTakenOnboarding, isSuperAdmin, loginCount }:
 
                         <div className="bcn-0 w-300 br-4 en-2 bw-1 cursor" onClick={onClickSetActionButtonToTrue}>
                             <NavLink
-                                to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`}
+                                to={redirectDeployCardToCICD()}
                                 className="no-decor fw-6 cursor cn-9"
                                 activeClassName="active"
                             >

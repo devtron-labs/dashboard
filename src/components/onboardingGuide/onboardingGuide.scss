@@ -1,5 +1,5 @@
 .onboarding-body {
-    height: calc(100vh - 300px);
+    height: calc(100vh - 364px);
 }
 
 .onboarding-container {
@@ -9,6 +9,10 @@
         grid-gap: 20px;
         position: absolute;
         top: -80px;
+    }
+
+    .onboarding-header{
+       background: var(--window-bg);
     }
 
     .onboarding-card__img {
@@ -31,5 +35,9 @@
         grid-gap: 20px;
         position: absolute;
         top: 240px;
+    }
+
+    .deploy-manage__body{
+      height: calc(100vh - 300px);
     }
 }

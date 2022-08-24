@@ -9,7 +9,10 @@ import { ReactComponent as GoBack } from '../../assets/icons/ic-arrow-forward.sv
 import './onboardingGuide.scss'
 import ReactGA from 'react-ga'
 
-function DeployManageGuide() {
+export interface DeployManageGuideProps {
+    devtronHelmCount: number
+}
+function DeployManageGuide({ devtronHelmCount }: DeployManageGuideProps) {
     const history = useHistory()
 
     const redirectToOnboardingPage = () => {
@@ -25,7 +28,7 @@ function DeployManageGuide() {
 
     return (
         <div className="deploy-manage-container">
-            <div className="flex h-300 guide-header">
+            <div className="deploy-manage__header flex h-300">
                 <div className="bcn-0 deploy_arrow flex cursor" onClick={redirectToOnboardingPage}>
                     <GoBack className="rotate icon-dim-24" style={{ ['--rotateBy' as any]: '180deg' }} />
                 </div>
@@ -34,27 +37,30 @@ function DeployManageGuide() {
                     <p className="fs-14 cn-7">This helps us in guiding you towards relevant product features</p>
                 </div>
             </div>
-            <div className="bcn-0 guide-body flex">
+            <div className="deploy-manage__body bcn-0 flex">
                 <div className="deploy-manage-cards__wrap">
-                    <div className="deploy-card bcn-0  flex w-400 br-4 en-2 bw-1 ">
-                        <img
-                            className=" bcn-1"
-                            src={HelmSearch}
-                            width="200"
-                            height="150"
-                            alt="Please connect cluster"
-                        />
-                        <div className="fw-6 fs-16 pl-20 pr-20">
-                            3 helm applications found in default_cluster <br />
-                            <NavLink
-                                to={`${URLS.APP}/${URLS.APP_LIST}`}
-                                activeClassName="active"
-                                onClick={onClickViewApplication}
-                            >
-                                View applications
-                            </NavLink>
+                    {devtronHelmCount < 0 && (
+                        <div className="deploy-card bcn-0 flex w-400 br-4 en-2 bw-1 ">
+                            <img
+                                className=" bcn-1"
+                                src={HelmSearch}
+                                width="200"
+                                height="150"
+                                alt="Please connect cluster"
+                            />
+                            <div className="fw-6 fs-16 pl-20 pr-20">
+                                {devtronHelmCount} helm applications found in default_cluster <br />
+                                <NavLink
+                                    to={`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`}
+                                    activeClassName="active"
+                                    onClick={onClickViewApplication}
+                                >
+                                    View applications
+                                </NavLink>
+                            </div>
                         </div>
-                    </div>
+                    )}
+
                     <div className="deploy-card bcn-0 flex w-400 br-4 en-2 bw-1 ">
                         <img
                             className=" bcn-1"

@@ -24,6 +24,7 @@ import ClusterNodeContainer from '../../ClusterNodes/ClusterNodeContainer'
 import DeployManageGuide from '../../onboardingGuide/DeployManageGuide'
 import { showError } from '../helpers/Helpers'
 import GettingStartedCard from '../gettingStartedCard/GettingStarted'
+import { getDevtronInstalledHelmApps } from '../../app/list-new/AppListService'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -57,7 +58,7 @@ export default function NavigationRoutes() {
     const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
     const [appListCount, setAppListCount] = useState(undefined)
     const [expiryDate, setExpiryDate] = useState(0)
-
+    const [devtronHelmCount, setDevtronHelmCount] = useState(0)
     const hideGettingStartedCard = () => {
         setShowGettingStartedCard(false)
     }
@@ -85,6 +86,9 @@ export default function NavigationRoutes() {
         const loginInfo = getLoginInfo()
         getAppListMin().then((response) => {
             setAppListCount(response.result?.length)
+        })
+        getDevtronInstalledHelmApps('').then((response) => {
+            setDevtronHelmCount(response.result.helmApps.length)
         })
         if (process.env.NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
@@ -133,8 +137,8 @@ export default function NavigationRoutes() {
                 }
                 updateLoginCount(updatedPayload)
             }
-            if(!count){
-              history.push('/')
+            if (!count) {
+                history.push('/')
             }
         })
 
@@ -277,14 +281,18 @@ export default function NavigationRoutes() {
                                                 getCurrentServerInfo={getCurrentServerInfo}
                                             />
                                         </Route>
-                                        <Route path={`/${URLS.GUIDE}`} component={DeployManageGuide} />
-                                        <Route
-                                            exact
-                                            path={'/'}
-                                            render={() => (
-                                                <OnboardingGuide setActionTakenOnboarding={setActionTakenOnboarding} loginCount={loginCount} isSuperAdmin={isSuperAdmin}/>
-                                            )}
-                                        />
+                                        <Route path={`/${URLS.GUIDE}`}>
+                                            <DeployManageGuide devtronHelmCount={devtronHelmCount}/>
+                                        </Route>
+                                        <Route exact path={'/'}>
+                                            <OnboardingGuide
+                                                setActionTakenOnboarding={setActionTakenOnboarding}
+                                                loginCount={loginCount}
+                                                isSuperAdmin={isSuperAdmin}
+                                                serverMode={serverMode}
+                                                devtronHelmCount={devtronHelmCount}
+                                            />
+                                        </Route>
                                         <Route>
                                             <RedirectWithSentry />
                                         </Route>
