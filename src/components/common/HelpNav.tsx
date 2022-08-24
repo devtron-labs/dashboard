@@ -48,7 +48,6 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
 
     const onClickGettingStarted = () => {
       localStorage.setItem('actionTakenOnOnboarding', 'false')
-      history.push('/')
     }
 
     return (

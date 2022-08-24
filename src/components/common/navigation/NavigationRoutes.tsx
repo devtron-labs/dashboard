@@ -133,6 +133,9 @@ export default function NavigationRoutes() {
                 }
                 updateLoginCount(updatedPayload)
             }
+            if(!count){
+              history.push('/')
+            }
         })
 
         if (typeof Storage !== 'undefined') {
@@ -274,21 +277,14 @@ export default function NavigationRoutes() {
                                                 getCurrentServerInfo={getCurrentServerInfo}
                                             />
                                         </Route>
-                                        {/* {(!actionTakenOnOnboarding) || appListCount === 0 && ( */}
-                                            <>
-                                                <Route path={`/${URLS.GUIDE}`} component={DeployManageGuide} />
-                                                <Route
-                                                    exact
-                                                    path={'/'}
-                                                    render={() => (
-                                                        <OnboardingGuide
-                                                        setActionTakenOnboarding={setActionTakenOnboarding}
-                                                        />
-                                                    )}
-                                                />
-                                            </>
-                                        {/* )} */}
-
+                                        <Route path={`/${URLS.GUIDE}`} component={DeployManageGuide} />
+                                        <Route
+                                            exact
+                                            path={'/'}
+                                            render={() => (
+                                                <OnboardingGuide setActionTakenOnboarding={setActionTakenOnboarding} loginCount={loginCount} isSuperAdmin={isSuperAdmin}/>
+                                            )}
+                                        />
                                         <Route>
                                             <RedirectWithSentry />
                                         </Route>

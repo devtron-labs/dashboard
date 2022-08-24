@@ -6,11 +6,14 @@ import { DOCUMENTATION, URLS } from '../../config'
 import './onboardingGuide.scss'
 import PreviewImage from '../../assets/img/ic-preview.png'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { OpaqueModal } from '../common'
 
 export interface OnboardingGuideProps{
   setActionTakenOnboarding: (actionTaken: boolean) => void
+  loginCount: number
+  isSuperAdmin:boolean
 }
-function OnboardingGuide({setActionTakenOnboarding}: OnboardingGuideProps) {
+function OnboardingGuide({setActionTakenOnboarding, isSuperAdmin, loginCount}: OnboardingGuideProps) {
     const match = useRouteMatch()
     const history = useHistory()
 
@@ -25,10 +28,14 @@ function OnboardingGuide({setActionTakenOnboarding}: OnboardingGuideProps) {
     }
 
     return (
+      <OpaqueModal >
         <div className="onboarding-container">
-           <button type="button" className="w-100 flex right transparent p-20" onClick={() => {}}>
+            { loginCount > 1 && (
+                <button type="button" className="w-100 flex right transparent p-20" onClick={() => history.goBack()}>
                     <Close className="icon-dim-24" />
                 </button>
+            )}
+
             <div className="flex h-300 onboarding-header column">
                 <h1 className="fw-6 mb-8">What will you use devtron for?</h1>
                 <p className="fs-14 cn-7">This will help us in guiding you towards relevant product features</p>
@@ -48,7 +55,10 @@ function OnboardingGuide({setActionTakenOnboarding}: OnboardingGuideProps) {
                             </div>
                         </a>
                     </div>
-                    <div className="onboarding-card__left bcn-0 w-300 br-4 en-2 bw-1 cursor" onClick={onClickSetActionButtonToTrue}>
+                    <div
+                        className="onboarding-card__left bcn-0 w-300 br-4 en-2 bw-1 cursor"
+                        onClick={onClickSetActionButtonToTrue}
+                    >
                         <NavLink
                             to={`${match.path}/${URLS.GUIDE}`}
                             className="no-decor fw-6 cursor cn-9"
@@ -88,13 +98,18 @@ function OnboardingGuide({setActionTakenOnboarding}: OnboardingGuideProps) {
                     </div>
                 </div>
                 <div className="fs-14 mt-120 flex column">
-                    <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="cb-5 fw-6 cursor mb-8" onClick={onClickSetActionButtonToTrue}>
+                    <NavLink
+                        to={`${URLS.APP}/${URLS.APP_LIST}`}
+                        className="cb-5 fw-6 cursor mb-8"
+                        onClick={onClickSetActionButtonToTrue}
+                    >
                         Skip and explore Devtron on your own
                     </NavLink>
                     <div className="cn-7">Tip: You can return here anytime from the Help menu</div>
                 </div>
             </div>
         </div>
+        </OpaqueModal>
     )
 }
 
