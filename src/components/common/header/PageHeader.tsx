@@ -52,8 +52,6 @@ function PageHeader({
             fetchingServerInfo: false,
         },
     )
-    const [isGettingStartedClicked, setIsGettingStartedButtonClicked] = useState(false)
-
     const getCurrentServerInfo = async () => {
         try {
             const { result } = await getServerInfo()

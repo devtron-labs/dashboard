@@ -54,7 +54,7 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
         <div className="transparent-div" onClick={() => setShowHelpCard(!showHelpCard)}>
             <div className={`help-card pt-4 pb-4 ${className}`}>
                 <div className="help-card__option" onClick={onClickGettingStarted}>
-                    <NavLink to={`/`} className="no-decor help-card__link flex left cn-9" activeClassName="active" onClick={onClickGettingStarted}>
+                    <NavLink to="/" className="no-decor help-card__link flex left cn-9" activeClassName="active" onClick={onClickGettingStarted}>
                         <GettingStartedIcon />
                         <div  className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
                     </NavLink>
