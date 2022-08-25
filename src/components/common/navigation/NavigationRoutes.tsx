@@ -218,7 +218,6 @@ export default function NavigationRoutes() {
                     showCloseButtonAfterGettingStartedClicked,
                 }}
             >
-              {console.log(match)}
                 <main className={`${window.location.href.includes(URLS.GETTING_STARTED) ? 'no-nav' : ''}`}>
                     {!window.location.href.includes(URLS.GETTING_STARTED) && (
                         <Navigation

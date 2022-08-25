@@ -47,20 +47,24 @@ function OnboardingGuide({ loginCount, serverMode }: OnboardingGuideProps) {
                             rel="noreferrer noopener"
                             target="_blank"
                         >
-                            <img className="onboarding-card__img" src={PreviewImage} width="250" height="250" />
+                            <img className="onboarding-card__img top-radius-4" src={PreviewImage} />
                             <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
                                 Explore a preconfigured Demo at <span className="cb-5">preview.devtron.ai</span>
                             </div>
                         </a>
                     </div>
                     <div className="onboarding__line" />
-                    <div className="onboarding-card__left bcn-0 w-300 br-4 en-2 bw-1 cursor">
+                    <div className=" bcn-0 w-300 br-4 en-2 bw-1 cursor">
                         <NavLink
                             to={`${match.path}/${URLS.GUIDE}`}
                             className="no-decor fw-6 cursor cn-9"
                             activeClassName="active"
                         >
-                            <img className="onboarding-card__img" src={HelmCollage} alt="Please connect cluster" />
+                            <img
+                                className="onboarding-card__img top-radius-4"
+                                src={HelmCollage}
+                                alt="Deploy and manage helm"
+                            />
                             <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
                                 Deploy and manage helm applications
                             </div>
@@ -73,7 +77,11 @@ function OnboardingGuide({ loginCount, serverMode }: OnboardingGuideProps) {
                             className="no-decor fw-6 cursor cn-9"
                             activeClassName="active"
                         >
-                            <img className="onboarding-card__img" src={DeployCICD} alt="Please connect cluster" />
+                            <img
+                                className="onboarding-card__img top-radius-4"
+                                src={DeployCICD}
+                                alt="Please connect cluster"
+                            />
                             <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24">
                                 Deploy custom applications using CI/CD pipelines
                             </div>

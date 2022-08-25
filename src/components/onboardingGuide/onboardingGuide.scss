@@ -14,7 +14,7 @@
     }
 
     .onboarding-card__img {
-        width: 300px;
+        width: 298px;
         height: 210px;
     }
 
@@ -44,11 +44,13 @@
     }
 
     .deploy-manage-cards__wrap {
-        display: grid;
-        grid-template-columns: 400px 400px;
+        display: flex;
         grid-gap: 20px;
         position: absolute;
         top: 240px;
+        flex-wrap: wrap;
+        width: 820px;
+        justify-content: center;
     }
 
     .deploy-manage__body{
