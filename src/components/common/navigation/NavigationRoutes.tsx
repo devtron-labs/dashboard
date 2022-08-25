@@ -264,7 +264,7 @@ export default function NavigationRoutes() {
                                                 getCurrentServerInfo={getCurrentServerInfo}
                                             />
                                         </Route>
-                                        <Route path={`/${URLS.GETTING_STARTED}`}>
+                                        <Route exact path={`/${URLS.GETTING_STARTED}`}>
                                             <OnboardingGuide
                                                 loginCount={loginCount}
                                                 isSuperAdmin={isSuperAdmin}
@@ -277,7 +277,7 @@ export default function NavigationRoutes() {
                                         </Route>
 
                                         <Route>
-                                            <RedirectUserToOnboarding isFirstLoginUser={isSuperAdmin && appListCount === 0} loginCount={loginCount}  />
+                                            <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && appListCount === 0} loginCount={loginCount}  />
                                         </Route>
                                     </Switch>
                                 </ErrorBoundary>
@@ -325,7 +325,7 @@ export function AppRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                         <RedirectToAppList />
                     </Route>
                     <Route>
-                        <RedirectUserToOnboarding isFirstLoginUser={isSuperAdmin && appListCount === 0} loginCount={loginCount}/>
+                        <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && appListCount === 0} loginCount={loginCount}/>
                     </Route>
                 </Switch>
             </AppContext.Provider>
@@ -345,7 +345,7 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
                         <RedirectToAppList />
                     </Route>
                     <Route>
-                        <RedirectUserToOnboarding isFirstLoginUser = {isSuperAdmin && appListCount === 0} loginCount={loginCount} />
+                        <RedirectUserWithSentry isFirstLoginUser = {isSuperAdmin && appListCount === 0} loginCount={loginCount} />
                     </Route>
                 </Switch>
             </AppContext.Provider>
@@ -353,7 +353,7 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
     )
 }
 
-export function RedirectUserToOnboarding({ isFirstLoginUser, loginCount  }) {
+export function RedirectUserWithSentry({ isFirstLoginUser, loginCount  }) {
     const { push } = useHistory()
     const { pathname } = useLocation()
     useEffect(() => {
