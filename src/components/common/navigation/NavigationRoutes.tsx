@@ -23,8 +23,7 @@ import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.
 import ClusterNodeContainer from '../../ClusterNodes/ClusterNodeContainer'
 import DeployManageGuide from '../../onboardingGuide/DeployManageGuide'
 import { showError } from '../helpers/Helpers'
-import GettingStartedCard from '../gettingStartedCard/GettingStarted'
-import { AppRouterType } from './navigation.type'
+import { AppRouterType } from '../guidePage/onboarding.type'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -125,13 +124,13 @@ export default function NavigationRoutes() {
         getLoginData().then((response) => {
             const count = response.result?.value ? parseInt(response.result.value) : 0
             setLoginCount(count || 1)
-            // if (count < 5) {
-            const updatedPayload = {
-                key: 'login-count',
-                value: `${count + 1}`,
+            if (count < 5) {
+                const updatedPayload = {
+                    key: 'login-count',
+                    value: `${count + 1}`,
+                }
+                updateLoginCount(updatedPayload)
             }
-            updateLoginCount(updatedPayload)
-            // }
             if (!count) {
                 history.push('/')
             }

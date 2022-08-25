@@ -1,4 +1,3 @@
-import React from 'react'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../../../services/service.types'
 import { CIMaterialType } from './MaterialHistory'

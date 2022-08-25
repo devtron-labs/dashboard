@@ -5,6 +5,8 @@ import PreviewImage from '../../../assets/img/ic-preview.png'
 import { DOCUMENTATION } from '../../../config'
 import { GuidedPageType } from './onboarding.type'
 
+const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
+
 function GuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
     const renderSubTitle = () => {
         return (
@@ -12,7 +14,7 @@ function GuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
                 Tip:
                 <a
                     className="learn-more__href"
-                    href={'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'}
+                    href={DEVTRON_NODE_DEPLOY_VIDEO}
                     rel="noreferrer noopener"
                     target="_blank"
                 >

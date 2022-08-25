@@ -14,3 +14,7 @@ export interface OnboardingGuideProps {
   isSuperAdmin: boolean
   serverMode: string
 }
+export interface AppRouterType {
+  isSuperAdmin?: boolean
+  appListCount: number
+}
