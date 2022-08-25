@@ -24,6 +24,7 @@ import ClusterNodeContainer from '../../ClusterNodes/ClusterNodeContainer'
 import DeployManageGuide from '../../onboardingGuide/DeployManageGuide'
 import { showError } from '../helpers/Helpers'
 import GettingStartedCard from '../gettingStartedCard/GettingStarted'
+import { AppRouterType } from './navigation.type'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -77,9 +78,6 @@ export default function NavigationRoutes() {
 
     useEffect(() => {
         getInit()
-    }, [])
-
-    useEffect(() => {
         const expDate = localStorage.getItem('clickedOkay')
         setExpiryDate(+expDate)
     }, [])
@@ -293,10 +291,6 @@ export default function NavigationRoutes() {
     }
 }
 
-export interface AppRouterType {
-    isSuperAdmin?: boolean
-    appListCount: number
-}
 export function AppRouter({ isSuperAdmin, appListCount }: AppRouterType) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)

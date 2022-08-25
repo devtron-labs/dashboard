@@ -82,14 +82,13 @@ function PageHeader({
         getLoginData().then((response) => {
             const count = response.result?.value ? parseInt(response.result.value) : 0
             setLoginCount(count || 1)
-            // if (count < 5) {
-            const updatedPayload = {
-                key: 'login-count',
-                // value: `${count + 1}`,
-                value: `1`,
+            if (count < 5) {
+                const updatedPayload = {
+                    key: 'login-count',
+                    value: `${count + 1}`,
+                }
+                updateLoginCount(updatedPayload)
             }
-            updateLoginCount(updatedPayload)
-            // }
             if (!count) {
                 history.push('/')
             }

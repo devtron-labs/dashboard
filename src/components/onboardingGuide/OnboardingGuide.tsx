@@ -7,12 +7,8 @@ import './onboardingGuide.scss'
 import PreviewImage from '../../assets/img/ic-preview.png'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { OpaqueModal } from '../common'
+import { OnboardingGuideProps } from '../common/guidePage/onboarding.type'
 
-export interface OnboardingGuideProps {
-    loginCount: number
-    isSuperAdmin: boolean
-    serverMode: string
-}
 function OnboardingGuide({loginCount, serverMode }: OnboardingGuideProps) {
     const match = useRouteMatch()
     const history = useHistory()

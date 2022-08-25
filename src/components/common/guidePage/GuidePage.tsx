@@ -3,9 +3,7 @@ import './guidePage.scss'
 import CreateApp from '../../../assets/img/guide-create-app.png'
 import PreviewImage from '../../../assets/img/ic-preview.png'
 import { DOCUMENTATION } from '../../../config'
-export interface GuidedPageType {
-    openDevtronAppCreateModel: (event) => void
-}
+import { GuidedPageType } from './onboarding.type'
 
 function GuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
     const renderSubTitle = () => {

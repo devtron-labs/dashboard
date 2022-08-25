@@ -21,7 +21,7 @@ import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
 import * as queryString from 'query-string'
-import { OrderBy, SortBy } from '../list/types'
+import { AppListPropType, OrderBy, SortBy } from '../list/types'
 import { AddNewApp } from '../create/CreateApp'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import '../list/list.css'
@@ -30,12 +30,8 @@ import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
 import GuidePage from '../../common/guidePage/GuidePage'
 
-export interface AppListProps {
-  isSuperAdmin: boolean
-  appListCount: number
-}
 
-export default function AppList({isSuperAdmin, appListCount} : AppListProps) {
+export default function AppList({isSuperAdmin, appListCount} : AppListPropType) {
     const location = useLocation()
     const history = useHistory()
     const params = useParams<{ appType: string }>()
@@ -912,9 +908,6 @@ export default function AppList({isSuperAdmin, appListCount} : AppListProps) {
         )
     }
 
-    const renderFirstAppView = (): JSX.Element => {
-        return <GuidePage openDevtronAppCreateModel={openDevtronAppCreateModel} />
-    }
     return (
         <div>
             {dataStateType === AppListViewType.LOADING && (
@@ -934,7 +927,7 @@ export default function AppList({isSuperAdmin, appListCount} : AppListProps) {
                     {renderAppliedFilters()}
                     {renderAppTabs()}
                     {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
-                    {appListCount === 0 && isSuperAdmin ? renderFirstAppView() :
+                    {appListCount === 0 && isSuperAdmin ? <GuidePage openDevtronAppCreateModel={openDevtronAppCreateModel} /> :
                         <>
                             {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
                                 serverMode === SERVER_MODE.FULL && (

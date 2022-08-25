@@ -112,3 +112,7 @@ export const SortBy = {
     ENVIRONMENT: "environmentSort",
 }
 
+export interface AppListPropType {
+  isSuperAdmin: boolean
+  appListCount: number
+}

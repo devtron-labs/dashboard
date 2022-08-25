@@ -11,9 +11,6 @@ import ReactGA from 'react-ga'
 import { OpaqueModal } from '../common'
 import { getDevtronInstalledHelmApps } from '../app/list-new/AppListService'
 
-export interface DeployManageGuideProps {
-    devtronHelmCount: number
-}
 function DeployManageGuide() {
     const history = useHistory()
     const [devtronHelmCount, setDevtronHelmCount] = useState(0)

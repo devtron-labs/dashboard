@@ -391,7 +391,7 @@ export function getLoginData() : Promise<LoginCountType>  {
   return get(`${Routes.ATTRIBUTES_USER}/${Routes.GET}?key=login-count`)
 }
 
-export function updateLoginCount(payload): Promise<ResponseType>  {
+export function updateLoginCount(payload): Promise<LoginCountType>  {
     return post(`${Routes.ATTRIBUTES_USER}/${Routes.UPDATE}`, payload)
 }
 interface UserRole extends ResponseType {
