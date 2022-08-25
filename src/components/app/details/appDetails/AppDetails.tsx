@@ -58,7 +58,7 @@ import {
     NodeDetailTabs,
     NodeDetailTabsType
 } from '../../types';
-import { aggregateNodes, SecurityVulnerabilitites, getSelectedNodeItems, getPodNameSuffix } from './utils';
+import { aggregateNodes, SecurityVulnerabilitites, getSelectedNodeItems, getPodNameSuffix, getDefaultDeploymentData } from './utils';
 import { AppMetrics } from './AppMetrics';
 import IndexStore from '../../../v2/appDetails/index.store';
 import { TriggerInfoModal } from '../../list/TriggerInfo';
@@ -70,6 +70,9 @@ import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab';
 import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
 import { AppType } from '../../../v2/appDetails/appDetails.type';
+import DeploymentStatusDetailModal from './DeploymentStatusDetailModal';
+import { getDeploymentStatusDetail } from './appDetails.service';
+import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from './appDetails.type';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -163,6 +166,8 @@ export const Details: React.FC<{
         externalLinks: [],
         monitoringTools: [],
     })
+    const [deploymentDetailedStatus, toggleDeploymentDetailedStatus] = useState<boolean>(false)
+    const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] = useState<DeploymentStatusDetailsBreakdownDataType>(getDefaultDeploymentData)
     //let prefix = '';
     //if (process.env.NODE_ENV === 'production') {
         //     //@ts-ignore
@@ -182,14 +187,74 @@ export const Details: React.FC<{
         return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || []);
     }, [appDetails]);
 
+    const processDeploymentStatusDetailsData = (data: DeploymentStatusDetailsType[], deployedBy: string): void=>{
+        const deploymentData = getDefaultDeploymentData
+        deploymentData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.displaySubText = ` by ${deployedBy}`
+        for (let index = data.length - 1; index >= 0; index--) {
+            const element = data[index]
+            if (element['status'] === 'HEALTHY' || element['status'] === 'DEGRADED') {
+                deploymentData.deploymentStatus = 'succeeded'
+                deploymentData.deploymentStatusText = 'Succeeded'
+                deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText =
+                    element['status'] === 'HEALTHY' ? 'Healthy' : 'Degraded'
+                deploymentData.deploymentStatusBreakdown.APP_HEALTH.time = element['status_time']
+                deploymentData.deploymentTime = element['status_time']
+            } else if (element['status'] === 'FAILED') {
+                deploymentData.deploymentStatus = 'Failed'
+                deploymentData.deploymentStatusText = 'failed'
+                deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = 'Failed'
+                deploymentData.deploymentError = element['statusDetail']
+                deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
+                deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
+                deploymentData.deploymentTime = element['status_time']
+            } else if (element['status'].includes('KUBECTL_APPLY')) {
+                if (
+                    element['status'] === 'KUBECTL_APPLY_STARTED' &&
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time === '' &&
+                    deploymentData.deploymentStatus !== 'Succeeded'
+                ) {
+                    deploymentData.deploymentStatus = 'Succeeded'
+                    if (deploymentData.deploymentStatus === 'Failed') {
+                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
+                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
+                    } else {
+                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'inprogress'
+                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': In progress'
+                    }
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time = element['status_time']
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon =
+                        deploymentData.deploymentStatus === 'Failed' ? 'Unknown' : 'inprogress'
+                } else if (element['status'] === 'KUBECTL_APPLY_SYNCED') {
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time = element['status_time']
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
+                }
+            } else if (element['status'].includes('GIT_COMMIT')) {
+                deploymentData.deploymentStatusBreakdown.GIT_COMMIT.time = element['status_time']
+                deploymentData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.time = element['status_time']
+                if (element['status'] === 'GIT_COMMIT_FAILED') {
+                    deploymentData.deploymentStatusBreakdown.GIT_COMMIT.displaySubText = ': Failed'
+                    deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'failed'
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
+                } else{
+                  deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
+                }
+            } else if (element['status'] === 'DEPLOYMENT_INITIATED') {
+                deploymentData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.time = element['status_time']
+            }
+        }
+        setDeploymentStatusDetailsBreakdownData(deploymentData)
+    }
+
     async function callAppDetailsAPI() {
         try {
             const response = await appDetailsAPI(params.appId, params.envId, 25000);
             IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
             setAppDetailsResult(response)
             if (response.result?.clusterId) {
-                Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId)])
-                    .then(([monitoringToolsRes, externalLinksRes]) => {
+                Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId), getDeploymentStatusDetail(params.appId, params.envId)])
+                    .then(([monitoringToolsRes, externalLinksRes, deploymentStatusDetailRes]) => {
                         setExternalLinksAndTools({
                             externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],
                             monitoringTools:
@@ -201,6 +266,7 @@ export const Details: React.FC<{
                                     }))
                                     .sort(sortOptionsByValue) || [],
                         })
+                        processDeploymentStatusDetailsData(deploymentStatusDetailRes.result || [], response.result.lastDeployedBy)
                         setAppDetailsLoading(false)
                     })
                     .catch((e) => {
@@ -341,6 +407,10 @@ export const Details: React.FC<{
                             environments={environments}
                             showCommitInfo={isAppDeployment ? showCommitInfo : null}
                             showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
+                            toggleDeploymentDetailedStatus={toggleDeploymentDetailedStatus}
+                            deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
+                            deploymentStatusText={deploymentStatusDetailsBreakdownData.deploymentStatusText}
+                            deploymentTriggerTime={deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.time}
                         />
                     </div>
                     <SyncError appStreamData={streamData} />
@@ -384,7 +454,15 @@ export const Details: React.FC<{
                             environmentName={appDetails.environmentName}
                         />
                     )}
-                    {showScanDetailsModal && 
+                    {deploymentDetailedStatus && (
+                        <DeploymentStatusDetailModal
+                            close={() => toggleDeploymentDetailedStatus(false)}
+                            appName={appDetails.appName}
+                            environmentName={appDetails.environmentName}
+                            deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                        />
+                    )}
+                    {showScanDetailsModal &&
                         <ScanDetailsModal
                             showAppInfo={false}
                             uniqueId={{
@@ -470,7 +548,7 @@ export function EnvSelector({ environments, disabled, controlStyleOverrides }:{ 
     const sortedEnvironments = environments? sortObjectArrayAlphabetically(environments,"environmentName") : environments;
     return (
         <>
-            <div style={{ width: 'clamp( 100px, 30%, 200px )', height: '100%', position: 'relative' }}>
+            <div style={{ width: 'clamp( 100px, 30%, 100px )', height: '100%', position: 'relative' }}>
                 <svg
                     viewBox="0 0 200 40"
                     preserveAspectRatio="none"
@@ -496,8 +574,9 @@ export function EnvSelector({ environments, disabled, controlStyleOverrides }:{ 
                     components={{ IndicatorSeparator: null, Option, DropdownIndicator: disabled ? null : components.DropdownIndicator }}
                     styles={{
                         ...multiSelectStyles,
-                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'transparent',...controlStyleOverrides }),
-                        singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: '#06c' })
+                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'white', minHeight: '32px', height: '32px',...controlStyleOverrides }),
+                        singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: '#06c' }),
+                        indicatorsContainer: (base, state) => ({ ...base, height: '32px' })
                     }}
                     isDisabled={disabled}
                     isSearchable={false}
@@ -907,7 +986,7 @@ export function AppNotConfigured({
         <section className="app-not-configured w-100" style={style}>
             <img src={image || AppNotConfiguredIcon} />
             <h3 className="mb-8 mt-20 fs-16 fw-600 w-300">{title || 'Finish configuring this application'}</h3>
-                <p className="mb-20 fs-13 w-300"> {subtitle ? subtitle : 
+                <p className="mb-20 fs-13 w-300"> {subtitle ? subtitle :
                     <>This application is not fully configured. Complete the configuration, trigger a deployment and come
                     back here.
                     <a href="https://docs.devtron.ai/devtron/user-guide/creating-application" target="_blank">

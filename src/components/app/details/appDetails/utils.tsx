@@ -10,7 +10,7 @@ import React, { Component } from 'react';
 import { components } from 'react-select';
 import { ReactComponent as Bug } from '../../../../assets/icons/ic-bug.svg';
 import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg';
-import { ChartTypes, AppMetricsTabType, SecurityVulnerabilititesProps, StatusType, StatusTypes } from './appDetails.type';
+import { ChartTypes, AppMetricsTabType, SecurityVulnerabilititesProps, StatusType, StatusTypes, DeploymentStatusDetailsBreakdownDataType } from './appDetails.type';
 import CreatableSelect from 'react-select/creatable';
 import { DayPickerRangeControllerPresets } from '../../../common';
 
@@ -373,4 +373,37 @@ export function addQueryParamToGrafanaURL(url: string, appId: string | number, e
     url += `&from=${startTime}&to=${endTime}`;
     url += `&panelId=${panelId}`;
     return url;
+}
+
+export const getDefaultDeploymentData: DeploymentStatusDetailsBreakdownDataType = {
+  deploymentStatus: 'inprogress',
+  deploymentStatusText: 'In progress...',
+  deploymentTime: '',
+  deploymentError: '',
+  deploymentStatusBreakdown: {
+      DEPLOYMENT_INITIATED: {
+          icon: 'success',
+          displayText: 'Deployment initiated',
+          displaySubText: '',
+          time: '',
+      },
+      GIT_COMMIT: {
+          icon: '',
+          displayText: 'Git commit',
+          displaySubText: '',
+          time: '',
+      },
+      KUBECTL_APPLY: {
+          icon: '',
+          displayText: 'Kubectl apply',
+          displaySubText: '',
+          time: '',
+      },
+      APP_HEALTH: {
+          icon: '',
+          displayText: 'Application health',
+          displaySubText: '',
+          time: '',
+      },
+  },
 }

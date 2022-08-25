@@ -1763,3 +1763,51 @@ table.resource-tree {
     color: var(--N700);
     margin-right: 4px;
 }
+
+.source-info-container{
+  .app-summary__icon{
+      &.healthy {
+        background-size: contain, contain;
+        background: url(../../../../assets/icons/appstatus/ic-heart-green.svg), transparent;
+    }
+  }
+
+  .app-summary__status-name{
+    text-transform: none !important;
+    &.f-succeeded {
+        color: var(--green);
+    }
+    &.f-inprogress {
+        color: var(--orange);
+    }
+    &.f-failed {
+        color: var(--red);
+    }
+  }
+
+  .mw-340 {
+    max-width: 340px !important;
+  }
+
+  .mw-382 {
+    max-width: 382px !important;
+  }
+
+  .mw-140 {
+    max-width: 140px !important;
+  }
+}
+
+.deployment-status-breakdown-container {
+  .vertical-connector{
+    border-left: 1px solid var(--N200);
+    height: 15px;
+    position: relative;
+    left: 10px;
+    width: 5px;
+  }
+  .deployment-status-breakdown-row{
+    display: grid;
+    grid-template-columns: 30px auto 150px;
+  }
+}
