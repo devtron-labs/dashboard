@@ -1757,3 +1757,9 @@ table.resource-tree {
     flex-direction: column;
     flex: 1;
 }
+
+.more-message::before {
+    content: '...';
+    color: var(--N700);
+    margin-right: 4px;
+}
