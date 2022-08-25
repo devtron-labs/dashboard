@@ -17,4 +17,5 @@ export interface OnboardingGuideProps {
 export interface AppRouterType {
   isSuperAdmin?: boolean
   appListCount: number
+  loginCount: number
 }

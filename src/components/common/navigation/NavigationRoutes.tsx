@@ -236,7 +236,7 @@ export default function NavigationRoutes() {
                                     <Switch>
                                         <Route
                                             path={URLS.APP}
-                                            render={() => <AppRouter isSuperAdmin={isSuperAdmin} appListCount={appListCount}/>}
+                                            render={() => <AppRouter isSuperAdmin={isSuperAdmin} appListCount={appListCount} loginCount={loginCount}/>}
                                         />
                                         <Route path={URLS.CHARTS} render={() => <Charts />} />
                                         <Route
@@ -277,7 +277,7 @@ export default function NavigationRoutes() {
                                         </Route>
 
                                         <Route>
-                                            <RedirectUserToOnboarding isFirstLoginUser={isSuperAdmin && appListCount === 0}  />
+                                            <RedirectUserToOnboarding isFirstLoginUser={isSuperAdmin && appListCount === 0} loginCount={loginCount}  />
                                         </Route>
                                     </Switch>
                                 </ErrorBoundary>
@@ -290,7 +290,7 @@ export default function NavigationRoutes() {
     }
 }
 
-export function AppRouter({ isSuperAdmin, appListCount }: AppRouterType) {
+export function AppRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterType) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     return (
@@ -299,7 +299,7 @@ export function AppRouter({ isSuperAdmin, appListCount }: AppRouterType) {
                 <Switch>
                     <Route
                         path={`${path}/${URLS.APP_LIST}`}
-                        render={() => <AppListRouter isSuperAdmin={isSuperAdmin} appListCount={appListCount} />}
+                        render={() => <AppListRouter isSuperAdmin={isSuperAdmin} appListCount={appListCount} loginCount={loginCount} />}
                     />
                     <Route path={`${path}/${URLS.EXTERNAL_APPS}/:appId/:appName`} render={() => <ExternalApps />} />
                     <Route
@@ -325,7 +325,7 @@ export function AppRouter({ isSuperAdmin, appListCount }: AppRouterType) {
                         <RedirectToAppList />
                     </Route>
                     <Route>
-                        <RedirectUserToOnboarding isFirstLoginUser={isSuperAdmin && appListCount === 0}/>
+                        <RedirectUserToOnboarding isFirstLoginUser={isSuperAdmin && appListCount === 0} loginCount={loginCount}/>
                     </Route>
                 </Switch>
             </AppContext.Provider>
@@ -333,7 +333,7 @@ export function AppRouter({ isSuperAdmin, appListCount }: AppRouterType) {
     )
 }
 
-export function AppListRouter({ isSuperAdmin, appListCount }: AppRouterType) {
+export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterType) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     return (
@@ -345,7 +345,7 @@ export function AppListRouter({ isSuperAdmin, appListCount }: AppRouterType) {
                         <RedirectToAppList />
                     </Route>
                     <Route>
-                        <RedirectUserToOnboarding isFirstLoginUser = {isSuperAdmin && appListCount === 0} />
+                        <RedirectUserToOnboarding isFirstLoginUser = {isSuperAdmin && appListCount === 0} loginCount={loginCount} />
                     </Route>
                 </Switch>
             </AppContext.Provider>
@@ -353,12 +353,12 @@ export function AppListRouter({ isSuperAdmin, appListCount }: AppRouterType) {
     )
 }
 
-export function RedirectUserToOnboarding({ isFirstLoginUser  }) {
+export function RedirectUserToOnboarding({ isFirstLoginUser, loginCount  }) {
     const { push } = useHistory()
     const { pathname } = useLocation()
     useEffect(() => {
       if (pathname && pathname !== '/') Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
-        if (isFirstLoginUser) {
+        if (isFirstLoginUser && !loginCount) {
             push(`${URLS.GETTING_STARTED}`)
         } else {
             push(`${URLS.APP}/${URLS.APP_LIST}`)

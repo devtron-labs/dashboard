@@ -9,7 +9,7 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { OpaqueModal } from '../common'
 import { OnboardingGuideProps } from '../common/guidePage/onboarding.type'
 
-function OnboardingGuide({loginCount, serverMode }: OnboardingGuideProps) {
+function OnboardingGuide({ loginCount, serverMode }: OnboardingGuideProps) {
     const match = useRouteMatch()
     const history = useHistory()
 
@@ -17,18 +17,18 @@ function OnboardingGuide({loginCount, serverMode }: OnboardingGuideProps) {
         history.goBack()
     }
 
-    const redirectDeployCardToCICD = () : string => {
-      if (serverMode === SERVER_MODE.FULL) {
-       return `${URLS.APP}/${URLS.APP_LIST}`
-    } else {
-      return `${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`
-    }
+    const redirectDeployCardToCICD = (): string => {
+        if (serverMode === SERVER_MODE.FULL) {
+            return `${URLS.APP}/${URLS.APP_LIST}`
+        } else {
+            return `${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`
+        }
     }
 
     return (
         <OpaqueModal>
             <div className="onboarding-container h-100">
-                <div className="bc-window bcn-1">
+                <div className="onboarding__upper bc-window bcn-1">
                     {loginCount > 1 && (
                         <button
                             type="button"
@@ -38,13 +38,12 @@ function OnboardingGuide({loginCount, serverMode }: OnboardingGuideProps) {
                             <Close className="icon-dim-24" />
                         </button>
                     )}
-
-                    <div className="flex h-300  column">
+                    <div className="flex column">
                         <h1 className="fw-6 mb-8">What will you use devtron for?</h1>
                         <p className="fs-14 cn-7">This will help us in guiding you towards relevant product features</p>
                     </div>
                 </div>
-                <div className="bcn-0 onboarding-body flex position-rel cn-9">
+                <div className="bcn-0 onboarding__bottom flex position-rel cn-9">
                     <div className="onboarding-cards__wrap">
                         <div className="bcn-0 w-300 br-4 en-2 bw-1 cursor">
                             <a
@@ -59,6 +58,7 @@ function OnboardingGuide({loginCount, serverMode }: OnboardingGuideProps) {
                                 </div>
                             </a>
                         </div>
+                        <div className='onboarding__line'/>
                         <div className="onboarding-card__left bcn-0 w-300 br-4 en-2 bw-1 cursor">
                             <NavLink
                                 to={`${match.path}/${URLS.GUIDE}`}
@@ -68,8 +68,6 @@ function OnboardingGuide({loginCount, serverMode }: OnboardingGuideProps) {
                                 <img
                                     className="onboarding-card__img"
                                     src={HelmCollage}
-                                    width="250"
-                                    height="250"
                                     alt="Please connect cluster"
                                 />
                                 <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
@@ -87,8 +85,6 @@ function OnboardingGuide({loginCount, serverMode }: OnboardingGuideProps) {
                                 <img
                                     className="onboarding-card__img"
                                     src={DeployCICD}
-                                    width="250"
-                                    height="250"
                                     alt="Please connect cluster"
                                 />
                                 <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24">
