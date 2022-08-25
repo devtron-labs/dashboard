@@ -22,9 +22,8 @@ import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.typ
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import ClusterNodeContainer from '../../ClusterNodes/ClusterNodeContainer'
 import DeployManageGuide from '../../onboardingGuide/DeployManageGuide'
-import { showError, useAsync } from '../helpers/Helpers'
+import { showError } from '../helpers/Helpers'
 import GettingStartedCard from '../gettingStartedCard/GettingStarted'
-import { getDevtronInstalledHelmApps } from '../../app/list-new/AppListService'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -53,15 +52,10 @@ export default function NavigationRoutes() {
     )
     const [isHelpGettingStartedClicked, setIsHelpGettingStartedClicked] = useState(false)
     const [loginCount, setLoginCount] = useState(0)
-    const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
     const [expiryDate, setExpiryDate] = useState(0)
     const [isSuperAdmin, setSuperAdmin] = useState(false)
     const [appListCount, setAppListCount] = useState(0)
     const [loginLoader, setLoginLoader] = useState(true)
-
-    const hideGettingStartedCard = () => {
-        setShowGettingStartedCard(false)
-    }
 
     const showCloseButtonAfterGettingStartedClicked = () => {
         setIsHelpGettingStartedClicked(true)
@@ -136,8 +130,7 @@ export default function NavigationRoutes() {
             // if (count < 5) {
             const updatedPayload = {
                 key: 'login-count',
-                // value: `${count + 1}`,
-                value: `1`,
+                value: `${count + 1}`,
             }
             updateLoginCount(updatedPayload)
             // }
@@ -212,7 +205,7 @@ export default function NavigationRoutes() {
         const getExpired = (): boolean => {
             // Render Getting started tippy card if the time gets expired
             const now = new Date().valueOf()
-            if (now > expiryDate) {
+            if (now < expiryDate) {
                 return true
             }
             return false
@@ -238,14 +231,7 @@ export default function NavigationRoutes() {
                         serverInfo={currentServerInfo.serverInfo}
                         getCurrentServerInfo={getCurrentServerInfo}
                     />
-                    {showGettingStartedCard && loginCount > 0 && loginCount < 5 && getExpired() && (
-                        <GettingStartedCard
-                            className="w-300"
-                            showHelpCard={false}
-                            hideGettingStartedCard={hideGettingStartedCard}
-                            loginCount={loginCount}
-                        />
-                    )}
+
                     {serverMode && (
                         <div className={`main ${pageOverflowEnabled ? '' : 'main__overflow-disabled'}`}>
                             <Suspense fallback={<Progressing pageLoader />}>
@@ -253,7 +239,7 @@ export default function NavigationRoutes() {
                                     <Switch>
                                         <Route
                                             path={URLS.APP}
-                                            render={() => <AppRouter isSuperAdmin={isSuperAdmin} />}
+                                            render={() => <AppRouter isSuperAdmin={isSuperAdmin} appListCount={appListCount}/>}
                                         />
                                         <Route path={URLS.CHARTS} render={() => <Charts />} />
                                         <Route
@@ -281,7 +267,7 @@ export default function NavigationRoutes() {
                                                 getCurrentServerInfo={getCurrentServerInfo}
                                             />
                                         </Route>
-                                        <Route exact path={`/${URLS.GETTING_STARTED}`}>
+                                        <Route path={`/${URLS.GETTING_STARTED}`}>
                                             <OnboardingGuide
                                                 loginCount={loginCount}
                                                 isSuperAdmin={isSuperAdmin}
@@ -289,15 +275,12 @@ export default function NavigationRoutes() {
                                             />
                                         </Route>
 
-                                        <Route path={`/${URLS.GETTING_STARTED}/${URLS.GUIDE}`}>
+                                        <Route exact path={`/${URLS.GETTING_STARTED}/${URLS.GUIDE}`}>
                                             <DeployManageGuide />
                                         </Route>
 
-                                        {/* <Route exact path={'/'}>
-                                          <RedirectUserToOnboarding isFirstLoginUser={isFirstLoginUser}/>
-                                        </Route> */}
                                         <Route>
-                                            <RedirectUserToOnboarding isFirstLoginUser={ isSuperAdmin && appListCount !== 0}  />
+                                            <RedirectUserToOnboarding isFirstLoginUser={isSuperAdmin && appListCount === 0}  />
                                         </Route>
                                     </Switch>
                                 </ErrorBoundary>
@@ -312,9 +295,9 @@ export default function NavigationRoutes() {
 
 export interface AppRouterType {
     isSuperAdmin?: boolean
-    onClickShowGettingStartedCard?: () => void
+    appListCount: number
 }
-export function AppRouter({ isSuperAdmin, onClickShowGettingStartedCard }: AppRouterType) {
+export function AppRouter({ isSuperAdmin, appListCount }: AppRouterType) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     return (
@@ -323,7 +306,7 @@ export function AppRouter({ isSuperAdmin, onClickShowGettingStartedCard }: AppRo
                 <Switch>
                     <Route
                         path={`${path}/${URLS.APP_LIST}`}
-                        render={() => <AppListRouter isSuperAdmin={isSuperAdmin} />}
+                        render={() => <AppListRouter isSuperAdmin={isSuperAdmin} appListCount={appListCount} />}
                     />
                     <Route path={`${path}/${URLS.EXTERNAL_APPS}/:appId/:appName`} render={() => <ExternalApps />} />
                     <Route
@@ -349,7 +332,7 @@ export function AppRouter({ isSuperAdmin, onClickShowGettingStartedCard }: AppRo
                         <RedirectToAppList />
                     </Route>
                     <Route>
-                        <RedirectWithSentry />
+                        <RedirectUserToOnboarding isFirstLoginUser={isSuperAdmin && appListCount === 0}/>
                     </Route>
                 </Switch>
             </AppContext.Provider>
@@ -357,19 +340,19 @@ export function AppRouter({ isSuperAdmin, onClickShowGettingStartedCard }: AppRo
     )
 }
 
-export function AppListRouter({ isSuperAdmin }: AppRouterType) {
+export function AppListRouter({ isSuperAdmin, appListCount }: AppRouterType) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     return (
         <ErrorBoundary>
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
-                    <Route path={`${path}/:appType`} render={() => <NewAppList isSuperAdmin={isSuperAdmin} />} />
+                    <Route path={`${path}/:appType`} render={() => <NewAppList isSuperAdmin={isSuperAdmin} appListCount={appListCount}/>} />
                     <Route exact path="">
                         <RedirectToAppList />
                     </Route>
                     <Route>
-                        <RedirectWithSentry />
+                        <RedirectUserToOnboarding isFirstLoginUser = {isSuperAdmin && appListCount === 0} />
                     </Route>
                 </Switch>
             </AppContext.Provider>
@@ -377,17 +360,7 @@ export function AppListRouter({ isSuperAdmin }: AppRouterType) {
     )
 }
 
-export function RedirectWithSentry() {
-    const { push } = useHistory()
-    const { pathname } = useLocation()
-    useEffect(() => {
-        if (pathname && pathname !== '/') Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
-        push(`${URLS.APP}/${URLS.APP_LIST}`)
-    }, [])
-    return null
-}
-
-export function RedirectUserToOnboarding({ isFirstLoginUser }) {
+export function RedirectUserToOnboarding({ isFirstLoginUser  }) {
     const { push } = useHistory()
     const { pathname } = useLocation()
     useEffect(() => {

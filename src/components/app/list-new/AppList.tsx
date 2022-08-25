@@ -32,9 +32,10 @@ import GuidePage from '../../common/guidePage/GuidePage'
 
 export interface AppListProps {
   isSuperAdmin: boolean
+  appListCount: number
 }
 
-export default function AppList({isSuperAdmin} : AppListProps) {
+export default function AppList({isSuperAdmin, appListCount} : AppListProps) {
     const location = useLocation()
     const history = useHistory()
     const params = useParams<{ appType: string }>()
@@ -933,7 +934,7 @@ export default function AppList({isSuperAdmin} : AppListProps) {
                     {renderAppliedFilters()}
                     {renderAppTabs()}
                     {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
-                    {(dataStateType === AppListViewType.NO_RESULT) && isSuperAdmin ? renderFirstAppView() :
+                    {appListCount === 0 && isSuperAdmin ? renderFirstAppView() :
                         <>
                             {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
                                 serverMode === SERVER_MODE.FULL && (

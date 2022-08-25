@@ -27,21 +27,23 @@ function GettingStartedCard({ className, hideGettingStartedCard }: GettingStarte
     }
 
     return (
-        <div className={`${className} getting_tippy__position getting-started-card cn-0 p-20 br-8 fs-13 `}>
-            {/* <div className="arrow-up " /> */}
-            <img className="mb-12 icon-dim-32" src={GettingToast} alt="getting started icon" />
-            <div className="flex column left fw-6">Getting started</div>
-            <div>You can always access the Getting Started guide from here.</div>
-            <div className="mt-12">
-                <button onClick={onClickedOkay} className="cn-9 fw-6 br-4 mr-16">
-                    Okay
-                </button>
-                <button
-                    className="br-4 token__dont-show en-0 bw-1 transparent pl-4 pr-4"
-                    onClick={onClickedDontShowAgain}
-                >
-                    Don't show again
-                </button>
+        <div className="getting_tippy__position">
+            <div className="arrow-up" />
+            <div className={`${className} getting-started-card cn-0 p-20 br-8 fs-13 `}>
+                <img className="mb-12 icon-dim-32" src={GettingToast} alt="getting started icon" />
+                <div className="flex column left fw-6">Getting started</div>
+                <div>You can always access the Getting Started guide from here.</div>
+                <div className="mt-12">
+                    <button onClick={onClickedOkay} className="cn-9 fw-6 br-4 mr-16">
+                        Okay
+                    </button>
+                    <button
+                        className="br-4 token__dont-show en-0 bw-1 transparent pl-4 pr-4"
+                        onClick={onClickedDontShowAgain}
+                    >
+                        Don't show again
+                    </button>
+                </div>
             </div>
         </div>
     )

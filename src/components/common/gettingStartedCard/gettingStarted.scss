@@ -2,6 +2,9 @@
     background-color: #2d3452;
     position: fixed;
     z-index: 6;
+    right: 20px;
+    top: 44px;
+
 }
 
 .arrow-up {
@@ -10,9 +13,12 @@
   border-left: 12px solid transparent;
   border-right: 12px solid transparent;
   border-bottom: 12px solid #2d3452;
+  right: 64px;
+  position: fixed;
+  top: 32px
+
 }
 
 .getting_tippy__position {
-  top: 42px;
-  right: 56px;
+  position: fixed;
 }
