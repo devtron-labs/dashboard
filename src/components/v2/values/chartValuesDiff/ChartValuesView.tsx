@@ -568,7 +568,7 @@ function ChartValuesView({
             )}/${appName}`
         }
 
-        return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}`
+        return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}?newDeployment=true`
     }
 
     const deployOrUpdateApplication = async (forceUpdate?: boolean) => {
