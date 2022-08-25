@@ -40,8 +40,13 @@ function RouterComponent({ envType }) {
         if (initTimer) {
             clearTimeout(initTimer);
         }
-
-        _init();
+        if (location.search.includes('newDeployment')) {
+            setTimeout(() => {
+                _init()
+            }, 30000)
+        } else {
+            _init()
+        }
     }, [params.appId, params.envId]);
 
     // clearing the timer on component unmount

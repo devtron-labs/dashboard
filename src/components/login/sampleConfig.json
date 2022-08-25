@@ -42,6 +42,23 @@
       }
     }
   },
+  "gitlab": {
+    "config": {
+      "type": "gitlab",
+      "id": "gitlab",
+      "name": "GitLab",
+      "config": {
+        "baseURL": "https://gitlab.com",
+        "clientID": "$GITLAB_APPLICATION_ID",
+        "clientSecret": "$GITLAB_CLIENT_SECRET",
+        "redirectURI": "http://devtron.yourdomain.com/orchestrator/api/dex/callback",
+        "groups": [
+          "users"
+        ],
+        "useLoginAsID": false
+      }
+    }
+  },
   "microsoft": {
     "config": {
       "type": "microsoft",
