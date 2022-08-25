@@ -21,13 +21,13 @@ function DeployManageGuide() {
         try {
             getDevtronInstalledHelmApps('').then((response) => {
                 setDevtronHelmCount(response.result.helmApps.length)
+                setLoader(false)
             })
         } catch (err) {
             showError(err)
-        } finally {
             setLoader(false)
         }
-    })
+    },[])
 
     const redirectToOnboardingPage = () => {
         history.goBack()
@@ -41,7 +41,7 @@ function DeployManageGuide() {
     }
 
     return (
-        <OpaqueModal>
+        <div>
             {loader ? (
                 <div className="w-100 flex" style={{ height: 'calc(100vh - 80px)' }}>
                     <Progressing pageLoader />
@@ -130,7 +130,7 @@ function DeployManageGuide() {
                     </div>
                 </div>
             )}
-        </OpaqueModal>
+        </div>
     )
 }
 

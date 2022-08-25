@@ -4,6 +4,9 @@
     display: grid;
     grid-template-columns: 64px 1fr;
     overflow-y: hidden;
+    &.no-nav{
+      grid-template-columns: 1fr;
+    }
 }
 
 .main {

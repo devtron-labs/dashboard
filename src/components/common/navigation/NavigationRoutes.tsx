@@ -218,16 +218,19 @@ export default function NavigationRoutes() {
                     showCloseButtonAfterGettingStartedClicked,
                 }}
             >
-                <main>
-                    <Navigation
-                        history={history}
-                        match={match}
-                        location={location}
-                        serverMode={serverMode}
-                        fetchingServerInfo={currentServerInfo.fetchingServerInfo}
-                        serverInfo={currentServerInfo.serverInfo}
-                        getCurrentServerInfo={getCurrentServerInfo}
-                    />
+              {console.log(match)}
+                <main className={`${window.location.href.includes(URLS.GETTING_STARTED) ? 'no-nav' : ''}`}>
+                    {!window.location.href.includes(URLS.GETTING_STARTED) && (
+                        <Navigation
+                            history={history}
+                            match={match}
+                            location={location}
+                            serverMode={serverMode}
+                            fetchingServerInfo={currentServerInfo.fetchingServerInfo}
+                            serverInfo={currentServerInfo.serverInfo}
+                            getCurrentServerInfo={getCurrentServerInfo}
+                        />
+                    )}
 
                     {serverMode && (
                         <div className={`main ${pageOverflowEnabled ? '' : 'main__overflow-disabled'}`}>
@@ -236,7 +239,13 @@ export default function NavigationRoutes() {
                                     <Switch>
                                         <Route
                                             path={URLS.APP}
-                                            render={() => <AppRouter isSuperAdmin={isSuperAdmin} appListCount={appListCount} loginCount={loginCount}/>}
+                                            render={() => (
+                                                <AppRouter
+                                                    isSuperAdmin={isSuperAdmin}
+                                                    appListCount={appListCount}
+                                                    loginCount={loginCount}
+                                                />
+                                            )}
                                         />
                                         <Route path={URLS.CHARTS} render={() => <Charts />} />
                                         <Route
@@ -264,6 +273,9 @@ export default function NavigationRoutes() {
                                                 getCurrentServerInfo={getCurrentServerInfo}
                                             />
                                         </Route>
+                                        <Route exact path={`/${URLS.GETTING_STARTED}/${URLS.GUIDE}`}>
+                                            <DeployManageGuide />
+                                        </Route>
                                         <Route exact path={`/${URLS.GETTING_STARTED}`}>
                                             <OnboardingGuide
                                                 loginCount={loginCount}
@@ -272,12 +284,11 @@ export default function NavigationRoutes() {
                                             />
                                         </Route>
 
-                                        <Route exact path={`/${URLS.GETTING_STARTED}/${URLS.GUIDE}`}>
-                                            <DeployManageGuide />
-                                        </Route>
-
                                         <Route>
-                                            <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && appListCount === 0} loginCount={loginCount}  />
+                                            <RedirectUserWithSentry
+                                                isFirstLoginUser={isSuperAdmin && appListCount === 0}
+                                                loginCount={loginCount}
+                                            />
                                         </Route>
                                     </Switch>
                                 </ErrorBoundary>
