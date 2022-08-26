@@ -1776,8 +1776,8 @@ table.resource-tree {
     max-width: 340px !important;
   }
 
-  .mw-382 {
-    max-width: 382px !important;
+  .mw-400 {
+    max-width: 400px !important;
   }
 
   .mw-140 {
@@ -1786,17 +1786,23 @@ table.resource-tree {
 }
 
 .source-info-container,
-.deployment-status-breakdown-modal-container{
+.deployment-status-breakdown-modal-container,
+.deployment-status-breakdown-container {
   .app-summary__status-name{
     text-transform: none !important;
     &.f-succeeded {
         color: var(--green);
     }
     &.f-inprogress {
-        color: var(--orange);
+        color: #ff7e5b;
     }
     &.f-failed {
         color: var(--red);
+    }
+  }
+  .timer-icon{
+    path {
+      stroke: var(--N600);
     }
   }
 }
@@ -1811,7 +1817,7 @@ table.resource-tree {
   }
   .deployment-status-breakdown-row{
     display: grid;
-    grid-template-columns: 30px auto 150px;
+    grid-template-columns: 30px auto 180px;
   }
 
   .pulse-highlight {

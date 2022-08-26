@@ -350,7 +350,6 @@ export const Details: React.FC<{
                             toggleDeploymentDetailedStatus={toggleDeploymentDetailedStatus}
                             deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
                             deploymentStatusText={deploymentStatusDetailsBreakdownData.deploymentStatusText}
-                            deploymentTriggerTime={deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.time}
                         />
                     </div>
                     <SyncError appStreamData={streamData} />
@@ -400,6 +399,7 @@ export const Details: React.FC<{
                             appName={appDetails.appName}
                             environmentName={appDetails.environmentName}
                             deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                            lastDeployedTime={appDetails.lastDeployedTime}
                         />
                     )}
                     {showScanDetailsModal &&

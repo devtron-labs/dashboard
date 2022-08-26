@@ -24,7 +24,6 @@ export function SourceInfo({
     toggleDeploymentDetailedStatus = null,
     deploymentStatus = null,
     deploymentStatusText = null,
-    deploymentTriggerTime= null
 }) {
     const status = appDetails?.resourceTree?.status || ''
     const params = useParams<{ appId: string; envId?: string }>()
@@ -140,7 +139,7 @@ export function SourceInfo({
                             <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
                                 <CD className="icon-dim-32" />
                             </div>
-                            <div className="flex left column pr-8 border-right mr-8">
+                            <div className="flex left column pr-16 border-right-n1 mr-16">
                                 <div className="flexbox">
                                     <span className="fs-12 mr-5 fw-4 cn-9">Deployment status</span>
 
@@ -154,9 +153,7 @@ export function SourceInfo({
                                     </Tippy>
                                 </div>
                                 <div className="flexbox">
-                                    <span
-                                        className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus}`}
-                                    >
+                                    <span className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus}`}>
                                         {deploymentStatusText}
                                     </span>
                                     <div className={`${deploymentStatus} icon-dim-20 mt-2`}></div>
@@ -168,8 +165,12 @@ export function SourceInfo({
                             <div className="flex left column mw-140">
                                 <div className="fs-12 fw-4 cn-9">Deployment triggered</div>
                                 <div className="flexbox">
-                                    <span className="fs-13 mr-5 fw-6 cn-9">{handleUTCTime(deploymentTriggerTime, true)}</span>
-                                    {deploymentStatus=== 'inprogress' && <Timer className="icon-dim-16 mt-4" />}
+                                    <span className="fs-13 mr-5 fw-6 cn-9">
+                                        {appDetails?.lastDeployedTime
+                                            ? moment(appDetails?.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
+                                            : ''}
+                                    </span>
+                                    {deploymentStatus === 'inprogress' && <Timer className="icon-dim-16 mt-4" />}
                                 </div>
                                 <div className="fw-4 fs-12 cn-9 ellipsis-right" style={{ maxWidth: 'inherit' }}>
                                     by {appDetails?.lastDeployedBy}
