@@ -5,6 +5,7 @@ import {
     Host,
     getAppDetailsURL,
     getAppTriggerURL,
+    DEFAULT_STATUS,
 } from '../../../../config';
 import {
     NavigationArrow,
@@ -58,7 +59,7 @@ import {
     NodeDetailTabs,
     NodeDetailTabsType
 } from '../../types';
-import { aggregateNodes, SecurityVulnerabilitites, getSelectedNodeItems, getPodNameSuffix } from './utils';
+import { aggregateNodes, SecurityVulnerabilitites, getSelectedNodeItems, getPodNameSuffix, processDeploymentStatusDetailsData } from './utils';
 import { AppMetrics } from './AppMetrics';
 import IndexStore from '../../../v2/appDetails/index.store';
 import { TriggerInfoModal } from '../../list/TriggerInfo';
@@ -70,6 +71,9 @@ import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils';
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab';
 import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
 import { AppType } from '../../../v2/appDetails/appDetails.type';
+import DeploymentStatusDetailModal from './DeploymentStatusDetailModal';
+import { getDeploymentStatusDetail } from './appDetails.service';
+import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from './appDetails.type';
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING';
 
@@ -163,11 +167,14 @@ export const Details: React.FC<{
         externalLinks: [],
         monitoringTools: [],
     })
-    //let prefix = '';
-    //if (process.env.NODE_ENV === 'production') {
-        //     //@ts-ignore
-        //     prefix = `${location.protocol}//${location.host}`;
-    //}
+    const [deploymentDetailedStatus, toggleDeploymentDetailedStatus] = useState<boolean>(false)
+    const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
+        useState<DeploymentStatusDetailsBreakdownDataType>({
+            ...processDeploymentStatusDetailsData(),
+            deploymentStatus: DEFAULT_STATUS,
+            deploymentStatusText: DEFAULT_STATUS,
+        })
+    let deploymentStatusTimer = null
     const isExternalToolAvailable: boolean = externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
     const interval = 30000;
     const appDetails = appDetailsResult?.result;
@@ -182,14 +189,44 @@ export const Details: React.FC<{
         return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || []);
     }, [appDetails]);
 
+    const getDeploymentDetailStepsData = (): void => {
+      getDeploymentStatusDetail(params.appId, params.envId)
+          .then((deploymentStatusDetailRes) => {
+            processDeploymentStatusData(deploymentStatusDetailRes.result)
+          })
+  }
+
+  const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
+      const processedDeploymentStatusDetailsData = processDeploymentStatusDetailsData(deploymentStatusDetailRes)
+      clearDeploymentStatusTimer()
+      if (processedDeploymentStatusDetailsData.deploymentStatus === 'inprogress') {
+          deploymentStatusTimer = setTimeout(() => {
+              getDeploymentDetailStepsData()
+          }, 10000)
+      }
+      setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusDetailsData)
+  }
+
+  const clearDeploymentStatusTimer = (): void => {
+      if (deploymentStatusTimer) {
+          clearTimeout(deploymentStatusTimer)
+      }
+  }
+
+  useEffect(() => {
+      return () => {
+        clearDeploymentStatusTimer()
+      }
+  }, [])
+
     async function callAppDetailsAPI() {
         try {
             const response = await appDetailsAPI(params.appId, params.envId, 25000);
             IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
             setAppDetailsResult(response)
             if (response.result?.clusterId) {
-                Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId)])
-                    .then(([monitoringToolsRes, externalLinksRes]) => {
+                Promise.all([getMonitoringTools(), getExternalLinks(response.result.clusterId), getDeploymentStatusDetail(params.appId, params.envId)])
+                    .then(([monitoringToolsRes, externalLinksRes, deploymentStatusDetailRes]) => {
                         setExternalLinksAndTools({
                             externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],
                             monitoringTools:
@@ -201,6 +238,7 @@ export const Details: React.FC<{
                                     }))
                                     .sort(sortOptionsByValue) || [],
                         })
+                        processDeploymentStatusData(deploymentStatusDetailRes.result)
                         setAppDetailsLoading(false)
                     })
                     .catch((e) => {
@@ -315,6 +353,10 @@ export const Details: React.FC<{
         }
     }
 
+    const hideDeploymentDetailModal = ():void=>{
+      toggleDeploymentDetailedStatus(false)
+    }
+
     if (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0){
         return (
             <>
@@ -334,13 +376,17 @@ export const Details: React.FC<{
     }
 
     return <React.Fragment>
-         <div className="w-100 pt-16 pr-20 pb-20 pl-20">
+         <div className="w-100 pt-16 pr-20 pb-16 pl-20">
                         <SourceInfo
                             appDetails={appDetails}
                             setDetailed={toggleDetailedStatus}
                             environments={environments}
                             showCommitInfo={isAppDeployment ? showCommitInfo : null}
                             showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
+                            toggleDeploymentDetailedStatus={toggleDeploymentDetailedStatus}
+                            deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
+                            deploymentStatusText={deploymentStatusDetailsBreakdownData.deploymentStatusText}
+                            deploymentTriggerTime={deploymentStatusDetailsBreakdownData.deploymentTriggerTime}
                         />
                     </div>
                     <SyncError appStreamData={streamData} />
@@ -384,7 +430,15 @@ export const Details: React.FC<{
                             environmentName={appDetails.environmentName}
                         />
                     )}
-                    {showScanDetailsModal && 
+                    {deploymentDetailedStatus && (
+                        <DeploymentStatusDetailModal
+                            close={hideDeploymentDetailModal}
+                            appName={appDetails.appName}
+                            environmentName={appDetails.environmentName}
+                            deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                        />
+                    )}
+                    {showScanDetailsModal &&
                         <ScanDetailsModal
                             showAppInfo={false}
                             uniqueId={{
@@ -466,11 +520,23 @@ export function EnvSelector({ environments, disabled, controlStyleOverrides }:{ 
         }, {})
         : {};
     const environmentName = environmentsMap[+envId];
-
+    const envSelectorStyle = {
+        ...multiSelectStyles,
+        control: (base, state) => ({
+            ...base,
+            border: '1px solid var(--B500)',
+            backgroundColor: 'white',
+            minHeight: '32px',
+            height: '32px',
+            ...controlStyleOverrides,
+        }),
+        singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: 'var(--B500)' }),
+        indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),
+    }
     const sortedEnvironments = environments? sortObjectArrayAlphabetically(environments,"environmentName") : environments;
     return (
         <>
-            <div style={{ width: 'clamp( 100px, 30%, 200px )', height: '100%', position: 'relative' }}>
+            <div style={{ width: 'clamp( 100px, 30%, 100px )', height: '100%', position: 'relative' }}>
                 <svg
                     viewBox="0 0 200 40"
                     preserveAspectRatio="none"
@@ -494,11 +560,7 @@ export function EnvSelector({ environments, disabled, controlStyleOverrides }:{ 
                     onChange={(selected, meta) => selectEnvironment((selected as any).value)}
                     closeMenuOnSelect
                     components={{ IndicatorSeparator: null, Option, DropdownIndicator: disabled ? null : components.DropdownIndicator }}
-                    styles={{
-                        ...multiSelectStyles,
-                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'transparent',...controlStyleOverrides }),
-                        singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: '#06c' })
-                    }}
+                    styles={envSelectorStyle}
                     isDisabled={disabled}
                     isSearchable={false}
                 />
@@ -907,7 +969,7 @@ export function AppNotConfigured({
         <section className="app-not-configured w-100" style={style}>
             <img src={image || AppNotConfiguredIcon} />
             <h3 className="mb-8 mt-20 fs-16 fw-600 w-300">{title || 'Finish configuring this application'}</h3>
-                <p className="mb-20 fs-13 w-300"> {subtitle ? subtitle : 
+                <p className="mb-20 fs-13 w-300"> {subtitle ? subtitle :
                     <>This application is not fully configured. Complete the configuration, trigger a deployment and come
                     back here.
                     <a href="https://docs.devtron.ai/devtron/user-guide/creating-application" target="_blank">
