@@ -15,18 +15,20 @@ export default function DeploymentStatusDetailBreakdown({
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
 }) {
     const renderIcon = (iconState: string): JSX.Element => {
-        if (iconState === 'success') {
-            return <Check className="icon-dim-20 green-tick" />
-        } else if (iconState === 'failed') {
-            return <Error className="icon-dim-20" />
-        } else if (iconState === 'unknown') {
-            return <Question className="icon-dim-20" />
-        } else if (iconState === 'inprogress') {
-            return <div className="pulse-highlight"></div>
-        } else if (iconState === 'unreachable') {
-            return <Close className="icon-dim-20" />
+        switch (iconState) {
+            case 'success':
+              return <Check className="icon-dim-20 green-tick" />
+            case 'failed':
+              return <Error className="icon-dim-20" />
+            case 'unknown':
+              return <Question className="icon-dim-20" />
+            case 'inprogress':
+              return <div className="pulse-highlight"></div>
+            case 'unreachable':
+              return <Close className="icon-dim-20" />
+            default:
+              return <Timer className="icon-dim-20 timer-icon" />
         }
-        return <Timer className="icon-dim-20 timer-icon" />
     }
     return (
         <div className="deployment-status-breakdown-container pl-20 pr-20">

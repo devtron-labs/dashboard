@@ -5,6 +5,7 @@ import {
     Host,
     getAppDetailsURL,
     getAppTriggerURL,
+    DEFAULT_STATUS,
 } from '../../../../config';
 import {
     NavigationArrow,
@@ -170,15 +171,10 @@ export const Details: React.FC<{
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
             ...processDeploymentStatusDetailsData(),
-            deploymentStatus: 'checking',
-            deploymentStatusText: 'checking...',
+            deploymentStatus: DEFAULT_STATUS,
+            deploymentStatusText: DEFAULT_STATUS,
         })
     let deploymentStatusTimer = null
-    //let prefix = '';
-    //if (process.env.NODE_ENV === 'production') {
-        //     //@ts-ignore
-        //     prefix = `${location.protocol}//${location.host}`;
-    //}
     const isExternalToolAvailable: boolean = externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
     const interval = 30000;
     const appDetails = appDetailsResult?.result;
@@ -203,7 +199,7 @@ export const Details: React.FC<{
               if (processedDeploymentStatusDetailsData.deploymentStatus === 'inprogress') {
                   deploymentStatusTimer = setTimeout(() => {
                       getDeploymentDetailStepsData()
-                  }, 10 * 1000)
+                  }, 10000)
               }
               setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusDetailsData)
           })
@@ -248,7 +244,7 @@ export const Details: React.FC<{
                         if (processedDeploymentStatusDetailsData.deploymentStatus === 'inprogress') {
                           deploymentStatusTimer = setTimeout(() => {
                                 getDeploymentDetailStepsData()
-                            }, 10 * 1000)
+                            }, 10000)
                         }
                         setAppDetailsLoading(false)
                     })
@@ -527,7 +523,19 @@ export function EnvSelector({ environments, disabled, controlStyleOverrides }:{ 
         }, {})
         : {};
     const environmentName = environmentsMap[+envId];
-
+    const envSelectorStyle = {
+        ...multiSelectStyles,
+        control: (base, state) => ({
+            ...base,
+            border: '1px solid #0066cc',
+            backgroundColor: 'white',
+            minHeight: '32px',
+            height: '32px',
+            ...controlStyleOverrides,
+        }),
+        singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: '#06c' }),
+        indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),
+    }
     const sortedEnvironments = environments? sortObjectArrayAlphabetically(environments,"environmentName") : environments;
     return (
         <>
@@ -555,12 +563,7 @@ export function EnvSelector({ environments, disabled, controlStyleOverrides }:{ 
                     onChange={(selected, meta) => selectEnvironment((selected as any).value)}
                     closeMenuOnSelect
                     components={{ IndicatorSeparator: null, Option, DropdownIndicator: disabled ? null : components.DropdownIndicator }}
-                    styles={{
-                        ...multiSelectStyles,
-                        control: (base, state) => ({ ...base, border: '1px solid #0066cc', backgroundColor: 'white', minHeight: '32px', height: '32px',...controlStyleOverrides }),
-                        singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: '#06c' }),
-                        indicatorsContainer: (base, state) => ({ ...base, height: '32px' })
-                    }}
+                    styles={envSelectorStyle}
                     isDisabled={disabled}
                     isSearchable={false}
                 />

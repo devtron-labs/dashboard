@@ -22,7 +22,7 @@ export default function DeploymentDetailSteps() {
                 if (processedDeploymentStatusDetailsData.deploymentStatus === 'inprogress') {
                     initTimer = setTimeout(() => {
                         getDeploymentDetailStepsData()
-                    }, 10 * 1000)
+                    }, 10000)
                 }
                 setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusDetailsData)
                 setDeploymentListLoader(false)
@@ -41,17 +41,13 @@ export default function DeploymentDetailSteps() {
         }
     }, [])
 
-    return (
-        <>
-            {deploymentListLoader ? (
-                <Progressing pageLoader />
-            ) : (
-                <div className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 m-16" style={{ width: 'min( 100%, 800px )' }}>
-                    <DeploymentStatusDetailBreakdown
-                        deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                    />
-                </div>
-            )}
-        </>
+    return deploymentListLoader ? (
+        <Progressing pageLoader />
+    ) : (
+        <div className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 m-16" style={{ width: 'min( 100%, 800px )' }}>
+            <DeploymentStatusDetailBreakdown
+                deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+            />
+        </div>
     )
 }
