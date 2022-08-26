@@ -52,10 +52,10 @@ export interface DeploymentStatusDetailsTimelineType {
 }
 
 export interface DeploymentStatusDetailsType {
-  deploymentFinishedOn: string
-  deploymentStartedOn: string
-  triggeredBy: string
-  timelines: DeploymentStatusDetailsTimelineType[]
+    deploymentFinishedOn: string
+    deploymentStartedOn: string
+    triggeredBy: string
+    timelines: DeploymentStatusDetailsTimelineType[]
 }
 
 export interface DeploymentStatusDetailsResponse extends ResponseType {
@@ -80,4 +80,15 @@ export interface DeploymentStatusDetailsBreakdownDataType {
         KUBECTL_APPLY: DeploymentStatusDetailRow
         APP_HEALTH: DeploymentStatusDetailRow
     }
+}
+
+export interface DeploymentStatusDetailBreakdownType {
+    deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
+}
+
+export interface DeploymentStatusDetailModalType{
+  close: () => void
+  appName: string
+  environmentName: string
+  deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
 }

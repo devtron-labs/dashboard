@@ -4,31 +4,51 @@ import { ReactComponent as Check } from '../../../../assets/icons/ic-check.svg'
 import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
-import { DeploymentStatusDetailsBreakdownDataType } from './appDetails.type'
+import { DeploymentStatusDetailBreakdownType, DeploymentStatusDetailsBreakdownDataType } from './appDetails.type'
 import moment from 'moment'
 import { Moment12HourFormat } from '../../../../config'
 import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 
 export default function DeploymentStatusDetailBreakdown({
     deploymentStatusDetailsBreakdownData,
-}: {
-    deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
-}) {
+}: DeploymentStatusDetailBreakdownType) {
     const renderIcon = (iconState: string): JSX.Element => {
         switch (iconState) {
             case 'success':
-              return <Check className="icon-dim-20 green-tick" />
+                return <Check className="icon-dim-20 green-tick" />
             case 'failed':
-              return <Error className="icon-dim-20" />
+                return <Error className="icon-dim-20" />
             case 'unknown':
-              return <Question className="icon-dim-20" />
+                return <Question className="icon-dim-20" />
             case 'inprogress':
-              return <div className="pulse-highlight"></div>
+                return <div className="pulse-highlight"></div>
             case 'unreachable':
-              return <Close className="icon-dim-20" />
+                return <Close className="icon-dim-20" />
             default:
-              return <Timer className="icon-dim-20 timer-icon" />
+                return <Timer className="icon-dim-20 timer-icon" />
         }
+    }
+    const renderStatusDetailRow = (key: string, hideVerticalConnector?: boolean): JSX.Element => {
+        return (
+            <>
+                <div className="deployment-status-breakdown-row pt-4 pb-4">
+                    {renderIcon(deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown[key].icon)}
+                    <span className="fs-13">
+                        {deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown[key].displayText +
+                            deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown[key].displaySubText}
+                    </span>
+                    <span className="align-right cn-7">
+                        {deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown[key].time !== ''
+                            ? moment(
+                                  deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown[key].time,
+                                  'YYYY-MM-DDTHH:mm:ssZ',
+                              ).format(Moment12HourFormat)
+                            : ''}
+                    </span>
+                </div>
+                {!hideVerticalConnector && <div className="vertical-connector"></div>}
+            </>
+        )
     }
     return (
         <div className="deployment-status-breakdown-container pl-20 pr-20">
@@ -40,71 +60,10 @@ export default function DeploymentStatusDetailBreakdown({
                     iconClass="icon-dim-20"
                 />
             )}
-            <div className="deployment-status-breakdown-row pt-4 pb-4">
-                {renderIcon(deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.icon)}
-                <span className="fs-13">
-                    {deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.displayText +
-                        deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED
-                            .displaySubText}
-                </span>
-                <span className="align-right cn-7">
-                    {deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.time !== ''
-                        ? moment(
-                              deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.time,
-                              'YYYY-MM-DDTHH:mm:ssZ',
-                          ).format(Moment12HourFormat)
-                        : ''}
-                </span>
-            </div>
-            <div className="vertical-connector"></div>
-            <div className="deployment-status-breakdown-row pt-4 pb-4">
-                {renderIcon(deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.GIT_COMMIT.icon)}
-                <span className="fs-13">
-                    {deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.GIT_COMMIT.displayText +
-                        deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.GIT_COMMIT.displaySubText}
-                </span>
-                <span className="align-right cn-7">
-                    {deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.GIT_COMMIT.time !== ''
-                        ? moment(
-                              deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.GIT_COMMIT.time,
-                              'YYYY-MM-DDTHH:mm:ssZ',
-                          ).format(Moment12HourFormat)
-                        : ''}
-                </span>
-            </div>
-            <div className="vertical-connector"></div>
-            <div className="deployment-status-breakdown-row pt-4 pb-4">
-                {renderIcon(deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.KUBECTL_APPLY.icon)}
-                <span className="fs-13">
-                    {deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.KUBECTL_APPLY.displayText +
-                        deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText}
-                </span>
-                <span className="align-right cn-7">
-                    {deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.KUBECTL_APPLY.time !== '' &&
-                    deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.KUBECTL_APPLY.icon !== 'inprogress'
-                        ? moment(
-                              deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.KUBECTL_APPLY.time,
-                              'YYYY-MM-DDTHH:mm:ssZ',
-                          ).format(Moment12HourFormat)
-                        : ''}
-                </span>
-            </div>
-            <div className="vertical-connector"></div>
-            <div className="deployment-status-breakdown-row pt-4 pb-4">
-                {renderIcon(deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.APP_HEALTH.icon)}
-                <span className="fs-13">
-                    {deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.APP_HEALTH.displayText +
-                        deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.APP_HEALTH.displaySubText}
-                </span>
-                <span className="align-right cn-7">
-                    {deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.APP_HEALTH.time !== ''
-                        ? moment(
-                              deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.APP_HEALTH.time,
-                              'YYYY-MM-DDTHH:mm:ssZ',
-                          ).format(Moment12HourFormat)
-                        : ''}
-                </span>
-            </div>
+            {renderStatusDetailRow('DEPLOYMENT_INITIATED')}
+            {renderStatusDetailRow('GIT_COMMIT')}
+            {renderStatusDetailRow('KUBECTL_APPLY')}
+            {renderStatusDetailRow('APP_HEALTH', true)}
         </div>
     )
 }

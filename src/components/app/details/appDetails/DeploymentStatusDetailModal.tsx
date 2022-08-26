@@ -3,7 +3,7 @@ import { Drawer, handleUTCTime } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
 import DeploymentStatusDetailBreakdown from './DeploymentStatusBreakdown'
-import { DeploymentStatusDetailsBreakdownDataType } from './appDetails.type'
+import { DeploymentStatusDetailModalType, DeploymentStatusDetailsBreakdownDataType } from './appDetails.type'
 import moment from 'moment'
 import { Moment12HourFormat } from '../../../../config'
 
@@ -12,12 +12,7 @@ export default function DeploymentStatusDetailModal({
     appName,
     environmentName,
     deploymentStatusDetailsBreakdownData,
-}: {
-    close: () => void
-    appName: string
-    environmentName: string
-    deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
-}) {
+}: DeploymentStatusDetailModalType) {
     return (
         <Drawer position="right" width="50%">
             <div className="deployment-status-breakdown-modal-container bcn-0">

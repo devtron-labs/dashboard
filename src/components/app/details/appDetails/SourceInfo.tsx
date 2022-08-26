@@ -13,7 +13,6 @@ import { ReactComponent as CD } from '../../../../assets/icons/ic-CD.svg'
 import { useParams } from 'react-router'
 import { Nodes } from '../../types'
 import Tippy from '@tippyjs/react'
-import { handleUTCTime } from '../../../common'
 
 export function SourceInfo({
     appDetails,
@@ -24,7 +23,7 @@ export function SourceInfo({
     toggleDeploymentDetailedStatus = null,
     deploymentStatus = null,
     deploymentStatusText = null,
-    deploymentTriggerTime = null
+    deploymentTriggerTime = null,
 }) {
     const status = appDetails?.resourceTree?.status || ''
     const params = useParams<{ appId: string; envId?: string }>()
@@ -42,7 +41,12 @@ export function SourceInfo({
         message = Rollout[0].health.message
     }
     message = message + message + message
-
+    const showApplicationDetailedModal = (): void => {
+        setDetailed && setDetailed(true)
+    }
+    const showDeploymentDetailedStatus = (): void => {
+        toggleDeploymentDetailedStatus && toggleDeploymentDetailedStatus(true)
+    }
     return (
         <div className="flex left w-100 column w-100 source-info-container">
             <div className="flex left w-100 mb-16">
@@ -79,7 +83,7 @@ export function SourceInfo({
                 {appDetails?.resourceTree && (
                     <>
                         <div
-                            onClick={setDetailed ? (e) => setDetailed(true) : () => {}}
+                            onClick={showApplicationDetailedModal()}
                             className="pointer flex left bcn-0 p-16 br-4 mw-340 mr-12 en-2 bw-1"
                         >
                             <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
@@ -115,9 +119,7 @@ export function SourceInfo({
                             </div>
                         </div>
                         <div
-                            onClick={
-                                toggleDeploymentDetailedStatus ? (e) => toggleDeploymentDetailedStatus(true) : () => {}
-                            }
+                            onClick={showDeploymentDetailedStatus()}
                             className="pointer flex left bcn-0 p-16 br-4 mw-382 en-2 bw-1"
                         >
                             <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
@@ -137,7 +139,11 @@ export function SourceInfo({
                                     </Tippy>
                                 </div>
                                 <div className="flexbox">
-                                    <span className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus} ${deploymentStatus === 'inprogress'?'loading-dots':''}`}>
+                                    <span
+                                        className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus} ${
+                                            deploymentStatus === 'inprogress' ? 'loading-dots' : ''
+                                        }`}
+                                    >
                                         {deploymentStatusText}
                                     </span>
                                     <div className={`${deploymentStatus} icon-dim-20 mt-2`}></div>

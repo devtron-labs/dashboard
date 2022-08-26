@@ -353,6 +353,10 @@ export const Details: React.FC<{
         }
     }
 
+    const hideDeploymentDetailModal = ():void=>{
+      toggleDeploymentDetailedStatus(false)
+    }
+
     if (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0){
         return (
             <>
@@ -428,7 +432,7 @@ export const Details: React.FC<{
                     )}
                     {deploymentDetailedStatus && (
                         <DeploymentStatusDetailModal
-                            close={() => toggleDeploymentDetailedStatus(false)}
+                            close={hideDeploymentDetailModal}
                             appName={appDetails.appName}
                             environmentName={appDetails.environmentName}
                             deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
@@ -520,13 +524,13 @@ export function EnvSelector({ environments, disabled, controlStyleOverrides }:{ 
         ...multiSelectStyles,
         control: (base, state) => ({
             ...base,
-            border: '1px solid #0066cc',
+            border: '1px solid var(--B500)',
             backgroundColor: 'white',
             minHeight: '32px',
             height: '32px',
             ...controlStyleOverrides,
         }),
-        singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: '#06c' }),
+        singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: 'var(--B500)' }),
         indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),
     }
     const sortedEnvironments = environments? sortObjectArrayAlphabetically(environments,"environmentName") : environments;
