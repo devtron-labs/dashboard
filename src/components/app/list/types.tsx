@@ -58,6 +58,9 @@ export interface AppListProps extends RouteComponentProps<{ route: string }> {
     clearAllFilters: () => void;
     sortApplicationList : (key: string) => void;
     updateLastDataSync : () => void;
+    appListCount: number
+    isSuperAdmin: boolean
+    openDevtronAppCreateModel: (event) => void
 }
 
 export interface AppListResponse {

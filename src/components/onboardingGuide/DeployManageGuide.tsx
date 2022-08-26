@@ -8,10 +8,11 @@ import { URLS } from '../../config'
 import { ReactComponent as GoBack } from '../../assets/icons/ic-arrow-forward.svg'
 import './onboardingGuide.scss'
 import ReactGA from 'react-ga'
-import { OpaqueModal, Progressing, showError } from '../common'
+import { Progressing, showError } from '../common'
 import { getDevtronInstalledHelmApps } from '../app/list-new/AppListService'
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 
-function DeployManageGuide() {
+function DeployManageGuide({ isDeployManageCardClicked }) {
     const history = useHistory()
     const [devtronHelmCount, setDevtronHelmCount] = useState(0)
     const [loader, setLoader] = useState(false)
@@ -27,7 +28,7 @@ function DeployManageGuide() {
             showError(err)
             setLoader(false)
         }
-    },[])
+    }, [])
 
     const redirectToOnboardingPage = () => {
         history.goBack()
@@ -48,13 +49,26 @@ function DeployManageGuide() {
                 </div>
             ) : (
                 <div className="deploy-manage-container">
-                    <div className="deploy-manage__header flex h-300">
-                        <div className="bcn-0 deploy_arrow flex cursor" onClick={redirectToOnboardingPage}>
-                            <GoBack className="rotate icon-dim-24" style={{ ['--rotateBy' as any]: '180deg' }} />
-                        </div>
-                        <div className="ml-32">
-                            <h1 className="fw-6 mb-8">Deploy and manage helm apps</h1>
-                            <p className="fs-14 cn-7">This helps us in guiding you towards relevant product features</p>
+                    <div className="deploy-manage__header  h-300">
+                        {/* {isDeployManageCardClicked && (
+                            <button
+                                type="button"
+                                className="w-100 flex right transparent p-20"
+                                onClick={redirectToOnboardingPage}
+                            >
+                                <Close className="icon-dim-24" />
+                            </button>
+                        )} */}
+                        <div className={`${isDeployManageCardClicked ? '' : 'h-300'} flex h-300`}>
+                            <div className="bcn-0 deploy_arrow flex cursor" onClick={redirectToOnboardingPage}>
+                                <GoBack className="rotate icon-dim-24" style={{ ['--rotateBy' as any]: '180deg' }} />
+                            </div>
+                            <div className="ml-32">
+                                <h1 className="fw-6 mb-8">Deploy and manage helm apps</h1>
+                                <p className="fs-14 cn-7">
+                                    This helps us in guiding you towards relevant product features
+                                </p>
+                            </div>
                         </div>
                     </div>
                     <div className="deploy-manage__body bcn-0 flex">
@@ -126,6 +140,12 @@ function DeployManageGuide() {
                                     </NavLink>
                                 </div>
                             </div>
+                        </div>
+                        <div className="fs-14 mt-120 flex column">
+                            <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="cb-5 fw-6 cursor mb-8">
+                                Skip and explore Devtron on your own
+                            </NavLink>
+                            <div className="cn-7">Tip: You can return here anytime from the Help menu</div>
                         </div>
                     </div>
                 </div>

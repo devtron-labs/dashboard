@@ -51,7 +51,7 @@ function GuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
                         >
                             <img className="guide-card__img" src={PreviewImage} alt="Please connect cluster" />
                             <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
-                                Explore a preconfigured Demo at &nbsp;
+                                Explore a preconfigured Demo app at &nbsp;
                                 <span className="cb-5">preview.devtron.ai</span>
                             </div>
                         </a>

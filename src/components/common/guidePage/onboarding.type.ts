@@ -13,6 +13,7 @@ export interface OnboardingGuideProps {
   loginCount: number
   isSuperAdmin: boolean
   serverMode: string
+  onClickedDeployManageCardClicked: () => void
 }
 export interface AppRouterType {
   isSuperAdmin?: boolean

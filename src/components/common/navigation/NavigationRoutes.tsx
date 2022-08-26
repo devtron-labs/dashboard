@@ -56,6 +56,7 @@ export default function NavigationRoutes() {
     const [isSuperAdmin, setSuperAdmin] = useState(false)
     const [appListCount, setAppListCount] = useState(0)
     const [loginLoader, setLoginLoader] = useState(true)
+    const [isDeployManageCardClicked, setIsDeployManageCardClicked] = useState(false)
 
     const showCloseButtonAfterGettingStartedClicked = () => {
         setIsHelpGettingStartedClicked(true)
@@ -199,15 +200,9 @@ export default function NavigationRoutes() {
         return <Reload />
     } else {
 
-        const getExpired = (): boolean => {
-            // Render Getting started tippy card if the time gets expired
-            const now = new Date().valueOf()
-            if (now < expiryDate) {
-                return true
-            }
-            return false
-        }
-
+const onClickedDeployManageCardClicked = () =>{
+   setIsDeployManageCardClicked(true)
+}
         return (
             <mainContext.Provider
                 value={{
@@ -273,13 +268,14 @@ export default function NavigationRoutes() {
                                             />
                                         </Route>
                                         <Route exact path={`/${URLS.GETTING_STARTED}/${URLS.GUIDE}`}>
-                                            <DeployManageGuide />
+                                            <DeployManageGuide isDeployManageCardClicked={isDeployManageCardClicked}/>
                                         </Route>
                                         <Route exact path={`/${URLS.GETTING_STARTED}`}>
                                             <OnboardingGuide
                                                 loginCount={loginCount}
                                                 isSuperAdmin={isSuperAdmin}
                                                 serverMode={serverMode}
+                                                onClickedDeployManageCardClicked={onClickedDeployManageCardClicked}
                                             />
                                         </Route>
 

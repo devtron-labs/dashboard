@@ -182,6 +182,9 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             clearAll={this.props.clearAllFilters}
             changePage={this.changePage}
             changePageSize={this.changePageSize}
+            isSuperAdmin={this.props.isSuperAdmin}
+            appListCount={this.props.appListCount}
+            openDevtronAppCreateModel={this.props.openDevtronAppCreateModel}
         />
     }
 }

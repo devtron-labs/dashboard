@@ -927,7 +927,6 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                     {renderAppliedFilters()}
                     {renderAppTabs()}
                     {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
-                    {appListCount === 0 && isSuperAdmin ? <GuidePage openDevtronAppCreateModel={openDevtronAppCreateModel} /> :
                         <>
                             {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
                                 serverMode === SERVER_MODE.FULL && (
@@ -937,6 +936,9 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                                         clearAllFilters={removeAllFilters}
                                         sortApplicationList={sortApplicationList}
                                         updateLastDataSync={updateLastDataSync}
+                                        appListCount={appListCount}
+                                        isSuperAdmin={isSuperAdmin}
+                                        openDevtronAppCreateModel={openDevtronAppCreateModel}
                                     />
                                 )}
                             {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
@@ -971,7 +973,6 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                                 </>
                             )}
                         </>
-                    }
                 </>
             )}
         </div>

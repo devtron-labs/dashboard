@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import HelmCollage from '../../assets/img/helm-collage.png'
 import DeployCICD from '../../assets/img/guide-onboard.png'
 import { NavLink, useRouteMatch, useHistory } from 'react-router-dom'
@@ -6,10 +6,9 @@ import { DOCUMENTATION, SERVER_MODE, URLS } from '../../config'
 import './onboardingGuide.scss'
 import PreviewImage from '../../assets/img/ic-preview.png'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { OpaqueModal } from '../common'
 import { OnboardingGuideProps } from '../common/guidePage/onboarding.type'
 
-function OnboardingGuide({ loginCount, serverMode }: OnboardingGuideProps) {
+function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClicked }: OnboardingGuideProps) {
     const match = useRouteMatch()
     const history = useHistory()
 
@@ -49,12 +48,12 @@ function OnboardingGuide({ loginCount, serverMode }: OnboardingGuideProps) {
                         >
                             <img className="onboarding-card__img top-radius-4" src={PreviewImage} />
                             <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
-                                Explore a preconfigured Demo at <span className="cb-5">preview.devtron.ai</span>
+                                Explore a preconfigured Demo app at <span className="cb-5">preview.devtron.ai</span>
                             </div>
                         </a>
                     </div>
                     <div className="onboarding__line" />
-                    <div className=" bcn-0 w-300 br-4 en-2 bw-1 cursor">
+                    <div className=" bcn-0 w-300 br-4 en-2 bw-1 cursor" onClick={onClickedDeployManageCardClicked}>
                         <NavLink
                             to={`${match.path}/${URLS.GUIDE}`}
                             className="no-decor fw-6 cursor cn-9"
