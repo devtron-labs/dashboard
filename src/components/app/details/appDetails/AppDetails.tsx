@@ -192,17 +192,19 @@ export const Details: React.FC<{
     const getDeploymentDetailStepsData = (): void => {
       getDeploymentStatusDetail(params.appId, params.envId)
           .then((deploymentStatusDetailRes) => {
-              const processedDeploymentStatusDetailsData = processDeploymentStatusDetailsData(
-                  deploymentStatusDetailRes.result,
-              )
-              clearDeploymentStatusTimer()
-              if (processedDeploymentStatusDetailsData.deploymentStatus === 'inprogress') {
-                  deploymentStatusTimer = setTimeout(() => {
-                      getDeploymentDetailStepsData()
-                  }, 10000)
-              }
-              setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusDetailsData)
+            processDeploymentStatusData(deploymentStatusDetailRes.result)
           })
+  }
+
+  const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
+      const processedDeploymentStatusDetailsData = processDeploymentStatusDetailsData(deploymentStatusDetailRes)
+      clearDeploymentStatusTimer()
+      if (processedDeploymentStatusDetailsData.deploymentStatus === 'inprogress') {
+          deploymentStatusTimer = setTimeout(() => {
+              getDeploymentDetailStepsData()
+          }, 10000)
+      }
+      setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusDetailsData)
   }
 
   const clearDeploymentStatusTimer = (): void => {
@@ -236,16 +238,7 @@ export const Details: React.FC<{
                                     }))
                                     .sort(sortOptionsByValue) || [],
                         })
-                        const processedDeploymentStatusDetailsData = processDeploymentStatusDetailsData(
-                            deploymentStatusDetailRes.result,
-                        )
-                        setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusDetailsData)
-                        clearDeploymentStatusTimer()
-                        if (processedDeploymentStatusDetailsData.deploymentStatus === 'inprogress') {
-                          deploymentStatusTimer = setTimeout(() => {
-                                getDeploymentDetailStepsData()
-                            }, 10000)
-                        }
+                        processDeploymentStatusData(deploymentStatusDetailRes.result)
                         setAppDetailsLoading(false)
                     })
                     .catch((e) => {

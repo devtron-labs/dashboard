@@ -17,5 +17,5 @@ export function isDatasourceHealthy(datasourceId: number | string) {
 }
 
 export function getDeploymentStatusDetail(appId: string, envId: string, triggerId?: string): Promise<DeploymentStatusDetailsResponse> {
-  return get(`${URLS.DEPLOYMENT_STATUS}/${appId}/${envId}${triggerId ? '?wfrId=' + triggerId : ''}`)
+  return get(`${URLS.DEPLOYMENT_STATUS}/${appId}/${envId}${triggerId ? `?wfrId=${triggerId}` : ``}`)
 }
