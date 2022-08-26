@@ -25,6 +25,7 @@ export function SourceInfo({
     deploymentStatus = null,
     deploymentStatusText = null,
     deploymentTriggerTime = null,
+    triggeredBy = null
 }) {
     const status = appDetails?.resourceTree?.status || ''
     const params = useParams<{ appId: string; envId?: string }>()
@@ -172,7 +173,7 @@ export function SourceInfo({
                                     {deploymentStatus === 'inprogress' && <Timer className="icon-dim-16 mt-4" />}
                                 </div>
                                 <div className="fw-4 fs-12 cn-9 ellipsis-right" style={{ maxWidth: 'inherit' }}>
-                                    by {appDetails?.lastDeployedBy}
+                                    by {triggeredBy}
                                 </div>
                             </div>
                         </div>

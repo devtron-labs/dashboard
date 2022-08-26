@@ -387,6 +387,7 @@ export const Details: React.FC<{
                             deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
                             deploymentStatusText={deploymentStatusDetailsBreakdownData.deploymentStatusText}
                             deploymentTriggerTime={deploymentStatusDetailsBreakdownData.deploymentTriggerTime}
+                            triggeredBy={deploymentStatusDetailsBreakdownData.triggeredBy}
                         />
                     </div>
                     <SyncError appStreamData={streamData} />
