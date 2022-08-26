@@ -12,13 +12,11 @@ export default function DeploymentStatusDetailModal({
     appName,
     environmentName,
     deploymentStatusDetailsBreakdownData,
-    lastDeployedTime,
 }: {
     close: () => void
     appName: string
     environmentName: string
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
-    lastDeployedTime: string
 }) {
     return (
         <Drawer position="right" width="50%">
@@ -41,29 +39,17 @@ export default function DeploymentStatusDetailModal({
                                         <Timer className="icon-dim-16 mt-3 mr-5 timer-icon" />
                                         <span className="fs-13">
                                             {handleUTCTime(
-                                                deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown
-                                                    .DEPLOYMENT_INITIATED.time !== ''
-                                                    ? deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown
-                                                          .DEPLOYMENT_INITIATED.time
-                                                    : lastDeployedTime,
+                                                deploymentStatusDetailsBreakdownData.deploymentTriggerTime,
                                                 true,
                                             )}
                                         </span>
                                     </>
                                 ) : (
                                     <span className="fs-13">
-                                        {deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.APP_HEALTH
-                                            .time !== ''
-                                            ? moment(
-                                                  deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown
-                                                      .APP_HEALTH.time,
-                                                  'YYYY-MM-DDTHH:mm:ssZ',
-                                              ).format(Moment12HourFormat)
-                                            : moment(
-                                                  deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown
-                                                      .GIT_COMMIT.time,
-                                                  'YYYY-MM-DDTHH:mm:ssZ',
-                                              ).format(Moment12HourFormat)}
+                                        {moment(
+                                            deploymentStatusDetailsBreakdownData.deploymentEndTime,
+                                            'YYYY-MM-DDTHH:mm:ssZ',
+                                        ).format(Moment12HourFormat)}
                                     </span>
                                 )}
                             </div>

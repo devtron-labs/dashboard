@@ -405,7 +405,6 @@ export const Details: React.FC<{
                             appName={appDetails.appName}
                             environmentName={appDetails.environmentName}
                             deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                            lastDeployedTime={appDetails.lastDeployedTime}
                         />
                     )}
                     {showScanDetailsModal &&
