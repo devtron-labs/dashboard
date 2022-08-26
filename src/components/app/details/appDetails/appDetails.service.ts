@@ -16,6 +16,6 @@ export function isDatasourceHealthy(datasourceId: number | string) {
     return fetchWithFullRoute(URL, 'GET');
 }
 
-export function getDeploymentStatusDetail(appId: string, envId: string): Promise<DeploymentStatusDetailsResponse> {
-  return get(`${URLS.DEPLOYMENT_STATUS}/${appId}/${envId}`)
+export function getDeploymentStatusDetail(appId: string, envId: string, triggerId?: string): Promise<DeploymentStatusDetailsResponse> {
+  return get(`${URLS.DEPLOYMENT_STATUS}/${appId}/${envId}${triggerId ? '?wfrId=' + triggerId : ''}`)
 }

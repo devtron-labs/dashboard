@@ -14,13 +14,15 @@ export default function DeploymentStatusDetailBreakdown({
 }) {
     const renderIcon = (iconState: string): JSX.Element => {
         if (iconState === 'success') {
-            return <Check className="icon-dim-20" />
+            return <Check className="icon-dim-20 green-tick" />
         } else if (iconState === 'failed') {
             return <Error className="icon-dim-20" />
         } else if (iconState === 'unknown') {
             return <Question className="icon-dim-20" />
         } else if (iconState === 'inprogress') {
-            return <Question className="icon-dim-20" />
+            return <div className="pulse-highlight"></div>
+        } else if (iconState === 'unreachable') {
+          return <Close className="icon-dim-20" />
         }
         return <Timer className="icon-dim-20" />
     }

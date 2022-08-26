@@ -41,6 +41,7 @@ import DeploymentHistoryConfigList from './deploymentHistoryDiff/DeploymentHisto
 import './cdDetail.scss'
 import DeploymentHistoryDetailedView from './deploymentHistoryDiff/DeploymentHistoryDetailedView'
 import { DeploymentTemplateList } from './cd.type'
+import DeploymentDetailSteps from './DeploymentDetailSteps'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -526,6 +527,18 @@ const TriggerOutput: React.FC<{
                             }
                         />
                         <ul className="pl-20 tab-list tab-list--nodes border-bottom">
+                            {triggerDetails.stage === 'DEPLOY' && (
+                                <li className="tab-list__tab">
+                                    <NavLink
+                                        replace
+                                        className="tab-list__tab-link"
+                                        activeClassName="active"
+                                        to="deployment-steps"
+                                    >
+                                        Steps
+                                    </NavLink>
+                                </li>
+                            )}
                             {triggerDetails.stage !== 'DEPLOY' && (
                                 <li className="tab-list__tab">
                                     <NavLink
@@ -621,6 +634,9 @@ const HistoryLogs: React.FC<{
                                 </div>
                             </Route>
                         )}
+                        <Route path={`${path}/deployment-steps`}>
+                            <DeploymentDetailSteps />
+                        </Route>
                         <Route
                             path={`${path}/source-code`}
                             render={(props) => <GitChanges triggerDetails={triggerDetails} />}
@@ -651,7 +667,7 @@ const HistoryLogs: React.FC<{
                                 triggerDetails.status.toLowerCase() === 'succeeded'
                                     ? `${path}/artifacts`
                                     : triggerDetails.stage === 'DEPLOY'
-                                    ? `${path}/source-code`
+                                    ? `${path}/deployment-steps`
                                     : `${path}/logs`
                             }
                         />

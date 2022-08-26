@@ -1772,6 +1772,21 @@ table.resource-tree {
     }
   }
 
+  .mw-340 {
+    max-width: 340px !important;
+  }
+
+  .mw-382 {
+    max-width: 382px !important;
+  }
+
+  .mw-140 {
+    max-width: 140px !important;
+  }
+}
+
+.source-info-container,
+.deployment-status-breakdown-modal-container{
   .app-summary__status-name{
     text-transform: none !important;
     &.f-succeeded {
@@ -1783,18 +1798,6 @@ table.resource-tree {
     &.f-failed {
         color: var(--red);
     }
-  }
-
-  .mw-340 {
-    max-width: 340px !important;
-  }
-
-  .mw-382 {
-    max-width: 382px !important;
-  }
-
-  .mw-140 {
-    max-width: 140px !important;
   }
 }
 
@@ -1809,5 +1812,26 @@ table.resource-tree {
   .deployment-status-breakdown-row{
     display: grid;
     grid-template-columns: 30px auto 150px;
+  }
+
+  .pulse-highlight {
+    width: 12px;
+    height: 12px;
+    border: solid 4px rgba(255, 126, 91, 0.4);
+    background-color: #ff7e5b;
+    position: relative;
+    top: 5px;
+    right: -5px;
+    border-radius: 50%;
+    animation-name: pulse;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+  }
+
+  .green-tick{
+    path {
+      stroke: var(--G500);
+    }
   }
 }

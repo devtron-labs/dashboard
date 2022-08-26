@@ -58,7 +58,7 @@ import {
     NodeDetailTabs,
     NodeDetailTabsType
 } from '../../types';
-import { aggregateNodes, SecurityVulnerabilitites, getSelectedNodeItems, getPodNameSuffix, getDefaultDeploymentData } from './utils';
+import { aggregateNodes, SecurityVulnerabilitites, getSelectedNodeItems, getPodNameSuffix, processDeploymentStatusDetailsData } from './utils';
 import { AppMetrics } from './AppMetrics';
 import IndexStore from '../../../v2/appDetails/index.store';
 import { TriggerInfoModal } from '../../list/TriggerInfo';
@@ -167,7 +167,7 @@ export const Details: React.FC<{
         monitoringTools: [],
     })
     const [deploymentDetailedStatus, toggleDeploymentDetailedStatus] = useState<boolean>(false)
-    const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] = useState<DeploymentStatusDetailsBreakdownDataType>(getDefaultDeploymentData)
+    const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] = useState<DeploymentStatusDetailsBreakdownDataType>(processDeploymentStatusDetailsData([], ''))
     //let prefix = '';
     //if (process.env.NODE_ENV === 'production') {
         //     //@ts-ignore
@@ -186,66 +186,6 @@ export const Details: React.FC<{
     const aggregatedNodes: AggregatedNodes = useMemo(() => {
         return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || []);
     }, [appDetails]);
-
-    const processDeploymentStatusDetailsData = (data: DeploymentStatusDetailsType[], deployedBy: string): void=>{
-        const deploymentData = getDefaultDeploymentData
-        deploymentData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.displaySubText = ` by ${deployedBy}`
-        for (let index = data.length - 1; index >= 0; index--) {
-            const element = data[index]
-            if (element['status'] === 'HEALTHY' || element['status'] === 'DEGRADED') {
-                deploymentData.deploymentStatus = 'succeeded'
-                deploymentData.deploymentStatusText = 'Succeeded'
-                deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText =
-                    element['status'] === 'HEALTHY' ? 'Healthy' : 'Degraded'
-                deploymentData.deploymentStatusBreakdown.APP_HEALTH.time = element['status_time']
-                deploymentData.deploymentTime = element['status_time']
-            } else if (element['status'] === 'FAILED') {
-                deploymentData.deploymentStatus = 'Failed'
-                deploymentData.deploymentStatusText = 'failed'
-                deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = 'Failed'
-                deploymentData.deploymentError = element['statusDetail']
-                deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
-                deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
-                deploymentData.deploymentTime = element['status_time']
-            } else if (element['status'].includes('KUBECTL_APPLY')) {
-                if (
-                    element['status'] === 'KUBECTL_APPLY_STARTED' &&
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time === '' &&
-                    deploymentData.deploymentStatus !== 'Succeeded'
-                ) {
-                    deploymentData.deploymentStatus = 'Succeeded'
-                    if (deploymentData.deploymentStatus === 'Failed') {
-                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
-                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
-                    } else {
-                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'inprogress'
-                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': In progress'
-                    }
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time = element['status_time']
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon =
-                        deploymentData.deploymentStatus === 'Failed' ? 'Unknown' : 'inprogress'
-                } else if (element['status'] === 'KUBECTL_APPLY_SYNCED') {
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time = element['status_time']
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
-                }
-            } else if (element['status'].includes('GIT_COMMIT')) {
-                deploymentData.deploymentStatusBreakdown.GIT_COMMIT.time = element['status_time']
-                deploymentData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.time = element['status_time']
-                if (element['status'] === 'GIT_COMMIT_FAILED') {
-                    deploymentData.deploymentStatusBreakdown.GIT_COMMIT.displaySubText = ': Failed'
-                    deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'failed'
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
-                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
-                } else{
-                  deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
-                }
-            } else if (element['status'] === 'DEPLOYMENT_INITIATED') {
-                deploymentData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.time = element['status_time']
-            }
-        }
-        setDeploymentStatusDetailsBreakdownData(deploymentData)
-    }
 
     async function callAppDetailsAPI() {
         try {
@@ -266,7 +206,7 @@ export const Details: React.FC<{
                                     }))
                                     .sort(sortOptionsByValue) || [],
                         })
-                        processDeploymentStatusDetailsData(deploymentStatusDetailRes.result || [], response.result.lastDeployedBy)
+                        setDeploymentStatusDetailsBreakdownData(processDeploymentStatusDetailsData(deploymentStatusDetailRes.result || [], response.result.lastDeployedBy))
                         setAppDetailsLoading(false)
                     })
                     .catch((e) => {
