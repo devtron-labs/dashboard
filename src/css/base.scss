@@ -35,7 +35,8 @@ html {
     max-width: 100%;
 }
 
-.info__container {
+// Info bar
+.dc__info__container {
     display: grid;
     grid-template-columns: 20px 1fr auto;
     padding: 10px 16px;
@@ -46,20 +47,20 @@ html {
     border-radius: 4px;
 }
 
-.info__container.info__container--documentation-link {
+.dc__info__container.info__container--documentation-link {
     padding: 9px 16px;
     margin-bottom: 16px;
     grid-template-columns: 20px 1fr auto;
     grid-column-gap: 8px;
 }
 
-.info__title {
+.dc__info__title {
     font-size: 13px;
     color: var(--N900);
     font-weight: 600;
 }
 
-.info__subtitle {
+.dc__info__subtitle {
     color: var(--N900);
     font-size: 13px;
 }
@@ -1770,6 +1771,7 @@ button.anchor {
     text-align: right;
 }
 
+// Line height
 .lh-20 {
     line-height: 20px;
 }
@@ -1790,13 +1792,20 @@ button.anchor {
     line-height: 18px;
 }
 
+.lh-28 {
+  line-height: 28px;
+}
+
+.lh-n {
+  line-height: normal !important;
+}
+
+
 .mh-28 {
     min-height: 28px;
 }
 
-.lh-28 {
-    line-height: 28px;
-}
+
 
 .h-28 {
     height: 28px !important;
@@ -1813,9 +1822,7 @@ button.anchor {
     line-height: 1.5;
 }
 
-.lh-n {
-    line-height: normal !important;
-}
+// Height
 
 .h-8 {
     height: 8px;
@@ -2007,6 +2014,7 @@ textarea {
 .no-text-transform {
     text-transform: none !important;
 }
+
 .split-header {
     display: flex;
     background-color: var(--N100);
