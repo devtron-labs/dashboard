@@ -7,6 +7,7 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-error-excla
 import { DeploymentStatusDetailsBreakdownDataType } from './appDetails.type'
 import moment from 'moment'
 import { Moment12HourFormat } from '../../../../config'
+import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 
 export default function DeploymentStatusDetailBreakdown({
     deploymentStatusDetailsBreakdownData,
@@ -29,6 +30,14 @@ export default function DeploymentStatusDetailBreakdown({
     }
     return (
         <div className="deployment-status-breakdown-container pl-20 pr-20">
+            {deploymentStatusDetailsBreakdownData.deploymentError && (
+                <InfoColourBar
+                    message={deploymentStatusDetailsBreakdownData.deploymentError}
+                    classname="error_bar cn-9 mb-20 lh-20"
+                    Icon={Error}
+                    iconClass="icon-dim-20"
+                />
+            )}
             <div className="deployment-status-breakdown-row pt-4 pb-4">
                 {renderIcon(deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.icon)}
                 <span className="fs-13">

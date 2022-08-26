@@ -35,7 +35,7 @@ export default function DeploymentStatusDetailModal({
                                 >
                                     {deploymentStatusDetailsBreakdownData.deploymentStatusText}
                                 </span>
-                                <span className="bullet mr-4 ml-4 mt-10"></span>
+                                <span className="bullet mr-8 ml-8 mt-10"></span>
                                 {deploymentStatusDetailsBreakdownData.deploymentStatus === 'inprogress' ? (
                                     <>
                                         <Timer className="icon-dim-16 mt-3 mr-5 timer-icon" />

@@ -379,7 +379,8 @@ export const processDeploymentStatusDetailsData = (data: DeploymentStatusDetails
   const deploymentData = {
       deploymentStatus: 'inprogress',
       deploymentStatusText: 'In progress',
-      deploymentTime: '',
+      deploymentTriggerTime: '',
+      deploymentEndTime: '',
       deploymentError: '',
       deploymentStatusBreakdown: {
           DEPLOYMENT_INITIATED: {
@@ -418,7 +419,7 @@ export const processDeploymentStatusDetailsData = (data: DeploymentStatusDetails
               element['status'] === 'HEALTHY' ? ': Healthy' : ': Degraded'
           deploymentData.deploymentStatusBreakdown.APP_HEALTH.time = element['statusTime']
           deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'success'
-          deploymentData.deploymentTime = element['statusTime']
+          deploymentData.deploymentEndTime = element['statusTime']
       } else if (element['status'] === 'FAILED') {
           deploymentData.deploymentStatus = 'Failed'
           deploymentData.deploymentStatusText = 'failed'
@@ -426,7 +427,7 @@ export const processDeploymentStatusDetailsData = (data: DeploymentStatusDetails
           deploymentData.deploymentError = element['statusDetail']
           deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
           deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
-          deploymentData.deploymentTime = element['statusTime']
+          deploymentData.deploymentEndTime = element['statusTime']
       } else if (element['status'].includes('KUBECTL_APPLY')) {
           if (
               element['status'] === 'KUBECTL_APPLY_STARTED' &&
@@ -453,13 +454,17 @@ export const processDeploymentStatusDetailsData = (data: DeploymentStatusDetails
           }
       } else if (element['status'].includes('GIT_COMMIT')) {
           deploymentData.deploymentStatusBreakdown.GIT_COMMIT.time = element['statusTime']
+          if (deploymentData.deploymentTriggerTime === '') {
+              deploymentData.deploymentTriggerTime = element['statusTime']
+          }
           if (element['status'] === 'GIT_COMMIT_FAILED') {
               deploymentData.deploymentStatusBreakdown.GIT_COMMIT.displaySubText = ': Failed'
               deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'failed'
-              deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
-              deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
               deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unreachable'
               deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unreachable'
+              deploymentData.deploymentStatus = 'failed'
+              deploymentData.deploymentStatusText = 'Failed'
+              deploymentData.deploymentEndTime = element['statusTime']
           } else {
               deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
               if (
@@ -471,6 +476,7 @@ export const processDeploymentStatusDetailsData = (data: DeploymentStatusDetails
           }
       } else if (element['status'] === 'DEPLOYMENT_INITIATED') {
           deploymentData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.time = element['statusTime']
+          deploymentData.deploymentTriggerTime = element['statusTime']
           if (
               deploymentData.deploymentStatusBreakdown.GIT_COMMIT.time === '' &&
               deploymentData.deploymentStatus === 'inprogress'

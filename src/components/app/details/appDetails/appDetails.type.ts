@@ -64,7 +64,8 @@ interface DeploymentStatusDetailRow {
 export interface DeploymentStatusDetailsBreakdownDataType {
     deploymentStatus: string
     deploymentStatusText: string
-    deploymentTime: string
+    deploymentTriggerTime: string
+    deploymentEndTime: string
     deploymentError: string
     deploymentStatusBreakdown: {
         DEPLOYMENT_INITIATED: DeploymentStatusDetailRow

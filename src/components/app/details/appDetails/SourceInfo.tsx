@@ -24,6 +24,7 @@ export function SourceInfo({
     toggleDeploymentDetailedStatus = null,
     deploymentStatus = null,
     deploymentStatusText = null,
+    deploymentTriggerTime = null
 }) {
     const status = appDetails?.resourceTree?.status || ''
     const params = useParams<{ appId: string; envId?: string }>()
@@ -73,30 +74,13 @@ export function SourceInfo({
                         </button>
                     )}
                 </div>
-                {/* {appDetails?.lastDeployedBy && appDetails?.lastDeployedTime && (
-                    <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
-                        Deployed
-                        <span className="fw-6 ml-4 mr-4">
-                            {appDetails?.lastDeployedTime
-                                ? moment(appDetails.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
-                                : ''}
-                        </span>
-                        by
-                        <span className="fw-6 ml-4">{appDetails?.lastDeployedBy}</span>
-                        {showCommitInfo && (
-                            <Link className="ml-8 pointer fs-12 fw-6 cb-5" to={getAppCDURL(params.appId, params.envId)}>
-                                Details
-                            </Link>
-                        )}
-                    </div>
-                )} */}
             </div>
             <div className="flex left w-100">
                 {appDetails?.resourceTree && (
                     <>
                         <div
                             onClick={setDetailed ? (e) => setDetailed(true) : () => {}}
-                            className="pointer flex left bcn-0 p-16 br-4 mw-340 mr-12"
+                            className="pointer flex left bcn-0 p-16 br-4 mw-340 mr-12 en-2 bw-1"
                         >
                             <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
                                 <figure
@@ -134,7 +118,7 @@ export function SourceInfo({
                             onClick={
                                 toggleDeploymentDetailedStatus ? (e) => toggleDeploymentDetailedStatus(true) : () => {}
                             }
-                            className="pointer flex left bcn-0 p-16 br-4 mw-382"
+                            className="pointer flex left bcn-0 p-16 br-4 mw-382 en-2 bw-1"
                         >
                             <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
                                 <CD className="icon-dim-32" />
@@ -166,8 +150,8 @@ export function SourceInfo({
                                 <div className="fs-12 fw-4 cn-9">Deployment triggered</div>
                                 <div className="flexbox">
                                     <span className="fs-13 mr-5 fw-6 cn-9">
-                                        {appDetails?.lastDeployedTime
-                                            ? moment(appDetails?.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
+                                        {deploymentTriggerTime
+                                            ? moment(deploymentTriggerTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
                                             : ''}
                                     </span>
                                     {deploymentStatus === 'inprogress' && <Timer className="icon-dim-16 mt-4" />}

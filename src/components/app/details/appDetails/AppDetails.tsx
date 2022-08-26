@@ -345,7 +345,7 @@ export const Details: React.FC<{
     }
 
     return <React.Fragment>
-         <div className="w-100 pt-16 pr-20 pb-20 pl-20">
+         <div className="w-100 pt-16 pr-20 pb-16 pl-20">
                         <SourceInfo
                             appDetails={appDetails}
                             setDetailed={toggleDetailedStatus}
@@ -355,6 +355,7 @@ export const Details: React.FC<{
                             toggleDeploymentDetailedStatus={toggleDeploymentDetailedStatus}
                             deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
                             deploymentStatusText={deploymentStatusDetailsBreakdownData.deploymentStatusText}
+                            deploymentTriggerTime={deploymentStatusDetailsBreakdownData.deploymentTriggerTime}
                         />
                     </div>
                     <SyncError appStreamData={streamData} />
