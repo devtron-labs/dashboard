@@ -43,9 +43,17 @@ export function SourceInfo({
     message = message + message + message
     const showApplicationDetailedModal = (): void => {
         setDetailed && setDetailed(true)
+        ReactGA.event({
+            category: 'App Details',
+            action: 'App Status clicked',
+        })
     }
     const showDeploymentDetailedStatus = (): void => {
         toggleDeploymentDetailedStatus && toggleDeploymentDetailedStatus(true)
+        ReactGA.event({
+            category: 'App Details',
+            action: 'Deployment status clicked',
+        })
     }
     return (
         <div className="flex left w-100 column w-100 source-info-container">
