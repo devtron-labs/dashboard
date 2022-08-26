@@ -375,18 +375,18 @@ export function addQueryParamToGrafanaURL(url: string, appId: string | number, e
     return url;
 }
 
-export const processDeploymentStatusDetailsData = (data: DeploymentStatusDetailsType[], deployedBy: string): DeploymentStatusDetailsBreakdownDataType=>{
+export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetailsType): DeploymentStatusDetailsBreakdownDataType=>{
   const deploymentData = {
       deploymentStatus: 'inprogress',
       deploymentStatusText: 'In progress',
-      deploymentTriggerTime: '',
-      deploymentEndTime: '',
+      deploymentTriggerTime: data?.deploymentStartedOn || '',
+      deploymentEndTime: data?.deploymentFinishedOn || '',
       deploymentError: '',
       deploymentStatusBreakdown: {
           DEPLOYMENT_INITIATED: {
               icon: 'success',
               displayText: 'Deployment initiated',
-              displaySubText: '',
+              displaySubText: ` by ${data?.triggeredBy || ''}`,
               time: '',
           },
           GIT_COMMIT: {
@@ -409,79 +409,80 @@ export const processDeploymentStatusDetailsData = (data: DeploymentStatusDetails
           },
       },
   }
-  deploymentData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.displaySubText = ` by ${deployedBy}`
-  for (let index = data.length - 1; index >= 0; index--) {
-      const element = data[index]
-      if (element['status'] === 'HEALTHY' || element['status'] === 'DEGRADED') {
-          deploymentData.deploymentStatus = 'succeeded'
-          deploymentData.deploymentStatusText = 'Succeeded'
-          deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText =
-              element['status'] === 'HEALTHY' ? ': Healthy' : ': Degraded'
-          deploymentData.deploymentStatusBreakdown.APP_HEALTH.time = element['statusTime']
-          deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'success'
-          deploymentData.deploymentEndTime = element['statusTime']
-      } else if (element['status'] === 'FAILED') {
-          deploymentData.deploymentStatus = 'Failed'
-          deploymentData.deploymentStatusText = 'failed'
-          deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = 'Failed'
-          deploymentData.deploymentError = element['statusDetail']
-          deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
-          deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
-          deploymentData.deploymentEndTime = element['statusTime']
-      } else if (element['status'].includes('KUBECTL_APPLY')) {
-          if (
-              element['status'] === 'KUBECTL_APPLY_STARTED' &&
-              deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time === '' &&
-              deploymentData.deploymentStatus !== 'Succeeded'
-          ) {
-              if (deploymentData.deploymentStatus === 'Failed') {
-                  deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
-                  deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
-              } else {
-                  deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'inprogress'
-                  deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': In progress'
-              }
-              deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time = element['statusTime']
-              deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon =
-                  deploymentData.deploymentStatus === 'Failed' ? 'Unknown' : 'inprogress'
-          } else if (element['status'] === 'KUBECTL_APPLY_SYNCED') {
-              deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
-              deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time = element['statusTime']
-              deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
-              if (deploymentData.deploymentStatus === 'inprogress') {
-                  deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'inprogress'
-              }
-          }
-      } else if (element['status'].includes('GIT_COMMIT')) {
-          deploymentData.deploymentStatusBreakdown.GIT_COMMIT.time = element['statusTime']
-          if (deploymentData.deploymentTriggerTime === '') {
-              deploymentData.deploymentTriggerTime = element['statusTime']
-          }
-          if (element['status'] === 'GIT_COMMIT_FAILED') {
-              deploymentData.deploymentStatusBreakdown.GIT_COMMIT.displaySubText = ': Failed'
-              deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'failed'
-              deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unreachable'
-              deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unreachable'
-              deploymentData.deploymentStatus = 'failed'
-              deploymentData.deploymentStatusText = 'Failed'
+  if (data) {
+      for (let index = data.timelines.length - 1; index >= 0; index--) {
+          const element = data.timelines[index]
+          if (element['status'] === 'HEALTHY' || element['status'] === 'DEGRADED') {
+              deploymentData.deploymentStatus = 'succeeded'
+              deploymentData.deploymentStatusText = 'Succeeded'
+              deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText =
+                  element['status'] === 'HEALTHY' ? ': Healthy' : ': Degraded'
+              deploymentData.deploymentStatusBreakdown.APP_HEALTH.time = element['statusTime']
+              deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'success'
               deploymentData.deploymentEndTime = element['statusTime']
-          } else {
-              deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
+          } else if (element['status'] === 'FAILED') {
+              deploymentData.deploymentStatus = 'Failed'
+              deploymentData.deploymentStatusText = 'failed'
+              deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = 'Failed'
+              deploymentData.deploymentError = element['statusDetail']
+              deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
+              deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
+              deploymentData.deploymentEndTime = element['statusTime']
+          } else if (element['status'].includes('KUBECTL_APPLY')) {
               if (
+                  element['status'] === 'KUBECTL_APPLY_STARTED' &&
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time === '' &&
+                  deploymentData.deploymentStatus !== 'Succeeded'
+              ) {
+                  if (deploymentData.deploymentStatus === 'Failed') {
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
+                  } else {
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'inprogress'
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': In progress'
+                  }
+                  deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time = element['statusTime']
+                  deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon =
+                      deploymentData.deploymentStatus === 'Failed' ? 'Unknown' : 'inprogress'
+              } else if (element['status'] === 'KUBECTL_APPLY_SYNCED') {
+                  deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
+                  deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time = element['statusTime']
+                  deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
+                  if (deploymentData.deploymentStatus === 'inprogress') {
+                      deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'inprogress'
+                  }
+              }
+          } else if (element['status'].includes('GIT_COMMIT')) {
+              deploymentData.deploymentStatusBreakdown.GIT_COMMIT.time = element['statusTime']
+              if (deploymentData.deploymentTriggerTime === '') {
+                  deploymentData.deploymentTriggerTime = element['statusTime']
+              }
+              if (element['status'] === 'GIT_COMMIT_FAILED') {
+                  deploymentData.deploymentStatusBreakdown.GIT_COMMIT.displaySubText = ': Failed'
+                  deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'failed'
+                  deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unreachable'
+                  deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unreachable'
+                  deploymentData.deploymentStatus = 'failed'
+                  deploymentData.deploymentStatusText = 'Failed'
+                  deploymentData.deploymentEndTime = element['statusTime']
+              } else {
+                  deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
+                  if (
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time === '' &&
+                      deploymentData.deploymentStatus === 'inprogress'
+                  ) {
+                      deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'inprogress'
+                  }
+              }
+          } else if (element['status'] === 'DEPLOYMENT_INITIATED') {
+              deploymentData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.time = element['statusTime']
+              deploymentData.deploymentTriggerTime = element['statusTime']
+              if (
+                  deploymentData.deploymentStatusBreakdown.GIT_COMMIT.time === '' &&
                   deploymentData.deploymentStatus === 'inprogress'
               ) {
-                  deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'inprogress'
+                  deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'inprogress'
               }
-          }
-      } else if (element['status'] === 'DEPLOYMENT_INITIATED') {
-          deploymentData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.time = element['statusTime']
-          deploymentData.deploymentTriggerTime = element['statusTime']
-          if (
-              deploymentData.deploymentStatusBreakdown.GIT_COMMIT.time === '' &&
-              deploymentData.deploymentStatus === 'inprogress'
-          ) {
-              deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'inprogress'
           }
       }
   }

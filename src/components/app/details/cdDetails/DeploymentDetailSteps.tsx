@@ -10,15 +10,14 @@ export default function DeploymentDetailSteps() {
     const { appId, envId, triggerId } = useParams<{ appId: string; envId?: string; triggerId?: string }>()
     const [deploymentListLoader, setDeploymentListLoader] = useState<boolean>(true)
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
-        useState<DeploymentStatusDetailsBreakdownDataType>(processDeploymentStatusDetailsData([], ''))
+        useState<DeploymentStatusDetailsBreakdownDataType>(processDeploymentStatusDetailsData())
 
     let initTimer = null
     const getDeploymentDetailStepsData = (): void => {
         getDeploymentStatusDetail(appId, envId, triggerId)
             .then((deploymentStatusDetailRes) => {
                 const processedDeploymentStatusDetailsData = processDeploymentStatusDetailsData(
-                    deploymentStatusDetailRes.result || [],
-                    '',
+                    deploymentStatusDetailRes.result,
                 )
                 if (processedDeploymentStatusDetailsData.deploymentStatus === 'inprogress') {
                     initTimer = setTimeout(() => {

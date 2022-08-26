@@ -169,10 +169,11 @@ export const Details: React.FC<{
     const [deploymentDetailedStatus, toggleDeploymentDetailedStatus] = useState<boolean>(false)
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
-            ...processDeploymentStatusDetailsData([], ''),
+            ...processDeploymentStatusDetailsData(),
             deploymentStatus: 'checking',
             deploymentStatusText: 'checking...',
         })
+    let deploymentStatusTimer = null
     //let prefix = '';
     //if (process.env.NODE_ENV === 'production') {
         //     //@ts-ignore
@@ -191,6 +192,34 @@ export const Details: React.FC<{
     const aggregatedNodes: AggregatedNodes = useMemo(() => {
         return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || []);
     }, [appDetails]);
+
+    const getDeploymentDetailStepsData = (): void => {
+      getDeploymentStatusDetail(params.appId, params.envId)
+          .then((deploymentStatusDetailRes) => {
+              const processedDeploymentStatusDetailsData = processDeploymentStatusDetailsData(
+                  deploymentStatusDetailRes.result,
+              )
+              clearDeploymentStatusTimer()
+              if (processedDeploymentStatusDetailsData.deploymentStatus === 'inprogress') {
+                  deploymentStatusTimer = setTimeout(() => {
+                      getDeploymentDetailStepsData()
+                  }, 10 * 1000)
+              }
+              setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusDetailsData)
+          })
+  }
+
+  const clearDeploymentStatusTimer = (): void => {
+      if (deploymentStatusTimer) {
+          clearTimeout(deploymentStatusTimer)
+      }
+  }
+
+  useEffect(() => {
+      return () => {
+        clearDeploymentStatusTimer()
+      }
+  }, [])
 
     async function callAppDetailsAPI() {
         try {
@@ -211,7 +240,16 @@ export const Details: React.FC<{
                                     }))
                                     .sort(sortOptionsByValue) || [],
                         })
-                        setDeploymentStatusDetailsBreakdownData(processDeploymentStatusDetailsData(deploymentStatusDetailRes.result || [], response.result.lastDeployedBy))
+                        const processedDeploymentStatusDetailsData = processDeploymentStatusDetailsData(
+                            deploymentStatusDetailRes.result,
+                        )
+                        setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusDetailsData)
+                        clearDeploymentStatusTimer()
+                        if (processedDeploymentStatusDetailsData.deploymentStatus === 'inprogress') {
+                          deploymentStatusTimer = setTimeout(() => {
+                                getDeploymentDetailStepsData()
+                            }, 10 * 1000)
+                        }
                         setAppDetailsLoading(false)
                     })
                     .catch((e) => {

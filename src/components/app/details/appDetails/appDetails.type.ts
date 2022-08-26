@@ -43,7 +43,7 @@ export interface SecurityVulnerabilititesProps {
     onClick: () => void
 }
 
-export interface DeploymentStatusDetailsType {
+export interface DeploymentStatusDetailsTimelineType {
     id: number
     cdWorkflowRunnerId: number
     status: string
@@ -51,8 +51,15 @@ export interface DeploymentStatusDetailsType {
     statusTime: string
 }
 
+export interface DeploymentStatusDetailsType {
+  deploymentFinishedOn: string
+  deploymentStartedOn: string
+  triggeredBy: string
+  timelines: DeploymentStatusDetailsTimelineType[]
+}
+
 export interface DeploymentStatusDetailsResponse extends ResponseType {
-    result?: DeploymentStatusDetailsType[]
+    result?: DeploymentStatusDetailsType
 }
 
 interface DeploymentStatusDetailRow {
