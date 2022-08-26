@@ -482,7 +482,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unreachable'
                   deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ''
                   deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unreachable'
-                } else{
+                } else if(deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon !== 'failed'){
                   if(deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time === ''){
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
