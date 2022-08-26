@@ -135,6 +135,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         externalType = '',
         defaultPermissionNumber = '',
         filePermission = '',
+        esoSecretData = null,
         subPath = false,
     } = secrets.has(name) ? secrets.get(name) : { type: 'environment', mountPath: '', externalType: '' }
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -900,6 +901,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     secretData={secretData.map((s) => {
                         return { key: s.fileName, name: s.name, property: s.property, isBinary: s.isBinary }
                     })}
+                    esoSecretData={esoSecretData}
                     externalType={externalType}
                     data={state.duplicate}
                     type={type}

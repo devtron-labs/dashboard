@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, Component } from 'react'
 import {
     Progressing,
     showError,
@@ -12,7 +12,9 @@ import {
     CHECKBOX_VALUE,
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
+    multiSelectStyles,
 } from '../common'
+import ReactSelect, { components } from 'react-select'
 import { useParams } from 'react-router'
 import { updateSecret, deleteSecret, getSecretKeys } from '../secrets/service'
 import { getAppChartRef } from '../../services/service'
@@ -34,6 +36,137 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import '../configMaps/ConfigMap.scss'
 import { decode } from '../../util/Util'
+import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-i-outline.svg'
+import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
+
+let sampleJSONs = {
+    ESO_GoogleSecretsManager: {
+        secretStore: {
+            gcpsm: {
+                auth: {
+                    secretRef: {
+                        secretAccessKeySecretRef: {
+                            name: 'gcpsm-secret',
+                            key: 'secret-access-credentials',
+                        },
+                    },
+                },
+                projectID: 'myProject',
+            },
+        },
+        esoData: [
+            {
+                secretKey: 'prod-mysql-password',
+                key: 'secrets/prod-mysql-secrets',
+            },
+            {
+                secretKey: 'prod-mysql-password',
+                key: 'secrets/prod-mysql-secrets',
+            },
+        ],
+    },
+    ESO_AWSSecretsManager: {
+        secretStore: {
+            aws: {
+                service: 'SecretsManager',
+                region: 'us-east-1',
+                auth: {
+                    secretRef: {
+                        accessKeyIDSecretRef: {
+                            name: 'awssm-secret',
+                            key: 'access-key',
+                        },
+                        secretAccessKeySecretRef: {
+                            name: 'awssm-secret',
+                            key: 'secret-access-key',
+                        },
+                    },
+                },
+            },
+        },
+        esoData: [
+            {
+                secretKey: 'prod-mysql-password',
+                key: 'secrets/prod-mysql-secrets',
+                property: 'prodPassword',
+            },
+            {
+                secretKey: 'prod-mysql-password',
+                key: 'secrets/prod-mysql-secrets',
+                property: 'prodPassword',
+            },
+        ],
+    },
+    ESO_AzureSecretsManager: {
+        secretStore: {
+            azurekv: {
+                tenantId: 'd3bc2180-xxxx-xxxx-xxxx-154105743342',
+                vaultUrl: 'https://my-keyvault-name.vault.azure.net',
+                authSecretRef: {
+                    clientId: {
+                        name: 'azure-secret-sp',
+                        key: 'ClientID',
+                    },
+                    clientSecret: {
+                        name: 'azure-secret-sp',
+                        key: 'ClientSecret',
+                    },
+                },
+            },
+        },
+        esoData: [
+            {
+                secretKey: 'prod-mysql-password',
+                key: 'secrets/prod-mysql-secrets',
+            },
+            {
+                secretKey: 'prod-mysql-password',
+                key: 'secrets/prod-mysql-secrets',
+            },
+        ],
+    },
+    ESO_HashiCorpVault: {
+        secretStore: {
+            vault: {
+                server: 'http://my.vault.server:8200',
+                path: 'secret',
+                version: 'v2',
+                auth: {
+                    tokenSecretRef: {
+                        name: 'vault-token',
+                        key: 'token',
+                    },
+                },
+            },
+        },
+        esoData: [
+            {
+                secretKey: 'prod-mysql-password',
+                key: 'secrets/prod-mysql-secrets',
+                property: 'prodPassword',
+            },
+            {
+                secretKey: 'prod-mysql-password',
+                key: 'secrets/prod-mysql-secrets',
+                property: 'prodPassword',
+            },
+        ],
+    },
+    default: [
+        {
+            key: 'service/credentials',
+            name: 'secret-key',
+            property: 'property-name',
+            isBinary: true,
+        },
+        {
+            key: 'service/credentials',
+            name: 'secret-key',
+            property: 'property-name',
+            isBinary: true,
+        },
+    ],
+}
 
 let sampleJSON = [
     {
@@ -50,15 +183,95 @@ let sampleJSON = [
     },
 ]
 
-let dataHeader = (
-    <div>
-        # Sample Data<br></br># key: Secret key in backend<br></br># name: Name for this key in the generated secret
-        <br></br># property: Property to extract if secret in backend is a JSON object(optional)<br></br># isBinary: Set
-        this to true if configuring an item for a binary file stored(optional)<br></br>
-    </div>
-)
+let dataHeaders = {
+    ESO_GoogleSecretsManager: (
+        <div>
+            #Sample Data<br />
+            #secretKey: Name of the secret<br />
+            #key: GCP secret name<br />
+            #property: GCP Secrets Manager secret key<br />
+            #secretAccessKeySecretRef.name: The secret name which would be used for authentication<br />
+            #secretAccessKeySecretRef.key: Key name containing SA key<br />
+            #projectID: GCP Project ID where secret is created<br />
+        </div>
+    ),
+    ESO_AWSSecretsManager: (
+        <div>
+            #Sample Data <br />
+            #accessKeyIDSecretRef.name: Name of secret created that would be used for authentication <br />
+            #region: The region where Secret is created <br />
+            #secretKey: Name of the secret created <br />
+            #key: AWS Secrets Manager secret name <br />
+            #property: AWS Secrets Manager secret key <br />
+        </div>
+    ),
+    ESO_AzureSecretsManager: (
+        <div>
+            #Sample Data <br />
+            #tenantId: azure tenant ID <br />
+            #vaultUrl: URL of your vault instance <br />
+            #authSecretRef.name: Name of secret created that would be used for authentication <br />
+            #secretKey: Name of the secret <br />
+            #key: Azure Key vault secret name <br />
+        </div>
+    ),
+    ESO_HashiCorpVault: (
+        <div>
+            #Sample Data <br />
+            #vault.server: Server URL where vault is running <br />
+            #vault.path: Path where secret is stored <br />
+            #tokenSecretRef.name: The secret name which would be used for authentication <br />
+            #tokenSecretRef.key: Key name containing token <br />
+            #secretKey: Name of the secret <br />
+            #key: Vault secret name <br />
+            #property: Vault secret key <br />
+        </div>
+    ),
+    default: (
+        <div>
+            # Sample Data<br></br># key: Secret key in backend<br></br># name: Name for this key in the generated secret
+            <br></br># property: Property to extract if secret in backend is a JSON object(optional)<br></br># isBinary: Set
+            this to true if configuring an item for a binary file stored(optional)<br></br>
+        </div>
+    )
+}
 
-const sample = YAML.stringify(sampleJSON)
+
+const getTypeGroups = (typeValue?: string) => {
+    const noGroups: any[] = [
+            { value: '', label: 'Kubernetes Secret' },
+            { value: 'KubernetesSecret', label: 'Mount Existing Kubernetes Secret' },
+        ],
+        esoGroups: any[] = [
+            { value: 'ESO_GoogleSecretsManager', label: 'Google Secrets Manager' },
+            { value: 'ESO_AWSSecretsManager', label: 'AWS Secrets Manager' },
+            { value: 'ESO_AzureSecretsManager', label: 'Azure Secrets Manager' },
+            { value: 'ESO_HashiCorpVault', label: 'Hashi Corp Vault' },
+        ],
+        ksoGroups: any[] = [
+            { value: 'AWSSecretsManager', label: 'AWS Secrets Manager', deprecated: true },
+            { value: 'AWSSystemManager', label: 'AWS System Manager', deprecated: true },
+            { value: 'HashiCorpVault', label: 'Hashi Corp Vault', deprecated: true },
+        ]
+
+    const externalType = [...noGroups, ...esoGroups, ...ksoGroups].find((x) => x.value === typeValue)
+
+    if (typeValue) return externalType
+    return [
+        {
+            label: '',
+            options: noGroups,
+        },
+        {
+            label: 'External Secret Operator (ESO)',
+            options: esoGroups,
+        },
+        {
+            label: 'Kubernetes External Secret (KES)',
+            options: ksoGroups,
+        },
+    ]
+}
 
 const Secret = ({ respondOnSuccess, ...props }) => {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
@@ -192,6 +405,7 @@ export function CollapsedSecretForm({
     externalType = '',
     filePermission = '',
     subPath = false,
+    esoSecretData= null,
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true)
@@ -226,6 +440,7 @@ export function CollapsedSecretForm({
                     externalType={externalType}
                     subPath={subPath}
                     filePermission={filePermission}
+                    esoSecretData={esoSecretData}
                 />
             )}
         </section>
@@ -256,6 +471,12 @@ export function ListComponent({ icon = '', title, subtitle = '', onClick, classN
         </article>
     )
 }
+
+interface EsoData {
+    secretKey: string,
+    key: string,
+    property: string
+}
 interface SecretFormProps {
     id: number
     appChartRef: { id: number; version: string; name: string }
@@ -266,6 +487,7 @@ interface SecretFormProps {
     external: boolean
     externalType: string
     secretData: { key: string; name: string; property: string; isBinary: boolean }[]
+    esoSecretData?: {secretStore: any, esoData: EsoData[] }
     type: string
     data: { k: string; v: string }[]
     isUpdate: boolean
@@ -315,6 +537,25 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         error: '',
     })
 
+    const isHashiOrAWS =
+        externalType === 'AWSSecretsManager' || externalType === 'AWSSystemManager' || externalType === 'HashiCorpVault'
+
+    const isESO =
+        externalType === 'ESO_GoogleSecretsManager' ||
+        externalType === 'ESO_AzureSecretsManager' ||
+        externalType === 'ESO_AWSSecretsManager' ||
+        externalType === 'ESO_HashiCorpVault'
+        
+    
+    let tempEsoData: any[] = props?.esoSecretData?.esoData || []
+    tempEsoData = tempEsoData.map((data) => {
+        return {
+            secretKey: data.secretKey,
+            key: data.key,
+            property: data?.property
+        }
+    })
+    
     let tempSecretData: any[] = props?.secretData || []
     tempSecretData = tempSecretData.map((s) => {
         return {
@@ -339,17 +580,22 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         }
         return temp
     })
+
+
+    const [esoSecretData, setEsoData] = useState(tempEsoData)
+    const [secretStore, setSecretStore] = useState(props.esoSecretData?.secretStore)
     const [secretData, setSecretData] = useState(tempSecretData)
     const [secretDataYaml, setSecretDataYaml] = useState(YAML.stringify(jsonForSecretDataYaml))
+    const [esoSecretYaml, setEsoYaml] = useState(YAML.stringify(props?.esoSecretData || {}))
     const [codeEditorRadio, setCodeEditorRadio] = useState('data')
     const isExternalValues = externalType !== 'KubernetesSecret'
     const tabs = [{ title: 'Environment Variable' }, { title: 'Data Volume' }].map((data) => ({
         ...data,
         active: data.title === selectedTab,
     }))
-    const isHashiOrAWS =
-        externalType === 'AWSSecretsManager' || externalType === 'AWSSystemManager' || externalType === 'HashiCorpVault'
-
+   
+    const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs["default"])
+    
     function setKeyValueArray(arr) {
         tempArray.current = arr
     }
@@ -372,6 +618,12 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         if (!props.isUpdate) return
         handleSecretFetch()
     }, [])
+
+    useEffect(() => {
+        if(isESO){
+            toggleYamlMode(true)
+        }
+    },[isESO,yamlMode])
 
     function handleRoleARNChange(event) {
         setRoleARN({ value: event.target.value, error: '' })
@@ -496,12 +748,17 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             toast.warn('Please add secret data before saving.')
             return
         }
-        if (isHashiOrAWS) {
-            let secretDataArray = secretData
-            let isValid = secretDataArray.reduce((isValid, s) => {
+
+        if (isHashiOrAWS || isESO) {
+            let secretDataArray = isESO ? esoSecretData : secretData 
+            let isValid = !isESO ? secretDataArray.reduce((isValid, s) => {
                 isValid = isValid && !!s.fileName && !!s.name
                 return isValid
-            }, true)
+            }, true) :
+            secretDataArray.reduce((isValid, s) => {
+                isValid = isValid && !!s.secretKey && !!s.key
+                return isValid
+            })
             if (!isValid) {
                 toast.warn('Please check key and name')
                 return
@@ -519,7 +776,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 name: configName.value,
                 type: selectedTab === 'Environment Variable' ? 'environment' : 'volume',
                 external: !!externalType,
-                roleARN: isHashiOrAWS ? roleARN.value : '',
+                roleARN: isHashiOrAWS || isESO ? roleARN.value : '',
                 externalType,
             }
             //Adding conditional fields
@@ -535,6 +792,17 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 payload['secretData'] = payload['secretData'].filter((s) => s.key || s.name || s.property)
             } else if (externalType === '') {
                 payload['data'] = data
+            } else if (isESO) {
+                payload['esoSecretData'] = {
+                    secretStore: secretStore,
+                    esoData: esoSecretData.map((s) => {
+                        return {
+                            secretKey: s.secretKey,
+                            key: s.key,
+                            property: s?.property
+                        }
+                    })
+                }
             }
 
             if (selectedTab === 'Data Volume') {
@@ -629,15 +897,18 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     }
 
     function handleSecretDataYamlChange(yaml): void {
+        
         if (codeEditorRadio !== 'data') return
-        setSecretDataYaml(yaml)
+        isESO ? setEsoYaml(yaml) : setSecretDataYaml(yaml)
         try {
             if (!yaml || !yaml.length) {
+                setEsoData([])
                 setSecretData([])
                 return
             }
             let json = YAML.parse(yaml)
-            if (Array.isArray(json)) {
+            setSecretStore(json.secretStore)
+            if (!isESO && Array.isArray(json)) {
                 json = json.map((j) => {
                     let temp = {}
                     temp['isBinary'] = j.isBinary
@@ -653,6 +924,22 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     return temp
                 })
                 setSecretData(json)
+            }
+            if(isESO && Array.isArray(json?.esoData)){
+                let jsonList = json?.esoData.map((j) => {
+                    let temp = {}
+                    if (j.secretKey) {
+                        temp['secretKey'] = j.secretKey
+                    }
+                    if (j.key) {
+                        temp['key'] = j.key
+                    }
+                    if (j.property) {
+                        temp['property'] = j.property
+                    }
+                    return temp
+                })
+                setEsoData(jsonList)
             }
         } catch (error) {
             // console.log(error)
@@ -673,6 +960,10 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             return
         }
         toggleYamlMode(not)
+    }
+
+    const onChange = (e) => {
+        setExternalType(e.value)
     }
 
     return (
@@ -696,22 +987,55 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             <div className="form__row">
                 <label className="form__label">Data type</label>
                 <div className="form-row__select-external-type flex">
-                    <Select
-                        value={externalType}
-                        onChange={(e) => {
-                            setExternalType(e.target.value)
-                        }}
-                        disabled={secretMode}
-                    >
-                        <Select.Button>
-                            {externalType || externalType === '' ? EXTERNAL_TYPES[externalType] : `Select Secret Type`}
-                        </Select.Button>
-                        {Object.entries(EXTERNAL_TYPES).map(([value, name]) => (
-                            <Select.Option key={value} value={value}>
-                                {name}
-                            </Select.Option>
-                        ))}
-                    </Select>
+                    <ReactSelect 
+                    placeholder="Select Secret Type"
+                    options={getTypeGroups()}
+                    defaultValue={externalType && externalType !== '' ? getTypeGroups(externalType) : getTypeGroups()[0].options[0]}
+                    onChange={onChange}
+                    styles={{
+                        ...multiSelectStyles,
+                        menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
+                        control: (base) => ({...base, border: '1px solid #d6dbdf', width: '450px'}),
+                        group: (base) => ({
+                            ...base,
+                            paddingTop: 0,
+                            paddingBottom: 0,
+                        }),
+                        groupHeading: (base) => ({
+                            ...base,
+                            fontWeight: 600,
+                            fontSize: '12px',
+                            height: '28px',
+                            color: 'var(--N900)',
+                            backgroundColor: 'var(--N100)',
+                            marginBottom: 0,
+                        }),
+                        indicatorsContainer: (provided, state) => ({
+                            ...provided,
+                        })
+                    }}
+                    components={{
+                        IndicatorSeparator: null,
+                        Option: (props) => {
+                            props.selectProps.styles.option = getCustomOptionSelectionStyle()
+                            return <components.Option {...props}>
+                                <div>
+                                    <div>{props.data.label}</div>
+                                    {props.data?.deprecated && <div className='cy-7 fw-4 fs-11'>Deprecated</div>}
+                                </div>
+                            </components.Option>
+                        },
+                        GroupHeading: (props) => {
+                            if(!props.data.label)return null;
+                            return <components.GroupHeading {...props}>
+                                <div className='flex flex-justify h-100'>
+                                    {props.data.label}
+                                    <a className='flex' href='https://github.com/external-secrets/external-secrets' target='_blank'><InfoIcon className='icon-dim-20' /></a>
+                                </div>
+                            </components.GroupHeading>
+                        }
+                    }}
+                    />
                 </div>
             </div>
             {externalType === 'KubernetesSecret' ? (
@@ -874,7 +1198,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     />
                 </div>
             )}
-            {isHashiOrAWS ? (
+            {isHashiOrAWS || isESO ? (
                 <div className="form__row">
                     <CustomInput
                         value={roleARN.value}
@@ -890,7 +1214,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             {isExternalValues && (
                 <div className="flex left mb-16">
                     <b className="mr-5 bold">Data*</b>
-                    <RadioGroup
+                    {!isESO && <RadioGroup
                         className="gui-yaml-switch"
                         name="yaml-mode"
                         initialTab={yamlMode ? 'yaml' : 'gui'}
@@ -899,7 +1223,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     >
                         <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
                         <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
-                    </RadioGroup>
+                    </RadioGroup>}
                 </div>
             )}
             {externalType === '' && (
@@ -951,16 +1275,16 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     )}
                 </>
             )}
-            {isHashiOrAWS && yamlMode ? (
+            {(isHashiOrAWS || isESO) && yamlMode ? (
                 <div className="yaml-container">
                     <CodeEditor
-                        value={codeEditorRadio === 'sample' ? sample : secretDataYaml}
+                        value={codeEditorRadio === 'sample' ? sample : isESO ? esoSecretYaml: secretDataYaml}
                         mode="yaml"
                         inline
                         height={350}
                         onChange={handleSecretDataYamlChange}
                         readOnly={secretMode && codeEditorRadio === 'sample'}
-                        shebang={codeEditorRadio === 'data' ? '#Check sample for usage.' : dataHeader}
+                        shebang={codeEditorRadio === 'data' ? '#Check sample for usage.' : dataHeaders[externalType] || dataHeaders['default']}
                     >
                         <CodeEditor.Header>
                             <RadioGroup
