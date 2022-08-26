@@ -1734,6 +1734,10 @@ button.anchor {
 .border-right {
     border-right: solid 1px var(--N200);
 }
+
+.border-right-n1 {
+    border-right: solid 1px var(--N100);
+}
 .border-left {
     border-left: solid 1px var(--N200);
 }
@@ -1833,6 +1837,10 @@ button.anchor {
     height: 32px !important;
 }
 
+.w-32 {
+    width: 32px !important;
+}
+
 .h-36 {
     height: 36px !important;
 }
@@ -1843,6 +1851,14 @@ button.anchor {
 
 .h-48 {
     height: 48px !important;
+}
+
+.mh-48 {
+  min-height: 48px;
+}
+
+.mw-48 {
+  min-width: 48px;
 }
 
 .h-44 {
