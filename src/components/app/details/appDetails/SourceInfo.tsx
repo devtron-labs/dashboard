@@ -83,7 +83,7 @@ export function SourceInfo({
                 {appDetails?.resourceTree && (
                     <>
                         <div
-                            onClick={showApplicationDetailedModal()}
+                            onClick={showApplicationDetailedModal}
                             className="pointer flex left bcn-0 p-16 br-4 mw-340 mr-12 en-2 bw-1"
                         >
                             <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
@@ -119,7 +119,7 @@ export function SourceInfo({
                             </div>
                         </div>
                         <div
-                            onClick={showDeploymentDetailedStatus()}
+                            onClick={showDeploymentDetailedStatus}
                             className="pointer flex left bcn-0 p-16 br-4 mw-382 en-2 bw-1"
                         >
                             <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
