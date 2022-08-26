@@ -79,7 +79,7 @@ export default function AppDetail() {
     return (
         <>
             <div className="deployment-page">
-                <div className="page-header" style={{ height: '80px' }}>
+                <div className="dc__page-header" style={{ height: '80px' }}>
                     <div className="flex left column">
                         <div className="flex left fs-12 cn-7">
                             <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 2)} />

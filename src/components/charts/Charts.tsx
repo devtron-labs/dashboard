@@ -21,7 +21,7 @@ export default function Charts() {
 }
 
 export function GenericChartsHeader({ children = null }) {
-    return <div className="page-header page-header__tabs">{children}</div>
+    return <div className="dc__page-header page-header__tabs">{children}</div>
 }
 
 export function ChartDetailNavigator() {

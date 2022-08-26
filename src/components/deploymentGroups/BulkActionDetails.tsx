@@ -160,7 +160,7 @@ export default function BulkActionDetails() {
 
     return <>
         <section className="page deployment-detail-page">
-            {deploymentGroup && <article className="page-header">
+            {deploymentGroup && <article className="dc__page-header">
                 <div className="page-header__title flex left">
                     {deploymentGroup.name}
                 </div>

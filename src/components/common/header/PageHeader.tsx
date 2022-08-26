@@ -107,7 +107,7 @@ function PageHeader({
 
     return (
         <div
-            className={`page-header content-space cn-9 bcn-0 pl-20 pr-20 ${
+            className={`dc__page-header content-space cn-9 bcn-0 pl-20 pr-20 ${
                 showTabs ? 'page-header-tabs__height' : 'page-header__height flex'
             }`}
         >
