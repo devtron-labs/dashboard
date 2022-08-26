@@ -167,7 +167,12 @@ export const Details: React.FC<{
         monitoringTools: [],
     })
     const [deploymentDetailedStatus, toggleDeploymentDetailedStatus] = useState<boolean>(false)
-    const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] = useState<DeploymentStatusDetailsBreakdownDataType>(processDeploymentStatusDetailsData([], ''))
+    const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
+        useState<DeploymentStatusDetailsBreakdownDataType>({
+            ...processDeploymentStatusDetailsData([], ''),
+            deploymentStatus: 'checking',
+            deploymentStatusText: 'checking...',
+        })
     //let prefix = '';
     //if (process.env.NODE_ENV === 'production') {
         //     //@ts-ignore

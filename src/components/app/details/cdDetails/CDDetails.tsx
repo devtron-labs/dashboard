@@ -634,23 +634,27 @@ const HistoryLogs: React.FC<{
                                 </div>
                             </Route>
                         )}
-                        <Route path={`${path}/deployment-steps`}>
-                            <DeploymentDetailSteps />
-                        </Route>
+                        {triggerDetails.stage === 'DEPLOY' && (
+                            <Route path={`${path}/deployment-steps`}>
+                                <DeploymentDetailSteps />
+                            </Route>
+                        )}
                         <Route
                             path={`${path}/source-code`}
                             render={(props) => <GitChanges triggerDetails={triggerDetails} />}
                         />
-                        <Route
-                            path={`${path}/configuration`}
-                            render={(props) => (
-                                <DeploymentHistoryConfigList
-                                    setShowTemplate={setShowTemplate}
-                                    setDeploymentHistoryList={setDeploymentHistoryList}
-                                    deploymentHistoryList={deploymentHistoryList}
-                                />
-                            )}
-                        />
+                        {triggerDetails.stage === 'DEPLOY' && (
+                            <Route
+                                path={`${path}/configuration`}
+                                render={(props) => (
+                                    <DeploymentHistoryConfigList
+                                        setShowTemplate={setShowTemplate}
+                                        setDeploymentHistoryList={setDeploymentHistoryList}
+                                        deploymentHistoryList={deploymentHistoryList}
+                                    />
+                                )}
+                            />
+                        )}
                         {triggerDetails.stage !== 'DEPLOY' && (
                             <Route
                                 path={`${path}/artifacts`}
