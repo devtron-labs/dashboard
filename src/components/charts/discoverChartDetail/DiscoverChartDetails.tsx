@@ -329,8 +329,8 @@ const Deployment: React.FC<DeploymentProps> = ({
 
     return (
         <div className="deployment-container chart-deployment flex column left white-card white-card--chart-detail">
-            <div className="chart-grid-item__icon-wrapper">
-                <img src={icon} onError={handleImageError} className="chart-grid-item__icon" alt="chart icon" />
+            <div className="dc__chart-grid-item__icon-wrapper">
+                <img src={icon} onError={handleImageError} className="dc__chart-grid-item__icon" alt="chart icon" />
             </div>
             <div className="mb-16">
                 <div className="repository">

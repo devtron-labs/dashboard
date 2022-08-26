@@ -119,7 +119,7 @@ export default function ChartVersionSelectorModal({
         return (
             <div className="flex content-start">
                 <div className="h-44 mr-16">
-                    <img src={appIconUrl} onError={onError} className="chart-grid-item__icon" alt="chart icon" />
+                    <img src={appIconUrl} onError={onError} className="dc__chart-grid-item__icon" alt="chart icon" />
                 </div>
                 <div className="h-44">
                     <div className="fw-6 fs-16 cn-9 h-22 mb-2">Deploy {appStoreApplicationName}</div>
