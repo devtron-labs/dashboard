@@ -382,6 +382,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
       deploymentTriggerTime: data?.deploymentStartedOn || '',
       deploymentEndTime: data?.deploymentFinishedOn || '',
       deploymentError: '',
+      triggeredBy: data?.triggeredBy || '',
       deploymentStatusBreakdown: {
           DEPLOYMENT_INITIATED: {
               icon: 'success',
