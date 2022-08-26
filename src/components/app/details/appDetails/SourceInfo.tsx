@@ -153,7 +153,7 @@ export function SourceInfo({
                                     </Tippy>
                                 </div>
                                 <div className="flexbox">
-                                    <span className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus}`}>
+                                    <span className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus} ${deploymentStatus === 'inprogress'?'loading-dots':''}`}>
                                         {deploymentStatusText}
                                     </span>
                                     <div className={`${deploymentStatus} icon-dim-20 mt-2`}></div>

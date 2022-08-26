@@ -378,7 +378,7 @@ export function addQueryParamToGrafanaURL(url: string, appId: string | number, e
 export const processDeploymentStatusDetailsData = (data: DeploymentStatusDetailsType[], deployedBy: string): DeploymentStatusDetailsBreakdownDataType=>{
   const deploymentData = {
       deploymentStatus: 'inprogress',
-      deploymentStatusText: 'In progress...',
+      deploymentStatusText: 'In progress',
       deploymentTime: '',
       deploymentError: '',
       deploymentStatusBreakdown: {
