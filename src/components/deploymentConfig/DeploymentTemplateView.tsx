@@ -2,19 +2,32 @@ import React, { useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import { NavLink } from 'react-router-dom'
 import ReactSelect, { components } from 'react-select'
-import { MODES, URLS } from '../../config'
-import { ConditionalWrap, Progressing, showError, sortObjectArrayAlphabetically } from '../common'
+import { MODES, ROLLOUT_DEPLOYMENT, URLS } from '../../config'
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    ConditionalWrap,
+    isVersionLessThanOrEqualToTarget,
+    Progressing,
+    showError,
+    sortObjectArrayAlphabetically,
+} from '../common'
 import { DropdownIndicator, Option } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Upload } from '../../assets/icons/ic-arrow-line-up.svg'
 import { ReactComponent as Arrows } from '../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as File } from '../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
+import { ReactComponent as Next } from '../../assets/icons/ic-arrow-right.svg'
+import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { OptionType } from '../app/types'
 import { getDeploymentTemplate } from '../EnvironmentOverride/service'
 import YAML from 'yaml'
+import { DeploymentChartVersionType } from './types'
+import { getTriggerHistory } from '../app/details/cdDetails/service'
+import { getCDConfig } from '../../services/service'
 
 const renderReadMeOption = (
     fetchingReadMe: boolean,
@@ -90,18 +103,14 @@ const getComparisonTippyContent = (
 ) => {
     if (isComparisonAvailable) {
         return isEnvOverride
-            ? `Compare values with values on other environments or previous deployments on ${environmentName}`
-            : 'Compare values with values on other environments'
+            ? `Compare ${environmentName} values with base template values, values on other environments or previous deployments on ${environmentName}`
+            : 'Compare base template values with values on other environments'
     }
 
     return (
         <>
             <h2 className="fs-12 fw-6 lh-18 m-0">Nothing to compare with</h2>
-            <p className="fs-12 fw-4 lh-18 m-0">
-                {isEnvOverride
-                    ? 'No other environments or previous deployments available'
-                    : 'No other environments available'}
-            </p>
+            <p className="fs-12 fw-4 lh-18 m-0">No other environments available</p>
         </>
     )
 }
@@ -125,15 +134,19 @@ const ChartMenuList = (props) => {
 
 export const ChartTypeVersionOptions = ({
     isUnSet,
+    disableVersionSelect,
     charts,
     selectedChart,
     selectChart,
     selectedChartRefId,
 }: {
     isUnSet: boolean
-    charts: { id: number; version: string; name: string }[]
-    selectedChart: { id: number; version: string; name: string }
-    selectChart: React.Dispatch<React.SetStateAction<{ id: number; version: string; name: string }>>
+    disableVersionSelect?: boolean
+    charts: DeploymentChartVersionType[]
+    selectedChart: DeploymentChartVersionType
+    selectChart: (
+        selectedChart: DeploymentChartVersionType,
+    ) => void | React.Dispatch<React.SetStateAction<DeploymentChartVersionType>>
     selectedChartRefId: number
 }) => {
     const uniqueChartsByDevtron = new Map<string, boolean>(),
@@ -276,66 +289,70 @@ export const ChartTypeVersionOptions = ({
                 }}
             >
                 <span className="fs-13 fw-4 cn-9">Chart version:</span>
-                <ReactSelect
-                    options={filteredCharts}
-                    isMulti={false}
-                    getOptionLabel={(option) => `${option.version}`}
-                    getOptionValue={(option) => `${option.id}`}
-                    value={selectedChart}
-                    isSearchable={false}
-                    components={{
-                        IndicatorSeparator: null,
-                        Option,
-                        DropdownIndicator,
-                    }}
-                    styles={{
-                        control: (base, state) => ({
-                            ...base,
-                            minHeight: '32px',
-                            boxShadow: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                        }),
-                        valueContainer: (base, state) => ({
-                            ...base,
-                            padding: '0',
-                            fontWeight: '600',
-                        }),
-                        menu: (base, state) => ({
-                            ...base,
-                            margin: '0',
-                            width: '120px',
-                        }),
-                        option: (base, state) => {
-                            return {
+                {disableVersionSelect ? (
+                    <span className="fs-13 fw-6 cn-9">{selectedChart?.version}</span>
+                ) : (
+                    <ReactSelect
+                        options={filteredCharts}
+                        isMulti={false}
+                        getOptionLabel={(option) => `${option.version}`}
+                        getOptionValue={(option) => `${option.id}`}
+                        value={selectedChart}
+                        isSearchable={false}
+                        components={{
+                            IndicatorSeparator: null,
+                            Option,
+                            DropdownIndicator,
+                        }}
+                        styles={{
+                            control: (base, state) => ({
                                 ...base,
-                                color: 'var(--N900)',
-                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                            }
-                        },
-                        container: (base, state) => {
-                            return {
+                                minHeight: '32px',
+                                boxShadow: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                            }),
+                            valueContainer: (base, state) => ({
                                 ...base,
-                                width: '100%',
-                            }
-                        },
-                        dropdownIndicator: (base, state) => ({
-                            ...base,
-                            padding: '0 8px',
-                            transition: 'all .2s ease',
-                            transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                        }),
-                        loadingMessage: (base) => ({
-                            ...base,
-                            color: 'var(--N600)',
-                        }),
-                        noOptionsMessage: (base) => ({
-                            ...base,
-                            color: 'var(--N600)',
-                        }),
-                    }}
-                    onChange={(selected) => selectChart(selected as { id: number; version: string; name: string })}
-                />
+                                padding: '0',
+                                fontWeight: '600',
+                            }),
+                            menu: (base, state) => ({
+                                ...base,
+                                margin: '0',
+                                width: '120px',
+                            }),
+                            option: (base, state) => {
+                                return {
+                                    ...base,
+                                    color: 'var(--N900)',
+                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                }
+                            },
+                            container: (base, state) => {
+                                return {
+                                    ...base,
+                                    width: '100%',
+                                }
+                            },
+                            dropdownIndicator: (base, state) => ({
+                                ...base,
+                                padding: '0 8px',
+                                transition: 'all .2s ease',
+                                transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                            }),
+                            loadingMessage: (base) => ({
+                                ...base,
+                                color: 'var(--N600)',
+                            }),
+                            noOptionsMessage: (base) => ({
+                                ...base,
+                                color: 'var(--N600)',
+                            }),
+                        }}
+                        onChange={(selected) => selectChart(selected as DeploymentChartVersionType)}
+                    />
+                )}
             </div>
         </div>
     )
@@ -345,6 +362,7 @@ const CompareOptions = ({
     isComparisonAvailable,
     environmentName,
     isEnvOverride,
+    showComparisonOption,
     openComparison,
     handleComparisonClick,
     fetchingReadMe,
@@ -354,7 +372,8 @@ const CompareOptions = ({
 }: {
     isComparisonAvailable: boolean
     environmentName: string
-    isEnvOverride?: boolean
+    isEnvOverride: boolean
+    showComparisonOption: boolean
     openComparison: boolean
     handleComparisonClick: () => void
     fetchingReadMe: boolean
@@ -364,14 +383,16 @@ const CompareOptions = ({
 }) => {
     return (
         <div className="flex">
-            <Tippy
-                className="default-tt w-200"
-                arrow={false}
-                placement="bottom"
-                content={getComparisonTippyContent(isComparisonAvailable, environmentName, isEnvOverride)}
-            >
-                {renderComparisonOption(openComparison, handleComparisonClick, !isComparisonAvailable)}
-            </Tippy>
+            {showComparisonOption && (
+                <Tippy
+                    className="default-tt w-200"
+                    arrow={false}
+                    placement="bottom"
+                    content={getComparisonTippyContent(isComparisonAvailable, environmentName, isEnvOverride)}
+                >
+                    {renderComparisonOption(openComparison, handleComparisonClick, !isComparisonAvailable)}
+                </Tippy>
+            )}
             <ConditionalWrap
                 condition={
                     !openReadMe && (fetchingReadMe || !isReadMeAvailable)
@@ -409,6 +430,7 @@ export const DeploymentTemplateOptionsTab = ({
     selectedChart,
     selectChart,
     selectedChartRefId,
+    disableVersionSelect,
 }: {
     isComparisonAvailable: boolean
     environmentName?: string
@@ -420,27 +442,16 @@ export const DeploymentTemplateOptionsTab = ({
     isReadMeAvailable: boolean
     handleReadMeClick: () => void
     isUnSet: boolean
-    charts: {
-        id: number
-        version: string
-        name: string
-    }[]
-    selectedChart: {
-        id: number
-        version: string
-        name: string
-    }
-    selectChart: React.Dispatch<
-        React.SetStateAction<{
-            id: number
-            version: string
-            name: string
-        }>
-    >
+    charts: DeploymentChartVersionType[]
+    selectedChart: DeploymentChartVersionType
+    selectChart: (
+        selectedChart: DeploymentChartVersionType,
+    ) => void | React.Dispatch<React.SetStateAction<DeploymentChartVersionType>>
     selectedChartRefId: number
+    disableVersionSelect?: boolean
 }) => {
     return (
-        <div className="dt-options-tab-container flex content-space pl-16 pr-16 pt-8 pb-8">
+        <div className="dt-options-tab-container flex content-space pl-16 pr-16 pt-14 pb-14">
             {!openComparison && !openReadMe ? (
                 <ChartTypeVersionOptions
                     isUnSet={isUnSet}
@@ -448,6 +459,7 @@ export const DeploymentTemplateOptionsTab = ({
                     selectedChart={selectedChart}
                     selectChart={selectChart}
                     selectedChartRefId={selectedChartRefId}
+                    disableVersionSelect={disableVersionSelect}
                 />
             ) : (
                 <span className="flex fs-13 fw-6 cn-9 h-32">
@@ -458,6 +470,7 @@ export const DeploymentTemplateOptionsTab = ({
                 isComparisonAvailable={isComparisonAvailable}
                 environmentName={environmentName}
                 isEnvOverride={isEnvOverride}
+                showComparisonOption={!disableVersionSelect}
                 openComparison={openComparison}
                 handleComparisonClick={handleComparisonClick}
                 fetchingReadMe={fetchingReadMe}
@@ -554,31 +567,78 @@ const CompareWithDropdown = ({ environments, selectedEnvironment, setSelectedEnv
     )
 }
 
-const getCodeEditorHeight = (isUnSet: boolean, openComparison: boolean, showReadme: boolean) => {
+const getCodeEditorHeight = (
+    isUnSet: boolean,
+    isEnvOverride: boolean,
+    openComparison: boolean,
+    showReadme: boolean,
+) => {
     if (openComparison || showReadme) {
         return 'calc(100vh - 158px)'
+    } else if (isEnvOverride) {
+        return 'calc(100vh - 282px)'
     }
 
-    return isUnSet ? 'calc(100vh - 242px)' : 'calc(100vh - 210px)'
+    return isUnSet ? 'calc(100vh - 256px)' : 'calc(100vh - 224px)'
 }
 
 export const DeploymentTemplateEditorView = ({
     appId,
+    envId,
     isUnSet,
+    isEnvOverride = false,
+    environmentName = '',
     openComparison,
     showReadme,
     chartConfigLoading,
     readme,
-    tempFormData,
+    value,
+    defaultValue = '',
     editorOnChange,
     schemas,
     selectedChart,
     environments,
     fetchedValues,
     setFetchedValues,
+    readOnly = false,
 }) => {
     const [fetchingValues, setFetchingValues] = useState(false)
     const [selectedEnvironment, setSelectedEnvironment] = useState<OptionType>()
+    // const [selectedDeployment, setSelectedDeployment] = useState<OptionType>()
+    const [filteredEnvironments, setFilteredEnvironments] = useState<OptionType[]>([])
+    // const [prevDeployments, setPrevDeployments] = useState([])
+
+    // useEffect(() => {
+    //     if (isEnvOverride && !readOnly) {
+    //         getCDConfig(appId).then(({ pipelines }) => {
+    //             const _pipeline = pipelines?.find((pipeline) => pipeline.environmentId === envId)
+
+    //             if (_pipeline) {
+    //                 getTriggerHistory(appId, envId, _pipeline.id, { offset: 0, size: 15 })
+    //                     .then(({ result }) => {
+    //                         // console.log(result)
+    //                     })
+    //                     .catch((err) => {})
+    //             }
+    //         }).catch((err) => {})
+    //     }
+    // }, [readOnly])
+
+    useEffect(() => {
+        if (environments.length > 0) {
+            let _filteredEnvironments = environments
+            if (isEnvOverride) {
+                _filteredEnvironments = environments.filter((env) => envId !== env.environmentId)
+            }
+
+            setFilteredEnvironments(
+                _filteredEnvironments.map((env) => ({
+                    label: env.environmentName,
+                    value: env.environmentId,
+                })),
+            )
+        }
+    }, [environments])
 
     useEffect(() => {
         if (selectedEnvironment && !fetchedValues[selectedEnvironment.value]) {
@@ -587,7 +647,9 @@ export const DeploymentTemplateEditorView = ({
                 .then(({ result }) => {
                     const _fetchedValues = {
                         ...fetchedValues,
-                        [selectedEnvironment.value]: YAML.stringify(result?.environmentConfig?.envOverrideValues || result?.globalConfig),
+                        [selectedEnvironment.value]: YAML.stringify(
+                            result?.environmentConfig?.envOverrideValues || result?.globalConfig,
+                        ),
                     }
                     setFetchedValues(_fetchedValues)
                     setFetchingValues(false)
@@ -613,14 +675,15 @@ export const DeploymentTemplateEditorView = ({
             )}
             <div className="form__row form__row--code-editor-container border-top border-bottom">
                 <CodeEditor
-                    defaultValue={fetchedValues[selectedEnvironment?.value] || ''}
-                    value={tempFormData}
+                    defaultValue={fetchedValues[selectedEnvironment?.value] || defaultValue || ''}
+                    value={value}
                     onChange={editorOnChange}
                     mode={MODES.YAML}
                     validatorSchema={schemas}
-                    loading={chartConfigLoading || !tempFormData || fetchingValues}
-                    height={getCodeEditorHeight(isUnSet, openComparison, showReadme)}
+                    loading={chartConfigLoading || !value || fetchingValues}
+                    height={getCodeEditorHeight(isUnSet, isEnvOverride, openComparison, showReadme)}
                     diffView={openComparison}
+                    readOnly={readOnly}
                 >
                     {isUnSet && !openComparison && !showReadme && (
                         <CodeEditor.Warning text={'Chart type cannot be changed once saved.'} />
@@ -629,7 +692,9 @@ export const DeploymentTemplateEditorView = ({
                         <CodeEditor.Header hideDefaultSplitHeader={true}>
                             <div className="flex fs-12 fw-6 cn-9">
                                 <Edit className="icon-dim-16 mr-10" />
-                                Base deployment template {selectedChart ? `(${selectedChart.version})` : ''}
+                                {`${isEnvOverride ? environmentName : 'Base deployment template'} ${
+                                    selectedChart ? `(${selectedChart.version})` : ''
+                                }`}
                             </div>
                         </CodeEditor.Header>
                     )}
@@ -639,17 +704,16 @@ export const DeploymentTemplateEditorView = ({
                                 <div className="flex left fs-12 fw-6 cn-9 border-right h-32">
                                     <span style={{ width: '85px' }}>Compare with: </span>
                                     <CompareWithDropdown
-                                        environments={environments.map((env) => ({
-                                            label: env.environmentName,
-                                            value: env.environmentId,
-                                        }))}
+                                        environments={filteredEnvironments}
                                         selectedEnvironment={selectedEnvironment}
                                         setSelectedEnvironment={setSelectedEnvironment}
                                     />
                                 </div>
                                 <div className="flex left fs-12 fw-6 cn-9 pl-16 h-32">
                                     <Edit className="icon-dim-16 mr-10" />
-                                    Base deployment template {selectedChart ? `(${selectedChart.version})` : ''}
+                                    {`${isEnvOverride ? environmentName : 'Base deployment template'} ${
+                                        selectedChart ? `(${selectedChart.version})` : ''
+                                    }`}
                                 </div>
                             </>
                         </CodeEditor.Header>
@@ -657,5 +721,87 @@ export const DeploymentTemplateEditorView = ({
                 </CodeEditor>
             </div>
         </>
+    )
+}
+
+export const DeploymentConfigFormCTA = ({
+    loading,
+    showAppMetricsToggle,
+    isAppMetricsEnabled,
+    isEnvOverride,
+    isCiPipeline,
+    disableCheckbox,
+    disableButton,
+    currentChart,
+    toggleAppMetrics,
+}: {
+    loading: boolean
+    showAppMetricsToggle: boolean
+    isAppMetricsEnabled: boolean
+    isEnvOverride?: boolean
+    isCiPipeline?: boolean
+    disableCheckbox?: boolean
+    disableButton?: boolean
+    currentChart: DeploymentChartVersionType
+    toggleAppMetrics: () => void
+}) => {
+    const isUnSupportedChartVersion =
+        showAppMetricsToggle &&
+        currentChart.name === ROLLOUT_DEPLOYMENT &&
+        isVersionLessThanOrEqualToTarget(currentChart.version, [3, 7, 0])
+    return (
+        <div className="form-cta-section flex right pt-16 pb-16 pr-20 pl-20">
+            {showAppMetricsToggle && (
+                <div className="form-app-metrics-cta flex top left">
+                    {loading ? (
+                        <Progressing
+                            styles={{
+                                width: 'auto',
+                                marginRight: '16px',
+                            }}
+                        />
+                    ) : (
+                        <Checkbox
+                            rootClassName="mt-2 mr-8"
+                            isChecked={isAppMetricsEnabled}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={toggleAppMetrics}
+                            disabled={disableCheckbox || isUnSupportedChartVersion}
+                        />
+                    )}
+                    <div className="flex column left">
+                        <b className="fs-13 fw-6 cn-9 mb-4">Show application metrics</b>
+                        <div className={`fs-13 fw-4 ${isUnSupportedChartVersion ? 'cr-5' : 'cn-7'}`}>
+                            {isUnSupportedChartVersion
+                                ? 'Application metrics is not supported for the selected chart version. Select a different chart version.'
+                                : 'Capture and show key application metrics over time. (E.g. Status codes 2xx, 3xx, 5xx; throughput and latency).'}
+                        </div>
+                    </div>
+                </div>
+            )}
+            <button className="form-submit-cta cta flex h-32" type="submit" disabled={disableButton || loading}>
+                {loading ? (
+                    <Progressing />
+                ) : (
+                    <>
+                        {!isEnvOverride && !isCiPipeline ? (
+                            <>
+                                Save & Next
+                                <Next className={`icon-dim-16 ml-5 ${disableButton || loading ? 'scn-4' : 'scn-0'}`} />
+                            </>
+                        ) : (
+                            <>
+                                <Check
+                                    className={`icon-dim-16 mr-5 no-svg-fill ${
+                                        disableButton || loading ? 'scn-4' : 'scn-0'
+                                    }`}
+                                />
+                                Save changes
+                            </>
+                        )}
+                    </>
+                )}
+            </button>
+        </div>
     )
 }

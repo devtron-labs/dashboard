@@ -34,14 +34,15 @@
         width: calc(100% - 64px);
         height: calc(100% - 78px);
 
-        .white-card__deployment-config {
+        .white-card__deployment-config,
+        .deployment-template-override-form {
             display: grid;
             grid-template-rows: 48px auto;
             grid-template-columns: 1fr 1fr;
-            grid-template-areas: "tab tab" "readme editor";
-            
+            grid-template-areas: 'tab tab' 'readme editor';
+
             &.comparison-view {
-                grid-template-areas: "tab" "editor";
+                grid-template-areas: 'tab' 'editor';
                 grid-template-columns: 1fr;
 
                 .form__row--code-editor-container {
@@ -69,26 +70,66 @@
             padding-left: 8px;
             height: 40px;
         }
-    
-        .dt-readme {
-            grid-area: readme;
+    }
 
-            .code-editor__header {
-                height: 32px;
-                padding: 0 12px;
-                border-bottom: none;
+    .form-cta-section {
+        height: 80px;
+
+        .form-app-metrics-cta {
+            width: 88%;
+        }
+
+        .form-submit-cta {
+            width: 140px;
+        }
+    }
+
+    .dt-readme {
+        grid-area: readme;
+
+        .code-editor__header {
+            height: 32px;
+            padding: 0 12px;
+            border-bottom: none;
+        }
+
+        .dt-readme-markdown {
+            height: calc(100vh - 162px);
+            overflow: scroll;
+        }
+    }
+
+    .dt-options-tab-container {
+        grid-area: tab;
+
+        .dt-view-option {
+            padding: 4px 8px;
+
+            &.disabled {
+                opacity: 0.5;
+                user-select: none;
+                cursor: not-allowed;
             }
-    
-            .dt-readme-markdown {
-                height: calc(100vh - 162px);
-                overflow: scroll;
+
+            &.opened,
+            &:hover {
+                background-color: var(--N100);
+                border-radius: 4px;
+            }
+
+            .option-open-icon path {
+                stroke: var(--N700);
+            }
+
+            .option-close-icon use {
+                fill: var(--N700);
             }
         }
     }
 }
 
 .form__row--code-editor-container {
-    height: calc(100% - 128px);
+    height: calc(100% - 140px);
     display: grid;
     grid-template-rows: 32px 1fr;
     overflow: hidden;
@@ -105,44 +146,6 @@
 
         .code-editor__information-info-icon path:nth-child(2) {
             fill: var(--Y700);
-        }
-    }
-}
-
-.form-cta-section {
-    .form-app-metrics-cta {
-        width: 88%;
-    }
-
-    .form-submit-cta {
-        width: 140px
-    }
-}
-
-.dt-options-tab-container {
-    grid-area: tab;
-
-    .dt-view-option {
-        padding: 4px 8px;
-    
-        &.disabled {
-            opacity: 0.5;
-            user-select: none;
-            cursor: not-allowed;
-        }
-    
-        &.opened,
-        &:hover {
-            background-color: var(--N100);
-            border-radius: 4px;
-        }
-
-        .option-open-icon path {
-            stroke: var(--N700);
-        }
-        
-        .option-close-icon use {
-            fill: var(--N700);
         }
     }
 }
@@ -237,6 +240,57 @@
     .upload-icon-stroke {
         path {
             stroke: var(--B500);
+        }
+    }
+}
+
+.deployment-template-override {
+    .app-compose__deployment-config {
+        min-width: 1024px;
+    }
+
+    .deployment-template-override-form {
+        height: calc(100% - 60px);
+
+        &.comparison-view {
+            height: 100%;
+        }
+
+        .override-container {
+            height: 60px;
+            align-items: flex-start;
+            padding: 10px 16px;
+            margin-bottom: 0;
+            grid-column-gap: 10px;
+            background: var(--B100);
+            border: none;
+            border-radius: 0;
+
+            svg {
+                width: 20px !important;
+                height: 20px !important;
+            }
+
+            .override-title,
+            .override-subtitle {
+                font-size: 13px;
+                color: var(--N900);
+                line-height: 20px;
+            }
+
+            .override-title {
+                font-weight: 600;
+            }
+
+            .override-subtitle {
+                font-weight: 400;
+            }
+
+            .cta.ghosted {
+                height: 32px;
+                display: flex;
+                align-items: center;
+            }
         }
     }
 }

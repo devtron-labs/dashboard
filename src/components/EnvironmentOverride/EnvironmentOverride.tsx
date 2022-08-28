@@ -20,9 +20,7 @@ export default function EnvironmentOverride() {
         !!params.appId,
     )
 
-    const [deploymentState, setDeploymentState] = useState<ComponentStates>(null)
-    const [configMapState, setConfigMapState] = useState<ComponentStates>(null)
-    const [secretState, setSecretState] = useState<ComponentStates>(null)
+    const [viewState, setViewState] = useState<ComponentStates>(null)
     const { path } = useRouteMatch()
     const { push } = useHistory()
     const location = useLocation()
@@ -33,9 +31,7 @@ export default function EnvironmentOverride() {
 
     useEffect(() => {
         if (params.envId) setEnvironmentId(+params.envId)
-        setDeploymentState('loading')
-        setConfigMapState('loading')
-        setSecretState('loading')
+        setViewState('loading')
     }, [params.envId])
 
     useEffect(() => {
@@ -60,25 +56,23 @@ export default function EnvironmentOverride() {
     }
     useEffect(envMissingRedirect, [appEnvironmentsLoading])
 
-    if (appEnvironmentsLoading) return <Progressing pageLoader />
-    if (deploymentState === 'failed' || configMapState === 'failed' || secretState === 'failed') {
+    if (!params.envId) {
+        return null
+    } else if (appEnvironmentsLoading) {
+        return <Progressing pageLoader />
+    } else if (viewState === 'failed') {
         return (
             <Reload
                 reload={(event) => {
-                    setConfigMapState('loading')
-                    setSecretState('loading')
-                    setDeploymentState('loading')
+                    setViewState('loading')
                 }}
             />
         )
     }
-    if (!params.envId) return null
-    // const loading = deploymentState === 'loading' || configMapState === 'loading' || secretState === 'loading'
 
     return (
         <ErrorBoundary>
-            {/* {loading && <Progressing pageLoader />} */}
-            <div className="environment-override mb-24">
+            <div className={headingData ? 'environment-override mb-24' : 'deployment-template-override h-100'}>
                 {environments.size && headingData && (
                     <>
                         <h1 className="form__title form__title--artifacts flex left">
@@ -110,22 +104,24 @@ export default function EnvironmentOverride() {
                         path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}
                         render={(props) => (
                             <DeploymentTemplateOverride
-                                parentState={deploymentState}
-                                setParentState={setDeploymentState}
+                                parentState={viewState}
+                                setParentState={setViewState}
+                                environments={appEnvironmentResult?.result}
+                                environmentName={
+                                    environments.has(+params.envId)
+                                        ? environments.get(+params.envId).environmentName
+                                        : ''
+                                }
                             />
                         )}
                     />
                     <Route
                         path={`${path}/${URLS.APP_CM_CONFIG}`}
-                        render={(props) => (
-                            <ConfigMapOverrides parentState={configMapState} setParentState={setConfigMapState} />
-                        )}
+                        render={(props) => <ConfigMapOverrides parentState={viewState} setParentState={setViewState} />}
                     />
                     <Route
                         path={`${path}/${URLS.APP_CS_CONFIG}`}
-                        render={(props) => (
-                            <SecretOverrides parentState={secretState} setParentState={setSecretState} />
-                        )}
+                        render={(props) => <SecretOverrides parentState={viewState} setParentState={setViewState} />}
                     />
                 </Switch>
             </div>
