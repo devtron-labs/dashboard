@@ -218,6 +218,7 @@ export default function AppConfig() {
     const match = useRouteMatch();
     const location = useLocation();
     const history = useHistory();
+    const [environments, setEnvironments] = useState([])
 
     const [state, setState] = useState<AppConfigState>({
         view: ViewType.LOADING,
@@ -401,6 +402,7 @@ export default function AppConfig() {
                             deleteApp={showDeleteConfirmation}
                             navItems={state.navItems}
                             isCDPipeline={state.isCDPipeline}
+                            setEnvironments={setEnvironments}
                         />
                     </div>
                     <div className="app-compose__main">
@@ -412,6 +414,7 @@ export default function AppConfig() {
                             maxAllowedUrl={state.maximumAllowedUrl}
                             respondOnSuccess={respondOnSuccess}
                             getWorkflows={reloadWorkflows}
+                            environments={environments}
                         />
                     </div>
                 </div>
@@ -453,9 +456,10 @@ interface NavigationType {
     navItems: CustomNavItemsType[];
     deleteApp: () => void;
     isCDPipeline: boolean;
+    setEnvironments
 }
 
-function Navigation({ navItems, deleteApp, isCDPipeline }: NavigationType) {
+function Navigation({ navItems, deleteApp, isCDPipeline, setEnvironments }: NavigationType) {
     const location = useLocation();
     const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href) >= 0)[0];
     return (
@@ -477,7 +481,7 @@ function Navigation({ navItems, deleteApp, isCDPipeline }: NavigationType) {
                         </NavLink>
                     );
                 } else {
-                    return <EnvironmentOverrideRouter key={item.title} />;
+                    return <EnvironmentOverrideRouter key={item.title} setEnvironments={setEnvironments} />;
                 }
             })}
             <button type="button" className="cta delete cta-delete-app mt-8" onClick={deleteApp}>
@@ -495,6 +499,7 @@ interface AppComposeRouterType {
     getWorkflows: () => void;
     maxAllowedUrl: string;
     isCDPipeline: boolean;
+    environments
 }
 
 function AppComposeRouter({
@@ -505,6 +510,7 @@ function AppComposeRouter({
     getWorkflows,
     maxAllowedUrl,
     isCDPipeline,
+    environments
 }: AppComposeRouterType) {
     const { path } = useRouteMatch()
 
@@ -545,12 +551,9 @@ function AppComposeRouter({
                                 <DeploymentConfig
                                     respondOnSuccess={respondOnSuccess}
                                     isUnSet={!isUnlocked.workflowEditor}
-                                />
-                                <NextButton
-                                    currentStageName={STAGE_NAME.DEPLOYMENT_TEMPLATE}
                                     navItems={navItems}
-                                    isDisabled={!isUnlocked.workflowEditor}
                                     isCiPipeline={isCiPipeline}
+                                    environments={environments}
                                 />
                             </>
                         </Route>
@@ -674,7 +677,7 @@ const EnvironmentOverrides = ({
     }
 }
 
-function EnvironmentOverrideRouter() {
+function EnvironmentOverrideRouter({ setEnvironments }) {
     const { pathname } = useLocation()
     const { appId } = useParams<{ appId }>()
     const previousPathName = usePrevious(pathname)
@@ -688,6 +691,12 @@ function EnvironmentOverrideRouter() {
             reloadEnvironments()
         }
     }, [pathname])
+
+    useEffect(() => {
+        if (!environmentsLoading && environmentResult?.result?.length > 0) {
+            setEnvironments(environmentResult.result)
+        }
+    }, [environmentsLoading, environmentResult])
 
     return (
         <div className="h-100 overflow-hidden">

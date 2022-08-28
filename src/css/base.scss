@@ -2052,3 +2052,9 @@ textarea {
 .overflow-scroll {
     overflow: scroll !important;
 }
+
+.no-svg-fill {
+    path {
+        fill: none !important;
+    }
+}

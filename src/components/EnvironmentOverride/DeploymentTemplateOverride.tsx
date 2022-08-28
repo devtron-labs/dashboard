@@ -354,7 +354,7 @@ function DeploymentTemplateOverrideForm({
                         </div>
                     )}
                 </div>
-                <div className="form__row form__row--code-editor-container">
+                <div className="form__row form__row--code-editor-container border-top border-bottom">
                     <CodeEditor
                         value={
                             tempValue
