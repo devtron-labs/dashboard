@@ -279,3 +279,18 @@ export const groupStyle = () => {
         }),
     }
 }
+
+export const hasHashiOrAWS = (externalType): boolean => {
+    return (
+        externalType === 'AWSSecretsManager' || externalType === 'AWSSystemManager' || externalType === 'HashiCorpVault'
+    )
+}
+
+export const hasESO = (externalType): boolean => {
+    return (
+        externalType === 'ESO_GoogleSecretsManager' ||
+        externalType === 'ESO_AzureSecretsManager' ||
+        externalType === 'ESO_AWSSecretsManager' ||
+        externalType === 'ESO_HashiCorpVault'
+    )
+}

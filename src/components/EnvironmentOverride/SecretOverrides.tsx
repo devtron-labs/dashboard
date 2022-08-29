@@ -30,7 +30,7 @@ import { PATTERNS, EXTERNAL_TYPES, ROLLOUT_DEPLOYMENT } from '../../config'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import { getAppChartRef } from '../../services/service'
 import './environmentOverride.scss'
-import { dataHeaders, getTypeGroups, sampleJSONs } from '../secrets/secret.utils'
+import { dataHeaders, getTypeGroups, sampleJSONs, hasHashiOrAWS, hasESO } from '../secrets/secret.utils'
 
 const SecretContext = React.createContext(null)
 function useSecretContext() {
@@ -221,13 +221,8 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     const [secretData, setSecretData] = useState(tempSecretData)
     const [secretDataYaml, setSecretDataYaml] = useState(YAML.stringify(jsonForSecretDataYaml))
     const [codeEditorRadio, setCodeEditorRadio] = useState('data')
-    const isHashiOrAWS =
-        externalType === 'AWSSecretsManager' || externalType === 'AWSSystemManager' || externalType === 'HashiCorpVault'
-    const isESO =
-        externalType === 'ESO_GoogleSecretsManager' ||
-        externalType === 'ESO_AzureSecretsManager' ||
-        externalType === 'ESO_AWSSecretsManager' ||
-        externalType === 'ESO_HashiCorpVault'
+    const isHashiOrAWS = hasHashiOrAWS(externalType)
+    const isESO = hasESO(externalType)
     const memoisedReducer = React.useCallback(reducer, [appId, envId])
     const initialState = {
         mountPath: mountPath ? mountPath : defaultMountPath,

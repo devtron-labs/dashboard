@@ -12,7 +12,6 @@ import {
     CHECKBOX_VALUE,
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
-    multiSelectStyles,
 } from '../common'
 import ReactSelect, { components } from 'react-select'
 import { useParams } from 'react-router'
@@ -36,7 +35,7 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import '../configMaps/ConfigMap.scss'
 import { decode } from '../../util/Util'
-import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions } from './secret.utils'
+import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO } from './secret.utils'
 import { SecretFormProps } from '../deploymentConfig/types'
 
 const Secret = ({ respondOnSuccess, ...props }) => {
@@ -275,15 +274,9 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         error: '',
     })
 
-    const isHashiOrAWS =
-        externalType === 'AWSSecretsManager' || externalType === 'AWSSystemManager' || externalType === 'HashiCorpVault'
+    const isHashiOrAWS = hasHashiOrAWS(externalType)
 
-    const isESO =
-        externalType === 'ESO_GoogleSecretsManager' ||
-        externalType === 'ESO_AzureSecretsManager' ||
-        externalType === 'ESO_AWSSecretsManager' ||
-        externalType === 'ESO_HashiCorpVault'
-        
+    const isESO = hasESO(externalType)
     
     let tempEsoData: any[] = props?.esoSecretData?.esoData || []
     tempEsoData = tempEsoData.map((data) => {
@@ -318,7 +311,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         }
         return temp
     })
-
     
     const [esoSecretData, setEsoData] = useState(tempEsoData)
     const [secretStore, setSecretStore] = useState(props.esoSecretData?.secretStore)
@@ -493,10 +485,10 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 isValid = isValid && !!s.fileName && !!s.name
                 return isValid
             }, true) :
-            secretDataArray.reduce((isValid, s) => {
+            secretDataArray?.reduce((isValid, s) => {
                 isValid = isValid && !!s.secretKey && !!s.key
                 return isValid
-            })
+            }, true)
             if (!isValid) {
                 toast.warn('Please check key and name')
                 return
@@ -533,7 +525,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             } else if (isESO) {
                 payload['esoSecretData'] = {
                     secretStore: secretStore,
-                    esoData: esoSecretData.map((s) => {
+                    esoData: esoSecretData?.map((s) => {
                         return {
                             secretKey: s.secretKey,
                             key: s.key,
@@ -644,7 +636,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 setSecretData([])
                 return
             }
-            let json = YAML.parse(yaml)
+            let json = YAML.parse(yaml) 
             setSecretStore(json.secretStore)
             if (!isESO && Array.isArray(json)) {
                 json = json.map((j) => {
