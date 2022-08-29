@@ -29,11 +29,11 @@ export default function DeployedChartFilters({ handleFilterQueryChanges, appStor
         <div>
             <div className="chart-group__header">
                 <div className="flexbox flex-justify  w-100">
-                    <form onSubmit={(e) => handleFilterQueryChanges(e, "search")} style={{ width: "none" }} className="search dc__position-rel " >
+                    <form onSubmit={(e) => handleFilterQueryChanges(e, "search")} style={{ width: "none" }} className="search dc__position-rel" >
                         <Search className="search__icon icon-dim-18" />
                         <input type="text" placeholder="Search charts" value={appStoreName} className="search__input bcn-0" onChange={(e) => handleAppStoreName(e.target.value)} />
                         {searchApplied ? <button className="search__clear-button" type="button" onClick={(e) => handleFilterQueryChanges(e, "clear")}>
-                            <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle " />
+                            <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                         </button> : null}
                     </form>
                     <div className="flex">

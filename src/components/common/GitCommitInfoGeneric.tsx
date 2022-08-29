@@ -147,7 +147,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
                         <div>
                             <div className="flex left mb-8">
                                 {_webhookData.data["source branch name"] ? <div className=" mono cn-7 fs-12 lh-1-5 br-4 bcn-1 pl-6 pr-6">
-                                    <BranchIcon className="icon-dim-12 dc__vertical-align-middle " /> {_webhookData.data["source branch name"]}
+                                    <BranchIcon className="icon-dim-12 dc__vertical-align-middle" /> {_webhookData.data["source branch name"]}
                                 </div> : null}
                                 {_webhookData.data["source checkout"] ?
                                     <div className="flex left cb-5 br-4 pl-8 pr-8">
@@ -160,7 +160,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
                             <div className="flex left">
                                 <div className="mono cn-7 fs-12 lh-1-5 br-4 bcn-1 pl-6 pr-6">
                                     {_webhookData.data["target branch name"] ?
-                                        <><BranchIcon className="icon-dim-12 dc__vertical-align-middle " /> {_webhookData.data["target branch name"]} </>
+                                        <><BranchIcon className="icon-dim-12 dc__vertical-align-middle" /> {_webhookData.data["target branch name"]} </>
                                         : null}
                                 </div>
                                 <div className="flex left cb-5 br-4 pl-8 pr-8">

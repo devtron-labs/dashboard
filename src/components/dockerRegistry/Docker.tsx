@@ -104,7 +104,7 @@ function CollapsedList({
                 )}
                 {!id && collapsed && (
                     <List.Logo>
-                        <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle " />
+                        <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
                     </List.Logo>
                 )}
 

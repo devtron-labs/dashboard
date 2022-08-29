@@ -95,7 +95,7 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
     return (
         <article className={`collapsed-list clear-both ${id ? 'collapsed-list--chart' : 'collapsed-list--git'} collapsed-list--${id ? 'update' : 'create'}`}>
             <List onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column':''}`}>
-                <List.Logo>{id ? <div className={`${url} list__logo`}><Helm className="icon-dim-24 fcb-5 dc__vertical-align-middle  " /></div> : collapsed && <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle " />}</List.Logo>
+                <List.Logo>{id ? <div className={`${url} list__logo`}><Helm className="icon-dim-24 fcb-5 dc__vertical-align-middle " /></div> : collapsed && <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />}</List.Logo>
                 <div className="flex left">
                     <List.Title style={{color: !id && !collapsed ? 'var(--N900)': ''}} title={id && !collapsed ? 'Edit repository' : name || "Add repository"} subtitle={collapsed ? url : null} />
                     {id &&

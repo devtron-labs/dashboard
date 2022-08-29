@@ -33,7 +33,7 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
                         </span>
                     </div>
                     {options.map((option) => (
-                        <div className="dc__position-rel  flex left cursor">
+                        <div className="dc__position-rel flex left cursor">
                             <Checkbox
                                 rootClassName="cursor bcn-0 ml-7 h-32 fs-13 mb-0 mr-10"
                                 isChecked={value.filter((event) => event === option).length}

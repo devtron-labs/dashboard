@@ -112,7 +112,7 @@ export default function NodeListSearchFliter({
     }
     const renderTextFilter = (): JSX.Element => {
         return (
-            <div className="dc__position-rel " style={{ background: 'var(--N50)' }}>
+            <div className="dc__position-rel" style={{ background: 'var(--N50)' }}>
                 <div
                     className=" h-32 br-4 en-2 bw-1 w-100 fw-4 pt-6 pb-6 pr-10 flexbox"
                     onClick={() => setOpenFilterPopup(true)}
@@ -120,7 +120,7 @@ export default function NodeListSearchFliter({
                     <Search className="mr-5 ml-10 icon-dim-18" />
                     {selectedSearchTextType ? (
                         <>
-                            <span className="dc__position-rel  bottom-2px">{selectedSearchTextType}:</span>
+                            <span className="dc__position-rel bottom-2px">{selectedSearchTextType}:</span>
                             <input
                                 autoComplete="off"
                                 type="text"
@@ -168,7 +168,7 @@ export default function NodeListSearchFliter({
                 )}
                 {searchApplied && (
                     <button className="search__clear-button" type="button" onClick={clearTextFilter}>
-                        <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle " />
+                        <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                     </button>
                 )}
             </div>

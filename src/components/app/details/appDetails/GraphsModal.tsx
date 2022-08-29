@@ -288,7 +288,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
                         <div className="flexbox flex-justify mb-16 w-100">
                             <div className="flex">
                                 <h3 className="graph-modal__title mt-0  mb-0 mr-16">
-                                    <GraphIcon className="mr-8 fcn-7 dc__vertical-align-middle  icon-dim-20" />
+                                    <GraphIcon className="mr-8 fcn-7 dc__vertical-align-middle icon-dim-20" />
                                     {ChartNames[this.state.mainChartName]}
                                 </h3>
                                 {this.state.mainChartName === "status" &&

@@ -506,12 +506,12 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             }
         }
         return (
-            <div className="dc__position-rel ">
+            <div className="dc__position-rel">
                 <div
                     className="form__input pipeline-filter__select-pipeline"
                     onClick={() => this.setState({ openSelectPipeline: true })}
                 >
-                    <Filter className="icon-dim-20 mr-5 dc__vertical-align-middle " />
+                    <Filter className="icon-dim-20 mr-5 dc__vertical-align-middle" />
                     {this.state.appliedFilters
                         .filter((p) => p.value)
                         .map((p) => {

@@ -321,15 +321,15 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         props.selectProps.styles.option = getCustomOptionSelectionStyle()
         return (
             <components.Option {...props}>
-                {props.data.url.includes('gitlab') && <GitLab className="mr-8 dc__vertical-align-middle  icon-dim-20" />}
-                {props.data.url.includes('github') && <GitHub className="mr-8 dc__vertical-align-middle  icon-dim-20" />}
+                {props.data.url.includes('gitlab') && <GitLab className="mr-8 dc__vertical-align-middle icon-dim-20" />}
+                {props.data.url.includes('github') && <GitHub className="mr-8 dc__vertical-align-middle icon-dim-20" />}
                 {props.data.url.includes('bitbucket') && (
-                    <BitBucket className="mr-8 dc__vertical-align-middle  icon-dim-20" />
+                    <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" />
                 )}
                 {props.data.url.includes('gitlab') ||
                 props.data.url.includes('github') ||
                 props.data.url.includes('bitbucket') ? null : (
-                    <Git className="mr-8 dc__vertical-align-middle  icon-dim-20" />
+                    <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />
                 )}
 
                 {props.label}

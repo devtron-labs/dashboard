@@ -128,12 +128,12 @@ export function FailureLegendEmptyState(props) {
   return <div>
     <p className="graph-legend__primary-label">Change Failure Rate
       <Tippy className="default-tt" arrow={false} content="How often does the pipeline fail?">
-        <Help className="icon-dim-20 ml-8 dc__vertical-align-middle  mr-5" />
+        <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
       </Tippy>
     </p>
     <div className="mt-16">
-      <Smiley className="mr-8 inline-block dc__vertical-align-middle " style={{ width: "39px" }} />
-      <p className="m-0 fw-6 inline-block dc__vertical-align-middle ">Good Job! <br></br>
+      <Smiley className="mr-8 inline-block dc__vertical-align-middle" style={{ width: "39px" }} />
+      <p className="m-0 fw-6 inline-block dc__vertical-align-middle">Good Job! <br></br>
       No pipeline failures in this period
     </p>
     </div>

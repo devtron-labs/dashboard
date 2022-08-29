@@ -196,7 +196,7 @@ export default function NodeDetails() {
 
     const renderKeyValueLabel = (key: string, value?: string): JSX.Element => {
         return (
-            <div className="flexbox mb-8 hover-trigger dc__position-rel ">
+            <div className="flexbox mb-8 hover-trigger dc__position-rel">
                 <div
                     className={`cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
                         !value ? ' br-4' : ' left-radius-4 no-right-border'
@@ -266,7 +266,7 @@ export default function NodeDetails() {
 
     const renderWithCopy = (key: string): JSX.Element => {
         return (
-            <div className="flexbox mb-8 hover-trigger dc__position-rel ">
+            <div className="flexbox mb-8 hover-trigger dc__position-rel">
                 <div>{key}</div>
                 <Tippy
                     className="default-tt"
@@ -582,7 +582,7 @@ export default function NodeDetails() {
                         {columnName}
                     </span>
                 </Tippy>
-                <Sort className="pointer icon-dim-14 dc__position-rel  sort-icon" />
+                <Sort className="pointer icon-dim-14 dc__position-rel sort-icon" />
             </div>
         )
     }
@@ -613,7 +613,7 @@ export default function NodeDetails() {
                                     <div className="border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9">
                                         {pod.namespace}
                                     </div>
-                                    <div className="hover-trigger dc__position-rel  flexbox border-bottom-n1 p-8 fw-4 fs-13 cn-9">
+                                    <div className="hover-trigger dc__position-rel flexbox border-bottom-n1 p-8 fw-4 fs-13 cn-9">
                                         <>
                                             <Tippy
                                                 className="default-tt"

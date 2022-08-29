@@ -246,7 +246,7 @@ function CollapsedList({
                             </span>
                         </div>
                     )}
-                    {!id && collapsed && <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle " />}
+                    {!id && collapsed && <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />}
                 </List.Logo>
                 <div className="flex left">
                     <List.Title

@@ -513,7 +513,7 @@ export default function NodeList() {
                 <Tippy className="default-tt" arrow={false} placement="top" content={column.label}>
                     <span className="inline-block ellipsis-right mw-85px ">{column.label}</span>
                 </Tippy>
-                {column.isSortingAllowed && <Sort className="pointer icon-dim-14 dc__position-rel  sort-icon" />}
+                {column.isSortingAllowed && <Sort className="pointer icon-dim-14 dc__position-rel sort-icon" />}
             </div>
         )
     }
@@ -569,7 +569,7 @@ export default function NodeList() {
                             {column.value === 'errorCount' ? (
                                 nodeData['errorCount'] > 0 && (
                                     <>
-                                        <Error className="mr-3 icon-dim-16 dc__position-rel  top-3" />
+                                        <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
                                         <span className="cr-5">{nodeData['errorCount'] || '-'}</span>{' '}
                                     </>
                                 )

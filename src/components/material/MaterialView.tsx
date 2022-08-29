@@ -63,7 +63,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             </div>
         }
         return <div className="white-card white-card--add-new-item mb-16 dashed" onClick={this.props.toggleCollapse}>
-            <Add className="icon-dim-24 mr-5 fcb-5 dc__vertical-align-middle " />
+            <Add className="icon-dim-24 mr-5 fcb-5 dc__vertical-align-middle" />
             <span className="artifact__add">Add Git Repository</span>
         </div>
     }
@@ -124,10 +124,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             Option: (props) => {
                                 props.selectProps.styles.option = getCustomOptionSelectionStyle()
                                 return <components.Option {...props}>
-                                    {props.data.url.includes("gitlab") ? <GitLab className="mr-8 dc__vertical-align-middle  icon-dim-20" /> : null}
-                                    {props.data.url.includes("github") ? <GitHub className="mr-8 dc__vertical-align-middle  icon-dim-20" /> : null}
-                                    {props.data.url.includes("bitbucket") ? <BitBucket className="mr-8 dc__vertical-align-middle  icon-dim-20" /> : null}
-                                    {props.data.url.includes("gitlab") || props.data.url.includes("github") || props.data.url.includes("bitbucket") ? null : <Git className="mr-8 dc__vertical-align-middle  icon-dim-20" />}
+                                    {props.data.url.includes("gitlab") ? <GitLab className="mr-8 dc__vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.url.includes("github") ? <GitHub className="mr-8 dc__vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.url.includes("bitbucket") ? <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" /> : null}
+                                    {props.data.url.includes("gitlab") || props.data.url.includes("github") || props.data.url.includes("bitbucket") ? null : <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />}
 
                                     {props.label}
                                 </components.Option>
