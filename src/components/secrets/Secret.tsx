@@ -39,7 +39,7 @@ import { decode } from '../../util/Util'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-i-outline.svg'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 
-let sampleJSONs = {
+export const sampleJSONs = {
     ESO_GoogleSecretsManager: {
         secretStore: {
             gcpsm: {
@@ -168,22 +168,7 @@ let sampleJSONs = {
     ],
 }
 
-let sampleJSON = [
-    {
-        key: 'service/credentials',
-        name: 'secret-key',
-        property: 'property-name',
-        isBinary: true,
-    },
-    {
-        key: 'service/credentials',
-        name: 'secret-key',
-        property: 'property-name',
-        isBinary: true,
-    },
-]
-
-let dataHeaders = {
+export const dataHeaders = {
     ESO_GoogleSecretsManager: (
         <div>
             #Sample Data<br />
@@ -237,7 +222,7 @@ let dataHeaders = {
 }
 
 
-const getTypeGroups = (typeValue?: string) => {
+export const getTypeGroups = (typeValue?: string) => {
     const noGroups: any[] = [
             { value: '', label: 'Kubernetes Secret' },
             { value: 'KubernetesSecret', label: 'Mount Existing Kubernetes Secret' },
@@ -581,7 +566,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         return temp
     })
 
-
+    
     const [esoSecretData, setEsoData] = useState(tempEsoData)
     const [secretStore, setSecretStore] = useState(props.esoSecretData?.secretStore)
     const [secretData, setSecretData] = useState(tempSecretData)
