@@ -12,15 +12,17 @@ interface InfoColourBarType {
 
 function InfoColourBar({ message, classname, Icon, iconClass, iconSize, renderActionButton }: InfoColourBarType) {
     return (
-        <div className={`${classname} info_text flex content-space pt-10 pb-10 pl-16 pr-16 br-4 top fs-13 fw-4`}>
-            <span className="flex top">
-                <div className={`${iconSize ?? 'icon-dim-20'} mr-10`}>
-                    <Icon className={`${iconSize ?? 'icon-dim-20'} ${iconClass} mr-8`} />
-                </div>
-                {message}
-            </span>
-            &nbsp;
-            {typeof renderActionButton === 'function' && renderActionButton()}
+        <div className="info-bar-container">
+            <div className={`${classname} info_text flex content-space pt-10 pb-10 pl-16 pr-16 br-4 top fs-13 fw-4`}>
+                <span className="flex top">
+                    <div className={`${iconSize ?? 'icon-dim-20'} mr-10`}>
+                        <Icon className={`${iconSize ?? 'icon-dim-20'} ${iconClass} mr-8`} />
+                    </div>
+                    {message}
+                </span>
+                &nbsp;
+                {typeof renderActionButton === 'function' && renderActionButton()}
+            </div>
         </div>
     )
 }

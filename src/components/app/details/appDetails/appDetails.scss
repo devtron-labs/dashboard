@@ -1747,12 +1747,97 @@ table.resource-tree {
     height: 450px;
 }
 
-.select-material--w450 {
-    width: 450px;
+.select-material-message {
+    max-width: 450px;
+    white-space: nowrap;
 }
 
 .app-details-page-wrapper {
     display: flex;
     flex-direction: column;
     flex: 1;
+}
+
+.more-message::before {
+    content: '...';
+    color: var(--N700);
+    margin-right: 4px;
+}
+
+.source-info-container{
+  .app-summary__icon{
+      &.healthy {
+        background-size: contain, contain;
+        background: url(../../../../assets/icons/appstatus/ic-heart-green.svg), transparent;
+    }
+  }
+
+  .mw-340 {
+    max-width: 340px !important;
+  }
+
+  .mw-400 {
+    max-width: 400px !important;
+  }
+
+  .mw-140 {
+    max-width: 140px !important;
+  }
+}
+
+.source-info-container,
+.deployment-status-breakdown-modal-container,
+.deployment-status-breakdown-container {
+  .app-summary__status-name{
+    text-transform: none !important;
+    &.f-succeeded {
+        color: var(--green);
+    }
+    &.f-inprogress {
+        color: #ff7e5b;
+    }
+    &.f-failed {
+        color: var(--red);
+    }
+  }
+  .timer-icon{
+    path {
+      stroke: var(--N600);
+    }
+  }
+}
+
+.deployment-status-breakdown-container {
+  .vertical-connector{
+    border-left: 1px solid var(--N200);
+    height: 15px;
+    position: relative;
+    left: 10px;
+    width: 5px;
+  }
+  .deployment-status-breakdown-row{
+    display: grid;
+    grid-template-columns: 30px auto 180px;
+  }
+
+  .pulse-highlight {
+    width: 12px;
+    height: 12px;
+    border: solid 4px rgba(255, 126, 91, 0.4);
+    background-color: #ff7e5b;
+    position: relative;
+    top: 5px;
+    right: -5px;
+    border-radius: 50%;
+    animation-name: pulse;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+  }
+
+  .green-tick{
+    path {
+      stroke: var(--G500);
+    }
+  }
 }
