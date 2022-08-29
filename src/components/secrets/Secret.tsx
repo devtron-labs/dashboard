@@ -311,19 +311,19 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         }
         return temp
     })
-    
+    const isEsoSecretData = props.esoSecretData?.secretStore && props.esoSecretData?.esoData.length > 0
     const [esoSecretData, setEsoData] = useState(tempEsoData)
     const [secretStore, setSecretStore] = useState(props.esoSecretData?.secretStore)
     const [secretData, setSecretData] = useState(tempSecretData)
     const [secretDataYaml, setSecretDataYaml] = useState(YAML.stringify(jsonForSecretDataYaml))
-    const [esoSecretYaml, setEsoYaml] = useState(YAML.stringify(props?.esoSecretData || {}))
+    const [esoSecretYaml, setEsoYaml] = useState(YAML.stringify(isEsoSecretData ? props?.esoSecretData : {}))
     const [codeEditorRadio, setCodeEditorRadio] = useState('data')
     const isExternalValues = externalType !== 'KubernetesSecret'
     const tabs = [{ title: 'Environment Variable' }, { title: 'Data Volume' }].map((data) => ({
         ...data,
         active: data.title === selectedTab,
     }))
-   
+  
     const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs["default"])
     
     function setKeyValueArray(arr) {

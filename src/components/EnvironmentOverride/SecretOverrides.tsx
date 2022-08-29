@@ -246,11 +246,12 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         PATTERNS.CONFIG_MAP_AND_SECRET_KEY,
         `Key must consist of alphanumeric characters, '.', '-' and '_'`,
     )
+    const isEsoSecretData = esoSecretData?.secretStore && esoSecretData?.esoData.length > 0
     const [yamlMode, toggleYamlMode] = useState(true)
     const [esoDataSecret, setEsoData] = useState(esoSecretData?.esoData)
     const [secretStore, setSecretStore] = useState(esoSecretData?.secretStore)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
-    const [esoSecretYaml, setEsoYaml] = useState(YAML.stringify(esoSecretData || {}))
+    const [esoSecretYaml, setEsoYaml] = useState(YAML.stringify(isEsoSecretData ? esoSecretData : {}))
     const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs["default"])
     const isChartVersion309OrBelow =
         appChartRef &&
@@ -258,7 +259,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]) &&
         isChartRef3090OrBelow(appChartRef.id)
 
-
+        
     useEffect(() => {
         if(isESO){
             toggleYamlMode(true)
