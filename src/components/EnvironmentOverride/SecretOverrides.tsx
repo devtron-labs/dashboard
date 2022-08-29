@@ -19,7 +19,7 @@ import {
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
 } from '../common'
-import { dataHeaders, getTypeGroups, sampleJSONs, SecretForm } from '../secrets/Secret'
+import { SecretForm } from '../secrets/Secret'
 import { KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
 import { Progressing } from '../common'
@@ -30,6 +30,7 @@ import { PATTERNS, EXTERNAL_TYPES, ROLLOUT_DEPLOYMENT } from '../../config'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import { getAppChartRef } from '../../services/service'
 import './environmentOverride.scss'
+import { dataHeaders, getTypeGroups, sampleJSONs } from '../secrets/secret.constants'
 
 const SecretContext = React.createContext(null)
 function useSecretContext() {
