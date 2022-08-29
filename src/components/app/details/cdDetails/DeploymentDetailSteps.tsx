@@ -46,7 +46,7 @@ export default function DeploymentDetailSteps({ deploymentStatus }: DeploymentDe
     }, [])
 
     return deploymentStatus === 'Aborted' ? (
-        <div className="flexbox" style={{ height: 'calc(100vh - 250px)', justifyContent: 'center' }}>
+        <div className="flexbox deployment-aborted">
             <CDEmptyState
                 title="This deployment was aborted"
                 subtitle="This deployment was aborted as a successive deployment was triggered before this deployment could complete."
