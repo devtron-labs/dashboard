@@ -167,7 +167,7 @@ export default function ChartVersionSelectorModal({
                             }}
                         >
                             <div className="pr-16">
-                                <File className="icon-dim-18 icon-n4 vertical-align-middle" />
+                                <File className="icon-dim-18 icon-n4 dc__vertical-align-middle " />
                             </div>
                             <div className="pr-16">{valueDetail.name}</div>
                             <div>{valueDetail.chartVersion}</div>
@@ -187,7 +187,7 @@ export default function ChartVersionSelectorModal({
                     disabled={selectedChartValue === null}
                 >
                     Edit & deploy
-                    <Back className="icon-dim-20 rotate-180 vertical-align-middle ml-5" />
+                    <Back className="icon-dim-20 rotate-180 dc__vertical-align-middle  ml-5" />
                 </button>
             </div>
         )

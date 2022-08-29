@@ -286,12 +286,12 @@ function Cluster({
                         <List key={clusterId} onClick={clusterId ? () => {} : (e) => toggleEditMode((t) => !t)}>
                             {!clusterId && (
                                 <List.Logo>
-                                    <Add className="icon-dim-24 fcb-5 vertical-align-middle" />
+                                    <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle " />
                                 </List.Logo>
                             )}
                             <div className="flex left">
                                 {clusterId ? (
-                                    <ClusterIcon className="cluster-icon icon-dim-24 vertical-align-middle mr-16" />
+                                    <ClusterIcon className="cluster-icon icon-dim-24 dc__vertical-align-middle  mr-16" />
                                 ) : null}
                                 <List.Title
                                     title={cluster_name || 'Add cluster'}
@@ -596,7 +596,7 @@ function ClusterForm({
         <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
             <div className="flex left mb-20">
                 {id && (
-                    <Pencil color="#363636" className="icon-dim-24 vertical-align-middle mr-8" />
+                    <Pencil color="#363636" className="icon-dim-24 dc__vertical-align-middle  mr-8" />
                 )}
                 <span className="fw-6 fs-14 cn-9">{clusterTitle()}</span>
             </div>

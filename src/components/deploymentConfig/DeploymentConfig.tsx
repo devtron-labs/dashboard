@@ -283,7 +283,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                     target="_blank"
                     rel="noreferrer noopener"
                 >
-                    <Upload className="icon-dim-16 mr-8 vertical-align-bottom upload-icon-stroke" />
+                    <Upload className="icon-dim-16 mr-8 dc__vertical-align-bottom  upload-icon-stroke" />
                     Upload custom chart
                 </NavLink>
             </components.MenuList>

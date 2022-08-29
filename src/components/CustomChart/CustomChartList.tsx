@@ -101,7 +101,7 @@ export default function CustomChartList() {
                     {false && (
                         <form
                             onSubmit={(e) => handleFilterChanges(e, 'search')}
-                            className="search position-rel margin-right-0 en-2 bw-1 br-4"
+                            className="search dc__position-rel  margin-right-0 en-2 bw-1 br-4"
                         >
                             <Search className="search__icon icon-dim-18" />
                             <input
@@ -119,7 +119,7 @@ export default function CustomChartList() {
                                     type="button"
                                     onClick={(e) => handleFilterChanges(e, 'clear')}
                                 >
-                                    <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                                    <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle " />
                                 </button>
                             ) : null}
                         </form>

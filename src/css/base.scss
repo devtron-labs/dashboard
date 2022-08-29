@@ -232,7 +232,7 @@ a:focus {
     clear: both;
 }
 
-.truncate-text {
+.dc__truncate-text  {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -245,23 +245,23 @@ a:focus {
     padding: 2px;
 }
 
-.position-rel {
+.dc__position-rel  {
     position: relative;
 }
 
-.position-abs {
+.dc__position-abs  {
     position: absolute;
 }
 
-.position-sticky {
+.dc__position-sticky  {
     position: sticky;
 }
 
-.vertical-align-middle {
+.dc__vertical-align-middle  {
     vertical-align: middle;
 }
 
-.vertical-align-bottom {
+.dc__vertical-align-bottom  {
     vertical-align: bottom;
 }
 
@@ -270,7 +270,7 @@ a:focus {
     cursor: pointer;
 }
 
-.cursor--ns-resize {
+.dc__cursor--ns-resize  {
     cursor: ns-resize;
 }
 

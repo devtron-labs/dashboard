@@ -88,7 +88,7 @@ function CollapsedList({
     const setToggleCollapse = () => {
         toggleCollapse(false)
     }
-    
+
     const closeDropdown = (e) => {
         e.stopPropagation()
         toggleCollapse((t) => !t)
@@ -104,7 +104,7 @@ function CollapsedList({
                 )}
                 {!id && collapsed && (
                     <List.Logo>
-                        <Add className="icon-dim-24 fcb-5 vertical-align-middle" />
+                        <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle " />
                     </List.Logo>
                 )}
 
@@ -247,7 +247,7 @@ function DockerForm({
             }));
         }
     }
-    
+
 
     function fetchAWSRegion(): string {
         const pattern = /(ecr.)[a-z]{2}-[a-z]*-[0-9]{1}/i;

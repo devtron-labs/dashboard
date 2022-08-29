@@ -515,7 +515,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                 {this.renderGraphs()}
                 <div className="deployment-metrics__body">
                     <div className="deployment-table__header mb-16">
-                        <p className="deployment-table__title m-0"><Deploy className="icon-dim-20 vertical-align-middle mr-5 scn-7 fcn-7" />
+                        <p className="deployment-table__title m-0"><Deploy className="icon-dim-20 dc__vertical-align-middle  mr-5 scn-7 fcn-7" />
                             Deployments</p>
                         <div className="flex right">
                             <label className="tertiary-tab__radio">
@@ -527,7 +527,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                 <input type="radio" name="status" checked={this.state.statusFilter === 0}
                                     value={0} onClick={this.handleTableFilter} />
                                 <span className="tertiary-tab">
-                                    <Success className="icon-dim-16 vertical-align-middle mr-4" />
+                                    <Success className="icon-dim-16 dc__vertical-align-middle  mr-4" />
                                     Success ({this.state.totalDeployments - this.state.failedDeployments})
                                 </span>
                             </label>
@@ -535,7 +535,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                 <input type="radio" name="status" checked={this.state.statusFilter === 1}
                                     value={1} onClick={this.handleTableFilter} />
                                 <span className="tertiary-tab">
-                                    <Fail className="icon-dim-16 vertical-align-middle mr-4" />
+                                    <Fail className="icon-dim-16 dc__vertical-align-middle  mr-4" />
                                     Failed ({this.state.failedDeployments})
                                 </span>
                             </label>
@@ -568,7 +568,7 @@ export class FrequencyGraphLegend extends React.Component<FrequencyGraphLegendPr
             <div className="w-50 inline-block">
                 <p className="graph-legend__primary-label">Deployment Frequency
                     <Tippy className="default-tt" arrow={false} content="How often this app is deployed to production?">
-                        <Help className="icon-dim-20 ml-8 vertical-align-middle mr-5" />
+                        <Help className="icon-dim-20 ml-8 dc__vertical-align-middle  mr-5" />
                     </Tippy>
                     <span className="cursor" onClick={this.props.setFrequencyMetric}>{renderCategoryTag(this.props.frequencyBenchmark.name)} </span>
                 </p>
@@ -590,7 +590,7 @@ export class FrequencyGraphLegend extends React.Component<FrequencyGraphLegendPr
                     <>
                         <p className="graph-legend__primary-label">Change Failure Rate
                             <Tippy className="default-tt" arrow={false} content="How often does the pipeline fail?">
-                                <Help className="icon-dim-20 ml-8 vertical-align-middle mr-5" />
+                                <Help className="icon-dim-20 ml-8 dc__vertical-align-middle  mr-5" />
                             </Tippy>
                             <span className="cursor" onClick={this.props.setFailureMetric}>{renderCategoryTag(this.props.failureRateBenchmark?.name)} </span>
                         </p>
@@ -624,7 +624,7 @@ export class RecoveryAndLeadTimeGraphLegend extends React.Component<RecoveryAndL
                 <p className="graph-legend__primary-label">
                     {this.props.label}
                     <Tippy className="default-tt" arrow={false} content={this.props.tooltipText}>
-                        <Help className="icon-dim-20 ml-8 vertical-align-middle mr-5" />
+                        <Help className="icon-dim-20 ml-8 dc__vertical-align-middle  mr-5" />
                     </Tippy>
                 </p>
                 <p className="graph-legend__primary-value">
@@ -638,7 +638,7 @@ export class RecoveryAndLeadTimeGraphLegend extends React.Component<RecoveryAndL
                 <p className="graph-legend__primary-label">
                     {this.props.label}
                     <Tippy className="default-tt" arrow={false} content={this.props.tooltipText}>
-                        <Help className="icon-dim-20 ml-8 vertical-align-middle mr-5" />
+                        <Help className="icon-dim-20 ml-8 dc__vertical-align-middle  mr-5" />
                     </Tippy>
                     <span className="cursor" onClick={this.props.setMetric}>{renderCategoryTag(this.props.benchmark?.name)} </span>
                 </p>

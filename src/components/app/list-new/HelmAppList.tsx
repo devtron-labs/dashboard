@@ -407,21 +407,21 @@ export default function HelmAppList({
                                     />
                                 </div>
                                 <div className="app-list__cell app-list__cell--name flex column left">
-                                    <div className="truncate-text m-0 value">{app.appName}</div>
-                                    <div className="truncate-text m-0">{app.chartName}</div>
+                                    <div className="dc__truncate-text  m-0 value">{app.appName}</div>
+                                    <div className="dc__truncate-text  m-0">{app.chartName}</div>
                                 </div>
                                 <div className="app-list__cell app-list__cell--env">
-                                    <p className="truncate-text m-0">
+                                    <p className="dc__truncate-text  m-0">
                                         {app.environmentDetail.environmentName
                                             ? app.environmentDetail.environmentName
                                             : app.environmentDetail.clusterName + "__" + app.environmentDetail.namespace}
                                     </p>
                                 </div>
                                 <div className="app-list__cell app-list__cell--cluster">
-                                    <p className="truncate-text m-0"> {app.environmentDetail.clusterName}</p>
+                                    <p className="dc__truncate-text  m-0"> {app.environmentDetail.clusterName}</p>
                                 </div>
                                 <div className="app-list__cell app-list__cell--namespace">
-                                    <p className="truncate-text m-0"> {app.environmentDetail.namespace}</p>
+                                    <p className="dc__truncate-text  m-0"> {app.environmentDetail.namespace}</p>
                                 </div>
                                 <div className="app-list__cell app-list__cell--time">
                                     {app.lastDeployedAt && (
@@ -431,7 +431,7 @@ export default function HelmAppList({
                                             placement="top"
                                             content={handleUTCTime(app.lastDeployedAt, false)}
                                         >
-                                            <p className="truncate-text m-0">
+                                            <p className="dc__truncate-text  m-0">
                                                 {handleUTCTime(app.lastDeployedAt, true)}
                                             </p>
                                         </Tippy>

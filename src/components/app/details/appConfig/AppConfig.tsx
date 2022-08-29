@@ -392,7 +392,7 @@ export default function AppConfig() {
             <>
                 <div className="app-compose">
                     <div
-                        className={`app-compose__nav flex column left top position-rel ${
+                        className={`app-compose__nav flex column left top dc__position-rel  ${
                             state.isCDPipeline ? 'hide-app-config-help' : ''
                         }`}
                     >

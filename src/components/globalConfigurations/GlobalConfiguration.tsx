@@ -550,7 +550,7 @@ export function ProtectedInput({
             <label htmlFor="" className={`form__label ${labelClassName}`}>
                 {label}
             </label>
-            <div className="position-rel w-100">
+            <div className="dc__position-rel  w-100">
                 <input
                     type={shown ? 'text' : 'password'}
                     tabIndex={tabIndex}

@@ -719,7 +719,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <Select rootClassName="mb-16" onChange={(e) => this.selectStrategy(e.target.value)}>
                     <Select.Button rootClassName="select-button--deployment-strategy">
                         <span>
-                            <Add className="icon-dim-24 mr-16 fcb-5 vertical-align-middle" />
+                            <Add className="icon-dim-24 mr-16 fcb-5 dc__vertical-align-middle " />
                             Add Deployment Strategy
                         </span>
                     </Select.Button>
@@ -881,8 +881,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <div
                     className={
                         this.state.pipelineConfig.isClusterCdActive
-                            ? 'position-rel cd-checkbox'
-                            : 'position-rel cd-checkbox cd-checkbox-tooltip'
+                            ? 'dc__position-rel  cd-checkbox'
+                            : 'dc__position-rel  cd-checkbox cd-checkbox-tooltip'
                     }
                 >
                     <Checkbox

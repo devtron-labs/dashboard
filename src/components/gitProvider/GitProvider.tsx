@@ -246,7 +246,7 @@ function CollapsedList({
                             </span>
                         </div>
                     )}
-                    {!id && collapsed && <Add className="icon-dim-24 fcb-5 vertical-align-middle" />}
+                    {!id && collapsed && <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle " />}
                 </List.Logo>
                 <div className="flex left">
                     <List.Title
@@ -474,7 +474,7 @@ function GitForm({
                         toggleCollapse(false);
                     }}
                 >
-                    <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 vertical-align-bottom " /> Add Git Host
+                    <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 dc__vertical-align-bottom  " /> Add Git Host
                 </div>
             </components.MenuList>
         );
@@ -501,7 +501,7 @@ function GitForm({
         }
         return true;
     }
-    
+
     let payload = {
         id: id || 0,
         name: state.name.value,
@@ -509,7 +509,7 @@ function GitForm({
         gitHostId: gitHost?.value?.value || 0,
         authMode: state.auth.value || '',
         active,
-        username: customState.username.value || '', 
+        username: customState.username.value || '',
         password: customState.password.value || '',
         accessToken: customState.accessToken.value || '',
         sshPrivateKey: customState.sshInput.value || '',

@@ -149,7 +149,7 @@ export default function GitInfoMaterial({
 
     const renderSearch = (): JSX.Element => {
         return (
-            <div className="search position-rel en-2 bw-1 br-4 h-32">
+            <div className="search dc__position-rel  en-2 bw-1 br-4 h-32">
                 <Search className="search__icon icon-dim-18" />
                 <input
                     type="text"
@@ -161,7 +161,7 @@ export default function GitInfoMaterial({
                 />
                 {searchApplied && (
                     <button className="search__clear-button" type="button" onClick={clearSearch}>
-                        <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                        <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle " />
                     </button>
                 )}
             </div>
@@ -175,7 +175,7 @@ export default function GitInfoMaterial({
             <div className="select-material select-material--trigger-view">
                 {!isWebhook && (
                     <div
-                        className="flex content-space position-sticky"
+                        className="flex content-space dc__position-sticky "
                         style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
                     >
                         {renderBranchChangeHeader(material)}

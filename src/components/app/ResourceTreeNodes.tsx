@@ -533,9 +533,8 @@ const URL: React.FC<{ url: string }> = ({ url }) => {
             <div className="flex left">
                 {url}
                 <Clipboard
-                    className="icon-dim-16 ml-8"
+                    className="icon-dim-16 ml-8 pointer"
                     onClick={(e) => copyToClipboard(url, () => toast.success('Copied to clipboard'))}
-                    style={{ cursor: 'pointer' }}
                 />
             </div>
         </td>

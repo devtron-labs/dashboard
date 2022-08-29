@@ -222,7 +222,7 @@ export const SearchInput = ({ queryParams, history }: URLModificationType): JSX.
             />
             {searchApplied && (
                 <button className="search__clear-button" type="button" onClick={clearSearch}>
-                    <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                    <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle " />
                 </button>
             )}
         </div>
@@ -875,7 +875,7 @@ export const AppliedFilterChips = ({
     }
 
     return (
-        <div className="saved-filters__wrap position-rel pl-0 pr-20 mb-10">
+        <div className="saved-filters__wrap dc__position-rel  pl-0 pr-20 mb-10">
             {appliedClusters.map((filter) => {
                 return (
                     <div key={filter.label} className="saved-filter">

@@ -29,7 +29,7 @@ export class Checkbox extends Component<CheckboxProps> {
         let rootClassName = `${this.props.rootClassName ? this.props.rootClassName : ''}`
         return (
             <>
-                <label className={`position-rel flex left cursor ${rootClassName}`} onClick={this.props?.onClick}>
+                <label className={`dc__position-rel  flex left cursor ${rootClassName}`} onClick={this.props?.onClick}>
                     <input
                         type="checkbox"
                         className={'form__checkbox'}

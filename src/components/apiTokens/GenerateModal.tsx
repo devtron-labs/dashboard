@@ -34,7 +34,7 @@ function GenerateModal({ close, token, reload, redirectToTokenList, isRegenerati
                 <button type="button" className="w-100 flex right transparent" onClick={handleCloseButton}>
                     <Close className="icon-dim-24" />
                 </button>
-                <Success className="vertical-align-middle mb-16" />
+                <Success className="dc__vertical-align-middle  mb-16" />
 
                 <div className="modal__header ">
                     <h2 className="modal__title fs-16">

@@ -52,7 +52,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
         target.src = placeHolder
     }
 
-    let classes = `chart-grid-item ${showDescription ? '' : 'chart-grid-item--discover'} white-card position-rel`
+    let classes = `chart-grid-item ${showDescription ? '' : 'chart-grid-item--discover'} white-card dc__position-rel `
 
     const addchartTab = (e): void => {
         e.stopPropagation()

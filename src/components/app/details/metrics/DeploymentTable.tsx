@@ -162,7 +162,7 @@ export class DeploymentTable extends Component<DeploymentTableProps, any>{
     }
 
     renderSortIcon(rowName: string) {
-        let iconClasses = "icon-dim-20 vertical-align-middle";
+        let iconClasses = "icon-dim-20 dc__vertical-align-middle ";
         return this.state.sort.rowName === rowName ? this.state.sort.order === "ASC" ? <SortUp className={iconClasses} /> : <SortDown className={iconClasses} /> : <Sort className={iconClasses} />
     }
 
@@ -230,8 +230,8 @@ export class DeploymentTable extends Component<DeploymentTableProps, any>{
                         return <tr key={index + row.releaseTime.value} className="deployment-table__row">
                             <td className="deployment-table__cell-deployed">
                                 {row.releaseStatus === 1
-                                    ? <Fail className="icon-dim-20 vertical-align-middle mr-10" />
-                                    : <Success className="icon-dim-20 vertical-align-middle mr-10" />}
+                                    ? <Fail className="icon-dim-20 dc__vertical-align-middle  mr-10" />
+                                    : <Success className="icon-dim-20 dc__vertical-align-middle  mr-10" />}
                                 {row.releaseTime.label}
                             </td>
                             <td className="deployment-table__cell-cycle">{row.cycleTime.label}</td>

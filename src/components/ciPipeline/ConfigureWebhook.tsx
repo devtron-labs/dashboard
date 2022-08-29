@@ -89,7 +89,7 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
             {
                 canEditPipeline &&
                 <div className="cb-5 fw-6 fs-14 cursor add-filter" onClick={addWebhookCondition}>
-                    <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 vertical-align-bottom " />Add Filter
+                    <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 dc__vertical-align-bottom  " />Add Filter
                 </div>
             }
         </div>

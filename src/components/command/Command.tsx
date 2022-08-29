@@ -400,7 +400,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                                     <span>{a.value}</span>
                                     <span className="ff-monospace command__control ml-20"
                                         style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}>
-                                        <ArrowRight className="icon-dim-16 vertical-align-middle mr-5" /><span>expand</span>
+                                        <ArrowRight className="icon-dim-16 dc__vertical-align-middle  mr-5" /><span>expand</span>
                                     </span>
                                 </button>
                             </>
@@ -457,7 +457,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                                         {!arg.data?.isEOC ? <span key={`${index}-/`} className="m-4">/</span> : null}
                                     </>
                                 })}
-                                {!this.state.arguments[this.state.arguments.length - 1]?.data?.isEOC && <div className="position-rel m-4 flex-1" style={{ height: '22px' }}>
+                                {!this.state.arguments[this.state.arguments.length - 1]?.data?.isEOC && <div className="dc__position-rel  m-4 flex-1" style={{ height: '22px' }}>
                                     <input ref={this._inputPlaceholder} type="text" placeholder={PlaceholderText} className="w-100 command__input" />
                                     <input ref={this._inputText} type="text" value={this.state.argumentInput} tabIndex={1} autoFocus className="w-100 command__input"
                                         placeholder="" onKeyDown={this.noopOnArgumentInput} onChange={this.handleArgumentInputChange} />

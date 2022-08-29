@@ -220,7 +220,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
             return <div key={cluster.value} className="saved-filter">{cluster.label}
               <button type="button" className="saved-filter__clear-btn pt-4 pb-4"
                 onClick={(event) => { this.handleFilterRemove(filter, cluster) }} >
-                <Close className="icon-dim-18 icon-n4 vertical-align-middle" />
+                <Close className="icon-dim-18 icon-n4 dc__vertical-align-middle " />
               </button>
             </div>
           })}

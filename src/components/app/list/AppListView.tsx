@@ -75,19 +75,19 @@ export class AppListView extends Component<AppListViewProps>{
                                     <DevtronAppIcon className="icon-dim-24"/>
                                 </div>
                                 <div className="app-list__cell app-list__cell--name">
-                                    <p className="truncate-text m-0 value">{app.name}</p>
+                                    <p className="dc__truncate-text  m-0 value">{app.name}</p>
                                 </div>
                                 {this.renderEnvironmentList(app)}
                                 <div className="app-list__cell app-list__cell--cluster">
-                                    <p className="truncate-text m-0"> {app.defaultEnv ? app.defaultEnv.clusterName : ""}</p>
+                                    <p className="dc__truncate-text  m-0"> {app.defaultEnv ? app.defaultEnv.clusterName : ""}</p>
                                 </div>
                                 <div className="app-list__cell app-list__cell--namespace">
-                                    <p className="truncate-text m-0"> {app.defaultEnv ? app.defaultEnv.namespace : ""}</p>
+                                    <p className="dc__truncate-text  m-0"> {app.defaultEnv ? app.defaultEnv.namespace : ""}</p>
                                 </div>
                                 <div className="app-list__cell app-list__cell--time">
                                     {app.defaultEnv && app.defaultEnv.lastDeployedTime &&
                                         <Tippy className="default-tt" arrow={true} placement="top" content={app.defaultEnv.lastDeployedTime}>
-                                            <p className="truncate-text m-0">{handleUTCTime(app.defaultEnv.lastDeployedTime, true)}</p>
+                                            <p className="dc__truncate-text  m-0">{handleUTCTime(app.defaultEnv.lastDeployedTime, true)}</p>
                                         </Tippy>
                                     }
                                 </div>

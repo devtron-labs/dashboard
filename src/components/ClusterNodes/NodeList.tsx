@@ -501,7 +501,7 @@ export default function NodeList() {
             <div
                 className={`h-36 list-title inline-block mr-16 pt-8 pb-8 ${
                     column.label === 'Node'
-                        ? `${fixedNodeNameColumn ? 'bcn-0 position-sticky sticky-column border-right' : ''} w-280 pl-20`
+                        ? `${fixedNodeNameColumn ? 'bcn-0 dc__position-sticky  sticky-column border-right' : ''} w-280 pl-20`
                         : 'w-100-px'
                 } ${sortByColumn.value === column.value ? 'sort-by' : ''} ${sortOrder === OrderBy.DESC ? 'desc' : ''} ${
                     column.isSortingAllowed ? ' pointer' : ''
@@ -513,7 +513,7 @@ export default function NodeList() {
                 <Tippy className="default-tt" arrow={false} placement="top" content={column.label}>
                     <span className="inline-block ellipsis-right mw-85px ">{column.label}</span>
                 </Tippy>
-                {column.isSortingAllowed && <Sort className="pointer icon-dim-14 position-rel sort-icon" />}
+                {column.isSortingAllowed && <Sort className="pointer icon-dim-14 dc__position-rel  sort-icon" />}
             </div>
         )
     }
@@ -555,7 +555,7 @@ export default function NodeList() {
                     return column.label === 'Node' ? (
                         <div
                             className={`w-280 inline-block ellipsis-right mr-16 pl-20 pt-12 pb-12${
-                                fixedNodeNameColumn ? ' bcn-0 position-sticky sticky-column border-right' : ''
+                                fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column border-right' : ''
                             }`}
                         >
                             <NavLink to={`${match.url}/${nodeData[column.value]}`}>{nodeData[column.value]}</NavLink>
@@ -569,7 +569,7 @@ export default function NodeList() {
                             {column.value === 'errorCount' ? (
                                 nodeData['errorCount'] > 0 && (
                                     <>
-                                        <Error className="mr-3 icon-dim-16 position-rel top-3" />
+                                        <Error className="mr-3 icon-dim-16 dc__position-rel  top-3" />
                                         <span className="cr-5">{nodeData['errorCount'] || '-'}</span>{' '}
                                     </>
                                 )

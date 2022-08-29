@@ -639,7 +639,7 @@ export default function AppList() {
                         />
                         {searchApplied && (
                             <button className="search__clear-button" type="button" onClick={clearSearch}>
-                                <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                                <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle " />
                             </button>
                         )}
                     </div>
@@ -714,7 +714,7 @@ export default function AppList() {
         let count = 0
         let keys = Object.keys(masterFilters)
         let appliedFilters = (
-            <div className="saved-filters__wrap position-rel">
+            <div className="saved-filters__wrap dc__position-rel ">
                 {keys.map((key) => {
                     let filterType = ''
                     let _filterKey = ''
