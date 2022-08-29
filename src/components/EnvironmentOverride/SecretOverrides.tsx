@@ -30,7 +30,7 @@ import { PATTERNS, EXTERNAL_TYPES, ROLLOUT_DEPLOYMENT } from '../../config'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import { getAppChartRef } from '../../services/service'
 import './environmentOverride.scss'
-import { dataHeaders, getTypeGroups, sampleJSONs } from '../secrets/secret.constants'
+import { dataHeaders, getTypeGroups, sampleJSONs } from '../secrets/secret.utils'
 
 const SecretContext = React.createContext(null)
 function useSecretContext() {

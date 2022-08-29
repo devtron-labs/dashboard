@@ -4,34 +4,6 @@ import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-outlined.svg'
 import { multiSelectStyles } from '../common'
 
-export interface EsoData {
-    secretKey: string
-    key: string
-    property: string
-}
-export interface SecretFormProps {
-    id: number
-    appChartRef: { id: number; version: string; name: string }
-    appId: number
-    roleARN: string
-    name: string
-    index: number
-    external: boolean
-    externalType: string
-    secretData: { key: string; name: string; property: string; isBinary: boolean }[]
-    esoSecretData?: { secretStore: any; esoData: EsoData[] }
-    type: string
-    data: { k: string; v: string }[]
-    isUpdate: boolean
-    mountPath: string
-    keyValueEditable?: boolean
-    filePermission: string
-    subPath: boolean
-    update: (...args) => void
-    collapse: (...args) => void
-    initialise?: () => void
-}
-
 export const sampleJSONs = {
     ESO_GoogleSecretsManager: {
         secretStore: {
