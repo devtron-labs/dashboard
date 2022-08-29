@@ -62,11 +62,11 @@ export default function NavigationRoutes() {
     }
 
     const getInit = () => {
-        Promise.all([getUserRole(), getAppListMin()]).then(
-            (response) => {
-                setSuperAdmin(response[0].result.superAdmin)
+        Promise.all([getUserRole(), getAppListMin()]).then((response) => {
+                setSuperAdmin( response[0].result.roles.indexOf("role:super-admin___") > -1)
                 setAppListCount(response[1].result.length)
                 setLoginLoader(false)
+
             },
             (err) => {
                 setLoginLoader(false)
@@ -83,7 +83,6 @@ export default function NavigationRoutes() {
 
     useEffect(() => {
         const loginInfo = getLoginInfo()
-        console.log('test')
         if (process.env.NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
@@ -207,6 +206,7 @@ const onClickedDeployManageCardClicked = () =>{
                     setLoginCount
                 }}
             >
+              {console.log(isSuperAdmin)}
                 <main className={`${window.location.href.includes(URLS.GETTING_STARTED) ? 'no-nav' : ''}`}>
                     {!window.location.href.includes(URLS.GETTING_STARTED) && (
                         <Navigation

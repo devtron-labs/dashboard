@@ -8,7 +8,7 @@ export const Routes = {
     UPDATE: 'update',
     LOGIN: 'api/v1/session',
     SOURCE_CONFIG_GET: 'app/get',
-    USER_CHECK_RULE:'user/check/roles',
+    USER_CHECK_ROLE:'user/check/roles',
 
     CHART_REFERENCES_MIN: 'chartref/autocomplete',
     CI_CONFIG_GET: 'app/ci-pipeline',

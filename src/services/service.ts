@@ -402,5 +402,5 @@ interface UserRole extends ResponseType {
 }
 
 export function getUserRole(): Promise<UserRole> {
-  return get(Routes.USER_CHECK_RULE);
+  return get(Routes.USER_CHECK_ROLE);
 }

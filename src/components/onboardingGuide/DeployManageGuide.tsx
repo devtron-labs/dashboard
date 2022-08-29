@@ -12,6 +12,8 @@ import { Progressing, showError, useEventSource } from '../common'
 import { getDevtronInstalledHelmApps } from '../app/list-new/AppListService'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { mainContext } from '../common/navigation/NavigationRoutes'
+import IndexStore from '../v2/appDetails/index.store'
+import { AppType } from '../v2/appDetails/appDetails.type'
 
 function DeployManageGuide({ isDeployManageCardClicked }) {
     const history = useHistory()
@@ -19,6 +21,13 @@ function DeployManageGuide({ isDeployManageCardClicked }) {
     const [loader, setLoader] = useState(false)
     const { serverMode, setPageOverflowEnabled } = useContext(mainContext)
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
+    // const [streamData, setStreamData] = useState(null);
+    // const appDetails = IndexStore.getAppDetails();
+    // const syncSSE = useEventSource(`${Host}/api/v1/applications?clusterIds=1`, null, appDetails?.appType?.toString() === AppType.EXTERNAL_HELM_CHART.toString(), (event) =>
+    //     setStreamData(JSON.parse(event.data)),
+    // )
+
+    // console.log(streamData)
 
     const _getInit = () => {
         if (serverMode === SERVER_MODE.FULL) {
