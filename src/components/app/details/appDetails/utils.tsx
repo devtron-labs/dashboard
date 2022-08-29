@@ -392,7 +392,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
           },
           GIT_COMMIT: {
               icon: '',
-              displayText: 'Git commit',
+              displayText: 'GitOps commit',
               displaySubText: '',
               time: '',
           },
@@ -420,6 +420,8 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                   element['status'] === 'HEALTHY' ? ': Healthy' : ': Degraded'
               deploymentData.deploymentStatusBreakdown.APP_HEALTH.time = element['statusTime']
               deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'success'
+              deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
+              deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
           } else if (element['status'] === 'FAILED') {
               deploymentData.deploymentStatus = 'failed'
               deploymentData.deploymentStatusText = 'Failed'
