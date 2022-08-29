@@ -38,60 +38,62 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
                 </div>
             </div>
             <div className="bcn-0 onboarding__bottom flex position-rel cn-9">
-                <div className="onboarding-cards__wrap">
-                    <div className="bcn-0 w-300 br-4 en-2 bw-1 cursor">
-                        <a
-                            className="learn-more__href cn-9"
-                            href={DOCUMENTATION.PREVIEW_DEVTRON}
-                            rel="noreferrer noopener"
-                            target="_blank"
-                        >
-                            <img className="onboarding-card__img top-radius-4" src={PreviewImage} />
-                            <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
-                                Explore a preconfigured Demo app at <span className="cb-5">preview.devtron.ai</span>
-                            </div>
-                        </a>
-                    </div>
-                    <div className="onboarding__line" />
-                    <div className=" bcn-0 w-300 br-4 en-2 bw-1 cursor" onClick={onClickedDeployManageCardClicked}>
-                        <NavLink
-                            to={`${match.path}/${URLS.GUIDE}`}
-                            className="no-decor fw-6 cursor cn-9"
-                            activeClassName="active"
-                        >
-                            <img
-                                className="onboarding-card__img top-radius-4"
-                                src={HelmCollage}
-                                alt="Deploy and manage helm"
-                            />
-                            <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
-                                Deploy and manage helm applications
-                            </div>
-                        </NavLink>
-                    </div>
+                <div style={{ position: 'absolute', top: '-80px' }}>
+                    <div className="onboarding-cards__wrap">
+                        <div className="bcn-0 w-300 br-4 en-2 bw-1 cursor">
+                            <a
+                                className="learn-more__href cn-9"
+                                href={DOCUMENTATION.PREVIEW_DEVTRON}
+                                rel="noreferrer noopener"
+                                target="_blank"
+                            >
+                                <img className="onboarding-card__img top-radius-4" src={PreviewImage} />
+                                <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
+                                    Explore a preconfigured Demo app at <span className="cb-5">preview.devtron.ai</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div className="onboarding__line" />
+                        <div className=" bcn-0 w-300 br-4 en-2 bw-1 cursor" onClick={onClickedDeployManageCardClicked}>
+                            <NavLink
+                                to={`${match.path}/${URLS.GUIDE}`}
+                                className="no-decor fw-6 cursor cn-9"
+                                activeClassName="active"
+                            >
+                                <img
+                                    className="onboarding-card__img top-radius-4"
+                                    src={HelmCollage}
+                                    alt="Deploy and manage helm"
+                                />
+                                <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
+                                    Deploy and manage helm applications
+                                </div>
+                            </NavLink>
+                        </div>
 
-                    <div className="bcn-0 w-300 br-4 en-2 bw-1 cursor">
-                        <NavLink
-                            to={redirectDeployCardToCICD()}
-                            className="no-decor fw-6 cursor cn-9"
-                            activeClassName="active"
-                        >
-                            <img
-                                className="onboarding-card__img top-radius-4"
-                                src={DeployCICD}
-                                alt="Please connect cluster"
-                            />
-                            <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24">
-                                Deploy custom applications using CI/CD pipelines
-                            </div>
-                        </NavLink>
+                        <div className="bcn-0 w-300 br-4 en-2 bw-1 cursor">
+                            <NavLink
+                                to={redirectDeployCardToCICD()}
+                                className="no-decor fw-6 cursor cn-9"
+                                activeClassName="active"
+                            >
+                                <img
+                                    className="onboarding-card__img top-radius-4"
+                                    src={DeployCICD}
+                                    alt="Please connect cluster"
+                                />
+                                <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24">
+                                    Deploy custom applications using CI/CD pipelines
+                                </div>
+                            </NavLink>
+                        </div>
                     </div>
-                </div>
-                <div className="fs-14 mt-120 flex column">
-                    <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="cb-5 fw-6 cursor mb-8">
-                        Skip and explore Devtron on your own
-                    </NavLink>
-                    <div className="cn-7">Tip: You can return here anytime from the Help menu</div>
+                    <div className="fs-14 mt-20 flex column">
+                        <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="cb-5 fw-6 cursor mb-8">
+                            Skip and explore Devtron on your own
+                        </NavLink>
+                        <div className="cn-7">Tip: You can return here anytime from the Help menu</div>
+                    </div>
                 </div>
             </div>
         </div>
