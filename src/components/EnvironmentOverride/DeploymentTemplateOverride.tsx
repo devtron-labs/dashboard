@@ -256,6 +256,7 @@ function DeploymentTemplateOverrideForm({
             envOverrideValues: obj,
             chartRefId: state.selectedChartRefId,
             IsOverride: true,
+            isAppMetricsEnabled: state.data.appMetrics,
             ...(state.data.environmentConfig.id > 0
                 ? {
                       id: state.data.environmentConfig.id,
@@ -343,8 +344,9 @@ function DeploymentTemplateOverrideForm({
                 )}
                 <DeploymentTemplateOptionsTab
                     isEnvOverride={true}
-                    isComparisonAvailable={environments.length > 1}
+                    isComparisonAvailable={true}
                     isUnSet={false}
+                    environmentName={environmentName}
                     disableVersionSelect={!state.duplicate}
                     openComparison={state.openComparison}
                     handleComparisonClick={handleComparisonClick}

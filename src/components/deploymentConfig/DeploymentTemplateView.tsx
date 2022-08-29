@@ -395,7 +395,6 @@ const CompareOptions = ({
             <ConditionalWrap
                 condition={
                     !openReadMe && (fetchingReadMe || !isReadMeAvailable)
-                    // ||!fetchedReadMe.get(commonState.selectedVersionUpdatePage?.id || 0)
                 }
                 wrap={() => (
                     <Tippy
