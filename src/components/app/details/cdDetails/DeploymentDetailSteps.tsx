@@ -37,10 +37,10 @@ export default function DeploymentDetailSteps({ deploymentStatus }: DeploymentDe
     useEffect(() => {
         if (deploymentStatus !== 'Aborted') {
             getDeploymentDetailStepsData()
-            return (): void => {
-                if (initTimer) {
-                    clearTimeout(initTimer)
-                }
+        }
+        return (): void => {
+            if (initTimer) {
+                clearTimeout(initTimer)
             }
         }
     }, [])
