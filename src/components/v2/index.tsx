@@ -106,7 +106,7 @@ function RouterComponent({ envType }) {
                     .catch((e) => {
                         setExternalLinksAndTools(externalLinksAndTools)
                         setIsLoading(false)
-                    })   
+                    })
             } else {
                 setIsLoading(false)
             }
@@ -143,7 +143,7 @@ function RouterComponent({ envType }) {
             {isLoading && <DetailsProgressing loadingText="Please wait…" size={24} fullHeight />}
 
             {!isLoading && errorResponseCode && (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )}

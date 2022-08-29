@@ -490,7 +490,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
         }
         else if (this.state.view === ViewType.ERROR) {
             return (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={this.state.code} />
                 </div>
             )

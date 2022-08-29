@@ -84,9 +84,9 @@ export default function AppDetail() {
                         <div className="flex left fs-12 cn-7">
                             <BreadCrumb breadcrumbs={breadcrumbs.slice(0, breadcrumbs.length - 2)} />
                         </div>
-                        <div className="flex left page-header__title">{appDetails?.appName}</div>
+                        <div className="flex left dc__page-header__title">{appDetails?.appName}</div>
                     </div>
-                    <div className="page-header__cta-container flex">
+                    <div className="dc__page-header__cta-container flex">
                         {appDetails?.deprecated && (
                             <div className="mr-20">
                                 <UpdateWarn />

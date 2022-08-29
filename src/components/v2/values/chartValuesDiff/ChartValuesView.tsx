@@ -1339,13 +1339,13 @@ function ChartValuesView({
 
     if (commonState.isLoading) {
         return (
-            <div className="loading-wrapper">
+            <div className="dc__loading-wrapper">
                 <Progressing pageLoader />
             </div>
         )
     } else if (commonState.errorResponseCode) {
         return (
-            <div className="loading-wrapper">
+            <div className="dc__loading-wrapper">
                 <ErrorScreenManager code={commonState.errorResponseCode} />
             </div>
         )

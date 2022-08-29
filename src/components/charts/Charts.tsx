@@ -21,7 +21,7 @@ export default function Charts() {
 }
 
 export function GenericChartsHeader({ children = null }) {
-    return <div className="dc__page-header page-header__tabs">{children}</div>
+    return <div className="dc__page-header dc__page-header__tabs">{children}</div>
 }
 
 export function ChartDetailNavigator() {
@@ -37,7 +37,7 @@ export function ChartDetailNavigator() {
 }
 
 export function HeaderTitle({ children = null }) {
-    return <h1 className="page-header__title flex left">{children}</h1>
+    return <h1 className="dc__page-header__title flex left">{children}</h1>
 }
 
 export function HeaderSubtitle({ children = null }) {
@@ -45,5 +45,5 @@ export function HeaderSubtitle({ children = null }) {
 }
 
 export function HeaderButtonGroup({ children = null }) {
-    return <div className="page-header__cta-container flex right">{children}</div>
+    return <div className="dc__page-header__cta-container flex right">{children}</div>
 }

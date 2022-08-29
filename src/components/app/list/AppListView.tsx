@@ -124,7 +124,7 @@ export class AppListView extends Component<AppListViewProps>{
     render() {
         if (this.props.view === AppListViewType.LOADING) {
             return <React.Fragment>
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <Progressing pageLoader />
                 </div>
             </React.Fragment>
@@ -152,7 +152,7 @@ export class AppListView extends Component<AppListViewProps>{
         }
         else if (this.props.view === AppListViewType.ERROR) {
             return <React.Fragment>
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={this.props.code} />
                 </div>
             </React.Fragment>

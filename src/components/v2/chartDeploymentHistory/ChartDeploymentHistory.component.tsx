@@ -546,7 +546,7 @@ function ChartDeploymentHistory({
     function renderData() {
         if (errorResponseCode && errorResponseCode !== 404) {
             return (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )
@@ -573,7 +573,7 @@ function ChartDeploymentHistory({
     return (
         <>
             {isLoading ? (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <Progressing pageLoader />
                 </div>
             ) : (
