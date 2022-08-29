@@ -35,7 +35,7 @@ export default function DeploymentConfig({ respondOnSuccess, isUnSet, navItems, 
     const [readme, setReadme] = useState('')
     const history = useHistory()
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
-    const [fetchedValues, setFetchedValues] = useState<Record<number, string>>({})
+    const [fetchedValues, setFetchedValues] = useState<Record<number | string, string>>({})
 
     useEffect(() => {
         initialise()
@@ -164,7 +164,7 @@ export default function DeploymentConfig({ respondOnSuccess, isUnSet, navItems, 
         }
     }
 
-    const appMetricsEnvironmentVariableEnabled = true// window._env_ && window._env_.APPLICATION_METRICS_ENABLED
+    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
 
     return (
         <div className={`app-compose__deployment-config ${openComparison || showReadme ? 'full-view' : 'h-100'}`}>
@@ -187,22 +187,24 @@ export default function DeploymentConfig({ respondOnSuccess, isUnSet, navItems, 
                     selectChart={selectChart}
                     selectedChartRefId={selectedChartRefId}
                 />
-                <DeploymentTemplateEditorView
-                    appId={appId}
-                    envId={+envId}
-                    isUnSet={isUnSet}
-                    openComparison={openComparison}
-                    showReadme={showReadme}
-                    chartConfigLoading={chartConfigLoading}
-                    readme={readme}
-                    value={tempFormData}
-                    editorOnChange={editorOnChange}
-                    schemas={schemas}
-                    selectedChart={selectedChart}
-                    environments={environments}
-                    fetchedValues={fetchedValues}
-                    setFetchedValues={setFetchedValues}
-                />
+                {selectedChart && (
+                    <DeploymentTemplateEditorView
+                        appId={appId}
+                        envId={+envId}
+                        isUnSet={isUnSet}
+                        openComparison={openComparison}
+                        showReadme={showReadme}
+                        chartConfigLoading={chartConfigLoading}
+                        readme={readme}
+                        value={tempFormData}
+                        editorOnChange={editorOnChange}
+                        schemas={schemas}
+                        selectedChart={selectedChart}
+                        environments={environments}
+                        fetchedValues={fetchedValues}
+                        setFetchedValues={setFetchedValues}
+                    />
+                )}
                 {!openComparison && !showReadme && (
                     <DeploymentConfigFormCTA
                         loading={loading || chartConfigLoading}

@@ -126,6 +126,23 @@
             }
         }
     }
+
+    .compare-template-values-select__group {
+        padding-top: 0;
+        padding-bottom: 0;
+
+        .compare-template-values-select__group-heading {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: none;
+            color: var(--N900);
+            background-color: var(--window-bg);
+            padding: 4px 10px;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            margin: 0;
+        }
+    }
 }
 
 .form__row--code-editor-container {

@@ -324,7 +324,7 @@ function DeploymentTemplateOverrideForm({
         dispatch({ type: 'selectChart', value: selectedChart })
     }
 
-    const appMetricsEnvironmentVariableEnabled = true // window._env_ && window._env_.APPLICATION_METRICS_ENABLED
+    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
 
     return (
         <>

@@ -22,10 +22,9 @@ import { ReactComponent as Next } from '../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { OptionType } from '../app/types'
 import { getDeploymentTemplate } from '../EnvironmentOverride/service'
 import YAML from 'yaml'
-import { DeploymentChartVersionType } from './types'
+import { DeploymentChartGroupOptionType, DeploymentChartOptionType, DeploymentChartVersionType } from './types'
 import { getTriggerHistory } from '../app/details/cdDetails/service'
 import { getCDConfig } from '../../services/service'
 
@@ -482,13 +481,12 @@ export const DeploymentTemplateOptionsTab = ({
     )
 }
 
-const formatOptionLabel = (option: { label: string; value: number; info: string; version?: string }): JSX.Element => {
+const formatOptionLabel = (option: DeploymentChartOptionType): JSX.Element => {
     return (
         <div className="flex left column">
             <span className="w-100 ellipsis-right">
                 {option.label}&nbsp;{option.version && `(${option.version})`}
             </span>
-            {option.info && <small className="cn-6">{option.info}</small>}
         </div>
     )
 }
@@ -505,26 +503,68 @@ const customValueContainer = (props: any): JSX.Element => {
     )
 }
 
-const CompareWithDropdown = ({ environments, selectedEnvironment, setSelectedEnvironment }) => {
+const CompareWithDropdown = ({ isEnvOverride, environments, selectedOption, setSelectedOption }) => {
+    const [groupedOptions, setGroupedOptions] = useState<DeploymentChartGroupOptionType[]>([
+        {
+            label: '',
+            options: [],
+        },
+    ])
+    const baseTemplateOption = {
+        id: -1,
+        value: '',
+        label: 'Base deployment template',
+    }
+
     useEffect(() => {
-        if (!selectedEnvironment) {
-            setSelectedEnvironment(environments[0])
+        if (isEnvOverride) {
+            setGroupedOptions([
+                {
+                    label: '',
+                    options: [baseTemplateOption],
+                },
+                {
+                    label: 'values on other environments',
+                    options: environments.length > 0 ? environments : [{ label: 'No options', value: 0, info: '' }],
+                },
+            ])
+
+            if (!selectedOption) {
+                setSelectedOption(baseTemplateOption)
+            }
+        } else {
+            setGroupedOptions([
+                {
+                    label: '',
+                    options: environments,
+                },
+            ])
+
+            if (!selectedOption) {
+                setSelectedOption(environments[0])
+            }
         }
-    }, [])
+    }, [environments])
+
+    const onChange = (selected: DeploymentChartOptionType) => {
+        setSelectedOption(selected)
+    }
 
     return (
         <ReactSelect
-            options={environments}
+            options={groupedOptions}
             isMulti={false}
-            // getOptionLabel={(option) => `${option.environmentName}`}
-            // getOptionValue={(option) => `${option.environmentId}`}
-            value={selectedEnvironment}
+            value={selectedOption}
+            classNamePrefix="compare-template-values-select"
+            formatOptionLabel={formatOptionLabel}
+            isOptionDisabled={(option) => option.value === 0}
             isSearchable={false}
-            onChange={(selected) => setSelectedEnvironment(selected)}
+            onChange={onChange}
             components={{
                 IndicatorSeparator: null,
                 Option,
                 DropdownIndicator,
+                ValueContainer: customValueContainer,
             }}
             styles={{
                 control: (base) => ({
@@ -603,26 +643,8 @@ export const DeploymentTemplateEditorView = ({
     readOnly = false,
 }) => {
     const [fetchingValues, setFetchingValues] = useState(false)
-    const [selectedEnvironment, setSelectedEnvironment] = useState<OptionType>()
-    // const [selectedDeployment, setSelectedDeployment] = useState<OptionType>()
-    const [filteredEnvironments, setFilteredEnvironments] = useState<OptionType[]>([])
-    // const [prevDeployments, setPrevDeployments] = useState([])
-
-    // useEffect(() => {
-    //     if (isEnvOverride && !readOnly) {
-    //         getCDConfig(appId).then(({ pipelines }) => {
-    //             const _pipeline = pipelines?.find((pipeline) => pipeline.environmentId === envId)
-
-    //             if (_pipeline) {
-    //                 getTriggerHistory(appId, envId, _pipeline.id, { offset: 0, size: 15 })
-    //                     .then(({ result }) => {
-    //                         // console.log(result)
-    //                     })
-    //                     .catch((err) => {})
-    //             }
-    //         }).catch((err) => {})
-    //     }
-    // }, [readOnly])
+    const [selectedOption, setSelectedOption] = useState<DeploymentChartOptionType>()
+    const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
 
     useEffect(() => {
         if (environments.length > 0) {
@@ -632,22 +654,23 @@ export const DeploymentTemplateEditorView = ({
             }
 
             setFilteredEnvironments(
-                _filteredEnvironments.map((env) => ({
+                (_filteredEnvironments = _filteredEnvironments.map((env) => ({
+                    id: env.environmentId,
                     label: env.environmentName,
                     value: env.environmentId,
-                })),
+                }))),
             )
         }
     }, [environments])
 
     useEffect(() => {
-        if (selectedEnvironment && !fetchedValues[selectedEnvironment.value]) {
+        if (selectedOption && selectedOption.id !== -1 && !fetchedValues[selectedOption.id]) {
             setFetchingValues(true)
-            getDeploymentTemplate(appId, selectedEnvironment.value, selectedChart.id)
+            getDeploymentTemplate(appId, selectedOption.value, selectedChart.id)
                 .then(({ result }) => {
                     const _fetchedValues = {
                         ...fetchedValues,
-                        [selectedEnvironment.value]: YAML.stringify(
+                        [selectedOption.id]: YAML.stringify(
                             result?.environmentConfig?.envOverrideValues || result?.globalConfig,
                         ),
                     }
@@ -659,7 +682,7 @@ export const DeploymentTemplateEditorView = ({
                     setFetchingValues(false)
                 })
         }
-    }, [selectedEnvironment])
+    }, [selectedOption])
 
     return (
         <>
@@ -675,7 +698,7 @@ export const DeploymentTemplateEditorView = ({
             )}
             <div className="form__row form__row--code-editor-container border-top border-bottom">
                 <CodeEditor
-                    defaultValue={fetchedValues[selectedEnvironment?.value] || defaultValue || ''}
+                    defaultValue={(selectedOption?.id === -1 ? defaultValue : fetchedValues[selectedOption?.id]) || ''}
                     value={value}
                     onChange={editorOnChange}
                     mode={MODES.YAML}
@@ -704,9 +727,10 @@ export const DeploymentTemplateEditorView = ({
                                 <div className="flex left fs-12 fw-6 cn-9 border-right h-32">
                                     <span style={{ width: '85px' }}>Compare with: </span>
                                     <CompareWithDropdown
+                                        isEnvOverride={isEnvOverride}
                                         environments={filteredEnvironments}
-                                        selectedEnvironment={selectedEnvironment}
-                                        setSelectedEnvironment={setSelectedEnvironment}
+                                        selectedOption={selectedOption}
+                                        setSelectedOption={setSelectedOption}
                                     />
                                 </div>
                                 <div className="flex left fs-12 fw-6 cn-9 pl-16 h-32">

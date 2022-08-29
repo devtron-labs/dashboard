@@ -76,3 +76,13 @@ export interface DeploymentChartVersionType {
     version: string
     name: string
 }
+
+export interface DeploymentChartOptionType extends DeploymentChartVersionType {
+    value: string | number
+    label: string
+}
+
+export interface DeploymentChartGroupOptionType {
+    label: string
+    options: DeploymentChartOptionType[]
+}
