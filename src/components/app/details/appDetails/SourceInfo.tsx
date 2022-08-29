@@ -42,7 +42,6 @@ export function SourceInfo({
     } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
         message = Rollout[0].health.message
     }
-    message = message + message + message
     const showApplicationDetailedModal = (): void => {
         setDetailed && setDetailed(true)
         ReactGA.event({
@@ -168,12 +167,12 @@ export function SourceInfo({
                                     <span className="fs-13 mr-5 fw-6 cn-9">
                                         {deploymentTriggerTime
                                             ? moment(deploymentTriggerTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
-                                            : ''}
+                                            : '-'}
                                     </span>
                                     {deploymentStatus === 'inprogress' && <Timer className="icon-dim-16 mt-4" />}
                                 </div>
                                 <div className="fw-4 fs-12 cn-9 ellipsis-right" style={{ maxWidth: 'inherit' }}>
-                                    by {triggeredBy}
+                                    by {triggeredBy || '-'}
                                 </div>
                             </div>
                         </div>
