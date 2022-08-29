@@ -31,7 +31,12 @@
        align-self: center;
      }
 
+     .onboarding__abs{
+      position: absolute;
+      top: -80px;
+    }
 }
+
 
 .deploy-manage-container {
     .deploy_arrow {
@@ -44,8 +49,6 @@
     .deploy-manage-cards__wrap {
         display: flex;
         grid-gap: 20px;
-        position: absolute;
-        top: 240px;
         flex-wrap: wrap;
         width: 820px;
         justify-content: center;
@@ -54,4 +57,10 @@
     .deploy-manage__body{
       height: calc(100vh - 300px);
     }
+
+    .deploy-manage__abs{
+      position: absolute;
+      top: -80px;
+    }
+
 }

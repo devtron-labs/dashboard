@@ -1,33 +1,40 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import HelmSearch from '../../assets/img/guided-helm-search.png'
 import HelmInCluster from '../../assets/img/guided-helm-cluster.png'
 import ChartRepository from '../../assets/img/guided-chart-repository.png'
 import HelmCollage from '../../assets/img/guided-helm-collage.png'
 import { NavLink, useHistory } from 'react-router-dom'
-import { URLS } from '../../config'
+import { SERVER_MODE, URLS } from '../../config'
 import { ReactComponent as GoBack } from '../../assets/icons/ic-arrow-forward.svg'
 import './onboardingGuide.scss'
 import ReactGA from 'react-ga'
 import { Progressing, showError } from '../common'
 import { getDevtronInstalledHelmApps } from '../app/list-new/AppListService'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { mainContext } from '../common/navigation/NavigationRoutes'
 
 function DeployManageGuide({ isDeployManageCardClicked }) {
     const history = useHistory()
     const [devtronHelmCount, setDevtronHelmCount] = useState(0)
     const [loader, setLoader] = useState(false)
+    const { serverMode, setPageOverflowEnabled } = useContext(mainContext)
 
-    useEffect(() => {
-        setLoader(true)
-        try {
-            getDevtronInstalledHelmApps('').then((response) => {
-                setDevtronHelmCount(response.result.helmApps.length)
+    const _getInit = () => {
+        if (serverMode === SERVER_MODE.FULL) {
+            setLoader(true)
+            try {
+                getDevtronInstalledHelmApps('').then((response) => {
+                    setDevtronHelmCount(response.result.helmApps.length)
+                    setLoader(false)
+                })
+            } catch (err) {
+                showError(err)
                 setLoader(false)
-            })
-        } catch (err) {
-            showError(err)
-            setLoader(false)
+            }
         }
+    }
+    useEffect(() => {
+      _getInit()
     }, [])
 
     const redirectToOnboardingPage = () => {
@@ -71,7 +78,8 @@ function DeployManageGuide({ isDeployManageCardClicked }) {
                             </div>
                         </div>
                     </div>
-                    <div className="deploy-manage__body bcn-0 flex">
+                    <div className="deploy-manage__body bcn-0 flex position-rel">
+                      <div className='deploy-manage__abs'>
                         <div className="deploy-manage-cards__wrap">
                             {devtronHelmCount > 0 && (
                                 <div className="deploy-card bcn-0 flex w-400 br-4 en-2 bw-1 ">
@@ -141,13 +149,15 @@ function DeployManageGuide({ isDeployManageCardClicked }) {
                                 </div>
                             </div>
                         </div>
-                        <div className="fs-14 mt-120 flex column">
+                        <div className="fs-14 flex column mt-20 mb-20">
                             <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="cb-5 fw-6 cursor mb-8">
                                 Skip and explore Devtron on your own
                             </NavLink>
                             <div className="cn-7">Tip: You can return here anytime from the Help menu</div>
                         </div>
+                        </div>
                     </div>
+
                 </div>
             )}
         </div>

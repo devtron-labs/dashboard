@@ -38,7 +38,7 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
                 </div>
             </div>
             <div className="bcn-0 onboarding__bottom flex position-rel cn-9">
-                <div style={{ position: 'absolute', top: '-80px' }}>
+                <div className= "onboarding__abs"  >
                     <div className="onboarding-cards__wrap">
                         <div className="bcn-0 w-300 br-4 en-2 bw-1 cursor">
                             <a
@@ -54,7 +54,7 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
                             </a>
                         </div>
                         <div className="onboarding__line" />
-                        <div className=" bcn-0 w-300 br-4 en-2 bw-1 cursor" onClick={onClickedDeployManageCardClicked}>
+                        <div className="bcn-0 w-300 br-4 en-2 bw-1 cursor" onClick={onClickedDeployManageCardClicked}>
                             <NavLink
                                 to={`${match.path}/${URLS.GUIDE}`}
                                 className="no-decor fw-6 cursor cn-9"
@@ -88,7 +88,7 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
                             </NavLink>
                         </div>
                     </div>
-                    <div className="fs-14 mt-20 flex column">
+                    <div className="fs-14 mt-20 mb-20 flex column">
                         <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="cb-5 fw-6 cursor mb-8">
                             Skip and explore Devtron on your own
                         </NavLink>
