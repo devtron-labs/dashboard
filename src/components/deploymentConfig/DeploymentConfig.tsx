@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate } from './service'
 import { getChartReferences } from '../../services/service'
-import { Toggle, Progressing, ConfirmationDialog, useJsonYaml, isVersionLessThanOrEqualToTarget } from '../common'
+import { Progressing, ConfirmationDialog, useJsonYaml } from '../common'
 import { useEffectAfterMount, showError } from '../common/helpers/Helpers'
 import { useParams } from 'react-router'
 import { toast } from 'react-toastify'
@@ -14,10 +14,16 @@ import {
     DeploymentTemplateEditorView,
     DeploymentTemplateOptionsTab,
 } from './DeploymentTemplateView'
-import { STAGE_NAME } from '../app/details/appConfig/AppConfig'
-import { DeploymentChartVersionType } from './types'
+import { DeploymentChartVersionType, DeploymentConfigProps } from './types'
+import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 
-export default function DeploymentConfig({ respondOnSuccess, isUnSet, navItems, isCiPipeline, environments }) {
+export default function DeploymentConfig({
+    respondOnSuccess,
+    isUnSet,
+    navItems,
+    isCiPipeline,
+    environments,
+}: DeploymentConfigProps) {
     const [charts, setCharts] = useState<DeploymentChartVersionType[]>([])
     const [selectedChartRefId, selectChartRefId] = useState(0)
     const [selectedChart, selectChart] = useState<DeploymentChartVersionType>(null)
@@ -78,7 +84,7 @@ export default function DeploymentConfig({ respondOnSuccess, isUnSet, navItems, 
                         schema,
                     },
                 },
-            } = await getDeploymentTemplate(+appId, selectedChart.id)
+            } = await getDeploymentTemplate(+appId, +selectedChart.id)
             setTemplate(defaultAppOverride)
             setSchema(schema)
             setReadme(readme)
@@ -118,7 +124,7 @@ export default function DeploymentConfig({ respondOnSuccess, isUnSet, navItems, 
                 isAppMetricsEnabled,
             }
             const api = chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
-            const { result } = await api(requestBody)
+            await api(requestBody)
             fetchDeploymentTemplate()
             respondOnSuccess()
             toast.success(
@@ -190,7 +196,7 @@ export default function DeploymentConfig({ respondOnSuccess, isUnSet, navItems, 
                 {selectedChart && (
                     <DeploymentTemplateEditorView
                         appId={appId}
-                        envId={+envId}
+                        envId={envId}
                         isUnSet={isUnSet}
                         openComparison={openComparison}
                         showReadme={showReadme}
@@ -199,8 +205,9 @@ export default function DeploymentConfig({ respondOnSuccess, isUnSet, navItems, 
                         value={tempFormData}
                         editorOnChange={editorOnChange}
                         schemas={schemas}
+                        charts={charts || []}
                         selectedChart={selectedChart}
-                        environments={environments}
+                        environments={environments || []}
                         fetchedValues={fetchedValues}
                         setFetchedValues={setFetchedValues}
                     />

@@ -1,52 +1,32 @@
 import React, { useState, useEffect, useReducer, useCallback } from 'react'
 import { useParams } from 'react-router'
-import ReadmeConfig from '../deploymentConfig/ReadmeConfig'
 import {
     getDeploymentTemplate,
     createDeploymentTemplate,
     updateDeploymentTemplate,
     deleteDeploymentTemplate,
-    createNamespace,
-    toggleAppMetrics,
     chartRefAutocomplete,
 } from './service'
-import fileIcon from '../../assets/icons/ic-file.svg'
-import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as ArrowSquareOut } from '../../assets/icons/misc/arrowSquareOut.svg'
 import { Override } from './ConfigMapOverrides'
-import {
-    Select,
-    mapByKey,
-    showError,
-    not,
-    Progressing,
-    ConfirmationDialog,
-    VisibleModal,
-    Info,
-    useEffectAfterMount,
-    useJsonYaml,
-} from '../common'
-import CodeEditor from '../CodeEditor/CodeEditor'
+import { showError, not, Progressing, ConfirmationDialog, useEffectAfterMount, useJsonYaml } from '../common'
 import { toast } from 'react-toastify'
 import '../deploymentConfig/deploymentConfig.scss'
 import warningIcon from '../../assets/img/warning-medium.svg'
-import { MODES } from '../../../src/config/constants'
 import YAML from 'yaml'
-import { ReactComponent as DiffIcon } from '../../assets/icons/ic-compare.svg'
 import {
     DeploymentConfigFormCTA,
     DeploymentTemplateEditorView,
     DeploymentTemplateOptionsTab,
 } from '../deploymentConfig/DeploymentTemplateView'
 import { DeploymentChartVersionType } from '../deploymentConfig/types'
+import { DeploymentTemplateOverrideProps } from './EnvironmentOverrides.type'
 
 export default function DeploymentTemplateOverride({
     parentState,
     setParentState,
     environments,
     environmentName,
-    ...props
-}) {
+}: DeploymentTemplateOverrideProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     const [loading, setLoading] = useState(false)
     const [chartRefLoading, setChartRefLoading] = useState(null)
@@ -88,8 +68,8 @@ export default function DeploymentTemplateOverride({
                 case 'selectChart':
                     return {
                         ...state,
-                        selectedChart: action.value.selectedChart,
-                        selectedChartRefId: action.value.selectedChartRefId,
+                        selectedChart: action.value,
+                        selectedChartRefId: action.value.id,
                     }
                 case 'appMetrics':
                     return {
@@ -197,7 +177,7 @@ export default function DeploymentTemplateOverride({
         }
     }
 
-    if (loading || state.loading || chartRefLoading || parentState === 'loading') {
+    if (loading || state.loading || parentState === 'loading') {
         return <Progressing size={48} fullHeight />
     }
 
@@ -361,7 +341,7 @@ function DeploymentTemplateOverrideForm({
                 />
                 <DeploymentTemplateEditorView
                     appId={appId}
-                    envId={+envId}
+                    envId={envId}
                     isUnSet={false}
                     isEnvOverride={true}
                     openComparison={state.openComparison}
@@ -384,12 +364,14 @@ function DeploymentTemplateOverrideForm({
                     }
                     editorOnChange={editorOnChange}
                     schemas={state.data.schema}
+                    charts={state.charts || []}
                     selectedChart={state.selectedChart}
-                    environments={environments}
+                    environments={environments || []}
                     environmentName={environmentName}
                     fetchedValues={fetchedValues}
                     setFetchedValues={setFetchedValues}
                     readOnly={!state.duplicate}
+                    globalChartRefId={state.data.globalChartRefId}
                 />
                 {!state.openComparison && !state.showReadme && (
                     <DeploymentConfigFormCTA

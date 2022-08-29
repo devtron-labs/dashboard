@@ -27,8 +27,8 @@ import warningIcon from '../../assets/img/warning-medium.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
-import { getAppChartRef } from '../../services/service'
 import './environmentOverride.scss'
+import { ConfigMapOverridesProps } from './EnvironmentOverrides.type'
 
 const ConfigMapContext = React.createContext(null)
 
@@ -40,7 +40,7 @@ function useConfigMapContext() {
     return context
 }
 
-export default function ConfigMapOverrides({ parentState, setParentState, ...props }) {
+export default function ConfigMapOverrides({ parentState, setParentState }: ConfigMapOverridesProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     // const [loading, result, error, reload] = useAsync(() => getEnvironmentConfigs(+appId, +envId), [+appId, +envId]);
     const [configmapList, setConfigmapList] = useState<{ id: number; configData: any[]; appId: number }>()
@@ -89,7 +89,8 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
             })
         } catch (error) {}
     }
-    if (parentState === 'loading' || !configmapList) return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
+    if (parentState === 'loading' || !configmapList)
+        return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
 
     if (configmapLoading && !configmapList) {
         return null
@@ -118,9 +119,14 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
 
 export function ListComponent({ name = '', type, label = '', appChartRef, reload = null }) {
     const [isCollapsed, toggleCollapse] = useState(true)
+
+    const handleOverrideListClick = () => {
+        toggleCollapse(!isCollapsed)
+    }
+
     return (
         <div className={`white-card white-card--list ${name ? '' : 'en-3 bw-1 dashed'}`}>
-            <div className="environment-override-list pointer left flex" onClick={(e) => toggleCollapse(!isCollapsed)}>
+            <div className="environment-override-list pointer left flex" onClick={handleOverrideListClick}>
                 {name ? (
                     type === 'config-map' ? (
                         <FileIcon className="icon-dim-24" />

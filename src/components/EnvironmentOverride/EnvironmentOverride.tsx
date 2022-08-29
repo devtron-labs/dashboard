@@ -2,24 +2,22 @@ import React, { useState, useEffect } from 'react'
 import ConfigMapOverrides from './ConfigMapOverrides'
 import SecretOverrides from './SecretOverrides'
 import DeploymentTemplateOverride from './DeploymentTemplateOverride'
-import { mapByKey, Progressing, ErrorBoundary, useAppContext, useAsync } from '../common'
+import { mapByKey, Progressing, ErrorBoundary, useAppContext } from '../common'
 import { useParams, useRouteMatch, generatePath, useHistory, useLocation } from 'react-router'
 import './environmentOverride.scss'
 import Reload from '../Reload/Reload'
-import { getAppOtherEnvironment } from '../../services/service'
 import { getAppComposeURL, APP_COMPOSE_STAGE, URLS } from '../../config'
 import { Route, Switch } from 'react-router-dom'
-import { ComponentStates, SectionHeadingType, SECTION_HEADING_INFO } from './EnvironmentOverrides.type'
+import {
+    ComponentStates,
+    EnvironmentOverrideComponentProps,
+    SectionHeadingType,
+    SECTION_HEADING_INFO,
+} from './EnvironmentOverrides.type'
 import { ReactComponent as Arrow } from '../../assets/icons/ic-arrow-left.svg'
 
-export default function EnvironmentOverride() {
+export default function EnvironmentOverride({ environmentsLoading, environments }: EnvironmentOverrideComponentProps) {
     const params = useParams<{ appId: string; envId: string }>()
-    const [appEnvironmentsLoading, appEnvironmentResult] = useAsync(
-        () => getAppOtherEnvironment(params.appId),
-        [params.appId],
-        !!params.appId,
-    )
-
     const [viewState, setViewState] = useState<ComponentStates>(null)
     const { path } = useRouteMatch()
     const { push } = useHistory()
@@ -27,7 +25,7 @@ export default function EnvironmentOverride() {
     const { environmentId, setEnvironmentId } = useAppContext()
     const [headingData, setHeadingData] = useState<SectionHeadingType>()
 
-    const environments = mapByKey(appEnvironmentResult?.result || [], 'environmentId')
+    const environmentsMap = mapByKey(environments || [], 'environmentId')
 
     useEffect(() => {
         if (params.envId) setEnvironmentId(+params.envId)
@@ -45,8 +43,8 @@ export default function EnvironmentOverride() {
     }, [location.pathname])
 
     const envMissingRedirect = () => {
-        if (params.envId || appEnvironmentsLoading) return
-        if (environments.has(environmentId)) {
+        if (params.envId || environmentsLoading) return
+        if (environmentsMap.has(environmentId)) {
             const newUrl = generatePath(path, { appId: params.appId, envId: environmentId })
             push(newUrl)
         } else {
@@ -54,11 +52,11 @@ export default function EnvironmentOverride() {
             push(workflowUrl)
         }
     }
-    useEffect(envMissingRedirect, [appEnvironmentsLoading])
+    useEffect(envMissingRedirect, [environmentsLoading])
 
     if (!params.envId) {
         return null
-    } else if (appEnvironmentsLoading) {
+    } else if (environmentsLoading) {
         return <Progressing pageLoader />
     } else if (viewState === 'failed') {
         return (
@@ -73,12 +71,12 @@ export default function EnvironmentOverride() {
     return (
         <ErrorBoundary>
             <div className={headingData ? 'environment-override mb-24' : 'deployment-template-override h-100'}>
-                {environments.size && headingData && (
+                {environmentsMap.size && headingData && (
                     <>
                         <h1 className="form__title form__title--artifacts flex left">
-                            {environments.has(+params.envId) ? (
+                            {environmentsMap.has(+params.envId) ? (
                                 <>
-                                    {environments.get(+params.envId).environmentName}
+                                    {environmentsMap.get(+params.envId).environmentName}
                                     <Arrow className="icon-dim-20 fcn-6 rotateBy-180 mr-4 ml-4" />
                                 </>
                             ) : (
@@ -100,29 +98,24 @@ export default function EnvironmentOverride() {
                     </>
                 )}
                 <Switch>
-                    <Route
-                        path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}
-                        render={(props) => (
-                            <DeploymentTemplateOverride
-                                parentState={viewState}
-                                setParentState={setViewState}
-                                environments={appEnvironmentResult?.result}
-                                environmentName={
-                                    environments.has(+params.envId)
-                                        ? environments.get(+params.envId).environmentName
-                                        : ''
-                                }
-                            />
-                        )}
-                    />
-                    <Route
-                        path={`${path}/${URLS.APP_CM_CONFIG}`}
-                        render={(props) => <ConfigMapOverrides parentState={viewState} setParentState={setViewState} />}
-                    />
-                    <Route
-                        path={`${path}/${URLS.APP_CS_CONFIG}`}
-                        render={(props) => <SecretOverrides parentState={viewState} setParentState={setViewState} />}
-                    />
+                    <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
+                        <DeploymentTemplateOverride
+                            parentState={viewState}
+                            setParentState={setViewState}
+                            environments={environments}
+                            environmentName={
+                                environmentsMap.has(+params.envId)
+                                    ? environmentsMap.get(+params.envId).environmentName
+                                    : ''
+                            }
+                        />
+                    </Route>
+                    <Route path={`${path}/${URLS.APP_CM_CONFIG}`}>
+                        <ConfigMapOverrides parentState={viewState} setParentState={setViewState} />
+                    </Route>
+                    <Route path={`${path}/${URLS.APP_CS_CONFIG}`}>
+                        <SecretOverrides parentState={viewState} setParentState={setViewState} />
+                    </Route>
                 </Switch>
             </div>
         </ErrorBoundary>

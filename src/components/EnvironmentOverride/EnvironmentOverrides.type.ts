@@ -1,6 +1,7 @@
 import { DOCUMENTATION, URLS } from '../../config'
+import { AppEnvironment } from '../../services/service.types'
 
-export type ComponentStates = 'loading' | 'success' | 'failed'
+export type ComponentStates = 'loading' | 'loaded' | 'success' | 'failed'
 
 export interface SectionHeadingType {
     title: string
@@ -20,4 +21,19 @@ export const SECTION_HEADING_INFO: Record<string, SectionHeadingType> = {
         subtitle: 'A Secret is an object that contains sensitive data such as passwords, OAuth tokens, and SSH keys.',
         learnMoreLink: DOCUMENTATION.APP_CREATE_SECRET,
     },
+}
+
+export interface EnvironmentOverrideComponentProps {
+    environmentsLoading: boolean
+    environments: AppEnvironment[]
+}
+
+export interface ConfigMapOverridesProps {
+    parentState: ComponentStates
+    setParentState: React.Dispatch<React.SetStateAction<ComponentStates>>
+}
+
+export interface DeploymentTemplateOverrideProps extends ConfigMapOverridesProps {
+    environments: AppEnvironment[]
+    environmentName: string
 }

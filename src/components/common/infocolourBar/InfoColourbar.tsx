@@ -6,7 +6,7 @@ interface InfoColourBarType {
     classname: string
     Icon
     iconClass?: string
-    iconSize?: string // E.g. icon-dim-16, icon-dim-20, etc.
+    iconSize?: number // E.g. 16, 20, etc.. Currently, there are around 12 sizes supported. Check `icons.css` or `base.scss` for supported sizes or add new size (class names starts with `icon-dim-`).
     renderActionButton?: () => JSX.Element
 }
 
