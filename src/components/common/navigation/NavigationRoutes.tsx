@@ -268,7 +268,7 @@ const onClickedDeployManageCardClicked = () =>{
                                             />
                                         </Route>
                                         <Route exact path={`/${URLS.GETTING_STARTED}/${URLS.GUIDE}`}>
-                                            <DeployManageGuide isDeployManageCardClicked={isDeployManageCardClicked}/>
+                                            <DeployManageGuide isDeployManageCardClicked={isDeployManageCardClicked} />
                                         </Route>
                                         <Route exact path={`/${URLS.GETTING_STARTED}`}>
                                             <OnboardingGuide
@@ -280,10 +280,7 @@ const onClickedDeployManageCardClicked = () =>{
                                         </Route>
 
                                         <Route>
-                                            <RedirectUserWithSentry
-                                                isFirstLoginUser={isSuperAdmin && appListCount === 0}
-                                                loginCount={loginCount}
-                                            />
+                                            <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && (!loginCount || appListCount === 0)} />
                                         </Route>
                                     </Switch>
                                 </ErrorBoundary>
@@ -305,33 +302,29 @@ export function AppRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                 <Switch>
                     <Route
                         path={`${path}/${URLS.APP_LIST}`}
-                        render={() => <AppListRouter isSuperAdmin={isSuperAdmin} appListCount={appListCount} loginCount={loginCount} />}
+                        render={() => (
+                            <AppListRouter
+                                isSuperAdmin={isSuperAdmin}
+                                appListCount={appListCount}
+                                loginCount={loginCount}
+                            />
+                        )}
                     />
                     <Route path={`${path}/${URLS.EXTERNAL_APPS}/:appId/:appName`} render={() => <ExternalApps />} />
                     <Route
                         path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
                         render={(props) => <V2Details envType={EnvType.CHART} />}
                     />
-                    <Route
-                        path={`${path}/:appId(\\d+)`}
-                        render={() => (
-                            <AppDetailsPage
-                                isV2={false}
-                            />
-                        )}
-                    />
-                    <Route
-                        path={`${path}/v2/:appId(\\d+)`}
-                        render={() => (
-                            <AppDetailsPage isV2={true} />
-                        )}
-                    />
+                    <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage isV2={false} />} />
+                    <Route path={`${path}/v2/:appId(\\d+)`} render={() => <AppDetailsPage isV2={true} />} />
 
                     <Route exact path="">
                         <RedirectToAppList />
                     </Route>
                     <Route>
-                        <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && appListCount === 0} loginCount={loginCount}/>
+                        <RedirectUserWithSentry
+                            isFirstLoginUser={(isSuperAdmin && appListCount === 0) || !loginCount}
+                        />
                     </Route>
                 </Switch>
             </AppContext.Provider>
@@ -351,7 +344,7 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
                         <RedirectToAppList />
                     </Route>
                     <Route>
-                        <RedirectUserWithSentry isFirstLoginUser = {isSuperAdmin && appListCount === 0} loginCount={loginCount} />
+                        <RedirectUserWithSentry isFirstLoginUser = {isSuperAdmin && (appListCount === 0 || !loginCount)} />
                     </Route>
                 </Switch>
             </AppContext.Provider>
@@ -359,12 +352,12 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
     )
 }
 
-export function RedirectUserWithSentry({ isFirstLoginUser, loginCount  }) {
+export function RedirectUserWithSentry({ isFirstLoginUser  }) {
     const { push } = useHistory()
     const { pathname } = useLocation()
     useEffect(() => {
       if (pathname && pathname !== '/') Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
-        if (isFirstLoginUser && !loginCount) {
+        if (isFirstLoginUser) {
             push(`${URLS.GETTING_STARTED}`)
         } else {
             push(`${URLS.APP}/${URLS.APP_LIST}`)

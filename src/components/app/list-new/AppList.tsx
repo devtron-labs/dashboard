@@ -28,8 +28,6 @@ import '../list/list.css'
 import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
 import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
-import GuidePage from '../../common/guidePage/GuidePage'
-
 
 export default function AppList({isSuperAdmin, appListCount} : AppListPropType) {
     const location = useLocation()
