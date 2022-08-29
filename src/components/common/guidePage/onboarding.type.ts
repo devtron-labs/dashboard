@@ -1,7 +1,7 @@
 export interface GettingStartedType {
   className: string
   showHelpCard: boolean
-  hideGettingStartedCard: () => void
+  hideGettingStartedCard: (count?: string) => void
   loginCount: number
 }
 

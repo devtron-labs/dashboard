@@ -9,9 +9,10 @@ import { getLoginInfo, getRandomColor, setActionWithExpiry } from '../helpers/He
 import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import ReactGA from 'react-ga'
-import { getLoginData, updateLoginCount } from '../../../services/service'
+import { updateLoginCount } from '../../../services/service'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import GettingStartedCard from '../gettingStartedCard/GettingStarted'
+import { mainContext } from '../navigation/NavigationRoutes'
 
 export interface PageHeaderType {
     headerName?: string
@@ -46,7 +47,7 @@ function PageHeader({
     showCloseButton = false,
     onClose,
 }: PageHeaderType) {
-
+    const { loginCount, setLoginCount } = useContext(mainContext)
     const [showHelpCard, setShowHelpCard] = useState(false)
     const [showLogOutCard, setShowLogOutCard] = useState(false)
     const loginInfo = getLoginInfo()
@@ -58,7 +59,6 @@ function PageHeader({
         },
     )
     const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
-    const [loginCount, setLoginCount] = useState(0)
     const history = useHistory()
     const [expiryDate, setExpiryDate] = useState(0)
 
@@ -77,23 +77,6 @@ function PageHeader({
             console.error('Error in fetching server info')
         }
     }
-
-    useEffect(() => {
-        getLoginData().then((response) => {
-            const count = response.result?.value ? parseInt(response.result.value) : 0
-            setLoginCount(count || 1)
-            if (count < 5) {
-                const updatedPayload = {
-                    key: 'login-count',
-                    value: `${count + 1}`,
-                }
-                updateLoginCount(updatedPayload)
-            }
-            if (!count) {
-                history.push('/')
-            }
-        })
-    }, [])
 
     useEffect(() => {
         const expDate = localStorage.getItem('clickedOkay')
@@ -119,7 +102,7 @@ function PageHeader({
             value: '5',
         }
         updateLoginCount(updatedPayload)
-        hideGettingStartedCard()
+        hideGettingStartedCard(updatedPayload.value)
 
         ReactGA.event({
             category: 'Main Navigation',
@@ -147,8 +130,11 @@ function PageHeader({
         )
     }
 
-    const hideGettingStartedCard = () => {
+    const hideGettingStartedCard = (count?: string) => {
       setShowGettingStartedCard(false)
+      if(count){
+        setLoginCount(+count)
+      }
     }
 
     const getExpired = (): boolean => {

@@ -10,7 +10,7 @@ import { Progressing, showError } from '../common'
 import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
 import './login.css'
-import { dashboardAccessed } from '../../services/service'
+import { dashboardAccessed, getLoginData, updateLoginCount } from '../../services/service'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
     constructor(props) {
@@ -23,6 +23,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 username: 'admin',
                 password: '',
             },
+            loginCount: 0
         }
         this.handleChange = this.handleChange.bind(this)
         this.autoFillLogin = this.autoFillLogin.bind(this)
@@ -101,7 +102,23 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                     this.setState({ loading: false })
                     let queryString = this.props.location.search.split('continue=')[1]
                     let url = queryString ? `${queryString}` : URLS.APP
-                    this.props.history.push(`${url}`)
+
+                    getLoginData().then((response) => {
+                      const count = response.result?.value ? parseInt(response.result.value) : 0
+                      this.setState({loginCount: count || 1})
+                      if (count < 6) {
+                          const updatedPayload = {
+                              key: 'login-count',
+                              value: `${count + 1}`,
+                          }
+                          updateLoginCount(updatedPayload)
+                      }
+                      if (!count) {
+                        this.props.history.push('/')
+                      }else{
+                        this.props.history.push(`${url}`)
+                      }
+                  })
                 }
             })
             .catch((errors: ServerErrors) => {

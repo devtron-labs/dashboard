@@ -8,7 +8,7 @@ import { SERVER_MODE, URLS } from '../../config'
 import { ReactComponent as GoBack } from '../../assets/icons/ic-arrow-forward.svg'
 import './onboardingGuide.scss'
 import ReactGA from 'react-ga'
-import { Progressing, showError } from '../common'
+import { Progressing, showError, useEventSource } from '../common'
 import { getDevtronInstalledHelmApps } from '../app/list-new/AppListService'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { mainContext } from '../common/navigation/NavigationRoutes'
@@ -18,6 +18,7 @@ function DeployManageGuide({ isDeployManageCardClicked }) {
     const [devtronHelmCount, setDevtronHelmCount] = useState(0)
     const [loader, setLoader] = useState(false)
     const { serverMode, setPageOverflowEnabled } = useContext(mainContext)
+    const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
 
     const _getInit = () => {
         if (serverMode === SERVER_MODE.FULL) {

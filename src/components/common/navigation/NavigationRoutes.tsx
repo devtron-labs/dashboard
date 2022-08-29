@@ -13,7 +13,6 @@ import {
     getLoginData,
     getUserRole,
     getVersionConfig,
-    updateLoginCount,
 } from '../../../services/service'
 import Reload from '../../Reload/Reload'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
@@ -84,7 +83,7 @@ export default function NavigationRoutes() {
 
     useEffect(() => {
         const loginInfo = getLoginInfo()
-
+        console.log('test')
         if (process.env.NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
@@ -125,13 +124,6 @@ export default function NavigationRoutes() {
         getLoginData().then((response) => {
             const count = response.result?.value ? parseInt(response.result.value) : 0
             setLoginCount(count || 1)
-            if (count < 5) {
-                const updatedPayload = {
-                    key: 'login-count',
-                    value: `${count + 1}`,
-                }
-                updateLoginCount(updatedPayload)
-            }
             if (!count) {
                 history.push('/')
             }
@@ -211,6 +203,8 @@ const onClickedDeployManageCardClicked = () =>{
                     setPageOverflowEnabled,
                     isHelpGettingStartedClicked,
                     showCloseButtonAfterGettingStartedClicked,
+                    loginCount,
+                    setLoginCount
                 }}
             >
                 <main className={`${window.location.href.includes(URLS.GETTING_STARTED) ? 'no-nav' : ''}`}>
@@ -280,7 +274,7 @@ const onClickedDeployManageCardClicked = () =>{
                                         </Route>
 
                                         <Route>
-                                            <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && (!loginCount || appListCount === 0)} />
+                                            <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && (serverMode === SERVER_MODE.EA_ONLY && !loginCount) || (serverMode === SERVER_MODE.FULL && appListCount === 0)} />
                                         </Route>
                                     </Switch>
                                 </ErrorBoundary>

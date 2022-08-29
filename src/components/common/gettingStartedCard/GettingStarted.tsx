@@ -17,7 +17,7 @@ function GettingStartedCard({ className, hideGettingStartedCard }: GettingStarte
             value: '5',
         }
         updateLoginCount(updatedPayload)
-        hideGettingStartedCard()
+        hideGettingStartedCard(updatedPayload.value)
     }
 
     return (
