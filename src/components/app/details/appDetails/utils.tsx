@@ -392,7 +392,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
           },
           GIT_COMMIT: {
               icon: '',
-              displayText: 'Gitops commit',
+              displayText: 'GitOps commit',
               displaySubText: '',
               time: '',
           },
