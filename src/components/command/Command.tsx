@@ -3,7 +3,7 @@ import { Progressing } from '../common';
 import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-forward.svg';
 import { getArgumentSuggestions, AllSuggestedArguments } from './command.util';
 import { COMMAND_REV, CommandProps, CommandState, ArgumentType, PlaceholderText } from './command.types';
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 import './command.css';
 
 const FlexSearch = require("flexsearch");

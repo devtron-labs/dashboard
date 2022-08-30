@@ -425,7 +425,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
           } else if (element['status'] === 'FAILED') {
               deploymentData.deploymentStatus = 'failed'
               deploymentData.deploymentStatusText = 'Failed'
-              deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = 'failed'
+              deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Failed'
               deploymentData.deploymentError = element['statusDetail']
           } else if (element['status'].includes('KUBECTL_APPLY')) {
               if (
@@ -436,19 +436,24 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                   if (deploymentData.deploymentStatus === 'failed') {
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': Unknown'
+                      deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unknown'
+                      deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Unknown'
                   } else {
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'inprogress'
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ': In progress'
                   }
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time = element['statusTime']
-                  deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon =
-                      deploymentData.deploymentStatus === 'failed' ? 'Unknown' : 'inprogress'
               } else if (element['status'] === 'KUBECTL_APPLY_SYNCED') {
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time = element['statusTime']
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
+                  deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
+
                   if (deploymentData.deploymentStatus === 'inprogress') {
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'inprogress'
+                  } else if(deploymentData.deploymentStatus  === 'failed'){
+                    deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'failed'
+                    deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Failed'
                   }
               }
           } else if (element['status'].includes('GIT_COMMIT')) {

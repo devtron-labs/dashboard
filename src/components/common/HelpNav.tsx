@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react'
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga4'
 import { DOCUMENTATION, URLS } from '../../config'
 import { ReactComponent as File } from '../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Discord } from '../../assets/icons/ic-discord-fill.svg'

@@ -47,7 +47,7 @@ import { ReactComponent as AlertTriangle } from '../../../../assets/icons/ic-ale
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg';
 import { ReactComponent as ForwardArrow } from '../../../../assets/icons/ic-arrow-forward.svg'
 import Tippy from '@tippyjs/react';
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 import Select, { components } from 'react-select';
 import { SourceInfo } from './SourceInfo'
 import {

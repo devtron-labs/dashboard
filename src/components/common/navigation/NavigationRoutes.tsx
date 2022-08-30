@@ -5,7 +5,7 @@ import { ErrorBoundary, Progressing, getLoginInfo, AppContext } from '../../comm
 import Navigation from './Navigation'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga4'
 import { Security } from '../../security/Security'
 import { dashboardLoggedIn, getVersionConfig } from '../../../services/service'
 import Reload from '../../Reload/Reload'
@@ -52,13 +52,11 @@ export default function NavigationRoutes() {
                 let email = loginInfo ? loginInfo['email'] || loginInfo['sub'] : ''
                 let path = location.pathname
                 ReactGA.initialize(window._env_.GA_TRACKING_ID, {
-                    debug: false,
-                    titleCase: false,
                     gaOptions: {
                         userId: `${email}`,
                     },
                 })
-                ReactGA.pageview(`${path}`)
+                ReactGA.send({ hitType: 'pageview', page: path })
                 ReactGA.event({
                     category: `Page ${path}`,
                     action: 'First Land',
@@ -67,7 +65,7 @@ export default function NavigationRoutes() {
                     let path = location.pathname
                     path = path.replace(new RegExp('[0-9]', 'g'), '')
                     path = path.replace(new RegExp('//', 'g'), '/')
-                    ReactGA.pageview(`${path}`)
+                    ReactGA.send({ hitType: 'pageview', page: path })
                     ReactGA.event({
                         category: `Page ${path}`,
                         action: 'First Land',
