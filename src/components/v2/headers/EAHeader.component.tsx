@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import { URLS, AppListConstants } from '../../../config'
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga4'
 import { useParams, useRouteMatch, useHistory } from 'react-router'
 import './header.css'
 import PageHeader from '../../common/header/PageHeader'
