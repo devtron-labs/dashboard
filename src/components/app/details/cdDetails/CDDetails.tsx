@@ -80,6 +80,7 @@ export default function CDDetails() {
     const { pathname } = useLocation()
     const { push } = useHistory()
     const pipelines = result?.length ? result[1]?.pipelines : []
+    const deploymentAppType = pipelines.find(pipeline=> pipeline.ciPipelineId === Number(pipelineId))?.deploymentAppType
     useInterval(pollHistory, 30000)
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
     const keys = useKeyDown()
@@ -107,7 +108,6 @@ export default function CDDetails() {
             setHasMore(true)
         }
         const newTriggerHistory = (deploymentHistoryResult?.result || []).reduce((agg, curr) => {
-          curr.deploymentAppType = DeploymentAppType.helm
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
@@ -141,7 +141,6 @@ export default function CDDetails() {
         const triggerHistoryMap = mapByKey(result?.result || [], 'id')
         const newTriggerHistory = Array.from(triggerHistoryMap).reduce((agg, [triggerId, curr]) => {
             const detailedTriggerHistory = triggerHistory.has(triggerId) ? triggerHistory.get(triggerId) : {}
-            curr.deploymentAppType = DeploymentAppType.helm
             agg.set(curr.id, { ...detailedTriggerHistory, ...curr })
             return agg
         }, triggerHistoryMap)
@@ -185,7 +184,7 @@ export default function CDDetails() {
     function syncState(triggerId: number, triggerDetail: History) {
       const currentHistory =  triggerHistory.get(triggerId)
         setTriggerHistory((triggerHistory) => {
-            triggerHistory.set(triggerId, {...triggerDetail, deploymentAppType: currentHistory.deploymentAppType})
+            triggerHistory.set(triggerId, triggerDetail)
             return new Map(triggerHistory)
         })
     }
@@ -235,6 +234,7 @@ export default function CDDetails() {
                                         setShowTemplate={setShowTemplate}
                                         setDeploymentHistoryList={setDeploymentHistoryList}
                                         deploymentHistoryList={deploymentHistoryList}
+                                        deploymentAppType={deploymentAppType}
                                     />
                                 </Route>
                             )}
@@ -466,6 +466,7 @@ const TriggerOutput: React.FC<{
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
+    deploymentAppType: DeploymentAppType
 }> = ({
     fullScreenView,
     syncState,
@@ -473,6 +474,7 @@ const TriggerOutput: React.FC<{
     setShowTemplate,
     setDeploymentHistoryList,
     deploymentHistoryList,
+    deploymentAppType
 }) => {
     const { appId, triggerId, envId, pipelineId } = useParams<{
         appId: string
@@ -513,7 +515,7 @@ const TriggerOutput: React.FC<{
 
     if (triggerDetailsLoading && !triggerDetails) return <Progressing pageLoader />
     if (!triggerDetailsLoading && !triggerDetails) return <Reload />
-    if (triggerDetails?.id !== +triggerId || !triggerDetails.deploymentAppType) {
+    if (triggerDetails?.id !== +triggerId) {
         return null
     }
     return (
@@ -531,7 +533,7 @@ const TriggerOutput: React.FC<{
                             }
                         />
                         <ul className="pl-20 tab-list tab-list--nodes border-bottom">
-                            {triggerDetails.stage === 'DEPLOY' && (
+                            {triggerDetails.stage === 'DEPLOY' && deploymentAppType!== DeploymentAppType.helm && (
                                 <li className="tab-list__tab">
                                     <NavLink
                                         replace
@@ -600,6 +602,7 @@ const TriggerOutput: React.FC<{
                 setShowTemplate={setShowTemplate}
                 setDeploymentHistoryList={setDeploymentHistoryList}
                 deploymentHistoryList={deploymentHistoryList}
+                deploymentAppType={deploymentAppType}
             />
         </>
     )
@@ -611,7 +614,8 @@ const HistoryLogs: React.FC<{
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
-}> = ({ triggerDetails, loading, setShowTemplate, deploymentHistoryList, setDeploymentHistoryList }) => {
+    deploymentAppType: DeploymentAppType
+}> = ({ triggerDetails, loading, setShowTemplate, deploymentHistoryList, setDeploymentHistoryList, deploymentAppType }) => {
     let { path } = useRouteMatch()
     const { appId, pipelineId, triggerId, envId } = useParams<{
         appId: string
@@ -640,7 +644,7 @@ const HistoryLogs: React.FC<{
                         )}
                         {triggerDetails.stage === 'DEPLOY' && (
                             <Route path={`${path}/deployment-steps`}>
-                                <DeploymentDetailSteps deploymentStatus={triggerDetails.status} deploymentAppType={triggerDetails.deploymentAppType} />
+                                <DeploymentDetailSteps deploymentStatus={triggerDetails.status} deploymentAppType={deploymentAppType} />
                             </Route>
                         )}
                         <Route
