@@ -638,9 +638,9 @@ const HistoryLogs: React.FC<{
                                 </div>
                             </Route>
                         )}
-                        {triggerDetails.deploymentAppType !== DeploymentAppType.helm && triggerDetails.stage === 'DEPLOY' && (
+                        {triggerDetails.stage === 'DEPLOY' && (
                             <Route path={`${path}/deployment-steps`}>
-                                <DeploymentDetailSteps deploymentStatus={triggerDetails.status}/>
+                                <DeploymentDetailSteps deploymentStatus={triggerDetails.status} deploymentAppType={triggerDetails.deploymentAppType} />
                             </Route>
                         )}
                         <Route
