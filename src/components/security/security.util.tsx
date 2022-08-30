@@ -81,7 +81,7 @@ export function ValueContainer(props) {
 
 export function Option(props) {
     return <components.Option {...props}>
-        <p className="m-0 ellipsis-right lowercase">
+        <p className="m-0 ellipsis-right dc__lowercase">
             {props.isSelected ? <CheckSelected className="icon-dim-24 dc__vertical-align-middle mr-5" />
                 : <CheckNotSelected className="icon-dim-24 dc__vertical-align-middle mr-5" />}
             {props.label}</p>

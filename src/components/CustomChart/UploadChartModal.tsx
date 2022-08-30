@@ -196,7 +196,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
             >
                 {uploadState !== UPLOAD_STATE.UPLOAD && (
                     <button
-                        className={`cta delete no-text-transform ${
+                        className={`cta delete dc__no-text-transform ${
                             uploadState === UPLOAD_STATE.UPLOADING ? '  mr-20' : '  ml-20'
                         }`}
                         onClick={(e) => onCancelUpload('Cancel')}
@@ -206,7 +206,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                 )}
                 {uploadState !== UPLOAD_STATE.UPLOADING && (
                     <ButtonWithLoader
-                        rootClassName="cta mr-20 no-text-transform"
+                        rootClassName="cta mr-20 dc__no-text-transform"
                         loaderColor="white"
                         onClick={handleSuccessButton}
                         isLoading={loadingData}

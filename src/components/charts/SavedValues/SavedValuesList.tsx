@@ -243,7 +243,7 @@ export default function SavedValuesList() {
                         renderEmptyState('No matching preset values', 'We couldn’t find any matching results', true)
                     ) : (
                         <>
-                            <div className="preset-values-row fw-6 cn-7 fs-12 border-bottom text-uppercase pt-8 pr-20 pb-8 pl-20">
+                            <div className="preset-values-row fw-6 cn-7 fs-12 border-bottom dc__uppercase pt-8 pr-20 pb-8 pl-20">
                                 <div />
                                 <div>Name</div>
                                 <div>Version</div>

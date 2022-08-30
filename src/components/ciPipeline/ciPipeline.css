@@ -302,7 +302,7 @@
     border-bottom: 1px solid var(--N100);
 }
 
-.text-uppercase {
+.dc__uppercase {
     text-transform: uppercase;
 }
 

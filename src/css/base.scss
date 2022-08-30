@@ -1790,10 +1790,6 @@ textarea {
     background-color: var(--N50);
 }
 
-.no-text-transform {
-    text-transform: none !important;
-}
-
 .split-header {
     display: flex;
     background-color: var(--N100);
@@ -1845,16 +1841,16 @@ textarea {
   cursor: not-allowed !important;
 }
 
-.lowercase {
-  text-transform: lowercase;
+.dc__lowercase {
+  text-transform: dc__lowercase;
 }
 
-.text-uppercase {
+.dc__uppercase {
   text-transform: uppercase;
 }
 
-.no-text-transform {
-  text-transform: none;
+.dc__no-text-transform {
+  text-transform: none !important;
 }
 
 .ff-monospace {

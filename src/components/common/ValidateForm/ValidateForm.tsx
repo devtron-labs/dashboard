@@ -91,10 +91,10 @@ function ValidateFailure({ formId, validationError, onClickValidate, validatedTi
                 {!isChartRepo && <>
                     <p className="mt-0 mb-0">Devtron was unable to perform the following actions.</p>
                     {Object.entries(validationError).map(([value, name]) =>
-                        <p key={value} className="mt-4 mb-0"><span className="fw-6 text-lowercase">{value}: </span>{name}</p>
-                    )} 
+                        <p key={value} className="mt-4 mb-0"><span className="fw-6 dc__lowercase">{value}: </span>{name}</p>
+                    )}
                     {warning &&
-                     <p className="mt-4 mb-0"><span className="fw-6 text-lowercase">NOTE: </span>{warning}</p>}
+                     <p className="mt-4 mb-0"><span className="fw-6 dc__lowercase">NOTE: </span>{warning}</p>}
                     </>
                 }
             </div>
@@ -105,7 +105,7 @@ function ValidateFailure({ formId, validationError, onClickValidate, validatedTi
 export function ValidateForm({ id, onClickValidate, validationError, isChartRepo = false, validationStatus = "", configName, warning = "" }) {
     return (
         <div className="mt-16">
-            {!id && validationStatus != VALIDATION_STATUS.LOADER && 
+            {!id && validationStatus != VALIDATION_STATUS.LOADER &&
                 <div className="infobar flex left bcb-1 eb-2 bw-1 br-4 mb-20 pt-10 pb-10 pr-16 pl-16"><InfoIcon className="icon-dim-18 mr-8" />Only public chart repositories can be connected as of now.</div>}
             {id && validationStatus == VALIDATION_STATUS.DRY_RUN &&
                 <ValidateDryRun onClickValidate={onClickValidate} configName={configName} />}

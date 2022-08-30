@@ -150,7 +150,7 @@ export default function ChartVersionSelectorModal({
     const renderValueList = (): JSX.Element => {
         return (
             <div style={{ height: 'calc(100vh - 170px)' }}>
-                <div className="chart-value-row fw-6 cn-7 fs-12 border-top border-bottom text-uppercase pt-8 pr-16 pb-8 pl-16">
+                <div className="chart-value-row fw-6 cn-7 fs-12 border-top border-bottom dc__uppercase pt-8 pr-16 pb-8 pl-16">
                     <div className="pr-16"></div>
                     <div className="pr-16">Name</div>
                     <div>Chart Version</div>

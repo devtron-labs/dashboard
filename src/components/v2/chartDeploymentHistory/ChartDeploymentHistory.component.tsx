@@ -559,7 +559,7 @@ function ChartDeploymentHistory({
         return (
             <div className="ci-details">
                 <div className="ci-details__history deployment-cards">
-                    <span className="pl-16 pr-16 text-uppercase">Deployments</span>
+                    <span className="pl-16 pr-16 dc__uppercase">Deployments</span>
                     <div className="flex column top left" style={{ overflowY: 'auto' }}>
                         {renderDeploymentCards()}
                     </div>

@@ -72,7 +72,7 @@ function AppHeaderComponent() {
                     linked: false,
                 },
                 app: {
-                    component: <span className="cn-5 fs-16 lowercase">apps</span>,
+                    component: <span className="cn-5 fs-16 dc__lowercase">apps</span>,
                     linked: true,
                 },
             },
