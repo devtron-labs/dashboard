@@ -187,7 +187,7 @@ export default function NodeDetails() {
 
     const noDataInSubTab = (tabName: string): JSX.Element => {
         return (
-            <div className="text-center no-data-tab">
+            <div className="dc__text-center no-data-tab">
                 <Info className="no-data-icon" />
                 <div className="cn-7 fs-13 fw-4">No {tabName}</div>
             </div>

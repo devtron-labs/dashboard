@@ -20,7 +20,7 @@ function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefi
                     <div className="dc__page-header__title flex left fs-16 pt-16 pb-16 ">{headerText}</div>
                 </div>
             )}
-            <div className="ea-empty__wrapper cn-9 text-center">
+            <div className="ea-empty__wrapper cn-9 dc__text-center">
                 <div className="fs-20 fw-6 mb-8">{title}</div>
                 <div className="fs-14 dc__m-auto w-600">{msg}</div>
                 <div className="pt-20">

@@ -160,7 +160,7 @@ export function DropdownIcon({ style = {}, color = '#06c', ...props }) {
             style={{ width: '24px', height: '24px', ...style }}
             viewBox="0 0 24 24"
         >
-            <g fill="dc__transparent" fillRule="evenodd">
+            <g fill="transparent" fillRule="evenodd">
                 <path d="M0 0h24v24H0z" />
                 <path
                     stroke={`${color}`}

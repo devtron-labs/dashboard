@@ -139,7 +139,7 @@ class Edge extends React.Component <EdgeProps>{
 
     render() {
         return <g onClick={this.props.onClickEdge} className="edge-group">
-            <path id={`path-${this.props.startNode.id}-${this.props.endNode.id}`} className="color-path" d={this.getPathEquation()} fill="dc__transparent" stroke={nodeColors.strokeColor} strokeWidth={this.props.nodeSizes.strokeWidth} />
+            <path id={`path-${this.props.startNode.id}-${this.props.endNode.id}`} className="color-path" d={this.getPathEquation()} fill="transparent" stroke={nodeColors.strokeColor} strokeWidth={this.props.nodeSizes.strokeWidth} />
             <path d={this.getArrowEquation()} fill={nodeColors.strokeColor} />
             {this.renderEdgeText()}
         </g>

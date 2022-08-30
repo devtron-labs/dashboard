@@ -161,7 +161,7 @@ export default function CustomChartList() {
                     {chartList?.map((chartData) => (
                         <div className="chart-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-14 pb-14 pr-20 pl-20">
                             <div className="flexbox">
-                                <span className="cn-9">{chartData.name}</span>
+                                <span className="cn-9 dc__ellipsis-right">{chartData.name}</span>
                             </div>
                             <div>
                                 {chartData.version}

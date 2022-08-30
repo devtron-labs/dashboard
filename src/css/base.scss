@@ -1551,6 +1551,7 @@ button.anchor {
 
 .dc__align-right {
     text-align: right;
+    margin-left: auto;
 }
 
 .dc__text__subtitle {
@@ -1560,16 +1561,16 @@ button.anchor {
     line-height: 1.5;
 }
 
+.dc__text-center {
+  text-align: center;
+}
+
 .fw-n {
     font-weight: normal !important;
 }
 
-.hide-section {
+.dc__hide-section {
     display: none;
-}
-
-.text-center {
-    text-align: center;
 }
 
 .dark-background {
@@ -1744,7 +1745,7 @@ textarea {
   text-transform: uppercase;
 }
 
-.capitalize {
+.dc__capitalize {
   text-transform: lowercase;
 
   &::first-letter {
@@ -1764,7 +1765,7 @@ textarea {
   z-index: 1;
 }
 
-.break-word {
+.dc__break-word {
   word-wrap: break-word;
 }
 

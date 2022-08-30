@@ -42,7 +42,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
 }: MsgUIProps) => {
     return (
         <div
-            className={`text-center ${theme || 'dark'}-background w-100 `}
+            className={`dc__text-center ${theme || 'dark'}-background w-100 `}
             style={{ paddingTop: '200px', minHeight: '600px', flex: '1', ...bodyStyle }}
         >
             <div>

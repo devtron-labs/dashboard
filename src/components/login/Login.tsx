@@ -128,7 +128,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                                 <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24">
                                     <use href={`${LoginIcons}#${item.name}`}></use>
                                 </svg>
-                                Login with <span className="ml-5 capitalize">{item.name}</span>
+                                Login with <span className="ml-5 dc__capitalize">{item.name}</span>
                             </a>
                         )
                     })}

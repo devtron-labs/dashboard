@@ -265,7 +265,7 @@ function EditAPIToken({
                         <label className="form__row">
                             <span className="form__label">Token</span>
                             <div className="flex dc__content-space top cn-9">
-                                <span className="mono fs-14 break-word">
+                                <span className="mono fs-14 dc__break-word">
                                     {editData.token}
                                 </span>
                                 <Tippy

@@ -69,7 +69,7 @@ export const StatusFilterButtonComponent = ({nodes}: {nodes: Array<Node>}) => {
                                             style={{ zIndex: 'unset' }}
                                         />
                                     )}
-                                    <span className="capitalize">{filter.status.toLowerCase()}</span>
+                                    <span className="dc__capitalize">{filter.status.toLowerCase()}</span>
                                     <span className="pl-4">({filter.count})</span>
                                 </a>
                             )}

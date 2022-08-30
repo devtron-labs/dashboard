@@ -100,7 +100,7 @@ function NodeTreeDetailTab({
                                                 className={`${
                                                     tab.name === AppDetailsTabs.log_analyzer ||
                                                     tab.name === AppDetailsTabs.k8s_Resources
-                                                        ? 'hide-section'
+                                                        ? 'dc__hide-section'
                                                         : ''
                                                 } default-tt `}
                                                 arrow={false}
