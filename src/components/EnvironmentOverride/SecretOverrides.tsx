@@ -395,7 +395,8 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 secretDataArray.reduce((isValid, s) => {
                     isValid = isValid && !!s.secretKey && !!s.key && 
                     (hasProperty(externalType) ? !!s.property : true)
-                })
+                    return isValid
+                }, true)
                 if (!isValid) {
                     !isESO
                         ? toast.warn('Please check key and name')
