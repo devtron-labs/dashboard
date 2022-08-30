@@ -36,7 +36,7 @@ html {
 }
 
 // Info bar
-.dc__info__container {
+.dc__info-container {
     display: grid;
     grid-template-columns: 20px 1fr auto;
     padding: 10px 16px;
@@ -47,20 +47,20 @@ html {
     border-radius: 4px;
 }
 
-.dc__info__container.info__container--documentation-link {
+.dc__info-container.dc__info-container--documentation-link {
     padding: 9px 16px;
     margin-bottom: 16px;
     grid-template-columns: 20px 1fr auto;
     grid-column-gap: 8px;
 }
 
-.dc__info__title {
+.dc__info-title {
     font-size: 13px;
     color: var(--N900);
     font-weight: 600;
 }
 
-.dc__info__subtitle {
+.dc__info-subtitle {
     color: var(--N900);
     font-size: 13px;
 }
@@ -82,7 +82,7 @@ html {
     max-height: 100%;
 }
 
-.dc__chart-grid-item__icon.list-icon {
+.dc__chart-grid-item__icon.dc__list-icon {
     max-height: none;
 }
 
@@ -1680,10 +1680,6 @@ button.anchor {
     height: 32px !important;
 }
 
-.w-32 {
-    width: 32px !important;
-}
-
 .h-36 {
     height: 36px !important;
 }
@@ -1958,6 +1954,10 @@ textarea {
   width: 0px;
 }
 
+.w-32 {
+  width: 32px !important;
+}
+
 .w-180 {
   width: 180px;
 }
@@ -2102,10 +2102,10 @@ height: 100%;
   margin-right: 0px !important;
 }
 
-.m-b-4 {
+.mb-4-imp {
   margin-bottom: 4px !important;
 }
 
-.m-b-16 {
+.mb-16-imp {
   margin-bottom: 16px !important;
 }

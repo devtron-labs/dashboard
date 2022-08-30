@@ -304,7 +304,7 @@ function DeploymentTemplateOverrideForm({
                     type="deployment template"
                 />
                 <div className="form__row">
-                    <div className="m-b-4 form__label">Chart type</div>
+                    <div className="mb-4-imp form__label">Chart type</div>
                     <div className="text__subtitle fs-13 fw-6 cn-9 lh-16">{chartName}</div>
                 </div>
                 <div

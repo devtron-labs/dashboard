@@ -906,11 +906,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     renderNamespaceInfo(namespaceEditable: boolean) {
         if (namespaceEditable) {
             return (
-                <div className="dc__info__container info__container--cd-pipeline">
+                <div className="dc__info-container info__container--cd-pipeline">
                     <Info />
                     <div className="flex column left">
-                        <div className="dc__info__title">Set Namespace</div>
-                        <div className="dc__info__subtitle">
+                        <div className="dc__info-title">Set Namespace</div>
+                        <div className="dc__info-subtitle">
                             The entered namespace will be applicable to selected environment across all the pipelines
                             for this application.
                         </div>

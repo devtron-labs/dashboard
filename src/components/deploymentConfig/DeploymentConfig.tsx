@@ -399,7 +399,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                         />
                     </div>
                 </div>
-                <div className="deploymentConfig__warning flex fs-12 left pt-4 m-b-16">
+                <div className="deploymentConfig__warning flex fs-12 left pt-4 mb-16-imp">
                     {isUnSet && (
                         <>
                             <Warn className="icon-dim-16 mr-4 " />

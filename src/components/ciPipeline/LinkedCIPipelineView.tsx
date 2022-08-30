@@ -122,11 +122,11 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
     }
 
     renderInfoDialog() {
-        return <div className="dc__info__container info__container--linked-ci">
+        return <div className="dc__info-container info__container--linked-ci mb-16">
             <Info />
             <div className="flex column left">
-                <div className="dc__info__title">Configurations(Read Only)</div>
-                <div className="dc__info__subtitle">You cannot edit a linked Pipeline. To make changes edit the source Pipeline.
+                <div className="dc__info-title">Configurations(Read Only)</div>
+                <div className="dc__info-subtitle">You cannot edit a linked Pipeline. To make changes edit the source Pipeline.
                 <Link to={this.state.sourcePipelineURL} target="_blank" className="ml-5">
                         View Source Pipeline
                 </Link>

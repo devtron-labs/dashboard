@@ -83,7 +83,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
         >
             <div className={`${showDescription ? 'dc__chart-list-item__icon-wrapper' : 'dc__chart-grid-item__icon-wrapper'}`}>
                 <LazyImage
-                    className={`${showDescription ? 'list-icon' : ''} dc__chart-grid-item__icon`}
+                    className={`${showDescription ? 'dc__list-icon' : ''} dc__chart-grid-item__icon`}
                     src={chart.icon}
                     onError={handleImageError}
                 />
