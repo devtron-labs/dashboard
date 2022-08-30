@@ -159,6 +159,7 @@ export const Routes = {
     NODE_LIST: 'k8s/capacity/node/list',
     NODE_CAPACITY: 'k8s/capacity/node',
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
+    TELEMETRY_EVENT: 'telemetry/event'
 }
 
 export const ViewType = {

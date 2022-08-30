@@ -13,14 +13,15 @@ import { getDevtronInstalledHelmApps } from '../app/list-new/AppListService'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import IndexStore from '../v2/appDetails/index.store'
-import { AppType } from '../v2/appDetails/appDetails.type'
+import { OnClickedHandler, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
 
 function DeployManageGuide({ isDeployManageCardClicked }) {
     const history = useHistory()
     const [devtronHelmCount, setDevtronHelmCount] = useState(0)
     const [loader, setLoader] = useState(false)
     const { serverMode, setPageOverflowEnabled } = useContext(mainContext)
-    const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT;
+
+    const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
     // const [streamData, setStreamData] = useState(null);
     // const appDetails = IndexStore.getAppDetails();
     // const syncSSE = useEventSource(`${Host}/api/v1/applications?clusterIds=1`, null, appDetails?.appType?.toString() === AppType.EXTERNAL_HELM_CHART.toString(), (event) =>
@@ -44,18 +45,11 @@ function DeployManageGuide({ isDeployManageCardClicked }) {
         }
     }
     useEffect(() => {
-      _getInit()
+        _getInit()
     }, [])
 
     const redirectToOnboardingPage = () => {
         history.goBack()
-    }
-
-    const onClickViewApplication = () => {
-        ReactGA.event({
-            category: 'Onboarding',
-            action: 'Onboarding Guide Clicked',
-        })
     }
 
     return (
@@ -89,85 +83,102 @@ function DeployManageGuide({ isDeployManageCardClicked }) {
                         </div>
                     </div>
                     <div className="deploy-manage__body bcn-0 flex position-rel">
-                      <div className='deploy-manage__abs'>
-                        <div className="deploy-manage-cards__wrap">
-                            {devtronHelmCount > 0 && (
-                                <div className="deploy-card bcn-0 flex w-400 br-4 en-2 bw-1 ">
-                                    <img
-                                        className=" bcn-1"
-                                        src={HelmSearch}
-                                        width="200"
-                                        height="150"
-                                        alt="Please connect cluster"
-                                    />
-                                    <div className="fw-6 fs-16 pl-20 pr-20">
-                                        {devtronHelmCount} helm applications found in default_cluster <br />
+                        <div className="deploy-manage__abs">
+                            <div className="deploy-manage-cards__wrap">
+                                {devtronHelmCount > 0 && (
+                                    <div className="deploy-card bcn-0 flex w-400 br-4 en-2 bw-1 ">
                                         <NavLink
                                             to={`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`}
                                             activeClassName="active"
-                                            onClick={onClickViewApplication}
+                                            className="no-decor fw-6 cursor cn-9 flex"
+                                            onClick={() => OnClickedHandler(POSTHOG_EVENT_ONBOARDING.VIEW_APPLICATION)}
                                         >
-                                            View applications
+                                            <img
+                                                className="left-radius-4 bcn-1"
+                                                src={HelmSearch}
+                                                width="200"
+                                                height="150"
+                                                alt="Please connect cluster"
+                                            />
+                                            <div className="fw-6 fs-16 pl-20 pr-20">
+                                                {devtronHelmCount} helm applications found in default_cluster <br />
+                                                <span className="fs-14 cb-5">View applications</span>
+                                            </div>
                                         </NavLink>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            <div className="deploy-card bcn-0 flex w-400 br-4 en-2 bw-1 ">
-                                <img
-                                    className=" bcn-1"
-                                    src={HelmCollage}
-                                    width="200"
-                                    height="150"
-                                    alt="Please connect cluster"
-                                />
-                                <div className="fw-6 fs-16 pl-20 pr-20">
-                                    I want to deploy popular helm charts <br />
-                                    <NavLink to={URLS.CHARTS_DISCOVER} activeClassName="active">
-                                        Browse helm charts
+                                <div className="deploy-card bcn-0 w-400 br-4 en-2 bw-1 ">
+                                    <NavLink
+                                        to={URLS.CHARTS_DISCOVER}
+                                        activeClassName="active"
+                                        className="no-decor fw-6 cursor cn-9 flex"
+                                        onClick={() => OnClickedHandler(POSTHOG_EVENT_ONBOARDING.BROWSW_HELM_CHART)}
+                                    >
+                                        <img
+                                            className="left-radius-4 bcn-1"
+                                            src={HelmCollage}
+                                            width="200"
+                                            height="150"
+                                            alt="Please connect cluster"
+                                        />
+                                        <div className="fw-6 fs-16 pl-20 pr-20">
+                                            I want to deploy popular helm charts <br />
+                                            <span className="fs-14 cb-5">Browse helm charts</span>
+                                        </div>
+                                    </NavLink>
+                                </div>
+                                <div className="deploy-card bcn-0 w-400 br-4 en-2 bw-1 ">
+                                    <NavLink
+                                        to={URLS.GLOBAL_CONFIG_CLUSTER}
+                                        activeClassName="active"
+                                        className="no-decor fw-6 cursor cn-9 flex"
+                                        onClick={() => OnClickedHandler(POSTHOG_EVENT_ONBOARDING.CONNECT_CLUSTER)}
+                                    >
+                                        <img
+                                            className="left-radius-4 bcn-1"
+                                            src={HelmInCluster}
+                                            width="200"
+                                            height="150"
+                                            alt="Please connect cluster"
+                                        />
+                                        <div className="fw-6 fs-16 pl-20 pr-20">
+                                            I have helm applications in other clusters <br />
+                                            <span className="fs-14 cb-5"> Connect a cluster</span>
+                                        </div>
+                                    </NavLink>
+                                </div>
+                                <div className="deploy-card bcn-0 w-400 br-4 en-2 bw-1 ">
+                                    <NavLink
+                                        to={URLS.GLOBAL_CONFIG_CHART}
+                                        activeClassName="active"
+                                        className="no-decor fw-6 cursor cn-9 flex"
+                                        onClick={() =>
+                                            OnClickedHandler(POSTHOG_EVENT_ONBOARDING.CONNECT_CHART_REPOSITORY)
+                                        }
+                                    >
+                                        <img
+                                            className="left-radius-4 bcn-1"
+                                            src={ChartRepository}
+                                            width="200"
+                                            height="150"
+                                            alt="Please connect cluster"
+                                        />
+                                        <div className="fw-6 fs-16 pl-20 pr-20">
+                                            I want to connect my own chart repository <br />
+                                            <span className="fs-14 cb-5"> Connect chart repository</span>
+                                        </div>
                                     </NavLink>
                                 </div>
                             </div>
-                            <div className="deploy-card bcn-0  flex w-400 br-4 en-2 bw-1 ">
-                                <img
-                                    className=" bcn-1"
-                                    src={HelmInCluster}
-                                    width="200"
-                                    height="150"
-                                    alt="Please connect cluster"
-                                />
-                                <div className="fw-6 fs-16 pl-20 pr-20">
-                                    I have helm applications in other clusters <br />
-                                    <NavLink to={URLS.GLOBAL_CONFIG_CLUSTER} activeClassName="active">
-                                        Connect a cluster
-                                    </NavLink>
-                                </div>
+                            <div className="fs-14 flex column mt-20 mb-20">
+                                <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="cb-5 fw-6 cursor mb-8">
+                                    Skip and explore Devtron on your own
+                                </NavLink>
+                                <div className="cn-7">Tip: You can return here anytime from the Help menu</div>
                             </div>
-                            <div className="deploy-card bcn-0 flex w-400 br-4 en-2 bw-1 ">
-                                <img
-                                    className=" bcn-1"
-                                    src={ChartRepository}
-                                    width="200"
-                                    height="150"
-                                    alt="Please connect cluster"
-                                />
-                                <div className="fw-6 fs-16 pl-20 pr-20">
-                                    I want to connect my own chart repository <br />
-                                    <NavLink to={URLS.GLOBAL_CONFIG_CHART} activeClassName="active">
-                                        Connect chart repository
-                                    </NavLink>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="fs-14 flex column mt-20 mb-20">
-                            <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="cb-5 fw-6 cursor mb-8">
-                                Skip and explore Devtron on your own
-                            </NavLink>
-                            <div className="cn-7">Tip: You can return here anytime from the Help menu</div>
-                        </div>
                         </div>
                     </div>
-
                 </div>
             )}
         </div>

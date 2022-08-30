@@ -7,6 +7,8 @@ import './onboardingGuide.scss'
 import PreviewImage from '../../assets/img/ic-preview.png'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { OnboardingGuideProps } from '../common/guidePage/onboarding.type'
+import { OnClickedHandler, POSTHOG_EVENT_ONBOARDING}  from './onboarding.utils'
+
 
 function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClicked }: OnboardingGuideProps) {
     const match = useRouteMatch()
@@ -23,6 +25,16 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
             return `${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`
         }
     }
+
+    const onClickedCICD = () => {
+        if (serverMode === SERVER_MODE.FULL) {
+            OnClickedHandler(POSTHOG_EVENT_ONBOARDING.DEPLOY_CUSTOM_APP_CI_CD)
+        } else {
+            OnClickedHandler(POSTHOG_EVENT_ONBOARDING.INSTALL_CUSTOM_CI_CD)
+        }
+    }
+
+
 
     return (
         <div className="onboarding-container h-100">
@@ -46,6 +58,7 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
                                 href={DOCUMENTATION.PREVIEW_DEVTRON}
                                 rel="noreferrer noopener"
                                 target="_blank"
+                                onClick={() => OnClickedHandler(POSTHOG_EVENT_ONBOARDING.PREVIEW)}
                             >
                                 <img className="onboarding-card__img top-radius-4" src={PreviewImage} />
                                 <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
@@ -76,6 +89,7 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
                                 to={redirectDeployCardToCICD()}
                                 className="no-decor fw-6 cursor cn-9"
                                 activeClassName="active"
+                                onClick={onClickedCICD}
                             >
                                 <img
                                     className="onboarding-card__img top-radius-4"
@@ -101,3 +115,4 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
 }
 
 export default OnboardingGuide
+

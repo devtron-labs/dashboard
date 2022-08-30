@@ -404,3 +404,16 @@ interface UserRole extends ResponseType {
 export function getUserRole(): Promise<UserRole> {
   return get(Routes.USER_CHECK_ROLE);
 }
+
+interface PostHog extends ResponseType {
+    result?: {
+        eventType: string
+        key: string
+        value: string
+        active: boolean
+    }
+}
+
+export function updatePostHogEvent(payload): Promise<PostHog> {
+    return post(`${Routes.TELEMETRY_EVENT}`, payload)
+}

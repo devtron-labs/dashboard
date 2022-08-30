@@ -56,6 +56,14 @@
 
     .deploy-manage__body{
       height: calc(100vh - 300px);
+        .deploy-card:hover{
+          border: 1px solid var(--B500);
+          border-radius: 400;
+        }
+        a:hover{
+          color: var(--N900);
+        }
+
     }
 
     .deploy-manage__abs{
