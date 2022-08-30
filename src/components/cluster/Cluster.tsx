@@ -627,7 +627,7 @@ function ClusterForm({
                 </label>
                 <div className="bearer-token">
                     <ResizableTextarea
-                        className="resizable-textarea__with-max-height"
+                        className="dc__resizable-textarea__with-max-height"
                         name="token"
                         value={config && config.bearer_token ? config.bearer_token : ''}
                         onChange={handleOnChange}
@@ -711,7 +711,7 @@ function ClusterForm({
                     <div className="form__row">
                         <span className="form__label">TLS Key</span>
                         <ResizableTextarea
-                            className="resizable-textarea__with-max-height w-100"
+                            className="dc__resizable-textarea__with-max-height w-100"
                             name="tlsClientKey"
                             value={state.tlsClientKey.value}
                             onChange={handleOnChange}
@@ -720,7 +720,7 @@ function ClusterForm({
                     <div className="form__row">
                         <span className="form__label">TLS Certificate</span>
                         <ResizableTextarea
-                            className="resizable-textarea__with-max-height w-100"
+                            className="dc__resizable-textarea__with-max-height w-100"
                             name="tlsClientCert"
                             value={state.tlsClientCert.value}
                             onChange={handleOnChange}
@@ -887,7 +887,7 @@ function Environment({
                                 }}
                                 checked={ignore}
                             />
-                            <div className="form__label bold">Ignore namespace</div>
+                            <div className="form__label dc__bold">Ignore namespace</div>
                         </div>
                         <div className="form__row form__row--warn">
                             If left empty, you won't be able to add more environments to this cluster

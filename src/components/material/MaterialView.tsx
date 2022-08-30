@@ -93,7 +93,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         return <form key={`${(this.props.material).id}`} className="white-card p-20 mb-16">
             <div className="mb-20 cn-9 fs-16 fw-6 white-card__header--form">
                 {(this.props.material).id ? "Edit Git Repository" : "Add Git Repository"}
-                {(this.props.material).id ? <button type="button" className="transparent collapse-button" tabIndex={0} onClick={this.props.toggleCollapse}>
+                {(this.props.material).id ? <button type="button" className="dc__transparent collapse-button" tabIndex={0} onClick={this.props.toggleCollapse}>
                     <Down className="collapsed__icon icon-dim-20" style={{ transform: 'rotateX(180deg)' }} />
                 </button> : null}
             </div>
@@ -135,7 +135,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             MenuList: (props) => {
                                 return <components.MenuList {...props}>
                                     {props.children}
-                                    <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="border-top dc__react-select__bottom bcn-0 p-10 cb-5 block fw-5 anchor cursor no-decor">
+                                    <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="border-top dc__react-select__bottom bcn-0 p-10 cb-5 dc__block fw-5 anchor cursor no-decor">
                                         <Add className="icon-dim-20 fcb-5 mr-12 dc__vertical-align-bottom " />
                                         Add Git Account
                                     </NavLink>

@@ -86,7 +86,7 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                                             </span>
                                         }
                                     >
-                                        <div className="fs-13 fw-4 lh-28 ellipsis-right">
+                                        <div className="fs-13 fw-4 lh-28 dc__ellipsis-right">
                                             <span className="text-underline-dashed">{variable.name}</span>
                                         </div>
                                     </Tippy>

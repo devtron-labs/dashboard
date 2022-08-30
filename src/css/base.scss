@@ -207,24 +207,19 @@ a:focus {
     color: var(--N900);
 }
 
-.align-right {
-    display: block;
-    margin-left: auto;
-}
-
-.bold {
+.dc__bold {
     font-weight: 700;
 }
 
-.small-text {
+.dc__small-text {
     font-size: 9px;
 }
 
-.float-right {
+.dc__float-right {
     float: right;
 }
 
-.float-left {
+.dc__float-left {
     float: left;
 }
 
@@ -239,7 +234,7 @@ a:focus {
     min-width: 0px;
 }
 
-.transparent {
+.dc__transparent {
     background: transparent;
     border: none;
     padding: 2px;
@@ -283,11 +278,11 @@ a:focus {
 }
 
 // block
-.block {
+.dc__block {
     display: block;
 }
 
-.inline-block {
+.dc__inline-block {
     display: inline-block;
 }
 
@@ -401,13 +396,13 @@ a:focus {
     }
 }
 
-.ellipsis-right {
+.dc__ellipsis-right {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.ellipsis-left {
+.dc__ellipsis-left {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -431,7 +426,7 @@ button.anchor {
     background: transparent;
 }
 
-.git-logo {
+.dc__git-logo {
     width: 24px;
     height: 24px;
     background: url('../assets/icons/git/git.svg');
@@ -456,7 +451,7 @@ button.anchor {
     background-size: 100% 100%;
 }
 
-.loading-dots::after {
+.dc__loading-dots::after {
     animation-name: loadingDots;
     animation-duration: 2s;
     animation-iteration-count: infinite;
@@ -495,7 +490,7 @@ button.anchor {
     }
 }
 
-.app-summary__icon {
+.dc__app-summary__icon {
     flex-shrink: 0;
 }
 
@@ -503,7 +498,7 @@ button.anchor {
     display: flex;
     align-items: center;
 
-    .app-summary__icon {
+    .dc__app-summary__icon {
         position: unset;
         margin: 0 4px 0 10px;
     }
@@ -649,12 +644,12 @@ button.anchor {
     margin: auto;
 }
 
-.empty__img {
+.dc__empty__img {
     display: block;
     margin: auto;
 }
 
-.empty__title {
+.dc__empty__title {
     max-width: 250px;
     font-size: 16px;
     font-weight: normal;
@@ -667,7 +662,7 @@ button.anchor {
     margin-bottom: 4px;
 }
 
-.empty__message {
+.dc__empty__message {
     font-size: 12px;
     font-weight: normal;
     font-style: normal;
@@ -680,31 +675,18 @@ button.anchor {
     margin-bottom: 20px;
 }
 
-.round-button--empty {
-    display: block;
-    width: 142px;
-    height: 40px;
-    margin: auto;
-    border: none;
-}
-
-.clear-buttons {
-    display: flex;
-    justify-content: center;
-}
-
-.empty-state__no-deploymentgroup {
+.dc__empty-state__no-deploymentgroup {
     min-height: calc(100vh - 82px);
     padding-top: 100px;
 }
 
-.devtron-tag__container {
+.dc__devtron-tag__container {
     padding: 6px 0px;
     display: flex;
     flex-wrap: wrap;
 }
 
-.devtron-tag {
+.dc__devtron-tag {
     border-radius: 4px;
     border: solid 1px var(--N200);
     padding: 2px 8px;
@@ -723,8 +705,7 @@ button.anchor {
     background-color: var(--N000);
 }
 
-//TODO:
-.ses_config-table__tag {
+.dc__ses_config-table__tag {
     border-radius: 2px;
     padding: 2px 8px;
     font-size: 11px;
@@ -739,7 +720,7 @@ button.anchor {
     background-image: linear-gradient(to bottom, #f0f7ff, #f0f7ff);
 }
 
-.saved-filter__clear-btn--dark {
+.dc__saved-filter__clear-btn--dark {
     height: 36px;
     background-color: var(--white);
     color: var(--B500);
@@ -750,7 +731,7 @@ button.anchor {
     padding: 6px 12px;
 }
 
-.saved-filter__clear-btn--dark:hover {
+.dc__saved-filter__clear-btn--dark:hover {
     background-color: var(--B500);
     color: var(--white);
 }
@@ -1004,7 +985,7 @@ button.anchor {
     }
 }
 
-.app-summary__icon {
+.dc__app-summary__icon {
     @include app-status-icon(transparent);
 
     &.icon-dim-20 {
@@ -1024,7 +1005,7 @@ button.anchor {
     }
 }
 
-.app-update-toast {
+.dc__app-update-toast {
     font-size: 14px;
 
     .info {
@@ -1091,7 +1072,7 @@ button.anchor {
     background-color: var(--N000);
 }
 
-.devtron-breadcrumb {
+.dc__devtron-breadcrumb {
     font-size: 12px;
     line-height: 1.34;
     color: var(--N700);
@@ -1158,7 +1139,7 @@ button.anchor {
     }
 }
 
-.resizable-textarea {
+.dc__resizable-textarea {
     resize: none;
     border-radius: 4px;
     outline: none;
@@ -1170,16 +1151,16 @@ button.anchor {
     }
 }
 
-.resizable-textarea__with-max-height {
+.dc__resizable-textarea__with-max-height {
     max-height: 100px;
     overflow: auto;
 }
 
-.app-commit {
+.dc__app-commit {
     display: flex;
 }
 
-.app-commit__hash {
+.dc__app-commit__hash {
     font-size: 12px;
     border-radius: 4px;
     background-color: var(--N100);
@@ -1196,7 +1177,7 @@ button.anchor {
     }
 }
 
-.app-commit__hash .stroke-color {
+.dc__app-commit__hash .stroke-color {
     stroke: var(--N500);
 }
 
@@ -1271,14 +1252,6 @@ button.anchor {
 
 .grayscale {
     filter: grayscale(1);
-}
-
-.capitalize {
-    text-transform: lowercase;
-
-    &::first-letter {
-        text-transform: uppercase;
-    }
 }
 
 .no-decor {
@@ -1554,7 +1527,7 @@ button.anchor {
     align-items: baseline !important;
 }
 
-
+// Border
 .border {
     border: 1px solid var(--N200);
 }
@@ -1578,6 +1551,7 @@ button.anchor {
 .border-right-n1 {
     border-right: solid 1px var(--N100);
 }
+
 .border-left {
     border-left: solid 1px var(--N200);
 }
@@ -1594,6 +1568,7 @@ button.anchor {
     border: solid 1px #ffcb5d;
 }
 
+// Text alignment
 .align-start {
     align-items: flex-start !important;
 }
@@ -1608,6 +1583,11 @@ button.anchor {
 
 .align-right {
     text-align: right;
+}
+
+.align-right {
+  display: block;
+  margin-left: auto;
 }
 
 // Line height
@@ -1894,6 +1874,14 @@ textarea {
 
 .dc__uppercase {
   text-transform: uppercase;
+}
+
+.capitalize {
+  text-transform: lowercase;
+
+  &::first-letter {
+      text-transform: uppercase;
+  }
 }
 
 .dc__no-text-transform {

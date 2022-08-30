@@ -145,7 +145,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                 <div className="modal__body modal__body--w-600 modal__body--p-0 no-top-radius mt-0">
                     <div className="modal__header m-24">
                         <h1 className="modal__title">Configure SMTP</h1>
-                        <button type="button" className="transparent" onClick={this.props.closeSMTPConfigModal}>
+                        <button type="button" className="dc__transparent" onClick={this.props.closeSMTPConfigModal}>
                             <Close className="icon-dim-24" />
                         </button>
                     </div>

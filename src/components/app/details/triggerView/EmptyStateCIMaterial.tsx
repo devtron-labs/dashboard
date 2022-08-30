@@ -28,7 +28,7 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
     if (this.props.isRepoError) {
       return {
         img: <img src={ErrorImage} alt="no commits found" className="empty-state__img--ci-material" />,
-        title: <h1 className="empty__title">{this.props.repoErrorMsg}</h1>,
+        title: <h1 className="dc__empty__title">{this.props.repoErrorMsg}</h1>,
         subtitle: <a href={`${this.props.repoUrl}`} rel="noopener noreferrer" target="_blank" className="">{this.props.repoUrl}</a>,
         cta: null
       }
@@ -36,7 +36,7 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
     else if (this.props.isBranchError) {
       return {
         img: <img src={ErrorImage} alt="no commits found" className="empty-state__img--ci-material" />,
-        title: <h1 className="empty__title">{this.props.branchErrorMsg}</h1>,
+        title: <h1 className="dc__empty__title">{this.props.branchErrorMsg}</h1>,
         subtitle: <a href={this.props.repoUrl} rel="noopener noreferrer" target="_blank" className="">{this.props.repoUrl}</a>,
         cta: null,
       }
@@ -44,7 +44,7 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
     else if (this.props.noSearchResults)  {
       return {
         img: <img src={NoResults} alt="no commits found" className="empty-state__img--ci-material" />,
-        title: <h1 className="empty__title" style={{wordBreak: 'break-all'}}>{this.props.noSearchResultsMsg}</h1>,
+        title: <h1 className="dc__empty__title" style={{wordBreak: 'break-all'}}>{this.props.noSearchResultsMsg}</h1>,
         subtitle: `Please check the commit hash and try again. Make sure you enter the complete commit hash.`,
         cta: <button type="button" className="cta ghosted small" onClick={this.props.clearSearch}>Clear search</button>,
       }
@@ -52,7 +52,7 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
     else if (!this.props.anyCommit) {
       return {
         img: <img src={EmptyStateImage} alt="no commits found" className="empty-state__img--ci-material" />,
-        title: <h1 className="empty__title">No material found</h1>,
+        title: <h1 className="dc__empty__title">No material found</h1>,
         subtitle: `We could not find any matching data for provided configurations`,
         cta: null,
       }
@@ -60,7 +60,7 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
     else {
       return {
         img: <img src={ErrorImage} alt="no commits found" className="empty-state__img--ci-material" />,
-        title: <h1 className="empty__title">Failed to fetch</h1>,
+        title: <h1 className="dc__empty__title">Failed to fetch</h1>,
         subtitle: `Sorry! We could not fetch available materials. Please try again.`,
         cta: <button type="button" className="cta ghosted small" onClick={this.props.onRetry}>Retry</button>,
       }

@@ -1126,7 +1126,7 @@ export const ProgressStatus: React.FC<{
                                                     <td valign="top">
                                                         <div className="kind-name">
                                                             <div>{nodeDetails.kind}/</div>
-                                                            <div className="ellipsis-left">{nodeDetails.name}</div>
+                                                            <div className="dc__ellipsis-left">{nodeDetails.name}</div>
                                                         </div>
                                                     </td>
                                                     <td

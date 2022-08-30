@@ -107,7 +107,7 @@ function ChartHeaderFilter({
             <div className="pb-12 pl-12 pr-12 pt-16">
                 <form
                     onSubmit={(e) => handleFilterChanges(e, 'search')}
-                    className="bcn-0 dc__position-rel block en-2 bw-1 br-4 h-36 w-100 dc__position-rel"
+                    className="bcn-0 dc__position-rel dc__block en-2 bw-1 br-4 h-36 w-100 dc__position-rel"
                 >
                     <Search className="search__icon icon-dim-18" />
                     <input

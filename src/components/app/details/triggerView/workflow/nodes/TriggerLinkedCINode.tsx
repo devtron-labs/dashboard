@@ -65,7 +65,7 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
                 <div className="workflow-node__full-width-minus-Icon">
                     <span className="workflow-node__text-light">Build: Linked</span>
                     <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.title}>
-                        <div className="ellipsis-left">{this.props.title}</div>
+                        <div className="dc__ellipsis-left">{this.props.title}</div>
                     </Tippy>
                 </div>
                 <div className="workflow-node__icon-common ml-8 workflow-node__CI-linked-icon"/>

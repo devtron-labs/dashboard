@@ -596,7 +596,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 mode="yaml"
                                 onChange={value => { setTextRef(value) }}>
                                 <CodeEditor.Header>
-                                    <span className="bold">values.yaml</span>
+                                    <span className="dc__bold">values.yaml</span>
                                 </CodeEditor.Header>
                                 {hasChartChanged() &&
                                     <CodeEditor.Information

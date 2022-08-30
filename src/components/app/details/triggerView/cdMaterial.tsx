@@ -114,7 +114,7 @@ export class CDMaterial extends Component<CDMaterialProps> {
   }
 
   renderMaterial() {
-    let tabClasses = "transparent tab-list__tab-link tab-list__tab-link--vulnerability";
+    let tabClasses = "dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability";
     return this.props.material.map((mat, index) => {
       let classes = `material-history material-history--cd ${mat.isSelected ? 'material-history-selected' : ''}`;
       return <div key={index} className={classes} >
@@ -123,10 +123,10 @@ export class CDMaterial extends Component<CDMaterialProps> {
 
         <div className="material-history__top" style={{ 'cursor': `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
           onClick={(event) => { event.stopPropagation(); if (!mat.vulnerable) this.props.selectImage(index, this.props.materialType) }}>
-          <div>  
+          <div>
            <div className="commit-hash commit-hash--docker"><img src={docker} alt="" className="commit-hash__icon" />{mat.image}</div>
            {this.props.stageType !== 'CD' && mat.latest  ? <span className="last-deployed-status">Last Run</span> : null}
-         </div>  
+         </div>
           {this.props.materialType === "none" ? null : <div className="material-history__info">
             <span className="trigger-modal__small-text">Deployed at:</span> <span>{mat.deployedTime}</span>
           </div>}
@@ -173,7 +173,7 @@ export class CDMaterial extends Component<CDMaterialProps> {
     return <>
       <div className="trigger-modal__header">
         <h1 className="modal__title">{header}</h1>
-        <button type="button" className="transparent" onClick={(e) => this.props.closeCDModal()}><img alt="close" src={close} /></button>
+        <button type="button" className="dc__transparent" onClick={(e) => this.props.closeCDModal()}><img alt="close" src={close} /></button>
       </div>
       <div className="trigger-modal__body">
         <div className="material-list__title">Select Image</div>
@@ -194,13 +194,13 @@ export class CDMaterial extends Component<CDMaterialProps> {
   }
 
   render() {
-    let header = getCDModalHeader(this.props.stageType, this.props.envName);    
+    let header = getCDModalHeader(this.props.stageType, this.props.envName);
     return <VisibleModal className="" close={this.props.closeCDModal}>
       <div className="modal-body--cd-material" onClick={(e) => e.stopPropagation()}>
         {this.props.material.length > 0 ? this.renderCDModal()
           : <><div className="trigger-modal__header">
             <h1 className="modal__title">{header}</h1>
-            <button type="button" className="transparent" onClick={(e) => this.props.closeCDModal()}><img alt="close" src={close} /></button>
+            <button type="button" className="dc__transparent" onClick={(e) => this.props.closeCDModal()}><img alt="close" src={close} /></button>
           </div>
             <EmptyStateCdMaterial materialType={this.props.materialType} />
           </>}

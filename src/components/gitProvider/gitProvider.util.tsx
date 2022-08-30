@@ -31,7 +31,7 @@ export function Option(props) {
     const { selectOption, data } = props;
     const style = { height: '16px', width: '16px', flex: '0 0 16px' }
     const onClick = (e) => selectOption(data);
-    return <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
+    return <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'dc__transparent' }}>
         {props.isSelected ? (
             <Check onClick={onClick} className="mr-8 icon-dim-16" style={style} />
         ) : (
@@ -45,4 +45,4 @@ export function DropdownIndicator(props) {
     return <components.DropdownIndicator {...props}>
         <ArrowDown className="icon-dim-20 icon-n5" />
     </components.DropdownIndicator>
-} 
+}

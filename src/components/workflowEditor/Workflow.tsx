@@ -227,13 +227,13 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 <div className="workflow__header">
                     <span className="workflow__name">{this.props.name}</span>
                     <Link to={this.props.openEditWorkflow(null, this.props.id)}>
-                        <button type="button" className="transparent">
+                        <button type="button" className="dc__transparent">
                             <img src={edit} alt="edit" className="icon-dim-18" />
                         </button>
                     </Link>
                     <button
                         type="button"
-                        className="align-right transparent"
+                        className="align-right dc__transparent"
                         onClick={(e) => this.props.showDeleteDialog(this.props.id)}
                     >
                         <img src={trash} alt="delete" />

@@ -216,8 +216,8 @@ function ChartDeploymentHistory({
                                         gridColumnGap: '12px',
                                     }}
                                 >
-                                    <div className="app-summary__icon icon-dim-22 succeeded"></div>
-                                    <div className="flex column left ellipsis-right">
+                                    <div className="dc__app-summary__icon icon-dim-22 succeeded"></div>
+                                    <div className="flex column left dc__ellipsis-right">
                                         <div className="cn-9 fs-14">
                                             {moment(new Date(deployment.deployedAt.seconds * 1000)).format(
                                                 Moment12HourFormat,
@@ -225,7 +225,7 @@ function ChartDeploymentHistory({
                                         </div>
                                         <div className="flex left cn-7 fs-12">
                                             {deployment.dockerImages && (
-                                                <div className="app-commit__hash app-commit__hash--no-bg">
+                                                <div className="dc__app-commit__hash app-commit__hash--no-bg">
                                                     <img src={docker} className="commit-hash__icon grayscale" />
                                                     <span className="ml-3">
                                                         {deployment.dockerImages[0].split(':')[1] ||
@@ -440,7 +440,7 @@ function ChartDeploymentHistory({
                             </time>
                             {deployment.dockerImages.slice(0, 3).map((dockerImage, index) => {
                                 return (
-                                    <div key={index} className="app-commit__hash ml-10">
+                                    <div key={index} className="dc__app-commit__hash ml-10">
                                         <Tippy arrow={true} className="default-tt" content={dockerImage}>
                                             <span>
                                                 <img src={docker} className="commit-hash__icon grayscale" />

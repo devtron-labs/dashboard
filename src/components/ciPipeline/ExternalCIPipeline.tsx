@@ -237,7 +237,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
         return <>
             <div className="p-20 flex flex-align-center flex-justify">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">Create external build pipeline</h2>
-                <button type="button" className="transparent flex icon-dim-24" onClick={() => {
+                <button type="button" className="dc__transparent flex icon-dim-24" onClick={() => {
                               this.props.close();
                           }}>
                     <Close className="icon-dim-24" />

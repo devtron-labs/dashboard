@@ -692,7 +692,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <h2 className="fs-16 fw-6 lh-1-43 m-0">{title}</h2>
                     <button
                         type="button"
-                        className="transparent flex icon-dim-24"
+                        className="dc__transparent flex icon-dim-24"
                         onClick={() => {
                             this.props.close()
                         }}
@@ -755,14 +755,14 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 <span className="deployment-strategy__controls">
                                     <button
                                         type="button"
-                                        className="transparent"
+                                        className="dc__transparent"
                                         onClick={(event) => this.toggleStrategy(strategy.deploymentTemplate)}
                                     >
                                         <img src={settings} alt="config" className="icon-dim-20" />
                                     </button>
                                     <button
                                         type="button"
-                                        className="transparent"
+                                        className="dc__transparent"
                                         onClick={(event) => {
                                             event.stopPropagation()
                                             this.deleteStrategy(strategy.deploymentTemplate)
@@ -812,7 +812,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         className="delete-stage-icon cursor"
                         onClick={(e) => this.deleteStage(key)}
                     />
-                    <label className="form__label form__label--sentence bold">
+                    <label className="form__label form__label--sentence dc__bold">
                         When do you want this stage to trigger?
                     </label>
                     <RadioGroup
@@ -827,7 +827,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     </RadioGroup>
                 </div>
                 <div className="form__row">
-                    <label className="form__label form__label--sentence bold">Select Configmap and Secrets</label>
+                    <label className="form__label form__label--sentence dc__bold">Select Configmap and Secrets</label>
                     <ReactSelect
                         menuPortalTarget={this.state.isAdvanced ? null : document.getElementById('visible-modal')}
                         closeMenuOnScroll={true}
@@ -923,7 +923,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     renderTriggerType() {
         return (
             <div className="form__row">
-                <label className="form__label form__label--sentence bold">
+                <label className="form__label form__label--sentence dc__bold">
                     When do you want the pipeline to execute?*
                 </label>
                 <RadioGroup

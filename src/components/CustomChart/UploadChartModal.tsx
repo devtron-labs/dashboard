@@ -96,8 +96,8 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                     <div className="bcb-1 eb-2 p-10 br-4 flexbox cn-9 fs-13 mb-20">
                         <Info className="mr-8 ml-4 icon-dim-20" />
                         <span className="lh-20">
-                            <span className="inline-block fs-13 fw-6">{chartDetail.message}</span>
-                            <span className="inline-block fs-13 fw-4">
+                            <span className="dc__inline-block fs-13 fw-6">{chartDetail.message}</span>
+                            <span className="dc__inline-block fs-13 fw-4">
                                 The version ({chartDetail.chartVersion}) you’re uploading will be added to the existing
                                 chart.
                             </span>

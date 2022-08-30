@@ -101,7 +101,7 @@ export default function ConfigMapOverrides({ parentState, setParentState, ...pro
 
     return (
         <section className="config-map-overrides">
-            <label className="form__label bold">ConfigMaps</label>
+            <label className="form__label dc__bold">ConfigMaps</label>
             <ConfigMapContext.Provider value={{ configmapList, id: configmapList.id, reload }}>
                 {configData.map(({ name, defaultData, data }) => (
                     <ListComponent
@@ -586,7 +586,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                     ) : null}
                     {!external && (
                         <div className="flex left mb-16">
-                            <b className="mr-5 bold">Data*</b>
+                            <b className="mr-5 dc__bold">Data*</b>
                             <RadioGroup
                                 className="gui-yaml-switch"
                                 name="yaml-mode"
@@ -654,7 +654,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                         </>
                     )}
                     {state.duplicate && !yamlMode && (
-                        <span className="bold anchor pointer" onClick={(e) => dispatch({ type: 'add-param' })}>
+                        <span className="dc__bold anchor pointer" onClick={(e) => dispatch({ type: 'add-param' })}>
                             +Add params
                         </span>
                     )}

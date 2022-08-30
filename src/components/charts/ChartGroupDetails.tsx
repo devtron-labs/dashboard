@@ -218,7 +218,7 @@ export default function ChartGroupDetails() {
 
                                         }*/
                                         onClick={handleAdvancedChart}
-                                        className="cta cancel ellipsis-right w-100"
+                                        className="cta cancel dc__ellipsis-right w-100"
                                     >
                                         Advanced Options
                                     </button>
@@ -240,7 +240,7 @@ export default function ChartGroupDetails() {
                                         type="button"
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
                                         onClick={() => toggleDeployModal(true)}
-                                        className="cta ellipsis-right w-100"
+                                        className="cta dc__ellipsis-right w-100"
                                     >
                                         {loading ? <Progressing /> : 'Deploy to ...'}
                                     </button>

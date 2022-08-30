@@ -157,7 +157,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">Create linked build pipeline</h2>
                 <button
                     type="button"
-                    className="transparent flex icon-dim-24"
+                    className="dc__transparent flex icon-dim-24"
                     onClick={() => {
                         this.props.close()
                     }}

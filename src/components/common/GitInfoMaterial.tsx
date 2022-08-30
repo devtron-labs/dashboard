@@ -52,7 +52,7 @@ export default function GitInfoMaterial({
             <div className="trigger-modal__header">
                 <h1 className="modal__title flex left fs-16">
                     {showWebhookModal ? (
-                        <button type="button" className="transparent flex" onClick={hideWebhookModal}>
+                        <button type="button" className="dc__transparent flex" onClick={hideWebhookModal}>
                             <Back className="mr-16" />
                         </button>
                     ) : null}
@@ -67,7 +67,7 @@ export default function GitInfoMaterial({
                         </>
                     ) : null}
                 </h1>
-                <button type="button" className="transparent" onClick={onClickCloseButton}>
+                <button type="button" className="dc__transparent" onClick={onClickCloseButton}>
                     <Close />
                 </button>
             </div>
@@ -104,7 +104,7 @@ export default function GitInfoMaterial({
                 onClick={material.regex ? showBranchRegexModal : noop}
             >
                 <BranchFixed className=" mr-8 icon-color-n9" />
-                {showWebhookModal ? 'Select commit to build' : <div className="ellipsis-right"> {material?.value}</div>}
+                {showWebhookModal ? 'Select commit to build' : <div className="dc__ellipsis-right"> {material?.value}</div>}
                 {material.regex && (
                     <Tippy
                         className="default-tt"
@@ -113,7 +113,7 @@ export default function GitInfoMaterial({
                         content={'Change branch'}
                         interactive={true}
                     >
-                        <button type="button" className="transparent flexbox">
+                        <button type="button" className="dc__transparent flexbox">
                             <Edit className="icon-dim-16" />
                         </button>
                     </Tippy>

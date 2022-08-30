@@ -107,7 +107,7 @@
     letter-spacing: 0.005em;
 }
 
-.info-block .small-text {
+.info-block .dc__small-text {
     width: 100%;
     font-size: 13px;
     color: #262626;
@@ -117,7 +117,7 @@
     letter-spacing: 0.005em;
 }
 
-.info-block .small-text a {
+.info-block .dc__small-text a {
     display: block;
 }
 
@@ -868,7 +868,7 @@ table.pod__table td:last-child {
                     font-size: 12px;
                 }
 
-                .app-summary__icon {
+                .dc__app-summary__icon {
                     width: 32px;
                     height: 32px;
                     background-size: cover;
@@ -1011,7 +1011,7 @@ table.pod__table td:last-child {
             justify-content: space-between;
             border-radius: 4px;
 
-            span.ellipsis-left {
+            span.dc__ellipsis-left {
                 border-radius: 4px;
                 padding: 8px 10px 8px 12px;
                 font-size: 12px;
@@ -1375,7 +1375,7 @@ table.pod__table td:last-child {
             grid-template-columns: auto 1fr;
             grid-template-rows: 1fr;
 
-            .ellipsis-left {
+            .dc__ellipsis-left {
                 text-align: left;
             }
         }
@@ -1765,7 +1765,7 @@ table.resource-tree {
 }
 
 .source-info-container{
-  .app-summary__icon{
+  .dc__app-summary__icon{
       &.healthy {
         background-size: contain, contain;
         background: url(../../../../assets/icons/appstatus/ic-heart-green.svg), transparent;

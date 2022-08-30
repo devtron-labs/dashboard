@@ -348,7 +348,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
             return;
         }
         event.data.result.forEach((log: string) => subject.publish(log));
-        
+
         if (event.data.readyState) {
             setReadyState(event.data.readyState);
         }
@@ -374,7 +374,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
             return
         }
         let pods = getPods();
-        
+
         workerRef.current = new WebWorker(sseWorker);
         workerRef.current['addEventListener' as any]('message', handleMessage);
         workerRef.current['postMessage' as any]({
@@ -510,11 +510,11 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
                                 }`}
                         >
                             {readyState === 0 && (
-                                <div className="readyState loading-dots" style={{ color: 'orange' }}>
+                                <div className="readyState dc__loading-dots" style={{ color: 'orange' }}>
                                     Connecting
                                 </div>
                             )}
-                            {readyState === 1 && <div className="readyState loading-dots cg-5">Connected</div>}
+                            {readyState === 1 && <div className="readyState dc__loading-dots cg-5">Connected</div>}
                         </div>
                     </div>}
                 </>

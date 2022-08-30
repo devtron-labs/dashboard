@@ -347,16 +347,16 @@
     font-weight: 600;
 }
 
-.app-list__row:hover .app-commit__hash {
+.app-list__row:hover .dc__app-commit__hash {
     background-color: var(--N000);
     color: var(--N700);
 }
 
-.app-list__row .app-commit__hash:hover {
+.app-list__row .dc__app-commit__hash:hover {
     color: var(--B500);
 }
 
-.app-commit__hash:hover .stroke-color {
+.dc__app-commit__hash:hover .stroke-color {
     stroke: var(--B500);
 }
 

@@ -63,7 +63,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                     <div className="w-90 flexbox">
                         {selectedChartValue ? (
                             <>
-                                <div className="ellipsis-right">{selectedChartValue.name}</div>&nbsp;
+                                <div className="dc__ellipsis-right">{selectedChartValue.name}</div>&nbsp;
                                 {!this.props.hideVersionFromLabel && selectedChartValue.chartVersion && (
                                     <span>({selectedChartValue.chartVersion})</span>
                                 )}
@@ -81,7 +81,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                                   <Select.Option key={chartValue.id} value={chartValue}>
                                       <div>
                                           <div className="w-100 flexbox">
-                                              <div className="ellipsis-right">{chartValue.name}</div>&nbsp;(
+                                              <div className="dc__ellipsis-right">{chartValue.name}</div>&nbsp;(
                                               {chartValue.chartVersion})
                                           </div>
                                           <div className="option-with-subtitle__subtitle">Deployed on:{`${env}`}</div>
@@ -97,7 +97,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                               return (
                                   <Select.Option key={chartValue.id} value={chartValue}>
                                       <div className="w-100 flexbox">
-                                          <div className="ellipsis-right">{chartValue.name}</div>&nbsp;(
+                                          <div className="dc__ellipsis-right">{chartValue.name}</div>&nbsp;(
                                           {chartValue.chartVersion})
                                       </div>
                                   </Select.Option>
@@ -122,7 +122,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                               return (
                                   <Select.Option key={chartValue.id} value={chartValue}>
                                       <div className="w-100 flexbox">
-                                          <div className="ellipsis-right">{chartValue.name}</div>&nbsp;(
+                                          <div className="dc__ellipsis-right">{chartValue.name}</div>&nbsp;(
                                           {chartValue.chartVersion})
                                       </div>
                                   </Select.Option>

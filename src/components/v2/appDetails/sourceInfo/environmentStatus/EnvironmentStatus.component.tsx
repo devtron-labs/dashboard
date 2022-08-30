@@ -50,7 +50,7 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                             <figure
                                 className={`${
                                     showHibernationStatusMessage ? 'hibernating' : status.toLowerCase()
-                                } app-summary__icon ml-8 icon-dim-20`}
+                                } dc__app-summary__icon ml-8 icon-dim-20`}
                             ></figure>
                         </div>
                         <div onClick={() => setShowAppStatusDetail(true)}>
@@ -80,7 +80,7 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                             <figure
                                 className={`${appDetails.additionalData[
                                     'status'
-                                ].toLowerCase()} app-summary__icon ml-8 icon-dim-20`}
+                                ].toLowerCase()} dc__app-summary__icon ml-8 icon-dim-20`}
                             ></figure>
                         </div>
                         <div className="lh-1-33 cn-9 flex left">

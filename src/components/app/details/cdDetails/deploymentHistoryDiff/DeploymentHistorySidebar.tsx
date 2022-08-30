@@ -26,7 +26,7 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDeploymentHistoryL
                 <NavLink
                     to={configURL}
                     activeClassName="active"
-                    className="historical-name inline-block no-decor pt-12 pb-12 pl-16 pr-12 fs-13 cn-9 configuration-link w-280"
+                    className="historical-name dc__inline-block no-decor pt-12 pb-12 pl-16 pr-12 fs-13 cn-9 configuration-link w-280"
                 >
                     {currentComponent.DISPLAY_NAME + childComponentDetail}
                 </NavLink>

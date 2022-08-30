@@ -396,16 +396,16 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                 },
               })
             }}>
-              <td className="security__data ellipsis-right">{scan.name}</td>
-              <td className="security__data table__cell--type ellipsis-right">{scan.type}</td>
-              <td className="security__data ellipsis-right">
+              <td className="security__data dc__ellipsis-right">{scan.name}</td>
+              <td className="security__data table__cell--type dc__ellipsis-right">{scan.type}</td>
+              <td className="security__data dc__ellipsis-right">
                 {total === 0 ? <span className="fill-pass">Passed</span> : null}
                 {scan.severityCount.critical !== 0 ? <span className="fill-critical">{scan.severityCount.critical} Critical</span> : null}
                 {scan.severityCount.critical === 0 && scan.severityCount.moderate !== 0 ? <span className="fill-moderate">{scan.severityCount.moderate} Moderate</span> : null}
                 {scan.severityCount.critical === 0 && scan.severityCount.moderate === 0 && scan.severityCount.low !== 0 ? <span className="fill-low">{scan.severityCount.low} Low</span> : null}
               </td>
               <td className="security__data">{scan.environment}</td>
-              <td className="security__data table__cell--time ellipsis-right">{scan.lastExecution}</td>
+              <td className="security__data table__cell--time dc__ellipsis-right">{scan.lastExecution}</td>
               <td className="security__data"><Arrow className="table__row-icon align-right icon-dim-20 fcn-6" /></td>
             </tr>
           })}

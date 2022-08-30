@@ -399,7 +399,7 @@ export class Command extends Component<CommandProps, CommandState>  {
                                     className={this.state.focussedArgument === index ? "pl-20 pr-20 pt-6 pb-6 flexbox suggested-arguments__arg bcn-1 cursor" : "pl-20 pr-20 pt-6 pb-6 flexbox suggested-arguments__arg bcn-0 cursor"}>
                                     <span>{a.value}</span>
                                     <span className="ff-monospace command__control ml-20"
-                                        style={{ display: this.state.focussedArgument === index ? 'inline-block' : 'none' }}>
+                                        style={{ display: this.state.focussedArgument === index ? 'dc__inline-block' : 'none' }}>
                                         <ArrowRight className="icon-dim-16 dc__vertical-align-middle mr-5" /><span>expand</span>
                                     </span>
                                 </button>
@@ -425,7 +425,7 @@ export class Command extends Component<CommandProps, CommandState>  {
 
     render() {
         if (this.props.isCommandBarActive) {
-            return <div className="transparent-div" onKeyDown={this.disableTab}
+            return <div className="dc__transparent-div" onKeyDown={this.disableTab}
                 onClick={() => {
                     ReactGA.event({
                         category: 'Command Bar',

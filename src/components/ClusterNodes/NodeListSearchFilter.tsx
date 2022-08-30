@@ -124,7 +124,7 @@ export default function NodeListSearchFliter({
                             <input
                                 autoComplete="off"
                                 type="text"
-                                className="transparent flex-1 outline-none"
+                                className="dc__transparent flex-1 outline-none"
                                 autoFocus
                                 placeholder={
                                     selectedSearchTextType === 'name'
@@ -142,7 +142,7 @@ export default function NodeListSearchFliter({
                 </div>
                 {openFilterPopup && (
                     <>
-                        <div className="transparent-div" onClick={toggleSelectPopup}></div>
+                        <div className="dc__transparent-div" onClick={toggleSelectPopup}></div>
                         {!selectedSearchTextType && (
                             <div className="search-popup w-100 bcn-0 dc__position-abs  br-4 en-2 bw-1">
                                 <div className="search-title pt-4 pb-4 pl-10 pr-10">Search by</div>

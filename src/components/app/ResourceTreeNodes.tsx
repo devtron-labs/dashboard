@@ -73,11 +73,11 @@ export const StatusFilterButton: React.FC<{ status: string; count?: number }> = 
                 style={{
                     height: '32px',
                     border: (!statusFilter && status.toLowerCase() === 'all') || ignoreCaseCompare(statusFilter, status) ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                    background: (!statusFilter && status.toLowerCase() === 'all') || ignoreCaseCompare(statusFilter, status) ? 'var(--B100)' : 'transparent',
+                    background: (!statusFilter && status.toLowerCase() === 'all') || ignoreCaseCompare(statusFilter, status) ? 'var(--B100)' : 'dc__transparent',
                 }}
                 className="pointer ml-8 br-4 flex left p-6"
             >
-                {status !== 'All' && <div className={`app-summary__icon icon-dim-16 mr-6 ${status.toLowerCase()} ${status.toLowerCase()}--node`} style={{ zIndex: 'unset' }} />}
+                {status !== 'All' && <div className={`dc__app-summary__icon icon-dim-16 mr-6 ${status.toLowerCase()} ${status.toLowerCase()}--node`} style={{ zIndex: 'unset' }} />}
                 <span className="capitalize">{count || status}</span>
             </div>
         </Tippy>

@@ -43,7 +43,7 @@ function BranchRegexModal({
                 <h1 className="modal__title flex left fs-16">{title}</h1>
                 <button
                     type="button"
-                    className="transparent"
+                    className="dc__transparent"
                     onClick={() => {
                         close()
                     }}

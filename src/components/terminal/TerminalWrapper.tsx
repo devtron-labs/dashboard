@@ -274,13 +274,13 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         return <AutoSizer>
             {({ height, width }) => <div className={"terminal-view pt-24"} style={{ overflow: 'auto' }}>
                 <p style={{ zIndex: 11, textTransform: 'capitalize' }} className={statusBarClasses} >
-                    <span className={this.props.socketConnection === 'CONNECTING' ? "loading-dots" : ''}>
+                    <span className={this.props.socketConnection === 'CONNECTING' ? "dc__loading-dots" : ''}>
                         {this.props.socketConnection.toLowerCase()}
                     </span>
                     {this.props.socketConnection === 'DISCONNECTED' && <>
                         <span>.&nbsp;</span>
                         <button type="button" onClick={(e) => { this.props.setSocketConnection('CONNECTING'); this.props.setIsReconnection(true); }}
-                            className="cursor transparent inline-block"
+                            className="cursor dc__transparent dc__inline-block"
                             style={{ textDecoration: 'underline' }}>Resume
                     </button>
                     </>}
@@ -296,7 +296,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                     {this.props.socketConnection}
                 </p>}
                 <CopyToast showCopyToast={this.state.popupText} />
-            </div>}        
+            </div>}
         </AutoSizer>
     }
 }

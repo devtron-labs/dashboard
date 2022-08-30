@@ -116,7 +116,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         value = cleanKubeManifest(value);
         defaultValue = cleanKubeManifest(defaultValue);
     }
-    
+
     const editorRef = useRef(null)
     const monacoRef = useRef(null)
     const { width, height: windowHeight } = useWindowSize()
@@ -157,7 +157,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             'editor.background': '#0B0F22',
         }
     });
-    
+
     function editorDidMount(editor, monaco) {
         if (
             mode === 'yaml' &&
@@ -167,7 +167,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         ) {
             editor.getModel().updateOptions({ tabSize: 2 });
         }
-        
+
         editorRef.current = editor
         monacoRef.current = monaco
     }
@@ -299,7 +299,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                             editorDidMount={editorDidMount}
                             height={height}
                             width="100%"
-                            
+
                         />
                     }
                 </>
@@ -328,9 +328,9 @@ function ThemeChanger({ }) {
     ]
     return (
         <Select onChange={handleChangeTheme} rootClassName="select-theme" value={state.theme} disabled={readOnly}>
-            <Select.Button><span className="ellipsis-right">{state.theme}</span></Select.Button>
+            <Select.Button><span className="dc__ellipsis-right">{state.theme}</span></Select.Button>
             <Select.Search placeholder="select theme" />
-            {themes.map(theme => <Select.Option name={theme} key={theme} value={theme}><span className="ellipsis-right">{theme}</span></Select.Option>)}
+            {themes.map(theme => <Select.Option name={theme} key={theme} value={theme}><span className="dc__ellipsis-right">{theme}</span></Select.Option>)}
         </Select>
     )
 }

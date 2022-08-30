@@ -409,7 +409,7 @@ export const ActiveReadmeColumn = ({
 const formatOptionLabel = (option: { label: string; value: number; info: string; version?: string }): JSX.Element => {
     return (
         <div className="flex left column">
-            <span className="w-100 ellipsis-right">
+            <span className="w-100 dc__ellipsis-right">
                 {option.label}&nbsp;{option.version && `(${option.version})`}
             </span>
             {option.info && <small className="cn-6">{option.info}</small>}
@@ -841,13 +841,13 @@ export const ChartValuesEditor = ({
                 )}
                 {!manifestView && showInfoText && hasChartChanged && (
                     <CodeEditor.Warning
-                        className="ellipsis-right"
+                        className="dc__ellipsis-right"
                         text={`Please ensure that the values are compatible with "${repoChartValue.chartRepoName}/${repoChartValue.chartName}"`}
                     />
                 )}
                 {manifestView && showInfoText && (
                     <CodeEditor.Information
-                        className="ellipsis-right"
+                        className="dc__ellipsis-right"
                         text="Manifest is generated locally from the YAML."
                     >
                         <Tippy

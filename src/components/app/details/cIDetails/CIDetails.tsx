@@ -297,11 +297,11 @@ export const BuildCard: React.FC<{ triggerDetails: History }> = React.memo(({ tr
                     }}
                 >
                     <div
-                        className={`app-summary__icon icon-dim-20 ${triggerDetails.status
+                        className={`dc__app-summary__icon icon-dim-20 ${triggerDetails.status
                             ?.toLocaleLowerCase()
                             .replace(/\s+/g, '')}`}
                     ></div>
-                    <div className="flex column left ellipsis-right">
+                    <div className="flex column left dc__ellipsis-right">
                         <div className="cn-9 fs-14">{moment(triggerDetails.startedOn).format(Moment12HourFormat)}</div>
                         <div className="cn-7 fs-12">
                             {triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}
@@ -342,7 +342,7 @@ export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerD
                         >
                             {sourceType != SourceTypeMap.WEBHOOK && (
                                 <>
-                                    <div className="git-logo"> </div>
+                                    <div className="dc__git-logo"> </div>
                                     <div className="flex left column">
                                         <a
                                             href={createGitCommitUrl(gitMaterialUrl, gitDetail?.Commit)}
@@ -579,7 +579,7 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                                                 rel="noopener noreferer"
                                                 key={ciMaterial.id}
                                                 href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)}
-                                                className="app-commit__hash mr-12 bcn-1 cn-7"
+                                                className="dc__app-commit__hash mr-12 bcn-1 cn-7"
                                             >
                                                 {gitDetail?.Commit?.substr(0, 8)}
                                             </a>
@@ -587,7 +587,7 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                                         {ciMaterial.type == 'WEBHOOK' &&
                                             gitDetail.WebhookData &&
                                             gitDetail.WebhookData.Data && (
-                                                <span className="app-commit__hash">
+                                                <span className="dc__app-commit__hash">
                                                     {gitDetail.WebhookData.EventActionType == 'merged'
                                                         ? gitDetail.WebhookData.Data['target checkout']?.substr(0, 8)
                                                         : gitDetail.WebhookData.Data['target checkout']}
@@ -597,7 +597,7 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                                 )
                             })}
                         {type === 'CD' && (
-                            <div className="app-commit__hash ">
+                            <div className="dc__app-commit__hash ">
                                 <img src={docker} className="commit-hash__icon grayscale" />
                                 {triggerDetails.artifact.split(':')[1]}
                             </div>
@@ -653,7 +653,7 @@ const Finished: React.FC<{ triggerDetails: History; colorClass: string; type: 'C
                     </time>
                 )}
                 {type === 'CI' && triggerDetails.artifact && (
-                    <div className="app-commit__hash ">
+                    <div className="dc__app-commit__hash ">
                         <img src={docker} className="commit-hash__icon grayscale" />
                         {triggerDetails.artifact.split(':')[1]}
                     </div>
@@ -842,12 +842,12 @@ const SelectPipeline: React.FC<Pipelines> = ({ pipelines }) => {
             <label className="form__label">Select Pipeline</label>
             <Select onChange={handlePipelineChange} value={+pipelineId}>
                 <Select.Button rootClassName="select-button--default">
-                    <div className="ellipsis-left w-100 flex right">{pipeline ? pipeline.name : 'Select Pipeline'}</div>
+                    <div className="dc__ellipsis-left w-100 flex right">{pipeline ? pipeline.name : 'Select Pipeline'}</div>
                 </Select.Button>
                 {pipelines.map((item, idx) => {
                     return (
                         <Select.Option key={idx} value={item.id}>
-                            <span className="ellipsis-left">{item.name}</span>
+                            <span className="dc__ellipsis-left">{item.name}</span>
                         </Select.Option>
                     )
                 })}
@@ -1196,7 +1196,7 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
                         style={{ ['--rotateBy' as any]: isCollapsed ? '0deg' : '180deg' }}
                         className="icon-dim-24 rotate fcn-9 mr-12"
                     />
-                    <div className="security-scan__last-scan ellipsis-right">{securityData.lastExecution}</div>
+                    <div className="security-scan__last-scan dc__ellipsis-right">{securityData.lastExecution}</div>
                     {total === 0 ? <span className="fill-pass">Passed</span> : null}
                     {severityCount.critical !== 0 ? (
                         <span className="fill-critical">{severityCount.critical} Critical</span>

@@ -35,7 +35,7 @@ export default class ChartGroupCard extends Component<ChartGroupCardProps> {
                         onError={this.handleImageError} />
                 })}
             </div>
-            <p className="chart-group-item__title ellipsis-right">{chartGroup.name}</p>
+            <p className="chart-group-item__title dc__ellipsis-right">{chartGroup.name}</p>
             <span className="chart-group-item__desc">{chartGroup.chartGroupEntries?.length || 0} charts</span>
         </Link>
     }

@@ -107,7 +107,7 @@ export class BenchmarkModal extends Component<BenchmarkModalProps, {}>{
             <div className={`modal__body`} style={{ width: "800px" }}>
                 <div className="modal__header modal__header--benchmark">
                     <h1 className="modal__title modal__title--benchmark">{benchmark.metric}</h1>
-                    <button type="button" className="transparent" onClick={this.props.close}>
+                    <button type="button" className="dc__transparent" onClick={this.props.close}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>

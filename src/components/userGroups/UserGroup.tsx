@@ -1090,7 +1090,7 @@ const AppOption = (props) => {
         <div
             onClick={(e) => selectOption(data)}
             className="flex left pl-12"
-            style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}
+            style={{ background: props.isFocused ? 'var(--N100)' : 'dc__transparent' }}
         >
             <input
                 checked={props.isSelected}
@@ -1321,7 +1321,7 @@ export function GroupRow({ name, description, removeRow }) {
     return (
         <>
             <div className="anchor">{name}</div>
-            <div className="ellipsis-right">{description}</div>
+            <div className="dc__ellipsis-right">{description}</div>
             <CloseIcon onClick={removeRow} className="pointer" />
         </>
     )

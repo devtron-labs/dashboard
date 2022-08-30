@@ -534,11 +534,11 @@ function LogsComponent({ selectedTab, isDeleted, logSearchTerms, setLogSearchTer
                             }`}
                         >
                             {readyState === 0 && (
-                                <div className="readyState loading-dots" style={{ color: 'orange' }}>
+                                <div className="readyState dc__loading-dots" style={{ color: 'orange' }}>
                                     Connecting
                                 </div>
                             )}
-                            {readyState === 1 && <div className="readyState loading-dots cg-5 pl-20">Connected</div>}
+                            {readyState === 1 && <div className="readyState dc__loading-dots cg-5 pl-20">Connected</div>}
                         </div>
                     </div>
                 )}

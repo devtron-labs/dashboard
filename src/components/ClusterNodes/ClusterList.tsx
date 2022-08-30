@@ -116,7 +116,7 @@ export default function ClusterList() {
         const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
         return (
             <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class">
-                <div className="cb-5 ellipsis-right">
+                <div className="cb-5 dc__ellipsis-right">
                     <NavLink
                         to={`${match.url}/${clusterData.id}`}
                         onClick={(e) => {
@@ -150,7 +150,7 @@ export default function ClusterList() {
                         </>
                     )}
                 </div>
-                <div className="ellipsis-right">
+                <div className="dc__ellipsis-right">
                     <Tippy className="default-tt" arrow={false} content={clusterData.serverVersion}>
                         <span>{clusterData.serverVersion}</span>
                     </Tippy>

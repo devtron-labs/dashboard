@@ -164,7 +164,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                             <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
                                                 <button
                                                     type="button"
-                                                    className="transparent align-right mr-16"
+                                                    className="dc__transparent align-right mr-16"
                                                     onClick={(event) => {
                                                         this.setState({
                                                             showSlackConfigModal: true,
@@ -183,7 +183,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                             >
                                                 <button
                                                     type="button"
-                                                    className="transparent align-right"
+                                                    className="dc__transparent align-right"
                                                     onClick={() => {
                                                         this.deleteClickHandler(
                                                             slackConfig.id,
@@ -341,7 +341,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                         <div className="ses-config-table__name dc__truncate-text ">
                                             {sesConfig.name}
                                             {sesConfig.isDefault ? (
-                                                <span className="ses_config-table__tag">Default</span>
+                                                <span className="dc__ses_config-table__tag">Default</span>
                                             ) : null}
                                         </div>
                                         <div className="ses-config-table__access-key dc__truncate-text ">
@@ -352,7 +352,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                             <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
                                                 <button
                                                     type="button"
-                                                    className="transparent align-right mr-16"
+                                                    className="dc__transparent align-right mr-16"
                                                     onClick={(event) => {
                                                         this.setState({
                                                             showSESConfigModal: true,
@@ -371,7 +371,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                             >
                                                 <button
                                                     type="button"
-                                                    className="transparent align-right"
+                                                    className="dc__transparent align-right"
                                                     onClick={() => {
                                                         this.deleteClickHandler(
                                                             sesConfig.id,
@@ -429,7 +429,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                         <div className="ses-config-table__name dc__truncate-text ">
                                             {smtpConfig.name}
                                             {smtpConfig.isDefault ? (
-                                                <span className="ses_config-table__tag">Default</span>
+                                                <span className="dc__ses_config-table__tag">Default</span>
                                             ) : null}
                                         </div>
                                         <div className="smtp-config-table__host dc__truncate-text ">{smtpConfig.host}</div>
@@ -439,7 +439,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                             <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
                                                 <button
                                                     type="button"
-                                                    className="transparent align-right mr-16"
+                                                    className="dc__transparent align-right mr-16"
                                                     onClick={() => {
                                                         this.setState({
                                                             showSMTPConfigModal: true,
@@ -458,7 +458,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                             >
                                                 <button
                                                     type="button"
-                                                    className="transparent align-right"
+                                                    className="dc__transparent align-right"
                                                     onClick={() => {
                                                         this.deleteClickHandler(
                                                             smtpConfig.id,

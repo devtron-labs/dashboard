@@ -275,7 +275,7 @@ export const NoMatchingResults = (): JSX.Element => {
 const formatOptionLabelClusters = (option: OptionType): JSX.Element => {
     return (
         <div className="flex left column">
-            <span className="w-100 ellipsis-right">{option.label}</span>
+            <span className="w-100 dc__ellipsis-right">{option.label}</span>
             {option.value === '*' && (
                 <>
                     <small className="cn-6">All existing and future clusters</small>
@@ -326,7 +326,7 @@ const customOption = (data: OptionTypeWithIcon, className = '') => {
                 }}
                 onError={onImageLoadError}
             />
-            <span className="ellipsis-right">{data.label}</span>
+            <span className="dc__ellipsis-right">{data.label}</span>
         </div>
     )
 }
@@ -782,7 +782,7 @@ export const AddExternalLinkDialog = ({
                     <h3 className="modal__title fs-16">{selectedLink ? 'Update link' : 'Add link'}</h3>
                     <button
                         type="button"
-                        className={`transparent ${savingLinks ? 'cursor-not-allowed' : 'cursor'}`}
+                        className={`dc__transparent ${savingLinks ? 'cursor-not-allowed' : 'cursor'}`}
                         onClick={handleDialogVisibility}
                         disabled={savingLinks}
                     >
@@ -943,7 +943,7 @@ export const AppLevelExternalLinks = ({
                     className="external-link-chip flex left br-4"
                 >
                     <img src={linkOption.icon} alt={linkOption.label} onError={onImageLoadError} />
-                    <span className="ellipsis-right">{linkOption.label}</span>
+                    <span className="dc__ellipsis-right">{linkOption.label}</span>
                 </a>
             </Tippy>
         )
@@ -983,7 +983,7 @@ export const NodeLevelExternalLinks = ({
                     className="external-link-option flex left br-4"
                 >
                     <img src={data.icon} alt={data.label} onError={onImageLoadError} />
-                    <span className="ellipsis-right">{data.label}</span>
+                    <span className="dc__ellipsis-right">{data.label}</span>
                 </a>
             </Tippy>
         )

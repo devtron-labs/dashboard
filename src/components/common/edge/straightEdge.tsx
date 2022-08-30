@@ -29,7 +29,7 @@ interface EdgeProps {
 }
 
 class Edge extends React.Component <EdgeProps>{
-    
+
     getLineDots() {
         return {
             lineStartX: this.props.startNode.x + this.props.nodeSizes.nodeWidth,
@@ -49,7 +49,7 @@ class Edge extends React.Component <EdgeProps>{
         // (m*x2 + n*x1)/(m+n)
         let midPointX = (lineStartX + 9*lineEndX)/10;
         let midPointY = (lineStartY + 9*lineEndY)/10;
-        
+
         let slope = (lineEndY - lineStartY)/(lineEndX - lineStartX);
         let complimentrySlope = 0;
         let constant = 0;
@@ -72,7 +72,7 @@ class Edge extends React.Component <EdgeProps>{
         if(lineEndX - lineStartX == 0) {
             complimentrySlope = 0;
             sqrtCMPlusOne = Math.sqrt(1 + complimentrySlope*complimentrySlope);
-            
+
             pointAX = midPointX;
             pointAY = midPointY + this.props.nodeSizes.distanceA;
             pointBX = midPointX;
@@ -84,7 +84,7 @@ class Edge extends React.Component <EdgeProps>{
             pointCY = pointCX*complimentrySlope + complementryConstant;
             pointDX = pointBX + (this.props.nodeSizes.distanceC/sqrtCMPlusOne);
             pointDY = pointDX*complimentrySlope + complementryConstant;
-                
+
         }
         else {
             if(slope != 0) {
@@ -92,7 +92,7 @@ class Edge extends React.Component <EdgeProps>{
                 constant = lineEndY - slope*lineEndX;
                 sqrtMPlusOne = Math.sqrt(1 + slope*slope);
                 sqrtCMPlusOne = Math.sqrt(1 + complimentrySlope*complimentrySlope);
-                
+
                 pointAX = midPointX - (this.props.nodeSizes.distanceA/sqrtMPlusOne);
                 pointAY = pointAX*slope + constant;
                 pointBX = midPointX - (this.props.nodeSizes.distanceB/sqrtMPlusOne);
@@ -108,7 +108,7 @@ class Edge extends React.Component <EdgeProps>{
             else {
                 constant = lineEndY;
                 sqrtMPlusOne = Math.sqrt(1 + slope*slope);
-                
+
                 pointAX = midPointX - (this.props.nodeSizes.distanceA/sqrtMPlusOne);
                 pointAY = pointAX*slope + constant;
                 pointBX = midPointX - (this.props.nodeSizes.distanceB/sqrtMPlusOne);
@@ -136,10 +136,10 @@ class Edge extends React.Component <EdgeProps>{
             return null;
         }
     }
-    
+
     render() {
         return <g onClick={this.props.onClickEdge} className="edge-group">
-            <path id={`path-${this.props.startNode.id}-${this.props.endNode.id}`} className="color-path" d={this.getPathEquation()} fill="transparent" stroke={nodeColors.strokeColor} strokeWidth={this.props.nodeSizes.strokeWidth} />
+            <path id={`path-${this.props.startNode.id}-${this.props.endNode.id}`} className="color-path" d={this.getPathEquation()} fill="dc__transparent" stroke={nodeColors.strokeColor} strokeWidth={this.props.nodeSizes.strokeWidth} />
             <path d={this.getArrowEquation()} fill={nodeColors.strokeColor} />
             {this.renderEdgeText()}
         </g>

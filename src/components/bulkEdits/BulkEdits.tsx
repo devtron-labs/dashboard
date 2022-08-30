@@ -221,7 +221,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 border-btm">
                 <button
                     type="button"
-                    className="bulk-run-button cta ellipsis-right pl-12 pr-12 flex mr-12 "
+                    className="bulk-run-button cta dc__ellipsis-right pl-12 pr-12 flex mr-12 "
                     onClick={(e) => this.handleRunButton(e)}
                 >
                     <span>

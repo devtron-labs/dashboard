@@ -30,7 +30,7 @@ export class CDNode extends Component<CDNodeProps> {
                     <div className="workflow-node__title flex">
                         <div className="workflow-node__full-width-minus-Icon">
                             <span className="workflow-node__text-light">{this.props.title}</span>
-                            <span className="ellipsis-right">{this.props.environmentName}</span>
+                            <span className="dc__ellipsis-right">{this.props.environmentName}</span>
                         </div>
                         <div className="workflow-node__icon-common workflow-node__CD-icon"></div>
                     </div>

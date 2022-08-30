@@ -289,9 +289,9 @@ function MaterialList({ name, value, type }) {
     return (
         <div className="bulk-action-list__cell bulk-action-list__cell--source">
             <p className="deployment-group__repo-list">
-                <span className="icon-dim-18 git inline-block mr-5"></span>
+                <span className="icon-dim-18 git dc__inline-block mr-5"></span>
                 <span className="deployment-group__repo-name mr-5"> {name}/</span>
-                <span className="icon-dim-16 inline-block mr-5">
+                <span className="icon-dim-16 dc__inline-block mr-5">
                     {type === 'SOURCE_TYPE_BRANCH_FIXED' ? <Branch className="hw-100" /> : null}
                 </span>
                 <span className="deployment-group__branch-name">{value}</span>

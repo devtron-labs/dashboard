@@ -137,7 +137,7 @@ export default function ChartVersionSelectorModal({
     const renderListHeader = (): JSX.Element => {
         return (
             <div className="flex content-start">
-                <button type="button" className="transparent pl-16 pr-16" onClick={togglePageState}>
+                <button type="button" className="dc__transparent pl-16 pr-16" onClick={togglePageState}>
                     <Back className="icon-dim-20" />
                 </button>
                 <div>
@@ -201,7 +201,7 @@ export default function ChartVersionSelectorModal({
             >
                 <div className={`header-container mt-20 mr-20 mb-20 ${isListpage ? '' : 'ml-20'}`}>
                     {isListpage ? renderListHeader() : renderInitialHeader()}
-                    <button type="button" className="transparent" onClick={closePopup}>
+                    <button type="button" className="dc__transparent" onClick={closePopup}>
                         <Close className="icon-dim-20" />
                     </button>
                 </div>

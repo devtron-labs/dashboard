@@ -147,7 +147,7 @@ const getUpdateStatusLabel = (
     let updateStatusLabel = null
 
     if (installationStatus === ModuleStatus.UPGRADING) {
-        updateStatusLabel = <span className="loading-dots">{showInitializing ? 'Initializing' : 'Updating'}</span>
+        updateStatusLabel = <span className="dc__loading-dots">{showInitializing ? 'Initializing' : 'Updating'}</span>
     } else if (installationStatus === ModuleStatus.UPGRADE_FAILED || installationStatus === ModuleStatus.TIMEOUT) {
         updateStatusLabel = 'Update failed'
     } else if (installationStatus !== ModuleStatus.UNKNOWN && isLatestVersionAvailable(currentVersion, newVersion)) {
@@ -293,7 +293,7 @@ const InstallationStatus = ({
             {(installationStatus === ModuleStatus.INSTALLING || installationStatus === ModuleStatus.UPGRADING) && (
                 <>
                     <Progressing size={24} />
-                    <div className="mt-12 loading-dots">
+                    <div className="mt-12 dc__loading-dots">
                         {getProgressingLabel(isUpgradeView, canViewLogs, logPodName)}
                     </div>
                 </>

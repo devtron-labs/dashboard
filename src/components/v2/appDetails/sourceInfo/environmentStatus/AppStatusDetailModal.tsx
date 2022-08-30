@@ -45,7 +45,7 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: { 
             )
             setNodeStatusMap(stats)
         } catch (error) {
-            
+
         }
     }, [appStreamData])
 
@@ -167,7 +167,7 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: { 
                                                     <td className="pl-20 pt-12 pb-12" valign="top">
                                                         <div className="kind-name">
                                                             <div className="fw-6">{nodeDetails.kind}/</div>
-                                                            <div className="ellipsis-left">{nodeDetails.name}</div>
+                                                            <div className="dc__ellipsis-left">{nodeDetails.name}</div>
                                                         </div>
                                                     </td>
                                                     <td

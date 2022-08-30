@@ -69,7 +69,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                         >
                             <button
                                 type="button"
-                                className="transparent cursor flex"
+                                className="dc__transparent cursor flex"
                                 onClick={() => handleGenerateRowActionButton('edit', list.id)}
                             >
                                 <Key
@@ -82,9 +82,9 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                                 className={`flexbox cb-5 cursor`}
                                 onClick={() => handleGenerateRowActionButton('edit', list.id)}
                             >
-                                <span className="ellipsis-right">{list.name}</span>
+                                <span className="dc__ellipsis-right">{list.name}</span>
                             </div>
-                            <div className="ellipsis-right">
+                            <div className="dc__ellipsis-right">
                                 {list.lastUsedAt ? moment(list.lastUsedAt).format(MomentDateFormat) : 'Never used'}
                             </div>
                             <div>{list.lastUsedByIp ? list.lastUsedByIp : '-'}</div>
@@ -101,12 +101,12 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                             <div className="api__row-actions flex right">
                                 <button
                                     type="button"
-                                    className="transparent mr-18"
+                                    className="dc__transparent mr-18"
                                     onClick={() => handleGenerateRowActionButton('edit', list.id)}
                                 >
                                     <Edit className="icon-dim-20" />
                                 </button>
-                                <button type="button" className="transparent" onClick={() => handleDeleteButton(list)}>
+                                <button type="button" className="dc__transparent" onClick={() => handleDeleteButton(list)}>
                                     <Trash className="scn-6 icon-dim-20" />
                                 </button>
                             </div>

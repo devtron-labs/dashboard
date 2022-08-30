@@ -38,7 +38,7 @@ export class ClusterComponentModal extends Component<ClusterComponentModalProps,
                         <h1 className="modal__title mb-8">Installing Devtron Agent on {this.props.environmentName}</h1>
                         {this.renderStatus()}
                     </div>
-                    <button type="button" className="transparent align-self-top" onClick={this.props.close}>
+                    <button type="button" className="dc__transparent align-self-top" onClick={this.props.close}>
                         <Close className="icon-dim-20" />
                     </button>
                 </div>
@@ -54,7 +54,7 @@ export class ClusterComponentModal extends Component<ClusterComponentModalProps,
                 let status = c.status.toLowerCase().replace('_', '-');
                 return <li className="cluster-component__list-item flexbox" onClick={(e) => this.props.redirectToChartDeployment(c.installedAppId, c.envId)}>
                     <div className="mr-16 flex">
-                        <span className={`icon-dim-20 inline-block mr-16 ${status}`}></span>
+                        <span className={`icon-dim-20 dc__inline-block mr-16 ${status}`}></span>
                     </div>
                     <div className="flex-1">
                         <p className="cluster-component__name m-0">{c.name}</p>

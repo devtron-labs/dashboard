@@ -435,7 +435,7 @@ function DiscoverChartList() {
                                             type="button"
                                             disabled={state.charts.length === 0}
                                             onClick={() => configureChart(0)}
-                                            className="cta cancel ellipsis-right"
+                                            className="cta cancel dc__ellipsis-right"
                                         >
                                             Advanced Options
                                         </button>
@@ -458,7 +458,7 @@ function DiscoverChartList() {
                                         type="button"
                                         disabled={state.charts.length === 0}
                                         onClick={state.advanceVisited ? handleInstall : () => toggleDeployModal(true)}
-                                        className="cta ellipsis-right"
+                                        className="cta dc__ellipsis-right"
                                     >
                                         {installing ? (
                                             <Progressing />

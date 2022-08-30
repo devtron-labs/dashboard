@@ -499,7 +499,7 @@ export default function NodeList() {
     const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => {
         return (
             <div
-                className={`h-36 list-title inline-block mr-16 pt-8 pb-8 ${
+                className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 ${
                     column.label === 'Node'
                         ? `${fixedNodeNameColumn ? 'bcn-0 dc__position-sticky  sticky-column border-right' : ''} w-280 pl-20`
                         : 'w-100-px'
@@ -511,7 +511,7 @@ export default function NodeList() {
                 }}
             >
                 <Tippy className="default-tt" arrow={false} placement="top" content={column.label}>
-                    <span className="inline-block ellipsis-right mw-85px ">{column.label}</span>
+                    <span className="dc__inline-block dc__ellipsis-right mw-85px ">{column.label}</span>
                 </Tippy>
                 {column.isSortingAllowed && <Sort className="pointer icon-dim-14 dc__position-rel sort-icon" />}
             </div>
@@ -554,7 +554,7 @@ export default function NodeList() {
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
                         <div
-                            className={`w-280 inline-block ellipsis-right mr-16 pl-20 pt-12 pb-12${
+                            className={`w-280 dc__inline-block dc__ellipsis-right mr-16 pl-20 pt-12 pb-12${
                                 fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column border-right' : ''
                             }`}
                         >
@@ -562,7 +562,7 @@ export default function NodeList() {
                         </div>
                     ) : (
                         <div
-                            className={`w-100-px inline-block ellipsis-right mr-16 pt-12 pb-12 ${
+                            className={`w-100-px dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 ${
                                 column.value === 'status' ? TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7' : ''
                             }`}
                         >

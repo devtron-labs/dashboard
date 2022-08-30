@@ -98,7 +98,7 @@ export function SourceInfo({
                         >
                             <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
                                 <figure
-                                    className={`${status.toLowerCase()} app-summary__icon mr-8 h-32 w-32`}
+                                    className={`${status.toLowerCase()} dc__app-summary__icon mr-8 h-32 w-32`}
                                     style={{ margin: 'auto' }}
                                 ></figure>
                             </div>
@@ -151,7 +151,7 @@ export function SourceInfo({
                                 <div className="flexbox">
                                     <span
                                         className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus} ${
-                                            deploymentStatus === 'inprogress' ? 'loading-dots' : ''
+                                            deploymentStatus === 'inprogress' ? 'dc__loading-dots' : ''
                                         }`}
                                     >
                                         {deploymentStatusText}
@@ -172,7 +172,7 @@ export function SourceInfo({
                                     </span>
                                     {deploymentStatus === 'inprogress' && <Timer className="icon-dim-16 mt-4" />}
                                 </div>
-                                <div className="fw-4 fs-12 cn-9 ellipsis-right" style={{ maxWidth: 'inherit' }}>
+                                <div className="fw-4 fs-12 cn-9 dc__ellipsis-right" style={{ maxWidth: 'inherit' }}>
                                     by {triggeredBy}
                                 </div>
                             </div>

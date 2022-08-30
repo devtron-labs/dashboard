@@ -133,7 +133,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
    setDeleting = () => {
         this.setState({
-         deleting: true 
+         deleting: true
         })
     }
 
@@ -348,7 +348,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     renderDeleteDialog() {
         if (this.state.showDeleteDialog) {
             let n = this.state.singleDeletedId ? [this.state.singleDeletedId] : this.state.notificationList.filter(n => n.isSelected);
-            return <DeleteDialog 
+            return <DeleteDialog
                 title={`Delete ${n.length} notification configuration(s)`}
                 description={`Recipients will stop recieving notifications for selected pipilines.`}
                 closeDelete={() => { this.setState({ showDeleteDialog: false }) }}
@@ -370,7 +370,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     renderOptions() {
         if (this.state.headerCheckbox.isChecked) {
-            return <div className="block mt-20 mb-20">
+            return <div className="dc__block mt-20 mb-20">
                 <Tippy placement="top" content="Delete" >
                     <Delete className="icon-dim-24 mr-20 notification-tab__option"
                         onClick={(event) => { this.setState({ showDeleteDialog: !this.state.showDeleteDialog, singleDeletedId: 0 }) }} />
@@ -475,15 +475,15 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                             {row.pipelineName ? row.pipelineName : ""}
                             {row.appliedFilters.environment?.length || row.appliedFilters.application.length || row.appliedFilters.project?.length ? <>
                                 <i>All current and future pipelines matching.</i>
-                                <div className="devtron-tag__container">
+                                <div className="dc__devtron-tag__container">
                                     {row.appliedFilters.project.map((element) => {
-                                        return <span key={element.name} className="devtron-tag mr-5">Project:{element.name}</span>
+                                        return <span key={element.name} className="dc__devtron-tag mr-5">Project:{element.name}</span>
                                     })}
                                     {row.appliedFilters.application.map((element) => {
-                                        return <span key={element.name} className="devtron-tag mr-5">App:{element.name}</span>
+                                        return <span key={element.name} className="dc__devtron-tag mr-5">App:{element.name}</span>
                                     })}
                                     {row.appliedFilters.environment.map((element) => {
-                                        return <span key={element.name} className="devtron-tag mr-5">Env:{element.name}</span>
+                                        return <span key={element.name} className="dc__devtron-tag mr-5">Env:{element.name}</span>
                                     })}
                                 </div> </> : null}
                         </td>
@@ -512,9 +512,9 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                             </Tippy> : <span className="icon-dim-20"></span>}
                         </td>
                         <td className="pipeline-list__recipients">
-                            <div className="devtron-tag__container">
+                            <div className="dc__devtron-tag__container">
                                 {row.providers.map((p) => {
-                                    return <div key={p.configId} className="devtron-tag">
+                                    return <div key={p.configId} className="dc__devtron-tag">
                                         {p.dest === "ses" ? <Email className="icon-dim-20 mr-5" /> : null}
                                         {p.dest === "slack" ? <Slack className="icon-dim-20 mr-5" /> : null}
                                         {p.dest === "email" ? <Email className="icon-dim-20 mr-5" /> : null}
@@ -526,8 +526,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         </td>
                         <td className="pipeline-list__hover flex">
                              <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
-                                <button type="button" className="transparent align-right" onClick={(event) => { 
-                                    this.setState({ 
+                                <button type="button" className="dc__transparent align-right" onClick={(event) => {
+                                    this.setState({
                                         showDeleteDialog: !this.state.showDeleteDialog,
                                         singleDeletedId: row.id
                                     });

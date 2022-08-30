@@ -94,7 +94,7 @@ function NodeTreeDetailTab({
                                         <li
                                             key={index + 'tab'}
                                             id={`${params.nodeType}_${tab.name}`}
-                                            className="flex left ellipsis-right "
+                                            className="flex left dc__ellipsis-right "
                                         >
                                             <Tippy
                                                 className={`${

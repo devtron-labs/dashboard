@@ -381,7 +381,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                 ) : null}
                             </span>
                         </div>
-                        <div className="form__row clone-apps inline-block">
+                        <div className="form__row clone-apps dc__inline-block">
                             <RadioGroup
                                 className="no-border"
                                 value={this.state.form.appCreationType}
@@ -395,7 +395,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             </RadioGroup>
                         </div>
                         {this.state.form.appCreationType === AppCreationType.Existing && (
-                            <div className="form__row clone-apps inline-block">
+                            <div className="form__row clone-apps dc__inline-block">
                                 <span className="form__label">Select an app to clone*</span>
                                 <AsyncSelect
                                     loadOptions={appListOptions}

@@ -112,7 +112,7 @@ export default class Edge extends Component<EdgeProps>{
 
     render() {
         return <g style={{ cursor: 'pointer' }} onClick={this.props.onClickEdge} className="edge-group" onMouseOver={() => this.props.onMouseOverEdge(this.props.startNode, this.props.endNode)} >
-            <path className="color-path" d={this.getPathEquation()} fill="transparent" stroke={nodeColors.strokeSolid} strokeWidth={2} />
+            <path className="color-path" d={this.getPathEquation()} fill="dc__transparent" stroke={nodeColors.strokeSolid} strokeWidth={2} />
             <path d={this.getArrowEquation()} fill={nodeColors.arrowColor} />
         </g>
     }

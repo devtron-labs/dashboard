@@ -91,7 +91,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
     renderHeader() {
         return <div className="trigger-modal__header">
             <h1 className="modal__title">{this.props.name ? this.props.name : `Security Vulnerabilities`}</h1>
-            <button type="button" className="transparent " onClick={this.props.close}>
+            <button type="button" className="dc__transparent " onClick={this.props.close}>
                 <Close className="icon-dim-20" />
             </button>
         </div>

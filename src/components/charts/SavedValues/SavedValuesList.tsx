@@ -260,7 +260,7 @@ export default function SavedValuesList() {
                                             <File className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                                         </div>
                                         <div
-                                            className="cb-5 pointer ellipsis-right"
+                                            className="cb-5 pointer dc__ellipsis-right"
                                             onClick={() => redirectToChartValuePage(chartData.id)}
                                         >
                                             {chartData.name}

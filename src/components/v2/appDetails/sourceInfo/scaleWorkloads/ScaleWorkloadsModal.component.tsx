@@ -108,7 +108,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                     <h1 className="cn-9 fw-6 fs-16 m-0">Scale workloads</h1>
                     <button
                         type="button"
-                        className="transparent p-0"
+                        className="dc__transparent p-0"
                         style={{
                             lineHeight: '0',
                             margin: 'auto',

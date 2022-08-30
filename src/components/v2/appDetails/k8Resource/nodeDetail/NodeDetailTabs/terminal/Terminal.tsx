@@ -303,7 +303,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 } ${terminalViewProps.socketConnection === 'CONNECTING' ? 'cn-9' : 'cn-0'} m-0 pl-20 w-100`}
             >
                 {terminalViewProps.socketConnection !== 'CONNECTED' && (
-                    <span className={terminalViewProps.socketConnection === 'CONNECTING' ? 'loading-dots' : ''}>
+                    <span className={terminalViewProps.socketConnection === 'CONNECTING' ? 'dc__loading-dots' : ''}>
                         {terminalViewProps.socketConnection?.toLowerCase()}
                     </span>
                 )}
@@ -318,7 +318,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                                 terminalViewProps.setSocketConnection('CONNECTING');
                                 setIsReconnection(true);
                             }}
-                            className="cursor transparent inline-block"
+                            className="cursor dc__transparent dc__inline-block"
                             style={{ textDecoration: 'underline' }}
                         >
                             Resume

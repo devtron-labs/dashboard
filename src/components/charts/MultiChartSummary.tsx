@@ -256,7 +256,7 @@ const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
                                         <Select.Button arrowAsset={DropDownFilled}>
                                             Values:
                                             <span
-                                                className="ml-5 select-button__selected-option ellipsis-right"
+                                                className="ml-5 select-button__selected-option dc__ellipsis-right"
                                                 style={{ maxWidth: '95px' }}
                                             >
                                                 {selectedChartValue.name} {selectedChartValue.chartVersion}

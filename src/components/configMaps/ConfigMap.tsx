@@ -297,7 +297,7 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
             ref={(el) => (_textRef.current = el)}
             value={text}
             placeholder={placeholder}
-            className={`resizable-textarea ${className}`}
+            className={`dc__resizable-textarea ${className}`}
             onChange={handleChange}
             style={{ lineHeight: `${lineHeight}px`, padding: `${padding}px` }}
             spellCheck={false}
@@ -815,7 +815,7 @@ export function ConfigMapForm({
             )}
             {!isExternalValues && (
                 <div className="flex left mb-16">
-                    <b className="mr-5 bold">Data*</b>
+                    <b className="mr-5 dc__bold">Data*</b>
                     <RadioGroup
                         className="gui-yaml-switch"
                         name="yaml-mode"
@@ -879,7 +879,7 @@ export function ConfigMapForm({
                                 />
                             ))}
                             <div
-                                className="add-parameter bold pointer flex left"
+                                className="add-parameter dc__bold pointer flex left"
                                 onClick={(e) =>
                                     setExternalValues((externalValues) => [
                                         ...externalValues,

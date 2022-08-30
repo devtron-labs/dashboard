@@ -85,7 +85,7 @@ function ChartHeaderComponent() {
     const renderHelmDetailsTabs = () => {
         return (
             <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab ellipsis-right fs-13">
+                <li className="tab-list__tab dc__ellipsis-right fs-13">
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DETAILS}`}

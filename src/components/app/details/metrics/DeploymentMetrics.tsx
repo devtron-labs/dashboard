@@ -565,7 +565,7 @@ export class FrequencyGraphLegend extends React.Component<FrequencyGraphLegendPr
 
     render() {
         return <div className="graph-legend">
-            <div className="w-50 inline-block">
+            <div className="w-50 dc__inline-block">
                 <p className="graph-legend__primary-label">Deployment Frequency
                     <Tippy className="default-tt" arrow={false} content="How often this app is deployed to production?">
                         <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
@@ -585,7 +585,7 @@ export class FrequencyGraphLegend extends React.Component<FrequencyGraphLegendPr
                         <p className="graph-legend__secondary-value">{this.props.frequencyBenchmark?.targetValue} / day</p>
                     </div>}
             </div>
-            <div className="w-50 inline-block" style={{ verticalAlign: "top" }}>
+            <div className="w-50 dc__inline-block" style={{ verticalAlign: "top" }}>
                 {!this.props.noFailures ?
                     <>
                         <p className="graph-legend__primary-label">Change Failure Rate

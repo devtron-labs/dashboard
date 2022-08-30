@@ -99,7 +99,7 @@ export default function SecretOverrides({ parentState, setParentState, ...props 
 
     return (
         <section className="secret-overrides">
-            <label htmlFor="" className="form__label bold">
+            <label htmlFor="" className="form__label dc__bold">
                 Secrets
             </label>
             <SecretContext.Provider value={{ secrets, id, reload }}>
@@ -722,7 +722,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     ) : null}
                     {externalType !== 'KubernetesSecret' && (
                         <div className="flex left mb-16">
-                            <b className="mr-5 bold">Data*</b>
+                            <b className="mr-5 dc__bold">Data*</b>
                             <RadioGroup
                                 className="gui-yaml-switch"
                                 name="yaml-mode"
@@ -868,7 +868,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     )}
                     {!state.locked && !yamlMode && (
                         <span
-                            className="bold anchor pointer"
+                            className="dc__bold anchor pointer"
                             onClick={(event) => {
                                 if (isHashiOrAWS)
                                     setSecretData((secretData) => [

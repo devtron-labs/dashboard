@@ -58,7 +58,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
         return <div>
             <div className="cn-9 fs-14 pt-20 pb-8 fw-6 flex left">
                 Configured filters
-                <button type="button" className="mr-20 transparent align-right" onClick={() => onEditShowEditableCiModal(ciPipelineId, workflowId)}>
+                <button type="button" className="mr-20 dc__transparent align-right" onClick={() => onEditShowEditableCiModal(ciPipelineId, workflowId)}>
                     <Edit className=" icon-dim-24" />
                 </button> </div>
             <div className="cn-5 fs-12 fw-6 pt-8 pb-8 " style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
@@ -95,7 +95,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
                     <div>Payload data not available</div>
                 </div> : <>
                         <div className="cn-5 fw-6 pt-8 pb-8 border-bottom" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
-                            <div>Received at <button className="transparent filter-icon" ><i className="fa fa-caret-down"></i></button></div>
+                            <div>Received at <button className="dc__transparent filter-icon" ><i className="fa fa-caret-down"></i></button></div>
                             <div>Filters matched</div>
                             <div>Filters failed</div>
                             <div>Result</div>
@@ -117,14 +117,14 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
     const renderTimeStampDetailedHeader = (context) => {
         return <div className="trigger-modal__header">
             <div className="flex left">
-                <button type="button" className="transparent flex" onClick={() => { setShowDetailedIncomingPayload(!showDetailedIncomingPayload); setExpandedIncomingPayload(false) }}>
+                <button type="button" className="dc__transparent flex" onClick={() => { setShowDetailedIncomingPayload(!showDetailedIncomingPayload); setExpandedIncomingPayload(false) }}>
                     <Back />
                 </button>
                 <h1 className="modal__title fs-16 pl-16 flex left">All incoming webhook payloads
                 <Right className="rotate icon-dim-24 ml-16 mr-16" style={{ ['--rotateBy' as any]: '-180deg' }} />
                     {webhookPayloads.payloads.filter((payload, index, array) => payload.parsedDataId == parsedDataId).map((payload) => moment(payload.eventTime).format(Moment12HourFormat)).toString()} </h1>
             </div>
-            <button type="button" className="transparent" onClick={() => { onClose(); setExpandedIncomingPayload(false) }}>
+            <button type="button" className="dc__transparent" onClick={() => { onClose(); setExpandedIncomingPayload(false) }}>
                 <Close />
             </button>
         </div>
@@ -147,7 +147,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
                     </button>
                     <div className="cn-9 fw-6 fs-14 flex left">
                         Filter matching results
-                                <button type="button" className="mr-20 transparent align-right" onClick={() => onEditShowEditableCiModal(ciPipelineMaterialId, workflowId)}>
+                                <button type="button" className="mr-20 dc__transparent align-right" onClick={() => onEditShowEditableCiModal(ciPipelineMaterialId, workflowId)}>
                             <Edit className=" icon-dim-24" />
                         </button>
                     </div>

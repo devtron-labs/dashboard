@@ -65,7 +65,7 @@ export const StatusFilterButtonComponent = ({nodes}: {nodes: Array<Node>}) => {
                                 >
                                     {index !== 0 && (
                                         <span
-                                            className={`app-summary__icon icon-dim-16 mr-6 ${filter.status.toLowerCase()} ${filter.status.toLowerCase()}--node`}
+                                            className={`dc__app-summary__icon icon-dim-16 mr-6 ${filter.status.toLowerCase()} ${filter.status.toLowerCase()}--node`}
                                             style={{ zIndex: 'unset' }}
                                         />
                                     )}

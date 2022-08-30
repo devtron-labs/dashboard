@@ -42,9 +42,9 @@ export default function ChartRepo() {
             <p className="form__subtitle">Manage your organization’s chart repositories.
             <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_CHART}> Learn more</a> </span></p>
             <CollapsedList  id={null} default={true} url={""} name={""} active={true} authMode={"ANONYMOUS"}  key={Math.random().toString(36).substr(2, 5)} reload={reload} />
-            <div className="chartRepo_form__subtitle float-left bold">Repositories({(result && Array.isArray(result.result) ? result.result : []).length})</div>
+            <div className="chartRepo_form__subtitle dc__float-left dc__bold">Repositories({(result && Array.isArray(result.result) ? result.result : []).length})</div>
             <Tippy className="default-tt" arrow={false} placement="top" content="Refetch chart from repositories">
-                <div className="chartRepo_form__subtitle float-right">
+                <div className="chartRepo_form__subtitle dc__float-right">
                     <a rel="noreferrer noopener" target="_blank" className={`learn-more__href ${fetching? '': 'cursor'}`} onClick={refetchCharts}><span>
                         <svg width="16" height="16" viewBox="2 -2 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M11.0105 6.23225H14.0105V3.23225" stroke="#0066CC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>

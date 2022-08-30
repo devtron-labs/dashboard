@@ -108,7 +108,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
                         )}
                     >
                         <button
-                            className={'devtron-stepper__item transparent p-0 cursor'}
+                            className={'devtron-stepper__item dc__transparent p-0 cursor'}
                             disabled={selectedCount <= 0}
                             onClick={removeChartTab}
                         >
@@ -131,7 +131,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
                             </Tippy>
                         )}
                     >
-                        <button className={'devtron-stepper__item transparent p-0 cursor'} onClick={addchartTab}>
+                        <button className={'devtron-stepper__item dc__transparent p-0 cursor'} onClick={addchartTab}>
                             <Add className="icon-dim-14" />
                         </button>
                     </ConditionalWrap>
@@ -147,7 +147,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
                 />
             )}
             <div>
-                <div className="chart-grid-item__title ellipsis-right mb-4">
+                <div className="chart-grid-item__title dc__ellipsis-right mb-4">
                     <span className="chart-grid-item__title-repo">{chart.chart_name}</span>
                     <span>/{chart.name}</span>
                 </div>

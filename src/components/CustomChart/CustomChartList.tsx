@@ -169,7 +169,7 @@ export default function CustomChartList() {
                                     {chartData.count > 0 ? `+${chartData.count} more` : ''}
                                 </span>
                             </div>
-                            <div className="ellipsis-right">{chartData.chartDescription}</div>
+                            <div className="dc__ellipsis-right">{chartData.chartDescription}</div>
                         </div>
                     ))}
                 </div>

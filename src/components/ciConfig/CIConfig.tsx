@@ -294,7 +294,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                 {props.children}
                 <NavLink
                     to={`${URLS.GLOBAL_CONFIG_DOCKER}`}
-                    className="cb-5 select__sticky-bottom block fw-5 anchor w-100 cursor no-decor bottom-0"
+                    className="cb-5 select__sticky-bottom dc__block fw-5 anchor w-100 cursor no-decor bottom-0"
                     style={{ backgroundColor: '#FFF' }}
                 >
                     <Add className="icon-dim-20 mr-5 fcb-5 mr-12 dc__vertical-align-bottom " />
@@ -375,7 +375,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             <div
                 onClick={(e) => selectOption(data)}
                 className="flex left pl-12"
-                style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}
+                style={{ background: props.isFocused ? 'var(--N100)' : 'dc__transparent' }}
             >
                 {!data.__isNew__ && (
                     <input
@@ -446,10 +446,10 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
             <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warningIconSrc} />
                 <ConfirmationDialog.Body title="Please ensure you have set valid target platform for the build" />
-                <span className="fs-14 cn-7 block">Custom target platform(s):</span>
+                <span className="fs-14 cn-7 dc__block">Custom target platform(s):</span>
                 {selectedTargetPlatforms.map((targetPlatform) =>
                     targetPlatformMap.get(targetPlatform.value) ? null : (
-                        <span className="fs-13 cn-7 block">{targetPlatform.value}</span>
+                        <span className="fs-13 cn-7 dc__block">{targetPlatform.value}</span>
                     ),
                 )}
                 <p className="fs-13 cn-7 lh-1-54 mt-20">

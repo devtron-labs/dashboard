@@ -43,7 +43,7 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
     ]
 
     return (
-        <div className="transparent-div" onClick={() => setShowHelpCard(!showHelpCard)}>
+        <div className="dc__transparent-div" onClick={() => setShowHelpCard(!showHelpCard)}>
             <div className={`help-card pt-4 pb-4 ${className}`}>
                 {HelpOptions.map((option) => {
                     return (
@@ -73,7 +73,7 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
                 {serverInfo?.installationType === InstallationType.OSS_HELM && (
                     <div className="help-card__update-option fs-11 fw-6 mt-4">
                         {fetchingServerInfo ? (
-                            <span className="loading-dots">Checking current version</span>
+                            <span className="dc__loading-dots">Checking current version</span>
                         ) : (
                             <span>Devtron {serverInfo?.currentVersion || ''}</span>
                         )}

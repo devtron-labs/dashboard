@@ -578,7 +578,7 @@ export default function NodeDetails() {
                 }}
             >
                 <Tippy className="default-tt" arrow={false} placement="top" content={columnName}>
-                    <span className="inline-block ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
+                    <span className="dc__inline-block dc__ellipsis-right lh-20" style={{ maxWidth: 'calc(100% - 20px)' }}>
                         {columnName}
                     </span>
                 </Tippy>
@@ -623,7 +623,7 @@ export default function NodeDetails() {
                                                 interactive={true}
                                             >
                                                 <span
-                                                    className="inline-block ellipsis-right lh-20"
+                                                    className="dc__inline-block dc__ellipsis-right lh-20"
                                                     style={{ maxWidth: 'calc(100% - 20px)' }}
                                                 >
                                                     {pod.name}
@@ -799,7 +799,7 @@ export default function NodeDetails() {
                 >
                     {isReviewState && isShowWarning && (
                         <CodeEditor.Warning
-                            className="ellipsis-right"
+                            className="dc__ellipsis-right"
                             text="Actual YAML has changed since you made the changes. Please check the diff carefully."
                         />
                     )}

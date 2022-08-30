@@ -425,7 +425,7 @@ function DockerForm({
         return (
             <components.Option {...props}>
                 <div style={{ display: 'flex' }}>
-                    <div className={'dc__registry-icon git-logo mr-5 ' + props.data.value}></div>
+                    <div className={'dc__registry-icon dc__git-logo mr-5 ' + props.data.value}></div>
                     {props.label}
                 </div>
             </components.Option>
@@ -438,7 +438,7 @@ function DockerForm({
         }
         return (
             <components.Control {...props}>
-                <div className={'dc__registry-icon git-logo ml-5 ' + value}></div>
+                <div className={'dc__registry-icon dc__git-logo ml-5 ' + value}></div>
                 {props.children}
             </components.Control>
         );

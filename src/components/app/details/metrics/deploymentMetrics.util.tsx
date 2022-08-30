@@ -40,7 +40,7 @@ export function Option(props) {
   const { selectOption, data } = props;
   const style = { height: '16px', width: '16px', flex: '0 0 16px' }
   const onClick = (e) => selectOption(data);
-  return <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
+  return <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'dc__transparent' }}>
     {props.isSelected ? (
       <Check onClick={onClick} className="mr-8 icon-dim-16" style={style} />
     ) : (
@@ -132,8 +132,8 @@ export function FailureLegendEmptyState(props) {
       </Tippy>
     </p>
     <div className="mt-16">
-      <Smiley className="mr-8 inline-block dc__vertical-align-middle" style={{ width: "39px" }} />
-      <p className="m-0 fw-6 inline-block dc__vertical-align-middle">Good Job! <br></br>
+      <Smiley className="mr-8 dc__inline-block dc__vertical-align-middle" style={{ width: "39px" }} />
+      <p className="m-0 fw-6 dc__inline-block dc__vertical-align-middle">Good Job! <br></br>
       No pipeline failures in this period
     </p>
     </div>
