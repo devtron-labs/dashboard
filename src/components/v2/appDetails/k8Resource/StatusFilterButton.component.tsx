@@ -61,7 +61,7 @@ export const StatusFilterButtonComponent = ({nodes}: {nodes: Array<Node>}) => {
                                     }}
                                     className={`${
                                         filter.isSelected ? 'bcb-1' : ''
-                                    } p-6 pointer border-right cn-9 pr-6 fw-6 no-decor flex left`}
+                                    } p-6 pointer border-right cn-9 pr-6 fw-6 dc__no-decor flex left`}
                                 >
                                     {index !== 0 && (
                                         <span

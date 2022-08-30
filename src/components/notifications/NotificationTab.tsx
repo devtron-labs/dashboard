@@ -362,7 +362,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             <EmptyState.Image><img src={EmptyImage} alt="so empty" /></EmptyState.Image>
             <EmptyState.Title><h3>Notifications</h3></EmptyState.Title>
             <EmptyState.Subtitle>Receive alerts when a pipeline triggers, completes successfully or fails.</EmptyState.Subtitle>
-            <Link to={`${URLS.GLOBAL_CONFIG_NOTIFIER_ADD_NEW}`} className="cta flex no-decor">
+            <Link to={`${URLS.GLOBAL_CONFIG_NOTIFIER_ADD_NEW}`} className="cta flex dc__no-decor">
                 <Add className="icon-dim-20 mr-5" />Add Notification
             </Link>
         </EmptyState>
@@ -546,7 +546,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     renderBody() {
         return <div className="notification-tab">
             <Link to={`${URLS.GLOBAL_CONFIG_NOTIFIER_ADD_NEW}`} style={{ width: "100px" }}
-                className="cta small flex no-decor">
+                className="cta small flex dc__no-decor">
                 <Add className="icon-dim-16 mr-5" />Add New
             </Link>
             {this.renderOptions()}
@@ -581,7 +581,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             return <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 mb-16 ml-20 mr-20 flex left">
                 <Error className="icon-dim-20 mr-8" />
                 <div className="cn-9 fs-13">Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to &nbsp;
-                <NavLink className="hosturl__review" to={URLS.GLOBAL_CONFIG_HOST_URL}>Review and update</NavLink>
+                <NavLink className="dc__link-bold" to={URLS.GLOBAL_CONFIG_HOST_URL}>Review and update</NavLink>
                 </div>
             </div>
         }

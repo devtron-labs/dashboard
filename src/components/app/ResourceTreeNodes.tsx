@@ -304,7 +304,7 @@ export const NodeGroup: React.FC<{ title: AggregationKeysType, data: Object; agg
                                 key={kind}
                                 to={generatePath(path, { ...params, kind }) + location.search}
                                 style={{ height: '36px' }}
-                                className="no-decor fs-14 cn-9 node-link w-100 flex left pl-8 pr-8"
+                                className="dc__no-decor fs-14 cn-9 node-link w-100 flex left pl-8 pr-8"
                             >
                                 {kind}
                                 {aggregatedNodes?.nodeStatusCount[kind]?.Degraded > 0 && (
@@ -368,7 +368,7 @@ export const AllPods: React.FC<AllPods> = ({ isAppDeployment, pods, describeNode
                 <>
                     <div className="flex left old-new-switch-container">
                         <div
-                            className={`no-decor old-new-link flex left column pl-16 pr-16 pointer ${podTab === 'new' ? 'active' : ''
+                            className={`dc__no-decor old-new-link flex left column pl-16 pr-16 pointer ${podTab === 'new' ? 'active' : ''
                                 }`}
                             onClick={(e) => selectPodTab('new')}
                             data-testid="all-pods-new"
@@ -379,7 +379,7 @@ export const AllPods: React.FC<AllPods> = ({ isAppDeployment, pods, describeNode
                                     .filter((n) => n !== 'all')
                                     .map((status, idx) => (
                                         <React.Fragment key={idx}>
-                                            {!!idx && <span className="bullet mr-4 ml-4"></span>}
+                                            {!!idx && <span className="dc__bullet mr-4 ml-4"></span>}
                                             <span key={idx} data-testid={`new-pod-status-${status}`}>
                                                 {newPodStats[status]} {status}
                                             </span>
@@ -388,7 +388,7 @@ export const AllPods: React.FC<AllPods> = ({ isAppDeployment, pods, describeNode
                             </div>
                         </div>
                         <div
-                            className={`no-decor old-new-link flex left column pl-16 pr-16 pointer ${podTab === 'old' ? 'active' : ''
+                            className={`dc__no-decor old-new-link flex left column pl-16 pr-16 pointer ${podTab === 'old' ? 'active' : ''
                                 }`}
                             onClick={(e) => selectPodTab('old')}
                             data-testid="all-pods-old"
@@ -399,7 +399,7 @@ export const AllPods: React.FC<AllPods> = ({ isAppDeployment, pods, describeNode
                                     .filter((n) => n !== 'all')
                                     .map((status, idx) => (
                                         <React.Fragment key={idx}>
-                                            {!!idx && <span className="bullet mr-4 ml-4"></span>}
+                                            {!!idx && <span className="dc__bullet mr-4 ml-4"></span>}
                                             <span key={idx}>
                                                 {oldPodStats[status]} {status}
                                             </span>
@@ -457,7 +457,7 @@ export const GenericInfo: React.FC<{ appName: string; environmentName: string; n
                                         <div>
                                             {count} {status.toLowerCase()}
                                         </div>
-                                        {idx !== arr.length - 1 && <span className="bullet ml-6 mr-6"></span>}
+                                        {idx !== arr.length - 1 && <span className="dc__bullet ml-6 mr-6"></span>}
                                     </React.Fragment>
                                 ))}
                         </div>

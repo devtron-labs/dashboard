@@ -373,7 +373,7 @@ export default function AppConfig() {
                             <Link
                                 onClick={(e) => setState((state) => ({ ...state, showDeleteConfirm: false }))}
                                 to={redirectToWorkflowEditor()}
-                                className="cta ml-12 no-decor"
+                                className="cta ml-12 dc__no-decor"
                             >
                                 View Workflows
                             </Link>
@@ -616,7 +616,7 @@ const EnvironmentOverrideDropdown = (
                 Environment overrides allow you to manage environment specific configurations after you’ve created
                 deployment pipelines. &nbsp;
                 <a
-                    className="learn-more__href"
+                    className="dc__link"
                     href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE}
                     rel="noreferrer noopener"
                     target="_blank"

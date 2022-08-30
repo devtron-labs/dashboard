@@ -804,7 +804,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                 <div className="form__button-group-bottom flex right">
                     <Link
                         to={`${URLS.GLOBAL_CONFIG_NOTIFIER}/channels`}
-                        className="cta cancel mr-16 no-decor"
+                        className="cta cancel mr-16 dc__no-decor"
                         tabIndex={8}
                     >
                         Cancel

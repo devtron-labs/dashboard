@@ -12,7 +12,7 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
 
     return (
         <div>
-            <div className="flex fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8 content-space cursor" onClick={toggleDropdown}>
+            <div className="flex fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8 dc__content-space cursor" onClick={toggleDropdown}>
                 {header}
                 <Dropdown
                     className="icon-dim-24 rotate"

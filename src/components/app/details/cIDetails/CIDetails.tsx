@@ -322,7 +322,7 @@ export const BuildCardPopup: React.FC<{ triggerDetails: History }> = ({ triggerD
             <div className="flex column left ">
                 <div className="flex left fs-12 cn-7">
                     <div>{moment(triggerDetails.startedOn).format(Moment12HourFormat)}</div>
-                    <div className="bullet ml-6 mr-6"></div>
+                    <div className="dc__bullet ml-6 mr-6"></div>
                     <div>{triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}</div>
                 </div>
                 {triggerDetails?.ciMaterials?.map((ciMaterial) => {
@@ -563,7 +563,7 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                         <time className="cn-7 fs-12">
                             {moment(triggerDetails.startedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
                         </time>
-                        <div className="bullet mr-6 ml-6"></div>
+                        <div className="dc__bullet mr-6 ml-6"></div>
                         <div className="trigger-details__trigger-by cn-7 fs-12 mr-12">
                             {triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}
                         </div>
@@ -1047,11 +1047,11 @@ export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?:
         <div style={{ padding: '16px' }} className="flex left column">
             <CIListItem type="artifact">
                 <div className="flex column left">
-                    <div className="cn-9 fs-14 flex left visible-hover visible-hover--parent">
+                    <div className="cn-9 fs-14 flex left dc__visible-hover dc__visible-hover--parent">
                         {triggerDetails.artifact.split(':')[1]}
                         <Tippy content={'Copy to clipboard'}>
                             <CopyIcon
-                                className="pointer visible-hover--child ml-6 icon-dim-16"
+                                className="pointer dc__visible-hover--child ml-6 icon-dim-16"
                                 onClick={(e) =>
                                     copyToClipboard(triggerDetails.artifact.split(':')[1], () =>
                                         toast.info('copied to clipboard'),
@@ -1060,11 +1060,11 @@ export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?:
                             />
                         </Tippy>
                     </div>
-                    <div className="cn-7 fs-12 flex left visible-hover visible-hover--parent">
+                    <div className="cn-7 fs-12 flex left dc__visible-hover dc__visible-hover--parent">
                         {triggerDetails.artifact}
                         <Tippy content={'Copy to clipboard'}>
                             <CopyIcon
-                                className="pointer visible-hover--child ml-6 icon-dim-16"
+                                className="pointer dc__visible-hover--child ml-6 icon-dim-16"
                                 onClick={(e) =>
                                     copyToClipboard(triggerDetails.artifact, () => toast.info('copied to clipboard'))
                                 }
@@ -1197,15 +1197,15 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
                         className="icon-dim-24 rotate fcn-9 mr-12"
                     />
                     <div className="security-scan__last-scan dc__ellipsis-right">{securityData.lastExecution}</div>
-                    {total === 0 ? <span className="fill-pass">Passed</span> : null}
+                    {total === 0 ? <span className="dc__fill-pass">Passed</span> : null}
                     {severityCount.critical !== 0 ? (
-                        <span className="fill-critical">{severityCount.critical} Critical</span>
+                        <span className="dc__fill-critical">{severityCount.critical} Critical</span>
                     ) : null}
                     {severityCount.critical === 0 && severityCount.moderate !== 0 ? (
-                        <span className="fill-moderate">{severityCount.moderate} Moderate</span>
+                        <span className="dc__fill-moderate">{severityCount.moderate} Moderate</span>
                     ) : null}
                     {severityCount.critical === 0 && severityCount.moderate === 0 && severityCount.low !== 0 ? (
-                        <span className="fill-low">{severityCount.low} Low</span>
+                        <span className="dc__fill-low">{severityCount.low} Low</span>
                     ) : null}
                     <div className="security-scan__type">post build execution</div>
                 </div>
@@ -1228,7 +1228,7 @@ const SecurityTab: React.FC<{ triggerHistory: History }> = (props) => {
                             {securityData.vulnerabilities.map((item) => {
                                 return (
                                     <tr className="security-scan-table__row">
-                                        <td className="security-scan-table__data security-scan-table__pl security-scan-table__cve cve-cell">
+                                        <td className="security-scan-table__data security-scan-table__pl security-scan-table__cve dc__cve-cel">
                                             <a
                                                 href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${item.name}`}
                                                 target="_blank"

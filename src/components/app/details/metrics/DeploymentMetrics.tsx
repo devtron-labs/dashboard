@@ -518,23 +518,23 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                         <p className="deployment-table__title m-0"><Deploy className="icon-dim-20 dc__vertical-align-middle mr-5 scn-7 fcn-7" />
                             Deployments</p>
                         <div className="flex right">
-                            <label className="tertiary-tab__radio">
+                            <label className="dc__tertiary-tab__radio">
                                 <input type="radio" name="status" checked={this.state.statusFilter === -1}
                                     value={-1} onClick={this.handleTableFilter} />
-                                <span className="tertiary-tab">All ({this.state.totalDeployments})</span>
+                                <span className="dc__tertiary-tab">All ({this.state.totalDeployments})</span>
                             </label>
-                            <label className="tertiary-tab__radio">
+                            <label className="dc__tertiary-tab__radio">
                                 <input type="radio" name="status" checked={this.state.statusFilter === 0}
                                     value={0} onClick={this.handleTableFilter} />
-                                <span className="tertiary-tab">
+                                <span className="dc__tertiary-tab">
                                     <Success className="icon-dim-16 dc__vertical-align-middle mr-4" />
                                     Success ({this.state.totalDeployments - this.state.failedDeployments})
                                 </span>
                             </label>
-                            <label className="tertiary-tab__radio">
+                            <label className="dc__tertiary-tab__radio">
                                 <input type="radio" name="status" checked={this.state.statusFilter === 1}
                                     value={1} onClick={this.handleTableFilter} />
-                                <span className="tertiary-tab">
+                                <span className="dc__tertiary-tab">
                                     <Fail className="icon-dim-16 dc__vertical-align-middle mr-4" />
                                     Failed ({this.state.failedDeployments})
                                 </span>

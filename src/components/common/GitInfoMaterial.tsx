@@ -175,7 +175,7 @@ export default function GitInfoMaterial({
             <div className="select-material select-material--trigger-view">
                 {!isWebhook && (
                     <div
-                        className="flex content-space dc__position-sticky "
+                        className="flex dc__content-space dc__position-sticky "
                         style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
                     >
                         {renderBranchChangeHeader(material)}
@@ -225,7 +225,7 @@ export default function GitInfoMaterial({
                                 />
                                 .
                                 <span
-                                    className="learn-more__href cursor"
+                                    className="dc__link cursor"
                                     onClick={() => toggleWebhookModal(material.id)}
                                 >
                                     View all incoming webhook payloads

@@ -11,7 +11,7 @@ function GenerateActionButton({
     onDelete,
 }: GenerateActionButtonType) {
     return (
-        <div className={`modal__buttons w-100 p-16 flex ${showDelete ? 'content-space ' : 'right'} border-top`}>
+        <div className={`modal__buttons w-100 p-16 flex ${showDelete ? 'dc__content-space ' : 'right'} border-top`}>
             {showDelete && (
                 <ButtonWithLoader
                     rootClassName="flex cta delete h-36 mr-16"

@@ -46,7 +46,7 @@ export default function ChartVersionSelectorModal({
                 <div className="fw-4 fs-13 cn-7">
                     <span className="cr-5">{cardDetail.noDataSubtitle[0]}</span>&nbsp;
                     <a
-                        className="learn-more__href"
+                        className="dc__link"
                         href={cardDetail.helpLink}
                         rel="noreferrer noopener"
                         target="_blank"
@@ -117,7 +117,7 @@ export default function ChartVersionSelectorModal({
 
     const renderInitialHeader = (): JSX.Element => {
         return (
-            <div className="flex content-start">
+            <div className="flex dc__content-start">
                 <div className="h-44 mr-16">
                     <img src={appIconUrl} onError={onError} className="dc__chart-grid-item__icon" alt="chart icon" />
                 </div>
@@ -136,7 +136,7 @@ export default function ChartVersionSelectorModal({
 
     const renderListHeader = (): JSX.Element => {
         return (
-            <div className="flex content-start">
+            <div className="flex dc__content-start">
                 <button type="button" className="dc__transparent pl-16 pr-16" onClick={togglePageState}>
                     <Back className="icon-dim-20" />
                 </button>

@@ -95,7 +95,7 @@ export default function DeploymentConfig({ respondOnSuccess, isUnSet }) {
                 Required to execute deployment pipelines for this application.&nbsp;
                 <a
                     rel="noreferrer noopener"
-                    className="learn-more__href"
+                    className="dc__link"
                     href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE}
                     target="_blank"
                 >
@@ -279,7 +279,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                 {props.children}
                 <NavLink
                     to={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}
-                    className="upload-custom-chart-link cb-5 select__sticky-bottom fw-4 fs-13 no-decor bottom-radius-4"
+                    className="upload-custom-chart-link cb-5 select__sticky-bottom fw-4 fs-13 dc__no-decor bottom-radius-4"
                     target="_blank"
                     rel="noreferrer noopener"
                 >

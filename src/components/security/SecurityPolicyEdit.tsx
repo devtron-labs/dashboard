@@ -91,7 +91,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
     updateCVE(action: string, cve: CvePolicy, envId?: number): void {
         let payload = {};
         let promise;
-        if (cve.policy.inherited) { //create 
+        if (cve.policy.inherited) { //create
             payload = this.createCVEPayload(this.props.level, cve.name, action, envId);
             promise = savePolicy(payload)
         }
@@ -295,7 +295,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
                         {cves.map((cve) => {
                             //inherited is created at parent level
                             return <tr key={cve.name} className="security-policy__table-row">
-                                <td className="security-policy__data-cell security-policy__cve-cell cve-cell">
+                                <td className="security-policy__data-cell security-policy__cve-cell dc__cve-cel">
                                     <a href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${cve.name}`} rel="noopener noreferrer" target="_blank">
                                         {cve.name}
                                     </a>

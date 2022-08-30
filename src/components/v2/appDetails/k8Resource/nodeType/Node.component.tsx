@@ -19,12 +19,12 @@ import { ExternalLink, OptionTypeWithIcon } from '../../../../externalLinks/Exte
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils';
 import { NoPod } from '../../../../app/ResourceTreeNodes';
 
-function NodeComponent({ 
+function NodeComponent({
     handleFocusTabs,
     externalLinks,
     monitoringTools,
     isDevtronApp
-}: { 
+}: {
     handleFocusTabs: () => void,
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
@@ -49,7 +49,7 @@ function NodeComponent({
     const [podLevelExternalLinks, setPodLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
     const [containerLevelExternalLinks, setContainerLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
     const isPodAvailable: boolean = params.nodeType === NodeType.Pod.toLowerCase() && isDevtronApp;
-    
+
     useEffect(() => {
         if (externalLinks.length > 0) {
             const _podLevelExternalLinks = []
@@ -190,7 +190,7 @@ function NodeComponent({
                         </div>
                     )}
                     <div className="node-row m-0 resource-row">
-                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor content-space`}>
+                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor dc__content-space`}>
                             <div className="flex align-start">
                                 <div
                                     className="flex left top ml-2"

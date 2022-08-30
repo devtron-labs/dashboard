@@ -298,13 +298,13 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
                             </div>
                             <div className="flex">
                                 <div className="mr-16">
-                                    <label className="tertiary-tab__radio">
+                                    <label className="dc__tertiary-tab__radio">
                                         <input type="radio" value={'aggregate'} checked={this.state.tab === AppMetricsTab.Aggregate} onChange={this.handleTabChange} />
-                                        <span className="tertiary-tab">Aggregate</span>
+                                        <span className="dc__tertiary-tab">Aggregate</span>
                                     </label>
-                                    <label className="tertiary-tab__radio">
+                                    <label className="dc__tertiary-tab__radio">
                                         <input type="radio" value={'pod'} checked={this.state.tab === AppMetricsTab.Pod} onChange={this.handleTabChange} />
-                                        <span className="tertiary-tab">Per Pod</span>
+                                        <span className="dc__tertiary-tab">Per Pod</span>
                                     </label>
                                 </div>
                                 <DateRangePicker calendar={this.state.calendar}

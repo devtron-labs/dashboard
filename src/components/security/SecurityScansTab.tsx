@@ -237,7 +237,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
       let filterTypes = ['severity', 'clusters', 'environments'];
       return <div className='security-scan__filters'>
         <form onSubmit={(e) => { e.preventDefault(); this.search(); }} className="flex-1 flex mr-24">
-          <div className="search-with-dropdown">
+          <div className="dc__search-with-dropdown">
             <ReactSelect className="search-with-dropdown__dropdown"
               isMulti={false}
               isSearchable={false}
@@ -284,7 +284,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
         <div className="flexbox">
           {filterTypes.map((filter, index) => {
             return <ReactSelect key={filter}
-              className={`security-scan__filter security-scan__filter--${filter}`}
+              className={`dc__security-scan__filter dc__security-scan__filter--${filter}`}
               name={filter}
               tabIndex={index + 2}
               isMulti={true}
@@ -399,10 +399,10 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
               <td className="security__data dc__ellipsis-right">{scan.name}</td>
               <td className="security__data table__cell--type dc__ellipsis-right">{scan.type}</td>
               <td className="security__data dc__ellipsis-right">
-                {total === 0 ? <span className="fill-pass">Passed</span> : null}
-                {scan.severityCount.critical !== 0 ? <span className="fill-critical">{scan.severityCount.critical} Critical</span> : null}
-                {scan.severityCount.critical === 0 && scan.severityCount.moderate !== 0 ? <span className="fill-moderate">{scan.severityCount.moderate} Moderate</span> : null}
-                {scan.severityCount.critical === 0 && scan.severityCount.moderate === 0 && scan.severityCount.low !== 0 ? <span className="fill-low">{scan.severityCount.low} Low</span> : null}
+                {total === 0 ? <span className="dc__fill-pass">Passed</span> : null}
+                {scan.severityCount.critical !== 0 ? <span className="dc__fill-critical">{scan.severityCount.critical} Critical</span> : null}
+                {scan.severityCount.critical === 0 && scan.severityCount.moderate !== 0 ? <span className="dc__fill-moderate">{scan.severityCount.moderate} Moderate</span> : null}
+                {scan.severityCount.critical === 0 && scan.severityCount.moderate === 0 && scan.severityCount.low !== 0 ? <span className="dc__fill-low">{scan.severityCount.low} Low</span> : null}
               </td>
               <td className="security__data">{scan.environment}</td>
               <td className="security__data table__cell--time dc__ellipsis-right">{scan.lastExecution}</td>

@@ -294,7 +294,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                 {props.children}
                 <NavLink
                     to={`${URLS.GLOBAL_CONFIG_DOCKER}`}
-                    className="cb-5 select__sticky-bottom dc__block fw-5 anchor w-100 cursor no-decor bottom-0"
+                    className="cb-5 select__sticky-bottom dc__block fw-5 anchor w-100 cursor dc__no-decor bottom-0"
                     style={{ backgroundColor: '#FFF' }}
                 >
                     <Add className="icon-dim-20 mr-5 fcb-5 mr-12 dc__vertical-align-bottom " />
@@ -465,7 +465,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                     >
                         Go back
                     </button>
-                    <button onClick={onValidation} className="cta ml-12 no-decor">
+                    <button onClick={onValidation} className="cta ml-12 dc__no-decor">
                         Confirm save
                     </button>
                 </ConfirmationDialog.ButtonGroup>
@@ -484,7 +484,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         <a
                             rel="noreferrer noopener"
                             target="_blank"
-                            className="learn-more__href"
+                            className="dc__link"
                             href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
                         >
                             {' '}
@@ -597,7 +597,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                         </div>
                     </div>
                     <hr className="mt-0 mb-20" />
-                    <div onClick={toggleCollapse} className="flex content-space cursor mb-20">
+                    <div onClick={toggleCollapse} className="flex dc__content-space cursor mb-20">
                         <div>
                             <div className="fs-14 fw-6 ">Advanced (optional)</div>
                             <div className="form-row__add-parameters">

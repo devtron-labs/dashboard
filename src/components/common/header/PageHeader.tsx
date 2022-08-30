@@ -107,11 +107,11 @@ function PageHeader({
 
     return (
         <div
-            className={`dc__page-header content-space cn-9 bcn-0 pl-20 pr-20 ${
+            className={`dc__page-header dc__content-space cn-9 bcn-0 pl-20 pr-20 ${
                 showTabs ? 'dc__page-header-tabs__height' : 'dc__page-header__height flex'
             }`}
         >
-            <h1 className={`dc__page-header__title content-space  flex fs-16 fw-6 lh-20`}>
+            <h1 className={`dc__page-header__title dc__content-space  flex fs-16 fw-6 lh-20`}>
                 <div className="flex left">
                     {showCloseButton && (
                         <button className="dc__transparent flex mr-8" onClick={onClose}>
@@ -123,7 +123,7 @@ function PageHeader({
                     {isBreadcrumbs && breadCrumbs()}
                     {isTippyShown && (
                         <a
-                            className="learn-more__href flex"
+                            className="dc__link flex"
                             target="_blank"
                             href={tippyRedirectLink}
                             onClick={onClickTippybutton}

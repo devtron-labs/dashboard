@@ -1001,7 +1001,7 @@ export function EnvironmentNotConfigured({ environments, ...props }) {
                         : `Please select an environment to view app details`}
                 </p>
                 {environmentsMap[+envId] && (
-                    <Link className="cta no-decor" to={getAppTriggerURL(appId)}>
+                    <Link className="cta dc__no-decor" to={getAppTriggerURL(appId)}>
                         Go to Trigger
                     </Link>
                 )}

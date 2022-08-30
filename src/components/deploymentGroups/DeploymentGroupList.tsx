@@ -346,7 +346,7 @@ function NoDeploymentGroups() {
                     No Deployment Groups
                 </h1>
                 <p className="dc__empty__message">Use deployment groups to deploy multiple applications at once.</p>
-                <Link to={`${URLS.DEPLOYMENT_GROUPS}/0/edit`} className="cta no-decor cta--create-group flex">
+                <Link to={`${URLS.DEPLOYMENT_GROUPS}/0/edit`} className="cta dc__no-decor cta--create-group flex">
                     <Add className="icon-dim-20 mr-5" />
                     Create Group
                 </Link>

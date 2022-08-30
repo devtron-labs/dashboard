@@ -49,7 +49,7 @@ function AboutDevtronView({
                                 exact
                                 to={tab.link}
                                 activeClassName="active"
-                                className="tab-list__tab-link no-decor"
+                                className="tab-list__tab-link dc__no-decor"
                             >
                                 {tab.name}
                             </NavLink>

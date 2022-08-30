@@ -87,7 +87,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
         return <div className="pt-20 pb-8">
             <div className="fs-14 cn-9 fw-6 mb-8">
                 All incoming webhook payloads for
-            <a href={webhookPayloads?.repositoryUrl} rel="noreferrer noopener" target="_blank" className="learn-more__href" > /{repo}</a>
+            <a href={webhookPayloads?.repositoryUrl} rel="noreferrer noopener" target="_blank" className="dc__link" > /{repo}</a>
             </div>
             <div>
                 {webhookPayloads?.payloads == null ? <div className="bcn-1 empty-payload flex column mt-20 mr-20">
@@ -106,7 +106,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
                                 <div className="cb-5 cursor" onClick={() => getCIWebhookPayloadRes(ciPipelineMaterialId, payload.parsedDataId)}>{moment(payload.eventTime).format(Moment12HourFormat)}</div>
                                 <div>{payload.matchedFiltersCount}</div>
                                 <div>{payload.failedFiltersCount}</div>
-                                <div className={payload.matchedFilters == false ? `deprecated-warn__text fs-13` : `cg-5 ml-4 fs-13`}>{payload.matchedFilters == false ? "Failed" : "Passed"}</div>
+                                <div className={payload.matchedFilters == false ? `dc__deprecated-warn__text fs-13` : `cg-5 ml-4 fs-13`}>{payload.matchedFilters == false ? "Failed" : "Passed"}</div>
                             </div>
                         )}
                     </>}
@@ -168,7 +168,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
                                 <div >{selectedData?.selectorName}</div>
                                 <div>{selectedData?.selectorValue}</div>
                                 <div>{selectedData?.selectorCondition}</div>
-                                <div className={selectedData?.match == false ? `deprecated-warn__text` : `cg-5 ml-4`}>{selectedData?.match === false ? "Did not match" : "Matched"}</div>
+                                <div className={selectedData?.match == false ? `dc__deprecated-warn__text` : `cg-5 ml-4`}>{selectedData?.match === false ? "Did not match" : "Matched"}</div>
                             </div>
                         })}
                     </div>

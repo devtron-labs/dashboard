@@ -17,7 +17,7 @@ export default function DeploymentStatusDetailModal({
         <Drawer position="right" width="50%">
             <div className="deployment-status-breakdown-modal-container bcn-0">
                 <div className="box-shadow pb-12 pt-12 mb-20 bcn-0">
-                    <div className="title flex content-space pl-20 pr-20 ">
+                    <div className="title flex dc__content-space pl-20 pr-20 ">
                         <div>
                             <div className="cn-9 fs-16 fw-6">
                                 Deployment status: {appName} / {environmentName}
@@ -28,7 +28,7 @@ export default function DeploymentStatusDetailModal({
                                 >
                                     {deploymentStatusDetailsBreakdownData.deploymentStatusText}
                                 </span>
-                                <span className="bullet mr-8 ml-8 mt-10"></span>
+                                <span className="dc__bullet mr-8 ml-8 mt-10"></span>
                                 {deploymentStatusDetailsBreakdownData.deploymentStatus === 'inprogress' ? (
                                     <>
                                         <Timer className="icon-dim-16 mt-3 mr-5 timer-icon" />

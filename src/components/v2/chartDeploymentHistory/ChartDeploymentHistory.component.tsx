@@ -429,7 +429,7 @@ function ChartDeploymentHistory({
 
         return (
             <div className="trigger-details ml-20 mr-20 pb-20">
-                <div className="flex content-space trigger-details__summary">
+                <div className="flex dc__content-space trigger-details__summary">
                     <div className="flex column left pt-10">
                         <div className="cn-9 fs-14 fw-6">Deployed at</div>
                         <div className="flex left">

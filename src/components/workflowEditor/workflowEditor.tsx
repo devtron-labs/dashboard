@@ -318,7 +318,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             <>
                 <button
                     type="button"
-                    className="cta no-decor flex mb-20"
+                    className="cta dc__no-decor flex mb-20"
                     style={{ width: '170px' }}
                     onClick={this.toggleCIMenu}
                 >
@@ -347,7 +347,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 <p className="form__subtitle form__subtitle--workflow-editor">
                     Workflows consist of pipelines from build to deployment stages of an application. <br></br>
                     <a
-                        className="learn-more__href"
+                        className="dc__link"
                         href={DOCUMENTATION.APP_CREATE_WORKFLOW}
                         target="blank"
                         rel="noreferrer noopener"
@@ -368,7 +368,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     <div className="cn-9 fs-13">
                         Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to
                         &nbsp;
-                        <NavLink className="hosturl__review" to={URLS.GLOBAL_CONFIG_HOST_URL}>
+                        <NavLink className="dc__link-bold" to={URLS.GLOBAL_CONFIG_HOST_URL}>
                             Review and update
                         </NavLink>
                     </div>
@@ -439,7 +439,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     <p>
                         Workflow consist of pipelines from buid to deployment stages of an application.&nbsp;
                         <a
-                            className="learn-more__href"
+                            className="dc__link"
                             href={DOCUMENTATION.APP_CREATE_WORKFLOW}
                             target="blank"
                             rel="noreferrer noopener"

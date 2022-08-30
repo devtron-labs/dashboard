@@ -156,7 +156,7 @@ const getUpdateStatusLabel = (
 
     return updateStatusLabel ? (
         <>
-            <span className="bullet ml-4 mr-4" />
+            <span className="dc__bullet ml-4 mr-4" />
             {updateStatusLabel}
         </>
     ) : null
@@ -186,7 +186,7 @@ export const NavItem = ({
                         <span className="fs-13 ml-12">{route.name}</span>
                     )}
                     {route.name === 'Installed' && (
-                        <div className="installed-modules-link flex content-space ml-12" style={{ width: '175px' }}>
+                        <div className="installed-modules-link flex dc__content-space ml-12" style={{ width: '175px' }}>
                             <span className="fs-13">{route.name}</span>
                             <span className="badge">{installedModulesCount || 0}</span>
                         </div>
@@ -494,7 +494,7 @@ export const InstallationWrapper = ({
         return (
             <VisibleModal className="transition-effect">
                 <div className="modal__body upload-modal no-top-radius mt-0 p-0 w-600">
-                    <div className="flexbox content-space pl-20 pr-20 pt-16 pb-16 border-bottom">
+                    <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16 border-bottom">
                         <div className="fw-6 fs-16 cn-9">
                             {`Pre-requisites for update to ${upgradeVersion.toLowerCase()}`}
                         </div>
@@ -517,7 +517,7 @@ export const InstallationWrapper = ({
                                 </a>
                             </div>
                         ))}
-                        <div className="en-2 bw-1 flexbox content-space pt-8 pr-12 pb-8 pl-12 br-4">
+                        <div className="en-2 bw-1 flexbox dc__content-space pt-8 pr-12 pb-8 pl-12 br-4">
                             <span className="cn-9 fs-13 fw-6">Facing issues?</span>
                             <a
                                 className="pre-requisite-modal__help-chat fs-13 cb-5 flex left"
@@ -529,7 +529,7 @@ export const InstallationWrapper = ({
                             </a>
                         </div>
                     </div>
-                    <div className="p-16 border-top flexbox content-space">
+                    <div className="p-16 border-top flexbox dc__content-space">
                         <Checkbox
                             isChecked={preRequisiteChecked}
                             value={CHECKBOX_VALUE.CHECKED}
@@ -542,7 +542,7 @@ export const InstallationWrapper = ({
                         <button
                             onClick={handleActionButtonClick}
                             disabled={!preRequisiteChecked}
-                            className="cta ml-12 no-decor"
+                            className="cta ml-12 dc__no-decor"
                         >
                             Update
                         </button>

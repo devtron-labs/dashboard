@@ -1181,7 +1181,7 @@ button.anchor {
     stroke: var(--N500);
 }
 
-.app-commmit__body {
+.dc__app-commmit__body {
     border-radius: 4px;
     background-color: var(--N000);
     width: 400px;
@@ -1190,7 +1190,7 @@ button.anchor {
     cursor: default;
 }
 
-.app-commit__git-provider {
+.dc__app-commit__git-provider {
     font-weight: 600;
     font-stretch: normal;
     line-height: 1.67;
@@ -1199,34 +1199,7 @@ button.anchor {
     margin-bottom: 8px;
 }
 
-.app-commit__branch-name {
-    font-family: monospace;
-    font-weight: normal;
-    line-height: 1.67;
-    letter-spacing: normal;
-    color: var(--N900);
-    margin-bottom: 8px;
-}
-
-.app-commit__branch-name svg {
-    vertical-align: middle;
-}
-
-.app-commit__branch-name .stroke-color {
-    stroke: var(--N700);
-}
-
-.app-commit__message {
-    opacity: 0.8;
-    font-size: 12px;
-    font-weight: normal;
-    line-height: 1.67;
-    letter-spacing: normal;
-    color: var(--N900);
-    margin-bottom: 0;
-}
-
-.bullet {
+.dc__bullet {
     width: 4px;
     height: 4px;
     background: var(--N700);
@@ -1238,13 +1211,13 @@ button.anchor {
     }
 }
 
-.visible-hover {
-    .visible-hover--child {
+.dc__visible-hover {
+    .dc__visible-hover--child {
         display: none;
     }
 
-    &.visible-hover--parent:hover {
-        .visible-hover--child {
+    &.dc__visible-hover--parent:hover {
+        .dc__visible-hover--child {
             display: inherit;
         }
     }
@@ -1254,7 +1227,7 @@ button.anchor {
     filter: grayscale(1);
 }
 
-.no-decor {
+.dc__no-decor {
     text-decoration: none;
 
     &:hover {
@@ -1262,7 +1235,7 @@ button.anchor {
     }
 }
 
-.text-underline {
+.dc__text-underline {
     text-decoration: none;
 
     &:hover {
@@ -1270,7 +1243,7 @@ button.anchor {
     }
 }
 
-.tertiary-tab__radio {
+.dc__tertiary-tab__radio {
     margin-bottom: 0px;
     font-size: 12px;
     font-weight: normal;
@@ -1279,29 +1252,29 @@ button.anchor {
     color: #151515;
 }
 
-.tertiary-tab {
+.dc__tertiary-tab {
     border: solid 1px var(--N200);
     padding: 6px 8px;
     border-radius: 4px;
     cursor: pointer;
 }
 
-.tertiary-tab__radio input {
+.dc__tertiary-tab__radio input {
     visibility: hidden;
     vertical-align: middle;
     width: 8px;
 }
 
-.tertiary-tab__radio svg {
+.dc__tertiary-tab__radio svg {
     vertical-align: bottom;
 }
 
-.tertiary-tab__radio input:checked ~ .tertiary-tab {
+.dc__tertiary-tab__radio input:checked ~ .dc__tertiary-tab {
     border: solid 1px var(--B500);
     background-color: var(--B100);
 }
 
-.secondary-nav {
+.dc__secondary-nav {
     width: 240px;
     height: 100%;
     border-right: solid 1px #d6dbdf;
@@ -1309,7 +1282,7 @@ button.anchor {
     background-color: var(--N000);
 }
 
-.secondary-nav__item {
+.dc__secondary-nav__item {
     padding: 16px;
     max-height: 200px;
     overflow: auto;
@@ -1334,7 +1307,7 @@ button.anchor {
 }
 
 // Start Security CSS
-.fill-pass {
+.dc__fill-pass {
     border-radius: 4px;
     border: solid 1px var(--G300);
     color: var(--G500);
@@ -1343,7 +1316,7 @@ button.anchor {
     background-color: var(--G100);
 }
 
-.fill-critical {
+.dc__fill-critical {
     border-radius: 4px;
     border: solid 1px var(--R300);
     color: var(--R500);
@@ -1352,7 +1325,7 @@ button.anchor {
     background-color: var(--R100);
 }
 
-.fill-moderate {
+.dc__fill-moderate {
     border-radius: 4px;
     border: solid 1px #ffbc76;
     color: #ff8300;
@@ -1361,7 +1334,7 @@ button.anchor {
     background-color: #ffead4;
 }
 
-.fill-low {
+.dc__fill-low {
     border-radius: 4px;
     border: solid 1px var(--Y300);
     color: var(--Y600);
@@ -1370,25 +1343,25 @@ button.anchor {
     background-color: var(--Y100);
 }
 
-.security-tab__table-row:hover .cve-cell:after {
+.dc__security-tab__table-row:hover .dc__cve-cel:after {
     display: inline-block;
 }
 
-.security-tab__table-row:hover .cve-cell a {
+.dc__security-tab__table-row:hover .dc__cve-cel a {
     color: var(--B500);
     text-decoration: underline;
 }
 
-.cve-cell a {
+.dc__cve-cel a {
     color: var(--N900);
     line-height: 23px;
 }
 
-.cve-cell:hover a {
+.dc__cve-cel:hover a {
     color: var(--B500);
 }
 
-.cve-cell::after {
+.dc__cve-cel::after {
     content: '';
     background-image: url('../assets/icons/ic-open-in-new.svg');
     width: 14px;
@@ -1445,14 +1418,14 @@ button.anchor {
     margin: 6px;
 }
 
-.deprecated-warn__text {
+.dc__deprecated-warn__text {
     margin: 0 0 0 4px;
     font-size: 12px;
     line-height: 1.67;
     color: #f32e2e;
 }
 
-.search-with-dropdown {
+.dc__search-with-dropdown {
     width: 100%;
     border: solid 1px var(--N200);
     display: flex;
@@ -1461,20 +1434,24 @@ button.anchor {
     align-items: center;
 }
 
-.btn-confirm {
-    text-decoration: none !important;
-    margin-left: 20px;
-}
-
-.learn-more__href {
+.dc__link {
     color: var(--B500);
 }
 
-.learn-more__href:hover {
+.dc__link:hover {
     color: var(--B500);
 }
 
-.sso__description {
+.dc__link-bold {
+  color: var(--B500);
+  font-weight: 600;
+}
+
+.dc__link-bold:hover {
+  color: var(--B500);
+}
+
+.dc__sso__description {
     margin: 20px 24px;
     padding: 16px;
     border-radius: 4px;
@@ -1483,7 +1460,7 @@ button.anchor {
     font-size: 14px;
 }
 
-.hosturl__error {
+.dc__hosturl__error {
     border-radius: 4px;
     border: solid 1px var(--R200);
     color: var(--N900);
@@ -1492,16 +1469,7 @@ button.anchor {
     font-size: 13px;
 }
 
-.hosturl__review {
-    color: var(--B500);
-    font-weight: 600;
-}
-
-.hosturl__review:hover {
-    color: var(--B500);
-}
-
-.artifact__add {
+.dc__artifact__add {
     font-weight: 600;
     font-style: normal;
     line-height: 1.43;
@@ -1511,19 +1479,19 @@ button.anchor {
 }
 
 // Text Justify Content section
-.content-space {
+.dc__content-space {
     justify-content: space-between !important;
 }
 
-.content-start {
+.dc__content-start {
     justify-content: flex-start !important;
 }
 
-.content-end {
+.dc__content-end {
     justify-content: flex-end !important;
 }
 
-.align-baseline {
+.dc__align-baseline {
     align-items: baseline !important;
 }
 

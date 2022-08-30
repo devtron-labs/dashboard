@@ -119,7 +119,7 @@ function NodeTreeDetailTab({
                                                     >
                                                         <NavLink
                                                             to={`${tab.url}`}
-                                                            className={`resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 no-decor `}
+                                                            className={`resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 dc__no-decor `}
                                                         >
                                                             <div
                                                                 className={`flex left ${tab.isSelected ? 'cn-9' : ''} ${

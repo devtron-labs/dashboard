@@ -51,7 +51,7 @@ export default function Docker({ ...props }) {
             <h5 className="form__subtitle">
                 Manage your organization’s container registries.&nbsp;
                 <a
-                    className="learn-more__href"
+                    className="dc__link"
                     href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
                     rel="noopener noreferrer"
                     target="_blank"

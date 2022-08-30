@@ -122,7 +122,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                         <p className="scanned-object__value">{this.state.pod}</p>
                     </> : null}
                 </div> : null}
-                {this.props.showAppInfo && this.state.objectType !== "chart" ? <Link to={link} className="cta small cancel no-decor" onClick={(event) => {
+                {this.props.showAppInfo && this.state.objectType !== "chart" ? <Link to={link} className="cta small cancel dc__no-decor" onClick={(event) => {
                 }}> View Application
                 </Link> : null}
             </div>

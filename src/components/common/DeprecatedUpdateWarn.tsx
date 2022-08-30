@@ -6,7 +6,7 @@ export class DeprecatedWarn extends Component {
         return (
             <div className="flex left">
                 <img src={triangleAlert} alt="" className="icon-dim-16"/>
-                <span className="deprecated-warn__text">Deprecated</span>
+                <span className="dc__deprecated-warn__text">Deprecated</span>
             </div>
         )
     }
@@ -17,7 +17,7 @@ export class UpdateWarn extends Component {
         return (
             <div className="flex left">
                 <img src={triangleAlert} alt="" className="icon-dim-16"/>
-                <span className="deprecated-warn__text">Update Required</span>
+                <span className="dc__deprecated-warn__text">Update Required</span>
             </div>
         )
     }

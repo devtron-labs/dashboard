@@ -40,12 +40,12 @@ export default function ChartRepo() {
         <section className="global-configuration__component">
             <h2 className="form__title">Chart Repository</h2>
             <p className="form__subtitle">Manage your organization’s chart repositories.
-            <span><a rel="noreferrer noopener" target="_blank" className="learn-more__href" href={DOCUMENTATION.GLOBAL_CONFIG_CHART}> Learn more</a> </span></p>
+            <span><a rel="noreferrer noopener" target="_blank" className="dc__link" href={DOCUMENTATION.GLOBAL_CONFIG_CHART}> Learn more</a> </span></p>
             <CollapsedList  id={null} default={true} url={""} name={""} active={true} authMode={"ANONYMOUS"}  key={Math.random().toString(36).substr(2, 5)} reload={reload} />
             <div className="chartRepo_form__subtitle dc__float-left dc__bold">Repositories({(result && Array.isArray(result.result) ? result.result : []).length})</div>
             <Tippy className="default-tt" arrow={false} placement="top" content="Refetch chart from repositories">
                 <div className="chartRepo_form__subtitle dc__float-right">
-                    <a rel="noreferrer noopener" target="_blank" className={`learn-more__href ${fetching? '': 'cursor'}`} onClick={refetchCharts}><span>
+                    <a rel="noreferrer noopener" target="_blank" className={`dc__link ${fetching? '': 'cursor'}`} onClick={refetchCharts}><span>
                         <svg width="16" height="16" viewBox="2 -2 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M11.0105 6.23225H14.0105V3.23225" stroke="#0066CC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                             <path d="M4.11096 4.11091C4.62168 3.60019 5.228 3.19506 5.89529 2.91866C6.56258 2.64226 7.27778 2.5 8.00005 2.5C8.72232 2.5 9.43752 2.64226 10.1048 2.91866C10.7721 3.19506 11.3784 3.60019 11.8891 4.11091L14.0105 6.23223" stroke="#0066CC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>

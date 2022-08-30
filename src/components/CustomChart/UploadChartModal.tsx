@@ -158,7 +158,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                     <div className="fw-6 fs-13 cn-9 mb-8">
                         📙 Need help?&nbsp;
                         <a
-                            className="learn-more__href fw-6"
+                            className="dc__link fw-6"
                             href={DOCUMENTATION.CUSTOM_CHART_PRE_REQUISITES}
                             target="_blank"
                             rel="noreferrer noopener"
@@ -190,8 +190,8 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
             <div
                 className={`footer pt-16 pb-16 border-top flexbox ${
                     uploadState === UPLOAD_STATE.UPLOAD || uploadState === UPLOAD_STATE.UPLOADING
-                        ? 'content-end'
-                        : 'content-space'
+                        ? 'dc__content-end'
+                        : 'dc__content-space'
                 }`}
             >
                 {uploadState !== UPLOAD_STATE.UPLOAD && (
@@ -225,7 +225,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
     return (
         <VisibleModal className="transition-effect">
             <div className="modal__body upload-modal no-top-radius mt-0">
-                <div className="flexbox content-space pl-20 pr-20 pt-16 pb-16 border-bottom">
+                <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16 border-bottom">
                     <div className="fw-6 fs-16 cn-9">
                         {uploadState === UPLOAD_STATE.UPLOAD ? 'Using custom chart' : 'Upload chart'}
                     </div>

@@ -73,7 +73,7 @@ export function Sidebar() {
                 <div className="fw-6 fs-13 cn-9 mb-8">📙 Need help?</div>
                 <div>
                     <a
-                        className="learn-more__href fw-6"
+                        className="dc__link fw-6"
                         href={helpData.docLink}
                         target="_blank"
                         rel="noreferrer noopener"

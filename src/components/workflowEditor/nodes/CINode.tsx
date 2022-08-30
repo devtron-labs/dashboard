@@ -31,7 +31,7 @@ export class CINode extends Component<CINodeProps> {
         let classes = 'workflow-node cursor';
         let pipeline = this.props.isLinkedCI ? "Build: Linked" : this.props.isExternalCI ? "Build: External" : "Build";
         return <div className={classes}>
-            <Link to={this.props.to} className="no-decor">
+            <Link to={this.props.to} className="dc__no-decor">
                 {this.props.linkedCount ? <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.linkedCount}>
                     <span className="link-count"> <img src={link} className="icon-dim-12 mr-5" alt="" />
                         {this.props.linkedCount}

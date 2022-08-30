@@ -226,7 +226,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                         {this.renderSecondaryButtton()}
                         <Link to={this.state.sourcePipelineURL}
                             target="_blank"
-                            className="cta cta--workflow flex flex-1 no-decor"
+                            className="cta cta--workflow flex flex-1 dc__no-decor"
                             onClick={(event) => this.generateSourceUrl()}>
                             View Source Pipeline
                         </Link>

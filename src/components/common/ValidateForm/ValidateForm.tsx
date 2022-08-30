@@ -16,7 +16,7 @@ export enum VALIDATION_STATUS {
 
 function renderOnClickValidate(onClickValidate) {
     return (
-        <a onClick={() => onClickValidate()} className="fw-6 onlink pointer learn-more__href ">VALIDATE</a>
+        <a onClick={() => onClickValidate()} className="fw-6 onlink pointer dc__link ">VALIDATE</a>
     )
 }
 
@@ -76,7 +76,7 @@ function ValidateFailure({ formId, validationError, onClickValidate, validatedTi
                     <span className="ml-8 fw-6">Configurations validation failed</span>
                 </div>
             </div>
-            {isChartRepo && <a onClick={() => onClickValidate()} className="fw-6 onlink pointer learn-more__href ">VALIDATE</a>}
+            {isChartRepo && <a onClick={() => onClickValidate()} className="fw-6 onlink pointer dc__link ">VALIDATE</a>}
             {
                 !isChartRepo && formId && renderOnClickValidate(onClickValidate)
             }

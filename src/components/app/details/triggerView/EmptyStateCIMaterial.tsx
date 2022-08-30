@@ -83,7 +83,7 @@ export class EmptyStateCIMaterial extends Component<EmptyStateCIMaterialProps> {
               <EmptyState.Button>{cta}</EmptyState.Button>
               {this.props.isWebHook && (
                   <EmptyState.Button>
-                      <span className="learn-more__href cursor" onClick={this.props.toggleWebHookModal}>
+                      <span className="dc__link cursor" onClick={this.props.toggleWebHookModal}>
                           View all incoming webhook payloads
                       </span>
                   </EmptyState.Button>

@@ -959,7 +959,7 @@ function ChartValuesView({
 
     const renderValuesTabsContainer = () => {
         return (
-            <div className="chart-values-view__tabs-container flex content-space">
+            <div className="chart-values-view__tabs-container flex dc__content-space">
                 {renderValuesTabs()}
                 <div className="flex">
                     {(commonState.activeTab === 'yaml' || (commonState.activeTab === 'manifest' && isExternalApp)) && (

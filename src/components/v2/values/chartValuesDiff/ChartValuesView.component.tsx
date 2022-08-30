@@ -231,7 +231,7 @@ export const ChartRepoSelector = ({
     return (
         (isExternal || isUpdate) && (
             <div className="form__row form__row--w-100">
-                <div className="flex content-space">
+                <div className="flex dc__content-space">
                     <span className="form__label fs-13 fw-4 lh-20 cn-7">Chart</span>
                     <Tippy
                         className="default-tt "
@@ -239,7 +239,7 @@ export const ChartRepoSelector = ({
                         content="Fetch latest charts from connected chart repositories"
                     >
                         <span
-                            className={`refetch-charts cb-5 cursor text-underline ${
+                            className={`refetch-charts cb-5 cursor dc__text-underline ${
                                 refetchingCharts ? 'refetching' : ''
                             }`}
                             onClick={refetchCharts}
@@ -923,7 +923,7 @@ export const AppNotLinkedDialog = ({
                     </button>
                     <button
                         type="button"
-                        className="cta ml-12 no-decor"
+                        className="cta ml-12 dc__no-decor"
                         onClick={() => {
                             close()
                             update(true)

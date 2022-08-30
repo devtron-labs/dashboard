@@ -172,7 +172,7 @@ export default function SavedValuesList() {
 
     const renderLearnMoreLink = (): JSX.Element => {
         return (
-            <a className="no-decor" href={DOCUMENTATION.CUSTOM_VALUES} target="_blank" rel="noreferrer noopener">
+            <a className="dc__no-decor" href={DOCUMENTATION.CUSTOM_VALUES} target="_blank" rel="noreferrer noopener">
                 Learn more
             </a>
         )
@@ -185,7 +185,7 @@ export default function SavedValuesList() {
                     {subtitleText}&nbsp;
                     {renderLearnMoreLink()}
                 </p>
-                <div className="flexbox content-space">
+                <div className="flexbox dc__content-space">
                     {renderUploadButton()}
                     {renderSearch()}
                 </div>

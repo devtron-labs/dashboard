@@ -186,7 +186,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                     <h5 className="form__subtitle">
                         Manage your organization’s {moduleBasedTitle.toLowerCase()}. &nbsp;
                         <a
-                            className="learn-more__href"
+                            className="dc__link"
                             href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
                             rel="noopener noreferer"
                             target="_blank"
@@ -644,7 +644,7 @@ function ClusterForm({
                 <>
                     <hr></hr>
                     <div className={`${prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'} mt-20`}>
-                        <div className="content-space flex">
+                        <div className="dc__content-space flex">
                             <span className="form__input-header">See metrics for applications in this cluster</span>
                             <div className="" style={{ width: '32px', height: '20px' }}>
                                 <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />

@@ -370,7 +370,7 @@ export default function HelmAppList({
                             </span>
                             <span>
                                 To view helm charts deployed from outside devtron, please select a cluster from above
-                                filters. <a className="learn-more__href cursor" target="_blank" href={DOCUMENTATION.HYPERION}>Learn more</a>
+                                filters. <a className="dc__link cursor" target="_blank" href={DOCUMENTATION.HYPERION}>Learn more</a>
                             </span>
                         </div>
                     </div>

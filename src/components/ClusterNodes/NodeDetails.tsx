@@ -679,7 +679,7 @@ export default function NodeDetails() {
         if (!nodeDetail) return null
         return (
             <div className="node-details-container">
-                <div className="ml-20 mr-20 mb-12 mt-16 pl-20 pr-20 pt-16 pb-16 bcn-0 br-4 en-2 bw-1 flexbox content-space">
+                <div className="ml-20 mr-20 mb-12 mt-16 pl-20 pr-20 pt-16 pb-16 bcn-0 br-4 en-2 bw-1 flexbox dc__content-space">
                     <div className="fw-6">
                         <div className="fs-16 cn-9">{nodeDetail.name}</div>
                         <div className={`fs-13 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>

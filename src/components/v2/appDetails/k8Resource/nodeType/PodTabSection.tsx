@@ -27,12 +27,12 @@ function PodTabSection({
         <div
             className={
                 isNew
-                    ? `lh-1-4-33 no-decor pod-tab ${
+                    ? `lh-1-4-33 dc__no-decor pod-tab ${
                           podTab === 'new' ? 'pod-tab__active' : ''
                       } border-right flex left column pl-16 pr-16 pointer `
                     : `pod-tab ${
                           podTab === 'old' ? 'pod-tab__active border-right' : 'pod-tab__transparent-top'
-                      } no-decor flex left column pl-16 pr-16 pointer  `
+                      } dc__no-decor flex left column pl-16 pr-16 pointer  `
             }
             onClick={(e) => selectPodTab(isNew ? 'new' : 'old')}
             data-testid={dataTestId}
@@ -44,7 +44,7 @@ function PodTabSection({
             <div className="flex left fs-12 cn-9 pb-12">
             {getFilteredPodStatus(podStatus).map((status, idx) => (
                     <React.Fragment key={idx}>
-                        {!!idx && <span className="bullet mr-4 ml-4"></span>}
+                        {!!idx && <span className="dc__bullet mr-4 ml-4"></span>}
                         <span key={idx} data-testid={isNew && `new-pod-status-${status}`}>
                             {podStatus[status]} {status}
                         </span>

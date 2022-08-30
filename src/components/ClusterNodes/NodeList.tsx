@@ -365,7 +365,7 @@ export default function NodeList() {
                     collapsedErrorSection ? ' pb-12 ' : ' pb-8'
                 }`}
             >
-                <div className={`flexbox content-space ${collapsedErrorSection ? '' : ' mb-16'}`}>
+                <div className={`flexbox dc__content-space ${collapsedErrorSection ? '' : ' mb-16'}`}>
                     <span
                         className="flexbox pointer"
                         onClick={(event) => {
@@ -427,7 +427,7 @@ export default function NodeList() {
     const renderClusterSummary = (): JSX.Element => {
         return (
             <>
-                <div className="flexbox content-space pl-20 pr-20 pt-16 pb-16">
+                <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
                     <div className="fw-6 fs-14 cn-9">Resource allocation and usage</div>
                     <div className="fs-13">
                         {lastDataSyncTimeString && (
@@ -440,8 +440,8 @@ export default function NodeList() {
                         )}
                     </div>
                 </div>
-                <div className="flexbox content-space pl-20 pr-20 pb-20">
-                    <div className="flexbox content-space mr-16 w-50 p-16 bcn-0 br-4 en-2 bw-1">
+                <div className="flexbox dc__content-space pl-20 pr-20 pb-20">
+                    <div className="flexbox dc__content-space mr-16 w-50 p-16 bcn-0 br-4 en-2 bw-1">
                         <div className="mr-16 w-25">
                             <div className="align-center fs-13 fw-4 cn-7">CPU Usage</div>
                             <div className="align-center fs-24 fw-4 cn-9">
@@ -466,7 +466,7 @@ export default function NodeList() {
                         </div>
                     </div>
 
-                    <div className="flexbox content-space w-50 p-16 bcn-0 br-4 en-2 bw-1">
+                    <div className="flexbox dc__content-space w-50 p-16 bcn-0 br-4 en-2 bw-1">
                         <div className="mr-16 w-25">
                             <div className="align-center fs-13 fw-4 cn-7">Memory Usage</div>
                             <div className="align-center fs-24 fw-4 cn-9">

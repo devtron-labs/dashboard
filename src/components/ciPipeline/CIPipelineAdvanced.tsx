@@ -67,7 +67,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                 }}
             >
                 <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle mr-16" />
-                <span className="artifact__add">Add Stage</span>
+                <span className="dc__artifact__add">Add Stage</span>
             </div>
         )
     }
@@ -458,7 +458,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                 <div className="ml-28">
                     NOTE : Webhook based CI pipeline is not supported for multiple git repos.&nbsp;
                     <a
-                        className="learn-more__href ml-4 mr-4"
+                        className="dc__link ml-4 mr-4"
                         href="https://github.com/devtron-labs/devtron/issues"
                         target="_blank"
                         rel="noreferrer noopener"

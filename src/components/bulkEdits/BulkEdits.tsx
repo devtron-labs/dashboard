@@ -40,7 +40,7 @@ const STATUS = {
 
 const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, value, name }) => {
     return (
-        <label className="tertiary-tab__radio flex fs-13">
+        <label className="dc__tertiary-tab__radio flex fs-13">
             <input type="radio" name="status" checked={outputName === value} value={value} onClick={handleOutputTabs} />
             <div className="tertiary-output-tab cursor mr-12 pb-6"> {name} </div>
         </label>
@@ -117,7 +117,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     <div>
                         Run scripts to bulk edit configurations for multiple devtron components.
                         <a
-                            className="learn-more__href"
+                            className="dc__link"
                             href={DOCUMENTATION.BULK_UPDATE}
                             rel="noreferrer noopener"
                             target="_blank"

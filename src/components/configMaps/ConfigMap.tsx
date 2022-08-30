@@ -81,7 +81,7 @@ const ConfigMap = ({ respondOnSuccess, ...props }) => {
                 for different modules in a distributed system into one object.&nbsp;
                 <a
                     rel="noreferrer noopener"
-                    className="learn-more__href"
+                    className="dc__link"
                     href={DOCUMENTATION.APP_CREATE_CONFIG_MAP}
                     target="blank"
                 >

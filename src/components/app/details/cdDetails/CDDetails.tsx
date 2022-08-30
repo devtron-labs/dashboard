@@ -334,14 +334,14 @@ const DeploymentCard: React.FC<{
                                     ? `${triggerDetails.stage}-deploy`
                                     : triggerDetails.stage}
                             </div>
-                            <span className="bullet bullet--d2 ml-4 mr-4"></span>
+                            <span className="dc__bullet bullet--d2 ml-4 mr-4"></span>
                             {triggerDetails.artifact && (
                                 <div className="dc__app-commit__hash dc__app-commit__hash--no-bg">
                                     <img src={docker} className="commit-hash__icon grayscale" />
                                     {triggerDetails.artifact.split(':')[1].slice(-12)}
                                 </div>
                             )}
-                            <span className="bullet bullet--d2 ml-4 mr-4"></span>
+                            <span className="dc__bullet bullet--d2 ml-4 mr-4"></span>
                             <div className="cn-7 fs-12">
                                 {triggerDetails.triggeredBy === 1 ? 'auto trigger' : triggerDetails.triggeredByEmail}
                             </div>

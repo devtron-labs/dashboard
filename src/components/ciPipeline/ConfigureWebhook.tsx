@@ -59,7 +59,7 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
         <div className="webhook-config-container">
             <p className="mt-16 fs-13 mb-0 cn-7">Build {selectedWebhookEvent.name} Webhook CI which match below filters only <span className="cn-9 fw-6">(NOTE: Only regex is supported for values)</span></p>
             <p className="mb-16 fs-13">Devtron uses regexp library, <a className="learn-more-href" href="https://yourbasic.org/golang/regexp-cheat-sheet/" target="_blank" rel="noreferrer noopener" >view regexp cheatsheet</a>.
-             You can test your regex <a className="learn-more__href" href="https://regex101.com/r/lHHuaE/1" rel="noreferrer noopener" target="_blank">here</a></p>
+             You can test your regex <a className="dc__link" href="https://regex101.com/r/lHHuaE/1" rel="noreferrer noopener" target="_blank">here</a></p>
             {webhookConditionList.map((_condition, index) => {
                 let _masterSelectorList = [];
                 let _canEditSelectorCondition = canEditPipeline;

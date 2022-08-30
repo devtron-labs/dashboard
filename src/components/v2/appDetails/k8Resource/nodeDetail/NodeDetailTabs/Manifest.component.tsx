@@ -258,7 +258,7 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                             <div
                                                 className={`${
                                                     tab.isSelected ? 'selected-manifest-tab cn-0' : ' bcn-1'
-                                                } bw-1 pl-6 pr-6 br-4 en-2 no-decor flex left`}
+                                                } bw-1 pl-6 pr-6 br-4 en-2 dc__no-decor flex left`}
                                                 onClick={() => handleTabClick(tab)}
                                             >
                                                 {tab.name}

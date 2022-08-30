@@ -537,7 +537,7 @@ function ChartListHeader({ charts }) {
             <p className="mb-0 mt-4 pl-20">
                 Select chart to deploy. &nbsp;
                 <a
-                    className="learn-more__href"
+                    className="dc__link"
                     href={DOCUMENTATION.CHART_LIST}
                     rel="noreferrer noopener"
                     target="_blank"
@@ -574,7 +574,7 @@ export function EmptyChartGroup({
                         href={DOCUMENTATION.CHART_DEPLOY}
                         rel="noreferrer noopener"
                         target="_blank"
-                        className="learn-more__href"
+                        className="dc__link"
                     >
                         Learn more about chart groups
                     </a>
@@ -631,7 +631,7 @@ export function ChartGroupListMin({
                         Use chart groups to preconfigure and deploy frequently used charts together. Learn more about
                         chart groups
                     </p>
-                    <div className="flex content-space">
+                    <div className="flex dc__content-space">
                         {renderCreateGroupButton()}
                         <div className="cb-5 fw-6 fs-13 flex fcb-5 cursor" onClick={redirectToGroup}>
                             View all chart groups

@@ -192,7 +192,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                 <Info className="mr-4 icon-dim-16" />
                                 <span className="cb-5 mb-2 lh-1-33">
                                     <a
-                                        className="no-decor"
+                                        className="dc__no-decor"
                                         href="https://github.com/Knetic/govaluate/blob/0580e9b47a69125afa0e4ebd1cf93c49eb5a43ec/parsing.go#L258"
                                         target="_blank"
                                     >

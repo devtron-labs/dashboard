@@ -169,7 +169,7 @@ export default function ClusterList() {
         <>
             <PageHeader headerName="Clusters" />
             <div className={`cluster-list bcn-0 ${noResults ? 'no-result-container' : ''}`}>
-                <div className="flexbox content-space pl-20 pr-20 pt-16 pb-16">
+                <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
                     {renderSearch()}
                     <div className="fs-13">
                         {lastDataSyncTimeString && (

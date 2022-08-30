@@ -64,7 +64,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         }
         return <div className="white-card white-card--add-new-item mb-16 dashed" onClick={this.props.toggleCollapse}>
             <Add className="icon-dim-24 mr-5 fcb-5 dc__vertical-align-middle" />
-            <span className="artifact__add">Add Git Repository</span>
+            <span className="dc__artifact__add">Add Git Repository</span>
         </div>
     }
 
@@ -135,7 +135,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             MenuList: (props) => {
                                 return <components.MenuList {...props}>
                                     {props.children}
-                                    <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="border-top dc__react-select__bottom bcn-0 p-10 cb-5 dc__block fw-5 anchor cursor no-decor">
+                                    <NavLink to={`${URLS.GLOBAL_CONFIG_GIT}`} className="border-top dc__react-select__bottom bcn-0 p-10 cb-5 dc__block fw-5 anchor cursor dc__no-decor">
                                         <Add className="icon-dim-20 fcb-5 mr-12 dc__vertical-align-bottom " />
                                         Add Git Account
                                     </NavLink>

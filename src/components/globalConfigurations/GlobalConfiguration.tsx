@@ -285,7 +285,7 @@ function NavItem({ hostURLConfig, serverMode }) {
                             <NavLink
                                 key={`nav_item_${index}`}
                                 to={route.href}
-                                className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'} flex content-space`}
+                                className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'} flex dc__content-space`}
                                 onClick={(e) => {
                                     handleGroupCollapsedState(e, route)
                                 }}

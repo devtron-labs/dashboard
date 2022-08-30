@@ -261,7 +261,7 @@ function ExternalLinks() {
                         Learn more
                     </a>
                 </p>
-                <div className="cta-search-filter-container flex content-space mb-16">
+                <div className="cta-search-filter-container flex dc__content-space mb-16">
                     <AddLinkButton handleOnClick={handleAddLinkClick} />
                     {renderSearchFilterWrapper()}
                 </div>

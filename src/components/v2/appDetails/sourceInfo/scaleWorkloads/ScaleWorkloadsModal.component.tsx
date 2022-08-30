@@ -330,7 +330,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                                             <div key={`${item.kind}/${item.name}`} className="check-single-workload">
                                                 <Checkbox
                                                     rootClassName={`mb-0 fs-13 cursor bcn-0 p${
-                                                        item.errorMessage ? ' align-baseline' : ''
+                                                        item.errorMessage ? ' dc__align-baseline' : ''
                                                     }`}
                                                     isChecked={item.isChecked}
                                                     value={item.value}
