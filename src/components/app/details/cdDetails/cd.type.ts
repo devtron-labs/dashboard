@@ -1,3 +1,5 @@
+import { DeploymentAppType } from "../../../v2/appDetails/appDetails.type"
+
 export interface DeploymentHistorySingleValue {
     displayName: string
     value: string
@@ -78,4 +80,5 @@ export interface DeploymentHistorySidebarType {
 
 export interface DeploymentDetailStepsType{
   deploymentStatus: string
+  deploymentAppType?: DeploymentAppType
 }

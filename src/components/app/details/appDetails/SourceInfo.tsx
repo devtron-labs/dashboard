@@ -13,7 +13,8 @@ import { ReactComponent as CD } from '../../../../assets/icons/ic-CD.svg'
 import { useParams } from 'react-router'
 import { Nodes } from '../../types'
 import Tippy from '@tippyjs/react'
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga4'
+import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 
 export function SourceInfo({
     appDetails,
@@ -127,7 +128,7 @@ export function SourceInfo({
                                 </div>
                             </div>
                         </div>
-                        <div
+                       {appDetails?.deploymentAppType !== DeploymentAppType.helm && <div
                             onClick={showDeploymentDetailedStatus}
                             className="pointer flex left bcn-0 p-16 br-4 mw-382 en-2 bw-1"
                         >
@@ -175,7 +176,7 @@ export function SourceInfo({
                                     by {triggeredBy || '-'}
                                 </div>
                             </div>
-                        </div>
+                        </div>}
                     </>
                 )}
                 <div style={{ marginLeft: 'auto' }} className="flex right">
