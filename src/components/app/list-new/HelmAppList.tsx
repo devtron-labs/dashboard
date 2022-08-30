@@ -401,7 +401,7 @@ export default function HelmAppList({
                             <Link to={_buildAppDetailUrl(app)} className="app-list__row">
                                 <div className="app-list__cell--icon">
                                     <LazyImage
-                                        className="chart-grid-item__icon icon-dim-24"
+                                        className="dc__chart-grid-item__icon icon-dim-24"
                                         src={app.chartAvatar}
                                         onError={handleImageError}
                                     />
@@ -598,12 +598,12 @@ export default function HelmAppList({
     return (
         <>
             {dataStateType == AppListViewType.LOADING && (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <Progressing pageLoader />
                 </div>
             )}
             {dataStateType == AppListViewType.ERROR && (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )}

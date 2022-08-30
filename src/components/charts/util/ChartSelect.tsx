@@ -81,9 +81,9 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
             } ${selectedCount > 0 ? 'chart-grid-item--selected' : ''}`}
             onClick={onClick ? onClickChartSelect : noop}
         >
-            <div className={`${showDescription ? 'chart-list-item__icon-wrapper' : 'chart-grid-item__icon-wrapper'}`}>
+            <div className={`${showDescription ? 'dc__chart-list-item__icon-wrapper' : 'dc__chart-grid-item__icon-wrapper'}`}>
                 <LazyImage
-                    className={`${showDescription ? 'list-icon' : ''} chart-grid-item__icon`}
+                    className={`${showDescription ? 'list-icon' : ''} dc__chart-grid-item__icon`}
                     src={chart.icon}
                     onError={handleImageError}
                 />

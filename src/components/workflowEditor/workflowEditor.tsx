@@ -407,7 +407,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             return <Progressing pageLoader />
         } else if (this.state.view === ViewType.ERROR) {
             return (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={this.state.code} />
                 </div>
             )

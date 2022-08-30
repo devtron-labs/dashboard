@@ -135,7 +135,7 @@ export default function ChartGroupDetails() {
 
     const renderChartGroupActionButton = () => {
         return (
-            <div className="page-header__cta-container flex">
+            <div className="dc__page-header__cta-container flex">
                 <button type="button" className="cta flex cancel mr-16 h-32" onClick={redirectToConfigure}>
                     <Pencil className="mr-5" />
                     Edit

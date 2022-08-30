@@ -160,11 +160,11 @@ export default function BulkActionDetails() {
 
     return <>
         <section className="page deployment-detail-page">
-            {deploymentGroup && <article className="page-header">
-                <div className="page-header__title flex left">
+            {deploymentGroup && <article className="dc__page-header">
+                <div className="dc__page-header__title flex left">
                     {deploymentGroup.name}
                 </div>
-                <div className="page-header__cta-container flex left">
+                <div className="dc__page-header__cta-container flex left">
                     <button className="cta-with-img cancel mr-8" onClick={(event) => {
                         onClickDeploy()
                     }}><DeployButton />Deploy</button>

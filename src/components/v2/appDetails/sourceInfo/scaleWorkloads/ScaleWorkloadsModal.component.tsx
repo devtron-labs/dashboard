@@ -156,7 +156,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
     const renderScaleWorkloadTabs = (): JSX.Element => {
         return (
-            <ul className="tab-list deployment-tab-list tab-list--borderd mr-20">
+            <ul className="tab-list deployment-tab-list border-bottom mr-20">
                 {scaleWorkloadTabs.map((tab, index) => {
                     return (
                         <li
@@ -208,7 +208,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const handleWorkloadSelection = (workloadKey: string, isActiveWorkloadsTab: boolean): void => {
         const _workloadsList = isActiveWorkloadsTab ? workloadsToScaleDown : workloadsToRestore
         const _setWorkloadsList = isActiveWorkloadsTab ? setWorkloadsToScaleDown : setWorkloadsToRestore
-        
+
         const selectedWorkload = _workloadsList.get(workloadKey)
         selectedWorkload.value = !selectedWorkload.isChecked ? 'CHECKED' : 'INTERMEDIATE'
         selectedWorkload.isChecked = !selectedWorkload.isChecked

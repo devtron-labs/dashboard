@@ -649,11 +649,11 @@ export function ConfigMapForm({
                 </div>
             </div>
             {isExternalValues && (
-                <div className="info__container mb-24">
+                <div className="dc__info__container mb-24">
                     <Info />
                     <div className="flex column left">
-                        <div className="info__title">Using External Configmaps</div>
-                        <div className="info__subtitle">
+                        <div className="dc__info__title">Using External Configmaps</div>
+                        <div className="dc__info__subtitle">
                             Configmap will not be created by system. However, they will be used inside the pod. Please
                             make sure that configmap with the same name is present in the environment.
                         </div>
@@ -829,10 +829,10 @@ export function ConfigMapForm({
                 </div>
             )}
             {!isExternalValues && yamlMode && (
-                <div className="info__container info__container--configmap mb-16">
+                <div className="dc__info__container info__container--configmap mb-16">
                     <Info />
                     <div className="flex column left">
-                        <div className="info__subtitle">GUI Recommended for multi-line data.</div>
+                        <div className="dc__info__subtitle">GUI Recommended for multi-line data.</div>
                     </div>
                 </div>
             )}

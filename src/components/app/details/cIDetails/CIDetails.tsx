@@ -482,7 +482,7 @@ const Details: React.FC<BuildDetails> = ({
                             type="CI"
                             abort={() => cancelCiTrigger({ pipelineId, workflowId: buildId })}
                         />
-                        <ul className="ml-20 tab-list tab-list--borderd mr-20">
+                        <ul className="ml-20 tab-list border-bottom mr-20">
                             <li className="tab-list__tab">
                                 <NavLink replace className="tab-list__tab-link" activeClassName="active" to={`logs`}>
                                     Logs

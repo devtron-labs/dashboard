@@ -715,11 +715,11 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 </div>
             </div>
             {externalType === 'KubernetesSecret' ? (
-                <div className="info__container mb-24">
+                <div className="dc__info__container mb-24">
                     <Info className="icon-dim-20" />
                     <div className="flex column left">
-                        <div className="info__title">Using External Secrets</div>
-                        <div className="info__subtitle">
+                        <div className="dc__info__title">Using External Secrets</div>
+                        <div className="dc__info__subtitle">
                             Secret will not be created by system. However, they will be used inside the pod. Please make
                             sure that secret with the same name is present in the environment.
                         </div>

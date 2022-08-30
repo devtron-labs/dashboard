@@ -904,12 +904,12 @@ export default function AppList() {
     return (
         <div>
             {dataStateType == AppListViewType.LOADING && (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <Progressing pageLoader />
                 </div>
             )}
             {dataStateType == AppListViewType.ERROR && (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )}

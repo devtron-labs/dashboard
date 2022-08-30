@@ -263,7 +263,7 @@ function ChartDeploymentHistory({
 
     function renderSelectedDeploymentTabs() {
         return (
-            <ul className="tab-list deployment-tab-list tab-list--borderd mr-20">
+            <ul className="tab-list deployment-tab-list border-bottom mr-20">
                 {deploymentTabs.map((tab, index) => {
                     return (
                         <li onClick={() => changeDeploymentTab(index)} key={index} className="tab-list__tab">
@@ -471,7 +471,7 @@ function ChartDeploymentHistory({
                             </button>
                         </Tippy>
                     )}
-                    {showDockerInfo && 
+                    {showDockerInfo &&
                             <DockerListModal dockerList={deployment.dockerImages} closeTab={closeDockerInfoTab} />
                     }
                 </div>
@@ -546,7 +546,7 @@ function ChartDeploymentHistory({
     function renderData() {
         if (errorResponseCode && errorResponseCode !== 404) {
             return (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )
@@ -573,7 +573,7 @@ function ChartDeploymentHistory({
     return (
         <>
             {isLoading ? (
-                <div className="loading-wrapper">
+                <div className="dc__loading-wrapper">
                     <Progressing pageLoader />
                 </div>
             ) : (

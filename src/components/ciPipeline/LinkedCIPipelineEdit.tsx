@@ -170,12 +170,12 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
 
     renderInfoDialog() {
         return (
-            <div className="info__container fs-13 pt-12 pb-12 pl-16 pr-16 info__container--linked-ci">
+            <div className="dc__info__container fs-13 pt-12 pb-12 pl-16 pr-16 info__container--linked-ci">
                 <Info className="icon-dim-20" />
                 <div className="flex column left">
-                    <div className="info__title">
+                    <div className="dc__info__title">
                         Info: &nbsp;
-                        <span className="info__subtitle">
+                        <span className="dc__info__subtitle">
                             Use Linked CI Pipelines to refer to an existing CI Pipeline.
                         </span>
                     </div>

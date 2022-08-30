@@ -16,8 +16,8 @@ function EAEmptyState({ title, msg, stateType, knowMoreLink, headerText = undefi
     return (
         <div>
             {headerText && (
-                <div className="page-header border-bottom pl-20">
-                    <div className="page-header__title flex left fs-16 pt-16 pb-16 ">{headerText}</div>
+                <div className="dc__page-header border-bottom pl-20">
+                    <div className="dc__page-header__title flex left fs-16 pt-16 pb-16 ">{headerText}</div>
                 </div>
             )}
             <div className="ea-empty__wrapper cn-9 text-center">
