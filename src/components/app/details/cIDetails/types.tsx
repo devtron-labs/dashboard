@@ -1,3 +1,4 @@
+import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { CIMaterial } from '../triggerView/ciMaterial'
 
 export interface RootObject {
@@ -31,6 +32,7 @@ export interface History {
     artifactId: number
     triggeredByEmail: string
     stage?: 'POST' | 'DEPLOY' | 'PRE'
+    deploymentAppType: DeploymentAppType
 }
 
 export interface CiMaterial {

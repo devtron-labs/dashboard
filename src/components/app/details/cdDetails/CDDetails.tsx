@@ -42,6 +42,7 @@ import './cdDetail.scss'
 import DeploymentHistoryDetailedView from './deploymentHistoryDiff/DeploymentHistoryDetailedView'
 import { DeploymentTemplateList } from './cd.type'
 import DeploymentDetailSteps from './DeploymentDetailSteps'
+import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -106,6 +107,7 @@ export default function CDDetails() {
             setHasMore(true)
         }
         const newTriggerHistory = (deploymentHistoryResult?.result || []).reduce((agg, curr) => {
+          curr.deploymentAppType = DeploymentAppType.helm
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
@@ -139,6 +141,7 @@ export default function CDDetails() {
         const triggerHistoryMap = mapByKey(result?.result || [], 'id')
         const newTriggerHistory = Array.from(triggerHistoryMap).reduce((agg, [triggerId, curr]) => {
             const detailedTriggerHistory = triggerHistory.has(triggerId) ? triggerHistory.get(triggerId) : {}
+            curr.deploymentAppType = DeploymentAppType.helm
             agg.set(curr.id, { ...detailedTriggerHistory, ...curr })
             return agg
         }, triggerHistoryMap)
@@ -180,8 +183,9 @@ export default function CDDetails() {
     }, [deploymentHistoryResult, loadingDeploymentHistory, deploymentHistoryError])
 
     function syncState(triggerId: number, triggerDetail: History) {
+      const currentHistory =  triggerHistory.get(triggerId)
         setTriggerHistory((triggerHistory) => {
-            triggerHistory.set(triggerId, triggerDetail)
+            triggerHistory.set(triggerId, {...triggerDetail, deploymentAppType: currentHistory.deploymentAppType})
             return new Map(triggerHistory)
         })
     }
@@ -509,7 +513,7 @@ const TriggerOutput: React.FC<{
 
     if (triggerDetailsLoading && !triggerDetails) return <Progressing pageLoader />
     if (!triggerDetailsLoading && !triggerDetails) return <Reload />
-    if (triggerDetails?.id !== +triggerId) {
+    if (triggerDetails?.id !== +triggerId || !triggerDetails.deploymentAppType) {
         return null
     }
     return (
@@ -634,7 +638,7 @@ const HistoryLogs: React.FC<{
                                 </div>
                             </Route>
                         )}
-                        {triggerDetails.stage === 'DEPLOY' && (
+                        {triggerDetails.deploymentAppType !== DeploymentAppType.helm && triggerDetails.stage === 'DEPLOY' && (
                             <Route path={`${path}/deployment-steps`}>
                                 <DeploymentDetailSteps deploymentStatus={triggerDetails.status}/>
                             </Route>
