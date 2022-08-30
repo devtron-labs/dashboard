@@ -153,13 +153,13 @@ export default function CustomChartList() {
                 <div className="cn-9 fw-6 fs-16">Custom charts</div>
                 {renderSubtitleAndUploadButton('Manage custom charts to be used in Devtron applications.')}
                 <div className="mt-16 en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 235px)' }}>
-                    <div className="chart-list-row fw-6 cn-7 fs-12 border-bottom pt-10 pb-10 pr-20 pl-20 dc__uppercase">
+                    <div className="chart-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-20 dc__uppercase">
                         <div>Name</div>
                         <div>Version</div>
                         <div>Description</div>
                     </div>
                     {chartList?.map((chartData) => (
-                        <div className="chart-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-14 pb-14 pr-20 pl-20">
+                        <div className="chart-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-14 pb-14 pr-20 pl-20">
                             <div className="flexbox">
                                 <span className="cn-9">{chartData.name}</span>
                             </div>

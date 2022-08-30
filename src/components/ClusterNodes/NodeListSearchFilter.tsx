@@ -200,7 +200,7 @@ export default function NodeListSearchFliter({
                     }),
                 }}
             />
-            <div className="border-left h-20 mt-6"></div>
+            <div className="dc__border-left h-20 mt-6"></div>
             <ColumnFilterContext.Provider
                 value={{
                     appliedColumns,

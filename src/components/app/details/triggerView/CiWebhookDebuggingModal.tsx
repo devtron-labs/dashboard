@@ -94,7 +94,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
                     <InfoOutlined className="fcn-5 " />
                     <div>Payload data not available</div>
                 </div> : <>
-                        <div className="cn-5 fw-6 pt-8 pb-8 border-bottom" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
+                        <div className="cn-5 fw-6 pt-8 pb-8 dc__border-bottom" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
                             <div>Received at <button className="dc__transparent filter-icon" ><i className="fa fa-caret-down"></i></button></div>
                             <div>Filters matched</div>
                             <div>Filters failed</div>
@@ -152,7 +152,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
                         </button>
                     </div>
                     <div>
-                        <div className="cn-5 fw-6 pt-8 pb-8 border-bottom" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
+                        <div className="cn-5 fw-6 pt-8 pb-8 dc__border-bottom" style={{ display: "grid", gridTemplateColumns: "40% 20% 20% 20%", height: "100" }}>
                             <div className="pl-8">Selector/Key</div>
                             <div>Selector value in payload</div>
                             <div>Configured filter</div>

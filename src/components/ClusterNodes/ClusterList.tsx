@@ -115,7 +115,7 @@ export default function ClusterList() {
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
         const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
         return (
-            <div className="cluster-list-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class">
+            <div className="cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class">
                 <div className="cb-5 dc__ellipsis-right">
                     <NavLink
                         to={`${match.url}/${clusterData.id}`}
@@ -186,7 +186,7 @@ export default function ClusterList() {
                     <ClusterNodeEmptyState actionHandler={clearSearch} />
                 ) : (
                     <div style={{ minHeight: 'calc(100vh - 125px)' }}>
-                        <div className="cluster-list-row fw-6 cn-7 fs-12 border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
+                        <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
                             <div>Cluster</div>
                             <div>Connection status</div>
                             <div>Nodes</div>

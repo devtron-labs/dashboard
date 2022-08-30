@@ -285,7 +285,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     }}
                 ></CodeEditor>
                 <div className="bulk-output-drawer bcn-0 fs-13">
-                    <div className="bulk-output-header flex left pl-20 pr-20 pt-6 border-top border-btm bcn-0">
+                    <div className="bulk-output-header flex left pl-20 pr-20 pt-6 dc__border-top border-btm bcn-0">
                         <OutputTabs
                             handleOutputTabs={(e) => this.handleOutputTab(e, 'output')}
                             outputName={this.state.outputName}
@@ -692,7 +692,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderBulkCodeEditor = () => {
         return (
-            <div className="border-right">
+            <div className="dc__border-right">
                 {this.renderCodeEditorHeader()}
                 <div className="code-editor-body">{this.renderCodeEditorBody()}</div>
             </div>

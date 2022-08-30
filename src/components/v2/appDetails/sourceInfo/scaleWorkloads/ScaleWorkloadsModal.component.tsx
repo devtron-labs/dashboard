@@ -156,7 +156,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
     const renderScaleWorkloadTabs = (): JSX.Element => {
         return (
-            <ul className="tab-list deployment-tab-list border-bottom mr-20">
+            <ul className="tab-list deployment-tab-list dc__border-bottom mr-20">
                 {scaleWorkloadTabs.map((tab, index) => {
                     return (
                         <li
@@ -309,7 +309,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                     <>
                         {isWorkloadPresent ? (
                             <>
-                                <div className="check-all-workloads cn-7 fw-6 border-bottom">
+                                <div className="check-all-workloads cn-7 fw-6 dc__border-bottom">
                                     <Checkbox
                                         rootClassName="mb-0 fs-13 cursor bcn-0 p"
                                         isChecked={_nameSelection.isChecked}

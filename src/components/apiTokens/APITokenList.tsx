@@ -50,7 +50,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                 {renderSearchToken()}
             </div>
             <div className="api-token__list en-2 bw-1 bcn-0 br-8">
-                <div className="api-list-row fw-6 cn-7 fs-12 border-bottom pt-10 pb-10 pr-20 pl-20 dc__uppercase">
+                <div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-20 dc__uppercase">
                     <div></div>
                     <div>Name</div>
                     <div>Last Used On</div>

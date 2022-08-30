@@ -150,7 +150,7 @@ export default function ChartVersionSelectorModal({
     const renderValueList = (): JSX.Element => {
         return (
             <div style={{ height: 'calc(100vh - 170px)' }}>
-                <div className="chart-value-row fw-6 cn-7 fs-12 border-top border-bottom dc__uppercase pt-8 pr-16 pb-8 pl-16">
+                <div className="chart-value-row fw-6 cn-7 fs-12 dc__border-top dc__border-bottom dc__uppercase pt-8 pr-16 pb-8 pl-16">
                     <div className="pr-16"></div>
                     <div className="pr-16">Name</div>
                     <div>Chart Version</div>
@@ -179,7 +179,7 @@ export default function ChartVersionSelectorModal({
     }
     const renderDeployButton = (): JSX.Element => {
         return (
-            <div className="pt-20 pr-20 pb-20 pl-20 border-top right-align">
+            <div className="pt-20 pr-20 pb-20 pl-20 dc__border-top right-align">
                 <button
                     type="button"
                     className="cta h-36 lh-36"

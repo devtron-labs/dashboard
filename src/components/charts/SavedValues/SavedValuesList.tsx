@@ -243,7 +243,7 @@ export default function SavedValuesList() {
                         renderEmptyState('No matching preset values', 'We couldn’t find any matching results', true)
                     ) : (
                         <>
-                            <div className="preset-values-row fw-6 cn-7 fs-12 border-bottom dc__uppercase pt-8 pr-20 pb-8 pl-20">
+                            <div className="preset-values-row fw-6 cn-7 fs-12 dc__border-bottom dc__uppercase pt-8 pr-20 pb-8 pl-20">
                                 <div />
                                 <div>Name</div>
                                 <div>Version</div>
@@ -254,7 +254,7 @@ export default function SavedValuesList() {
                                 {filteredSavedValueList.map((chartData, index) => (
                                     <div
                                         key={`saved-value-${index}`}
-                                        className="preset-values-row fw-4 cn-9 fs-13 border-bottom-n1 pt-12 pr-20 pb-12 pl-20"
+                                        className="preset-values-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pr-20 pb-12 pl-20"
                                     >
                                         <div className="icon-dim-18">
                                             <File className="icon-dim-18 icon-n4 dc__vertical-align-middle" />

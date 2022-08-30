@@ -252,7 +252,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                         width: '20%',
                                                         borderTopRightRadius: '4px',
                                                     }}
-                                                    className="border-right"
+                                                    className="dc__border-right"
                                                 >
                                                     <ReactSelect
                                                         value={
@@ -279,7 +279,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                     </div>
                                     {type === PluginVariableType.INPUT && (
                                         <div className="flexbox">
-                                            <div className="border-left" style={{ width: '80%' }}>
+                                            <div className="dc__border-left" style={{ width: '80%' }}>
                                                 <CustomInputVariableSelect selectedVariableIndex={index} />
                                             </div>
                                             <div

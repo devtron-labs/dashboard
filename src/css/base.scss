@@ -1496,32 +1496,32 @@ button.anchor {
 }
 
 // Border
-.border {
+.dc__border {
     border: 1px solid var(--N200);
 }
 
-.border-top {
+.dc__border-top {
     border-top: solid 1px var(--N200);
 }
 
-.border-bottom {
+.dc__border-bottom {
     border-bottom: solid 1px var(--N200);
 }
 
-.border-bottom-n1 {
+.dc__border-left {
+  border-left: solid 1px var(--N200);
+}
+
+.dc__border-right {
+  border-right: solid 1px var(--N200);
+}
+
+.dc__border-bottom-n1 {
     border-bottom: solid 1px var(--N100);
 }
 
-.border-right {
-    border-right: solid 1px var(--N200);
-}
-
-.border-right-n1 {
+.dc__border-right-n1 {
     border-right: solid 1px var(--N100);
-}
-
-.border-left {
-    border-left: solid 1px var(--N200);
 }
 
 .box-shadow {
@@ -1558,102 +1558,11 @@ button.anchor {
   margin-left: auto;
 }
 
-// Line height
-.lh-16 {
-  line-height: 16px;
-}
-
-.lh-20 {
-    line-height: 20px;
-}
-
-.lh-32 {
-    line-height: 32px;
-}
-
-.lh-36 {
-    line-height: 36px !important;
-}
-
-.lh-18 {
-    line-height: 18px;
-}
-
-.lh-28 {
-  line-height: 28px;
-}
-
-.lh-n {
-  line-height: normal !important;
-}
-
-.mh-28 {
-    min-height: 28px;
-}
-
-.h-28 {
-    height: 28px !important;
-}
-
-.pl-16 {
-    padding-left: 16px !important;
-}
-
 .text__subtitle {
     font-size: 13px;
     font-weight: 600;
     color: var(--n-900);
     line-height: 1.5;
-}
-
-// Height
-
-.h-8 {
-    height: 8px;
-}
-
-.h-18 {
-    height: 18px;
-}
-
-.h-20 {
-    height: 20px !important;
-}
-
-.h-22 {
-    height: 22px !important;
-}
-
-.h-32 {
-    height: 32px !important;
-}
-
-.h-36 {
-    height: 36px !important;
-}
-
-.h-44 {
-    height: 44px !important;
-}
-
-.h-48 {
-    height: 48px !important;
-}
-
-.mh-48 {
-  min-height: 48px;
-}
-
-.mw-48 {
-  min-width: 48px;
-}
-
-.h-44 {
-    height: 44px !important;
-}
-
-.h-60 {
-    height: 60px !important;
 }
 
 .fw-n {
@@ -1972,7 +1881,13 @@ textarea {
   width: 100px;
 }
 
+.mw-48 {
+  min-width: 48px;
+  }
+
 // Height in pixels
+// Height
+
 .h-0 {
   height: 0px;
 }
@@ -2013,16 +1928,53 @@ textarea {
   height: 48px !important;
 }
 
-.h-44 {
-  height: 44px !important;
-}
-
 .h-60 {
   height: 60px !important;
 }
 
 .h-100 {
 height: 100%;
+}
+
+.mh-28 {
+  min-height: 28px;
+}
+
+.mh-48 {
+  min-height: 48px;
+}
+
+// Line height
+.lh-16 {
+  line-height: 16px;
+}
+
+.lh-20 {
+    line-height: 20px;
+}
+
+.lh-32 {
+    line-height: 32px;
+}
+
+.lh-36 {
+    line-height: 36px !important;
+}
+
+.lh-18 {
+    line-height: 18px;
+}
+
+.lh-28 {
+  line-height: 28px;
+}
+
+.lh-n {
+  line-height: normal !important;
+}
+
+.pl-16 {
+    padding-left: 16px !important;
 }
 
 // Padding

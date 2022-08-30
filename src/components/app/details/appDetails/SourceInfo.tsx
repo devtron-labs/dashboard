@@ -135,7 +135,7 @@ export function SourceInfo({
                             <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
                                 <CD className="icon-dim-32" />
                             </div>
-                            <div className="flex left column pr-16 border-right-n1 mr-16">
+                            <div className="flex left column pr-16 dc__border-right-n1 mr-16">
                                 <div className="flexbox">
                                     <span className="fs-12 mr-5 fw-4 cn-9">Deployment status</span>
 

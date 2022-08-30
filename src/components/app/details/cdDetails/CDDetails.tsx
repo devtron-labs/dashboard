@@ -526,7 +526,7 @@ const TriggerOutput: React.FC<{
                                     : () => cancelPrePostCdTrigger(pipelineId, triggerId)
                             }
                         />
-                        <ul className="pl-20 tab-list tab-list--nodes border-bottom">
+                        <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
                             {triggerDetails.stage === 'DEPLOY' && (
                                 <li className="tab-list__tab">
                                     <NavLink

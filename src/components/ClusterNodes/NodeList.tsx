@@ -361,7 +361,7 @@ export default function NodeList() {
         if (clusterErrorList.length === 0) return
         return (
             <div
-                className={`pl-20 pr-20 pt-12 bcr-1 border-top border-bottom ${
+                className={`pl-20 pr-20 pt-12 bcr-1 dc__border-top dc__border-bottom ${
                     collapsedErrorSection ? ' pb-12 ' : ' pb-8'
                 }`}
             >
@@ -501,7 +501,7 @@ export default function NodeList() {
             <div
                 className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 ${
                     column.label === 'Node'
-                        ? `${fixedNodeNameColumn ? 'bcn-0 dc__position-sticky  sticky-column border-right' : ''} w-280 pl-20`
+                        ? `${fixedNodeNameColumn ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''} w-280 pl-20`
                         : 'w-100-px'
                 } ${sortByColumn.value === column.value ? 'sort-by' : ''} ${sortOrder === OrderBy.DESC ? 'desc' : ''} ${
                     column.isSortingAllowed ? ' pointer' : ''
@@ -548,14 +548,14 @@ export default function NodeList() {
         return (
             <div
                 key={nodeData['name']}
-                className="fw-4 cn-9 fs-13 border-bottom-n1 pr-20 hover-class h-44"
+                className="fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44"
                 style={{ width: 'max-content', minWidth: '100%' }}
             >
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
                         <div
                             className={`w-280 dc__inline-block dc__ellipsis-right mr-16 pl-20 pt-12 pb-12${
-                                fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column border-right' : ''
+                                fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
                             }`}
                         >
                             <NavLink to={`${match.url}/${nodeData[column.value]}`}>{nodeData[column.value]}</NavLink>
@@ -642,7 +642,7 @@ export default function NodeList() {
                         <>
                             <div className="mt-16" style={{ width: '100%', overflow: 'auto hidden' }}>
                                 <div
-                                    className=" fw-6 cn-7 fs-12 border-bottom pr-20 dc__uppercase"
+                                    className=" fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase"
                                     style={{ width: 'max-content', minWidth: '100%' }}
                                 >
                                     {appliedColumns.map((column) => renderNodeListHeader(column))}

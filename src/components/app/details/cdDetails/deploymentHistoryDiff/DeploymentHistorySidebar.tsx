@@ -35,7 +35,7 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDeploymentHistoryL
     }
 
     return (
-        <div className="pt-8 pb-8 bcn-0 border-right h-100">
+        <div className="pt-8 pb-8 bcn-0 dc__border-right h-100">
             {deploymentHistoryList?.map((historicalComponent, index) => {
                 return historicalComponent.childList?.length > 0
                     ? historicalComponent.childList.map((historicalComponentName, childIndex) =>

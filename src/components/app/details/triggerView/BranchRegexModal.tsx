@@ -124,7 +124,7 @@ function BranchRegexModal({
                     const _regexValue = regexValue[mat.gitMaterialId] || {}
                     return (
                         mat.regex && (
-                            <div className="border-bottom pb-20 pt-20" key={`regex_${index}`}>
+                            <div className="dc__border-bottom pb-20 pt-20" key={`regex_${index}`}>
                                 <div className="flex left">
                                     <span className="mr-14">
                                         {mat.gitMaterialUrl.includes('gitlab') ? <GitLab /> : null}

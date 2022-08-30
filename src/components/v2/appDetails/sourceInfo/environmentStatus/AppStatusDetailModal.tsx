@@ -148,7 +148,7 @@ function AppStatusDetailModal({ close, appStreamData, showAppStatusMessage }: { 
                     )}
                     <table>
                         <thead>
-                            <tr className="border-bottom cn-7">
+                            <tr className="dc__border-bottom cn-7">
                                 {['name', 'status', 'message'].map((n, index) => (
                                     <th className="pl-20 pt-8 pb-8" key={`header_${index}`}>
                                         {n.toUpperCase()}

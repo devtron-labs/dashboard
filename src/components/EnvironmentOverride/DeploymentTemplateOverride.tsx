@@ -395,7 +395,7 @@ function DeploymentTemplateOverrideForm({
                             </CodeEditor.Header>
                             {state.data.readme && (
                                 <div
-                                    className="cb-5 fw-6 fs-13 flexbox pr-16 pt-10 cursor border-bottom-1px"
+                                    className="cb-5 fw-6 fs-13 flexbox pr-16 pt-10 cursor dc__border-bottom-1px"
                                     onClick={(e) => setReadme(true)}
                                 >
                                     README

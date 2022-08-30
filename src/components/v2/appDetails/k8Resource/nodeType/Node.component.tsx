@@ -185,7 +185,7 @@ function NodeComponent({
             return (
                 <React.Fragment key={'grt' + index}>
                     {showHeader && (
-                        <div className="fw-6 pt-10 pb-10 pl-16 border-bottom">
+                        <div className="fw-6 pt-10 pb-10 pl-16 dc__border-bottom">
                             <span>{node.kind}</span>
                         </div>
                     )}
@@ -327,7 +327,7 @@ function NodeComponent({
                     {isPodAvailable ? (
                         <PodHeaderComponent callBack={setPodType} />
                     ) : (
-                        <div className="node-detail__sticky-header border-bottom pt-10 pb-10">
+                        <div className="node-detail__sticky-header dc__border-bottom pt-10 pb-10">
                             <div className="pl-16 fw-6 fs-14 text-capitalize">
                                 <span className="pr-4">{selectedNodes && selectedNodes[0]?.kind}</span>
                                 <span>({selectedNodes?.length})</span>
@@ -338,7 +338,7 @@ function NodeComponent({
                         </div>
                     )}
 
-                    <div className="node-row border-bottom fw-6 m-0">
+                    <div className="node-row dc__border-bottom fw-6 m-0">
                         {tableHeader.map((cell, index) => {
                             return (
                                 <div

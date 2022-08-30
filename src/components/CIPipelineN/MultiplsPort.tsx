@@ -63,7 +63,7 @@ function MultiplePort() {
                         <div className="custom-input__port-map pl-220 mt-8" key={`multiple-port-${index}`}>
                             <input
                                 style={{ width: '80% !important' }}
-                                className="w-100 bcn-1 border left-radius-4 pl-10 pr-10 pt-5 pb-5"
+                                className="w-100 bcn-1 dc__border left-radius-4 pl-10 pr-10 pt-5 pb-5"
                                 autoComplete="off"
                                 placeholder="Host port"
                                 type="text"
@@ -72,10 +72,10 @@ function MultiplePort() {
                                 value={elm[PortMap.PORTONLOCAL]}
                                 maxLength={5}
                             />
-                            <div className="flex border-top border-bottom">:</div>
+                            <div className="flex dc__border-top dc__border-bottom">:</div>
                             <input
                                 style={{ width: '80% !important' }}
-                                className="w-100 bcn-1 border right-radius-4 pl-10 pr-10 pt-5 pb-5"
+                                className="w-100 bcn-1 dc__border right-radius-4 pl-10 pr-10 pt-5 pb-5"
                                 autoComplete="off"
                                 placeholder="Container port"
                                 type="text"
