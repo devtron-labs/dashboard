@@ -39,9 +39,11 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
     useEffect(() => {
         if (deploymentAppType === DeploymentAppType.helm) {
             history.replace(`${url.replace('deployment-steps', 'source-code')}`)
+            if (initTimer) {
+                clearTimeout(initTimer)
+            }
             return
         }
-
         if (deploymentStatus !== 'Aborted') {
             getDeploymentDetailStepsData()
         }
