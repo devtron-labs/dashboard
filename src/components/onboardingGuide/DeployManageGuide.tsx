@@ -172,7 +172,7 @@ function DeployManageGuide({ isDeployManageCardClicked }) {
                                 </div>
                             </div>
                             <div className="fs-14 flex column mt-20 mb-20">
-                                <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="cb-5 fw-6 cursor mb-8">
+                                <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="guide_skip no-decor cb-5 fw-6 cursor mb-8">
                                     Skip and explore Devtron on your own
                                 </NavLink>
                                 <div className="cn-7">Tip: You can return here anytime from the Help menu</div>

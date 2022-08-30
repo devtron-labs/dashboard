@@ -52,7 +52,7 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
             <div className="bcn-0 onboarding__bottom flex position-rel cn-9">
                 <div className= "onboarding__abs"  >
                     <div className="onboarding-cards__wrap">
-                        <div className="bcn-0 w-300 br-4 en-2 bw-1 cursor">
+                        <div className="onboarding-card bcn-0 w-300 br-4 en-2 bw-1 cursor">
                             <a
                                 className="learn-more__href cn-9"
                                 href={DOCUMENTATION.PREVIEW_DEVTRON}
@@ -67,7 +67,7 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
                             </a>
                         </div>
                         <div className="onboarding__line" />
-                        <div className="bcn-0 w-300 br-4 en-2 bw-1 cursor" onClick={onClickedDeployManageCardClicked}>
+                        <div className="onboarding-card bcn-0 w-300 br-4 en-2 bw-1 cursor" onClick={onClickedDeployManageCardClicked}>
                             <NavLink
                                 to={`${match.path}/${URLS.GUIDE}`}
                                 className="no-decor fw-6 cursor cn-9"
@@ -84,7 +84,7 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
                             </NavLink>
                         </div>
 
-                        <div className="bcn-0 w-300 br-4 en-2 bw-1 cursor">
+                        <div className="onboarding-card bcn-0 w-300 br-4 en-2 bw-1 cursor">
                             <NavLink
                                 to={redirectDeployCardToCICD()}
                                 className="no-decor fw-6 cursor cn-9"
@@ -103,7 +103,7 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
                         </div>
                     </div>
                     <div className="fs-14 mt-20 mb-20 flex column">
-                        <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="cb-5 fw-6 cursor mb-8">
+                        <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="guide_skip no-decor cb-5 fw-6 cursor mb-8">
                             Skip and explore Devtron on your own
                         </NavLink>
                         <div className="cn-7">Tip: You can return here anytime from the Help menu</div>

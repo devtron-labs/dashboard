@@ -22,6 +22,14 @@
 
     .onboarding__bottom {
       height: calc(100vh - 300px);
+        .onboarding-card a:hover{
+          color: var(--N900);
+          text-decoration: none;
+        }
+        .onboarding-card:hover{
+          border: 1px solid var(--B500);
+          border-radius: 400;
+        }
      }
 
      .onboarding__line{
@@ -52,6 +60,9 @@
         flex-wrap: wrap;
         width: 820px;
         justify-content: center;
+        a:hover{
+          color: var(--N900);
+        }
     }
 
     .deploy-manage__body{
@@ -60,10 +71,6 @@
           border: 1px solid var(--B500);
           border-radius: 400;
         }
-        a:hover{
-          color: var(--N900);
-        }
-
     }
 
     .deploy-manage__abs{
@@ -71,4 +78,8 @@
       top: -80px;
     }
 
+}
+
+.guide_skip a:hover{
+  color: var(--B500);
 }
