@@ -42,8 +42,8 @@ function GenerateModal({ close, token, reload, redirectToTokenList, isRegenerati
                     </h2>
                 </div>
                 <div
-                    className="flex top left bcg-1 br-4 eg-2 bw-1 pl-16 pr-16 pt-10 pb-10"
-                    style={{ width: '560px', wordWrap: 'break-word' }}
+                    className="flex top left bcg-1 br-4 eg-2 bw-1 pl-16 pr-16 pt-10 pb-10 break-word"
+                    style={{ width: '560px'}}
                 >
                     <Key className="api-token-icon icon-dim-20 mr-10" />
                     <span className="api-token-text cn-9 fs-14">{token}</span>

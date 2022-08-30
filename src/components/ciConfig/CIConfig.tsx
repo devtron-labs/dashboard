@@ -281,7 +281,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         return (
             <components.Option {...props}>
                 <div style={{ display: 'flex' }}>
-                    <div className={'registry-icon mr-5 ' + props.data.registryType}></div>
+                    <div className={'dc__registry-icon mr-5 ' + props.data.registryType}></div>
                     {props.label}
                 </div>
             </components.Option>
@@ -311,7 +311,7 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
         }
         return (
             <components.Control {...props}>
-                <div className={'registry-icon ml-5 ' + value}></div>
+                <div className={'dc__registry-icon ml-5 ' + value}></div>
                 {props.children}
             </components.Control>
         )

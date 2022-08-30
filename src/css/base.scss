@@ -274,6 +274,15 @@ a:focus {
     cursor: ns-resize;
 }
 
+.cursor {
+  cursor: pointer;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed !important;
+}
+
+// block
 .block {
     display: block;
 }
@@ -1544,9 +1553,7 @@ button.anchor {
 .align-baseline {
     align-items: baseline !important;
 }
-.h-0 {
-    height: 0px;
-}
+
 
 .border {
     border: 1px solid var(--N200);
@@ -1632,17 +1639,6 @@ button.anchor {
     min-height: 28px;
 }
 
-.pl-16 {
-    padding-left: 16px !important;
-}
-
-.text__subtitle {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--n-900);
-    line-height: 1.5;
-}
-
 .fw-n {
     font-weight: normal !important;
 }
@@ -1671,7 +1667,7 @@ button.anchor {
     background-color: var(--N100);
 }
 
-.registry-icon,
+.dc__registry-icon,
 .repository-icon {
     width: 20px;
     height: 20px;
@@ -1727,10 +1723,7 @@ button.anchor {
     width: initial !important;
 }
 
-.pl-200 {
-    padding-left: 200px;
-}
-
+// Radius
 .bottom-radius-4 {
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
@@ -1781,10 +1774,6 @@ button.anchor {
     border-top-left-radius: 4px;
 }
 
-.pl-220 {
-    padding-left: 220px;
-}
-
 input,
 textarea {
     background-color: var(--N50);
@@ -1814,9 +1803,6 @@ textarea {
         }
     }
 }
-.break-word {
-    word-wrap: break-word;
-}
 
 .basic-multi-select > .select__control--is-disabled {
     background-color: var(--N100) !important;
@@ -1832,15 +1818,7 @@ textarea {
     }
 }
 
-
-.cursor {
-  cursor: pointer;
-}
-
-.cursor-not-allowed {
-  cursor: not-allowed !important;
-}
-
+// Text Transform
 .dc__lowercase {
   text-transform: dc__lowercase;
 }
@@ -1853,16 +1831,20 @@ textarea {
   text-transform: none !important;
 }
 
-.ff-monospace {
-  font-family: monospace;
-}
-
-.react-select__bottom {
+.dc__react-select__bottom {
   position: sticky;
   bottom: 0px;
   width: 100%;
   border-radius: 4px;
   z-index: 1;
+}
+
+.break-word {
+  word-wrap: break-word;
+}
+
+.ff-monospace {
+  font-family: monospace;
 }
 
 @mixin tab-container($bgColor, $color) {
@@ -1962,6 +1944,9 @@ textarea {
 }
 
 // Height in pixels
+.h-0 {
+  height: 0px;
+}
 
 .h-8 {
   height: 8px;
@@ -2011,8 +1996,25 @@ textarea {
 height: 100%;
 }
 
-// Margin in pixels
+// Padding
+.pl-16 {
+  padding-left: 16px !important;
+}
 
+.pl-200 {
+  padding-left: 200px;
+}
+
+.pl-220 {
+  padding-left: 220px;
+}
+
+.p-lr-20 {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+// Margin in pixels
 .margin-auto {
   margin: auto;
 }
@@ -2025,11 +2027,6 @@ height: 100%;
 .m-lr-0 {
   margin-left: 0px !important;
   margin-right: 0px !important;
-}
-
-.p-lr-20 {
-  padding-left: 20px;
-  padding-right: 20px;
 }
 
 .m-b-4 {

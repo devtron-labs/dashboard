@@ -166,7 +166,7 @@ const MenuList = (props: any): JSX.Element => {
     return (
         <components.MenuList {...props}>
             {props.children}
-            <div className="flex react-select__bottom bcn-0 p-8">
+            <div className="flex dc__react-select__bottom bcn-0 p-8">
                 <button className="flex cta apply-filter" onClick={props.handleFilterQueryChanges}>
                     Apply Filter
                 </button>

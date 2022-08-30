@@ -468,7 +468,7 @@ function GitForm({
             <components.MenuList {...props}>
                 {props.children}
                 <div
-                    className="flex left pl-10 pt-8 pb-8 cb-5 cursor bcn-0 react-select__bottom border-top "
+                    className="flex left pl-10 pt-8 pb-8 cb-5 cursor bcn-0 dc__react-select__bottom border-top "
                     onClick={(selected) => {
                         setGitProviderConfigModal(true);
                         toggleCollapse(false);
