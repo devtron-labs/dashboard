@@ -443,24 +443,24 @@ export default function NodeList() {
                 <div className="flexbox dc__content-space pl-20 pr-20 pb-20">
                     <div className="flexbox dc__content-space mr-16 w-50 p-16 bcn-0 br-4 en-2 bw-1">
                         <div className="mr-16 w-25">
-                            <div className="align-center fs-13 fw-4 cn-7">CPU Usage</div>
-                            <div className="align-center fs-24 fw-4 cn-9">
+                            <div className="dc__align-center fs-13 fw-4 cn-7">CPU Usage</div>
+                            <div className="dc__align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.cpu?.usagePercentage}
                             </div>
                         </div>
                         <div className="mr-16 w-25">
-                            <div className="align-center fs-13 fw-4 cn-7">CPU Capacity</div>
-                            <div className="align-center fs-24 fw-4 cn-9">{clusterCapacityData?.cpu?.capacity}</div>
+                            <div className="dc__align-center fs-13 fw-4 cn-7">CPU Capacity</div>
+                            <div className="dc__align-center fs-24 fw-4 cn-9">{clusterCapacityData?.cpu?.capacity}</div>
                         </div>
                         <div className="mr-16 w-25">
-                            <div className="align-center fs-13 fw-4 cn-7">CPU Requests</div>
-                            <div className="align-center fs-24 fw-4 cn-9">
+                            <div className="dc__align-center fs-13 fw-4 cn-7">CPU Requests</div>
+                            <div className="dc__align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.cpu?.requestPercentage}
                             </div>
                         </div>
                         <div className="w-25">
-                            <div className="align-center fs-13 fw-4 cn-7">CPU Limits</div>
-                            <div className="align-center fs-24 fw-4 cn-9">
+                            <div className="dc__align-center fs-13 fw-4 cn-7">CPU Limits</div>
+                            <div className="dc__align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.cpu?.limitPercentage}
                             </div>
                         </div>
@@ -468,24 +468,24 @@ export default function NodeList() {
 
                     <div className="flexbox dc__content-space w-50 p-16 bcn-0 br-4 en-2 bw-1">
                         <div className="mr-16 w-25">
-                            <div className="align-center fs-13 fw-4 cn-7">Memory Usage</div>
-                            <div className="align-center fs-24 fw-4 cn-9">
+                            <div className="dc__align-center fs-13 fw-4 cn-7">Memory Usage</div>
+                            <div className="dc__align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.memory?.usagePercentage}
                             </div>
                         </div>
                         <div className="mr-16 w-25">
-                            <div className="align-center fs-13 fw-4 cn-7">Memory Capacity</div>
-                            <div className="align-center fs-24 fw-4 cn-9">{clusterCapacityData?.memory?.capacity}</div>
+                            <div className="dc__align-center fs-13 fw-4 cn-7">Memory Capacity</div>
+                            <div className="dc__align-center fs-24 fw-4 cn-9">{clusterCapacityData?.memory?.capacity}</div>
                         </div>
                         <div className="mr-16 w-25">
-                            <div className="align-center fs-13 fw-4 cn-7">Memory Requests</div>
-                            <div className="align-center fs-24 fw-4 cn-9">
+                            <div className="dc__align-center fs-13 fw-4 cn-7">Memory Requests</div>
+                            <div className="dc__align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.memory?.requestPercentage}
                             </div>
                         </div>
                         <div className="w-25">
-                            <div className="align-center fs-13 fw-4 cn-7">Memory Limits</div>
-                            <div className="align-center fs-24 fw-4 cn-9">
+                            <div className="dc__align-center fs-13 fw-4 cn-7">Memory Limits</div>
+                            <div className="dc__align-center fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.memory?.limitPercentage}
                             </div>
                         </div>

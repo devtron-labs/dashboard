@@ -137,7 +137,7 @@ export class BenchmarkModal extends Component<BenchmarkModalProps, {}>{
                     <p className="pro-tip__title m-0"><Tip className="icon-dim-20 vertical dc__vertical-align-middle mr-8" /> Pro Tip</p>
                     <p className="pro-tip__subtitle m-0"> {benchmark.tip}</p>
                 </div>
-                <button className="cta cancel align-right" onClick={this.props.close}>Close</button>
+                <button className="cta cancel dc__align-right" onClick={this.props.close}>Close</button>
             </div>
         </VisibleModal>
     }

@@ -723,7 +723,7 @@ function DockerForm({
             </div>
             <div className={`flex right mb-20`}>
                 {id && (
-                    <button className="cta delete m-auto ml-0" type="button" onClick={() => toggleConfirmation(true)}>
+                    <button className="cta delete dc__m-auto ml-0" type="button" onClick={() => toggleConfirmation(true)}>
                         {deleting ? <Progressing /> : 'Delete'}
                     </button>
                 )}

@@ -25,7 +25,7 @@ export function GitMaterialInfo({ repoUrl = "", materialType = "",  materialValu
     const tokens = repoUrl.split("/")
     const { length, [length - 1]: repo } = tokens
     return (
-        <div {...props} className="pl-16 box-shadow mb-12 pb-12 fs-12 fw-6 " style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '12px', ...style, }}>
+        <div {...props} className="pl-16 dc__box-shadow mb-12 pb-12 fs-12 fw-6 " style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '12px', ...style, }}>
             <div className={getGitIcon(repoUrl)}>
             </div>
             <div className="flex column left">

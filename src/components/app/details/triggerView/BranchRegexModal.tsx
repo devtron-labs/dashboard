@@ -89,7 +89,7 @@ function BranchRegexModal({
 
     const renderValidationErrorLabel = (message: string): JSX.Element => {
         return (
-            <div className="error-label flex left align-start fs-11 fw-4 mt-6 ml-36">
+            <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6 ml-36">
                 <Error className="icon-dim-16" />
                 <div className="ml-4 cr-5">{message}</div>
             </div>

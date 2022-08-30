@@ -233,7 +233,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     </Link>
                     <button
                         type="button"
-                        className="align-right dc__transparent"
+                        className="dc__align-right dc__transparent"
                         onClick={(e) => this.props.showDeleteDialog(this.props.id)}
                     >
                         <img src={trash} alt="delete" />

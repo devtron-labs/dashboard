@@ -257,7 +257,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                     onChange={(selected) => { this.handleEnvironmentChange(selected) }}
                     options={this.state.environments} />
             </div>
-            <div className="align-right">
+            <div className="dc__align-right">
                 {this.props.match.params.envId ?
                     <DatePicker startDate={this.state.startDate}
                         endDate={this.state.endDate}

@@ -64,7 +64,7 @@ export class Project extends Component<ProjectProps, ProjectState>  {
                 <span className="project-title">{this.props.name}</span>
                 <button
                     type="button"
-                    className="project__row__trash dc__transparent align-right"
+                    className="project__row__trash dc__transparent dc__align-right"
                     onClick={() => {
                         this.toggleConfirmation();
                     }}

@@ -289,7 +289,7 @@ const formatOptionLabelClusters = (option: OptionType): JSX.Element => {
 const getErrorLabel = (field: string): JSX.Element => {
     const errorLabel = (label: string): JSX.Element => {
         return (
-            <div className="error-label flex left align-start fs-11 mt-4">
+            <div className="error-label flex left dc__align-start fs-11 mt-4">
                 <div className="error-label-icon">
                     <Error className="icon-dim-20" />
                 </div>

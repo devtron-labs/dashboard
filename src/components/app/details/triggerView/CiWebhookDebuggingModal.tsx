@@ -58,7 +58,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
         return <div>
             <div className="cn-9 fs-14 pt-20 pb-8 fw-6 flex left">
                 Configured filters
-                <button type="button" className="mr-20 dc__transparent align-right" onClick={() => onEditShowEditableCiModal(ciPipelineId, workflowId)}>
+                <button type="button" className="mr-20 dc__transparent dc__align-right" onClick={() => onEditShowEditableCiModal(ciPipelineId, workflowId)}>
                     <Edit className=" icon-dim-24" />
                 </button> </div>
             <div className="cn-5 fs-12 fw-6 pt-8 pb-8 " style={{ display: "grid", gridTemplateColumns: "30% 70%", height: "100" }}>
@@ -147,7 +147,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
                     </button>
                     <div className="cn-9 fw-6 fs-14 flex left">
                         Filter matching results
-                                <button type="button" className="mr-20 dc__transparent align-right" onClick={() => onEditShowEditableCiModal(ciPipelineMaterialId, workflowId)}>
+                                <button type="button" className="mr-20 dc__transparent dc__align-right" onClick={() => onEditShowEditableCiModal(ciPipelineMaterialId, workflowId)}>
                             <Edit className=" icon-dim-24" />
                         </button>
                     </div>

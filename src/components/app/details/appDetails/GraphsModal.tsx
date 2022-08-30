@@ -324,7 +324,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState>{
                     </div>
                 </section>
                 <div className="modal__body-bottom pt-12 pb-12 pl-12 pr-12">
-                    <button className="cta cancel align-right cursor" onClick={this.props.close}>Done</button>
+                    <button className="cta cancel dc__align-right cursor" onClick={this.props.close}>Done</button>
                 </div>
             </div>
         </VisibleModal>

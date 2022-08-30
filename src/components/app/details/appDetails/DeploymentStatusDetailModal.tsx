@@ -16,7 +16,7 @@ export default function DeploymentStatusDetailModal({
     return (
         <Drawer position="right" width="50%">
             <div className="deployment-status-breakdown-modal-container bcn-0">
-                <div className="box-shadow pb-12 pt-12 mb-20 bcn-0">
+                <div className="dc__box-shadow pb-12 pt-12 mb-20 bcn-0">
                     <div className="title flex dc__content-space pl-20 pr-20 ">
                         <div>
                             <div className="cn-9 fs-16 fw-6">

@@ -290,7 +290,7 @@ function EditAPIToken({
                         </label>
                         <label className="form__row">
                             <span className="form__label">Expiration</span>
-                            <div className="align-left">
+                            <div className="dc__align-left">
                                 {getExpirationText()}
                                 &nbsp;
                                 <span className="fw-4">To set a new expiration date you must</span>&nbsp;

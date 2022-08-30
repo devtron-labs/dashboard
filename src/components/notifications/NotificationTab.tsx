@@ -526,7 +526,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         </td>
                         <td className="pipeline-list__hover flex">
                              <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
-                                <button type="button" className="dc__transparent align-right" onClick={(event) => {
+                                <button type="button" className="dc__transparent dc__align-right" onClick={(event) => {
                                     this.setState({
                                         showDeleteDialog: !this.state.showDeleteDialog,
                                         singleDeletedId: row.id

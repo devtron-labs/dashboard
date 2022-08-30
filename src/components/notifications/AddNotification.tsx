@@ -599,8 +599,8 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         } else if (!this.state.pipelineList.length) {
             return (
                 <div className="pipeline-list__empty-state">
-                    <Folder className="dc__block margin-auto" />
-                    <p className="dc__empty__subtitle margin-auto">Apply filters to find matching pipelines</p>
+                    <Folder className="dc__block dc__m-auto" />
+                    <p className="dc__empty__subtitle dc__m-auto">Apply filters to find matching pipelines</p>
                 </div>
             )
         } else {

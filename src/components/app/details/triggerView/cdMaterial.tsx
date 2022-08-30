@@ -132,7 +132,7 @@ export class CDMaterial extends Component<CDMaterialProps> {
           </div>}
           <div className="material-history__select-text">
             {mat.vulnerable ? <span className="material-history__scan-error">Security Issues Found</span>
-              : mat.isSelected ? <Check className="align-right icon-dim-24" /> : "Select"}
+              : mat.isSelected ? <Check className="dc__align-right icon-dim-24" /> : "Select"}
           </div>
         </div>
         {mat.showSourceInfo ? <>

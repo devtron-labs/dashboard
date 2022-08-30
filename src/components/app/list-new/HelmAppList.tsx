@@ -386,7 +386,7 @@ export default function HelmAppList({
                                 </span>
                                 <span>{externalHelmListFetchError}</span>
                                 <CloseIcon
-                                    className="icon-dim-24 align-right cursor"
+                                    className="icon-dim-24 dc__align-right cursor"
                                     onClick={() => _removeExternalAppFetchError(index)}
                                 />
                             </div>

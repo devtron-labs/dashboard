@@ -73,7 +73,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
     }
 
     function renderSeeMoreButtonForWebhook() {
-        return <button type="button" className="fs-12 fw-6 pt-12 mt-12 pl-12 pr-12 w-100 bcn-0 flex left br-4 box-shadow-top cb-5" style={{ border: "none" }} onClick={(event) => {
+        return <button type="button" className="fs-12 fw-6 pt-12 mt-12 pl-12 pr-12 w-100 bcn-0 flex left br-4 dc__box-shadow-top cb-5" style={{ border: "none" }} onClick={(event) => {
             event.stopPropagation();
             setShowSeeMore(!showSeeMore)
         }}>
@@ -119,7 +119,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
                         <div className="material-history__header"> <Commit className="commit-hash__icon" />{_lowerCaseCommitInfo.commit} </div>
                     </a> : null}
                     {selectedCommitInfo ? <div className="material-history__select-text " >
-                        {_lowerCaseCommitInfo.isselected ? <Check className="align-right" /> : "Select"}
+                        {_lowerCaseCommitInfo.isselected ? <Check className="dc__align-right" /> : "Select"}
                     </div> : null}
                 </div>
                 { _lowerCaseCommitInfo.author ? <div className="material-history__text flex left"><PersonIcon className="icon-dim-16 mr-8" /> {_lowerCaseCommitInfo.author}</div> : null}
@@ -137,7 +137,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
                         {_webhookData.data["git url"] ? <a href={`${_webhookData.data["git url"]}`} target="_blank" rel="noopener noreferer" className="dc__no-decor cb-5"> View git url</a> : null}
                     </div>
                     {selectedCommitInfo ? <div className="material-history__select-text material-history__header">
-                        {_lowerCaseCommitInfo.isselected ? <Check className="align-right" /> : "Select"}
+                        {_lowerCaseCommitInfo.isselected ? <Check className="dc__align-right" /> : "Select"}
                     </div> : null}
                 </div>
 
@@ -188,7 +188,7 @@ export default function GitCommitInfoGeneric({ materialSourceType, materialSourc
                 <div className="flex left pr-16 pb-8" style={{ justifyContent: "space-between" }}>
                     <div className="flex left cn-9 fs-13 ml-16"> {_webhookData.data["target checkout"]}</div>
                     {selectedCommitInfo ? <div className="material-history__select-text" >
-                        {_lowerCaseCommitInfo.isselected ? <Check className="align-right" /> : "Select"}
+                        {_lowerCaseCommitInfo.isselected ? <Check className="dc__align-right" /> : "Select"}
                     </div> : null}
                 </div>
                 {renderBasicGitCommitInfoForWebhook()}

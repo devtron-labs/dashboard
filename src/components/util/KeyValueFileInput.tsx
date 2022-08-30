@@ -15,7 +15,7 @@ interface KeyValueFileInputProps {
 
 export const KeyValueFileInput: React.FC<KeyValueFileInputProps> = function (props) {
     return <div className="form__key-value-file">
-        <Trash className="icon-n4 dc__block align-right icon-delete cursor"
+        <Trash className="icon-n4 dc__block dc__align-right icon-delete cursor"
             onClick={(event) => { props.handleDelete(props.index) }} />
         <div className="mb-16">
             <CustomInput label="Key (Filename)*"

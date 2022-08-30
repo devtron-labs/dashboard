@@ -164,7 +164,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                             <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
                                                 <button
                                                     type="button"
-                                                    className="dc__transparent align-right mr-16"
+                                                    className="dc__transparent dc__align-right mr-16"
                                                     onClick={(event) => {
                                                         this.setState({
                                                             showSlackConfigModal: true,
@@ -183,7 +183,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                             >
                                                 <button
                                                     type="button"
-                                                    className="dc__transparent align-right"
+                                                    className="dc__transparent dc__align-right"
                                                     onClick={() => {
                                                         this.deleteClickHandler(
                                                             slackConfig.id,
@@ -352,7 +352,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                             <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
                                                 <button
                                                     type="button"
-                                                    className="dc__transparent align-right mr-16"
+                                                    className="dc__transparent dc__align-right mr-16"
                                                     onClick={(event) => {
                                                         this.setState({
                                                             showSESConfigModal: true,
@@ -371,7 +371,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                             >
                                                 <button
                                                     type="button"
-                                                    className="dc__transparent align-right"
+                                                    className="dc__transparent dc__align-right"
                                                     onClick={() => {
                                                         this.deleteClickHandler(
                                                             sesConfig.id,
@@ -439,7 +439,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                             <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
                                                 <button
                                                     type="button"
-                                                    className="dc__transparent align-right mr-16"
+                                                    className="dc__transparent dc__align-right mr-16"
                                                     onClick={() => {
                                                         this.setState({
                                                             showSMTPConfigModal: true,
@@ -458,7 +458,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                             >
                                                 <button
                                                     type="button"
-                                                    className="dc__transparent align-right"
+                                                    className="dc__transparent dc__align-right"
                                                     onClick={() => {
                                                         this.deleteClickHandler(
                                                             smtpConfig.id,

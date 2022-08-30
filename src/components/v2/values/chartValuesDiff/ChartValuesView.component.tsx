@@ -822,7 +822,7 @@ export const ChartValuesEditor = ({
                 customLoader={
                     <DetailsProgressing size={32}>
                         {manifestView && !comparisonView && (
-                            <span className="fs-13 fw-4 cn-7 mt-8 align-center">
+                            <span className="fs-13 fw-4 cn-7 mt-8 dc__align-center">
                                 Generating the manifest. <br /> Please wait...
                             </span>
                         )}
@@ -939,7 +939,7 @@ export const AppNotLinkedDialog = ({
 
 const renderValidationErrorLabel = (message?: string): JSX.Element => {
     return (
-        <div className="error-label flex left align-start fs-11 fw-4 mt-6">
+        <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
             <div className="error-label-icon">
                 <Error className="icon-dim-16" />
             </div>

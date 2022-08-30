@@ -39,8 +39,8 @@ import {
 
 const PrometheusWarningInfo = () => {
     return (
-        <div className="pt-10 pb-10 pl-16 pr-16 bcy-1 br-4 bw-1 cluster-error mb-40">
-            <div className="flex left align-start">
+        <div className="pt-10 pb-10 pl-16 pr-16 bcy-1 br-4 bw-1 dc__cluster-error mb-40">
+            <div className="flex left dc__align-start">
                 <Warning className="icon-dim-20 fcr-7" />
                 <div className="ml-8 fs-13">
                     <span className="fw-6 text-capitalize">Warning: </span>Prometheus configuration will be removed and
@@ -54,7 +54,7 @@ const PrometheusWarningInfo = () => {
 const PrometheusRequiredFieldInfo = () => {
     return (
         <div className="pt-10 pb-10 pl-16 pr-16 bcr-1 br-4 bw-1 er-2 mb-16">
-            <div className="flex left align-start">
+            <div className="flex left dc__align-start">
                 <Error className="icon-dim-20" />
                 <div className="ml-8 fs-13">
                     Fill all the required fields OR turn off the above switch to skip configuring prometheus.
@@ -852,7 +852,7 @@ function Environment({
                 <div className="form__row">
                     <div className="flex left">
                         <div className="form__title">{id ? 'Update Environment' : 'New Environment'}</div>
-                        <Close className="icon-dim-24 align-right cursor" onClick={(e) => handleClose(false)} />
+                        <Close className="icon-dim-24 dc__align-right cursor" onClick={(e) => handleClose(false)} />
                     </div>
                 </div>
                 <div className="form__row">
@@ -927,7 +927,7 @@ function Environment({
                 <div className={`form__buttons`}>
                     {id && (
                         <button
-                            className="cta delete m-auto ml-0"
+                            className="cta delete dc__m-auto ml-0"
                             type="button"
                             onClick={() => toggleConfirmation(true)}
                         >

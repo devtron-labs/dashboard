@@ -250,7 +250,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             </label>
             <div className={`form__buttons`}>
                     {this.props.material.id && (
-                            <button className="cta delete m-auto ml-0" type="button" onClick={() => this.toggleConfirmation()}>
+                            <button className="cta delete dc__m-auto ml-0" type="button" onClick={() => this.toggleConfirmation()}>
                                 {this.state.deleting ? <Progressing /> : 'Delete'}
                             </button>
                     )}

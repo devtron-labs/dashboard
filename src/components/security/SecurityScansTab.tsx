@@ -406,7 +406,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
               </td>
               <td className="security__data">{scan.environment}</td>
               <td className="security__data table__cell--time dc__ellipsis-right">{scan.lastExecution}</td>
-              <td className="security__data"><Arrow className="table__row-icon align-right icon-dim-20 fcn-6" /></td>
+              <td className="security__data"><Arrow className="table__row-icon dc__align-right icon-dim-20 fcn-6" /></td>
             </tr>
           })}
         </tbody>

@@ -84,7 +84,7 @@ export class DialogFormSubmit extends Component<{ tabIndex: number }> {
             <DialogFormContext.Consumer>
                 {(context) => {
                     return (
-                        <button type="submit" className="cta align-right" tabIndex={this.props.tabIndex}>
+                        <button type="submit" className="cta dc__align-right" tabIndex={this.props.tabIndex}>
                             {context.isLoading ? <Progressing /> : this.props.children}
                         </button>
                     );

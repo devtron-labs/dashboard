@@ -659,7 +659,7 @@ function GitForm({
                 )}
                 <div className={`form__row form__buttons`}>
                     {id && (
-                        <button className={`cta delete m-auto ml-0`} type="button" onClick={() => toggleConfirmation(true)}>
+                        <button className={`cta delete dc__m-auto ml-0`} type="button" onClick={() => toggleConfirmation(true)}>
                             {deleting ? <Progressing /> : 'Delete'}
                         </button>
                     )}
