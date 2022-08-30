@@ -239,7 +239,7 @@ export const StackPageHeader = ({
     const renderBreadcrumbs = (headerTitleName, detailsMode) => {
         return (
             <div className="m-0 flex left ">
-                <div onClick={() => handleRedirectToModule(detailsMode)} className="devtron-breadcrumb__item">
+                <div onClick={() => handleRedirectToModule(detailsMode)} className="dc__devtron-breadcrumb__item">
                     <span className="cb-5 fs-16 cursor">{headerTitleName} </span>
                 </div>
                 <span className="fs-16 cn-9 ml-4 mr-4"> / </span>

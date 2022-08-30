@@ -481,7 +481,7 @@ function DockerForm({
                         Registry type*
                     </label>
                     <ReactSelect
-                        className="m-0 w100"
+                        className="m-0 w-100"
                         tabIndex={1}
                         isMulti={false}
                         isClearable={false}

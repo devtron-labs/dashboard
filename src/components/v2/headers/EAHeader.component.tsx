@@ -17,7 +17,7 @@ function EAHeaderComponent() {
             <div className="m-0 flex left fs-12 cn-9fw-4 fs-16">
                 <Link
                     to={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
-                    className="devtron-breadcrumb__item"
+                    className="dc__devtron-breadcrumb__item"
                 >
                     <div className="cb-5">Helm apps</div>
                 </Link>

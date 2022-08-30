@@ -288,19 +288,8 @@ a:focus {
     background-color: white;
 }
 
-.code__header {
-    height: 44px;
-    background-color: #2c3354;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 44px;
-    padding: 0 16px;
-    color: white;
-    text-align: left;
-}
-
 // ClassName of text area
-.code-textarea {
+.dc__code-textarea {
     min-width: 100%;
     height: 550px;
     color: white;
@@ -313,6 +302,7 @@ a:focus {
     font-family: monospace;
 }
 
+// Pop Up
 .popup {
     position: fixed;
     z-index: var(--modal-index);
@@ -438,7 +428,7 @@ button.anchor {
     background: url('../assets/icons/git/git.svg');
 }
 
-.cd-trigger-status {
+.dc__cd-trigger-status {
     margin: 12px;
     margin-top: 6px;
     margin-bottom: 10px;
@@ -449,7 +439,7 @@ button.anchor {
     color: var(--N400);
 }
 
-.cd-trigger-status__icon {
+.dc__cd-trigger-status__icon {
     width: 20px;
     height: 20px;
     margin-right: 4px;
@@ -1098,19 +1088,19 @@ button.anchor {
     color: var(--N700);
 }
 
-.devtron-breadcrumb__item {
+.dc__devtron-breadcrumb__item {
     color: inherit;
     text-transform: capitalize;
     font-weight: 400;
     color: var(--B500);
 }
 
-.devtron-breadcrumb__item:hover {
+.dc__devtron-breadcrumb__item:hover {
     color: var(--B500);
     text-decoration: none;
 }
 
-.devtron-breadcrumb__item:last-child {
+.dc__devtron-breadcrumb__item:last-child {
     text-decoration: none;
     cursor: unset;
     font-weight: 400;
@@ -1120,7 +1110,7 @@ button.anchor {
     }
 }
 
-.devtron-breadcrumb__item.param {
+.dc__devtron-breadcrumb__item.param {
     text-transform: unset;
     font-weight: 400;
 }
@@ -1133,10 +1123,6 @@ button.anchor {
 .multi-chart-summary__versions-select.popup-body {
     width: 298px;
     right: 10px !important;
-}
-
-.w100 {
-    width: 100%;
 }
 
 .shimmer {
@@ -1558,41 +1544,6 @@ button.anchor {
 .align-baseline {
     align-items: baseline !important;
 }
-
-// Width section
-
-.w-0 {
-    width: 0px;
-}
-
-.w-180 {
-    width: 180px;
-}
-
-.w-200 {
-    width: 200px;
-}
-
-.w-400 {
-    width: 400px;
-}
-
-.w-300 {
-    width: 300px;
-}
-
-.w-250 {
-    width: 250px;
-}
-
-.w-280 {
-    width: 280px;
-}
-
-.w-600 {
-    width: 600px;
-}
-
 .h-0 {
     height: 0px;
 }
@@ -1649,6 +1600,10 @@ button.anchor {
 }
 
 // Line height
+.lh-16 {
+  line-height: 16px;
+}
+
 .lh-20 {
     line-height: 20px;
 }
@@ -1659,10 +1614,6 @@ button.anchor {
 
 .lh-36 {
     line-height: 36px !important;
-}
-
-.lh-16 {
-    line-height: 16px;
 }
 
 .lh-18 {
@@ -1677,15 +1628,8 @@ button.anchor {
   line-height: normal !important;
 }
 
-
 .mh-28 {
     min-height: 28px;
-}
-
-
-
-.h-28 {
-    height: 28px !important;
 }
 
 .pl-16 {
@@ -1697,48 +1641,6 @@ button.anchor {
     font-weight: 600;
     color: var(--n-900);
     line-height: 1.5;
-}
-
-// Height
-
-.h-8 {
-    height: 8px;
-}
-
-.h-18 {
-    height: 18px;
-}
-
-.h-20 {
-    height: 20px !important;
-}
-
-.h-22 {
-    height: 22px !important;
-}
-
-.h-32 {
-    height: 32px !important;
-}
-
-.h-36 {
-    height: 36px !important;
-}
-
-.h-44 {
-    height: 44px !important;
-}
-
-.h-48 {
-    height: 48px !important;
-}
-
-.h-44 {
-    height: 44px !important;
-}
-
-.h-60 {
-    height: 60px !important;
 }
 
 .fw-n {
@@ -1999,9 +1901,41 @@ textarea {
   @include tab-container(#2c3354, white);
 }
 
-.h-100 {
-  height: 100%;
+
+// Width in pixels
+.w-0 {
+  width: 0px;
 }
+
+.w-180 {
+  width: 180px;
+}
+
+.w-200 {
+  width: 200px;
+}
+
+.w-400 {
+  width: 400px;
+}
+
+.w-300 {
+  width: 300px;
+}
+
+.w-250 {
+  width: 250px;
+}
+
+.w-280 {
+  width: 280px;
+}
+
+.w-600 {
+  width: 600px;
+}
+
+// Width in percentage
 
 .w-25 {
   width: 25%;
@@ -2030,6 +1964,58 @@ textarea {
 .w-100-px {
   width: 100px;
 }
+
+// Height in pixels
+
+.h-8 {
+  height: 8px;
+}
+
+.h-18 {
+  height: 18px;
+}
+
+.h-20 {
+  height: 20px !important;
+}
+
+.h-22 {
+  height: 22px !important;
+}
+
+.h-28 {
+  height: 28px !important;
+}
+
+.h-32 {
+  height: 32px !important;
+}
+
+.h-36 {
+  height: 36px !important;
+}
+
+.h-44 {
+  height: 44px !important;
+}
+
+.h-48 {
+  height: 48px !important;
+}
+
+.h-44 {
+  height: 44px !important;
+}
+
+.h-60 {
+  height: 60px !important;
+}
+
+.h-100 {
+height: 100%;
+}
+
+// Margin in pixels
 
 .margin-auto {
   margin: auto;

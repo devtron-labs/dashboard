@@ -42,10 +42,10 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
         let status = this.props.status ? this.props.status.toLowerCase() : "";
         let hideDetails = status === DEFAULT_STATUS.toLowerCase() || status === "not triggered" || status === "not deployed";
         if (hideDetails)
-            return <div className="cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+            return <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
                 {this.props.status}
             </div>
-        else return <div className="cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+        else return <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
             {this.props.status}
             <span className="mr-5 ml-5">/</span>
             <Link to={url} className="workflow-node__details-link">Details</Link>

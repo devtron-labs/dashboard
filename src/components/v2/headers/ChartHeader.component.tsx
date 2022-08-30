@@ -72,7 +72,7 @@ function ChartHeaderComponent() {
             <div className="m-0 flex left ">
                 <Link
                     to={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
-                    className="devtron-breadcrumb__item"
+                    className="dc__devtron-breadcrumb__item"
                 >
                     <span className="cb-5 fs-16">Helm Apps </span>
                 </Link>
