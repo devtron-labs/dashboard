@@ -199,13 +199,13 @@ export default function NodeDetails() {
             <div className="flexbox mb-8 hover-trigger dc__position-rel">
                 <div
                     className={`cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
-                        !value ? ' br-4' : ' left-radius-4 no-right-border'
+                        !value ? ' br-4' : ' dc__left-radius-4 dc__no-right-border'
                     }`}
                 >
                     {key}
                 </div>
                 {value && (
-                    <div className="bcn-7 cn-0 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 right-radius-4 no-left-border">
+                    <div className="bcn-7 cn-0 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 dc__right-radius-4 dc__no-left-border">
                         {value}
                     </div>
                 )}
@@ -385,7 +385,7 @@ export default function NodeDetails() {
         if (!nodeErrorKeys.length) return null
         return (
             <div className="mb-12 en-2 bw-1 br-4 bcn-0">
-                <div className="flexbox bcr-5 pt-12 pb-12 pr-10 pl-20 top-radius-4">
+                <div className="flexbox bcr-5 pt-12 pb-12 pr-10 pl-20 dc__top-radius-4">
                     <Error className="error-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
                     <span className="fw-6 fs-14 cn-0">
                         {`${nodeErrorKeys.length} Error${nodeErrorKeys.length > 1 ? 's' : ''}`}
@@ -409,7 +409,7 @@ export default function NodeDetails() {
         if (!issueCount) return null
         return (
             <div className="mb-12 en-2 bw-1 br-4 bcn-0">
-                <div className="flexbox bcy-5 pt-12 pb-12 pr-10 pl-20 top-radius-4">
+                <div className="flexbox bcy-5 pt-12 pb-12 pr-10 pl-20 dc__top-radius-4">
                     <AlertTriangle className="alert-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
                     <span className="fw-6 fs-14 cn-9">
                         {`${issueCount} Probable issue${issueCount > 1 ? 's' : ''}`}
@@ -445,7 +445,7 @@ export default function NodeDetails() {
     const renderNodeOverviewCard = (): JSX.Element => {
         return (
             <div className="en-2 bw-1 br-4 bcn-0 dc__position-sticky  top-88">
-                <div className="flexbox pt-12 pb-12 pr-10 pl-20 top-radius-4">
+                <div className="flexbox pt-12 pb-12 pr-10 pl-20 dc__top-radius-4">
                     <span className="fw-6 fs-14 cn-9">Node overview</span>
                 </div>
                 <div className="pr-20 pl-20">
@@ -592,11 +592,11 @@ export default function NodeDetails() {
         return (
             <div className="pod-container">
                 <div className="dc__position-sticky  pod-container-header">
-                    <div className="en-2 bw-1 top-radius-4 bcn-0 no-bottom-border">
+                    <div className="en-2 bw-1 dc__top-radius-4 bcn-0 dc__no-bottom-border">
                         <div className="fw-6 fs-14 cn-9 pr-20 pl-20 pt-12">Pods</div>
                     </div>
                 </div>
-                <div className="en-2 bw-1 br-4 no-top-radius no-top-border bcn-0 mb-20">
+                <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bcn-0 mb-20">
                     <div className="pods-grid">
                         <header className="bcn-0">
                             {renderPodHeaderCell('Namespace', 'namespace', 'string', 'pt-8 pr-8 pb-8 pl-20')}

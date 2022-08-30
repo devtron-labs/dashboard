@@ -231,10 +231,10 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                 }}
                                             >
                                                 <input
-                                                    className={`w-100 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 h-32 no-bottom-border ${
+                                                    className={`w-100 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 h-32 dc__no-bottom-border ${
                                                         type === PluginVariableType.INPUT
-                                                            ? 'top-radius-4'
-                                                            : 'top-left-radius'
+                                                            ? 'dc__top-radius-4'
+                                                            : 'dc__top-left-radius'
                                                     }`}
                                                     type="text"
                                                     placeholder="Variable name"
@@ -318,8 +318,8 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                     )}
                                     <input
                                         style={{ width: '80% !important' }}
-                                        className={`w-100 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 bottom-radius-4 h-32 ${
-                                            type === PluginVariableType.INPUT ? 'no-top-border' : ''
+                                        className={`w-100 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 dc__bottom-radius-4 h-32 ${
+                                            type === PluginVariableType.INPUT ? 'dc__no-top-border' : ''
                                         }`}
                                         autoComplete="off"
                                         placeholder="Description"

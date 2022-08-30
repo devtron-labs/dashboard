@@ -294,7 +294,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     render() {
         return (
             <VisibleModal className="">
-                <div className="modal__body modal__body--ci-mt-0 modal__body--p-0 no-top-radius">
+                <div className="modal__body modal__body--ci-mt-0 modal__body--p-0 dc__no-top-radius">
                     {this.renderHeader()}
                     <hr className="divider m-0" />
                     <div className="pl-20 pr-20 pt-20">

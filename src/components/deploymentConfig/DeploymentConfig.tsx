@@ -279,7 +279,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
                 {props.children}
                 <NavLink
                     to={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}
-                    className="upload-custom-chart-link cb-5 select__sticky-bottom fw-4 fs-13 dc__no-decor bottom-radius-4"
+                    className="upload-custom-chart-link cb-5 select__sticky-bottom fw-4 fs-13 dc__no-decor dc__bottom-radius-4"
                     target="_blank"
                     rel="noreferrer noopener"
                 >

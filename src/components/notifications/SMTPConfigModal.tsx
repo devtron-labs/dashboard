@@ -142,7 +142,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
     renderWithBackdrop(body) {
         return (
             <VisibleModal className="">
-                <div className="modal__body modal__body--w-600 modal__body--p-0 no-top-radius mt-0">
+                <div className="modal__body modal__body--w-600 modal__body--p-0 dc__no-top-radius mt-0">
                     <div className="modal__header m-24">
                         <h1 className="modal__title">Configure SMTP</h1>
                         <button type="button" className="dc__transparent" onClick={this.props.closeSMTPConfigModal}>

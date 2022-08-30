@@ -493,7 +493,7 @@ export const InstallationWrapper = ({
         if (!showPreRequisiteConfirmationModal) return null
         return (
             <VisibleModal className="transition-effect">
-                <div className="modal__body upload-modal no-top-radius mt-0 p-0 w-600">
+                <div className="modal__body upload-modal dc__no-top-radius mt-0 p-0 w-600">
                     <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16 dc__border-bottom">
                         <div className="fw-6 fs-16 cn-9">
                             {`Pre-requisites for update to ${upgradeVersion.toLowerCase()}`}

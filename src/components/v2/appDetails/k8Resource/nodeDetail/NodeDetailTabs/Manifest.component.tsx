@@ -322,9 +322,9 @@ function ManifestComponent({ selectedTab, isDeleted }) {
                                 )}
                                 {activeTab === 'Compare' && (
                                     <CodeEditor.Header hideDefaultSplitHeader={true}>
-                                        <div className="split-header">
-                                            <div className="left-pane">Helm generated manifest </div>
-                                            <div className="right-pane">Live manifest</div>
+                                        <div className="dc__split-header">
+                                            <div className="dc__left-pane">Helm generated manifest </div>
+                                            <div className="dc__right-pane">Live manifest</div>
                                         </div>
                                     </CodeEditor.Header>
                                 )}

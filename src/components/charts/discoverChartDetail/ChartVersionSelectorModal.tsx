@@ -195,8 +195,8 @@ export default function ChartVersionSelectorModal({
     return (
         <VisibleModal className="transition-effect">
             <div
-                className={`modal__body mt-0 no-top-radius chart-version-selector p-0 ${
-                    isListpage ? 'no-bottom-radius' : ''
+                className={`modal__body mt-0 dc__no-top-radius chart-version-selector p-0 ${
+                    isListpage ? 'dc__no-bottom-radius' : ''
                 }`}
             >
                 <div className={`header-container mt-20 mr-20 mb-20 ${isListpage ? '' : 'ml-20'}`}>

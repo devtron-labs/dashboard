@@ -234,7 +234,7 @@ export function Build({
                                 <div className="flexbox justify-space" key={`build-${index}`}>
                                     <div className="mt-8 w-100">
                                         <input
-                                            className="w-100 top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
+                                            className="w-100 dc__top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
                                             autoComplete="off"
                                             placeholder="Key"
                                             type="text"
@@ -244,7 +244,7 @@ export function Build({
                                             }}
                                         />
                                         <textarea
-                                            className="build__value w-100 bottom-radius-4 no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
+                                            className="build__value w-100 dc__bottom-radius-4 dc__no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
                                             value={arg.value}
                                             onChange={(event) => {
                                                 handleDockerArgChange(event, index, 'value')
