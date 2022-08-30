@@ -362,7 +362,7 @@ export default function AppConfig() {
             <>
                 <div className="app-compose">
                     <div
-                        className={`app-compose__nav flex column left top position-rel ${
+                        className={`app-compose__nav flex column left top position-rel overflow-scroll ${
                             state.isCDPipeline ? 'hide-app-config-help' : ''
                         }`}
                     >
@@ -454,9 +454,11 @@ function Navigation({
                     )
                 }
             })}
-            <button type="button" className="cta delete cta-delete-app mt-8" onClick={deleteApp}>
-                Delete Application
-            </button>
+            <div className="cta-delete-app flex w-100 position-sticky pt-2 pb-16 bcn-0">
+                <button type="button" className="cta delete mt-8" onClick={deleteApp}>
+                    Delete Application
+                </button>
+            </div>
         </>
     )
 }
@@ -556,7 +558,7 @@ function AppComposeRouter({
 
 const EnvOverridesHelpNote = () => {
     return (
-        <div>
+        <div className="fs-12 fw-4 lh-18">
             Environment overrides allow you to manage environment specific configurations after you’ve created
             deployment pipelines. &nbsp;
             <a
@@ -666,10 +668,10 @@ function EnvironmentOverrideRouter({ setEnvironments, setEnvironmentsLoading }: 
     }, [environmentsLoading, environmentResult])
 
     return (
-        <div className="h-100 overflow-hidden">
+        <div className="h-100">
             <div className="en-1 bw-1 mt-8 mb-8" />
             <div className="app-compose__nav-item flex text-uppercase fs-12 cn-6">Environment Overrides</div>
-            <div className="flex column left environment-routes-container top overflow-scroll">
+            <div className="flex column left environment-routes-container top">
                 <EnvironmentOverrides environmentsLoading={environmentsLoading} environmentResult={environmentResult} />
             </div>
         </div>

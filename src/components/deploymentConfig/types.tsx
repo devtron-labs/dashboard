@@ -130,7 +130,7 @@ export interface CompareOptionsProps {
     showComparisonOption: boolean
     openComparison: boolean
     handleComparisonClick: () => void
-    fetchingReadMe: boolean
+    chartConfigLoading: boolean
     openReadMe: boolean
     isReadMeAvailable: boolean
     handleReadMeClick: () => void
@@ -142,7 +142,7 @@ export interface DeploymentTemplateOptionsTabProps {
     isEnvOverride?: boolean
     openComparison: boolean
     handleComparisonClick: () => void
-    fetchingReadMe: boolean
+    chartConfigLoading: boolean
     openReadMe: boolean
     isReadMeAvailable: boolean
     handleReadMeClick: () => void

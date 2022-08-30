@@ -43,23 +43,23 @@ function useConfigMapContext() {
 export default function ConfigMapOverrides({ parentState, setParentState }: ConfigMapOverridesProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     // const [loading, result, error, reload] = useAsync(() => getEnvironmentConfigs(+appId, +envId), [+appId, +envId]);
-    const [configmapList, setConfigmapList] = useState<{ id: number; configData: any[]; appId: number }>()
-    const [configmapLoading, setConfigmapLoading] = useState(true)
+    const [configMapList, setConfigMapList] = useState<{ id: number; configData: any[]; appId: number }>()
+    const [configMapLoading, setConfigMapLoading] = useState(true)
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
 
     useEffect(() => {
-        if (!configmapLoading && configmapList) {
+        if (!configMapLoading && configMapList) {
             setParentState('loaded')
         }
-    }, [configmapLoading])
+    }, [configMapLoading])
 
     useEffect(() => {
         async function initialise() {
-            setConfigmapLoading(true)
+            setConfigMapLoading(true)
             try {
                 const appChartRefRes = await getAppChartRefForAppAndEnv(appId, envId)
                 const configmapRes = await getEnvironmentConfigs(appId, envId)
-                setConfigmapList({
+                setConfigMapList({
                     appId: configmapRes.result.appId,
                     id: configmapRes.result.id,
                     configData: configmapRes.result.configData || [],
@@ -73,7 +73,7 @@ export default function ConfigMapOverrides({ parentState, setParentState }: Conf
                 setParentState('failed')
                 showError(error)
             } finally {
-                setConfigmapLoading(false)
+                setConfigMapLoading(false)
             }
         }
         initialise()
@@ -82,27 +82,27 @@ export default function ConfigMapOverrides({ parentState, setParentState }: Conf
     async function reload() {
         try {
             const configmapRes = await getEnvironmentConfigs(appId, envId)
-            setConfigmapList({
+            setConfigMapList({
                 appId: configmapRes.result.appId,
                 id: configmapRes.result.id,
                 configData: configmapRes.result.configData || [],
             })
         } catch (error) {}
     }
-    if (parentState === 'loading' || !configmapList)
+    if (parentState === 'loading' || !configMapList)
         return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
 
-    if (configmapLoading && !configmapList) {
+    if (configMapLoading && !configMapList) {
         return null
     }
 
     let configData = [{ id: null, name: null, defaultData: undefined, data: undefined }].concat(
-        configmapList?.configData,
+        configMapList?.configData,
     )
 
     return (
         <section className="config-map-overrides">
-            <ConfigMapContext.Provider value={{ configmapList, id: configmapList.id, reload }}>
+            <ConfigMapContext.Provider value={{ configMapList, id: configMapList.id, reload }}>
                 {configData.map(({ name, defaultData, data }) => (
                     <ListComponent
                         key={name || Math.random().toString(36).substr(2, 5)}
@@ -174,8 +174,8 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
     appChartRef,
     toggleCollapse,
 }) {
-    const { configmapList, id, reload } = useConfigMapContext()
-    const configmap = configmapList.configData.find((cm) => cm.name === name)
+    const { configMapList, id, reload } = useConfigMapContext()
+    const configmap = configMapList.configData.find((cm) => cm.name === name)
     const {
         data = null,
         defaultData = {},

@@ -145,6 +145,26 @@
     }
 }
 
+.chart-type-version-options {
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 16px;
+
+    .chart-type-options,
+    .chart-version-options {
+        display: grid;
+        align-items: center;
+    }
+
+    .chart-type-options {
+        grid-template-columns: 75px 1fr;
+    }
+
+    .chart-version-options {
+        grid-template-columns: 94px 1fr;
+    }
+}
+
 .form__row--code-editor-container {
     height: calc(100% - 140px);
     display: grid;

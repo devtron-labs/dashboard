@@ -35,15 +35,11 @@ import {
     DeploymentTemplateEditorViewProps,
     DeploymentTemplateOptionsTabProps,
 } from './types'
+import { getCommonSelectStyles } from './constants'
 
-const renderReadMeOption = (
-    fetchingReadMe: boolean,
-    openReadMe: boolean,
-    handleReadMeClick: () => void,
-    disabled?: boolean,
-) => {
+const renderReadMeOption = (openReadMe: boolean, handleReadMeClick: () => void, disabled?: boolean) => {
     const handleReadMeOptionClick = () => {
-        if (fetchingReadMe || disabled) {
+        if (disabled) {
             return
         }
 
@@ -178,24 +174,27 @@ export const ChartTypeVersionOptions = ({
         },
     ]
     const filteredCharts = selectedChart
-        ? charts.filter((cv) => cv.name == selectedChart.name).sort((a, b) => +b.id - +a.id)
+        ? charts.filter((cv) => cv.name == selectedChart.name).sort((a, b) => Number(b.id) - Number(a.id))
         : []
 
+    const onSelectChartType = (selected) => {
+        const filteredCharts = charts.filter((chart) => chart.name == selected.name)
+        const selectedChart = filteredCharts.find((chart) => chart.id == selectedChartRefId)
+        if (selectedChart) {
+            selectChart(selectedChart)
+        } else {
+            const sortedFilteredCharts = filteredCharts.sort((a, b) => Number(a.id) - Number(b.id))
+            selectChart(sortedFilteredCharts[sortedFilteredCharts.length ? sortedFilteredCharts.length - 1 : 0])
+        }
+    }
+
+    const onSelectChartVersion = (selected) => {
+        selectChart(selected)
+    }
+
     return (
-        <div
-            style={{
-                display: 'grid',
-                gridTemplateColumns: 'auto auto',
-                columnGap: '16px',
-            }}
-        >
-            <div
-                style={{
-                    display: 'grid',
-                    gridTemplateColumns: '75px 1fr',
-                    alignItems: 'center',
-                }}
-            >
+        <div className="chart-type-version-options">
+            <div className="chart-type-options">
                 <span className="fs-13 fw-4 cn-9">Chart type:</span>
                 {isUnSet ? (
                     <ReactSelect
@@ -213,79 +212,26 @@ export const ChartTypeVersionOptions = ({
                             Option,
                             MenuList: ChartMenuList,
                         }}
-                        styles={{
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: '32px',
-                                boxShadow: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                            }),
-                            valueContainer: (base, state) => ({
-                                ...base,
-                                padding: '0',
-                                fontWeight: '600',
-                            }),
-                            option: (base, state) => {
-                                return {
-                                    ...base,
-                                    color: 'var(--N900)',
-                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                }
-                            },
-                            container: (base, state) => {
-                                return {
-                                    ...base,
-                                    width: '100%',
-                                }
-                            },
+                        styles={getCommonSelectStyles({
                             menu: (base, state) => ({
                                 ...base,
                                 margin: '0',
                                 width: '250px',
                             }),
-                            menuList: (base) => {
-                                return {
-                                    ...base,
-                                    position: 'relative',
-                                    paddingBottom: '0px',
-                                    maxHeight: '250px',
-                                }
-                            },
-                            dropdownIndicator: (base, state) => ({
+                            menuList: (base) => ({
                                 ...base,
-                                color: 'var(--N400)',
-                                padding: '0 8px',
-                                transition: 'all .2s ease',
-                                transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                                position: 'relative',
+                                paddingBottom: '0px',
+                                maxHeight: '250px',
                             }),
-                        }}
-                        onChange={(selected) => {
-                            let filteredCharts = charts.filter((chart) => chart.name == selected.name)
-                            let selectedChart = filteredCharts.find((chart) => chart.id == selectedChartRefId)
-                            if (selectedChart) {
-                                selectChart(selectedChart)
-                            } else {
-                                let sortedFilteredCharts = filteredCharts.sort((a, b) => +a.id - +b.id)
-                                selectChart(
-                                    sortedFilteredCharts[
-                                        sortedFilteredCharts.length ? sortedFilteredCharts.length - 1 : 0
-                                    ],
-                                )
-                            }
-                        }}
+                        })}
+                        onChange={onSelectChartType}
                     />
                 ) : (
                     <span className="fs-13 fw-6 cn-9">{selectedChart?.name}</span>
                 )}
             </div>
-            <div
-                style={{
-                    display: 'grid',
-                    gridTemplateColumns: '94px 1fr',
-                    alignItems: 'center',
-                }}
-            >
+            <div className="chart-version-options">
                 <span className="fs-13 fw-4 cn-9">Chart version:</span>
                 {disableVersionSelect ? (
                     <span className="fs-13 fw-6 cn-9">{selectedChart?.version}</span>
@@ -302,53 +248,14 @@ export const ChartTypeVersionOptions = ({
                             Option,
                             DropdownIndicator,
                         }}
-                        styles={{
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: '32px',
-                                boxShadow: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                            }),
-                            valueContainer: (base, state) => ({
-                                ...base,
-                                padding: '0',
-                                fontWeight: '600',
-                            }),
+                        styles={getCommonSelectStyles({
                             menu: (base, state) => ({
                                 ...base,
                                 margin: '0',
                                 width: '120px',
                             }),
-                            option: (base, state) => {
-                                return {
-                                    ...base,
-                                    color: 'var(--N900)',
-                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                }
-                            },
-                            container: (base, state) => {
-                                return {
-                                    ...base,
-                                    width: '100%',
-                                }
-                            },
-                            dropdownIndicator: (base, state) => ({
-                                ...base,
-                                padding: '0 8px',
-                                transition: 'all .2s ease',
-                                transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                            }),
-                            loadingMessage: (base) => ({
-                                ...base,
-                                color: 'var(--N600)',
-                            }),
-                            noOptionsMessage: (base) => ({
-                                ...base,
-                                color: 'var(--N600)',
-                            }),
-                        }}
-                        onChange={(selected) => selectChart(selected as DeploymentChartVersionType)}
+                        })}
+                        onChange={onSelectChartVersion}
                     />
                 )}
             </div>
@@ -363,7 +270,7 @@ const CompareOptions = ({
     showComparisonOption,
     openComparison,
     handleComparisonClick,
-    fetchingReadMe,
+    chartConfigLoading,
     openReadMe,
     isReadMeAvailable,
     handleReadMeClick,
@@ -372,7 +279,7 @@ const CompareOptions = ({
         <div className="flex">
             {showComparisonOption && (
                 <ConditionalWrap
-                    condition={!openComparison}
+                    condition={!openComparison && !chartConfigLoading}
                     wrap={(children) => (
                         <Tippy
                             className="default-tt w-200"
@@ -384,23 +291,27 @@ const CompareOptions = ({
                         </Tippy>
                     )}
                 >
-                    {renderComparisonOption(openComparison, handleComparisonClick, !isComparisonAvailable)}
+                    {renderComparisonOption(
+                        openComparison,
+                        handleComparisonClick,
+                        chartConfigLoading || !isComparisonAvailable,
+                    )}
                 </ConditionalWrap>
             )}
             <ConditionalWrap
-                condition={!openReadMe && (fetchingReadMe || !isReadMeAvailable)}
+                condition={!openReadMe && (chartConfigLoading || !isReadMeAvailable)}
                 wrap={(children) => (
                     <Tippy
                         className="default-tt"
                         arrow={false}
                         placement="bottom"
-                        content={fetchingReadMe ? 'Fetching...' : 'Readme is not available'}
+                        content={chartConfigLoading ? 'Fetching...' : 'Readme is not available'}
                     >
                         {children}
                     </Tippy>
                 )}
             >
-                {renderReadMeOption(fetchingReadMe, openReadMe, handleReadMeClick, !isReadMeAvailable)}
+                {renderReadMeOption(openReadMe, handleReadMeClick, chartConfigLoading || !isReadMeAvailable)}
             </ConditionalWrap>
         </div>
     )
@@ -412,7 +323,7 @@ export const DeploymentTemplateOptionsTab = ({
     isEnvOverride,
     openComparison,
     handleComparisonClick,
-    fetchingReadMe,
+    chartConfigLoading,
     openReadMe,
     isReadMeAvailable,
     handleReadMeClick,
@@ -446,7 +357,7 @@ export const DeploymentTemplateOptionsTab = ({
                 showComparisonOption={!disableVersionSelect}
                 openComparison={openComparison}
                 handleComparisonClick={handleComparisonClick}
-                fetchingReadMe={fetchingReadMe}
+                chartConfigLoading={chartConfigLoading}
                 openReadMe={openReadMe}
                 isReadMeAvailable={isReadMeAvailable}
                 handleReadMeClick={handleReadMeClick}
@@ -494,7 +405,8 @@ const CompareWithDropdown = ({
     const baseTemplateOption = {
         id: -1,
         value: '',
-        label: `Base deployment template ${globalChartRef?.version ? `(${globalChartRef.version})` : ''}`,
+        label: 'Base deployment template',
+        version: globalChartRef?.version || '',
         kind: 'base',
     }
 
@@ -549,6 +461,7 @@ const CompareWithDropdown = ({
             options={groupedOptions}
             isMulti={false}
             value={selectedOption}
+            isOptionSelected={(option, selected) => option.id === selected[0].id}
             classNamePrefix="compare-template-values-select"
             formatOptionLabel={formatOptionLabel}
             isOptionDisabled={(option) => option.value === 0}
@@ -567,6 +480,7 @@ const CompareWithDropdown = ({
                     border: 'none',
                     boxShadow: 'none',
                     minHeight: '32px',
+                    cursor: 'pointer',
                 }),
                 option: (base, state) => ({
                     ...base,
@@ -645,7 +559,7 @@ export const DeploymentTemplateEditorView = ({
     const [globalChartRef, setGlobalChartRef] = useState(null)
 
     useEffect(() => {
-        if (environments.length > 0) {
+        if (selectedChart && environments.length > 0) {
             let _filteredEnvironments = environments
             if (isEnvOverride) {
                 _filteredEnvironments = environments.filter((env) => +envId !== env.environmentId)
@@ -656,11 +570,12 @@ export const DeploymentTemplateEditorView = ({
                     id: env.environmentId,
                     label: env.environmentName,
                     value: env.chartRefId,
+                    version: charts.find((chart) => chart.id === env.chartRefId)?.version || '',
                     kind: 'env',
                 })) as DeploymentChartOptionType[],
             )
         }
-    }, [environments])
+    }, [selectedChart, environments])
 
     useEffect(() => {
         if (selectedChart && charts.length > 0) {
@@ -672,7 +587,7 @@ export const DeploymentTemplateEditorView = ({
 
                     return chart.id !== selectedChart.id && chart.name === selectedChart.name
                 })
-                .sort((a, b) => +b.id - +a.id)
+                .sort((a, b) => Number(b.id) - Number(a.id))
 
             setFilteredCharts(
                 _filteredCharts.map((chart) => ({
@@ -683,7 +598,7 @@ export const DeploymentTemplateEditorView = ({
                 })) as DeploymentChartOptionType[],
             )
         }
-    }, [charts])
+    }, [selectedChart, charts])
 
     useEffect(() => {
         if (selectedChart && selectedOption && selectedOption.id !== -1 && !fetchedValues[selectedOption.id]) {
@@ -713,6 +628,12 @@ export const DeploymentTemplateEditorView = ({
                 })
         }
     }, [selectedOption])
+
+    useEffect(() => {
+        return (): void => {
+            setSelectedOption(null)
+        }
+    }, [openComparison])
 
     return (
         <>

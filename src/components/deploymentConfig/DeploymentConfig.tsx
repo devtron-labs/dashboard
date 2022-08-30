@@ -127,6 +127,7 @@ export default function DeploymentConfig({
             await api(requestBody)
             fetchDeploymentTemplate()
             respondOnSuccess()
+            setFetchedValues({})
             toast.success(
                 <div className="toast">
                     <div className="toast__title">{chartConfig.id ? 'Updated' : 'Saved'}</div>
@@ -148,6 +149,10 @@ export default function DeploymentConfig({
 
     const toggleAppMetrics = () => {
         setAppMetricsEnabled(!isAppMetricsEnabled)
+    }
+
+    const closeConfirmationDialog = () => {
+        toggleConfirmation(false)
     }
 
     const editorOnChange = (str: string): void => {
@@ -183,7 +188,7 @@ export default function DeploymentConfig({
                     isComparisonAvailable={environments.length > 0}
                     openComparison={openComparison}
                     handleComparisonClick={handleComparisonClick}
-                    fetchingReadMe={chartConfigLoading}
+                    chartConfigLoading={chartConfigLoading}
                     isReadMeAvailable={!!readme}
                     openReadMe={showReadme}
                     handleReadMeClick={handleReadMeClick}
@@ -193,25 +198,23 @@ export default function DeploymentConfig({
                     selectChart={selectChart}
                     selectedChartRefId={selectedChartRefId}
                 />
-                {selectedChart && (
-                    <DeploymentTemplateEditorView
-                        appId={appId}
-                        envId={envId}
-                        isUnSet={isUnSet}
-                        openComparison={openComparison}
-                        showReadme={showReadme}
-                        chartConfigLoading={chartConfigLoading}
-                        readme={readme}
-                        value={tempFormData}
-                        editorOnChange={editorOnChange}
-                        schemas={schemas}
-                        charts={charts || []}
-                        selectedChart={selectedChart}
-                        environments={environments || []}
-                        fetchedValues={fetchedValues}
-                        setFetchedValues={setFetchedValues}
-                    />
-                )}
+                <DeploymentTemplateEditorView
+                    appId={appId}
+                    envId={envId}
+                    isUnSet={isUnSet}
+                    openComparison={openComparison}
+                    showReadme={showReadme}
+                    chartConfigLoading={chartConfigLoading}
+                    readme={readme}
+                    value={tempFormData}
+                    editorOnChange={editorOnChange}
+                    schemas={schemas}
+                    charts={charts || []}
+                    selectedChart={selectedChart}
+                    environments={environments || []}
+                    fetchedValues={fetchedValues}
+                    setFetchedValues={setFetchedValues}
+                />
                 {!openComparison && !showReadme && (
                     <DeploymentConfigFormCTA
                         loading={loading || chartConfigLoading}
@@ -230,10 +233,10 @@ export default function DeploymentConfig({
                     <p>Changes will only be applied to environments using default configuration.</p>
                     <p>Environments using overriden configurations will not be updated.</p>
                     <ConfirmationDialog.ButtonGroup>
-                        <button type="button" className="cta cancel" onClick={(e) => toggleConfirmation(false)}>
+                        <button type="button" className="cta cancel" onClick={closeConfirmationDialog}>
                             Cancel
                         </button>
-                        <button type="button" className="cta" onClick={(e) => save()}>
+                        <button type="button" className="cta" onClick={save}>
                             {loading ? <Progressing /> : chartConfig.id ? 'Update' : 'Save'}
                         </button>
                     </ConfirmationDialog.ButtonGroup>

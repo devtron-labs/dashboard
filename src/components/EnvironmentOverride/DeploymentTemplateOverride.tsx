@@ -261,6 +261,7 @@ function DeploymentTemplateOverrideForm({
                 </div>,
                 { autoClose: null },
             )
+            setFetchedValues({})
             initialise()
         } catch (err) {
             showError(err)
@@ -305,6 +306,10 @@ function DeploymentTemplateOverrideForm({
         dispatch({ type: 'selectChart', value: selectedChart })
     }
 
+    const closeConfirmationDialog = () => {
+        dispatch({ type: 'toggleDialog' })
+    }
+
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
 
     return (
@@ -330,7 +335,7 @@ function DeploymentTemplateOverrideForm({
                     disableVersionSelect={!state.duplicate}
                     openComparison={state.openComparison}
                     handleComparisonClick={handleComparisonClick}
-                    fetchingReadMe={chartRefLoading}
+                    chartConfigLoading={chartRefLoading}
                     isReadMeAvailable={!!state.data.readme}
                     openReadMe={state.showReadme}
                     handleReadMeClick={handleReadMeClick}
@@ -399,7 +404,7 @@ function DeploymentTemplateOverrideForm({
                         <button
                             type="button"
                             className="cta cancel"
-                            onClick={(e) => dispatch({ type: 'toggleDialog' })}
+                            onClick={closeConfirmationDialog}
                         >
                             Cancel
                         </button>

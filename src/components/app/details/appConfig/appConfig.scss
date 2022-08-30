@@ -6,7 +6,7 @@
     overflow: hidden;
 
     .app-compose__nav {
-        padding: 16px;
+        padding: 16px 16px 0;
         border-right: solid 1px #d6dbdf;
         background: white;
         height: 100%;
@@ -38,6 +38,10 @@
             .need-help {
                 color: var(--B500);
             }
+        }
+
+        .cta-delete-app {
+            bottom: 0;
         }
     }
 
