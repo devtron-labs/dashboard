@@ -75,3 +75,7 @@ export interface DeploymentHistorySidebarType {
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
 }
+
+export interface DeploymentDetailStepsType{
+  deploymentStatus: string
+}
