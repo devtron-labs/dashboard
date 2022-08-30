@@ -20,7 +20,7 @@ import NavSprite from '../../../assets/icons/navigation-sprite.svg'
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg'
 import { Command, CommandErrorBoundary } from '../../command'
 import { InstallationType, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga4'
 import './navigation.scss'
 import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
 
