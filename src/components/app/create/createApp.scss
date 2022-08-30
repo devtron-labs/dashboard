@@ -27,10 +27,10 @@ span.form__label {
     align-items: start;
     grid-template-columns: 20px 1fr auto;
     grid-column-gap: 12px;
-}
 
-.dc__info__title {
-    display: inline;
+    .dc__info__title {
+      display: inline;
+    }
 }
 
 .form-row {
