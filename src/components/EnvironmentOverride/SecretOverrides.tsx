@@ -30,7 +30,7 @@ import { PATTERNS, EXTERNAL_TYPES, ROLLOUT_DEPLOYMENT } from '../../config'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import { getAppChartRef } from '../../services/service'
 import './environmentOverride.scss'
-import { dataHeaders, getTypeGroups, sampleJSONs, hasHashiOrAWS, hasESO } from '../secrets/secret.utils'
+import { dataHeaders, getTypeGroups, sampleJSONs, hasHashiOrAWS, hasESO, hasProperty } from '../secrets/secret.utils'
 
 const SecretContext = React.createContext(null)
 function useSecretContext() {
@@ -393,11 +393,13 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     return isValid
                 }, true) :
                 secretDataArray.reduce((isValid, s) => {
-                    isValid = isValid && !!s.secretKey && !!s.key
-                    return isValid
+                    isValid = isValid && !!s.secretKey && !!s.key && 
+                    (hasProperty(externalType) ? !!s.property : true)
                 })
                 if (!isValid) {
-                    toast.warn('Please check key and name')
+                    !isESO
+                        ? toast.warn('Please check key and name')
+                        : toast.warn(`Please check key${hasProperty(externalType) ? ', property' : ''}  and secretKey`)
                     return
                 }
             }
@@ -587,7 +589,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                         <label className="form__label">Data type</label>
                         <div className="form-row__select-external-type">
                             <Select disabled onChange={(e) => {}}>
-                                <Select.Button>{getTypeGroups(externalType).label}</Select.Button>
+                                <Select.Button>{externalType ? getTypeGroups(externalType).label : getTypeGroups()[0].options[0].label}</Select.Button>
                             </Select>
                         </div>
                     </div>

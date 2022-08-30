@@ -294,3 +294,7 @@ export const hasESO = (externalType): boolean => {
         externalType === 'ESO_HashiCorpVault'
     )
 }
+
+export const hasProperty = (externalType): boolean => {
+    return externalType === 'ESO_AWSSecretsManager' || externalType === 'ESO_HashiCorpVault'
+} 

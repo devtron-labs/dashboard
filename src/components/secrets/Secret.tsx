@@ -35,7 +35,7 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import '../configMaps/ConfigMap.scss'
 import { decode } from '../../util/Util'
-import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO } from './secret.utils'
+import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, hasProperty } from './secret.utils'
 import { SecretFormProps } from '../deploymentConfig/types'
 
 const Secret = ({ respondOnSuccess, ...props }) => {
@@ -486,11 +486,14 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 return isValid
             }, true) :
             secretDataArray?.reduce((isValid, s) => {
-                isValid = isValid && !!s.secretKey && !!s.key
+                isValid = isValid && !!s.secretKey && !!s.key && 
+                (hasProperty(externalType) ? !!s.property : true)
                 return isValid
             }, true)
             if (!isValid) {
-                toast.warn('Please check key and name')
+                !isESO
+                    ? toast.warn('Please check key and name')
+                    : toast.warn(`Please check key${hasProperty(externalType) ? ', property' : ''}  and secretKey`)
                 return
             }
         }
