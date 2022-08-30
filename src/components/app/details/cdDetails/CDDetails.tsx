@@ -80,7 +80,7 @@ export default function CDDetails() {
     const { pathname } = useLocation()
     const { push } = useHistory()
     const pipelines = result?.length ? result[1]?.pipelines : []
-    const deploymentAppType = pipelines.find(pipeline=> pipeline.id === Number(pipelineId))?.deploymentAppType
+    const deploymentAppType = pipelines?.find(pipeline=> pipeline.id === Number(pipelineId))?.deploymentAppType
     useInterval(pollHistory, 30000)
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
     const keys = useKeyDown()
