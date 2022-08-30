@@ -67,6 +67,7 @@ export interface ModuleDetails {
     title?: string
     isIncludedInLegacyFullPackage?: boolean
     assets?: string[]
+    dependentModules?: number[]
 }
 
 export interface ModuleListingViewType {
@@ -76,6 +77,7 @@ export interface ModuleListingViewType {
 }
 
 export interface ModuleDetailsViewType {
+    modulesList: ModuleDetails[]
     moduleDetails: ModuleDetails
     setDetailsMode: React.Dispatch<React.SetStateAction<string>>
     serverInfo: ServerInfo
@@ -95,9 +97,11 @@ export interface ModuleInstallationStatusType {
     logPodName?: string
     isUpgradeView?: boolean
     latestVersionAvailable: boolean
+    isCICDModule?: boolean
 }
 
 export interface InstallationWrapperType {
+    modulesList?: ModuleDetails[]
     moduleName?: string
     installationStatus: ModuleStatus
     canViewLogs?: boolean

@@ -210,11 +210,7 @@ export default function DevtronStackManager({
          * - If in full mode then resolve all modules as INSTALLED which has isIncludedInLegacyFullPackage as true
          * - Else create a promise to fetch the details
          */
-        const _moduleDetailsPromiseList = _modulesList?.map((module: ModuleDetails) =>
-            serverMode === SERVER_MODE.FULL && module.isIncludedInLegacyFullPackage
-                ? { result: { name: module.name, status: ModuleStatus.INSTALLED } }
-                : getModuleInfo(module.name),
-        )
+        const _moduleDetailsPromiseList = _modulesList?.map((module: ModuleDetails) => getModuleInfo(module.name))
 
         const _discoverModulesList: ModuleDetails[] = []
         const _installedModulesList: ModuleDetails[] = []
@@ -346,6 +342,7 @@ export default function DevtronStackManager({
             <Switch location={location}>
                 <Route path={URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}>
                     <ModuleDetailsView
+                        modulesList={stackDetails.discoverModulesList}
                         moduleDetails={selectedModule}
                         setDetailsMode={setDetailsMode}
                         serverInfo={serverInfo}
@@ -360,6 +357,7 @@ export default function DevtronStackManager({
                 </Route>
                 <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS}>
                     <ModuleDetailsView
+                        modulesList={stackDetails.discoverModulesList}
                         moduleDetails={selectedModule}
                         setDetailsMode={setDetailsMode}
                         serverInfo={serverInfo}

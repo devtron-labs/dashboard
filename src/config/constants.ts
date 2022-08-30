@@ -179,7 +179,7 @@ export const AppConfigStatus = {
 
 export const FullRoutes = {
     LOGIN: `${Routes.LOGIN}`,
-    CENTRAL: 'https://api.devtron.ai',
+    CENTRAL: 'https://api-stage.devtron.ai'//'https://api.devtron.ai',
 }
 
 export const PATTERNS = {

@@ -52,6 +52,10 @@
             font-weight: 400;
         }
     }
+    &.dependent-module__card{
+      margin-right: 0;
+      width: inherit;
+    }
 }
 
 .module-details__view-container {
@@ -96,7 +100,7 @@
     .module-details__install-button {
         width: 100%;
         height: 36px;
-        
+
         &.cta {
             text-transform: none;
         }
@@ -109,6 +113,9 @@
             path {
                 fill: none;
             }
+        }
+        &.disabled-state {
+          opacity: 0.5;
         }
     }
     .module-details__installtion-status {
