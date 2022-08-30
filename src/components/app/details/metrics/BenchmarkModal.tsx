@@ -4,7 +4,7 @@ import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { ReactComponent as Tip } from '../../../../assets/icons/ic-bulb.svg';
 import { renderCategoryTag } from './deploymentMetrics.util';
 import { getTimeperiod } from './deploymentMetrics.util';
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 
 export interface BenchmarkModalProps {
     valueLabel: string;

@@ -74,6 +74,7 @@ export interface DeploymentStatusDetailsBreakdownDataType {
     deploymentTriggerTime: string
     deploymentEndTime: string
     deploymentError: string
+    triggeredBy: string
     deploymentStatusBreakdown: {
         DEPLOYMENT_INITIATED: DeploymentStatusDetailRow
         GIT_COMMIT: DeploymentStatusDetailRow

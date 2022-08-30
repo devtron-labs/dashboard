@@ -7,7 +7,7 @@ import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclama
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg';
 import YAML from 'yaml'
 import './codeEditor.scss';
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import 'monaco-editor';
 // @ts-ignore
@@ -116,7 +116,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         value = cleanKubeManifest(value);
         defaultValue = cleanKubeManifest(defaultValue);
     }
-    
+
     const editorRef = useRef(null)
     const monacoRef = useRef(null)
     const { width, height: windowHeight } = useWindowSize()
@@ -157,7 +157,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             'editor.background': '#0B0F22',
         }
     });
-    
+
     function editorDidMount(editor, monaco) {
         if (
             mode === 'yaml' &&
@@ -167,7 +167,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         ) {
             editor.getModel().updateOptions({ tabSize: 2 });
         }
-        
+
         editorRef.current = editor
         monacoRef.current = monaco
     }
@@ -299,7 +299,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                             editorDidMount={editorDidMount}
                             height={height}
                             width="100%"
-                            
+
                         />
                     }
                 </>

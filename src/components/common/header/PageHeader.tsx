@@ -8,7 +8,7 @@ import LogoutCard from '../LogoutCard'
 import { getLoginInfo, getRandomColor } from '../helpers/Helpers'
 import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga4'
 export interface PageHeaderType {
     headerName?: string
     additionalHeaderInfo?: () => JSX.Element
