@@ -13,7 +13,7 @@ import { ReactComponent as CD } from '../../../../assets/icons/ic-CD.svg'
 import { useParams } from 'react-router'
 import { Nodes } from '../../types'
 import Tippy from '@tippyjs/react'
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga4'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 
 export function SourceInfo({
