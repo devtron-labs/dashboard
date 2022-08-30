@@ -182,7 +182,6 @@ export default function CDDetails() {
     }, [deploymentHistoryResult, loadingDeploymentHistory, deploymentHistoryError])
 
     function syncState(triggerId: number, triggerDetail: History) {
-      const currentHistory =  triggerHistory.get(triggerId)
         setTriggerHistory((triggerHistory) => {
             triggerHistory.set(triggerId, triggerDetail)
             return new Map(triggerHistory)
