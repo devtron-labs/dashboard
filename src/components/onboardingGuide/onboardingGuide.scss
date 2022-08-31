@@ -16,10 +16,6 @@
         height: 210px;
     }
 
-    .onboarding__upper{
-      height: 300px;
-    }
-
     .onboarding__bottom {
       height: calc(100vh - 300px);
         .onboarding-card a:hover{
@@ -78,6 +74,9 @@
       top: -80px;
     }
 
+    .deploy-manage__upper{
+      height: 236px;
+    }
 }
 
 .guide_skip a:hover{

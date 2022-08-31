@@ -97,12 +97,8 @@ function PageHeader({
     const onClickHelp = () => {
         setShowHelpCard(!showHelpCard)
         showLogOutCard && setShowLogOutCard(false)
-        let updatedPayload = {
-            key: 'login-count',
-            value: '5',
-        }
-        updateLoginCount(updatedPayload)
-        hideGettingStartedCard(updatedPayload.value)
+        setActionWithExpiry('clickedOkay', 1)
+        hideGettingStartedCard()
 
         ReactGA.event({
             category: 'Main Navigation',

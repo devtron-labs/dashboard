@@ -120,13 +120,13 @@ export default function NavigationRoutes() {
         //Only For the first time login user(with superadmin permission)
         if (!loginInfo) return
 
-        getLoginData().then((response) => {
-            const count = response.result?.value ? parseInt(response.result.value) : 0
-            setLoginCount(count || 1)
-            if (!count) {
-                history.push('/')
-            }
-        })
+        // getLoginData().then((response) => {
+        //     const count = response.result?.value ? parseInt(response.result.value) : 0
+        //     setLoginCount(count || 1)
+        //     if (!count) {
+        //         history.push('/')
+        //     }
+        // })
 
         if (typeof Storage !== 'undefined') {
             if (localStorage.isDashboardLoggedIn) return
@@ -206,7 +206,6 @@ const onClickedDeployManageCardClicked = () =>{
                     setLoginCount
                 }}
             >
-              {console.log(isSuperAdmin)}
                 <main className={`${window.location.href.includes(URLS.GETTING_STARTED) ? 'no-nav' : ''}`}>
                     {!window.location.href.includes(URLS.GETTING_STARTED) && (
                         <Navigation

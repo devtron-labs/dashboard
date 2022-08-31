@@ -9,7 +9,6 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { OnboardingGuideProps } from '../common/guidePage/onboarding.type'
 import { OnClickedHandler, POSTHOG_EVENT_ONBOARDING}  from './onboarding.utils'
 
-
 function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClicked }: OnboardingGuideProps) {
     const match = useRouteMatch()
     const history = useHistory()
@@ -34,16 +33,14 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
         }
     }
 
-
-
     return (
         <div className="onboarding-container h-100">
-            <div className="onboarding__upper bc-window bcn-1">
-                {loginCount > 1 && (
+            <div className={`onboarding__upper h-300 bc-window bcn-1 ${loginCount <= 1 ? 'flex' : ''}`}>
+                 {loginCount > 1 && (
                     <button type="button" className="w-100 flex right transparent p-20" onClick={onClickCloseButton}>
                         <Close className="icon-dim-24" />
                     </button>
-                )}
+               )}
                 <div className="flex column">
                     <h1 className="fw-6 mb-8">What will you use devtron for?</h1>
                     <p className="fs-14 cn-7">This will help us in guiding you towards relevant product features</p>

@@ -5,7 +5,7 @@ import ChartRepository from '../../assets/img/guided-chart-repository.png'
 import HelmCollage from '../../assets/img/guided-helm-collage.png'
 import { NavLink, useHistory } from 'react-router-dom'
 import { SERVER_MODE, URLS } from '../../config'
-import { ReactComponent as GoBack } from '../../assets/icons/ic-arrow-forward.svg'
+import { ReactComponent as GoBack } from '../../assets/icons/ic-arrow-backward.svg'
 import './onboardingGuide.scss'
 import ReactGA from 'react-ga'
 import { Progressing, showError, useEventSource } from '../common'
@@ -60,8 +60,8 @@ function DeployManageGuide({ isDeployManageCardClicked }) {
                 </div>
             ) : (
                 <div className="deploy-manage-container">
-                    <div className="deploy-manage__header  h-300">
-                        {/* {isDeployManageCardClicked && (
+                    <div className="deploy-manage__header h-300">
+                         {isDeployManageCardClicked && (
                             <button
                                 type="button"
                                 className="w-100 flex right transparent p-20"
@@ -69,16 +69,18 @@ function DeployManageGuide({ isDeployManageCardClicked }) {
                             >
                                 <Close className="icon-dim-24" />
                             </button>
-                        )} */}
-                        <div className={`${isDeployManageCardClicked ? '' : 'h-300'} flex h-300`}>
+                        )}
+                        <div className={`${isDeployManageCardClicked ? 'deploy-manage__upper top' : 'h-300'} flex`}>
+                          <div className='flex center'>
                             <div className="bcn-0 deploy_arrow flex cursor" onClick={redirectToOnboardingPage}>
-                                <GoBack className="rotate icon-dim-24" style={{ ['--rotateBy' as any]: '180deg' }} />
+                                <GoBack className="icon-dim-24"/>
                             </div>
                             <div className="ml-32">
                                 <h1 className="fw-6 mb-8">Deploy and manage helm apps</h1>
                                 <p className="fs-14 cn-7">
                                     This helps us in guiding you towards relevant product features
                                 </p>
+                            </div>
                             </div>
                         </div>
                     </div>
