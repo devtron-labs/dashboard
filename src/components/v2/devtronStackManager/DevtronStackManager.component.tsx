@@ -709,16 +709,6 @@ export const ModuleDetailsView = ({
         }
     }, [])
 
-    // To fetch the latest module/server details, right after triggering the install/update action.
-    useEffect(() => {
-        if (queryParams.get('id') && moduleDetails && moduleDetails.name !== queryParams.get('id')) {
-            const currentModule = modulesList.find((module) => module.name === queryParams.get('id'))
-            if (currentModule) {
-                moduleDetails = currentModule
-            }
-        }
-    }, [location.search])
-
     return moduleDetails ? (
         <div className="module-details__view-container">
             <Carousel className="module-details__carousel" imageUrls={moduleDetails.assets} />
