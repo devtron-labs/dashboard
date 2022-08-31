@@ -4,6 +4,7 @@ export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
 export const DEFAULTK8SVERSION = 'v1.16.0'
 
 export const Routes = {
+    API_VERSION_V2: 'v2',
     LOGIN: 'api/v1/session',
     SOURCE_CONFIG_GET: 'app/get',
 

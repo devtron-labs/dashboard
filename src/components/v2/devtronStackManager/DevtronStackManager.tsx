@@ -31,7 +31,7 @@ import {
 } from './DevtronStackManager.type'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import './devtronStackManager.scss'
-import { getVersionConfig } from '../../../services/service'
+import { getVersionConfig, isGitopsConfigured } from '../../../services/service'
 import { toast } from 'react-toastify'
 
 export default function DevtronStackManager({
@@ -204,6 +204,28 @@ export default function DevtronStackManager({
         }
     }
 
+    const _getGitOpsConfigurationStatus = async (moduleName: string): Promise<void> => {
+        try {
+            if (
+                location.pathname.includes('/details') &&
+                queryParams.get('id') &&
+                queryParams.get('id') === moduleName
+            ) {
+                const { result } = await isGitopsConfigured()
+                const currentModule = stackDetails.installedModulesList?.find(
+                    (_module) => _module.name === moduleName,
+                )
+                if (currentModule) {
+                    currentModule.isModuleConfigurable = true
+                    currentModule.isModuleConfigured = result?.isExist || false
+                    setSelectedModule(currentModule)
+                }
+            }
+        } catch (e) {
+            console.error('Error in fetching pod name')
+        }
+    }
+
     const _getDetailsForAllModules = (_modulesList: ModuleDetails[], _stackDetails: StackDetailsType): void => {
         /**
          * 1. Create array of promises to fetch module details
@@ -236,6 +258,9 @@ export default function DevtronStackManager({
                         _discoverModulesList.push(_moduleDetails)
 
                         if (_moduleDetails.installationStatus === ModuleStatus.INSTALLED) {
+                            if (_moduleDetails.name === 'argo-cd') {
+                                _getGitOpsConfigurationStatus('argo-cd')
+                            }
                             _installedModulesList.push(_moduleDetails)
                         }
                     }

@@ -430,6 +430,7 @@ export const handleError = (err: any, isUpgradeView?: boolean): void => {
 
 export const InstallationWrapper = ({
     modulesList,
+    moduleDetails,
     moduleName,
     installationStatus,
     canViewLogs,
@@ -449,7 +450,9 @@ export const InstallationWrapper = ({
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const latestVersionAvailable = isLatestVersionAvailable(serverInfo?.currentVersion, upgradeVersion)
-    const belowMinSupportedVersion = baseMinVersionSupported? isLatestVersionAvailable(serverInfo?.currentVersion, baseMinVersionSupported): false
+    const belowMinSupportedVersion = baseMinVersionSupported
+        ? isLatestVersionAvailable(serverInfo?.currentVersion, baseMinVersionSupported)
+        : false
     const [preRequisiteList, setPreRequisiteList] = useState<
         { version: string; prerequisiteMessage: string; tagLink: string }[]
     >([])
@@ -661,10 +664,8 @@ export const InstallationWrapper = ({
                                 isCICDModule={moduleName === 'cicd'}
                             />
                         )}
-                        <ModuleNotConfigured moduleName={moduleName} />
-                        {!isUpgradeView && installationStatus === ModuleStatus.INSTALLED && (
-                            <ModuleNotConfigured moduleName={moduleName} />
-                        )}
+                        {moduleDetails.isModuleConfigurable &&
+                            !moduleDetails.isModuleConfigured && <ModuleNotConfigured moduleName={moduleName} />}
                         {!isUpgradeView && installationStatus === ModuleStatus.INSTALLED && <ModuleUpdateNote />}
                     </>
                 )}
@@ -732,6 +733,7 @@ export const ModuleDetailsView = ({
                 </div>
                 <InstallationWrapper
                     modulesList={modulesList}
+                    moduleDetails={moduleDetails}
                     moduleName={moduleDetails.name}
                     installationStatus={moduleDetails.installationStatus}
                     serverInfo={serverInfo}
@@ -797,9 +799,6 @@ const ManagedByNote = (): JSX.Element => {
 
 const ModuleNotConfigured = ({ moduleName }: { moduleName: string }): JSX.Element | null => {
     const configNoteDetail = MODULE_CONFIGURATION_DETAIL_MAP[moduleName]
-    if (!configNoteDetail) {
-        return null
-    }
     return (
         <div className="mb-16">
             <div className="pt-10 pr 16 pb-10 pl-16 flex top left br-4 cn-9 bcy-1 ey-2">

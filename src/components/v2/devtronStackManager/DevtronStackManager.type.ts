@@ -69,6 +69,8 @@ export interface ModuleDetails {
     assets?: string[]
     dependentModules?: number[]
     baseMinVersionSupported?: string
+    isModuleConfigurable?: boolean
+    isModuleConfigured?: boolean
 }
 
 export interface ModuleListingViewType {
@@ -103,6 +105,7 @@ export interface ModuleInstallationStatusType {
 
 export interface InstallationWrapperType {
     modulesList?: ModuleDetails[]
+    moduleDetails?: ModuleDetails
     moduleName?: string
     installationStatus: ModuleStatus
     canViewLogs?: boolean
