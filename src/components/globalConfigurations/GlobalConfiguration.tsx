@@ -17,6 +17,9 @@ import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExternalLinks from '../externalLinks/ExternalLinks'
 import PageHeader from '../common/header/PageHeader'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import { ModuleNameMap } from '../v2/devtronStackManager/DevtronStackManager.utils'
+import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -41,6 +44,7 @@ export default function GlobalConfiguration(props) {
         appStageCompleted: 0,
         chartStageCompleted: 0,
     })
+    const [installedModule, setInstalledModule] = useState([])
     const { serverMode, setServerMode } = useContext(mainContext)
 
     useEffect(() => {
@@ -60,6 +64,20 @@ export default function GlobalConfiguration(props) {
                 setIsHostURLConfig(response.result)
             })
             .catch((error) => {})
+    }
+
+    useEffect(() => {
+        checkGitOpsConfiguration()
+    }, [])
+
+    async function checkGitOpsConfiguration() {
+      try {
+          const { result } = await getModuleInfo(ModuleNameMap.ARGO_CD)
+          if (result?.status === ModuleStatus.INSTALLED) {
+              setInstalledModule([...installedModule, ModuleNameMap.ARGO_CD])
+          }
+          setInstalledModule([...installedModule, ModuleNameMap.ARGO_CD])
+      } catch (error) {}
     }
 
     function handleChecklistUpdate(itemName: string): void {
@@ -112,7 +130,7 @@ export default function GlobalConfiguration(props) {
             <PageHeader headerName="Global configurations" />
             <Router history={useHistory()}>
                 <section className="global-configuration__navigation">
-                    <NavItem hostURLConfig={hostURLConfig} serverMode={serverMode} />
+                    <NavItem hostURLConfig={hostURLConfig} serverMode={serverMode} installedModule={installedModule}/>
                 </section>
                 <section className="global-configuration__component-wrapper">
                     <Suspense fallback={<Progressing pageLoader />}>
@@ -122,6 +140,7 @@ export default function GlobalConfiguration(props) {
                                 checkList={checkList}
                                 serverMode={serverMode}
                                 handleChecklistUpdate={handleChecklistUpdate}
+                                installedModule={installedModule}
                             />
                         </ErrorBoundary>
                     </Suspense>
@@ -131,7 +150,7 @@ export default function GlobalConfiguration(props) {
     )
 }
 
-function NavItem({ hostURLConfig, serverMode }) {
+function NavItem({ hostURLConfig, serverMode, installedModule }) {
     const location = useLocation()
     // Add key of NavItem if grouping is used
     const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
@@ -145,7 +164,7 @@ function NavItem({ hostURLConfig, serverMode }) {
             component: HostURLConfiguration,
             isAvailableInEA: false,
         },
-        { name: 'GitOps ', href: URLS.GLOBAL_CONFIG_GITOPS, component: GitOpsConfiguration, isAvailableInEA: false },
+        { name: 'GitOps ', href: URLS.GLOBAL_CONFIG_GITOPS, component: GitOpsConfiguration, moduleName: ModuleNameMap.ARGO_CD },
         { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project, isAvailableInEA: true },
         {
             name: 'Clusters' + (serverMode === SERVER_MODE.EA_ONLY ? '' : ' & Environments'),
@@ -274,7 +293,7 @@ function NavItem({ hostURLConfig, serverMode }) {
     return (
         <div className="flex column left">
             {ConfigRequired.map(
-                (route) => (serverMode !== SERVER_MODE.EA_ONLY || route.isAvailableInEA) && renderNavItem(route),
+                (route) => (serverMode !== SERVER_MODE.EA_ONLY || route.isAvailableInEA || installedModule.indexOf(route.moduleName)>=0) && renderNavItem(route),
             )}
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
             {ConfigOptional.map(
@@ -320,7 +339,7 @@ function NavItem({ hostURLConfig, serverMode }) {
     )
 }
 
-function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }) {
+function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, installedModule }) {
     const location = useLocation()
 
     return (
@@ -340,17 +359,19 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                     )
                 }}
             />
-            <Route
-                path={URLS.GLOBAL_CONFIG_GITOPS}
-                render={(props) => {
-                    return (
-                        <div className="flexbox h-100">
-                            <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
-                            <GlobalConfigCheckList {...checkList} {...props} />
-                        </div>
-                    )
-                }}
-            />
+            {installedModule.indexOf(ModuleNameMap.ARGO_CD)>=0 && (
+                <Route
+                    path={URLS.GLOBAL_CONFIG_GITOPS}
+                    render={(props) => {
+                        return (
+                            <div className="flexbox h-100">
+                                <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
+                                <GlobalConfigCheckList {...checkList} {...props} />
+                            </div>
+                        )
+                    }}
+                />
+            )}
             <Route
                 path={URLS.GLOBAL_CONFIG_PROJECT}
                 render={(props) => {
