@@ -17,8 +17,6 @@ import './gitops.css';
 import { withRouter } from 'react-router-dom'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm';
 import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.svg'
-import { getModuleInfo } from "../v2/devtronStackManager/DevtronStackManager.service";
-import { ModuleStatus } from "../v2/devtronStackManager/DevtronStackManager.type";
 
 enum GitProvider {
     GITLAB = 'GITLAB',
@@ -133,7 +131,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     componentDidMount() {
-        this.fetchGitOpsConfigurationList()
+        this.fetchGitOpsConfigurationList();
     }
 
     fetchGitOpsConfigurationList() {
@@ -286,7 +284,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             } else {
                 this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, saveLoading: false, isFormEdited: false, validationError : errorMap || [], deleteRepoError : resp.deleteRepoFailed});
                 toast.error("Configuration validation failed");
-            }
+            } 
         }).catch((error) => {
             showError(error);
             this.setState({ view: ViewType.ERROR, statusCode: error.code, saveLoading: false });
