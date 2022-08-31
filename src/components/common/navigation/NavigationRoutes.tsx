@@ -128,6 +128,9 @@ export default function NavigationRoutes() {
         })
 
         if (typeof Storage !== 'undefined') {
+            if (localStorage.isSSOLogin) {
+                localStorage.setItem('isSSOLogin', 'false')
+            }
             if (localStorage.isDashboardLoggedIn) return
             dashboardLoggedIn()
                 .then((response) => {

@@ -46,15 +46,11 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
         },
     ]
 
-    const onClickGettingStarted = () => {
-      localStorage.setItem('actionTakenOnOnboarding', 'false')
-    }
-
     return (
         <div className="transparent-div" onClick={() => setShowHelpCard(!showHelpCard)}>
             <div className={`help-card pt-4 pb-4 ${className}`}>
-                <div className="help-card__option" onClick={onClickGettingStarted}>
-                    <NavLink to={`/${URLS.GETTING_STARTED}`} className="no-decor help-card__link flex left cn-9" activeClassName="active" onClick={onClickGettingStarted}>
+                <div className="help-card__option">
+                    <NavLink to={`/${URLS.GETTING_STARTED}`} className="no-decor help-card__link flex left cn-9" activeClassName="active">
                         <GettingStartedIcon />
                         <div  className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
                     </NavLink>

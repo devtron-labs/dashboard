@@ -9,7 +9,6 @@ import { getLoginInfo, getRandomColor, setActionWithExpiry } from '../helpers/He
 import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import ReactGA from 'react-ga'
-import { updateLoginCount } from '../../../services/service'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import GettingStartedCard from '../gettingStartedCard/GettingStarted'
 import { mainContext } from '../navigation/NavigationRoutes'
