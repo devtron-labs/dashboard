@@ -16,7 +16,6 @@ export interface LoginFormState {
     };
     loading: boolean;
     loginCount: number;
-    isSSOLogin: boolean
 }
 
 export interface LoginProps extends RouteComponentProps<{}> { }

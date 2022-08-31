@@ -19,4 +19,5 @@ export interface AppRouterType {
   isSuperAdmin?: boolean
   appListCount: number
   loginCount: number
+  serverMode: string
 }

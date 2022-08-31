@@ -24,7 +24,6 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 password: '',
             },
             loginCount: 0,
-            isSSOLogin: false,
         }
         this.handleChange = this.handleChange.bind(this)
         this.autoFillLogin = this.autoFillLogin.bind(this)
@@ -64,24 +63,6 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 })
                 .catch((errors) => {})
         }
-        if (this.state.isSSOLogin) {
-            getLoginData()
-                .then((response) => {
-                    const count = response.result?.value ? parseInt(response.result.value) : 0
-                    this.setState({ loginCount: count || 1 })
-                    if (count < 6) {
-                        const updatedPayload = {
-                            key: 'login-count',
-                            value: `${count + 1}`,
-                        }
-                        updateLoginCount(updatedPayload)
-                    }
-                })
-                .catch((errors: ServerErrors) => {
-                    showError(errors)
-                    this.setState({ loading: false })
-                })
-        }
     }
 
     handleChange(e: React.ChangeEvent<HTMLInputElement>): void {
@@ -112,16 +93,8 @@ export default class Login extends Component<LoginProps, LoginFormState> {
     }
 
     onClickSSO = (): void => {
-        localStorage.setItem('isSSOLogin', 'true')
-        let parsedJson = JSON.parse(localStorage.getItem('isSSOLogin'))
-        this.setState({
-            isSSOLogin: parsedJson,
-        })
-    }
-
-    onClickAdmin = () => {
-        if (localStorage.isSSOLogin) {
-            localStorage.setItem('isSSOLogin', 'false')
+        if (typeof Storage !== 'undefined') {
+            localStorage.setItem('isSSOLogin', 'true')
         }
     }
 
@@ -139,12 +112,8 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                     getLoginData().then((response) => {
                         const count = response.result?.value ? parseInt(response.result.value) : 0
                         this.setState({ loginCount: count || 1 })
-                        if (count < 6) {
-                            const updatedPayload = {
-                                key: 'login-count',
-                                value: `${count + 1}`,
-                            }
-                            updateLoginCount(updatedPayload)
+                        if (typeof Storage !== 'undefined' && localStorage.getItem('isSSOLogin')) {
+                            localStorage.removeItem('isSSOLogin')
                         }
                         if (!count) {
                             this.props.history.push('/')
@@ -183,7 +152,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             </a>
                         )
                     })}
-                <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`} onClick={this.onClickAdmin}>
+                <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>
                     Login as administrator
                 </NavLink>
             </div>

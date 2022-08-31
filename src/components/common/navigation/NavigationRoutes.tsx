@@ -13,6 +13,7 @@ import {
     getLoginData,
     getUserRole,
     getVersionConfig,
+    updateLoginCount,
 } from '../../../services/service'
 import Reload from '../../Reload/Reload'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
@@ -23,6 +24,7 @@ import ClusterNodeContainer from '../../ClusterNodes/ClusterNodeContainer'
 import DeployManageGuide from '../../onboardingGuide/DeployManageGuide'
 import { showError } from '../helpers/Helpers'
 import { AppRouterType } from '../guidePage/onboarding.type'
+import { ServerErrors } from '../../../modals/commonTypes'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -121,16 +123,23 @@ export default function NavigationRoutes() {
 
         getLoginData().then((response) => {
             const count = response.result?.value ? parseInt(response.result.value) : 0
-            setLoginCount(count || 1)
+            setLoginCount(count ?? 1)
+            if (typeof Storage !== 'undefined' && localStorage.getItem('isSSOLogin')) {
+                localStorage.removeItem('isSSOLogin')
+            }
+            if (count < 5) {
+                const updatedPayload = {
+                    key: 'login-count',
+                    value: `${count + 1}`,
+                }
+                updateLoginCount(updatedPayload)
+            }
             if (!count) {
                 history.push('/')
             }
         })
 
         if (typeof Storage !== 'undefined') {
-            if (localStorage.isSSOLogin) {
-                localStorage.setItem('isSSOLogin', 'false')
-            }
             if (localStorage.isDashboardLoggedIn) return
             dashboardLoggedIn()
                 .then((response) => {
@@ -233,6 +242,7 @@ const onClickedDeployManageCardClicked = () =>{
                                                     isSuperAdmin={isSuperAdmin}
                                                     appListCount={appListCount}
                                                     loginCount={loginCount}
+                                                    serverMode={serverMode}
                                                 />
                                             )}
                                         />
@@ -275,7 +285,7 @@ const onClickedDeployManageCardClicked = () =>{
                                         </Route>
 
                                         <Route>
-                                            <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && (serverMode === SERVER_MODE.EA_ONLY && !loginCount) || (serverMode === SERVER_MODE.FULL && appListCount === 0)} />
+                                            <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && (serverMode === SERVER_MODE.EA_ONLY && loginCount === 0) || (serverMode === SERVER_MODE.FULL && appListCount === 0)} />
                                         </Route>
                                     </Switch>
                                 </ErrorBoundary>
@@ -288,7 +298,7 @@ const onClickedDeployManageCardClicked = () =>{
     }
 }
 
-export function AppRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterType) {
+export function AppRouter({ isSuperAdmin, appListCount, loginCount, serverMode }: AppRouterType) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     return (
@@ -302,6 +312,7 @@ export function AppRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                                 isSuperAdmin={isSuperAdmin}
                                 appListCount={appListCount}
                                 loginCount={loginCount}
+                                serverMode={serverMode}
                             />
                         )}
                     />
@@ -318,7 +329,7 @@ export function AppRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                     </Route>
                     <Route>
                         <RedirectUserWithSentry
-                            isFirstLoginUser={(isSuperAdmin && appListCount === 0) || !loginCount}
+                            isFirstLoginUser={isSuperAdmin && (appListCount === 0 || !loginCount)}
                         />
                     </Route>
                 </Switch>
@@ -327,7 +338,7 @@ export function AppRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterT
     )
 }
 
-export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterType) {
+export function AppListRouter({ isSuperAdmin, appListCount, loginCount, serverMode }: AppRouterType) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     return (
@@ -339,7 +350,7 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
                         <RedirectToAppList />
                     </Route>
                     <Route>
-                        <RedirectUserWithSentry isFirstLoginUser = {isSuperAdmin && (appListCount === 0 || !loginCount)} />
+                        <RedirectUserWithSentry isFirstLoginUser = {isSuperAdmin && (serverMode === SERVER_MODE.EA_ONLY && loginCount === 0) || (serverMode === SERVER_MODE.FULL && appListCount === 0)} />
                     </Route>
                 </Switch>
             </AppContext.Provider>
