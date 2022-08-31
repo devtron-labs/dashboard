@@ -21,6 +21,7 @@ import { PipelineSelect } from './PipelineSelect'
 import './workflowEditor.css'
 import { NodeAttr } from '../app/details/triggerView/types'
 import CDSuccessModal from './CDSuccessModal'
+import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     constructor(props) {
@@ -42,6 +43,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             workflowId: 0,
             allCINodesMap: undefined,
             showSuccessScreen: false,
+            showNoGitOpsWarningPopup: false,
+            cdLink: '',
+            noGitOpsConfiguration: false
         }
     }
 
@@ -82,6 +86,16 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         getHostURLConfiguration()
             .then((response) => {
                 this.setState({ hostURLConfig: response.result })
+            })
+            .catch((error) => {})
+    }
+
+    getGitOpsConfig() {
+      isGitopsConfigured()
+            .then((response) => {
+              if(!response?.result?.isExist){
+                this.setState({ noGitOpsConfiguration: true })
+              }
             })
             .catch((error) => {})
     }
@@ -143,8 +157,15 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         parentPipelineType: string,
         parentPipelineId?: number | string,
     ) => {
-        const LINK = `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId}/ci-pipeline/${ciPipelineId}/cd-pipeline?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
-        this.props.history.push(LINK)
+      const LINK = `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId}/ci-pipeline/${ciPipelineId}/cd-pipeline?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
+      if (this.state.noGitOpsConfiguration) {
+          this.setState({
+              showNoGitOpsWarningPopup: true,
+              cdLink: LINK,
+          })
+      } else {
+          this.props.history.push(LINK)
+      }
     }
 
     openCreateWorkflow = (): string => {
@@ -183,6 +204,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         //update isCDpipeline in AppCompose
         if (!this.props.isCDPipeline) {
             this.props.respondOnSuccess()
+        }
+    }
+
+    hideNoGitOpsWarning = (isContinueWithHelm: boolean) => {
+        this.setState({ showNoGitOpsWarningPopup: false })
+        if(isContinueWithHelm){
+          this.props.history.push(this.state.cdLink)
         }
     }
 
@@ -460,6 +488,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             closeSuccessPopup={this.closeSuccessPopup}
                             successTitle={this.state.successTitle}
                         />
+                    )}
+                    {this.state.showNoGitOpsWarningPopup && (
+                        <NoGitOpsConfiguredWarning closePopup={this.hideNoGitOpsWarning}/>
                     )}
                 </div>
             )
