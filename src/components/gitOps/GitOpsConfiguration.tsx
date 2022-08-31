@@ -125,31 +125,15 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             validatedTime: "",
             validationError: [],
             validationStatus: VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
-            deleteRepoError: false,
-            moduleNotInstalled: false
+            deleteRepoError: false
         }
         this.handleGitopsTab = this.handleGitopsTab.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.fetchGitOpsConfigurationList = this.fetchGitOpsConfigurationList.bind(this);
-        this.fetchGitOpsInstalled = this.fetchGitOpsInstalled.bind(this);
     }
 
     componentDidMount() {
-        this.fetchGitOpsInstalled()
-    }
-
-    async fetchGitOpsInstalled() {
-      const { result } = await getModuleInfo('cicd-gitops')
-      if (result) {
-          if(result.status === ModuleStatus.INSTALLED){
-            this.fetchGitOpsConfigurationList();
-          } else{
-            this.setState({
-              view: ViewType.FORM,
-              moduleNotInstalled: true
-          })
-          }
-      }
+        this.fetchGitOpsConfigurationList()
     }
 
     fetchGitOpsConfigurationList() {

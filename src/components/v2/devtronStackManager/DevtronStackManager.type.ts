@@ -68,6 +68,7 @@ export interface ModuleDetails {
     isIncludedInLegacyFullPackage?: boolean
     assets?: string[]
     dependentModules?: number[]
+    baseMinVersionSupported?: string
 }
 
 export interface ModuleListingViewType {
@@ -108,6 +109,7 @@ export interface InstallationWrapperType {
     logPodName?: string
     serverInfo: ServerInfo
     upgradeVersion: string
+    baseMinVersionSupported?: string
     isUpgradeView?: boolean
     isActionTriggered: boolean
     releaseNotes?: ReleaseNotes[]

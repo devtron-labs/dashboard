@@ -56,42 +56,6 @@
         margin-right: 0;
         width: inherit;
     }
-    .module-error {
-        width: 0;
-        height: 0;
-        border-bottom-color: transparent;
-        border-width: 32px;
-        border-style: solid;
-        position: absolute;
-        z-index: 9;
-        right: 0;
-        top: 0;
-        border-left: 0;
-        border-top: 0;
-        border-radius: 0 5px 0 35px;
-        svg {
-          position: relative;
-          right: -10px;
-          top: 3px;
-        }
-        &.installed {
-            border-right-color: var(--G500);
-        }
-        &.installing {
-            border-right-color: var(--Y500);
-        }
-        &.failed {
-            border-right-color: var(--R500);
-            svg {
-                path[fill='#F33E3E'] {
-                    fill: var(--N0);
-                }
-                path[fill='#FFF'] {
-                    fill: var(--R500);
-                }
-            }
-        }
-    }
 }
 
 .module-details__view-container {

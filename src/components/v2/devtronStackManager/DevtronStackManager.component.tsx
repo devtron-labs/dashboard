@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link, NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
+import { NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
 import {
     ModuleDetailsCardType,
     ModuleStatus,
@@ -18,7 +18,7 @@ import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
 import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as InstallIcon } from '../../../assets/icons/ic-arrow-forward.svg'
-import { ReactComponent as RetyrInstallIcon } from '../../../assets/icons/ic-arrow-clockwise.svg'
+import { ReactComponent as RetryInstallIcon } from '../../../assets/icons/ic-arrow-clockwise.svg'
 import { ReactComponent as SuccessIcon } from '../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as UpToDateIcon } from '../../../assets/icons/ic-celebration.svg'
 import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
@@ -34,7 +34,6 @@ import {
     Progressing,
     showError,
     ToastBody,
-    useAsync,
     VisibleModal,
 } from '../../common'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
@@ -56,24 +55,26 @@ import './devtronStackManager.component.scss'
 import PageHeader from '../../common/header/PageHeader'
 import Tippy from '@tippyjs/react'
 
-const getInstallationStatusIcon = (installationStatus: ModuleStatus): JSX.Element => {
+const getInstallationStatusLabel = (installationStatus: ModuleStatus): JSX.Element => {
     if (installationStatus === ModuleStatus.INSTALLING) {
         return (
-            <div className={`module-error ${ModuleStatus.INSTALLING}`}>
-                <Progressing size={18} />
+            <div className={`module-details__installation-status flex ${installationStatus}`}>
+                <Progressing size={20} />
+                <span className="fs-13 fw-6 ml-8">Installing</span>
             </div>
         )
     } else if (installationStatus === ModuleStatus.INSTALLED) {
         return (
-            <div className={`module-error ${ModuleStatus.INSTALLED}`}>
-                <InstalledIcon className="icon-dim-18" />
+            <div className={`module-details__installation-status flex ${installationStatus}`}>
+                <InstalledIcon className="icon-dim-20" />
+                <span className="fs-13 fw-6 ml-8">Installed</span>
             </div>
         )
     } else if (installationStatus === ModuleStatus.INSTALL_FAILED || installationStatus === ModuleStatus.TIMEOUT) {
         return (
-            <div className="module-error failed">
-                {' '}
-                <ErrorIcon className="icon-dim-18" />
+            <div className={`module-details__installation-status flex installFailed`}>
+                <ErrorIcon className="icon-dim-20" />
+                <span className="fs-13 fw-6 ml-8">Failed</span>
             </div>
         )
     }
@@ -81,43 +82,41 @@ const getInstallationStatusIcon = (installationStatus: ModuleStatus): JSX.Elemen
     return <></>
 }
 
-const ModuleDeailsCard = ({
+const ModuleDetailsCard = ({
     moduleDetails,
     className,
     handleModuleCardClick,
     fromDiscoverModules,
 }: ModuleDetailsCardType): JSX.Element => {
     return (
-        <>
-            <div
-                className={`module-details__card flex left column br-8 p-20 mr-20 mb-20 ${className || ''}`}
-                {...(handleModuleCardClick && {
-                    onClick: () => handleModuleCardClick(moduleDetails, fromDiscoverModules),
-                })}
-            >
-                {getInstallationStatusIcon(moduleDetails.installationStatus)}
-                <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
-                <div className="module-details__card-name fs-16 fw-6 cn-9 mb-4">{moduleDetails.title}</div>
-                <div className="module-details__card-info fs-13 fw-4 cn-7">
-                    {moduleDetails.name === MORE_MODULE_DETAILS.name ? (
-                        <>
-                            You can&nbsp;
-                            <a
-                                href="https://github.com/devtron-labs/devtron/issues/new/choose"
-                                className="cb-5 fw-6"
-                                target="_blank"
-                                rel="noreferrer noopener"
-                            >
-                                submit a ticket
-                            </a>
-                            &nbsp;to request an integration
-                        </>
-                    ) : (
-                        moduleDetails.info
-                    )}
-                </div>
+        <div
+            className={`module-details__card flex left column br-8 p-20 mr-20 mb-20 ${className || ''}`}
+            {...(handleModuleCardClick && {
+                onClick: () => handleModuleCardClick(moduleDetails, fromDiscoverModules),
+            })}
+        >
+            {getInstallationStatusLabel(moduleDetails.installationStatus)}
+            <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
+            <div className="module-details__card-name fs-16 fw-6 cn-9 mb-4">{moduleDetails.title}</div>
+            <div className="module-details__card-info fs-13 fw-4 cn-7">
+                {moduleDetails.name === MORE_MODULE_DETAILS.name ? (
+                    <>
+                        You can&nbsp;
+                        <a
+                            href="https://github.com/devtron-labs/devtron/issues/new/choose"
+                            className="cb-5 fw-6"
+                            target="_blank"
+                            rel="noreferrer noopener"
+                        >
+                            submit a ticket
+                        </a>
+                        &nbsp;to request an integration
+                    </>
+                ) : (
+                    moduleDetails.info
+                )}
             </div>
-        </>
+        </div>
     )
 }
 
@@ -134,7 +133,7 @@ export const ModulesListingView = ({
         <div className="flexbox flex-wrap left p-20">
             {modulesList.map((module, idx) => {
                 return (
-                    <ModuleDeailsCard
+                    <ModuleDetailsCard
                         key={`module-details__card-${idx}`}
                         moduleDetails={module}
                         className="cursor"
@@ -144,7 +143,7 @@ export const ModulesListingView = ({
                 )
             })}
             {isDiscoverModulesView && (
-                <ModuleDeailsCard
+                <ModuleDetailsCard
                     moduleDetails={MORE_MODULE_DETAILS}
                     className="more-integrations__card"
                     fromDiscoverModules={isDiscoverModulesView}
@@ -437,6 +436,7 @@ export const InstallationWrapper = ({
     logPodName,
     serverInfo,
     upgradeVersion,
+    baseMinVersionSupported,
     isUpgradeView,
     isActionTriggered,
     releaseNotes,
@@ -449,6 +449,7 @@ export const InstallationWrapper = ({
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const latestVersionAvailable = isLatestVersionAvailable(serverInfo?.currentVersion, upgradeVersion)
+    const belowMinSupportedVersion = baseMinVersionSupported? isLatestVersionAvailable(serverInfo?.currentVersion, baseMinVersionSupported): false
     const [preRequisiteList, setPreRequisiteList] = useState<
         { version: string; prerequisiteMessage: string; tagLink: string }[]
     >([])
@@ -481,6 +482,9 @@ export const InstallationWrapper = ({
             return
         } else {
             if (!isUpgradeView || preRequisiteChecked || preRequisiteList.length === 0) {
+                if (!isUpgradeView && belowMinSupportedVersion) {
+                    return
+                }
                 setShowPreRequisiteConfirmationModal && setShowPreRequisiteConfirmationModal(false)
                 updateActionTrigger(true)
                 handleAction(moduleName, isUpgradeView, upgradeVersion, updateActionTrigger, history, location)
@@ -581,7 +585,7 @@ export const InstallationWrapper = ({
                                 (installationStatus === ModuleStatus.HEALTHY && latestVersionAvailable)) && (
                                 <>
                                     <ConditionalWrap
-                                        condition={!isUpgradeView && latestVersionAvailable}
+                                        condition={!isUpgradeView && belowMinSupportedVersion}
                                         wrap={(children) => (
                                             <Tippy
                                                 className="default-tt w-200"
@@ -595,13 +599,9 @@ export const InstallationWrapper = ({
                                     >
                                         <button
                                             className={`module-details__install-button cta flex mb-16 ${
-                                                !isUpgradeView && latestVersionAvailable ? 'disabled-state' : ''
+                                                !isUpgradeView && belowMinSupportedVersion ? 'disabled-state' : ''
                                             }`}
-                                            onClick={
-                                                isUpgradeView || !latestVersionAvailable
-                                                    ? handleActionButtonClick
-                                                    : noop
-                                            }
+                                            onClick={handleActionButtonClick}
                                         >
                                             {isActionTriggered && <Progressing />}
                                             {!isActionTriggered &&
@@ -625,7 +625,7 @@ export const InstallationWrapper = ({
                                                     installationStatus === ModuleStatus.TIMEOUT ||
                                                     installationStatus === ModuleStatus.UNKNOWN) && (
                                                     <>
-                                                        <RetyrInstallIcon className="module-details__retry-install-icon icon-dim-16 mr-8" />
+                                                        <RetryInstallIcon className="module-details__retry-install-icon icon-dim-16 mr-8" />
                                                         {`Retry ${isUpgradeView ? 'update' : 'install'}`}
                                                     </>
                                                 )}
@@ -645,7 +645,7 @@ export const InstallationWrapper = ({
                                             </div>
                                         </div>
                                     )}
-                                    {!isUpgradeView && latestVersionAvailable && <UpgradeNote />}
+                                    {!isUpgradeView && belowMinSupportedVersion && <UpgradeNote />}
                                 </>
                             )}
                         {((installationStatus !== ModuleStatus.NOT_INSTALLED &&
@@ -661,9 +661,9 @@ export const InstallationWrapper = ({
                                 isCICDModule={moduleName === 'cicd'}
                             />
                         )}
-                        <ModuleConfigurationStatus moduleName={moduleName} />
+                        <ModuleNotConfigured moduleName={moduleName} />
                         {!isUpgradeView && installationStatus === ModuleStatus.INSTALLED && (
-                            <ModuleConfigurationStatus moduleName={moduleName} />
+                            <ModuleNotConfigured moduleName={moduleName} />
                         )}
                         {!isUpgradeView && installationStatus === ModuleStatus.INSTALLED && <ModuleUpdateNote />}
                     </>
@@ -736,6 +736,7 @@ export const ModuleDetailsView = ({
                     installationStatus={moduleDetails.installationStatus}
                     serverInfo={serverInfo}
                     upgradeVersion={upgradeVersion}
+                    baseMinVersionSupported={moduleDetails.baseMinVersionSupported}
                     logPodName={logPodName}
                     isActionTriggered={isActionTriggered}
                     updateActionTrigger={(isActionTriggered) =>
@@ -792,43 +793,6 @@ const ManagedByNote = (): JSX.Element => {
             </div>
         </div>
     )
-}
-
-const ModuleConfigurationStatus = ({ moduleName }: { moduleName: string }): JSX.Element | null => {
-    //const [isModuleConfigured, setIsModuleConfigured] = useState(false)
-    const configNoteDetail = MODULE_CONFIGURATION_DETAIL_MAP[moduleName]
-    const [loading, result, error, reload] = useAsync(configNoteDetail.apiToCheckConfigurationStatus, [moduleName]);
-    // async function callLastExecutionMinAPI() {
-    //     try {
-    //         const { result } = await configNoteDetail.apiToCheckConfigurationStatus
-    //         if (result && result.exists) {
-    //             setIsModuleConfigured(true)
-    //         }
-    //     } catch (error) {
-    //         showError(error)
-    //         return null
-    //     }
-    // }
-    // useEffect(() => {
-    //     let isSubscribed = true
-    //     configNoteDetail.apiToCheckConfigurationStatus
-    //         .then((response) => {
-    //             if (isSubscribed) {
-    //                 setIsModuleConfigured(response.result && response.result.exists)
-    //             }
-    //         })
-    //         .catch((error) => {
-    //             showError(error)
-    //         })
-    //     return () => {
-    //         const clear = () => {
-    //             isSubscribed = false
-    //         }
-    //         clear()
-    //     }
-    // }, [moduleName])
-    return !result?.['exists'] ? null : <ModuleNotConfigured moduleName={moduleName} />
-    //return isModuleConfigured ? <ModuleNotConfigured moduleName={moduleName} /> : null
 }
 
 const ModuleNotConfigured = ({ moduleName }: { moduleName: string }): JSX.Element | null => {
@@ -951,7 +915,7 @@ const DependentModuleList = ({
             <div className="fs-14 fw-6 cn-9 mb-16">Pre-requisite integrations</div>
             {dependentModuleList.map((module, idx) => {
                 return (
-                    <ModuleDeailsCard
+                    <ModuleDetailsCard
                         key={`module-details__card-${idx}`}
                         moduleDetails={module}
                         className="cursor dependent-module__card"
