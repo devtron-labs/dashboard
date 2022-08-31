@@ -1,21 +1,37 @@
 //@ts-nocheck
 
 import React from 'react'
-import moment from 'moment';
-import { Link } from 'react-router-dom';
-import { URLS, getAppCDURL } from '../../../../config';
+import moment from 'moment'
+import { Link } from 'react-router-dom'
+import { URLS, getAppCDURL } from '../../../../config'
 import { EnvSelector } from './AppDetails'
-import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg';
-import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg';
+import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
+import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
+import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
+import { ReactComponent as CD } from '../../../../assets/icons/ic-CD.svg'
 import { useParams } from 'react-router'
-import { Nodes } from '../../types';
+import { Nodes } from '../../types'
+import Tippy from '@tippyjs/react'
+import ReactGA from 'react-ga4'
+import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 
-export function SourceInfo({ appDetails, setDetailed = null, environments, showCommitInfo = null, showHibernateModal = null }) {
-
-    const status = appDetails?.resourceTree?.status || ""
+export function SourceInfo({
+    appDetails,
+    setDetailed = null,
+    environments,
+    showCommitInfo = null,
+    showHibernateModal = null,
+    toggleDeploymentDetailedStatus = null,
+    deploymentStatus = null,
+    deploymentStatusText = null,
+    deploymentTriggerTime = null,
+    triggeredBy = null
+}) {
+    const status = appDetails?.resourceTree?.status || ''
     const params = useParams<{ appId: string; envId?: string }>()
-    const conditions = appDetails?.resourceTree?.conditions;
-    let message = null;
+    const conditions = appDetails?.resourceTree?.conditions
+    let message = null
     let Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
     if (
         ['progressing', 'degraded'].includes(status?.toLowerCase()) &&
@@ -23,71 +39,29 @@ export function SourceInfo({ appDetails, setDetailed = null, environments, showC
         conditions.length > 0 &&
         conditions[0].message
     ) {
-        message = conditions[0].message;
+        message = conditions[0].message
     } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
-        message = Rollout[0].health.message;
+        message = Rollout[0].health.message
     }
-
+    const showApplicationDetailedModal = (): void => {
+        setDetailed && setDetailed(true)
+        ReactGA.event({
+            category: 'App Details',
+            action: 'App Status clicked',
+        })
+    }
+    const showDeploymentDetailedStatus = (): void => {
+        toggleDeploymentDetailedStatus && toggleDeploymentDetailedStatus(true)
+        ReactGA.event({
+            category: 'App Details',
+            action: 'Deployment status clicked',
+        })
+    }
     return (
-        <div
-            className="flex left w-100 column bcn-0 pt-16 pb-16 br-8 w-100"
-            style={{ border: '1px solid var(--N200)' }}
-        >
-            <div className="flex left w-100 pl-20 pr-20 pb-10">
+        <div className="flex left w-100 column w-100 source-info-container">
+            <div className="flex left w-100 mb-16">
                 <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
-                {appDetails?.lastDeployedBy && appDetails?.lastDeployedTime && (
-                    <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
-                        Deployed
-                        <span className="fw-6 ml-4 mr-4">
-                            {appDetails?.lastDeployedTime
-                                ? moment(appDetails.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
-                                : ''}
-                        </span>
-                        by
-                        <span className="fw-6 ml-4">{appDetails?.lastDeployedBy}</span>
-                        {showCommitInfo && (
-                            <Link className="ml-8 pointer fs-12 fw-6 cb-5" to={getAppCDURL(params.appId, params.envId)}>
-                                Details
-                            </Link>
-                        )}
-                    </div>
-                )}
-            </div>
-            <div className="flex left w-100 pt-16 pl-20 pr-20" style={{ borderTop: '1px solid var(--N200)' }}>
-                {appDetails?.resourceTree && (
-                    <div style={{ maxWidth: '50%' }} onClick={setDetailed ? (e) => setDetailed(true) : () => { }} className="pointer flex left">
-                        <figure className={`${status.toLowerCase()} app-summary__icon mr-8 icon-dim-20`}></figure>
-                        <div className="flex left column" style={{ maxWidth: '100%' }}>
-                            <div>
-                                <span className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}>
-                                    {status}
-                                </span>
-                                <span
-                                    className={`fa fa-angle-right fw-6 fs-14 app-summary__status-name f-${status.toLowerCase()}`}
-                                ></span>
-                            </div>
-                            <div className="flex left">
-                                {message && <span className="select-material-message">{message.slice(0, 73)}</span>}
-                                {message?.length > 73 && (
-                                    <span className='more-message cb-5'>more</span>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                )}
-                <div style={{ marginLeft: 'auto' }} className="flex right">
-                    {appDetails?.appStoreChartId && (
-                        <>
-                            <span className="mr-8 fs-12 cn-7">Chart:</span>
-                            <Link
-                                className="cb-5 fw-6"
-                                to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
-                            >
-                                {appDetails.appStoreChartName}/{appDetails.appStoreAppName}(
-                                {appDetails.appStoreAppVersion})
-                            </Link>
-                        </>
-                    )}
+                <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
                     {showCommitInfo && (
                         <button
                             className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
@@ -115,6 +89,111 @@ export function SourceInfo({ appDetails, setDetailed = null, environments, showC
                     )}
                 </div>
             </div>
+            <div className="flex left w-100">
+                {appDetails?.resourceTree && (
+                    <>
+                        <div
+                            onClick={showApplicationDetailedModal}
+                            className="pointer flex left bcn-0 p-16 br-4 mw-340 mr-12 en-2 bw-1"
+                        >
+                            <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
+                                <figure
+                                    className={`${status.toLowerCase()} app-summary__icon mr-8 h-32 w-32`}
+                                    style={{ margin: 'auto', backgroundSize: 'contain, contain' }}
+                                ></figure>
+                            </div>
+                            <div className="flex left column">
+                                <div className="flexbox">
+                                    <span className="fs-12 mr-5 fw-4 cn-9">Application status</span>
+
+                                    <Tippy
+                                        className="default-tt"
+                                        arrow={false}
+                                        placement="top"
+                                        content="The health status of your app"
+                                    >
+                                        <Question className="icon-dim-16 mt-2" />
+                                    </Tippy>
+                                </div>
+                                <div>
+                                    <span
+                                        className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}
+                                    >
+                                        {status}
+                                    </span>
+                                </div>
+                                <div className="flex left">
+                                    {message && <span className="select-material-message">{message.slice(0, 30)}</span>}
+                                    {message?.length > 30 && <span className="more-message cb-5 fw-6">Details</span>}
+                                </div>
+                            </div>
+                        </div>
+                       {appDetails?.deploymentAppType !== DeploymentAppType.helm && <div
+                            onClick={showDeploymentDetailedStatus}
+                            className="pointer flex left bcn-0 p-16 br-4 mw-382 en-2 bw-1"
+                        >
+                            <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
+                                <CD className="icon-dim-32" />
+                            </div>
+                            <div className="flex left column pr-16 border-right-n1 mr-16">
+                                <div className="flexbox">
+                                    <span className="fs-12 mr-5 fw-4 cn-9">Deployment status</span>
+
+                                    <Tippy
+                                        className="default-tt"
+                                        arrow={false}
+                                        placement="top"
+                                        content="Status of last triggered deployment"
+                                    >
+                                        <Question className="icon-dim-16 mt-2" />
+                                    </Tippy>
+                                </div>
+                                <div className="flexbox">
+                                    <span
+                                        className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus} ${
+                                            deploymentStatus === 'inprogress' ? 'loading-dots' : ''
+                                        }`}
+                                    >
+                                        {deploymentStatusText}
+                                    </span>
+                                    <div className={`${deploymentStatus} icon-dim-20 mt-2`}></div>
+                                </div>
+                                <div>
+                                    <span className="cb-5 fw-6 pointer">Details</span>
+                                </div>
+                            </div>
+                            <div className="flex left column mw-140">
+                                <div className="fs-12 fw-4 cn-9">Deployment triggered</div>
+                                <div className="flexbox">
+                                    <span className="fs-13 mr-5 fw-6 cn-9">
+                                        {deploymentTriggerTime
+                                            ? moment(deploymentTriggerTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
+                                            : '-'}
+                                    </span>
+                                    {deploymentStatus === 'inprogress' && <Timer className="icon-dim-16 mt-4" />}
+                                </div>
+                                <div className="fw-4 fs-12 cn-9 ellipsis-right" style={{ maxWidth: 'inherit' }}>
+                                    by {triggeredBy || '-'}
+                                </div>
+                            </div>
+                        </div>}
+                    </>
+                )}
+                <div style={{ marginLeft: 'auto' }} className="flex right">
+                    {appDetails?.appStoreChartId && (
+                        <>
+                            <span className="mr-8 fs-12 cn-7">Chart:</span>
+                            <Link
+                                className="cb-5 fw-6"
+                                to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
+                            >
+                                {appDetails.appStoreChartName}/{appDetails.appStoreAppName}(
+                                {appDetails.appStoreAppVersion})
+                            </Link>
+                        </>
+                    )}
+                </div>
+            </div>
         </div>
-    );
+    )
 }
