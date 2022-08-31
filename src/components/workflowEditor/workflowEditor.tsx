@@ -55,6 +55,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     getWorkflows = () => {
         this.getHostURLConfig()
+        this.checkGitOpsConfiguration()
         getCreateWorkflows(this.props.match.params.appId)
             .then((result) => {
                 const allCINodeMap = new Map(
@@ -90,7 +91,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             .catch((error) => {})
     }
 
-    getGitOpsConfig() {
+    checkGitOpsConfiguration() {
       isGitopsConfigured()
             .then((response) => {
               if(!response?.result?.isExist){

@@ -74,6 +74,8 @@ import { convertSchemaJsonToMap, getAndUpdateSchemaValue, updateGeneratedManifes
 import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ChartValuesGUIForm from './ChartValuesGUIView'
 import './ChartValuesView.scss'
+import { isGitopsConfigured } from '../../../../services/service'
+import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfiguredWarning'
 
 function ChartValuesView({
     appId,
@@ -113,8 +115,23 @@ function ChartValuesView({
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
 
+    const checkGitOpsConfiguration= async ()=> {
+      try {
+        const {result} =await isGitopsConfigured()
+        if(true || !result?.isExist){
+          dispatch({
+            type: ChartValuesViewActionTypes.showNoGitOpsWarning,
+            payload: true,
+          })
+        }
+      } catch (error) {
+
+      }
+    }
+
     useEffect(() => {
         if (isDeployChartView || isCreateValueView) {
+          checkGitOpsConfiguration()
             fetchProjectsAndEnvironments(serverMode, dispatch)
             getAndUpdateSchemaValue(
                 commonState.installedConfig.rawValues,
@@ -1331,6 +1348,16 @@ function ChartValuesView({
                             })
                         }
                         update={deployOrUpdateApplication}
+                    />
+                )}
+                {commonState.showNoGitOpsWarning && (
+                    <NoGitOpsConfiguredWarning
+                        closePopup={() =>
+                            dispatch({
+                                type: ChartValuesViewActionTypes.showNoGitOpsWarning,
+                                payload: false,
+                            })
+                        }
                     />
                 )}
             </div>
