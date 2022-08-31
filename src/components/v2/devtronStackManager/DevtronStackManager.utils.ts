@@ -14,6 +14,7 @@ import {
     ModuleStatus,
     StackManagerNavLinkType,
 } from './DevtronStackManager.type'
+import { isGitopsConfigured } from '../../../services/service'
 
 export const MORE_MODULE_DETAILS: ModuleDetails = {
     id: 'moreIntegrations',
@@ -107,3 +108,14 @@ export const isLatestVersionAvailable = (currentVersion: string, newVersion: str
 }
 
 export const DEVTRON_UPGRADE_MESSAGE = 'Devtron needs to be updated to the latest version before you can install integrations.'
+
+export const MODULE_CONFIGURATION_DETAIL_MAP = {
+    'cicd-gitops': {
+      title: 'GitOps is not configured',
+      subtitle: 'Lorem ipsum',
+      linkText: 'Configure GitOps',
+      link: URLS.GLOBAL_CONFIG_GITOPS,
+      apiToCheckConfigurationStatus: isGitopsConfigured()
+
+    }
+}

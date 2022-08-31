@@ -54,8 +54,9 @@ export interface GitOpsState {
     validationError: GitOpsConfig[];
     validationStatus: string;
     deleteRepoError: boolean;
+    moduleNotInstalled: boolean
 }
 
-export interface GitOpsProps extends RouteComponentProps<{}> { 
+export interface GitOpsProps extends RouteComponentProps<{}> {
     handleChecklistUpdate: (string) => void
 }

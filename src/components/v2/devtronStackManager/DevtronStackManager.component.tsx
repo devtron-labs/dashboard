@@ -34,6 +34,7 @@ import {
     Progressing,
     showError,
     ToastBody,
+    useAsync,
     VisibleModal,
 } from '../../common'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
@@ -47,6 +48,7 @@ import {
     handleAction,
     isLatestVersionAvailable,
     ModulesSection,
+    MODULE_CONFIGURATION_DETAIL_MAP,
     MORE_MODULE_DETAILS,
 } from './DevtronStackManager.utils'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
@@ -659,6 +661,10 @@ export const InstallationWrapper = ({
                                 isCICDModule={moduleName === 'cicd'}
                             />
                         )}
+                        <ModuleConfigurationStatus moduleName={moduleName} />
+                        {!isUpgradeView && installationStatus === ModuleStatus.INSTALLED && (
+                            <ModuleConfigurationStatus moduleName={moduleName} />
+                        )}
                         {!isUpgradeView && installationStatus === ModuleStatus.INSTALLED && <ModuleUpdateNote />}
                     </>
                 )}
@@ -788,10 +794,75 @@ const ManagedByNote = (): JSX.Element => {
     )
 }
 
+const ModuleConfigurationStatus = ({ moduleName }: { moduleName: string }): JSX.Element | null => {
+    //const [isModuleConfigured, setIsModuleConfigured] = useState(false)
+    const configNoteDetail = MODULE_CONFIGURATION_DETAIL_MAP[moduleName]
+    const [loading, result, error, reload] = useAsync(configNoteDetail.apiToCheckConfigurationStatus, [moduleName]);
+    // async function callLastExecutionMinAPI() {
+    //     try {
+    //         const { result } = await configNoteDetail.apiToCheckConfigurationStatus
+    //         if (result && result.exists) {
+    //             setIsModuleConfigured(true)
+    //         }
+    //     } catch (error) {
+    //         showError(error)
+    //         return null
+    //     }
+    // }
+    // useEffect(() => {
+    //     let isSubscribed = true
+    //     configNoteDetail.apiToCheckConfigurationStatus
+    //         .then((response) => {
+    //             if (isSubscribed) {
+    //                 setIsModuleConfigured(response.result && response.result.exists)
+    //             }
+    //         })
+    //         .catch((error) => {
+    //             showError(error)
+    //         })
+    //     return () => {
+    //         const clear = () => {
+    //             isSubscribed = false
+    //         }
+    //         clear()
+    //     }
+    // }, [moduleName])
+    return !result?.['exists'] ? null : <ModuleNotConfigured moduleName={moduleName} />
+    //return isModuleConfigured ? <ModuleNotConfigured moduleName={moduleName} /> : null
+}
+
+const ModuleNotConfigured = ({ moduleName }: { moduleName: string }): JSX.Element | null => {
+    const configNoteDetail = MODULE_CONFIGURATION_DETAIL_MAP[moduleName]
+    if (!configNoteDetail) {
+        return null
+    }
+    return (
+        <div className="mb-16">
+            <div className="pt-10 pr 16 pb-10 pl-16 flex top left br-4 cn-9 bcy-1 ey-2">
+                <div className="icon-dim-20 mr-12">
+                    <Info className="icon-dim-20" />
+                </div>
+                <div>
+                    <h2 className="managed-by__note-title m-0 p-0 fs-13 fw-6 lh-20">{configNoteDetail.title}</h2>
+                    <p className="fs-13 fw-4 mb-0 mt-4 lh-20">{configNoteDetail.subtitle}</p>
+                    <NavLink
+                        exact
+                        to={configNoteDetail.link}
+                        activeClassName="active"
+                        className="mt-8 no-decor fs-13 fw-6"
+                    >
+                        {configNoteDetail.linkText}
+                    </NavLink>
+                </div>
+            </div>
+        </div>
+    )
+}
+
 const UpgradeNote = (): JSX.Element => {
     return (
-        <div className="managed-by__note-wrapper mb-16">
-            <div className="managed-by__note flex top left br-4 cn-9 bcb-1">
+        <div className="mb-16">
+            <div className="pt-10 pr 16 pb-10 pl-16 flex top left br-4 cn-9 bcb-1 eb-2">
                 <div className="icon-dim-20 mr-12">
                     <Info className="icon-dim-20" />
                 </div>
@@ -873,6 +944,7 @@ const DependentModuleList = ({
                     : URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS
             }?${queryParams.toString()}`,
         )
+        window.location.reload()
     }
     return dependentModuleList?.length ? (
         <div>

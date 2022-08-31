@@ -17,6 +17,8 @@ import './gitops.css';
 import { withRouter } from 'react-router-dom'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm';
 import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.svg'
+import { getModuleInfo } from "../v2/devtronStackManager/DevtronStackManager.service";
+import { ModuleStatus } from "../v2/devtronStackManager/DevtronStackManager.type";
 
 enum GitProvider {
     GITLAB = 'GITLAB',
@@ -123,15 +125,31 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             validatedTime: "",
             validationError: [],
             validationStatus: VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
-            deleteRepoError: false
+            deleteRepoError: false,
+            moduleNotInstalled: false
         }
         this.handleGitopsTab = this.handleGitopsTab.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.fetchGitOpsConfigurationList = this.fetchGitOpsConfigurationList.bind(this);
+        this.fetchGitOpsInstalled = this.fetchGitOpsInstalled.bind(this);
     }
 
     componentDidMount() {
-        this.fetchGitOpsConfigurationList();
+        this.fetchGitOpsInstalled()
+    }
+
+    async fetchGitOpsInstalled() {
+      const { result } = await getModuleInfo('cicd-gitops')
+      if (result) {
+          if(result.status === ModuleStatus.INSTALLED){
+            this.fetchGitOpsConfigurationList();
+          } else{
+            this.setState({
+              view: ViewType.FORM,
+              moduleNotInstalled: true
+          })
+          }
+      }
     }
 
     fetchGitOpsConfigurationList() {
@@ -284,7 +302,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             } else {
                 this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, saveLoading: false, isFormEdited: false, validationError : errorMap || [], deleteRepoError : resp.deleteRepoFailed});
                 toast.error("Configuration validation failed");
-            } 
+            }
         }).catch((error) => {
             showError(error);
             this.setState({ view: ViewType.ERROR, statusCode: error.code, saveLoading: false });
