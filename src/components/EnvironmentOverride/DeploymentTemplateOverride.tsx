@@ -50,8 +50,9 @@ export default function DeploymentTemplateOverride({
                                 : null,
                     }
                 case 'setCharts':
+                    // Use other latest ref id instead of selectedChartRefId on delete override action
                     const _selectedChartId =
-                        state.selectedChartRefId ||
+                        (!action.value.isDeleteAction && state.selectedChartRefId) ||
                         action.value.latestEnvChartRef ||
                         action.value.latestAppChartRef ||
                         action.value.latestChartRef
@@ -112,11 +113,17 @@ export default function DeploymentTemplateOverride({
         initialise()
     }, [state.selectedChartRefId])
 
-    async function initialise() {
+    async function initialise(isDeleteAction?: boolean) {
         setChartRefLoading(true)
         try {
             const { result } = await chartRefAutocomplete(+appId, +envId)
-            dispatch({ type: 'setCharts', value: result })
+            dispatch({
+                type: 'setCharts',
+                value: {
+                    ...result,
+                    isDeleteAction,
+                },
+            })
         } catch (err) {
             setParentState('failed')
             showError(err)
@@ -170,7 +177,7 @@ export default function DeploymentTemplateOverride({
             const { result } = await deleteDeploymentTemplate(state.data.environmentConfig.id, +appId, +envId)
             toast.success('Restored to global.', { autoClose: null })
             dispatch({ type: 'removeDuplicate' })
-            initialise()
+            initialise(true)
         } catch (err) {
         } finally {
             dispatch({ type: 'toggleDialog' })
@@ -220,6 +227,13 @@ function DeploymentTemplateOverrideForm({
     const [loading, setLoading] = useState(false)
     const { appId, envId } = useParams<{ appId; envId }>()
     const [fetchedValues, setFetchedValues] = useState<Record<number, string>>({})
+
+    useEffect(() => {
+        // Reset editor value on delete override action
+        if (!state.duplicate && tempValue) {
+            editorOnChange('')
+        }
+    }, [state.duplicate])
 
     async function handleSubmit(e) {
         e.preventDefault()
@@ -401,11 +415,7 @@ function DeploymentTemplateOverrideForm({
                         subtitle="This action will cause all overrides to erase and app level configuration will be applied"
                     />
                     <ConfirmationDialog.ButtonGroup>
-                        <button
-                            type="button"
-                            className="cta cancel"
-                            onClick={closeConfirmationDialog}
-                        >
+                        <button type="button" className="cta cancel" onClick={closeConfirmationDialog}>
                             Cancel
                         </button>
                         <button type="button" className="cta delete" onClick={handleDelete}>
