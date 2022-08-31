@@ -7,7 +7,7 @@ import * as XtermWebfont from 'xterm-webfont';
 import SockJS from 'sockjs-client';
 import { SocketConnectionType } from '../node.type';
 import { get } from '../../../../../../../services/api';
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 import './terminal.css';
 import IndexStore from '../../../../index.store';
 import { AppType } from '../../../../appDetails.type';

@@ -1,4 +1,5 @@
 import { VulnerabilityType } from '../components/common';
+import { DeploymentAppType } from '../components/v2/appDetails/appDetails.type';
 
 export interface ResponseType {
     code: number;
@@ -53,6 +54,7 @@ export interface CDPipeline {
     runPreStageInEnv: boolean;
     runPostStageInEnv: boolean;
     isClusterCdActive: boolean;
+    deploymentAppType?: DeploymentAppType
 }
 
 export interface TeamList extends RootObject {

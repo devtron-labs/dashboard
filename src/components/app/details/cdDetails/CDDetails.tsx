@@ -28,7 +28,7 @@ import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './servic
 import EmptyState from '../../../EmptyState/EmptyState'
 import { cancelPrePostCdTrigger } from '../../service'
 import { Scroller } from '../cIDetails/CIDetails'
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga4'
 import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg'
 import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-fullscreen.svg'
 import TippyHeadless from '@tippyjs/react/headless'
@@ -42,6 +42,7 @@ import './cdDetail.scss'
 import DeploymentHistoryDetailedView from './deploymentHistoryDiff/DeploymentHistoryDetailedView'
 import { DeploymentTemplateList } from './cd.type'
 import DeploymentDetailSteps from './DeploymentDetailSteps'
+import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -79,6 +80,7 @@ export default function CDDetails() {
     const { pathname } = useLocation()
     const { push } = useHistory()
     const pipelines = result?.length ? result[1]?.pipelines : []
+    const deploymentAppType = pipelines?.find(pipeline=> pipeline.id === Number(pipelineId))?.deploymentAppType
     useInterval(pollHistory, 30000)
     const [ref, scrollToTop, scrollToBottom] = useScrollable({ autoBottomScroll: true })
     const keys = useKeyDown()
@@ -231,6 +233,7 @@ export default function CDDetails() {
                                         setShowTemplate={setShowTemplate}
                                         setDeploymentHistoryList={setDeploymentHistoryList}
                                         deploymentHistoryList={deploymentHistoryList}
+                                        deploymentAppType={deploymentAppType}
                                     />
                                 </Route>
                             )}
@@ -462,6 +465,7 @@ const TriggerOutput: React.FC<{
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
+    deploymentAppType: DeploymentAppType
 }> = ({
     fullScreenView,
     syncState,
@@ -469,6 +473,7 @@ const TriggerOutput: React.FC<{
     setShowTemplate,
     setDeploymentHistoryList,
     deploymentHistoryList,
+    deploymentAppType
 }) => {
     const { appId, triggerId, envId, pipelineId } = useParams<{
         appId: string
@@ -527,7 +532,7 @@ const TriggerOutput: React.FC<{
                             }
                         />
                         <ul className="pl-20 tab-list tab-list--nodes border-bottom">
-                            {triggerDetails.stage === 'DEPLOY' && (
+                            {triggerDetails.stage === 'DEPLOY' && deploymentAppType!== DeploymentAppType.helm && (
                                 <li className="tab-list__tab">
                                     <NavLink
                                         replace
@@ -596,6 +601,7 @@ const TriggerOutput: React.FC<{
                 setShowTemplate={setShowTemplate}
                 setDeploymentHistoryList={setDeploymentHistoryList}
                 deploymentHistoryList={deploymentHistoryList}
+                deploymentAppType={deploymentAppType}
             />
         </>
     )
@@ -607,7 +613,8 @@ const HistoryLogs: React.FC<{
     setShowTemplate: React.Dispatch<React.SetStateAction<boolean>>
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
-}> = ({ triggerDetails, loading, setShowTemplate, deploymentHistoryList, setDeploymentHistoryList }) => {
+    deploymentAppType: DeploymentAppType
+}> = ({ triggerDetails, loading, setShowTemplate, deploymentHistoryList, setDeploymentHistoryList, deploymentAppType }) => {
     let { path } = useRouteMatch()
     const { appId, pipelineId, triggerId, envId } = useParams<{
         appId: string
@@ -636,7 +643,7 @@ const HistoryLogs: React.FC<{
                         )}
                         {triggerDetails.stage === 'DEPLOY' && (
                             <Route path={`${path}/deployment-steps`}>
-                                <DeploymentDetailSteps />
+                                <DeploymentDetailSteps deploymentStatus={triggerDetails.status} deploymentAppType={deploymentAppType} />
                             </Route>
                         )}
                         <Route
