@@ -20,6 +20,7 @@ import DeleteComponent from '../../util/DeleteComponent'
 import { DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartSelector } from '../AppSelector'
 import PageHeader from '../common/header/PageHeader'
+import NoGitOpsConfiguredWarning from '../workflowEditor/NoGitOpsConfiguredWarning'
 
 export default function ChartGroupDetails() {
     const { groupId } = useParams<{ groupId }>()
@@ -65,6 +66,8 @@ export default function ChartGroupDetails() {
     )
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
+    const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false)
+    const [clickedOnAdvance, setClickedOnAdvance] = useState(null)
 
     function handleAdvancedChart() {
             push(`${url}/deploy`, {
@@ -131,6 +134,30 @@ export default function ChartGroupDetails() {
                 reload={false}
             />
         )
+    }
+
+    const handleActionButtonClick = (_clickedOnAdvance: boolean) => {
+        if (state.noGitOpsConfigAvailable) {
+            setClickedOnAdvance(_clickedOnAdvance)
+            toggleGitOpsWarningModal(true)
+        } else {
+            handleContinueWithHelm(_clickedOnAdvance)
+        }
+    }
+
+    const handleContinueWithHelm = (_clickedOnAdvance: boolean) => {
+        if (_clickedOnAdvance) {
+            handleAdvancedChart()
+        } else {
+            toggleDeployModal(true)
+        }
+    }
+
+    const hideNoGitOpsWarning = (isContinueWithHelm: boolean) => {
+        toggleGitOpsWarningModal(false)
+        if (isContinueWithHelm) {
+            handleContinueWithHelm(clickedOnAdvance)
+        }
     }
 
     const renderChartGroupActionButton = () => {
@@ -217,7 +244,7 @@ export default function ChartGroupDetails() {
                                            })
 
                                         }*/
-                                        onClick={handleAdvancedChart}
+                                        onClick={() =>{handleActionButtonClick(true)}}
                                         className="cta cancel ellipsis-right w100"
                                     >
                                         Advanced Options
@@ -239,7 +266,7 @@ export default function ChartGroupDetails() {
                                     <button
                                         type="button"
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
-                                        onClick={() => toggleDeployModal(true)}
+                                        onClick={() =>{handleActionButtonClick(false)}}
                                         className="cta ellipsis-right w100"
                                     >
                                         {loading ? <Progressing /> : 'Deploy to ...'}
@@ -270,6 +297,7 @@ export default function ChartGroupDetails() {
                     }}
                 />
             ) : null}
+            {showGitOpsWarningModal && <NoGitOpsConfiguredWarning closePopup={hideNoGitOpsWarning} />}
         </div>
     )
 }

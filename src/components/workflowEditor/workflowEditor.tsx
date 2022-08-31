@@ -16,7 +16,7 @@ import ExternalCIPipeline from '../ciPipeline/ExternalCIPipeline'
 import LinkedCIPipeline from '../ciPipeline/LinkedCIPipelineEdit'
 import LinkedCIPipelineView from '../ciPipeline/LinkedCIPipelineView'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { isGitopsConfigured, getHostURLConfiguration } from '../../services/service'
+import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import { PipelineSelect } from './PipelineSelect'
 import './workflowEditor.css'
 import { NodeAttr } from '../app/details/triggerView/types'
@@ -91,14 +91,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             .catch((error) => {})
     }
 
-    checkGitOpsConfiguration() {
-      isGitopsConfigured()
-            .then((response) => {
-              if(!response?.result?.isExist){
-                this.setState({ noGitOpsConfiguration: true })
-              }
-            })
-            .catch((error) => {})
+    async checkGitOpsConfiguration() {
+      try {
+          const { result } = await isGitOpsModuleInstalledAndConfigured()
+          if (result.isInstalled && !result.isConfigured) {
+              this.setState({ noGitOpsConfiguration: true })
+          }
+      } catch (error) {}
     }
 
     showDeleteDialog = (workflowId: number) => {

@@ -22,6 +22,7 @@ import '../list/list.css'
 import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
 import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
+import { ModuleNameMap } from '../../v2/devtronStackManager/DevtronStackManager.utils'
 
 export default function AppList() {
     const location = useLocation()
@@ -799,7 +800,7 @@ export default function AppList() {
                     {serverMode === SERVER_MODE.EA_ONLY && (
                         <li className="tab-list__tab">
                             <NavLink
-                                to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`}
+                                to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`}
                                 className={`tab-list__tab-link ${
                                     currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? 'active' : ''
                                 }`}

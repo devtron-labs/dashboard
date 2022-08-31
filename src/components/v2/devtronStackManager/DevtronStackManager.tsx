@@ -33,6 +33,7 @@ import { mainContext } from '../../common/navigation/NavigationRoutes'
 import './devtronStackManager.scss'
 import { getVersionConfig, isGitopsConfigured } from '../../../services/service'
 import { toast } from 'react-toastify'
+import { ModuleNameMap } from './DevtronStackManager.utils'
 
 export default function DevtronStackManager({
     serverInfo,
@@ -258,8 +259,8 @@ export default function DevtronStackManager({
                         _discoverModulesList.push(_moduleDetails)
 
                         if (_moduleDetails.installationStatus === ModuleStatus.INSTALLED) {
-                            if (_moduleDetails.name === 'argo-cd') {
-                                _getGitOpsConfigurationStatus('argo-cd')
+                            if (_moduleDetails.name === ModuleNameMap.ARGO_CD) {
+                                _getGitOpsConfigurationStatus(ModuleNameMap.ARGO_CD)
                             }
                             _installedModulesList.push(_moduleDetails)
                         }

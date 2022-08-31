@@ -109,8 +109,14 @@ export const isLatestVersionAvailable = (currentVersion: string, newVersion: str
 
 export const DEVTRON_UPGRADE_MESSAGE = 'Devtron needs to be updated to the latest version before you can install integrations.'
 
+
+export const ModuleNameMap = {
+  ARGO_CD: 'argo-cd',
+  CICD: 'cicd'
+}
+
 export const MODULE_CONFIGURATION_DETAIL_MAP = {
-    'argo-cd': {
+  [ModuleNameMap.ARGO_CD]: {
       title: 'GitOps is not configured',
       subtitle: 'Lorem ipsum',
       linkText: 'Configure GitOps',

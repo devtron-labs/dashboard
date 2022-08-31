@@ -74,7 +74,7 @@ import { convertSchemaJsonToMap, getAndUpdateSchemaValue, updateGeneratedManifes
 import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ChartValuesGUIForm from './ChartValuesGUIView'
 import './ChartValuesView.scss'
-import { isGitopsConfigured } from '../../../../services/service'
+import { isGitOpsModuleInstalledAndConfigured } from '../../../../services/service'
 import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfiguredWarning'
 
 function ChartValuesView({
@@ -117,16 +117,14 @@ function ChartValuesView({
 
     const checkGitOpsConfiguration= async ()=> {
       try {
-        const {result} =await isGitopsConfigured()
-        if(true || !result?.isExist){
-          dispatch({
-            type: ChartValuesViewActionTypes.showNoGitOpsWarning,
-            payload: true,
-          })
-        }
-      } catch (error) {
-
-      }
+          const { result } = await isGitOpsModuleInstalledAndConfigured()
+          if (result.isInstalled && !result.isConfigured) {
+              dispatch({
+                  type: ChartValuesViewActionTypes.showNoGitOpsWarning,
+                  payload: true,
+              })
+          }
+      } catch (error) {}
     }
 
     useEffect(() => {

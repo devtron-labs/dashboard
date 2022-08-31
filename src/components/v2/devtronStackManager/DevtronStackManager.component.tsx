@@ -46,6 +46,7 @@ import {
     DEVTRON_UPGRADE_MESSAGE,
     handleAction,
     isLatestVersionAvailable,
+    ModuleNameMap,
     ModulesSection,
     MODULE_CONFIGURATION_DETAIL_MAP,
     MORE_MODULE_DETAILS,
@@ -661,7 +662,7 @@ export const InstallationWrapper = ({
                                 logPodName={logPodName}
                                 isUpgradeView={isUpgradeView}
                                 latestVersionAvailable={latestVersionAvailable}
-                                isCICDModule={moduleName === 'cicd'}
+                                isCICDModule={moduleName === ModuleNameMap.CICD}
                             />
                         )}
                         {moduleDetails.isModuleConfigurable &&

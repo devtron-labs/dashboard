@@ -5,6 +5,9 @@ import moment from 'moment';
 import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions, ClusterEnvironmentDetailList, EnvironmentListHelmResponse, ClusterListResponse } from './service.types';
 import { Chart } from '../components/charts/charts.types';
 import { fetchWithFullRoute } from './fetchWithFullRoute';
+import { ModuleNameMap } from '../components/v2/devtronStackManager/DevtronStackManager.utils';
+import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service';
+import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackManager.type';
 
 
 export function getAppConfigStatus(appId: number): Promise<any> {
@@ -276,6 +279,32 @@ export function getHostURLConfiguration(): Promise<ResponseType> {
 export function isGitopsConfigured(): Promise<ResponseType> {
     const URL = `${Routes.GITOPS_CONFIGURED}`;
     return get(URL);
+}
+
+export function isGitOpsModuleInstalledAndConfigured(): Promise<ResponseType> {
+    return getModuleInfo(ModuleNameMap.ARGO_CD)
+        .then((response) => {
+            if (response.result?.status === ModuleStatus.INSTALLED) {
+                return isGitopsConfigured()
+            } else {
+                return {
+                    code: response.code,
+                    status: response.status,
+                    result: { isInstalled: false, isConfigured: false },
+                }
+            }
+        })
+        .then((response) => {
+            if (response.result.exists) {
+                return {
+                    code: response.code,
+                    status: response.status,
+                    result: { isInstalled: true, isConfigured: false },
+                }
+            } else {
+                return response
+            }
+        })
 }
 
 export function getChartReferences(appId: number): Promise<ResponseType> {
