@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { useRouteMatch, useParams } from 'react-router'
+import { useHistory, useParams, useRouteMatch } from 'react-router'
 import { Progressing } from '../../../common'
+import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { getDeploymentStatusDetail } from '../appDetails/appDetails.service'
 import { DeploymentStatusDetailsBreakdownDataType } from '../appDetails/appDetails.type'
 import DeploymentStatusDetailBreakdown from '../appDetails/DeploymentStatusBreakdown'
 import { processDeploymentStatusDetailsData } from '../appDetails/utils'
 import { DeploymentDetailStepsType } from './cd.type'
 import CDEmptyState from './CDEmptyState'
-export default function DeploymentDetailSteps({ deploymentStatus }: DeploymentDetailStepsType) {
-    const match = useRouteMatch()
+export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppType }: DeploymentDetailStepsType) {
+    const history = useHistory()
+    const { url } = useRouteMatch()
     const { appId, envId, triggerId } = useParams<{ appId: string; envId?: string; triggerId?: string }>()
     const [deploymentListLoader, setDeploymentListLoader] = useState<boolean>(deploymentStatus !== 'Aborted')
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
@@ -35,6 +37,13 @@ export default function DeploymentDetailSteps({ deploymentStatus }: DeploymentDe
     }
 
     useEffect(() => {
+        if (deploymentAppType === DeploymentAppType.helm) {
+            history.replace(`${url.replace('deployment-steps', 'source-code')}`)
+            if (initTimer) {
+                clearTimeout(initTimer)
+            }
+            return
+        }
         if (deploymentStatus !== 'Aborted') {
             getDeploymentDetailStepsData()
         }
