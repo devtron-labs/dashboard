@@ -1,6 +1,7 @@
 import React from 'react'
 import GettingToast from '../../../assets/img/lifebuoy.png'
 import { updateLoginCount } from '../../../services/service'
+import { OnClickedHandler, POSTHOG_EVENT_ONBOARDING } from '../../onboardingGuide/onboarding.utils'
 import { GettingStartedType } from '../guidePage/onboarding.type'
 import { setActionWithExpiry } from '../helpers/Helpers'
 import './gettingStarted.scss'
@@ -9,6 +10,7 @@ function GettingStartedCard({ className, hideGettingStartedCard }: GettingStarte
     const onClickedOkay = () => {
         setActionWithExpiry('clickedOkay', 1)
         hideGettingStartedCard()
+        OnClickedHandler(POSTHOG_EVENT_ONBOARDING.VIEW_APPLICATION)
     }
 
     const onClickedDontShowAgain = () => {
@@ -18,6 +20,7 @@ function GettingStartedCard({ className, hideGettingStartedCard }: GettingStarte
         }
         updateLoginCount(updatedPayload)
         hideGettingStartedCard(updatedPayload.value)
+        OnClickedHandler(POSTHOG_EVENT_ONBOARDING.VIEW_APPLICATION)
     }
 
     return (
