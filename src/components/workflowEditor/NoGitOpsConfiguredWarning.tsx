@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { URLS } from '../../config'
 import { VisibleModal2 } from '../common'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 
 interface NoGitOpsConfiguredWarningType {
     closePopup: (isContinueWithHelm: boolean) => void
