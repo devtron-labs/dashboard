@@ -99,7 +99,7 @@ export function SourceInfo({
                             <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
                                 <figure
                                     className={`${status.toLowerCase()} app-summary__icon mr-8 h-32 w-32`}
-                                    style={{ margin: 'auto' }}
+                                    style={{ margin: 'auto', backgroundSize: 'contain, contain' }}
                                 ></figure>
                             </div>
                             <div className="flex left column">
