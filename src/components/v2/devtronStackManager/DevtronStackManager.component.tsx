@@ -54,26 +54,24 @@ import './devtronStackManager.component.scss'
 import PageHeader from '../../common/header/PageHeader'
 import Tippy from '@tippyjs/react'
 
-const getInstallationStatusLabel = (installationStatus: ModuleStatus): JSX.Element => {
+const getInstallationStatusIcon = (installationStatus: ModuleStatus): JSX.Element => {
     if (installationStatus === ModuleStatus.INSTALLING) {
         return (
-            <div className={`module-details__installation-status flex ${installationStatus}`}>
-                <Progressing size={20} />
-                <span className="fs-13 fw-6 ml-8">Installing</span>
+            <div className={`module-error ${ModuleStatus.INSTALLING}`}>
+                <Progressing size={18} />
             </div>
         )
     } else if (installationStatus === ModuleStatus.INSTALLED) {
         return (
-            <div className={`module-details__installation-status flex ${installationStatus}`}>
-                <InstalledIcon className="icon-dim-20" />
-                <span className="fs-13 fw-6 ml-8">Installed</span>
+            <div className={`module-error ${ModuleStatus.INSTALLED}`}>
+                <InstalledIcon className="icon-dim-18" />
             </div>
         )
     } else if (installationStatus === ModuleStatus.INSTALL_FAILED || installationStatus === ModuleStatus.TIMEOUT) {
         return (
-            <div className={`module-details__installation-status flex installFailed`}>
-                <ErrorIcon className="icon-dim-20" />
-                <span className="fs-13 fw-6 ml-8">Failed</span>
+            <div className="module-error failed">
+                {' '}
+                <ErrorIcon className="icon-dim-18" />
             </div>
         )
     }
@@ -88,32 +86,36 @@ const ModuleDeailsCard = ({
     fromDiscoverModules,
 }: ModuleDetailsCardType): JSX.Element => {
     return (
-        <div
-            className={`module-details__card flex left column br-8 p-20 mr-20 mb-20 ${className || ''}`}
-            {...(handleModuleCardClick && { onClick: () => handleModuleCardClick(moduleDetails, fromDiscoverModules) })}
-        >
-            {getInstallationStatusLabel(moduleDetails.installationStatus)}
-            <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
-            <div className="module-details__card-name fs-16 fw-6 cn-9 mb-4">{moduleDetails.title}</div>
-            <div className="module-details__card-info fs-13 fw-4 cn-7">
-                {moduleDetails.name === MORE_MODULE_DETAILS.name ? (
-                    <>
-                        You can&nbsp;
-                        <a
-                            href="https://github.com/devtron-labs/devtron/issues/new/choose"
-                            className="cb-5 fw-6"
-                            target="_blank"
-                            rel="noreferrer noopener"
-                        >
-                            submit a ticket
-                        </a>
-                        &nbsp;to request an integration
-                    </>
-                ) : (
-                    moduleDetails.info
-                )}
+        <>
+            <div
+                className={`module-details__card flex left column br-8 p-20 mr-20 mb-20 ${className || ''}`}
+                {...(handleModuleCardClick && {
+                    onClick: () => handleModuleCardClick(moduleDetails, fromDiscoverModules),
+                })}
+            >
+                {getInstallationStatusIcon(moduleDetails.installationStatus)}
+                <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
+                <div className="module-details__card-name fs-16 fw-6 cn-9 mb-4">{moduleDetails.title}</div>
+                <div className="module-details__card-info fs-13 fw-4 cn-7">
+                    {moduleDetails.name === MORE_MODULE_DETAILS.name ? (
+                        <>
+                            You can&nbsp;
+                            <a
+                                href="https://github.com/devtron-labs/devtron/issues/new/choose"
+                                className="cb-5 fw-6"
+                                target="_blank"
+                                rel="noreferrer noopener"
+                            >
+                                submit a ticket
+                            </a>
+                            &nbsp;to request an integration
+                        </>
+                    ) : (
+                        moduleDetails.info
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     )
 }
 
@@ -382,16 +384,8 @@ const InstallationStatus = ({
 
 const GetHelpCard = (): JSX.Element => {
     return (
-        <div className="module-details__get-help flex column top left br-4 cn-9 fs-13">
+        <div className="module-details__get-help flex column top left br-4 cn-9 fs-13 mb-16">
             <span className="fw-6 mb-10">Facing issues?</span>
-            {/* <a
-                className="module-details__help-guide cb-5 flex left"
-                href="https://discord.devtron.ai/"
-                target="_blank"
-                rel="noreferrer noopener"
-            >
-                <File className="icon-dim-20 mr-12" /> Troubleshooting guide
-            </a> */}
             <a
                 className="module-details__help-chat cb-5 flex left"
                 href="https://discord.devtron.ai/"
@@ -666,9 +660,6 @@ export const InstallationWrapper = ({
                             />
                         )}
                         {!isUpgradeView && installationStatus === ModuleStatus.INSTALLED && <ModuleUpdateNote />}
-                        {!isUpgradeView && modulesList && (
-                            <DependentModuleList moduleName={moduleName} modulesList={modulesList} />
-                        )}
                     </>
                 )}
                 {serverInfo?.installationType &&
@@ -678,6 +669,9 @@ export const InstallationWrapper = ({
                                 installationStatus === ModuleStatus.UPGRADE_FAILED ||
                                 installationStatus === ModuleStatus.TIMEOUT ||
                                 installationStatus === ModuleStatus.UNKNOWN))) && <GetHelpCard />}
+                {!isUpgradeView && modulesList && (
+                    <DependentModuleList moduleName={moduleName} modulesList={modulesList} />
+                )}
             </div>
             {renderPrerequisiteConfirmationModal()}
         </>
@@ -697,7 +691,7 @@ export const ModuleDetailsView = ({
     history,
     location,
 }: ModuleDetailsViewType): JSX.Element | null => {
-  const queryParams = new URLSearchParams(location.search)
+    const queryParams = new URLSearchParams(location.search)
     useEffect(() => {
         if (!moduleDetails && !new URLSearchParams(location.search).get('id')) {
             setDetailsMode('')
@@ -709,13 +703,13 @@ export const ModuleDetailsView = ({
 
     // To fetch the latest module/server details, right after triggering the install/update action.
     useEffect(() => {
-      if (queryParams.get('id') && moduleDetails && moduleDetails.name!==queryParams.get('id')) {
-        const currentModule =modulesList.find((module) => module.name === queryParams.get('id'))
-        if(currentModule){
-          moduleDetails = currentModule
+        if (queryParams.get('id') && moduleDetails && moduleDetails.name !== queryParams.get('id')) {
+            const currentModule = modulesList.find((module) => module.name === queryParams.get('id'))
+            if (currentModule) {
+                moduleDetails = currentModule
+            }
         }
-      }
-  }, [location.search])
+    }, [location.search])
 
     return moduleDetails ? (
         <div className="module-details__view-container">
@@ -874,7 +868,7 @@ const DependentModuleList = ({
         queryParams.set('id', moduleDetails.name)
         history.push(
             `${
-              moduleDetails.installationStatus !== ModuleStatus.INSTALLED
+                moduleDetails.installationStatus !== ModuleStatus.INSTALLED
                     ? URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS
                     : URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS
             }?${queryParams.toString()}`,
