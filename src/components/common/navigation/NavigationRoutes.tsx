@@ -62,11 +62,10 @@ export default function NavigationRoutes() {
     }
 
     const getInit = () => {
-        Promise.all([getUserRole(), getAppListMin()]).then((response) => {
+        Promise.all([getUserRole(), serverMode=== SERVER_MODE.FULL && getAppListMin()]).then((response) => {
                 setSuperAdmin( response[0].result.roles.indexOf("role:super-admin___") > -1)
-                setAppListCount(response[1].result.length)
+                setAppListCount(response[1]?.result?.length)
                 setLoginLoader(false)
-
             },
             (err) => {
                 setLoginLoader(false)
