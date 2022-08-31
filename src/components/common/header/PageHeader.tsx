@@ -135,7 +135,7 @@ function PageHeader({
     const getExpired = (): boolean => {
       // Render Getting started tippy card if the time gets expired
       const now = new Date().valueOf()
-      if (now < expiryDate) {
+      if (now > expiryDate) {
           return true
       }
       return false
