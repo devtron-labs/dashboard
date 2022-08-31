@@ -109,7 +109,6 @@ export const isLatestVersionAvailable = (currentVersion: string, newVersion: str
 
 export const DEVTRON_UPGRADE_MESSAGE = 'Devtron needs to be updated to the latest version before you can install integrations.'
 
-
 export const ModuleNameMap = {
   ARGO_CD: 'argo-cd',
   CICD: 'cicd'

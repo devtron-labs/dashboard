@@ -205,16 +205,16 @@ export default function DevtronStackManager({
         }
     }
 
-    const _getGitOpsConfigurationStatus = async (moduleName: string): Promise<void> => {
+    const _getGitOpsConfigurationStatus = async (): Promise<void> => {
         try {
             if (
                 location.pathname.includes('/details') &&
                 queryParams.get('id') &&
-                queryParams.get('id') === moduleName
+                queryParams.get('id') === ModuleNameMap.ARGO_CD
             ) {
                 const { result } = await isGitopsConfigured()
                 const currentModule = stackDetails.installedModulesList?.find(
-                    (_module) => _module.name === moduleName,
+                    (_module) => _module.name === ModuleNameMap.ARGO_CD,
                 )
                 if (currentModule) {
                     currentModule.isModuleConfigurable = true
@@ -260,7 +260,7 @@ export default function DevtronStackManager({
 
                         if (_moduleDetails.installationStatus === ModuleStatus.INSTALLED) {
                             if (_moduleDetails.name === ModuleNameMap.ARGO_CD) {
-                                _getGitOpsConfigurationStatus(ModuleNameMap.ARGO_CD)
+                                _getGitOpsConfigurationStatus()
                             }
                             _installedModulesList.push(_moduleDetails)
                         }
@@ -383,7 +383,7 @@ export default function DevtronStackManager({
                 </Route>
                 <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS}>
                     <ModuleDetailsView
-                        modulesList={stackDetails.discoverModulesList}
+                        modulesList={stackDetails.installedModulesList}
                         moduleDetails={selectedModule}
                         setDetailsMode={setDetailsMode}
                         serverInfo={serverInfo}

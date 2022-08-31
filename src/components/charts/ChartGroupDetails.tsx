@@ -136,6 +136,14 @@ export default function ChartGroupDetails() {
         )
     }
 
+    const handleDeployButtonClick= (): void => {
+      handleActionButtonClick(false)
+    }
+
+    const handleAdvancedButtonClick= (): void => {
+      handleActionButtonClick(true)
+    }
+
     const handleActionButtonClick = (_clickedOnAdvance: boolean) => {
         if (state.noGitOpsConfigAvailable) {
             setClickedOnAdvance(_clickedOnAdvance)
@@ -244,7 +252,7 @@ export default function ChartGroupDetails() {
                                            })
 
                                         }*/
-                                        onClick={() =>{handleActionButtonClick(true)}}
+                                        onClick={handleAdvancedButtonClick}
                                         className="cta cancel ellipsis-right w100"
                                     >
                                         Advanced Options
@@ -266,7 +274,7 @@ export default function ChartGroupDetails() {
                                     <button
                                         type="button"
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
-                                        onClick={() =>{handleActionButtonClick(false)}}
+                                        onClick={handleDeployButtonClick}
                                         className="cta ellipsis-right w100"
                                     >
                                         {loading ? <Progressing /> : 'Deploy to ...'}

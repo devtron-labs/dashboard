@@ -126,6 +126,14 @@ function DiscoverChartList() {
         }
     }, [location.search, state.loading])
 
+    const handleDeployButtonClick= (): void => {
+      handleActionButtonClick(false)
+    }
+
+    const handleAdvancedButtonClick= (): void => {
+      handleActionButtonClick(true)
+    }
+
     const handleActionButtonClick = (_clickedOnAdvance: boolean) => {
         if (state.noGitOpsConfigAvailable) {
             setClickedOnAdvance(_clickedOnAdvance)
@@ -465,7 +473,7 @@ function DiscoverChartList() {
                                         <button
                                             type="button"
                                             disabled={state.charts.length === 0}
-                                            onClick={()=>handleActionButtonClick(true)}
+                                            onClick={handleAdvancedButtonClick}
                                             className="cta cancel ellipsis-right"
                                         >
                                             Advanced Options
@@ -488,7 +496,7 @@ function DiscoverChartList() {
                                     <button
                                         type="button"
                                         disabled={state.charts.length === 0}
-                                        onClick={()=>handleActionButtonClick(false)}
+                                        onClick={handleDeployButtonClick}
                                         className="cta ellipsis-right"
                                     >
                                         {installing ? (
