@@ -252,7 +252,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     const [secretStore, setSecretStore] = useState(esoSecretData?.secretStore)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
     const [esoSecretYaml, setEsoYaml] = useState(YAML.stringify(isEsoSecretData ? esoSecretData : {}))
-    const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs["default"])
+    const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs['default'])
     const isChartVersion309OrBelow =
         appChartRef &&
         appChartRef.name === ROLLOUT_DEPLOYMENT &&
@@ -572,7 +572,6 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 setEsoData(jsonList)
             }
         } catch (error) {
-            // console.log(error)
         }
     }
     const memoisedHandleChange = (index, k, v) => dispatch({ type: 'key-value-change', value: { index, k, v } })
