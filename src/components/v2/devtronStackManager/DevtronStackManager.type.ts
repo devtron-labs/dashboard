@@ -86,7 +86,6 @@ export interface ModuleDetailsViewType {
     handleActionTrigger: (actionName: string, actionState: boolean) => void
     history: RouteComponentProps['history']
     location: RouteComponentProps['location']
-    setShowPreRequisiteConfirmationModal?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface ModuleInstallationStatusType {

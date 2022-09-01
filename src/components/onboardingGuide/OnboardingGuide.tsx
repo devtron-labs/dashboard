@@ -1,13 +1,14 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import HelmCollage from '../../assets/img/helm-collage.png'
 import DeployCICD from '../../assets/img/guide-onboard.png'
 import { NavLink, useRouteMatch, useHistory } from 'react-router-dom'
 import { DOCUMENTATION, SERVER_MODE, URLS } from '../../config'
 import './onboardingGuide.scss'
 import PreviewImage from '../../assets/img/ic-preview.png'
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { OnboardingGuideProps } from '../common/guidePage/onboarding.type'
 import { OnClickedHandler, POSTHOG_EVENT_ONBOARDING}  from './onboarding.utils'
 import CommonGuide from './CommonGuide'
-import { OnboardingGuideProps } from './OnboardingGuide.type'
 
 function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClicked, isGettingStartedClicked }: OnboardingGuideProps) {
     const match = useRouteMatch()

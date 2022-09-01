@@ -23,6 +23,8 @@ import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.
 import ClusterNodeContainer from '../../ClusterNodes/ClusterNodeContainer'
 import DeployManageGuide from '../../onboardingGuide/DeployManageGuide'
 import { showError } from '../helpers/Helpers'
+import { AppRouterType } from '../guidePage/onboarding.type'
+import { ServerErrors } from '../../../modals/commonTypes'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -35,13 +37,6 @@ const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
 
 export const mainContext = createContext(null)
-
-export interface AppRouterType {
-  isSuperAdmin?: boolean
-  appListCount: number
-  loginCount: number
-  serverMode: string
-}
 
 export default function NavigationRoutes() {
     const history = useHistory()
