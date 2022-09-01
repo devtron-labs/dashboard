@@ -681,7 +681,7 @@ export const InstallationWrapper = ({
                                 installationStatus === ModuleStatus.TIMEOUT ||
                                 installationStatus === ModuleStatus.UNKNOWN))) && <GetHelpCard />}
                 {!isUpgradeView && modulesList && (
-                    <DependentModuleList moduleName={moduleName} modulesList={dependentModuleList} />
+                    <DependentModuleList modulesList={dependentModuleList} />
                 )}
             </div>
             {renderPrerequisiteConfirmationModal()}
@@ -871,17 +871,15 @@ export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }):
 }
 
 const DependentModuleList = ({
-    moduleName,
     modulesList,
 }: {
-    moduleName: string
     modulesList: ModuleDetails[]
 }): JSX.Element => {
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const queryParams = new URLSearchParams(location.search)
 
-    const handleModuleCardClick = (moduleDetails: ModuleDetails, fromDiscoverModules?: boolean) => {
+    const handleModuleCardClick = (moduleDetails: ModuleDetails) => {
         queryParams.set('id', moduleDetails.name)
         history.push(
             `${
