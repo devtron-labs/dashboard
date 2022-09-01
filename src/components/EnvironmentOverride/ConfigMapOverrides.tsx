@@ -26,7 +26,7 @@ import { toast } from 'react-toastify'
 import warningIcon from '../../assets/img/warning-medium.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
+import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
 import { getAppChartRef } from '../../services/service'
 import './environmentOverride.scss'
 
@@ -515,7 +515,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                                         <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                                         <span className="cn-7 ml-5">Learn more about </span>
                                         <a
-                                            href="https://docs.devtron.ai/user-guide/creating-application/deployment-template"
+                                            href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE}
                                             rel="noreferrer noopener"
                                             target="_blank"
                                         >
@@ -557,7 +557,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                                             <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                                             <span className="cn-7 ml-5">Learn more about </span>
                                             <a
-                                                href="https://docs.devtron.ai/user-guide/creating-application/deployment-template"
+                                                href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE}
                                                 rel="noreferrer noopener"
                                                 target="_blank"
                                             >
