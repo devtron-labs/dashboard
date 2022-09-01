@@ -120,7 +120,5 @@ export const MODULE_CONFIGURATION_DETAIL_MAP = {
       subtitle: 'Lorem ipsum',
       linkText: 'Configure GitOps',
       link: URLS.GLOBAL_CONFIG_GITOPS,
-      apiToCheckConfigurationStatus: isGitopsConfigured()
-
     }
 }
