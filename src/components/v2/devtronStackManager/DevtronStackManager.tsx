@@ -114,22 +114,6 @@ export default function DevtronStackManager({
         }
     }, [location.search])
 
-    // To update the selected module based on th query param
-    useEffect(() => {
-        const moduleId = queryParams.get('id')
-        if (location.pathname.includes('/details') && moduleId && selectedModule && moduleId !== selectedModule.name) {
-            const currentModule = stackDetails.discoverModulesList?.find((_module) => _module.name === moduleId)
-            if (currentModule) {
-                setSelectedModule(currentModule)
-            } else {
-                history.push(
-                    location.pathname.includes(URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS)
-                        ? URLS.STACK_MANAGER_DISCOVER_MODULES
-                        : URLS.STACK_MANAGER_INSTALLED_MODULES,
-                )
-            }
-        }
-    }, [location.search])
 
     /**
      * To update the installation status for seleted module after fetching latest details
