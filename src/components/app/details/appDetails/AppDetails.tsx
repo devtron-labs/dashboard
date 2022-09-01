@@ -5,6 +5,7 @@ import {
     Host,
     getAppDetailsURL,
     getAppTriggerURL,
+    DOCUMENTATION,
     DEFAULT_STATUS,
 } from '../../../../config';
 import {
@@ -973,7 +974,7 @@ export function AppNotConfigured({
                 <p className="mb-20 fs-13 w-300"> {subtitle ? subtitle :
                     <>This application is not fully configured. Complete the configuration, trigger a deployment and come
                     back here.
-                    <a href="https://docs.devtron.ai/devtron/user-guide/creating-application" target="_blank">
+                    <a href={DOCUMENTATION.APP_CREATE} target="_blank">
                         Need help?
                     </a></>}
                 </p>
