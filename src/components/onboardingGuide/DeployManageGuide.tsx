@@ -75,7 +75,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                             />
                                             <div className="fw-6 fs-16 pl-20 pr-20">
                                                 {devtronHelmCount} helm applications found in default_cluster <br />
-                                                <span className="fs-14 cb-5">View applications</span>
+                                                <div className="fs-14 cb-5 mt-8">View applications</div>
                                             </div>
                                         </NavLink>
                                     </div>
@@ -97,7 +97,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                         />
                                         <div className="fw-6 fs-16 pl-20 pr-20">
                                             I want to deploy popular helm charts <br />
-                                            <span className="fs-14 cb-5">Browse helm charts</span>
+                                            <div className="fs-14 cb-5 mt-8">Browse helm charts</div>
                                         </div>
                                     </NavLink>
                                 </div>
@@ -117,7 +117,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                         />
                                         <div className="fw-6 fs-16 pl-20 pr-20">
                                             I have helm applications in other clusters <br />
-                                            <span className="fs-14 cb-5"> Connect a cluster</span>
+                                            <div className="fs-14 cb-5 mt-8"> Connect a cluster</div>
                                         </div>
                                     </NavLink>
                                 </div>
@@ -139,7 +139,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                         />
                                         <div className="fw-6 fs-16 pl-20 pr-20">
                                             I want to connect my own chart repository <br />
-                                            <span className="fs-14 cb-5"> Connect chart repository</span>
+                                            <div className="fs-14 cb-5 mt-8"> Connect chart repository</div>
                                         </div>
                                     </NavLink>
                                 </div>
