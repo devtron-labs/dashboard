@@ -356,6 +356,7 @@ export default function DevtronStackManager({
                         handleActionTrigger={handleActionTrigger}
                         history={history}
                         location={location}
+                        setShowPreRequisiteConfirmationModal={setShowPreRequisiteConfirmationModal}
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS}>
@@ -369,6 +370,7 @@ export default function DevtronStackManager({
                         handleActionTrigger={handleActionTrigger}
                         history={history}
                         location={location}
+                        setShowPreRequisiteConfirmationModal={setShowPreRequisiteConfirmationModal}
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_DISCOVER_MODULES}>

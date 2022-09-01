@@ -3,7 +3,7 @@ import './guidePage.scss'
 import CreateApp from '../../../assets/img/guide-create-app.png'
 import PreviewImage from '../../../assets/img/ic-preview.png'
 import { DOCUMENTATION } from '../../../config'
-import { GuidedPageType } from './onboarding.type'
+import { GuidedPageType } from './GuidePage.type'
 
 const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
 

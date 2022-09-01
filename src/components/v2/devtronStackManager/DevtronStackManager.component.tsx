@@ -657,6 +657,7 @@ export const ModuleDetailsView = ({
     handleActionTrigger,
     history,
     location,
+    setShowPreRequisiteConfirmationModal
 }: ModuleDetailsViewType): JSX.Element | null => {
     useEffect(() => {
         if (!moduleDetails && !new URLSearchParams(location.search).get('id')) {
@@ -690,6 +691,7 @@ export const ModuleDetailsView = ({
                     updateActionTrigger={(isActionTriggered) =>
                         handleActionTrigger(`moduleAction-${moduleDetails.name?.toLowerCase()}`, isActionTriggered)
                     }
+                    setShowPreRequisiteConfirmationModal={setShowPreRequisiteConfirmationModal}
                 />
             </div>
         </div>

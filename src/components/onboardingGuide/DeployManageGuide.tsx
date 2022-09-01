@@ -5,20 +5,19 @@ import ChartRepository from '../../assets/img/guided-chart-repository.png'
 import HelmCollage from '../../assets/img/guided-helm-collage.png'
 import { NavLink, useHistory } from 'react-router-dom'
 import { SERVER_MODE, URLS } from '../../config'
-import { ReactComponent as GoBack } from '../../assets/icons/ic-arrow-backward.svg'
 import './onboardingGuide.scss'
 import { Progressing, showError } from '../common'
 import { getDevtronInstalledHelmApps } from '../app/list-new/AppListService'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import { OnClickedHandler, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
 import CommonGuide from './CommonGuide'
 
 function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
+    const history = useHistory()
     const [devtronHelmCount, setDevtronHelmCount] = useState(0)
     const [loader, setLoader] = useState(false)
-    const { serverMode, setPageOverflowEnabled } = useContext(mainContext)
-    const history = useHistory()
+    const { serverMode } = useContext(mainContext)
+
     const _getInit = () => {
         if (serverMode === SERVER_MODE.FULL) {
             setLoader(true)
@@ -38,7 +37,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
     }, [])
 
     const redirectToAppList = () => {
-      history.push(`${URLS.APP}/${URLS.APP_LIST}`)
+        history.push(`${URLS.APP}/${URLS.APP_LIST}`)
     }
 
     return (
@@ -49,7 +48,13 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                 </div>
             ) : (
                 <div className="deploy-manage-container">
-                    <CommonGuide loginCount={loginCount} title='Deploy and manage helm apps' subtitle='This helps us in guiding you towards relevant product features' onClickCloseButton={redirectToAppList} isGettingStartedClicked={isGettingStartedClicked}/>
+                    <CommonGuide
+                        loginCount={loginCount}
+                        title="Deploy and manage helm apps"
+                        subtitle="This helps us in guiding you towards relevant product features"
+                        onClickCloseButton={redirectToAppList}
+                        isGettingStartedClicked={isGettingStartedClicked}
+                    />
                     <div className="deploy-manage__body bcn-0 flex position-rel">
                         <div className="deploy-manage__abs">
                             <div className="deploy-manage-cards__wrap">
@@ -140,7 +145,10 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                 </div>
                             </div>
                             <div className="fs-14 flex column mt-40 mb-20">
-                                <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="guide_skip no-decor cb-5 fw-6 cursor mb-4">
+                                <NavLink
+                                    to={`${URLS.APP}/${URLS.APP_LIST}`}
+                                    className="guide_skip no-decor cb-5 fw-6 cursor mb-4"
+                                >
                                     Skip and explore Devtron on your own
                                 </NavLink>
                                 <div className="cn-7">Tip: You can return here anytime from the Help menu</div>
