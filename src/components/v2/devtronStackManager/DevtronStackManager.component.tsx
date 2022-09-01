@@ -665,8 +665,9 @@ export const InstallationWrapper = ({
                                 isCICDModule={moduleName === ModuleNameMap.CICD}
                             />
                         )}
-                        {moduleDetails.isModuleConfigurable &&
-                            !moduleDetails.isModuleConfigured && <ModuleNotConfigured moduleName={moduleName} />}
+                        {moduleDetails.isModuleConfigurable && !moduleDetails.isModuleConfigured && (
+                            <ModuleNotConfigured moduleName={moduleName} />
+                        )}
                         {!isUpgradeView && installationStatus === ModuleStatus.INSTALLED && <ModuleUpdateNote />}
                     </>
                 )}
@@ -853,11 +854,7 @@ export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }):
                         {isUpgradeView ? (
                             <>
                                 Please refer&nbsp;
-                                <a
-                                    className="cb-5 fw-6"
-                                    href={DOCUMENTATION.DEVTRON_UPGRADE}
-                                    target="_blank"
-                                >
+                                <a className="cb-5 fw-6" href={DOCUMENTATION.DEVTRON_UPGRADE} target="_blank">
                                     steps to upgrade using CLI
                                 </a>
                             </>
@@ -898,7 +895,6 @@ const DependentModuleList = ({
                     : URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS
             }?${queryParams.toString()}`,
         )
-        window.location.reload()
     }
     return dependentModuleList?.length ? (
         <div>
