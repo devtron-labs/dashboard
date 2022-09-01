@@ -58,7 +58,7 @@ export default function EnvironmentOverride() {
                 <h1 className="form__title form__title--artifacts">Environment Overrides</h1>
                 <div className="form__title">{environments.has(+params.envId) ? environments.get(+params.envId).environment_name : ''}</div>
                 <div className="form__subtitle">Manage environment configurations for this application.&nbsp;
-                        <a className="learn-more__href" rel="noreferre noopener" href={DOCUMENTATION.APP_CREATE_ENV} target="blank">Learn about Environment Overrides</a>
+                        <a className="learn-more__href" rel="noreferre noopener" href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE} target="blank">Learn about Environment Overrides</a>
                 </div>
             </>}
             <DeploymentTemplateOverride parentState={loading ? 'loading' : deploymentState} setParentState={setDeploymentState} />

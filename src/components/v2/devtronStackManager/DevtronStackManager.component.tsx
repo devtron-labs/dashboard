@@ -28,7 +28,7 @@ import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
 import { Checkbox, CHECKBOX_VALUE, Progressing, showError, ToastBody, VisibleModal } from '../../common'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
-import { URLS } from '../../../config'
+import { DOCUMENTATION, URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
 import { toast } from 'react-toastify'
 import {
@@ -762,7 +762,7 @@ export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }):
                                 Please refer&nbsp;
                                 <a
                                     className="cb-5 fw-6"
-                                    href="https://docs.devtron.ai/devtron/setup/upgrade"
+                                    href={DOCUMENTATION.DEVTRON_UPGRADE}
                                     target="_blank"
                                 >
                                     steps to upgrade using CLI

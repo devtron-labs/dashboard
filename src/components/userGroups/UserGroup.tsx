@@ -169,7 +169,7 @@ function HeaderSection(type: string) {
                     href={
                         isUserPremissions
                             ? DOCUMENTATION.GLOBAL_CONFIG_USER
-                            : `${DOCUMENTATION.GLOBAL_CONFIG_USER}#groups`
+                            : DOCUMENTATION.GLOBAL_CONFIG_GROUPS
                     }
                     target="_blank"
                 >
