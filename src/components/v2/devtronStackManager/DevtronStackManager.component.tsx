@@ -470,8 +470,8 @@ export const InstallationWrapper = ({
         if (isActionTriggered) {
             return
         } else {
-            if (preRequisiteChecked || preRequisiteList.length === 0) {
-                setShowPreRequisiteConfirmationModal(false)
+            if (!isUpgradeView || preRequisiteChecked || preRequisiteList.length === 0) {
+                setShowPreRequisiteConfirmationModal && setShowPreRequisiteConfirmationModal(false)
                 updateActionTrigger(true)
                 handleAction(moduleName, isUpgradeView, upgradeVersion, updateActionTrigger, history, location)
             } else {
@@ -760,11 +760,7 @@ export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }):
                         {isUpgradeView ? (
                             <>
                                 Please refer&nbsp;
-                                <a
-                                    className="cb-5 fw-6"
-                                    href={DOCUMENTATION.DEVTRON_UPGRADE}
-                                    target="_blank"
-                                >
+                                <a className="cb-5 fw-6" href={DOCUMENTATION.DEVTRON_UPGRADE} target="_blank">
                                     steps to upgrade using CLI
                                 </a>
                             </>
