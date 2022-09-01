@@ -343,7 +343,7 @@ function DeploymentTemplateOverrideForm({
                                 </Select.Button>
                                 {state.charts &&
                                     Array.from(state.charts.values() as { id: number; name: string; version: string }[])
-                                        .sort((a, b) => b.id - a.id)
+                                        .sort((a, b) => b.version.localeCompare(a.version))
                                         .filter((chart) => chart.name == chartName)
                                         .map((value, idx) => (
                                             <Select.Option key={idx} value={value.id}>
