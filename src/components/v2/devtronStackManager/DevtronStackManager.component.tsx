@@ -636,7 +636,7 @@ export const InstallationWrapper = ({
                                         </button>
                                     </ConditionalWrap>
                                     {isUpgradeView && preRequisiteList.length > 0 && (
-                                        <div className="flexbox pt-10 pr-16 pb-10 pl-16 bcy-1 ey-2 bw-1 br-4">
+                                        <div className="flexbox pt-10 pr-16 pb-10 pl-16 bcy-1 ey-2 bw-1 br-4 mb-16">
                                             <Note className="module-details__install-icon icon-dim-16 mt-4 mr-8" />
                                             <div>
                                                 <div className="cn-9 fw-6 fs-13">Pre-requisites for this update</div>
@@ -665,7 +665,7 @@ export const InstallationWrapper = ({
                                 isCICDModule={moduleName === ModuleNameMap.CICD}
                             />
                         )}
-                        {moduleDetails.isModuleConfigurable && !moduleDetails.isModuleConfigured && (
+                        {moduleDetails?.isModuleConfigurable && !moduleDetails?.isModuleConfigured && (
                             <ModuleNotConfigured moduleName={moduleName} />
                         )}
                         {!isUpgradeView && installationStatus === ModuleStatus.INSTALLED && <ModuleUpdateNote />}
