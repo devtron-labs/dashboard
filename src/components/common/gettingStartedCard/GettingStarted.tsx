@@ -10,7 +10,7 @@ function GettingStartedCard({ className, hideGettingStartedCard }: GettingStarte
     const onClickedOkay = () => {
         setActionWithExpiry('clickedOkay', 1)
         hideGettingStartedCard()
-        OnClickedHandler(POSTHOG_EVENT_ONBOARDING.VIEW_APPLICATION)
+        OnClickedHandler(POSTHOG_EVENT_ONBOARDING.TOOLTIP_OKAY)
     }
 
     const onClickedDontShowAgain = () => {
@@ -20,7 +20,7 @@ function GettingStartedCard({ className, hideGettingStartedCard }: GettingStarte
         }
         updateLoginCount(updatedPayload)
         hideGettingStartedCard(updatedPayload.value)
-        OnClickedHandler(POSTHOG_EVENT_ONBOARDING.VIEW_APPLICATION)
+        OnClickedHandler(POSTHOG_EVENT_ONBOARDING.TOOLTIP_DONT_SHOW_AGAIN)
     }
 
     return (

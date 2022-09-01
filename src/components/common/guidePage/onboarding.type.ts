@@ -14,6 +14,7 @@ export interface OnboardingGuideProps {
   isSuperAdmin: boolean
   serverMode: string
   onClickedDeployManageCardClicked: () => void
+  isGettingStartedClicked: boolean
 }
 export interface AppRouterType {
   isSuperAdmin?: boolean

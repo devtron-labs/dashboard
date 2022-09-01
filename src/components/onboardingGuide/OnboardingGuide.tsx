@@ -10,7 +10,7 @@ import { OnboardingGuideProps } from '../common/guidePage/onboarding.type'
 import { OnClickedHandler, POSTHOG_EVENT_ONBOARDING}  from './onboarding.utils'
 import CommonGuide from './CommonGuide'
 
-function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClicked }: OnboardingGuideProps) {
+function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClicked, isGettingStartedClicked }: OnboardingGuideProps) {
     const match = useRouteMatch()
     const history = useHistory()
 
@@ -36,7 +36,7 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
 
     return (
         <div className="onboarding-container h-100">
-            <CommonGuide loginCount={loginCount} title= 'What will you use devtron for?' subtitle='This will help us in guiding you towards relevant product features' onClickCloseButton={onClickCloseButton}/>
+            <CommonGuide loginCount={loginCount} title= 'What will you use devtron for?' subtitle='This will help us in guiding you towards relevant product features' onClickCloseButton={onClickCloseButton} isGettingStartedClicked={isGettingStartedClicked}/>
             <div className="bcn-0 onboarding__bottom flex position-rel cn-9">
                 <div className= "onboarding__abs"  >
                     <div className="onboarding-cards__wrap">

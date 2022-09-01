@@ -3,23 +3,27 @@ import { useHistory, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as GoBack } from '../../assets/icons/ic-arrow-backward.svg'
 
-function CommonGuide({ loginCount, title, subtitle, onClickCloseButton }) {
+function CommonGuide({ loginCount, title, subtitle, onClickCloseButton, isGettingStartedClicked }) {
     const history = useHistory()
     const match = useRouteMatch()
     const isGuidePage = match.url.includes('guide')
 
+    const onClickedGoBack = () => {
+        history.goBack()
+    }
+
     return (
         <div className="common-guide__container">
-            <div className={`onboarding__upper h-300 bc-window bcn-1 ${loginCount <= 1 ? 'flex' : ''}`}>
-                {loginCount > 1 && (
+            <div className={`deploy-manage__header h-300 bc-window bcn-1`}>
+                {(loginCount > 0 || isGettingStartedClicked )&& (
                     <button type="button" className="w-100 flex right transparent p-20" onClick={onClickCloseButton}>
                         <Close className="icon-dim-24" />
                     </button>
                 )}
                 <div className={`${loginCount > 1 ? 'deploy-manage__upper top' : 'h-300'} flex`}>
-                    <div className="flex center">
+                    <div className="deploy__title flex center">
                         {isGuidePage && (
-                            <div className="bcn-0 deploy_arrow flex cursor" onClick={onClickCloseButton}>
+                            <div className="bcn-0 deploy_arrow flex cursor" onClick={onClickedGoBack}>
                                 <GoBack className="icon-dim-24" />
                             </div>
                         )}

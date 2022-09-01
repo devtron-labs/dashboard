@@ -58,7 +58,8 @@ export default function NavigationRoutes() {
     const [appListCount, setAppListCount] = useState(0)
     const [loginLoader, setLoginLoader] = useState(true)
     const [isDeployManageCardClicked, setIsDeployManageCardClicked] = useState(false)
-
+    const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
+    const [isGettingStartedClicked, setIsGettingStartedClicked] = useState()
     const showCloseButtonAfterGettingStartedClicked = () => {
         setIsHelpGettingStartedClicked(true)
     }
@@ -217,7 +218,11 @@ const onClickedDeployManageCardClicked = () =>{
                     isHelpGettingStartedClicked,
                     showCloseButtonAfterGettingStartedClicked,
                     loginCount,
-                    setLoginCount
+                    setLoginCount,
+                    showGettingStartedCard,
+                    setShowGettingStartedCard,
+                    isGettingStartedClicked,
+                    setIsGettingStartedClicked
                 }}
             >
                 <main className={`${window.location.href.includes(URLS.GETTING_STARTED) ? 'no-nav' : ''}`}>
@@ -276,7 +281,7 @@ const onClickedDeployManageCardClicked = () =>{
                                             />
                                         </Route>
                                         <Route exact path={`/${URLS.GETTING_STARTED}/${URLS.GUIDE}`}>
-                                            <DeployManageGuide isDeployManageCardClicked={isDeployManageCardClicked} loginCount={loginCount}/>
+                                            <DeployManageGuide isGettingStartedClicked={isGettingStartedClicked} loginCount={loginCount}/>
                                         </Route>
                                         <Route exact path={`/${URLS.GETTING_STARTED}`}>
                                             <OnboardingGuide
@@ -284,6 +289,7 @@ const onClickedDeployManageCardClicked = () =>{
                                                 isSuperAdmin={isSuperAdmin}
                                                 serverMode={serverMode}
                                                 onClickedDeployManageCardClicked={onClickedDeployManageCardClicked}
+                                                isGettingStartedClicked={isGettingStartedClicked}
                                             />
                                         </Route>
 

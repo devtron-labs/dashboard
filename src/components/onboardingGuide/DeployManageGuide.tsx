@@ -14,20 +14,11 @@ import { mainContext } from '../common/navigation/NavigationRoutes'
 import { OnClickedHandler, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
 import CommonGuide from './CommonGuide'
 
-function DeployManageGuide({ isDeployManageCardClicked, loginCount }) {
+function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
     const [devtronHelmCount, setDevtronHelmCount] = useState(0)
     const [loader, setLoader] = useState(false)
     const { serverMode, setPageOverflowEnabled } = useContext(mainContext)
     const history = useHistory()
-    const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
-    // const [streamData, setStreamData] = useState(null);
-    // const appDetails = IndexStore.getAppDetails();
-    // const syncSSE = useEventSource(`${Host}/api/v1/applications?clusterIds=1`, null, appDetails?.appType?.toString() === AppType.EXTERNAL_HELM_CHART.toString(), (event) =>
-    //     setStreamData(JSON.parse(event.data)),
-    // )
-
-    // console.log(streamData)
-
     const _getInit = () => {
         if (serverMode === SERVER_MODE.FULL) {
             setLoader(true)
@@ -58,7 +49,7 @@ function DeployManageGuide({ isDeployManageCardClicked, loginCount }) {
                 </div>
             ) : (
                 <div className="deploy-manage-container">
-                    <CommonGuide loginCount={loginCount} title='Deploy and manage helm apps' subtitle='This helps us in guiding you towards relevant product features' onClickCloseButton={redirectToAppList}/>
+                    <CommonGuide loginCount={loginCount} title='Deploy and manage helm apps' subtitle='This helps us in guiding you towards relevant product features' onClickCloseButton={redirectToAppList} isGettingStartedClicked={isGettingStartedClicked}/>
                     <div className="deploy-manage__body bcn-0 flex position-rel">
                         <div className="deploy-manage__abs">
                             <div className="deploy-manage-cards__wrap">

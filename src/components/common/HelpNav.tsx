@@ -15,9 +15,10 @@ export interface HelpNavType {
     setShowHelpCard: React.Dispatch<React.SetStateAction<boolean>>
     serverInfo: ServerInfo
     fetchingServerInfo: boolean
+    setIsGettingStartedClicked: (isClicked: boolean) => void
 }
 
-function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchingServerInfo }: HelpNavType) {
+function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchingServerInfo, setIsGettingStartedClicked }: HelpNavType) {
   const history = useHistory()
 
     const HelpOptions = [
@@ -46,11 +47,15 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
         },
     ]
 
+    const onClickGettingStarted = () => {
+      setIsGettingStartedClicked(true)
+    }
+
     return (
         <div className="transparent-div" onClick={() => setShowHelpCard(!showHelpCard)}>
             <div className={`help-card pt-4 pb-4 ${className}`}>
                 <div className="help-card__option">
-                    <NavLink to={`/${URLS.GETTING_STARTED}`} className="no-decor help-card__link flex left cn-9" activeClassName="active">
+                    <NavLink to={`/${URLS.GETTING_STARTED}`} className="no-decor help-card__link flex left cn-9" activeClassName="active" onClick={onClickGettingStarted}>
                         <GettingStartedIcon />
                         <div  className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
                     </NavLink>

@@ -48,6 +48,8 @@
         height: 56px;
         border: 1px solid var(--N200);
         border-radius: 50%;
+        position: absolute;
+        left: -40px;
     }
 
     .deploy-manage-cards__wrap {
@@ -76,6 +78,11 @@
 
     .deploy-manage__upper{
       height: 236px;
+    }
+
+    .deploy__title{
+      position: absolute;
+      width: 820px;
     }
 }
 

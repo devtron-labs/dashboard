@@ -10,6 +10,7 @@ export const POSTHOG_EVENT_ONBOARDING = {
     CONNECT_CHART_REPOSITORY: 'Connect chart repository',
     TOOLTIP_OKAY: 'Tooltip okay',
     TOOLTIP_DONT_SHOW_AGAIN: 'Tooltip Dont show again',
+    HELP: 'Clicked Help'
 }
 
 export const OnClickedHandler = (key) => {
