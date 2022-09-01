@@ -122,18 +122,23 @@ export default function NavigationRoutes() {
         getLoginData().then((response) => {
             const count = response.result?.value ? parseInt(response.result.value) : 0
             setLoginCount(count ?? 1)
-            if (typeof Storage !== 'undefined' && localStorage.getItem('isSSOLogin')) {
+            if (
+                typeof Storage !== 'undefined' &&
+                (localStorage.getItem('isSSOLogin') || localStorage.getItem('isAdminLogin'))
+            ) {
                 localStorage.removeItem('isSSOLogin')
-            }
-            if (count < 5) {
-                const updatedPayload = {
-                    key: 'login-count',
-                    value: `${count + 1}`,
+                localStorage.removeItem('isAdminLogin')
+                if (count < 5) {
+                    const updatedPayload = {
+                        key: 'login-count',
+                        value: `${count + 1}`,
+                    }
+                    updateLoginCount(updatedPayload)
                 }
-                updateLoginCount(updatedPayload)
             }
+
             if (!count) {
-                history.push('/')
+                history.push(`/${URLS.GETTING_STARTED}`)
             }
         })
 
@@ -271,7 +276,7 @@ const onClickedDeployManageCardClicked = () =>{
                                             />
                                         </Route>
                                         <Route exact path={`/${URLS.GETTING_STARTED}/${URLS.GUIDE}`}>
-                                            <DeployManageGuide isDeployManageCardClicked={isDeployManageCardClicked} />
+                                            <DeployManageGuide isDeployManageCardClicked={isDeployManageCardClicked} loginCount={loginCount}/>
                                         </Route>
                                         <Route exact path={`/${URLS.GETTING_STARTED}`}>
                                             <OnboardingGuide
@@ -327,7 +332,7 @@ export function AppRouter({ isSuperAdmin, appListCount, loginCount, serverMode }
                     </Route>
                     <Route>
                         <RedirectUserWithSentry
-                            isFirstLoginUser={isSuperAdmin && (appListCount === 0 || !loginCount)}
+                            isFirstLoginUser={isSuperAdmin && (serverMode === SERVER_MODE.EA_ONLY && loginCount === 0) || (serverMode === SERVER_MODE.FULL && appListCount === 0)}
                         />
                     </Route>
                 </Switch>

@@ -7,20 +7,18 @@ import { NavLink, useHistory } from 'react-router-dom'
 import { SERVER_MODE, URLS } from '../../config'
 import { ReactComponent as GoBack } from '../../assets/icons/ic-arrow-backward.svg'
 import './onboardingGuide.scss'
-import ReactGA from 'react-ga'
-import { Progressing, showError, useEventSource } from '../common'
+import { Progressing, showError } from '../common'
 import { getDevtronInstalledHelmApps } from '../app/list-new/AppListService'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { mainContext } from '../common/navigation/NavigationRoutes'
-import IndexStore from '../v2/appDetails/index.store'
 import { OnClickedHandler, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
+import CommonGuide from './CommonGuide'
 
-function DeployManageGuide({ isDeployManageCardClicked }) {
-    const history = useHistory()
+function DeployManageGuide({ isDeployManageCardClicked, loginCount }) {
     const [devtronHelmCount, setDevtronHelmCount] = useState(0)
     const [loader, setLoader] = useState(false)
     const { serverMode, setPageOverflowEnabled } = useContext(mainContext)
-
+    const history = useHistory()
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
     // const [streamData, setStreamData] = useState(null);
     // const appDetails = IndexStore.getAppDetails();
@@ -48,8 +46,8 @@ function DeployManageGuide({ isDeployManageCardClicked }) {
         _getInit()
     }, [])
 
-    const redirectToOnboardingPage = () => {
-        history.goBack()
+    const redirectToAppList = () => {
+      history.push(`${URLS.APP}/${URLS.APP_LIST}`)
     }
 
     return (
@@ -60,30 +58,7 @@ function DeployManageGuide({ isDeployManageCardClicked }) {
                 </div>
             ) : (
                 <div className="deploy-manage-container">
-                    <div className="deploy-manage__header h-300">
-                         {isDeployManageCardClicked && (
-                            <button
-                                type="button"
-                                className="w-100 flex right transparent p-20"
-                                onClick={redirectToOnboardingPage}
-                            >
-                                <Close className="icon-dim-24" />
-                            </button>
-                        )}
-                        <div className={`${isDeployManageCardClicked ? 'deploy-manage__upper top' : 'h-300'} flex`}>
-                          <div className='flex center'>
-                            <div className="bcn-0 deploy_arrow flex cursor" onClick={redirectToOnboardingPage}>
-                                <GoBack className="icon-dim-24"/>
-                            </div>
-                            <div className="ml-32">
-                                <h1 className="fw-6 mb-8">Deploy and manage helm apps</h1>
-                                <p className="fs-14 cn-7">
-                                    This helps us in guiding you towards relevant product features
-                                </p>
-                            </div>
-                            </div>
-                        </div>
-                    </div>
+                    <CommonGuide loginCount={loginCount} title='Deploy and manage helm apps' subtitle='This helps us in guiding you towards relevant product features' onClickCloseButton={redirectToAppList}/>
                     <div className="deploy-manage__body bcn-0 flex position-rel">
                         <div className="deploy-manage__abs">
                             <div className="deploy-manage-cards__wrap">
@@ -173,8 +148,8 @@ function DeployManageGuide({ isDeployManageCardClicked }) {
                                     </NavLink>
                                 </div>
                             </div>
-                            <div className="fs-14 flex column mt-20 mb-20">
-                                <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="guide_skip no-decor cb-5 fw-6 cursor mb-8">
+                            <div className="fs-14 flex column mt-40 mb-20">
+                                <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="guide_skip no-decor cb-5 fw-6 cursor mb-4">
                                     Skip and explore Devtron on your own
                                 </NavLink>
                                 <div className="cn-7">Tip: You can return here anytime from the Help menu</div>

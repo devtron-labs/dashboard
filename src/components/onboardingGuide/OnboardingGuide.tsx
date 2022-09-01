@@ -8,6 +8,7 @@ import PreviewImage from '../../assets/img/ic-preview.png'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { OnboardingGuideProps } from '../common/guidePage/onboarding.type'
 import { OnClickedHandler, POSTHOG_EVENT_ONBOARDING}  from './onboarding.utils'
+import CommonGuide from './CommonGuide'
 
 function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClicked }: OnboardingGuideProps) {
     const match = useRouteMatch()
@@ -35,17 +36,7 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
 
     return (
         <div className="onboarding-container h-100">
-            <div className={`onboarding__upper h-300 bc-window bcn-1 ${loginCount <= 1 ? 'flex' : ''}`}>
-                 {loginCount > 1 && (
-                    <button type="button" className="w-100 flex right transparent p-20" onClick={onClickCloseButton}>
-                        <Close className="icon-dim-24" />
-                    </button>
-               )}
-                <div className="flex column">
-                    <h1 className="fw-6 mb-8">What will you use devtron for?</h1>
-                    <p className="fs-14 cn-7">This will help us in guiding you towards relevant product features</p>
-                </div>
-            </div>
+            <CommonGuide loginCount={loginCount} title= 'What will you use devtron for?' subtitle='This will help us in guiding you towards relevant product features' onClickCloseButton={onClickCloseButton}/>
             <div className="bcn-0 onboarding__bottom flex position-rel cn-9">
                 <div className= "onboarding__abs"  >
                     <div className="onboarding-cards__wrap">
@@ -99,8 +90,8 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
                             </NavLink>
                         </div>
                     </div>
-                    <div className="fs-14 mt-20 mb-20 flex column">
-                        <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="guide_skip no-decor cb-5 fw-6 cursor mb-8">
+                    <div className="fs-14 mt-40 mb-20 flex column">
+                        <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="guide_skip no-decor cb-5 fw-6 cursor mb-4">
                             Skip and explore Devtron on your own
                         </NavLink>
                         <div className="cn-7">Tip: You can return here anytime from the Help menu</div>

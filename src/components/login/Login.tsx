@@ -63,6 +63,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 })
                 .catch((errors) => {})
         }
+
     }
 
     handleChange(e: React.ChangeEvent<HTMLInputElement>): void {
@@ -112,14 +113,9 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                     getLoginData().then((response) => {
                         const count = response.result?.value ? parseInt(response.result.value) : 0
                         this.setState({ loginCount: count || 1 })
-                        if (typeof Storage !== 'undefined' && localStorage.getItem('isSSOLogin')) {
-                            localStorage.removeItem('isSSOLogin')
-                        }
-                        if (!count) {
-                            this.props.history.push('/')
-                        } else {
-                            this.props.history.push(`${url}`)
-                        }
+                        localStorage.setItem('isAdminLogin', 'true')
+
+                        this.props.history.push(url)
                     })
                 }
             })

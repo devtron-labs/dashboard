@@ -30,12 +30,12 @@ function GettingStartedCard({ className, hideGettingStartedCard }: GettingStarte
                 <img className="mb-12 icon-dim-32" src={GettingToast} alt="getting started icon" />
                 <div className="flex column left fw-6">Getting started</div>
                 <div>You can always access the Getting Started guide from here.</div>
-                <div className="mt-12">
-                    <button onClick={onClickedOkay} className="cn-9 fw-6 br-4 mr-16">
+                <div className="mt-12 lh-18">
+                    <button onClick={onClickedOkay} className="bw-0 cn-9 fw-6 br-4 mr-12 pt-4 pb-4 pl-8 pr-8 pl-8 pr-8">
                         Okay
                     </button>
                     <button
-                        className="br-4 token__dont-show en-0 bw-1 transparent pl-4 pr-4"
+                        className="br-4 token__dont-show en-0 bw-1 transparent pl-8 pr-8 pt-3 pb-3"
                         onClick={onClickedDontShowAgain}
                     >
                         Don't show again
