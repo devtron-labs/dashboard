@@ -270,7 +270,7 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
         },
     ]
     let filteredCharts = selectedChart
-        ? charts.filter((cv) => cv.name == selectedChart.name).sort((a, b) => b.id - a.id)
+        ? charts.filter((cv) => cv.name == selectedChart.name).sort((a, b) => b.version.localeCompare(a.version))
         : []
 
     const chartMenuList = (props) => {
