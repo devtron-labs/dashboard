@@ -730,7 +730,7 @@ export function ConfigMapForm({
                                     <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                                     <span className="cn-7 ml-5">Learn more about </span>
                                     <a
-                                        href="https://docs.devtron.ai/user-guide/creating-application/deployment-template"
+                                        href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE}
                                         rel="noreferrer noopener"
                                         target="_blank"
                                     >
@@ -785,7 +785,7 @@ export function ConfigMapForm({
                                     <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                                     <span className="cn-7 ml-5">Learn more about </span>
                                     <a
-                                        href="https://docs.devtron.ai/user-guide/creating-application/deployment-template"
+                                        href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE}
                                         rel="noreferrer noopener"
                                         target="_blank"
                                     >
