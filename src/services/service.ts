@@ -290,19 +290,20 @@ export function isGitOpsModuleInstalledAndConfigured(): Promise<ResponseType> {
                 return {
                     code: response.code,
                     status: response.status,
-                    result: { isInstalled: false, isConfigured: false },
+                    result: { isInstalled: false, isConfigured: false, noInstallationStatus: true },
                 }
             }
         })
         .then((response) => {
-            if (response.result.exists) {
+            if (response.result.noInstallationStatus) {
+                delete response.result.noInstallationStatus
+                return response
+            } else {
                 return {
                     code: response.code,
                     status: response.status,
-                    result: { isInstalled: true, isConfigured: false },
+                    result: { isInstalled: true, isConfigured: response.result.exists },
                 }
-            } else {
-                return response
             }
         })
 }
