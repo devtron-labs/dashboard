@@ -451,6 +451,8 @@ export const InstallationWrapper = ({
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const latestVersionAvailable = isLatestVersionAvailable(serverInfo?.currentVersion, upgradeVersion)
+    const dependentModuleList = modulesList?.filter((module) => moduleDetails.dependentModules.indexOf(Number(module.id)) >= 0) || []
+    const isPendingDependency = !isUpgradeView && dependentModuleList.some(module=> module.installationStatus !== ModuleStatus.INSTALLED)
     const belowMinSupportedVersion = baseMinVersionSupported
         ? isLatestVersionAvailable(serverInfo?.currentVersion, baseMinVersionSupported)
         : false
@@ -486,7 +488,7 @@ export const InstallationWrapper = ({
             return
         } else {
             if (!isUpgradeView || preRequisiteChecked || preRequisiteList.length === 0) {
-                if (!isUpgradeView && belowMinSupportedVersion) {
+                if (!isUpgradeView && (belowMinSupportedVersion || isPendingDependency)) {
                     return
                 }
                 setShowPreRequisiteConfirmationModal && setShowPreRequisiteConfirmationModal(false)
@@ -603,7 +605,7 @@ export const InstallationWrapper = ({
                                     >
                                         <button
                                             className={`module-details__install-button cta flex mb-16 ${
-                                                !isUpgradeView && belowMinSupportedVersion ? 'disabled-state' : ''
+                                                !isUpgradeView && (belowMinSupportedVersion || isPendingDependency) ? 'disabled-state' : ''
                                             }`}
                                             onClick={handleActionButtonClick}
                                         >
@@ -679,7 +681,7 @@ export const InstallationWrapper = ({
                                 installationStatus === ModuleStatus.TIMEOUT ||
                                 installationStatus === ModuleStatus.UNKNOWN))) && <GetHelpCard />}
                 {!isUpgradeView && modulesList && (
-                    <DependentModuleList moduleName={moduleName} modulesList={modulesList} />
+                    <DependentModuleList moduleName={moduleName} modulesList={dependentModuleList} />
                 )}
             </div>
             {renderPrerequisiteConfirmationModal()}
@@ -878,13 +880,6 @@ const DependentModuleList = ({
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const queryParams = new URLSearchParams(location.search)
-    const [dependentModuleList, setDependentModuleList] = useState<ModuleDetails[]>(null)
-    useEffect(() => {
-        if (modulesList.length > 0) {
-            const dependentModuleIds = modulesList.find((module) => module.name === moduleName)?.dependentModules || []
-            setDependentModuleList(modulesList.filter((module) => dependentModuleIds.indexOf(Number(module.id)) >= 0))
-        }
-    }, [])
 
     const handleModuleCardClick = (moduleDetails: ModuleDetails, fromDiscoverModules?: boolean) => {
         queryParams.set('id', moduleDetails.name)
@@ -896,10 +891,10 @@ const DependentModuleList = ({
             }?${queryParams.toString()}`,
         )
     }
-    return dependentModuleList?.length ? (
+    return modulesList?.length ? (
         <div>
             <div className="fs-14 fw-6 cn-9 mb-16">Pre-requisite integrations</div>
-            {dependentModuleList.map((module, idx) => {
+            {modulesList.map((module, idx) => {
                 return (
                     <ModuleDetailsCard
                         key={`module-details__card-${idx}`}
