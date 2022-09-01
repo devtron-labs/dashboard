@@ -402,7 +402,7 @@ const GetHelpCard = (): JSX.Element => {
 
 const ModuleUpdateNote = (): JSX.Element => {
     return (
-        <div className="module-details__update-note br-4 cn-9 fs-13">
+        <div className="module-details__update-note br-4 cn-9 fs-13 mb-16">
             <div className="fs-4 mb-8">Integrations are updated along with Devtron updates.</div>
             <div className="fs-6">
                 <NavLink to={URLS.STACK_MANAGER_ABOUT} className="fw-6">

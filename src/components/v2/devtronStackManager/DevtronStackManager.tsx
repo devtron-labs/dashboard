@@ -100,7 +100,7 @@ export default function DevtronStackManager({
             getLatestInfo()
             queryParams.delete('actionTriggered')
             history.push(`${location.pathname}?${queryParams.toString()}`)
-        } else if (location.pathname.includes(URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS) && selectedModule) {
+        } else if (location.pathname.includes('/details') && selectedModule) {
             const moduleId = queryParams.get('id')
             if (moduleId && selectedModule.name.toLowerCase() !== moduleId.toLowerCase()) {
                 const _selectedModule = stackDetails.discoverModulesList.find(

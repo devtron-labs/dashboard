@@ -66,20 +66,6 @@ export default function GlobalConfiguration(props) {
             .catch((error) => {})
     }
 
-    useEffect(() => {
-        checkGitOpsConfiguration()
-    }, [])
-
-    async function checkGitOpsConfiguration() {
-      try {
-          const { result } = await getModuleInfo(ModuleNameMap.ARGO_CD)
-          if (result?.status === ModuleStatus.INSTALLED) {
-              setInstalledModule([...installedModule, ModuleNameMap.ARGO_CD])
-          }
-          setInstalledModule([...installedModule, ModuleNameMap.ARGO_CD])
-      } catch (error) {}
-    }
-
     function handleChecklistUpdate(itemName: string): void {
         const list = checkList
 
@@ -130,7 +116,7 @@ export default function GlobalConfiguration(props) {
             <PageHeader headerName="Global configurations" />
             <Router history={useHistory()}>
                 <section className="global-configuration__navigation">
-                    <NavItem hostURLConfig={hostURLConfig} serverMode={serverMode} installedModule={installedModule}/>
+                    <NavItem hostURLConfig={hostURLConfig} serverMode={serverMode}/>
                 </section>
                 <section className="global-configuration__component-wrapper">
                     <Suspense fallback={<Progressing pageLoader />}>
@@ -140,7 +126,6 @@ export default function GlobalConfiguration(props) {
                                 checkList={checkList}
                                 serverMode={serverMode}
                                 handleChecklistUpdate={handleChecklistUpdate}
-                                installedModule={installedModule}
                             />
                         </ErrorBoundary>
                     </Suspense>
@@ -150,8 +135,9 @@ export default function GlobalConfiguration(props) {
     )
 }
 
-function NavItem({ hostURLConfig, serverMode, installedModule }) {
+function NavItem({ hostURLConfig, serverMode }) {
     const location = useLocation()
+    const [installedModule, setInstalledModule] = useState([])
     // Add key of NavItem if grouping is used
     const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
         Authorization: location.pathname.startsWith('/global-config/auth') ? false : true,
@@ -215,6 +201,18 @@ function NavItem({ hostURLConfig, serverMode, installedModule }) {
         (!hostURLConfig || hostURLConfig.value !== window.location.origin) &&
         !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)
 
+    useEffect(() => {
+        checkGitOpsConfiguration()
+    }, [])
+
+    async function checkGitOpsConfiguration() {
+        try {
+            const { result } = await getModuleInfo(ModuleNameMap.ARGO_CD)
+            if (result?.status === ModuleStatus.INSTALLED) {
+                setInstalledModule([...installedModule, ModuleNameMap.ARGO_CD])
+            }
+        } catch (error) {}
+    }
     const renderNavItem = (route, className = '', preventOnClickOp = false) => {
         return (
             <NavLink
@@ -339,7 +337,7 @@ function NavItem({ hostURLConfig, serverMode, installedModule }) {
     )
 }
 
-function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, installedModule }) {
+function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }) {
     const location = useLocation()
 
     return (
@@ -359,19 +357,17 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     )
                 }}
             />
-            {installedModule.indexOf(ModuleNameMap.ARGO_CD)>=0 && (
-                <Route
-                    path={URLS.GLOBAL_CONFIG_GITOPS}
-                    render={(props) => {
-                        return (
-                            <div className="flexbox h-100">
-                                <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
-                                <GlobalConfigCheckList {...checkList} {...props} />
-                            </div>
-                        )
-                    }}
-                />
-            )}
+            <Route
+                path={URLS.GLOBAL_CONFIG_GITOPS}
+                render={(props) => {
+                    return (
+                        <div className="flexbox h-100">
+                            <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
+                            <GlobalConfigCheckList {...checkList} {...props} />
+                        </div>
+                    )
+                }}
+            />
             <Route
                 path={URLS.GLOBAL_CONFIG_PROJECT}
                 render={(props) => {
