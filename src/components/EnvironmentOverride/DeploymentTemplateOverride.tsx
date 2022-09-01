@@ -25,6 +25,7 @@ import {
     Info,
     useEffectAfterMount,
     useJsonYaml,
+    versionComparator,
 } from '../common'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { toast } from 'react-toastify'
@@ -34,6 +35,7 @@ import warningIcon from '../../assets/img/warning-medium.svg'
 import { MODES } from '../../../src/config/constants'
 import YAML from 'yaml'
 import { ReactComponent as DiffIcon } from '../../assets/icons/ic-compare.svg'
+import { OrderBy } from '../app/types'
 
 export default function DeploymentTemplateOverride({ parentState, setParentState, ...props }) {
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -343,7 +345,7 @@ function DeploymentTemplateOverrideForm({
                                 </Select.Button>
                                 {state.charts &&
                                     Array.from(state.charts.values() as { id: number; name: string; version: string }[])
-                                        .sort((a, b) => b.version.localeCompare(a.version))
+                                        .sort((a, b) => versionComparator(a, b, 'version', OrderBy.DESC))
                                         .filter((chart) => chart.name == chartName)
                                         .map((value, idx) => (
                                             <Select.Option key={idx} value={value.id}>
