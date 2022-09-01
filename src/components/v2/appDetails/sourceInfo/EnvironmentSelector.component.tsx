@@ -142,13 +142,13 @@ function EnvironmentSelectorComponent() {
                         arrow={false}
                         placement="top"
                         content={`Deployed using ${
-                            appDetails?.deploymentAppType === DeploymentAppType.helm ? `Helm` : `GitOps`
+                            appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? `GitOps` : `Helm`
                         }`}
                     >
-                        {appDetails?.deploymentAppType === DeploymentAppType.helm ? (
-                            <Helm className="icon-dim-24 ml-20 mt-4" />
-                        ) : (
+                        {appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? (
                             <ArgoCD className="icon-dim-24 ml-20 mt-4" />
+                        ) : (
+                            <Helm className="icon-dim-24 ml-20 mt-4" />
                         )}
                     </Tippy>
                 </div>

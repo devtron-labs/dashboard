@@ -63,11 +63,18 @@ export function SourceInfo({
         <div className="flex left w-100 column w-100 source-info-container">
             <div className="flex left w-100 mb-16">
                 <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
-                <Tippy className="default-tt" arrow={false} placement="top" content={`Deployed using ${appDetails?.deploymentAppType === DeploymentAppType.helm?`Helm`:`GitOps`}`}>
-                    {appDetails?.deploymentAppType === DeploymentAppType.helm ? (
-                        <Helm className="icon-dim-24 ml-20" />
+                <Tippy
+                    className="default-tt"
+                    arrow={false}
+                    placement="top"
+                    content={`Deployed using ${
+                        appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? `GitOps` : `Helm`
+                    }`}
+                >
+                    {appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? (
+                        <ArgoCD className="icon-dim-24 ml-20" />
                     ) : (
-                      <ArgoCD className="icon-dim-24 ml-20" />
+                        <Helm className="icon-dim-24 ml-20" />
                     )}
                 </Tippy>
                 <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
