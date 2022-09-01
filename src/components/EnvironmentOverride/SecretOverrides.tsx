@@ -246,7 +246,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         PATTERNS.CONFIG_MAP_AND_SECRET_KEY,
         `Key must consist of alphanumeric characters, '.', '-' and '_'`,
     )
-    const isEsoSecretData = esoSecretData?.secretStore && esoSecretData?.esoData.length > 0
+    const isEsoSecretData: boolean = esoSecretData?.secretStore && esoSecretData.esoData
     const [yamlMode, toggleYamlMode] = useState(true)
     const [esoDataSecret, setEsoData] = useState(esoSecretData?.esoData)
     const [secretStore, setSecretStore] = useState(esoSecretData?.secretStore)
