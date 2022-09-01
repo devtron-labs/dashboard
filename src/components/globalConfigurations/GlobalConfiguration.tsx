@@ -291,7 +291,7 @@ function NavItem({ hostURLConfig, serverMode }) {
     return (
         <div className="flex column left">
             {ConfigRequired.map(
-                (route) => (serverMode !== SERVER_MODE.EA_ONLY || route.isAvailableInEA || installedModule.indexOf(route.moduleName)>=0) && renderNavItem(route),
+                (route) => ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) || route.isAvailableInEA || installedModule.indexOf(route.moduleName)>=0) && renderNavItem(route),
             )}
             <hr className="mt-8 mb-8 w-100 checklist__divider" />
             {ConfigOptional.map(

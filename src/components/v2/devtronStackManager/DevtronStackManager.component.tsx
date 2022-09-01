@@ -50,6 +50,7 @@ import {
     ModulesSection,
     MODULE_CONFIGURATION_DETAIL_MAP,
     MORE_MODULE_DETAILS,
+    PENDING_DEPENDENCY_MESSAGE,
 } from './DevtronStackManager.utils'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import './devtronStackManager.component.scss'
@@ -451,8 +452,10 @@ export const InstallationWrapper = ({
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const latestVersionAvailable = isLatestVersionAvailable(serverInfo?.currentVersion, upgradeVersion)
-    const dependentModuleList = modulesList?.filter((module) => moduleDetails.dependentModules.indexOf(Number(module.id)) >= 0) || []
-    const isPendingDependency = !isUpgradeView && dependentModuleList.some(module=> module.installationStatus !== ModuleStatus.INSTALLED)
+    const dependentModuleList =
+        modulesList?.filter((module) => moduleDetails.dependentModules.indexOf(Number(module.id)) >= 0) || []
+    const isPendingDependency =
+        !isUpgradeView && dependentModuleList.some((module) => module.installationStatus !== ModuleStatus.INSTALLED)
     const belowMinSupportedVersion = baseMinVersionSupported
         ? isLatestVersionAvailable(serverInfo?.currentVersion, baseMinVersionSupported)
         : false
@@ -591,13 +594,17 @@ export const InstallationWrapper = ({
                                 (installationStatus === ModuleStatus.HEALTHY && latestVersionAvailable)) && (
                                 <>
                                     <ConditionalWrap
-                                        condition={!isUpgradeView && belowMinSupportedVersion}
+                                        condition={!isUpgradeView && (belowMinSupportedVersion ||isPendingDependency) }
                                         wrap={(children) => (
                                             <Tippy
                                                 className="default-tt w-200"
                                                 arrow={false}
                                                 placement="top"
-                                                content={DEVTRON_UPGRADE_MESSAGE}
+                                                content={
+                                                    isPendingDependency
+                                                        ? PENDING_DEPENDENCY_MESSAGE
+                                                        : DEVTRON_UPGRADE_MESSAGE
+                                                }
                                             >
                                                 <div>{children}</div>
                                             </Tippy>
@@ -605,7 +612,9 @@ export const InstallationWrapper = ({
                                     >
                                         <button
                                             className={`module-details__install-button cta flex mb-16 ${
-                                                !isUpgradeView && (belowMinSupportedVersion || isPendingDependency) ? 'disabled-state' : ''
+                                                !isUpgradeView && (belowMinSupportedVersion || isPendingDependency)
+                                                    ? 'disabled-state'
+                                                    : ''
                                             }`}
                                             onClick={handleActionButtonClick}
                                         >
@@ -680,9 +689,7 @@ export const InstallationWrapper = ({
                                 installationStatus === ModuleStatus.UPGRADE_FAILED ||
                                 installationStatus === ModuleStatus.TIMEOUT ||
                                 installationStatus === ModuleStatus.UNKNOWN))) && <GetHelpCard />}
-                {!isUpgradeView && modulesList && (
-                    <DependentModuleList modulesList={dependentModuleList} />
-                )}
+                {!isUpgradeView && modulesList && <DependentModuleList modulesList={dependentModuleList} />}
             </div>
             {renderPrerequisiteConfirmationModal()}
         </>
@@ -870,11 +877,7 @@ export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }):
     )
 }
 
-const DependentModuleList = ({
-    modulesList,
-}: {
-    modulesList: ModuleDetails[]
-}): JSX.Element => {
+const DependentModuleList = ({ modulesList }: { modulesList: ModuleDetails[] }): JSX.Element => {
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const queryParams = new URLSearchParams(location.search)

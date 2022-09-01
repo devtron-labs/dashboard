@@ -107,18 +107,22 @@ export const isLatestVersionAvailable = (currentVersion: string, newVersion: str
     return currentVersionLevels.length >= newVersionLevels.length ? false : true
 }
 
-export const DEVTRON_UPGRADE_MESSAGE = 'Devtron needs to be updated to the latest version before you can install integrations.'
+export const DEVTRON_UPGRADE_MESSAGE =
+    'Devtron needs to be updated to the latest version before you can install integrations.'
+
+export const PENDING_DEPENDENCY_MESSAGE =
+    'Some pre-requisite integrations need to be installed before you can install this integration. Please intall the pre-requisite integration and come back.'
 
 export const ModuleNameMap = {
-  ARGO_CD: 'argo-cd',
-  CICD: 'cicd'
+    ARGO_CD: 'argo-cd',
+    CICD: 'cicd',
 }
 
 export const MODULE_CONFIGURATION_DETAIL_MAP = {
-  [ModuleNameMap.ARGO_CD]: {
-      title: 'GitOps is not configured',
-      subtitle: 'Lorem ipsum',
-      linkText: 'Configure GitOps',
-      link: URLS.GLOBAL_CONFIG_GITOPS,
-    }
+    [ModuleNameMap.ARGO_CD]: {
+        title: 'GitOps is not configured',
+        subtitle: 'Lorem ipsum',
+        linkText: 'Configure GitOps',
+        link: URLS.GLOBAL_CONFIG_GITOPS,
+    },
 }
