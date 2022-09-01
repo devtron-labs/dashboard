@@ -26,7 +26,7 @@ import { Progressing } from '../common'
 import warningIcon from '../../assets/icons/ic-warning.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { PATTERNS, EXTERNAL_TYPES, ROLLOUT_DEPLOYMENT } from '../../config'
+import { PATTERNS, EXTERNAL_TYPES, ROLLOUT_DEPLOYMENT, DOCUMENTATION } from '../../config'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import { getAppChartRef } from '../../services/service'
 import './environmentOverride.scss'
@@ -635,7 +635,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                                         <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                                         <span className="cn-7 ml-5">Learn more about </span>
                                         <a
-                                            href="https://docs.devtron.ai/user-guide/creating-application/deployment-template"
+                                            href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE}
                                             rel="noreferrer noopener"
                                             target="_blank"
                                         >
@@ -677,7 +677,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                                             <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
                                             <span className="cn-7 ml-5">Learn more about </span>
                                             <a
-                                                href="https://docs.devtron.ai/user-guide/creating-application/deployment-template"
+                                                href={DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE}
                                                 rel="noreferrer noopener"
                                                 target="_blank"
                                             >

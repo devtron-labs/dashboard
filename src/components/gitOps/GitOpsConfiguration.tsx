@@ -40,9 +40,6 @@ const GitLink = {
     BITBUCKET_PROJECT: 'https://support.atlassian.com/bitbucket-cloud/docs/group-repositories-into-projects/'
 }
 
-const AccessTokenLink = {
-    AccessLink: "https://docs.devtron.ai/devtron/setup/global-configurations/gitops#4.-git-access-credential",
-}
 const DefaultGitOpsConfig = {
     id: undefined,
     provider: GitProvider.GITHUB,
@@ -284,7 +281,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             } else {
                 this.setState({ validationStatus: VALIDATION_STATUS.FAILURE, saveLoading: false, isFormEdited: false, validationError : errorMap || [], deleteRepoError : resp.deleteRepoFailed});
                 toast.error("Configuration validation failed");
-            } 
+            }
         }).catch((error) => {
             showError(error);
             this.setState({ view: ViewType.ERROR, statusCode: error.code, saveLoading: false });
@@ -439,7 +436,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     </div>
                     <div>
                         <span className={this.state.providerTab === GitProvider.AZURE_DEVOPS ? "azure_access_token" : "access_token"}>
-                            <a target="_blank" href={AccessTokenLink.AccessLink} className="cursor fs-13 onlink">(Check permissions required for PAT)</a>
+                            <a target="_blank" href={DOCUMENTATION.GLOBAL_CONFIG_GIT_ACCESS_LINK} className="cursor fs-13 onlink">(Check permissions required for PAT)</a>
                         </span>
                         <ProtectedInput value={this.state.form.token}
                             onChange={(event) => this.handleChange(event, 'token')}
