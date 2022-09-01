@@ -2,7 +2,7 @@ import React from 'react'
 import GettingToast from '../../../assets/img/lifebuoy.png'
 import { updateLoginCount } from '../../../services/service'
 import { OnClickedHandler, POSTHOG_EVENT_ONBOARDING } from '../../onboardingGuide/onboarding.utils'
-import { GettingStartedType } from '../guidePage/onboarding.type'
+import { GettingStartedType } from '../guidePage/GuidePage.type'
 import { setActionWithExpiry } from '../helpers/Helpers'
 import './gettingStarted.scss'
 
