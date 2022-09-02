@@ -120,7 +120,6 @@ export const ModuleNameMap = {
 export const MODULE_CONFIGURATION_DETAIL_MAP = {
     [ModuleNameMap.ARGO_CD]: {
         title: 'GitOps is not configured',
-        subtitle: 'Lorem ipsum',
         linkText: 'Configure GitOps',
         link: URLS.GLOBAL_CONFIG_GITOPS,
     },

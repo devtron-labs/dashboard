@@ -720,7 +720,7 @@ export const ModuleDetailsView = ({
     }, [])
 
     return moduleDetails ? (
-        <div className="module-details__view-container">
+        <div className="module-details__view-container pb-40">
             <Carousel className="module-details__carousel" imageUrls={moduleDetails.assets} />
             <div className="module-details__view-wrapper mt-24">
                 <div className="module-details__feature-wrapper">
@@ -805,11 +805,10 @@ const ModuleNotConfigured = ({ moduleName }: { moduleName: string }): JSX.Elemen
         <div className="mb-16">
             <div className="pt-10 pr 16 pb-10 pl-16 flex top left br-4 cn-9 bcy-1 ey-2">
                 <div className="icon-dim-20 mr-12">
-                    <Info className="icon-dim-20" />
+                  <Warning className="icon-dim-20" />
                 </div>
                 <div>
-                    <h2 className="managed-by__note-title m-0 p-0 fs-13 fw-6 lh-20">{configNoteDetail.title}</h2>
-                    <p className="fs-13 fw-4 mb-0 mt-4 lh-20">{configNoteDetail.subtitle}</p>
+                    <h2 className="fs-13 fw-6 lh-20 mb-4 mt-0">{configNoteDetail.title}</h2>
                     <NavLink
                         exact
                         to={configNoteDetail.link}
