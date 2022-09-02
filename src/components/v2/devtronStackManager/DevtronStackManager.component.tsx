@@ -728,7 +728,7 @@ export const ModuleDetailsView = ({
                     <h2 className="module-details__feature-heading cn-9 fs-20 fw-6">{moduleDetails.title}</h2>
                     <div className="module-details__divider mt-24 mb-24" />
                     <MarkDown
-                        className="module-details__feature-info fs-13 fw-4 cn-9"
+                        className="module-details__feature-info fs-14 fw-4 cn-9"
                         breaks={true}
                         markdown={moduleDetails.description}
                     />
