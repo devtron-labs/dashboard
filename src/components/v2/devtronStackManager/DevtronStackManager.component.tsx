@@ -100,7 +100,7 @@ const ModuleDetailsCard = ({
             {getInstallationStatusLabel(moduleDetails.installationStatus)}
             <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
             <div className="module-details__card-name fs-16 fw-6 cn-9 mb-4">{moduleDetails.title}</div>
-            <div className="module-details__card-info fs-13 fw-4 cn-7">
+            <div className="module-details__card-info fs-13 fw-4 cn-7 lh-20">
                 {moduleDetails.name === MORE_MODULE_DETAILS.name ? (
                     <>
                         You can&nbsp;

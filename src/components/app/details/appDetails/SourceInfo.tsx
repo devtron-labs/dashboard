@@ -72,9 +72,9 @@ export function SourceInfo({
                     }`}
                 >
                     {appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? (
-                        <ArgoCD className="icon-dim-32 ml-20" />
+                        <ArgoCD className="icon-dim-32 ml-16" />
                     ) : (
-                        <Helm className="icon-dim-32 ml-20" />
+                        <Helm className="icon-dim-32 ml-16" />
                     )}
                 </Tippy>
                 <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">

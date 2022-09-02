@@ -60,6 +60,9 @@
 .module-details__view-container {
     max-width: 960px;
     margin: 0 auto;
+    .module-details__carousel{
+      min-height: 400px;
+    }
 
     .module-details__view-wrapper {
         display: grid;
