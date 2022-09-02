@@ -115,6 +115,7 @@ export const PENDING_DEPENDENCY_MESSAGE =
 export const ModuleNameMap = {
     ARGO_CD: 'argo-cd',
     CICD: 'cicd',
+    SECURITY: 'clair',
 }
 
 export const MODULE_CONFIGURATION_DETAIL_MAP = {

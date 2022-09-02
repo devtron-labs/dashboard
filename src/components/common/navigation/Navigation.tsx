@@ -19,10 +19,12 @@ import { getRandomColor } from '../helpers/Helpers'
 import NavSprite from '../../../assets/icons/navigation-sprite.svg'
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg'
 import { Command, CommandErrorBoundary } from '../../command'
-import { InstallationType, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { ModuleStatus, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import ReactGA from 'react-ga4'
 import './navigation.scss'
 import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
+import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleNameMap } from '../../v2/devtronStackManager/DevtronStackManager.utils'
 
 const NavigationList = [
     {
@@ -55,7 +57,7 @@ const NavigationList = [
         href: URLS.SECURITY,
         iconClass: 'nav-security',
         icon: SecurityIcon,
-        isAvailableInEA: false,
+        moduleName: 'clair' || ModuleNameMap.SECURITY
     },
     {
         title: 'Clusters',
@@ -130,6 +132,7 @@ export default class Navigation extends Component<
         showHelpCard: boolean
         showMoreOptionCard: boolean
         isCommandBarActive: boolean
+        installedModule: string[]
     }
 > {
     constructor(props) {
@@ -140,11 +143,24 @@ export default class Navigation extends Component<
             showHelpCard: false,
             showMoreOptionCard: false,
             isCommandBarActive: false,
+            installedModule: []
         }
         this.onLogout = this.onLogout.bind(this)
         this.toggleLogoutCard = this.toggleLogoutCard.bind(this)
         this.toggleHelpCard = this.toggleHelpCard.bind(this)
         this.toggleCommandBar = this.toggleCommandBar.bind(this)
+    }
+
+    async getSecurityModuleStatus() {
+        try {
+            const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
+            if (result?.status === ModuleStatus.INSTALLED) {
+                this.setState((prevState) => ({
+                    ...prevState,
+                    installedModule: [...prevState.installedModule, ModuleNameMap.SECURITY],
+                }))
+            }
+        } catch (error) {}
     }
 
     toggleLogoutCard() {
@@ -251,8 +267,9 @@ export default class Navigation extends Component<
                         </NavLink>
                         {NavigationList.map((item, index) => {
                             if (
-                                this.props.serverMode === SERVER_MODE.FULL ||
-                                (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA)
+                                (this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
+                                (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
+                                (this.state.installedModule.indexOf(item.moduleName)>=0)
                             ) {
                                 if (item.type === 'button') {
                                     return this.renderNavButton(item)
