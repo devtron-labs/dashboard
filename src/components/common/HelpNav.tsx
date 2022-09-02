@@ -69,7 +69,7 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
                         <Fragment key={option.name}>
                             <a
                                 key={option.name}
-                                className="help-card__option help-card__link flex left cn-9"
+                                className="no-decor help-card__option help-card__link flex left cn-9"
                                 href={option.link}
                                 target="_blank"
                                 rel="noreferrer noopener"

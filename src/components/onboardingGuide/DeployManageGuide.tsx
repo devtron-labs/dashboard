@@ -9,14 +9,16 @@ import './onboardingGuide.scss'
 import { Progressing, showError } from '../common'
 import { getDevtronInstalledHelmApps } from '../app/list-new/AppListService'
 import { mainContext } from '../common/navigation/NavigationRoutes'
-import { OnClickedHandler, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
+import { NAVIGATION, OnClickedHandler, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
 import CommonGuide from './CommonGuide'
+import { getClusterListMinWithoutAuth } from '../../services/service'
 
 function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
     const history = useHistory()
     const [devtronHelmCount, setDevtronHelmCount] = useState(0)
     const [loader, setLoader] = useState(false)
     const { serverMode } = useContext(mainContext)
+    const [ isDefaultCluster, setIsDefaultCluster] = useState(false)
 
     const _getInit = () => {
         if (serverMode === SERVER_MODE.FULL) {
@@ -25,6 +27,9 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                 getDevtronInstalledHelmApps('').then((response) => {
                     setDevtronHelmCount(response.result.helmApps.length)
                     setLoader(false)
+                })
+                getClusterListMinWithoutAuth().then((response) => {
+                  setIsDefaultCluster(response?.result?.some((data) => data.cluster_name === 'default_cluster'))
                 })
             } catch (err) {
                 showError(err)
@@ -39,6 +44,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
     const redirectToAppList = () => {
         history.push(`${URLS.APP}/${URLS.APP_LIST}`)
     }
+
 
     return (
         <div>
@@ -61,7 +67,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                 {devtronHelmCount > 0 && (
                                     <div className="deploy-card bcn-0 flex w-400 br-4 en-2 bw-1 ">
                                         <NavLink
-                                            to={`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`}
+                                            to={isDefaultCluster ? NAVIGATION.AUTOCOMPLETE : NAVIGATION.HELM_APPS}
                                             activeClassName="active"
                                             className="no-decor fw-6 cursor cn-9 flex"
                                             onClick={() => OnClickedHandler(POSTHOG_EVENT_ONBOARDING.VIEW_APPLICATION)}
@@ -73,8 +79,8 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                                 height="150"
                                                 alt="Please connect cluster"
                                             />
-                                            <div className="fw-6 fs-16 pl-20 pr-20">
-                                                {devtronHelmCount} helm applications found in default_cluster <br />
+                                            <div className="lh-22 fw-6 fs-16 pl-20 pr-20">
+                                                Check deployed helm apps <br />
                                                 <div className="fs-14 cb-5 mt-8">View applications</div>
                                             </div>
                                         </NavLink>
@@ -95,7 +101,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                             height="150"
                                             alt="Please connect cluster"
                                         />
-                                        <div className="fw-6 fs-16 pl-20 pr-20">
+                                        <div className="lh-22 fw-6 fs-16 pl-20 pr-20">
                                             I want to deploy popular helm charts <br />
                                             <div className="fs-14 cb-5 mt-8">Browse helm charts</div>
                                         </div>
@@ -115,7 +121,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                             height="150"
                                             alt="Please connect cluster"
                                         />
-                                        <div className="fw-6 fs-16 pl-20 pr-20">
+                                        <div className="lh-22 fw-6 fs-16 pl-20 pr-20">
                                             I have helm applications in other clusters <br />
                                             <div className="fs-14 cb-5 mt-8"> Connect a cluster</div>
                                         </div>
@@ -137,7 +143,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                             height="150"
                                             alt="Please connect cluster"
                                         />
-                                        <div className="fw-6 fs-16 pl-20 pr-20">
+                                        <div className="lh-22 fw-6 fs-16 pl-20 pr-20">
                                             I want to connect my own chart repository <br />
                                             <div className="fs-14 cb-5 mt-8"> Connect chart repository</div>
                                         </div>
