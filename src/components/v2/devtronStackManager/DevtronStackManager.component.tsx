@@ -92,7 +92,7 @@ const ModuleDetailsCard = ({
 }: ModuleDetailsCardType): JSX.Element => {
     return (
         <div
-            className={`module-details__card flex left column br-8 p-20 mr-20 mb-20 ${className || ''}`}
+            className={`module-details__card flex left column br-8 p-16 mr-20 mb-20 ${className || ''}`}
             {...(handleModuleCardClick && {
                 onClick: () => handleModuleCardClick(moduleDetails, fromDiscoverModules),
             })}
@@ -594,16 +594,16 @@ export const InstallationWrapper = ({
                                 (installationStatus === ModuleStatus.HEALTHY && latestVersionAvailable)) && (
                                 <>
                                     <ConditionalWrap
-                                        condition={!isUpgradeView && (belowMinSupportedVersion ||isPendingDependency) }
+                                        condition={!isUpgradeView && (belowMinSupportedVersion || isPendingDependency)}
                                         wrap={(children) => (
                                             <Tippy
                                                 className="default-tt w-200"
                                                 arrow={false}
                                                 placement="top"
                                                 content={
-                                                    isPendingDependency
-                                                        ? PENDING_DEPENDENCY_MESSAGE
-                                                        : DEVTRON_UPGRADE_MESSAGE
+                                                    belowMinSupportedVersion
+                                                        ? DEVTRON_UPGRADE_MESSAGE
+                                                        : PENDING_DEPENDENCY_MESSAGE
                                                 }
                                             >
                                                 <div>{children}</div>
@@ -724,6 +724,7 @@ export const ModuleDetailsView = ({
             <Carousel className="module-details__carousel" imageUrls={moduleDetails.assets} />
             <div className="module-details__view-wrapper mt-24">
                 <div className="module-details__feature-wrapper">
+                    <img className="module-details__feature-icon mb-8" src={moduleDetails.icon} alt={moduleDetails.title} />
                     <h2 className="module-details__feature-heading cn-9 fs-20 fw-6">{moduleDetails.title}</h2>
                     <div className="module-details__divider mt-24 mb-24" />
                     <MarkDown

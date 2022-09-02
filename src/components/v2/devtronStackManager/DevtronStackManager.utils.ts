@@ -14,7 +14,6 @@ import {
     ModuleStatus,
     StackManagerNavLinkType,
 } from './DevtronStackManager.type'
-import { isGitopsConfigured } from '../../../services/service'
 
 export const MORE_MODULE_DETAILS: ModuleDetails = {
     id: 'moreIntegrations',

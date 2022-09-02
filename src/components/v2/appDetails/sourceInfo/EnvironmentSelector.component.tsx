@@ -146,9 +146,9 @@ function EnvironmentSelectorComponent() {
                         }`}
                     >
                         {appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? (
-                            <ArgoCD className="icon-dim-24 ml-20 mt-4" />
+                            <ArgoCD className="icon-dim-32 ml-20" />
                         ) : (
-                            <Helm className="icon-dim-24 ml-20 mt-4" />
+                            <Helm className="icon-dim-32 ml-20" />
                         )}
                     </Tippy>
                 </div>

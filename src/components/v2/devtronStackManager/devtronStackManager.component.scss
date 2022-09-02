@@ -9,7 +9,6 @@
         position: absolute;
         top: 20px;
         right: 20px;
-        text-transform: uppercase;
 
         &.installing {
             color: var(--B500);
@@ -72,6 +71,11 @@
                 padding: 0;
             }
 
+            .module-details__feature-icon {
+                width: 56px;
+                height: 56px;
+            }
+
             .module-details__feature-heading {
                 margin: 0;
                 line-height: 36px;
@@ -116,6 +120,7 @@
         }
         &.disabled-state {
             opacity: 0.5;
+            cursor: not-allowed;
         }
     }
     .module-details__installtion-status {
