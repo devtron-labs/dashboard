@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, Component } from 'react'
 import {
     Progressing,
     showError,
@@ -13,6 +13,7 @@ import {
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
 } from '../common'
+import ReactSelect from 'react-select'
 import { useParams } from 'react-router'
 import { updateSecret, deleteSecret, getSecretKeys } from '../secrets/service'
 import { getAppChartRef } from '../../services/service'
@@ -25,7 +26,7 @@ import { toast } from 'react-toastify'
 import { KeyValueInput, useKeyValueYaml, validateKeyValuePair } from '../configMaps/ConfigMap'
 import { getSecretList } from '../../services/service'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { DOCUMENTATION, PATTERNS, EXTERNAL_TYPES, ROLLOUT_DEPLOYMENT } from '../../config'
+import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
 import YAML from 'yaml'
 import keyIcon from '../../assets/icons/ic-key.svg'
 import addIcon from '../../assets/icons/ic-add.svg'
@@ -34,31 +35,8 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import '../configMaps/ConfigMap.scss'
 import { decode } from '../../util/Util'
-
-let sampleJSON = [
-    {
-        key: 'service/credentials',
-        name: 'secret-key',
-        property: 'property-name',
-        isBinary: true,
-    },
-    {
-        key: 'service/credentials',
-        name: 'secret-key',
-        property: 'property-name',
-        isBinary: true,
-    },
-]
-
-let dataHeader = (
-    <div>
-        # Sample Data<br></br># key: Secret key in backend<br></br># name: Name for this key in the generated secret
-        <br></br># property: Property to extract if secret in backend is a JSON object(optional)<br></br># isBinary: Set
-        this to true if configuring an item for a binary file stored(optional)<br></br>
-    </div>
-)
-
-const sample = YAML.stringify(sampleJSON)
+import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, hasProperty } from './secret.utils'
+import { SecretFormProps } from '../deploymentConfig/types'
 
 const Secret = ({ respondOnSuccess, ...props }) => {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
@@ -192,6 +170,7 @@ export function CollapsedSecretForm({
     externalType = '',
     filePermission = '',
     subPath = false,
+    esoSecretData= null,
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true)
@@ -226,6 +205,7 @@ export function CollapsedSecretForm({
                     externalType={externalType}
                     subPath={subPath}
                     filePermission={filePermission}
+                    esoSecretData={esoSecretData}
                 />
             )}
         </section>
@@ -255,27 +235,6 @@ export function ListComponent({ icon = '', title, subtitle = '', onClick, classN
             {collapsible && <img className="configuration-list__arrow pointer" src={arrowTriangle} />}
         </article>
     )
-}
-interface SecretFormProps {
-    id: number
-    appChartRef: { id: number; version: string; name: string }
-    appId: number
-    roleARN: string
-    name: string
-    index: number
-    external: boolean
-    externalType: string
-    secretData: { key: string; name: string; property: string; isBinary: boolean }[]
-    type: string
-    data: { k: string; v: string }[]
-    isUpdate: boolean
-    mountPath: string
-    keyValueEditable?: boolean
-    filePermission: string
-    subPath: boolean
-    update: (...args) => void
-    collapse: (...args) => void
-    initialise?: () => void
 }
 
 export const SecretForm: React.FC<SecretFormProps> = function (props) {
@@ -315,6 +274,19 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         error: '',
     })
 
+    const isHashiOrAWS = hasHashiOrAWS(externalType)
+
+    const isESO = hasESO(externalType)
+    
+    let tempEsoData: any[] = props?.esoSecretData?.esoData || []
+    tempEsoData = tempEsoData.map((data) => {
+        return {
+            secretKey: data.secretKey,
+            key: data.key,
+            property: data?.property
+        }
+    })
+    
     let tempSecretData: any[] = props?.secretData || []
     tempSecretData = tempSecretData.map((s) => {
         return {
@@ -339,17 +311,21 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         }
         return temp
     })
+    const isEsoSecretData = props.esoSecretData?.secretStore && props.esoSecretData?.esoData.length > 0
+    const [esoSecretData, setEsoData] = useState(tempEsoData)
+    const [secretStore, setSecretStore] = useState(props.esoSecretData?.secretStore)
     const [secretData, setSecretData] = useState(tempSecretData)
     const [secretDataYaml, setSecretDataYaml] = useState(YAML.stringify(jsonForSecretDataYaml))
+    const [esoSecretYaml, setEsoYaml] = useState(isEsoSecretData ? YAML.stringify(props?.esoSecretData) : '')
     const [codeEditorRadio, setCodeEditorRadio] = useState('data')
     const isExternalValues = externalType !== 'KubernetesSecret'
     const tabs = [{ title: 'Environment Variable' }, { title: 'Data Volume' }].map((data) => ({
         ...data,
         active: data.title === selectedTab,
     }))
-    const isHashiOrAWS =
-        externalType === 'AWSSecretsManager' || externalType === 'AWSSystemManager' || externalType === 'HashiCorpVault'
-
+  
+    const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs["default"])
+    
     function setKeyValueArray(arr) {
         tempArray.current = arr
     }
@@ -372,6 +348,12 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         if (!props.isUpdate) return
         handleSecretFetch()
     }, [])
+
+    useEffect(() => {
+        if(isESO){
+            toggleYamlMode(true)
+        }
+    },[isESO,yamlMode])
 
     function handleRoleARNChange(event) {
         setRoleARN({ value: event.target.value, error: '' })
@@ -496,14 +478,22 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             toast.warn('Please add secret data before saving.')
             return
         }
-        if (isHashiOrAWS) {
-            let secretDataArray = secretData
-            let isValid = secretDataArray.reduce((isValid, s) => {
+
+        if (isHashiOrAWS || isESO) {
+            let secretDataArray = isESO ? esoSecretData : secretData 
+            let isValid = !isESO ? secretDataArray.reduce((isValid, s) => {
                 isValid = isValid && !!s.fileName && !!s.name
+                return isValid
+            }, true) :
+            secretDataArray?.reduce((isValid, s) => {
+                isValid = isValid && !!s.secretKey && !!s.key && 
+                (hasProperty(externalType) ? !!s.property : true)
                 return isValid
             }, true)
             if (!isValid) {
-                toast.warn('Please check key and name')
+                !isESO
+                    ? toast.warn('Please check key and name')
+                    : toast.warn(`Please check key${hasProperty(externalType) ? ', property' : ''}  and secretKey`)
                 return
             }
         }
@@ -519,7 +509,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 name: configName.value,
                 type: selectedTab === 'Environment Variable' ? 'environment' : 'volume',
                 external: !!externalType,
-                roleARN: isHashiOrAWS ? roleARN.value : '',
+                roleARN: isHashiOrAWS || isESO ? roleARN.value : '',
                 externalType,
             }
             //Adding conditional fields
@@ -535,6 +525,17 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 payload['secretData'] = payload['secretData'].filter((s) => s.key || s.name || s.property)
             } else if (externalType === '') {
                 payload['data'] = data
+            } else if (isESO) {
+                payload['esoSecretData'] = {
+                    secretStore: secretStore,
+                    esoData: esoSecretData?.map((s) => {
+                        return {
+                            secretKey: s.secretKey,
+                            key: s.key,
+                            property: s?.property
+                        }
+                    })
+                }
             }
 
             if (selectedTab === 'Data Volume') {
@@ -629,15 +630,22 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     }
 
     function handleSecretDataYamlChange(yaml): void {
+        
         if (codeEditorRadio !== 'data') return
-        setSecretDataYaml(yaml)
+        if (isESO) {
+            setEsoYaml(yaml)
+        } else {
+            setSecretDataYaml(yaml)
+        }
         try {
             if (!yaml || !yaml.length) {
+                setEsoData([])
                 setSecretData([])
                 return
             }
-            let json = YAML.parse(yaml)
-            if (Array.isArray(json)) {
+            let json = YAML.parse(yaml) 
+            setSecretStore(json.secretStore)
+            if (!isESO && Array.isArray(json)) {
                 json = json.map((j) => {
                     let temp = {}
                     temp['isBinary'] = j.isBinary
@@ -653,6 +661,22 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     return temp
                 })
                 setSecretData(json)
+            }
+            if(isESO && Array.isArray(json?.esoData)){
+                const jsonList = json.esoData.map((j) => {
+                    let temp = {}
+                    if (j.secretKey) {
+                        temp['secretKey'] = j.secretKey
+                    }
+                    if (j.key) {
+                        temp['key'] = j.key
+                    }
+                    if (j.property) {
+                        temp['property'] = j.property
+                    }
+                    return temp
+                })
+                setEsoData(jsonList)
             }
         } catch (error) {
             // console.log(error)
@@ -673,6 +697,10 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             return
         }
         toggleYamlMode(not)
+    }
+
+    const onChange = (e) => {
+        setExternalType(e.value)
     }
 
     return (
@@ -696,22 +724,18 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             <div className="form__row">
                 <label className="form__label">Data type</label>
                 <div className="form-row__select-external-type flex">
-                    <Select
-                        value={externalType}
-                        onChange={(e) => {
-                            setExternalType(e.target.value)
-                        }}
-                        disabled={secretMode}
-                    >
-                        <Select.Button>
-                            {externalType || externalType === '' ? EXTERNAL_TYPES[externalType] : `Select Secret Type`}
-                        </Select.Button>
-                        {Object.entries(EXTERNAL_TYPES).map(([value, name]) => (
-                            <Select.Option key={value} value={value}>
-                                {name}
-                            </Select.Option>
-                        ))}
-                    </Select>
+                    <ReactSelect 
+                    placeholder="Select Secret Type"
+                    options={getTypeGroups()}
+                    defaultValue={externalType && externalType !== '' ? getTypeGroups(externalType) : getTypeGroups()[0].options[0]}
+                    onChange={onChange}
+                    styles={groupStyle()}
+                    components={{
+                        IndicatorSeparator: null,
+                        Option: SecretOptions,
+                        GroupHeading
+                    }}
+                    />
                 </div>
             </div>
             {externalType === 'KubernetesSecret' ? (
@@ -874,7 +898,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     />
                 </div>
             )}
-            {isHashiOrAWS ? (
+            {isHashiOrAWS || isESO ? (
                 <div className="form__row">
                     <CustomInput
                         value={roleARN.value}
@@ -890,7 +914,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             {isExternalValues && (
                 <div className="flex left mb-16">
                     <b className="mr-5 bold">Data*</b>
-                    <RadioGroup
+                    {!isESO && <RadioGroup
                         className="gui-yaml-switch"
                         name="yaml-mode"
                         initialTab={yamlMode ? 'yaml' : 'gui'}
@@ -899,7 +923,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     >
                         <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
                         <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
-                    </RadioGroup>
+                    </RadioGroup>}
                 </div>
             )}
             {externalType === '' && (
@@ -951,16 +975,16 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     )}
                 </>
             )}
-            {isHashiOrAWS && yamlMode ? (
+            {(isHashiOrAWS || isESO) && yamlMode ? (
                 <div className="yaml-container">
                     <CodeEditor
-                        value={codeEditorRadio === 'sample' ? sample : secretDataYaml}
+                        value={codeEditorRadio === 'sample' ? sample : isESO ? esoSecretYaml: secretDataYaml}
                         mode="yaml"
                         inline
                         height={350}
                         onChange={handleSecretDataYamlChange}
                         readOnly={secretMode && codeEditorRadio === 'sample'}
-                        shebang={codeEditorRadio === 'data' ? '#Check sample for usage.' : dataHeader}
+                        shebang={codeEditorRadio === 'data' ? '#Check sample for usage.' : dataHeaders[externalType] || dataHeaders['default']}
                     >
                         <CodeEditor.Header>
                             <RadioGroup
