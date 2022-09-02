@@ -251,7 +251,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     const [esoDataSecret, setEsoData] = useState(esoSecretData?.esoData)
     const [secretStore, setSecretStore] = useState(esoSecretData?.secretStore)
     const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
-    const [esoSecretYaml, setEsoYaml] = useState(YAML.stringify(isEsoSecretData ? esoSecretData : {}))
+    const [esoSecretYaml, setEsoYaml] = useState(isEsoSecretData ? YAML.stringify(esoSecretData) : '')
     const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs['default'])
     const isChartVersion309OrBelow =
         appChartRef &&
@@ -529,7 +529,11 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
 
     function handleSecretDataYamlChange(yaml): void {
         if (codeEditorRadio !== 'data') return
-        isESO ? setEsoYaml(yaml) : setSecretDataYaml(yaml)
+        if(isESO){
+            setEsoYaml(yaml)
+        }else {
+            setSecretDataYaml(yaml)
+        }
         try {
             if (!yaml || !yaml.length) {
                 setEsoData([])
@@ -556,7 +560,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 setSecretData(json)
             }
             if(isESO && Array.isArray(json?.esoData)){
-                let jsonList = json?.esoData.map((j) => {
+                const jsonList = json?.esoData.map((j) => {
                     let temp = {}
                     if (j.secretKey) {
                         temp['secretKey'] = j.secretKey

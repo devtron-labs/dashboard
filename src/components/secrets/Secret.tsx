@@ -316,7 +316,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const [secretStore, setSecretStore] = useState(props.esoSecretData?.secretStore)
     const [secretData, setSecretData] = useState(tempSecretData)
     const [secretDataYaml, setSecretDataYaml] = useState(YAML.stringify(jsonForSecretDataYaml))
-    const [esoSecretYaml, setEsoYaml] = useState(YAML.stringify(isEsoSecretData ? props?.esoSecretData : {}))
+    const [esoSecretYaml, setEsoYaml] = useState(isEsoSecretData ? YAML.stringify(props?.esoSecretData) : '')
     const [codeEditorRadio, setCodeEditorRadio] = useState('data')
     const isExternalValues = externalType !== 'KubernetesSecret'
     const tabs = [{ title: 'Environment Variable' }, { title: 'Data Volume' }].map((data) => ({
@@ -632,7 +632,11 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     function handleSecretDataYamlChange(yaml): void {
         
         if (codeEditorRadio !== 'data') return
-        isESO ? setEsoYaml(yaml) : setSecretDataYaml(yaml)
+        if (isESO) {
+            setEsoYaml(yaml)
+        } else {
+            setSecretDataYaml(yaml)
+        }
         try {
             if (!yaml || !yaml.length) {
                 setEsoData([])
@@ -659,7 +663,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 setSecretData(json)
             }
             if(isESO && Array.isArray(json?.esoData)){
-                let jsonList = json?.esoData.map((j) => {
+                const jsonList = json.esoData.map((j) => {
                     let temp = {}
                     if (j.secretKey) {
                         temp['secretKey'] = j.secretKey

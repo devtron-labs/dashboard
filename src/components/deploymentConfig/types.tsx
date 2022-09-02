@@ -76,6 +76,18 @@ export interface EsoData {
     key: string
     property: string
 }
+
+export interface SecretData {
+    key: string
+    name: string
+    property: string
+    isBinary: boolean
+}
+
+export interface EsoSecretData {
+    secretStore: any
+    esoData: EsoData[]
+}
 export interface SecretFormProps {
     id: number
     appChartRef: { id: number; version: string; name: string }
@@ -85,8 +97,8 @@ export interface SecretFormProps {
     index: number
     external: boolean
     externalType: string
-    secretData: { key: string; name: string; property: string; isBinary: boolean }[]
-    esoSecretData?: { secretStore: any; esoData: EsoData[] }
+    secretData: SecretData[]
+    esoSecretData?: EsoSecretData
     type: string
     data: { k: string; v: string }[]
     isUpdate: boolean
