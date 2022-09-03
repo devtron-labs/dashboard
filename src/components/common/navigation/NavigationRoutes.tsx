@@ -69,10 +69,19 @@ export default function NavigationRoutes() {
         setIsHelpGettingStartedClicked(true)
     }
 
-    const getInit = () => {
-        Promise.all([getUserRole(), serverMode=== SERVER_MODE.FULL && getAppListMin()]).then((response) => {
-                setSuperAdmin( response[0].result.roles.indexOf("role:super-admin___") > -1)
+    useEffect(() => {
+        getInit()
+        setExpiryDate(+localStorage.getItem('clickedOkay'))
+    }, [])
+
+     const getInit = () => {
+        setLoginLoader(true)
+        Promise.all([getUserRole(), serverMode === SERVER_MODE.FULL && getAppListMin(), getLoginData()]).then(
+            (response) => {
+              const superAdmin = response[0]?.result?.roles.includes('role:super-admin___')
+                setSuperAdmin(superAdmin)
                 setAppListCount(response[1]?.result?.length)
+                processLoginData(response[2], superAdmin)
                 setLoginLoader(false)
             },
             (err) => {
@@ -82,11 +91,29 @@ export default function NavigationRoutes() {
         )
     }
 
-    useEffect(() => {
-        getInit()
-        const expDate = localStorage.getItem('clickedOkay')
-        setExpiryDate(+expDate)
-    }, [])
+     const processLoginData = (response, superAdmin) => {
+         const count = response.result?.value ? parseInt(response.result.value) : 0
+         setLoginCount(count ?? 1)
+         if (
+             typeof Storage !== 'undefined' &&
+             (localStorage.getItem('isSSOLogin') || localStorage.getItem('isAdminLogin'))
+         ) {
+             localStorage.removeItem('isSSOLogin')
+             localStorage.removeItem('isAdminLogin')
+             if (count < 5) {
+                 const updatedPayload = {
+                     key: 'login-count',
+                     value: `${count + 1}`,
+                 }
+                 updateLoginCount(updatedPayload)
+             }
+         }
+         if (!count && superAdmin) {
+             history.push(`/${URLS.GETTING_STARTED}`)
+         } else if (!count) {
+             history.push(URLS.APP)
+         }
+     }
 
     useEffect(() => {
         const loginInfo = getLoginInfo()
@@ -124,32 +151,6 @@ export default function NavigationRoutes() {
 
         //Only For the first time login user(with superadmin permission)
         if (!loginInfo) return
-
-        getLoginData().then((response) => {
-            const count = response.result?.value ? parseInt(response.result.value) : 0
-            setLoginCount(count ?? 1)
-            if (
-                typeof Storage !== 'undefined' &&
-                (localStorage.getItem('isSSOLogin') || localStorage.getItem('isAdminLogin'))
-            ) {
-                localStorage.removeItem('isSSOLogin')
-                localStorage.removeItem('isAdminLogin')
-                if (count < 5) {
-                    const updatedPayload = {
-                        key: 'login-count',
-                        value: `${count + 1}`,
-                    }
-                    updateLoginCount(updatedPayload)
-                }
-            }
-            if(!count && isSuperAdmin){
-              history.push(`/${URLS.GETTING_STARTED}`)
-            }
-            else if (!count) {
-                history.push(URLS.APP)
-            }
-
-        })
 
         if (typeof Storage !== 'undefined') {
             if (localStorage.isDashboardLoggedIn) return
@@ -208,15 +209,15 @@ export default function NavigationRoutes() {
         }
     }
 
+    const onClickedDeployManageCardClicked = () =>{
+      setIsDeployManageCardClicked(true)
+    }
+
     if (pageState === ViewType.LOADING || loginLoader) {
         return <Progressing pageLoader />
     } else if (pageState === ViewType.ERROR) {
         return <Reload />
     } else {
-
-const onClickedDeployManageCardClicked = () =>{
-   setIsDeployManageCardClicked(true)
-}
         return (
             <mainContext.Provider
                 value={{
