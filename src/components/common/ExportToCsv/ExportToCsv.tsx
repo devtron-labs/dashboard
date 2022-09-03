@@ -142,7 +142,10 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
                     </Tippy>
                 )}
             >
-                <button className={`flex cta ghosted w-100 h-36 ${disabled ? 'nothing-to-export' : ''}`} onClick={generateDataToExport}>
+                <button
+                    className={`flex cta ghosted w-100 h-36 ${disabled ? 'nothing-to-export' : ''}`}
+                    onClick={generateDataToExport}
+                >
                     <ExportIcon className="icon-dim-16 mr-8" />
                     <span>Export CSV</span>
                 </button>
@@ -152,7 +155,6 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
                 filename={`${fileName}_${moment().format(Moment12HourExportFormat)}.csv`}
                 headers={CSV_HEADERS[fileName] || []}
                 data={dataToExport || []}
-                separator=";"
             />
             {showExportingModal && (
                 <VisibleModal className="export-to-csv-modal">
