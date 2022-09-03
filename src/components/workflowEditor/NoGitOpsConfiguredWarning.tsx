@@ -14,7 +14,7 @@ export default function NoGitOpsConfiguredWarning({ closePopup }: NoGitOpsConfig
         <VisibleModal2 className="confirmation-dialog">
             <div className="confirmation-dialog__body ">
                 <div className="flexbox content-space mb-20">
-                    <WarningIcon className="icon-dim-36" />
+                    <WarningIcon className="h-48 mw-48" />
                     <Close
                         className="icon-dim-24 cursor"
                         onClick={() => {
@@ -24,10 +24,10 @@ export default function NoGitOpsConfiguredWarning({ closePopup }: NoGitOpsConfig
                 </div>
                 <div className="flex left column ">
                     <h3 className="confirmation-dialog__title lh-1-25 break-word w-100">GitOps is not configured</h3>
-                    <p className="fs-13 fw-4">
+                    <p className="fs-14 fw-4">
                         Since GitOps is not configured, the deployment pipeline will use helm to create deployments.
                     </p>
-                    <p className="fs-13 fw-4">Are you sure you want to create this deployment pipeline using helm?</p>
+                    <p className="fs-14 fw-4">Are you sure you want to create this deployment pipeline using helm?</p>
                 </div>
                 <div className="flex right confirmation-dialog__button-group">
                     <button

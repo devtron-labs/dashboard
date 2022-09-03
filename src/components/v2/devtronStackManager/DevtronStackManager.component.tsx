@@ -805,7 +805,7 @@ const ModuleNotConfigured = ({ moduleName }: { moduleName: string }): JSX.Elemen
         <div className="mb-16">
             <div className="pt-10 pr 16 pb-10 pl-16 flex top left br-4 cn-9 bcy-1 ey-2">
                 <div className="icon-dim-20 mr-12">
-                  <Warning className="icon-dim-20" />
+                  <Warning className="icon-dim-20 warning-icon-y7" />
                 </div>
                 <div>
                     <h2 className="fs-13 fw-6 lh-20 mb-4 mt-0">{configNoteDetail.title}</h2>
