@@ -146,6 +146,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             state.pageSize = request.size;
             this.setState(state);
             this.abortController = null;
+            this.props.setAppCount(response.result.appCount)
         }).catch((errors: ServerErrors) => {
             if (errors.code) {
                 showError(errors);
