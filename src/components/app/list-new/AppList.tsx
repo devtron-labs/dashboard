@@ -615,17 +615,24 @@ export default function AppList() {
     }
 
     const getAppListDataToExport = () => {
-        return getAppList({
-            environments: [],
-            teams: [],
-            namespaces: [],
-            appNameSearch: '',
-            sortBy: 'appNameSort',
-            sortOrder: 'ASC',
-            offset: 0,
-            hOffset: 0,
-            size: appCount,
-        }).then(({ result }) => {
+        return getAppList(
+            typeof parsedPayloadOnUrlChange === 'object'
+                ? {
+                      ...parsedPayloadOnUrlChange,
+                      size: appCount,
+                  }
+                : {
+                      environments: [],
+                      teams: [],
+                      namespaces: [],
+                      appNameSearch: '',
+                      sortBy: 'appNameSort',
+                      sortOrder: 'ASC',
+                      offset: 0,
+                      hOffset: 0,
+                      size: appCount,
+                  },
+        ).then(({ result }) => {
             if (result.appContainers) {
                 const _appDataList = []
                 for (let _app of result.appContainers) {
