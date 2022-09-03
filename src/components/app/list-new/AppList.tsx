@@ -619,6 +619,7 @@ export default function AppList() {
             typeof parsedPayloadOnUrlChange === 'object'
                 ? {
                       ...parsedPayloadOnUrlChange,
+                      appNameSearch: searchString || '',
                       sortBy: 'appNameSort',
                       sortOrder: 'ASC',
                       size: appCount,
