@@ -1,6 +1,6 @@
 import React, { Suspense, useCallback, useEffect, useRef, useState, useContext } from 'react'
 import { Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLocation } from 'react-router-dom'
-import { SERVER_MODE, URLS } from '../../../config'
+import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
 import {
     ErrorBoundary,
     ErrorScreenManager,
@@ -33,7 +33,6 @@ import { mainContext } from '../../common/navigation/NavigationRoutes'
 import './devtronStackManager.scss'
 import { getVersionConfig, isGitopsConfigured } from '../../../services/service'
 import { toast } from 'react-toastify'
-import { ModuleNameMap } from './DevtronStackManager.utils'
 
 export default function DevtronStackManager({
     serverInfo,

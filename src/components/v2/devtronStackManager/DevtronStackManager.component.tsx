@@ -38,7 +38,7 @@ import {
 } from '../../common'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
-import { DOCUMENTATION, URLS } from '../../../config'
+import { DOCUMENTATION, ModuleNameMap, URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
 import { toast } from 'react-toastify'
 import {
@@ -46,7 +46,6 @@ import {
     DEVTRON_UPGRADE_MESSAGE,
     handleAction,
     isLatestVersionAvailable,
-    ModuleNameMap,
     ModulesSection,
     MODULE_CONFIGURATION_DETAIL_MAP,
     MORE_MODULE_DETAILS,

@@ -10,7 +10,7 @@ import EmptyState from '../../EmptyState/EmptyState'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
 import { ServerErrors } from '../../../modals/commonTypes'
 import { AppListViewType } from '../config'
-import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION } from '../../../config'
+import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION, ModuleNameMap } from '../../../config'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
@@ -22,7 +22,6 @@ import '../list/list.css'
 import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
 import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
-import { ModuleNameMap } from '../../v2/devtronStackManager/DevtronStackManager.utils'
 
 export default function AppList() {
     const location = useLocation()

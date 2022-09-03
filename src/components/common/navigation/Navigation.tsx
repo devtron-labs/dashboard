@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import ReactDOM from 'react-dom'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
-import { DOCUMENTATION, SERVER_MODE, URLS } from '../../../config'
+import { DOCUMENTATION, ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Discord } from '../../../assets/icons/ic-discord-fill.svg'
@@ -24,7 +24,6 @@ import ReactGA from 'react-ga4'
 import './navigation.scss'
 import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleNameMap } from '../../v2/devtronStackManager/DevtronStackManager.utils'
 
 const NavigationList = [
     {
@@ -57,7 +56,7 @@ const NavigationList = [
         href: URLS.SECURITY,
         iconClass: 'nav-security',
         icon: SecurityIcon,
-        moduleName: 'clair' || ModuleNameMap.SECURITY
+        moduleName: ModuleNameMap.SECURITY
     },
     {
         title: 'Clusters',
@@ -92,32 +91,6 @@ const NavigationStack = {
     icon: StackManagerIcon,
     href: URLS.STACK_MANAGER,
 }
-
-const HelpOptions = [
-    {
-        name: 'View documentation',
-        link: DOCUMENTATION.HOME_PAGE,
-        icon: File,
-        showSeparator: true,
-    },
-    {
-        name: 'Chat with support',
-        link: 'https://discord.devtron.ai/',
-        icon: Chat,
-    },
-    {
-        name: 'Join discord community',
-        link: 'https://discord.devtron.ai/',
-        icon: Discord,
-        showSeparator: true,
-    },
-    {
-        name: 'Raise an issue/request',
-        link: 'https://github.com/devtron-labs/devtron/issues/new/choose',
-        icon: Edit,
-    },
-]
-
 interface NavigationType extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE
     fetchingServerInfo: boolean
