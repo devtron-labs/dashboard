@@ -4,23 +4,21 @@ import { URLS } from '../../config'
 import { VisibleModal2 } from '../common'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
-
-interface NoGitOpsConfiguredWarningType {
-    closePopup: (isContinueWithHelm: boolean) => void
-}
+import { NoGitOpsConfiguredWarningType } from './types'
 
 export default function NoGitOpsConfiguredWarning({ closePopup }: NoGitOpsConfiguredWarningType) {
+    const closePopupContinueWithHelm = (): void => {
+        closePopup(true)
+    }
+    const closePopupDoNothing = (): void => {
+        closePopup(false)
+    }
     return (
         <VisibleModal2 className="confirmation-dialog">
             <div className="confirmation-dialog__body ">
                 <div className="flexbox content-space mb-20">
                     <WarningIcon className="h-48 mw-48" />
-                    <Close
-                        className="icon-dim-24 cursor"
-                        onClick={() => {
-                            closePopup(false)
-                        }}
-                    />
+                    <Close className="icon-dim-24 cursor" onClick={closePopupDoNothing} />
                 </div>
                 <div className="flex left column ">
                     <h3 className="confirmation-dialog__title lh-1-25 break-word w-100">GitOps is not configured</h3>
@@ -34,9 +32,7 @@ export default function NoGitOpsConfiguredWarning({ closePopup }: NoGitOpsConfig
                         type="button"
                         tabIndex={3}
                         className="cta cancel sso__warn-button"
-                        onClick={() => {
-                            closePopup(true)
-                        }}
+                        onClick={closePopupContinueWithHelm}
                     >
                         Continue with helm
                     </button>

@@ -54,3 +54,7 @@ export interface PipelineSelectProps {
     toggleCIMenu: (event) => void;
     addCIPipeline: (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI', workflowId?: number | string) => void;
 }
+
+export interface NoGitOpsConfiguredWarningType {
+    closePopup: (isContinueWithHelm: boolean) => void
+}

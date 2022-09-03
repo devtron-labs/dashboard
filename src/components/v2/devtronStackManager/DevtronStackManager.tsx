@@ -103,7 +103,7 @@ export default function DevtronStackManager({
             const moduleId = queryParams.get('id')
             if (moduleId && selectedModule.name.toLowerCase() !== moduleId.toLowerCase()) {
                 const _selectedModule = stackDetails.discoverModulesList.find(
-                    (module) => module.name.toLowerCase() === queryParams.get('id').toLowerCase(),
+                    (module) => module.name.toLowerCase() === moduleId.toLowerCase(),
                 )
 
                 if (_selectedModule) {
@@ -220,11 +220,10 @@ export default function DevtronStackManager({
         try {
             if (
                 location.pathname.includes('/details') &&
-                queryParams.get('id') &&
                 queryParams.get('id') === ModuleNameMap.ARGO_CD
             ) {
                 const { result } = await isGitopsConfigured()
-                const currentModule = stackDetails.installedModulesList?.find(
+                const currentModule = stackDetails.discoverModulesList.find(
                     (_module) => _module.name === ModuleNameMap.ARGO_CD,
                 )
                 if (currentModule) {

@@ -91,7 +91,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             .catch((error) => {})
     }
 
-    async checkGitOpsConfiguration() {
+    async checkGitOpsConfiguration():Promise<void> {
       try {
           const { result } = await isGitOpsModuleInstalledAndConfigured()
           if (result.isInstalled && !result.isConfigured) {

@@ -134,7 +134,7 @@ function DiscoverChartList() {
       handleActionButtonClick(true)
     }
 
-    const handleActionButtonClick = (_clickedOnAdvance: boolean) => {
+    const handleActionButtonClick = (_clickedOnAdvance: boolean): void => {
         if (state.noGitOpsConfigAvailable) {
             setClickedOnAdvance(_clickedOnAdvance)
             toggleGitOpsWarningModal(true)
@@ -143,7 +143,7 @@ function DiscoverChartList() {
         }
     }
 
-    const handleContinueWithHelm = (_clickedOnAdvance: boolean) => {
+    const handleContinueWithHelm = (_clickedOnAdvance: boolean): void => {
         if (_clickedOnAdvance) {
             configureChart(0)
         } else {
@@ -155,7 +155,7 @@ function DiscoverChartList() {
         }
     }
 
-    const hideNoGitOpsWarning = (isContinueWithHelm: boolean) => {
+    const hideNoGitOpsWarning = (isContinueWithHelm: boolean): void => {
         toggleGitOpsWarningModal(false)
         if (isContinueWithHelm) {
             handleContinueWithHelm(clickedOnAdvance)
