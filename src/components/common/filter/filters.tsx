@@ -107,7 +107,9 @@ export class Filter extends Component<FilterProps, FilterState>{
     }
 
     render() {
-        let classNames = this.state.show ? "filter__menu filter__menu--show" : "filter__menu";
+        let classNames = `filter__menu filter__menu-${this.props.position === 'right' ? 'right' : 'left'} ${
+            this.state.show ? 'filter__menu--show' : ''
+        }`
         let faIcon = this.state.show ? "fa fa-caret-up" : "fa fa-caret-down";
         let isDisable = this.shouldApplyFilter();
         let badge = this.props.badgeCount ? this.props.badgeCount : this.getSavedFilter();

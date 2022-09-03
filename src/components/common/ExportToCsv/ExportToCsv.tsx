@@ -5,12 +5,12 @@ import { ReactComponent as ExportIcon } from '../../../assets/icons/ic-arrow-lin
 import { ReactComponent as Success } from '../../../assets/icons/ic-success.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 import { VisibleModal } from '../modals/VisibleModal'
-import './exportToCsv.scss'
 import { DetailsProgressing } from '../icons/Progressing'
 import moment from 'moment'
 import { Moment12HourExportFormat } from '../../../config'
 import Tippy from '@tippyjs/react'
 import { ConditionalWrap } from '../helpers/Helpers'
+import './exportToCsv.scss'
 
 export default function ExportToCsv({ apiPromise, fileName, className, disabled }: ExportToCsvProps) {
     const [exportingData, setExportingData] = useState(false)
@@ -19,7 +19,6 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
     const [dataToExport, setDataToExport] = useState(null)
     const [requestCancelled, setRequestCancelled] = useState(false)
     const csvRef = useRef(null)
-    let abortController = null
 
     useEffect(() => {
         if (Array.isArray(dataToExport) && csvRef?.current && !requestCancelled) {
@@ -40,12 +39,11 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
         if (!exportingData) {
             const fileNameKey = Object.keys(FILE_NAMES).find((key) => FILE_NAMES[key] === fileName)
             console.info(`Started exporting data at ${moment().format('HH:mm:ss')}.`)
-            abortController = new AbortController()
             setExportingData(true)
             setShowExportingModal(true)
 
             try {
-                const response = await apiPromise({ signal: abortController.signal })
+                const response = await apiPromise()
                 setDataToExport(response)
 
                 console.info(
@@ -61,22 +59,11 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
                 )
             } finally {
                 setExportingData(false)
-
-                if (abortController) {
-                    abortController = null
-                }
             }
         }
     }
 
     const handleCancelAction = () => {
-        // Abort any ongoing request when cancel is clicked
-        if (abortController) {
-            abortController.abort()
-            abortController = null
-        }
-
-        // Hide the export modal
         setRequestCancelled(true)
         setShowExportingModal(false)
     }

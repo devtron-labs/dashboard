@@ -614,21 +614,18 @@ export default function AppList() {
         setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)
     }
 
-    const getAppListDataToExport = (options) => {
-        return getAppList(
-            {
-                environments: [],
-                teams: [],
-                namespaces: [],
-                appNameSearch: '',
-                sortBy: 'appNameSort',
-                sortOrder: 'ASC',
-                offset: 0,
-                hOffset: 0,
-                size: appCount,
-            },
-            options,
-        ).then(({ result }) => {
+    const getAppListDataToExport = () => {
+        return getAppList({
+            environments: [],
+            teams: [],
+            namespaces: [],
+            appNameSearch: '',
+            sortBy: 'appNameSort',
+            sortOrder: 'ASC',
+            offset: 0,
+            hOffset: 0,
+            size: appCount,
+        }).then(({ result }) => {
             if (result.appContainers) {
                 const _appDataList = []
                 for (let _app of result.appContainers) {
@@ -705,6 +702,11 @@ export default function AppList() {
 
     function renderMasterFilters() {
         let _isAnyClusterFilterApplied = masterFilters.clusters.some((_cluster) => _cluster.isChecked)
+        const showExportCsvButton =
+            userRoleResponse?.result?.roles?.indexOf('role:super-admin___') !== -1 &&
+            currentTab === AppListConstants.AppTabs.DEVTRON_APPS &&
+            serverMode !== SERVER_MODE.EA_ONLY
+
         return (
             <div className="search-filter-section">
                 <form style={{ display: 'inline' }} onSubmit={searchApp}>
@@ -773,6 +775,7 @@ export default function AppList() {
                     />
                     <Filter
                         rootClassName="no-margin-left"
+                        position={showExportCsvButton ? 'left' : 'right'}
                         list={masterFilters.namespaces.filter((namespace) => namespace.toShow)}
                         labelKey="label"
                         searchKey="actualName"
@@ -791,19 +794,17 @@ export default function AppList() {
                         errorMessage={'Could not load namespaces'}
                         errorCallbackFunction={_forceFetchAndSetNamespaces}
                     />
-                    {userRoleResponse?.result?.roles?.indexOf('role:super-admin___') !== -1 &&
-                        currentTab == AppListConstants.AppTabs.DEVTRON_APPS &&
-                        serverMode !== SERVER_MODE.EA_ONLY && (
-                            <>
-                                <span className="filter-divider"></span>
-                                <ExportToCsv
-                                    className="ml-10"
-                                    apiPromise={getAppListDataToExport}
-                                    fileName={FILE_NAMES.Apps}
-                                    disabled={!appCount}
-                                />
-                            </>
-                        )}
+                    {showExportCsvButton && (
+                        <>
+                            <span className="filter-divider"></span>
+                            <ExportToCsv
+                                className="ml-10"
+                                apiPromise={getAppListDataToExport}
+                                fileName={FILE_NAMES.Apps}
+                                disabled={!appCount}
+                            />
+                        </>
+                    )}
                 </div>
             </div>
         )
