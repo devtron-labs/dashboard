@@ -18,11 +18,13 @@ export function Build({
     isAdvanced,
     ciPipelineId,
     pageState,
+    isSecurityModuleInstalled
 }: {
     showFormError: boolean
     isAdvanced: boolean
     ciPipelineId: number
     pageState: string
+    isSecurityModuleInstalled: boolean
 }) {
     const {
         formData,
@@ -333,7 +335,7 @@ export function Build({
             {renderBasicCI()}
             {isAdvanced && (
                 <>
-                    {renderScanner()}
+                    {isSecurityModuleInstalled && renderScanner()}
                     {renderDockerArgs()}
                 </>
             )}
