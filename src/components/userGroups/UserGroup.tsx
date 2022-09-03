@@ -28,6 +28,7 @@ import {
     getGroupId,
     getUserRole,
     getEnvironmentListHelmApps,
+    getUsersOrGroupsDataToExport
 } from './userGroup.service'
 import { get } from '../../services/api'
 import { getEnvironmentListMin, getProjectFilteredApps } from '../../services/service'
@@ -56,6 +57,8 @@ import { mainContext } from '../common/navigation/NavigationRoutes'
 import { Option as singleOption } from '../v2/common/ReactSelect.utils'
 import ApiTokens from '../apiTokens/ApiTokens.component'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
+import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
+import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -326,6 +329,7 @@ const UserGroupList: React.FC<{
     const searchRef = useRef(null)
     const keys = useKeyDown()
     const [addHash, setAddHash] = useState(null)
+    const { superAdmin } = useContext(UserGroupContext)
 
     useEffect(() => {
         switch (keys.join(',').toLowerCase()) {
@@ -408,6 +412,109 @@ const UserGroupList: React.FC<{
         }
     }
 
+    function processUsersDataToExport(result) {
+        const _usersList = []
+        for (let _user of result) {
+            const _userData = {
+                emailId: _user.email_id,
+                userId: _user.id,
+                superAdmin: _user.superAdmin,
+                groups: '-',
+                project: '-',
+                environment: '-',
+                application: '-',
+                role: '-',
+            }
+
+            if (_user.groups?.length && !_user.superAdmin) {
+                 _userData.groups = _user.groups.join(', ')
+                _usersList.push(_userData)
+            }
+
+            if (_user.roleFilters?.length) {
+                for (let _roleFilter of _user.roleFilters) {
+                    if (_roleFilter.team) {
+                        const _userPermissions = {
+                            ..._userData,
+                            groups: '-'
+                        }
+
+                        _userPermissions.project = _roleFilter.team
+                        _userPermissions.environment =
+                            _roleFilter.environment?.split(',').join(', ') || 'All existing + future environments'
+                        _userPermissions.application =
+                            _roleFilter.entityName?.split(',').join(', ') || 'All existing + future applications'
+                        _userPermissions.role = _roleFilter.action || '-'
+
+                        _usersList.push(_userPermissions)
+                    }
+                }
+            } else {
+                _usersList.push(_userData)
+            }
+
+            if (result.length > 1) {
+                _usersList.push({})
+                _usersList.push(USER_EXPORT_HEADER_ROW)
+            }
+        }
+
+        return _usersList
+    }
+
+    function processGroupsDataToExport(result) {
+        const _groupsList = []
+        for (let _group of result) {
+            const _groupData = {
+                groupName: _group.name,
+                groupId: _group.id,
+                description: _group.description || '-',
+                project: '-',
+                environment: '-',
+                application: '-',
+                role: '-',
+            }
+
+            if (_group.roleFilters?.length) {
+                for (let _roleFilter of _group.roleFilters) {
+                    if (_roleFilter.team) {
+                        const _groupPermissions = {
+                            ..._groupData,
+                        }
+
+                        _groupPermissions.project = _roleFilter.team
+                        _groupPermissions.environment =
+                            _roleFilter.environment?.split(',').join(', ') || 'All existing + future environments'
+                        _groupPermissions.application =
+                            _roleFilter.entityName?.split(',').join(', ') || 'All existing + future applications'
+                        _groupPermissions.role = _roleFilter.action || '-'
+
+                        _groupsList.push(_groupPermissions)
+                    }
+                }
+            } else {
+                _groupsList.push(_groupData)
+            }
+
+            if (result.length > 1) {
+                _groupsList.push({})
+                _groupsList.push(GROUP_EXPORT_HEADER_ROW)
+            }
+        }
+
+        return _groupsList
+    }
+
+    function getPermissionsDataToExport() {
+        return getUsersOrGroupsDataToExport(type).then(({ result }) => {
+            if (result) {
+                return type === 'user' ? processUsersDataToExport(result) : processGroupsDataToExport(result)
+            }
+
+            return []
+        })
+    }
+
     if (loading)
         return (
             <div className="w-100 flex" style={{ minHeight: '600px' }}>
@@ -425,17 +532,26 @@ const UserGroupList: React.FC<{
         <div id="auth-page__body" className="auth-page__body-users__list-container">
             {renderHeaders(type)}
             {result.length > 0 && (
-                <div className="search position-rel en-2 bw-1 br-4 mb-16 bcn-0">
-                    <Search className="search__icon icon-dim-18" />
-                    <input
-                        value={searchString}
-                        autoComplete="off"
-                        ref={searchRef}
-                        type="search"
-                        placeholder={`Search ${type}`}
-                        className="search__input bcn-0"
-                        onChange={(e) => setSearchString(e.target.value)}
-                    />
+                <div className="flex content-space">
+                    <div className="search position-rel en-2 bw-1 br-4 mb-16 bcn-0">
+                        <Search className="search__icon icon-dim-18" />
+                        <input
+                            value={searchString}
+                            autoComplete="off"
+                            ref={searchRef}
+                            type="search"
+                            placeholder={`Search ${type}`}
+                            className="search__input bcn-0"
+                            onChange={(e) => setSearchString(e.target.value)}
+                        />
+                    </div>
+                    {superAdmin && (
+                        <ExportToCsv
+                            className="mb-16"
+                            apiPromise={getPermissionsDataToExport}
+                            fileName={type === 'user' ? FILE_NAMES.Users : FILE_NAMES.Groups}
+                        />
+                    )}
                 </div>
             )}
             {!(filteredAndSorted.length === 0 && result.length > 0) && (

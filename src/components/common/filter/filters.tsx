@@ -131,7 +131,7 @@ export class Filter extends Component<FilterProps, FilterState>{
         }
 
 
-        return <div className="filter" >
+        return <div className={`filter ${this.props.rootClassName || ''}`} >
             {
                 (!this.props.isDisabled || !this.props.disableTooltipMessage) &&
                 <div>

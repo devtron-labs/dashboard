@@ -150,3 +150,7 @@ export function getUserRole(): Promise<UserRole> {
 export function getEnvironmentListHelmApps(): Promise<any> {
     return get(Routes.ENVIRONMENT_LIST_MIN_HELM_PROJECTS);
 }
+
+export function getUsersOrGroupsDataToExport(type: string) {
+    return get(type === 'user' ? Routes.ALL_USERS_LIST : Routes.ALL_GROUPS_LIST)
+}

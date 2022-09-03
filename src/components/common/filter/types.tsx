@@ -25,6 +25,7 @@ export interface FilterProps {
     errored?: boolean;
     errorMessage?: string;
     errorCallbackFunction?: () => void;
+    rootClassName?: string
 }
 
 export interface FilterState {

@@ -1,0 +1,33 @@
+.export-to-csv-button {
+    width: 120px;
+
+    .cta.ghosted {
+        border: 1px solid var(--N200);
+        padding: 0;
+
+        &:hover,
+        &:active,
+        &:focus {
+            color: var(--B500);
+            background: white;
+            border: 1px solid var(--B500);
+        }
+    }
+}
+
+.export-to-csv-modal {
+    .modal__body {
+        margin-top: 0;
+        padding: 0;
+        border-radius: 0 0 4px 4px;
+
+        h2,
+        .modal__CTA {
+            padding: 16px 20px;
+        }
+
+        .export-status {
+            padding: 24px 20px;
+        }
+    }
+}

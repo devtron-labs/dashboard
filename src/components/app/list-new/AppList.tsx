@@ -10,7 +10,7 @@ import EmptyState from '../../EmptyState/EmptyState'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
 import { ServerErrors } from '../../../modals/commonTypes'
 import { AppListViewType } from '../config'
-import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION } from '../../../config'
+import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION, Moment12HourFormat } from '../../../config'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
@@ -22,6 +22,10 @@ import '../list/list.css'
 import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
 import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
+import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
+import { FILE_NAMES } from '../../common/ExportToCsv/constants'
+import { getAppList } from '../service'
+import moment from 'moment'
 
 export default function AppList() {
     const location = useLocation()
@@ -57,6 +61,7 @@ export default function AppList() {
     })
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
+    const [appCount, setAppCount] = useState(0)
 
     // on page load
     useEffect(() => {
@@ -597,6 +602,75 @@ export default function AppList() {
         setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)
     }
 
+    const getAppListDataToExport = (options) => {
+        return getAppList(
+            {
+                environments: [],
+                teams: [],
+                namespaces: [],
+                appNameSearch: '',
+                sortBy: 'appNameSort',
+                sortOrder: 'ASC',
+                offset: 0,
+                hOffset: 0,
+                size: appCount,
+            },
+            options,
+        ).then(({ result }) => {
+            if (result.appContainers) {
+                const _appDataList = []
+                for (let _app of result.appContainers) {
+                    if (_app.environments) {
+                        for (let _env of _app.environments) {
+                            const _clusterId =
+                                _env.clusterName &&
+                                masterFilters.clusters.find((_cluster) => {
+                                    return _cluster.label === _env.clusterName
+                                })?.key
+
+                            _appDataList.push({
+                                appId: _env.appId,
+                                appName: _env.appName,
+                                projectId: _env.teamId,
+                                projectName: _env.teamName,
+                                environmentId: (_env.environmentName && _env.environmentId) || '-',
+                                environmentName: _env.environmentName || '-',
+                                clusterId: `${(_clusterId ?? _clusterId) || '-'}`,
+                                clusterName: _env.clusterName || '-',
+                                namespaceId: _env.namespace && _clusterId ? `${_clusterId}_${_env.namespace}` : '-',
+                                namespace: _env.namespace || '-',
+                                status: _env.status || '-',
+                                lastDeployedTime: _env.lastDeployedTime
+                                    ? moment(_env.lastDeployedTime).format(Moment12HourFormat)
+                                    : '-',
+                            })
+                        }
+                    } else {
+                        _appDataList.push({
+                            appId: _app.appId,
+                            appName: _app.appName,
+                            projectId: _app.projectId,
+                            projectName:
+                                masterFilters.projects.find((_proj) => _proj.id === _app.projectId)?.name || '-',
+                            environmentId: '-',
+                            environmentName: '-',
+                            clusterId: '-',
+                            clusterName: '-',
+                            namespaceId: '-',
+                            namespace: '-',
+                            status: '-',
+                            lastDeployedTime: '-',
+                        })
+                    }
+                }
+
+                return _appDataList
+            }
+
+            return []
+        })
+    }
+
     const renderActionButtons = () => {
         return (
             serverMode === SERVER_MODE.FULL && (
@@ -644,8 +718,7 @@ export default function AppList() {
                         )}
                     </div>
                 </form>
-                <div className="filters">
-                    <span className="filters__label">Filter By</span>
+                <div className="app-list-filters filters">
                     <Filter
                         list={masterFilters.projects}
                         labelKey="label"
@@ -687,6 +760,7 @@ export default function AppList() {
                         showPulsatingDot={showPulsatingDot}
                     />
                     <Filter
+                        rootClassName="no-margin-left"
                         list={masterFilters.namespaces.filter((namespace) => namespace.toShow)}
                         labelKey="label"
                         searchKey="actualName"
@@ -705,6 +779,16 @@ export default function AppList() {
                         errorMessage={'Could not load namespaces'}
                         errorCallbackFunction={_forceFetchAndSetNamespaces}
                     />
+                    {currentTab == AppListConstants.AppTabs.DEVTRON_APPS && serverMode !== SERVER_MODE.EA_ONLY && (
+                        <>
+                            <span className="filter-divider"></span>
+                            <ExportToCsv
+                                className="ml-10"
+                                apiPromise={getAppListDataToExport}
+                                fileName={FILE_NAMES.Apps}
+                            />
+                        </>
+                    )}
                 </div>
             </div>
         )
@@ -927,6 +1011,7 @@ export default function AppList() {
                             clearAllFilters={removeAllFilters}
                             sortApplicationList={sortApplicationList}
                             updateLastDataSync={updateLastDataSync}
+                            setAppCount={setAppCount}
                         />
                     )}
                     {params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.EA_ONLY && (
