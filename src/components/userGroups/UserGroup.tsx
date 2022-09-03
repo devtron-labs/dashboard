@@ -20,6 +20,7 @@ import {
     sortBySelected,
     mapByKey,
     useEffectAfterMount,
+    sortObjectArrayAlphabetically,
 } from '../common'
 import {
     getUserList,
@@ -28,7 +29,8 @@ import {
     getGroupId,
     getUserRole,
     getEnvironmentListHelmApps,
-    getUsersOrGroupsDataToExport
+    getUsersDataToExport,
+    getGroupsDataToExport
 } from './userGroup.service'
 import { get } from '../../services/api'
 import { getEnvironmentListMin, getProjectFilteredApps } from '../../services/service'
@@ -40,6 +42,8 @@ import {
     ActionTypes,
     OptionType,
     CollapsedUserOrGroupProps,
+    CreateGroup,
+    CreateUser,
 } from './userGroups.types'
 import { ACCESS_TYPE_MAP, DOCUMENTATION, HELM_APP_UNASSIGNED_PROJECT, Routes, SERVER_MODE } from '../../config'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
@@ -412,9 +416,9 @@ const UserGroupList: React.FC<{
         }
     }
 
-    function processUsersDataToExport(result) {
+    function processUsersDataToExport(result: CreateUser[]) {
         const _usersList = []
-        for (let _user of result) {
+        for (const [idx, _user] of result.entries()) {
             const _userData = {
                 emailId: _user.email_id,
                 userId: _user.id,
@@ -427,16 +431,16 @@ const UserGroupList: React.FC<{
             }
 
             if (_user.groups?.length && !_user.superAdmin) {
-                 _userData.groups = _user.groups.join(', ')
+                _userData.groups = _user.groups.join(', ')
                 _usersList.push(_userData)
             }
 
             if (_user.roleFilters?.length) {
-                for (let _roleFilter of _user.roleFilters) {
+                for (const _roleFilter of _user.roleFilters) {
                     if (_roleFilter.team) {
                         const _userPermissions = {
                             ..._userData,
-                            groups: '-'
+                            groups: '-',
                         }
 
                         _userPermissions.project = _roleFilter.team
@@ -453,7 +457,7 @@ const UserGroupList: React.FC<{
                 _usersList.push(_userData)
             }
 
-            if (result.length > 1) {
+            if (idx !== result.length - 1) {
                 _usersList.push({})
                 _usersList.push(USER_EXPORT_HEADER_ROW)
             }
@@ -462,9 +466,9 @@ const UserGroupList: React.FC<{
         return _usersList
     }
 
-    function processGroupsDataToExport(result) {
+    function processGroupsDataToExport(result: CreateGroup[]) {
         const _groupsList = []
-        for (let _group of result) {
+        for (const [idx, _group] of result.entries()) {
             const _groupData = {
                 groupName: _group.name,
                 groupId: _group.id,
@@ -476,7 +480,7 @@ const UserGroupList: React.FC<{
             }
 
             if (_group.roleFilters?.length) {
-                for (let _roleFilter of _group.roleFilters) {
+                for (const _roleFilter of _group.roleFilters) {
                     if (_roleFilter.team) {
                         const _groupPermissions = {
                             ..._groupData,
@@ -496,7 +500,7 @@ const UserGroupList: React.FC<{
                 _groupsList.push(_groupData)
             }
 
-            if (result.length > 1) {
+            if (idx !== result.length - 1) {
                 _groupsList.push({})
                 _groupsList.push(GROUP_EXPORT_HEADER_ROW)
             }
@@ -506,9 +510,15 @@ const UserGroupList: React.FC<{
     }
 
     function getPermissionsDataToExport() {
-        return getUsersOrGroupsDataToExport(type).then(({ result }) => {
-            if (result) {
-                return type === 'user' ? processUsersDataToExport(result) : processGroupsDataToExport(result)
+        const getPermissionsAPI = type === 'user' ? getUsersDataToExport : getGroupsDataToExport
+
+        return getPermissionsAPI().then((response) => {
+            if (response?.result) {
+                return type === 'user'
+                    ? processUsersDataToExport(
+                          sortObjectArrayAlphabetically(response.result, 'email_id') as CreateUser[],
+                      )
+                    : processGroupsDataToExport(sortObjectArrayAlphabetically(response.result, 'name') as CreateGroup[])
             }
 
             return []

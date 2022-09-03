@@ -1,7 +1,7 @@
 import { getAppListMin, getTeamListMin, getEnvironmentListMin } from '../../services/service';
 import { get, post, put, trash } from '../../services/api';
 import { ResponseType } from '../../services/service.types';
-import { CreateGroup, CreateUser } from './userGroups.types';
+import { APIRoleFilter, CreateGroup, CreateUser } from './userGroups.types';
 import { Routes } from '../../config';
 
 export function getData() {
@@ -147,10 +147,22 @@ export function getUserRole(): Promise<UserRole> {
     return get(`user/check/roles`);
 }
 
+export interface UsersDataToExportResponse extends ResponseType {
+    result?: CreateUser[]
+}
+
+export interface GroupsDataToExportResponse extends ResponseType {
+    result?: CreateGroup[]
+}
+
 export function getEnvironmentListHelmApps(): Promise<any> {
     return get(Routes.ENVIRONMENT_LIST_MIN_HELM_PROJECTS);
 }
 
-export function getUsersOrGroupsDataToExport(type: string) {
-    return get(type === 'user' ? Routes.ALL_USERS_LIST : Routes.ALL_GROUPS_LIST)
+export function getUsersDataToExport(): Promise<UsersDataToExportResponse> {
+    return get(Routes.ALL_USERS_LIST)
+}
+
+export function getGroupsDataToExport(): Promise<GroupsDataToExportResponse> {
+    return get(Routes.ALL_GROUPS_LIST)
 }
