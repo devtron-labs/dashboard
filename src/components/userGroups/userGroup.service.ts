@@ -1,7 +1,7 @@
 import { getAppListMin, getTeamListMin, getEnvironmentListMin } from '../../services/service';
 import { get, post, put, trash } from '../../services/api';
 import { ResponseType } from '../../services/service.types';
-import { APIRoleFilter, CreateGroup, CreateUser } from './userGroups.types';
+import { CreateGroup, CreateUser } from './userGroups.types';
 import { Routes } from '../../config';
 
 export function getData() {

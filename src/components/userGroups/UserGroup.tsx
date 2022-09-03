@@ -448,7 +448,7 @@ const UserGroupList: React.FC<{
                             _roleFilter.environment?.split(',').join(', ') || 'All existing + future environments'
                         _userPermissions.application =
                             _roleFilter.entityName?.split(',').join(', ') || 'All existing + future applications'
-                        _userPermissions.role = _roleFilter.action || '-'
+                        _userPermissions.role = possibleRolesMeta[_roleFilter.action]?.value || '-'
 
                         _usersList.push(_userPermissions)
                     }
@@ -491,7 +491,7 @@ const UserGroupList: React.FC<{
                             _roleFilter.environment?.split(',').join(', ') || 'All existing + future environments'
                         _groupPermissions.application =
                             _roleFilter.entityName?.split(',').join(', ') || 'All existing + future applications'
-                        _groupPermissions.role = _roleFilter.action || '-'
+                        _groupPermissions.role = possibleRolesMeta[_roleFilter.action]?.value || '-'
 
                         _groupsList.push(_groupPermissions)
                     }

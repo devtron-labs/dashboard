@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, Fragment } from 'react'
 import { useLocation, useHistory, useParams } from 'react-router'
 import { Link, Switch, Route, NavLink } from 'react-router-dom'
-import { Progressing, Filter, showError, FilterOption, Modal, ErrorScreenManager, handleUTCTime } from '../../common'
+import { Progressing, Filter, showError, FilterOption, Modal, ErrorScreenManager, handleUTCTime, useAsync } from '../../common'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ChartIcon } from '../../../assets/icons/ic-charts.svg'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
@@ -26,6 +26,7 @@ import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import { getAppList } from '../service'
 import moment from 'moment'
+import { getUserRole } from '../../userGroups/userGroup.service'
 
 export default function AppList() {
     const location = useLocation()
@@ -62,6 +63,7 @@ export default function AppList() {
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
     const [appCount, setAppCount] = useState(0)
+    const [checkingUserRole, userRoleResponse] = useAsync(getUserRole, [])
 
     // on page load
     useEffect(() => {
@@ -779,16 +781,18 @@ export default function AppList() {
                         errorMessage={'Could not load namespaces'}
                         errorCallbackFunction={_forceFetchAndSetNamespaces}
                     />
-                    {currentTab == AppListConstants.AppTabs.DEVTRON_APPS && serverMode !== SERVER_MODE.EA_ONLY && (
-                        <>
-                            <span className="filter-divider"></span>
-                            <ExportToCsv
-                                className="ml-10"
-                                apiPromise={getAppListDataToExport}
-                                fileName={FILE_NAMES.Apps}
-                            />
-                        </>
-                    )}
+                    {userRoleResponse?.result?.superAdmin &&
+                        currentTab == AppListConstants.AppTabs.DEVTRON_APPS &&
+                        serverMode !== SERVER_MODE.EA_ONLY && (
+                            <>
+                                <span className="filter-divider"></span>
+                                <ExportToCsv
+                                    className="ml-10"
+                                    apiPromise={getAppListDataToExport}
+                                    fileName={FILE_NAMES.Apps}
+                                />
+                            </>
+                        )}
                 </div>
             </div>
         )
