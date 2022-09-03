@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useContext, Fragment } from 'react'
 import { useLocation, useHistory, useParams } from 'react-router'
 import { Link, Switch, Route, NavLink } from 'react-router-dom'
-import { Progressing, Filter, showError, FilterOption, Modal, ErrorScreenManager, handleUTCTime, useAsync, ConditionalWrap } from '../../common'
+import {
+    Progressing,
+    Filter,
+    showError,
+    FilterOption,
+    Modal,
+    ErrorScreenManager,
+    handleUTCTime,
+    useAsync,
+} from '../../common'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ChartIcon } from '../../../assets/icons/ic-charts.svg'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
@@ -787,26 +796,12 @@ export default function AppList() {
                         serverMode !== SERVER_MODE.EA_ONLY && (
                             <>
                                 <span className="filter-divider"></span>
-                                <ConditionalWrap
-                                    condition={!appCount}
-                                    wrap={(children) => (
-                                        <Tippy
-                                            className="default-tt"
-                                            arrow={false}
-                                            placement="top"
-                                            content="Nothing to export"
-                                        >
-                                            {children}
-                                        </Tippy>
-                                    )}
-                                >
-                                    <ExportToCsv
-                                        className="ml-10"
-                                        apiPromise={getAppListDataToExport}
-                                        fileName={FILE_NAMES.Apps}
-                                        disabled={!appCount}
-                                    />
-                                </ConditionalWrap>
+                                <ExportToCsv
+                                    className="ml-10"
+                                    apiPromise={getAppListDataToExport}
+                                    fileName={FILE_NAMES.Apps}
+                                    disabled={!appCount}
+                                />
                             </>
                         )}
                 </div>

@@ -72,6 +72,7 @@ interface UserGroup {
     chartGroupsList: ChartGroup[]
     fetchAppList: (projectId: number[]) => void
     superAdmin: boolean
+    roles: string[]
     envClustersList: any[]
     fetchAppListHelmApps: (projectId: number[]) => void
     appsListHelmApps: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -84,6 +85,7 @@ const UserGroupContext = React.createContext<UserGroup>({
     chartGroupsList: [],
     fetchAppList: () => {},
     superAdmin: false,
+    roles: [],
     envClustersList: [],
     fetchAppListHelmApps: () => {},
     appsListHelmApps: new Map(),
@@ -299,6 +301,7 @@ export default function UserGroupRoute() {
                         projectsList: projects.status === 'fulfilled' ? projects?.value?.result : [],
                         chartGroupsList: chartGroups.status === 'fulfilled' ? chartGroups?.value?.result?.groups : [],
                         superAdmin: userRole.status === 'fulfilled' ? userRole?.value?.result?.superAdmin : false,
+                        roles: userRole.status === 'fulfilled' ? userRole?.value?.result?.roles : [],
                         envClustersList: envClustersList.status === 'fulfilled' ? envClustersList?.value?.result : [],
                         fetchAppListHelmApps,
                         appsListHelmApps,
@@ -333,7 +336,7 @@ const UserGroupList: React.FC<{
     const searchRef = useRef(null)
     const keys = useKeyDown()
     const [addHash, setAddHash] = useState(null)
-    const { superAdmin } = useContext(UserGroupContext)
+    const { roles } = useUserGroupContext()
 
     useEffect(() => {
         switch (keys.join(',').toLowerCase()) {
@@ -555,7 +558,7 @@ const UserGroupList: React.FC<{
                             onChange={(e) => setSearchString(e.target.value)}
                         />
                     </div>
-                    {superAdmin && (
+                    {roles?.indexOf('role:super-admin___') !== -1 && (
                         <ExportToCsv
                             className="mb-16"
                             apiPromise={getPermissionsDataToExport}

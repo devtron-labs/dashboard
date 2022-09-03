@@ -9,6 +9,8 @@ import './exportToCsv.scss'
 import { DetailsProgressing } from '../icons/Progressing'
 import moment from 'moment'
 import { Moment12HourExportFormat } from '../../../config'
+import Tippy from '@tippyjs/react'
+import { ConditionalWrap } from '../helpers/Helpers'
 
 export default function ExportToCsv({ apiPromise, fileName, className, disabled }: ExportToCsvProps) {
     const [exportingData, setExportingData] = useState(false)
@@ -26,6 +28,10 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
     }, [dataToExport])
 
     const generateDataToExport = async () => {
+        if (disabled) {
+            return
+        }
+
         if (requestCancelled || errorExportingData) {
             setRequestCancelled(false)
             setErrorExportingData(false)
@@ -128,10 +134,19 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
 
     return (
         <div className={`export-to-csv-button ${className}`}>
-            <button className="flex cta ghosted w-100 h-36" onClick={generateDataToExport} disabled={disabled}>
-                <ExportIcon className="icon-dim-16 mr-8" />
-                <span>Export CSV</span>
-            </button>
+            <ConditionalWrap
+                condition={disabled}
+                wrap={(children) => (
+                    <Tippy className="default-tt" arrow={true} placement="top" content="Nothing to export">
+                        {children}
+                    </Tippy>
+                )}
+            >
+                <button className={`flex cta ghosted w-100 h-36 ${disabled ? 'nothing-to-export' : ''}`} onClick={generateDataToExport}>
+                    <ExportIcon className="icon-dim-16 mr-8" />
+                    <span>Export CSV</span>
+                </button>
+            </ConditionalWrap>
             <CSVLink
                 ref={csvRef}
                 filename={`${fileName}_${moment().format(Moment12HourExportFormat)}.csv`}
