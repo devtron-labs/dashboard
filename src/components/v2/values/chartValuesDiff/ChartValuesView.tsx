@@ -115,7 +115,7 @@ function ChartValuesView({
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
 
-    const checkGitOpsConfiguration= async ()=> {
+    const checkGitOpsConfiguration= async ():Promise<void>=> {
       try {
           const { result } = await isGitOpsModuleInstalledAndConfigured()
           if (result.isInstalled && !result.isConfigured) {

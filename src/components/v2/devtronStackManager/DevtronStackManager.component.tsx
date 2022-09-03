@@ -676,7 +676,7 @@ export const InstallationWrapper = ({
                                 isCICDModule={moduleName === ModuleNameMap.CICD}
                             />
                         )}
-                        {moduleDetails?.isModuleConfigurable && !moduleDetails?.isModuleConfigured && (
+                        {moduleDetails && moduleDetails.isModuleConfigurable && !moduleDetails.isModuleConfigured && (
                             <ModuleNotConfigured moduleName={moduleName} />
                         )}
                         {!isUpgradeView && installationStatus === ModuleStatus.INSTALLED && <ModuleUpdateNote />}
