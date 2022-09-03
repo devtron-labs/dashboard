@@ -440,7 +440,7 @@ const UserGroupList: React.FC<{
 
             if (_user.roleFilters?.length) {
                 for (const _roleFilter of _user.roleFilters) {
-                    if (_roleFilter.team) {
+                    if (_roleFilter.team && _roleFilter.accessType !== ACCESS_TYPE_MAP.HELM_APPS) {
                         const _userPermissions = {
                             ..._userData,
                             groups: '-',
@@ -484,7 +484,7 @@ const UserGroupList: React.FC<{
 
             if (_group.roleFilters?.length) {
                 for (const _roleFilter of _group.roleFilters) {
-                    if (_roleFilter.team) {
+                    if (_roleFilter.team && _roleFilter.accessType !== ACCESS_TYPE_MAP.HELM_APPS) {
                         const _groupPermissions = {
                             ..._groupData,
                         }
