@@ -20,6 +20,10 @@ export interface CDMaterialProps {
     parentEnvironmentName?: string
 }
 
+export interface CDMaterialState{
+  isSecurityModuleInstalled: boolean
+}
+
 export interface CDMaterialType {
     id: string
     materialInfo: {

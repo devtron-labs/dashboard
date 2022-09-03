@@ -116,6 +116,7 @@ export default class Navigation extends Component<
         this.toggleLogoutCard = this.toggleLogoutCard.bind(this)
         this.toggleHelpCard = this.toggleHelpCard.bind(this)
         this.toggleCommandBar = this.toggleCommandBar.bind(this)
+        this.getSecurityModuleStatus()
     }
 
     async getSecurityModuleStatus() {

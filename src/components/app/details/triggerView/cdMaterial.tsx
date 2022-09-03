@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { CDMaterialProps } from './types';
+import { CDMaterialProps, CDMaterialState } from './types';
 import { GitTriggers } from '../cIDetails/types';
 import close from '../../../../assets/icons/ic-close.svg';
 import arrow from '../../../../assets/icons/misc/arrow-chevron-down-black.svg';
@@ -12,8 +12,32 @@ import { EmptyStateCdMaterial } from './EmptyStateCdMaterial';
 import { getCDModalHeader, CDButtonLabelMap } from './config';
 import { CDModalTab } from '../../service';
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric';
+import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service';
+import { ModuleNameMap } from '../../../../config';
+import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type';
 
-export class CDMaterial extends Component<CDMaterialProps> {
+export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
+  constructor(props: CDMaterialProps) {
+    super(props)
+    this.state = {
+      isSecurityModuleInstalled: false
+    }
+  }
+
+  componentDidMount() {
+    this.getSecurityModuleStatus()
+  }
+
+  async getSecurityModuleStatus() {
+    try {
+        const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
+        if (result?.status === ModuleStatus.INSTALLED) {
+            this.setState((prevState) => ({
+                isSecurityModuleInstalled: true,
+            }))
+        }
+    } catch (error) {}
+  }
 
   renderGitMaterialInfo(matInfo) {
     return <>
@@ -123,10 +147,10 @@ export class CDMaterial extends Component<CDMaterialProps> {
 
         <div className="material-history__top" style={{ 'cursor': `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
           onClick={(event) => { event.stopPropagation(); if (!mat.vulnerable) this.props.selectImage(index, this.props.materialType) }}>
-          <div>  
+          <div>
            <div className="commit-hash commit-hash--docker"><img src={docker} alt="" className="commit-hash__icon" />{mat.image}</div>
            {this.props.stageType !== 'CD' && mat.latest  ? <span className="last-deployed-status">Last Run</span> : null}
-         </div>  
+         </div>
           {this.props.materialType === "none" ? null : <div className="material-history__info">
             <span className="trigger-modal__small-text">Deployed at:</span> <span>{mat.deployedTime}</span>
           </div>}
@@ -143,12 +167,12 @@ export class CDMaterial extends Component<CDMaterialProps> {
                 Changes
               </button>
             </li>
-            <li className="tab-list__tab">
+            {this.state.isSecurityModuleInstalled && <li className="tab-list__tab">
               <button type="button" onClick={(e) => { e.stopPropagation(); this.props.changeTab(index, Number(mat.id), CDModalTab.Security); }}
                 className={mat.tab === CDModalTab.Security ? `${tabClasses} active` : `${tabClasses}`}>
                 Security  {mat.vulnerabilitiesLoading ? `` : `(${mat.vulnerabilities.length})`}
               </button>
-            </li>
+            </li>}
           </ul>
           {mat.tab === CDModalTab.Changes ? this.renderGitMaterialInfo(mat.materialInfo) : this.renderVulnerabilities(mat)}
         </>
@@ -194,7 +218,7 @@ export class CDMaterial extends Component<CDMaterialProps> {
   }
 
   render() {
-    let header = getCDModalHeader(this.props.stageType, this.props.envName);    
+    let header = getCDModalHeader(this.props.stageType, this.props.envName);
     return <VisibleModal className="" close={this.props.closeCDModal}>
       <div className="modal-body--cd-material" onClick={(e) => e.stopPropagation()}>
         {this.props.material.length > 0 ? this.renderCDModal()
