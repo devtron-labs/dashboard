@@ -142,10 +142,13 @@ export default function NavigationRoutes() {
                     updateLoginCount(updatedPayload)
                 }
             }
-
-            if (!count) {
-                history.push(`/${URLS.GETTING_STARTED}`)
+            if(!count && isSuperAdmin){
+              history.push(`/${URLS.GETTING_STARTED}`)
             }
+            if (!count) {
+                history.push(`/`)
+            }
+
         })
 
         if (typeof Storage !== 'undefined') {
