@@ -2,15 +2,24 @@
     width: 120px;
 
     .cta.ghosted {
-        border: 1px solid var(--N200);
         padding: 0;
 
-        &:hover,
-        &:active,
-        &:focus {
-            color: var(--B500);
-            background: white;
-            border: 1px solid var(--B500);
+        &:not(:disabled) {
+            border: 1px solid var(--N200);
+
+            &:hover,
+            &:active,
+            &:focus {
+                color: var(--B500);
+                background: white;
+                border: 1px solid var(--B500);
+            }
+        }
+
+        &:disabled{
+            svg path {
+                stroke: var(--N400);
+            }
         }
     }
 }

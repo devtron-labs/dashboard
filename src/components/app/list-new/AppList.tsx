@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, Fragment } from 'react'
 import { useLocation, useHistory, useParams } from 'react-router'
 import { Link, Switch, Route, NavLink } from 'react-router-dom'
-import { Progressing, Filter, showError, FilterOption, Modal, ErrorScreenManager, handleUTCTime, useAsync } from '../../common'
+import { Progressing, Filter, showError, FilterOption, Modal, ErrorScreenManager, handleUTCTime, useAsync, ConditionalWrap } from '../../common'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ChartIcon } from '../../../assets/icons/ic-charts.svg'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
@@ -27,6 +27,7 @@ import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import { getAppList } from '../service'
 import moment from 'moment'
 import { getUserRole } from '../../userGroups/userGroup.service'
+import Tippy from '@tippyjs/react'
 
 export default function AppList() {
     const location = useLocation()
@@ -781,16 +782,31 @@ export default function AppList() {
                         errorMessage={'Could not load namespaces'}
                         errorCallbackFunction={_forceFetchAndSetNamespaces}
                     />
-                    {userRoleResponse?.result?.superAdmin &&
+                    {userRoleResponse?.result?.roles?.indexOf('role:super-admin___') !== -1 &&
                         currentTab == AppListConstants.AppTabs.DEVTRON_APPS &&
                         serverMode !== SERVER_MODE.EA_ONLY && (
                             <>
                                 <span className="filter-divider"></span>
-                                <ExportToCsv
-                                    className="ml-10"
-                                    apiPromise={getAppListDataToExport}
-                                    fileName={FILE_NAMES.Apps}
-                                />
+                                <ConditionalWrap
+                                    condition={!appCount}
+                                    wrap={(children) => (
+                                        <Tippy
+                                            className="default-tt"
+                                            arrow={false}
+                                            placement="top"
+                                            content="Nothing to export"
+                                        >
+                                            {children}
+                                        </Tippy>
+                                    )}
+                                >
+                                    <ExportToCsv
+                                        className="ml-10"
+                                        apiPromise={getAppListDataToExport}
+                                        fileName={FILE_NAMES.Apps}
+                                        disabled={!appCount}
+                                    />
+                                </ConditionalWrap>
                             </>
                         )}
                 </div>

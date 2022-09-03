@@ -10,11 +10,7 @@ import { DetailsProgressing } from '../icons/Progressing'
 import moment from 'moment'
 import { Moment12HourExportFormat } from '../../../config'
 
-export default function ExportToCsv({
-    apiPromise,
-    fileName,
-    className,
-}: ExportToCsvProps) {
+export default function ExportToCsv({ apiPromise, fileName, className, disabled }: ExportToCsvProps) {
     const [exportingData, setExportingData] = useState(false)
     const [showExportingModal, setShowExportingModal] = useState(false)
     const [errorExportingData, setErrorExportingData] = useState(false)
@@ -132,7 +128,7 @@ export default function ExportToCsv({
 
     return (
         <div className={`export-to-csv-button ${className}`}>
-            <button className="flex cta ghosted w-100 h-36" onClick={generateDataToExport}>
+            <button className="flex cta ghosted w-100 h-36" onClick={generateDataToExport} disabled={disabled}>
                 <ExportIcon className="icon-dim-16 mr-8" />
                 <span>Export CSV</span>
             </button>

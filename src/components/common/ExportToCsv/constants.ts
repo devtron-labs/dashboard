@@ -8,6 +8,7 @@ export interface ExportToCsvProps {
     apiPromise: any
     fileName: FILE_NAMES
     className?: string
+    disabled?: boolean
 }
 
 export const APPLIST_EXPORT_HEADERS = [
