@@ -619,6 +619,8 @@ export default function AppList() {
             typeof parsedPayloadOnUrlChange === 'object'
                 ? {
                       ...parsedPayloadOnUrlChange,
+                      sortBy: 'appNameSort',
+                      sortOrder: 'ASC',
                       size: appCount,
                   }
                 : {
