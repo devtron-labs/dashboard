@@ -145,8 +145,8 @@ export default function NavigationRoutes() {
             if(!count && isSuperAdmin){
               history.push(`/${URLS.GETTING_STARTED}`)
             }
-            if (!count) {
-                history.push(`/`)
+            else if (!count) {
+                history.push(URLS.APP)
             }
 
         })
