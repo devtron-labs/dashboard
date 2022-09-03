@@ -230,7 +230,7 @@ export default function DevtronStackManager({
                 )
                 if (currentModule) {
                     currentModule.isModuleConfigurable = true
-                    currentModule.isModuleConfigured = result?.isExist || false
+                    currentModule.isModuleConfigured = result?.exists || false
                     setSelectedModule(currentModule)
                 }
             }

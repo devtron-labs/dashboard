@@ -44,7 +44,6 @@ export default function GlobalConfiguration(props) {
         appStageCompleted: 0,
         chartStageCompleted: 0,
     })
-    const [installedModule, setInstalledModule] = useState([])
     const { serverMode, setServerMode } = useContext(mainContext)
 
     useEffect(() => {
@@ -202,10 +201,10 @@ function NavItem({ hostURLConfig, serverMode }) {
         !location.pathname.includes(URLS.GLOBAL_CONFIG_HOST_URL)
 
     useEffect(() => {
-        checkGitOpsConfiguration()
+        getGitOpsModuleStatus()
     }, [])
 
-    async function checkGitOpsConfiguration() {
+    async function getGitOpsModuleStatus() {
         try {
             const { result } = await getModuleInfo(ModuleNameMap.ARGO_CD)
             if (result?.status === ModuleStatus.INSTALLED) {
