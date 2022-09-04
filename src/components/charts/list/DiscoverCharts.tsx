@@ -29,7 +29,7 @@ import { DOCUMENTATION, URLS, SERVER_MODE } from '../../../config'
 import { Prompt } from 'react-router'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg'
 import Tippy from '@tippyjs/react'
-import { isGitopsConfigured } from '../../../services/service'
+import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
 import warn from '../../../assets/icons/ic-warning.svg'
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
 import ChartHeaderFilter from '../ChartHeaderFilters'
@@ -41,6 +41,7 @@ import emptyImage from '../../../assets/img/empty-noresult@2x.png'
 import SavedValuesList from '../SavedValues/SavedValuesList'
 import ChartValues from '../chartValues/ChartValues'
 import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-forward.svg'
+import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWarning'
 
 interface EmptyCharts {
     title?: string
@@ -111,6 +112,8 @@ function DiscoverChartList() {
     const isLeavingPageNotAllowed = useRef(false)
     const [showChartGroupModal, toggleChartGroupModal] = useState(false)
     const [isGrid, setIsGrid] = useState<boolean>(true)
+    const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false)
+    const [clickedOnAdvance, setClickedOnAdvance] = useState(null)
     const noChartAvailable: boolean = chartList.length > 0 || searchApplied || selectedChartRepo.length > 0
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
@@ -122,6 +125,42 @@ function DiscoverChartList() {
             callApplyFilterOnCharts()
         }
     }, [location.search, state.loading])
+
+    const handleDeployButtonClick= (): void => {
+      handleActionButtonClick(false)
+    }
+
+    const handleAdvancedButtonClick= (): void => {
+      handleActionButtonClick(true)
+    }
+
+    const handleActionButtonClick = (_clickedOnAdvance: boolean): void => {
+        if (state.noGitOpsConfigAvailable) {
+            setClickedOnAdvance(_clickedOnAdvance)
+            toggleGitOpsWarningModal(true)
+        } else {
+            handleContinueWithHelm(_clickedOnAdvance)
+        }
+    }
+
+    const handleContinueWithHelm = (_clickedOnAdvance: boolean): void => {
+        if (_clickedOnAdvance) {
+            configureChart(0)
+        } else {
+            if (state.advanceVisited) {
+                handleInstall()
+            } else {
+                toggleDeployModal(true)
+            }
+        }
+    }
+
+    const hideNoGitOpsWarning = (isContinueWithHelm: boolean): void => {
+        toggleGitOpsWarningModal(false)
+        if (isContinueWithHelm) {
+            handleContinueWithHelm(clickedOnAdvance)
+        }
+    }
 
     function reloadCallback(event): void {
         event.preventDefault()
@@ -434,7 +473,7 @@ function DiscoverChartList() {
                                         <button
                                             type="button"
                                             disabled={state.charts.length === 0}
-                                            onClick={() => configureChart(0)}
+                                            onClick={handleAdvancedButtonClick}
                                             className="cta cancel ellipsis-right"
                                         >
                                             Advanced Options
@@ -457,7 +496,7 @@ function DiscoverChartList() {
                                     <button
                                         type="button"
                                         disabled={state.charts.length === 0}
-                                        onClick={state.advanceVisited ? handleInstall : () => toggleDeployModal(true)}
+                                        onClick={handleDeployButtonClick}
                                         className="cta ellipsis-right"
                                     >
                                         {installing ? (
@@ -503,6 +542,8 @@ function DiscoverChartList() {
                     }}
                 />
             ) : null}
+
+            {showGitOpsWarningModal && <NoGitOpsConfiguredWarning closePopup={hideNoGitOpsWarning} />}
         </>
     )
 }

@@ -8,8 +8,10 @@ import { useParams, useHistory, useRouteMatch } from 'react-router';
 
 import { getAppOtherEnvironment } from '../appDetails.api';
 import { useSharedState } from '../../utils/useSharedState';
-import { AppType } from "../appDetails.type";
+import { AppType, DeploymentAppType } from "../appDetails.type";
 import { ReactComponent as ScaleObjects } from '../../../../assets/icons/ic-scale-objects.svg';
+import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
+import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import ScaleWorkloadsModal from './scaleWorkloads/ScaleWorkloadsModal.component';
 import Tippy from '@tippyjs/react';
 
@@ -101,7 +103,7 @@ function EnvironmentSelectorComponent() {
                                             : null
                                     }
                                     onChange={(selected) => {
-                                        handleEnvironmentChange(selected.value);
+                                        handleEnvironmentChange(selected.value)
                                     }}
                                     styles={{
                                         ...multiSelectStyles,
@@ -135,6 +137,20 @@ function EnvironmentSelectorComponent() {
                             )}
                         </div>
                     </div>
+                    <Tippy
+                        className="default-tt"
+                        arrow={false}
+                        placement="top"
+                        content={`Deployed using ${
+                            appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? `GitOps` : `Helm`
+                        }`}
+                    >
+                        {appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? (
+                            <ArgoCD className="icon-dim-32 ml-16" />
+                        ) : (
+                            <Helm className="icon-dim-32 ml-16" />
+                        )}
+                    </Tippy>
                 </div>
             </div>
             {appDetails.appType === AppType.EXTERNAL_HELM_CHART && !showWorkloadsModal && (
@@ -153,9 +169,7 @@ function EnvironmentSelectorComponent() {
                             className="default-tt"
                             content={'No scalable workloads available'}
                         >
-                            <button
-                                className="scale-workload__btn flex left cta pb-6 pt-6 pl-12 pr-12 not-allowed"
-                            >
+                            <button className="scale-workload__btn flex left cta pb-6 pt-6 pl-12 pr-12 not-allowed">
                                 <ScaleObjects className="scale-workload-icon mr-4" /> Scale workloads
                             </button>
                         </Tippy>
@@ -166,7 +180,7 @@ function EnvironmentSelectorComponent() {
                 <ScaleWorkloadsModal appId={params.appId} onClose={() => setWorkloadsModal(false)} history={history} />
             )}
         </div>
-    );
+    )
 }
 
 export default EnvironmentSelectorComponent;

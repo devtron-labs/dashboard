@@ -244,6 +244,7 @@ export interface ChartGroupState {
     advanceVisited: boolean;
     loading: boolean;
     chartGroupDetailsLoading: boolean;
+    noGitOpsConfigAvailable?: boolean
 }
 
 export interface ChartGroupHelpers extends ChartSummaryHelpers, AdvancedConfigHelpers {

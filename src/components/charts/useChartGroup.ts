@@ -8,7 +8,7 @@ import {
     getChartGroupDetail,
     createChartValues as createChartValuesService,
 } from './charts.service'
-import { getChartRepoList, getAvailableCharts, getTeamList, getEnvironmentListMin } from '../../services/service'
+import { getChartRepoList, getAvailableCharts, getTeamList, getEnvironmentListMin, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import { mapByKey, showError, sortOptionsByLabel } from '../common'
 import { toast } from 'react-toastify'
 import { getChartGroups } from './charts.service'
@@ -40,6 +40,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         advanceVisited: false,
         loading: true,
         chartGroupDetailsLoading: false,
+        noGitOpsConfigAvailable: false
     }
     const [state, setState] = useState<ChartGroupState>(initialState)
 
@@ -52,12 +53,14 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                     { result: availableCharts },
                     { result: projects },
                     { result: environments },
+                    { result: gitOpsModuleInstalledAndConfigured}
                 ] = await Promise.all([
                     getChartRepoList(),
                     serverMode == SERVER_MODE.FULL ? getChartGroups() : { result: undefined },
                     getAvailableCharts(`?includeDeprecated=1`),
                     getTeamList(),
                     getEnvironmentListMin(),
+                    isGitOpsModuleInstalledAndConfigured()
                 ])
                 let chartRepos = chartRepoList
                     .map((chartRepo) => {
@@ -75,6 +78,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                     availableCharts: mapByKey(availableCharts, 'id'),
                     projects,
                     environments,
+                    noGitOpsConfigAvailable: gitOpsModuleInstalledAndConfigured.isInstalled && !gitOpsModuleInstalledAndConfigured.isConfigured
                 }))
             } catch (err) {
                 showError(err)
