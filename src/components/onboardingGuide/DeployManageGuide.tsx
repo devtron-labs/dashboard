@@ -31,7 +31,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                     getClusterListMinWithoutAuth(),
                 ])
                 setLoader(false)
-                setDevtronHelmCount(installedHelmAppsRes.result.helmApps.length)
+                setDevtronHelmCount(installedHelmAppsRes?.result?.helmApps.length)
                 setDefaultCluster(clusterListMinRes?.result?.some((data) => data.cluster_name === 'default_cluster'))
             } catch (err) {
                 showError(err)
