@@ -1,11 +1,11 @@
 import React from 'react'
-import './guidePage.scss'
-import CreateApp from '../../../assets/img/guide-create-app.png'
-import PreviewImage from '../../../assets/img/ic-preview.png'
-import { DEVTRON_NODE_DEPLOY_VIDEO, DOCUMENTATION, PREVIEW_DEVTRON } from '../../../config'
-import { GuidedPageType } from './GuidePage.type'
+import CreateApp from '../../assets/img/guide-create-app.png'
+import PreviewImage from '../../assets/img/ic-preview.png'
+import { DEVTRON_NODE_DEPLOY_VIDEO, PREVIEW_DEVTRON } from '../../config'
+import { GuidedPageType } from './OnboardingGuide.type'
+import './onboardingGuide.scss'
 
-function GuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
+function DevtronAppGuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
     const renderSubTitle = () => {
         return (
             <>
@@ -60,4 +60,4 @@ function GuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
     )
 }
 
-export default GuidePage
+export default DevtronAppGuidePage

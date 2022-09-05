@@ -10,7 +10,7 @@ import { Progressing, showError } from '../common'
 import { getDevtronInstalledHelmApps } from '../app/list-new/AppListService'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import { NAVIGATION, handlePostHogEventUpdate, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
-import CommonGuide from './CommonGuide'
+import GuideCommonHeader from './GuideCommonHeader'
 import { getClusterListMinWithoutAuth } from '../../services/service'
 import { DeployManageGuideType } from './OnboardingGuide.type'
 
@@ -46,129 +46,119 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
         history.push(`${URLS.APP}/${URLS.APP_LIST}`)
     }
 
-    return (
-        <div>
-            {loader ? (
-                <div className="w-100 flex" style={{ height: 'calc(100vh - 80px)' }}>
-                    <Progressing pageLoader />
-                </div>
-            ) : (
-                <div className="deploy-manage-container">
-                    <CommonGuide
-                        loginCount={loginCount}
-                        title="Deploy and manage helm apps"
-                        subtitle="This helps us in guiding you towards relevant product features"
-                        onClickCloseButton={redirectToAppList}
-                        isGettingStartedClicked={isGettingStartedClicked}
-                    />
-                    <div className="deploy-manage__body bcn-0 flex position-rel">
-                        <div className="deploy-manage__abs">
-                            <div className="deploy-manage-cards__wrap">
-                                {devtronHelmCount > 0 && (
-                                    <div className="deploy-card bcn-0 flex w-400 br-4 en-2 bw-1 ">
-                                        <NavLink
-                                            to={isDefaultCluster ? NAVIGATION.AUTOCOMPLETE : NAVIGATION.HELM_APPS}
-                                            activeClassName="active"
-                                            className="no-decor fw-6 cursor cn-9 flex"
-                                            onClick={() =>
-                                                handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.VIEW_APPLICATION)
-                                            }
-                                        >
-                                            <img
-                                                className="left-radius-4 bcn-1"
-                                                src={HelmSearch}
-                                                width="200"
-                                                height="150"
-                                                alt="Please connect cluster"
-                                            />
-                                            <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
-                                                Check deployed helm apps <br />
-                                                <div className="fs-14 cb-5 mt-8">View applications</div>
-                                            </div>
-                                        </NavLink>
-                                    </div>
-                                )}
-
-                                <div className="deploy-card bcn-0 w-400 br-4 en-2 bw-1 ">
-                                    <NavLink
-                                        to={URLS.CHARTS_DISCOVER}
-                                        activeClassName="active"
-                                        className="no-decor fw-6 cursor cn-9 flex"
-                                        onClick={() =>
-                                            handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.BROWSW_HELM_CHART)
-                                        }
-                                    >
-                                        <img
-                                            className="left-radius-4 bcn-1"
-                                            src={HelmCollage}
-                                            width="200"
-                                            height="150"
-                                            alt="Please connect cluster"
-                                        />
-                                        <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
-                                            I want to deploy popular helm charts <br />
-                                            <div className="fs-14 cb-5 mt-8">Browse helm charts</div>
-                                        </div>
-                                    </NavLink>
-                                </div>
-                                <div className="deploy-card bcn-0 w-400 br-4 en-2 bw-1 ">
-                                    <NavLink
-                                        to={URLS.GLOBAL_CONFIG_CLUSTER}
-                                        activeClassName="active"
-                                        className="no-decor fw-6 cursor cn-9 flex"
-                                        onClick={() =>
-                                            handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.CONNECT_CLUSTER)
-                                        }
-                                    >
-                                        <img
-                                            className="left-radius-4 bcn-1"
-                                            src={HelmInCluster}
-                                            width="200"
-                                            height="150"
-                                            alt="Please connect cluster"
-                                        />
-                                        <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
-                                            I have helm applications in other clusters <br />
-                                            <div className="fs-14 cb-5 mt-8"> Connect a cluster</div>
-                                        </div>
-                                    </NavLink>
-                                </div>
-                                <div className="deploy-card bcn-0 w-400 br-4 en-2 bw-1 ">
-                                    <NavLink
-                                        to={URLS.GLOBAL_CONFIG_CHART}
-                                        activeClassName="active"
-                                        className="no-decor fw-6 cursor cn-9 flex"
-                                        onClick={() =>
-                                            handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.CONNECT_CHART_REPOSITORY)
-                                        }
-                                    >
-                                        <img
-                                            className="left-radius-4 bcn-1"
-                                            src={ChartRepository}
-                                            width="200"
-                                            height="150"
-                                            alt="Please connect cluster"
-                                        />
-                                        <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
-                                            I want to connect my own chart repository <br />
-                                            <div className="fs-14 cb-5 mt-8"> Connect chart repository</div>
-                                        </div>
-                                    </NavLink>
-                                </div>
-                            </div>
-                            <div className="fs-14 flex column mt-40 mb-20">
+    return loader ? (
+        <div className="w-100 flex" style={{ height: 'calc(100vh - 80px)' }}>
+            <Progressing pageLoader />
+        </div>
+    ) : (
+        <div className="deploy-manage-container">
+            <GuideCommonHeader
+                loginCount={loginCount}
+                title="Deploy and manage helm apps"
+                subtitle="This helps us in guiding you towards relevant product features"
+                onClickCloseButton={redirectToAppList}
+                isGettingStartedClicked={isGettingStartedClicked}
+            />
+            <div className="deploy-manage__body bcn-0 flex position-rel">
+                <div className="deploy-manage__abs">
+                    <div className="deploy-manage-cards__wrap">
+                        {devtronHelmCount > 0 && (
+                            <div className="deploy-card bcn-0 flex w-400 br-4 en-2 bw-1 ">
                                 <NavLink
-                                    to={`${URLS.APP}/${URLS.APP_LIST}`}
-                                    className="guide_skip no-decor cb-5 fw-6 cursor mb-4"
+                                    to={isDefaultCluster ? NAVIGATION.AUTOCOMPLETE : NAVIGATION.HELM_APPS}
+                                    activeClassName="active"
+                                    className="no-decor fw-6 cursor cn-9 flex"
+                                    onClick={() => handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.VIEW_APPLICATION)}
                                 >
-                                    Skip and explore Devtron on your own
+                                    <img
+                                        className="left-radius-4 bcn-1"
+                                        src={HelmSearch}
+                                        width="200"
+                                        height="150"
+                                        alt="Please connect cluster"
+                                    />
+                                    <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
+                                        Check deployed helm apps <br />
+                                        <div className="fs-14 cb-5 mt-8">View applications</div>
+                                    </div>
                                 </NavLink>
-                                <div className="cn-7">Tip: You can return here anytime from the Help menu</div>
                             </div>
+                        )}
+
+                        <div className="deploy-card bcn-0 w-400 br-4 en-2 bw-1 ">
+                            <NavLink
+                                to={URLS.CHARTS_DISCOVER}
+                                activeClassName="active"
+                                className="no-decor fw-6 cursor cn-9 flex"
+                                onClick={() => handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.BROWSW_HELM_CHART)}
+                            >
+                                <img
+                                    className="left-radius-4 bcn-1"
+                                    src={HelmCollage}
+                                    width="200"
+                                    height="150"
+                                    alt="Please connect cluster"
+                                />
+                                <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
+                                    I want to deploy popular helm charts <br />
+                                    <div className="fs-14 cb-5 mt-8">Browse helm charts</div>
+                                </div>
+                            </NavLink>
+                        </div>
+                        <div className="deploy-card bcn-0 w-400 br-4 en-2 bw-1 ">
+                            <NavLink
+                                to={URLS.GLOBAL_CONFIG_CLUSTER}
+                                activeClassName="active"
+                                className="no-decor fw-6 cursor cn-9 flex"
+                                onClick={() => handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.CONNECT_CLUSTER)}
+                            >
+                                <img
+                                    className="left-radius-4 bcn-1"
+                                    src={HelmInCluster}
+                                    width="200"
+                                    height="150"
+                                    alt="Please connect cluster"
+                                />
+                                <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
+                                    I have helm applications in other clusters <br />
+                                    <div className="fs-14 cb-5 mt-8"> Connect a cluster</div>
+                                </div>
+                            </NavLink>
+                        </div>
+                        <div className="deploy-card bcn-0 w-400 br-4 en-2 bw-1 ">
+                            <NavLink
+                                to={URLS.GLOBAL_CONFIG_CHART}
+                                activeClassName="active"
+                                className="no-decor fw-6 cursor cn-9 flex"
+                                onClick={() =>
+                                    handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.CONNECT_CHART_REPOSITORY)
+                                }
+                            >
+                                <img
+                                    className="left-radius-4 bcn-1"
+                                    src={ChartRepository}
+                                    width="200"
+                                    height="150"
+                                    alt="Please connect cluster"
+                                />
+                                <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
+                                    I want to connect my own chart repository <br />
+                                    <div className="fs-14 cb-5 mt-8"> Connect chart repository</div>
+                                </div>
+                            </NavLink>
                         </div>
                     </div>
+                    <div className="fs-14 flex column mt-40 mb-20">
+                        <NavLink
+                            to={`${URLS.APP}/${URLS.APP_LIST}`}
+                            className="guide_skip no-decor cb-5 fw-6 cursor mb-4"
+                        >
+                            Skip and explore Devtron on your own
+                        </NavLink>
+                        <div className="cn-7">Tip: You can return here anytime from the Help menu</div>
+                    </div>
                 </div>
-            )}
+            </div>
         </div>
     )
 }

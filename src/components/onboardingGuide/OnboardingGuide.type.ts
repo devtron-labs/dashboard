@@ -1,4 +1,4 @@
-export interface CommonGuideType{
+export interface GuideCommonHeaderType{
   loginCount: number
   title: string
   subtitle: string
@@ -22,4 +22,14 @@ export interface OnboardingGuideProps {
 export interface DeployManageGuideType {
     isGettingStartedClicked: boolean
     loginCount: number
+}
+export interface GettingStartedType {
+  className: string
+  showHelpCard: boolean
+  hideGettingStartedCard: (count?: string) => void
+  loginCount: number
+}
+
+export interface GuidedPageType {
+  openDevtronAppCreateModel: (event) => void
 }

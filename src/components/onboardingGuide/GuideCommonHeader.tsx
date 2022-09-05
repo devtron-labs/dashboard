@@ -2,10 +2,10 @@ import React from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as GoBack } from '../../assets/icons/ic-arrow-backward.svg'
-import { CommonGuideType } from './OnboardingGuide.type'
+import { GuideCommonHeaderType } from './OnboardingGuide.type'
 import { URLS } from '../../config'
 
-function CommonGuide({ loginCount, title, subtitle, onClickCloseButton, isGettingStartedClicked }: CommonGuideType) {
+function GuideCommonHeader({ loginCount, title, subtitle, onClickCloseButton, isGettingStartedClicked }: GuideCommonHeaderType) {
     const history = useHistory()
     const match = useRouteMatch()
     const isGuidePage = match.url.includes(`${URLS.GETTING_STARTED}/${URLS.GUIDE}`)
@@ -40,4 +40,4 @@ function CommonGuide({ loginCount, title, subtitle, onClickCloseButton, isGettin
     )
 }
 
-export default CommonGuide
+export default GuideCommonHeader

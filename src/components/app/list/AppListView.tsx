@@ -10,9 +10,7 @@ import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import {ReactComponent as DevtronAppIcon} from '../../../assets/icons/ic-devtron-app.svg';
 import {ReactComponent as HelpOutlineIcon} from '../../../assets/icons/ic-help-outline.svg';
 import Tippy from '@tippyjs/react';
-import GuidePage from '../../common/guidePage/GuidePage';
-
-
+import DevtronAppGuidePage from '../../onboardingGuide/DevtronAppGuidePage';
 interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
     expandRow: (app: App | null) => void;
     closeExpandedRow: () => void;
@@ -136,7 +134,7 @@ export class AppListView extends Component<AppListViewProps>{
 
         else if (this.props.view === AppListViewType.EMPTY) {
             return <React.Fragment>
-                <GuidePage openDevtronAppCreateModel={this.props.openDevtronAppCreateModel} />
+                <DevtronAppGuidePage openDevtronAppCreateModel={this.props.openDevtronAppCreateModel} />
             </React.Fragment>
         }
 

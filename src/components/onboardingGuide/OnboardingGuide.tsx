@@ -6,7 +6,7 @@ import { PREVIEW_DEVTRON, SERVER_MODE, URLS } from '../../config'
 import './onboardingGuide.scss'
 import PreviewImage from '../../assets/img/ic-preview.png'
 import { handlePostHogEventUpdate, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
-import CommonGuide from './CommonGuide'
+import GuideCommonHeader from './GuideCommonHeader'
 import { OnboardingGuideProps } from './OnboardingGuide.type'
 
 function OnboardingGuide({
@@ -40,7 +40,7 @@ function OnboardingGuide({
 
     return (
         <div className="onboarding-container h-100">
-            <CommonGuide
+            <GuideCommonHeader
                 loginCount={loginCount}
                 title="What will you use devtron for?"
                 subtitle="This will help us in guiding you towards relevant product features"
