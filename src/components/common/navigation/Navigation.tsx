@@ -119,7 +119,7 @@ export default class Navigation extends Component<
         this.getSecurityModuleStatus()
     }
 
-    async getSecurityModuleStatus() {
+    async getSecurityModuleStatus(): Promise<void> {
         try {
             const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
             if (result?.status === ModuleStatus.INSTALLED) {
