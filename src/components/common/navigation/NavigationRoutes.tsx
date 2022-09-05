@@ -59,8 +59,9 @@ export default function NavigationRoutes() {
     const [loginLoader, setLoginLoader] = useState(true)
     const [isDeployManageCardClicked, setDeployManageCardClicked] = useState(false)
     const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
-    const [isGettingStartedClicked, setGettingStartedClicked] = useState()
+    const [isGettingStartedClicked, setGettingStartedClicked] = useState(false)
 
+    setGettingStartedClicked
     const showCloseButtonAfterGettingStartedClicked = () => {
         setHelpGettingStartedClicked(true)
     }

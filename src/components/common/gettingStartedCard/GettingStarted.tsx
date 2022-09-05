@@ -1,7 +1,7 @@
 import React from 'react'
 import GettingToast from '../../../assets/img/lifebuoy.png'
 import { updateLoginCount } from '../../../services/service'
-import { handlePostHogEventUpdate, LOGIN_COUNT, POSTHOG_EVENT_ONBOARDING } from '../../onboardingGuide/onboarding.utils'
+import { handlePostHogEventUpdate, LOGIN_COUNT, MAX_LOGIN_COUNT, POSTHOG_EVENT_ONBOARDING } from '../../onboardingGuide/onboarding.utils'
 import { GettingStartedType } from '../../onboardingGuide/OnboardingGuide.type'
 import { setActionWithExpiry } from '../helpers/Helpers'
 import './gettingStarted.scss'
@@ -16,7 +16,7 @@ function GettingStartedCard({ className, hideGettingStartedCard }: GettingStarte
     const onClickedDontShowAgain = (e) => {
         const updatedPayload = {
             key: LOGIN_COUNT,
-            value: '5',
+            value: `${MAX_LOGIN_COUNT}`,
         }
         updateLoginCount(updatedPayload)
         hideGettingStartedCard(updatedPayload.value)
