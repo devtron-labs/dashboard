@@ -60,7 +60,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
     }
 
     const onClickCluster = (e) => {
-        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.BROWSE_HELM_CHART)
+        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.CONNECT_CLUSTER)
     }
 
     return loader ? (
