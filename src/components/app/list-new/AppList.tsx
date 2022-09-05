@@ -35,7 +35,6 @@ import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import { getAppList } from '../service'
 import moment from 'moment'
 import { getUserRole } from '../../userGroups/userGroup.service'
-import Tippy from '@tippyjs/react'
 
 export default function AppList({isSuperAdmin, appListCount} : AppListPropType) {
     const location = useLocation()
@@ -1027,30 +1026,7 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                     {renderMasterFilters()}
                     {renderAppliedFilters()}
                     {renderAppTabs()}
-                    {serverMode == SERVER_MODE.FULL && renderAppCreateRouter()}
-                    {params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.FULL && (
-                        <DevtronAppListContainer
-                            payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                            appCheckListRes={appCheckListRes}
-                            clearAllFilters={removeAllFilters}
-                            sortApplicationList={sortApplicationList}
-                            updateLastDataSync={updateLastDataSync}
-                            setAppCount={setAppCount}
-                        />
-                    )}
-                    {params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.EA_ONLY && (
-                        <div style={{ height: 'calc(100vh - 250px)' }}>
-                            <EAEmptyState
-                                title={'Create, build, deploy and debug custom apps'}
-                                msg={
-                                    'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'
-                                }
-                                stateType={EAEmptyStateType.DEVTRONAPPS}
-                                knowMoreLink={DOCUMENTATION.HOME_PAGE}
-                            />
-                        </div>
-                    )}
-                    {params.appType == AppListConstants.AppType.HELM_APPS && (
+                    {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
                         <>
                             {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
                                 serverMode === SERVER_MODE.FULL && (
@@ -1063,6 +1039,7 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                                         appListCount={appListCount}
                                         isSuperAdmin={isSuperAdmin}
                                         openDevtronAppCreateModel={openDevtronAppCreateModel}
+                                        setAppCount={setAppCount}
                                     />
                                 )}
                             {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
