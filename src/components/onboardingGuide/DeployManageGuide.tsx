@@ -24,20 +24,21 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
     const _getInit = async () => {
         if (serverMode === SERVER_MODE.FULL) {
             setLoader(true)
+
             try {
-                await getDevtronInstalledHelmApps('').then((response) => {
-                    setDevtronHelmCount(response.result.helmApps.length)
-                    setLoader(false)
-                })
-                await getClusterListMinWithoutAuth().then((response) => {
-                    setDefaultCluster(response?.result?.some((data) => data.cluster_name === 'default_cluster'))
-                })
+                const [installedHelmAppsRes, clusterListMinRes] = await Promise.all([
+                    getDevtronInstalledHelmApps(''),
+                    getClusterListMinWithoutAuth(),
+                ])
+                setLoader(false)
+                setDevtronHelmCount(installedHelmAppsRes.result.helmApps.length)
+                setDefaultCluster(clusterListMinRes?.result?.some((data) => data.cluster_name === 'default_cluster'))
             } catch (err) {
                 showError(err)
-                setLoader(false)
             }
         }
     }
+
     useEffect(() => {
         _getInit()
     }, [])
@@ -47,19 +48,19 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
     }
 
     const onClickChartCard = (e) => {
-      handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.CONNECT_CHART_REPOSITORY)
+        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.CONNECT_CHART_REPOSITORY)
     }
 
     const onClickViewApplication = (e) => {
-      handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.VIEW_APPLICATION)
+        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.VIEW_APPLICATION)
     }
 
     const onClickHelmChart = (e) => {
-      handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.BROWSE_HELM_CHART)
+        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.BROWSE_HELM_CHART)
     }
 
     const onClickCluster = (e) => {
-      handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.BROWSE_HELM_CHART)
+        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.BROWSE_HELM_CHART)
     }
 
     return loader ? (
