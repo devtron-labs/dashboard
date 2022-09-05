@@ -254,7 +254,6 @@ export default function NavigationRoutes() {
                                                     isSuperAdmin={isSuperAdmin}
                                                     appListCount={appListCount}
                                                     loginCount={loginCount}
-                                                    serverMode={serverMode}
                                                 />
                                             )}
                                         />
@@ -298,7 +297,7 @@ export default function NavigationRoutes() {
                                         </Route>
 
                                         <Route>
-                                            <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && (serverMode === SERVER_MODE.EA_ONLY && loginCount === 0) || (serverMode === SERVER_MODE.FULL && appListCount === 0)} />
+                                            <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && loginCount === 0} />
                                         </Route>
                                     </Switch>
                                 </ErrorBoundary>
@@ -311,7 +310,7 @@ export default function NavigationRoutes() {
     }
 }
 
-export function AppRouter({ isSuperAdmin, appListCount, loginCount, serverMode }: AppRouterType) {
+export function AppRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterType) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     return (
@@ -325,7 +324,6 @@ export function AppRouter({ isSuperAdmin, appListCount, loginCount, serverMode }
                                 isSuperAdmin={isSuperAdmin}
                                 appListCount={appListCount}
                                 loginCount={loginCount}
-                                serverMode={serverMode}
                             />
                         )}
                     />
@@ -351,7 +349,7 @@ export function AppRouter({ isSuperAdmin, appListCount, loginCount, serverMode }
     )
 }
 
-export function AppListRouter({ isSuperAdmin, appListCount, loginCount, serverMode }: AppRouterType) {
+export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterType) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     return (
@@ -363,7 +361,7 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount, serverMo
                         <RedirectToAppList />
                     </Route>
                     <Route>
-                        <RedirectUserWithSentry isFirstLoginUser = {isSuperAdmin && (serverMode === SERVER_MODE.EA_ONLY && loginCount === 0) || (serverMode === SERVER_MODE.FULL && appListCount === 0)} />
+                        <RedirectUserWithSentry isFirstLoginUser = {isSuperAdmin && loginCount === 0} />
                     </Route>
                 </Switch>
             </AppContext.Provider>
