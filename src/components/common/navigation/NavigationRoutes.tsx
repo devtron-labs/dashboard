@@ -88,7 +88,7 @@ export default function NavigationRoutes() {
 
      const processLoginData = (response, superAdmin) => {
          const count = response.result?.value ? parseInt(response.result.value) : 0
-         setLoginCount(count ?? 1)
+         setLoginCount(count)
          if (
              typeof Storage !== 'undefined' &&
              (localStorage.getItem('isSSOLogin') || localStorage.getItem('isAdminLogin'))
@@ -112,6 +112,9 @@ export default function NavigationRoutes() {
 
     useEffect(() => {
         const loginInfo = getLoginInfo()
+
+        if (!loginInfo) return
+
         if (process.env.NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
@@ -143,8 +146,6 @@ export default function NavigationRoutes() {
                 })
             }
         }
-
-        if (!loginInfo) return
 
         if (typeof Storage !== 'undefined') {
             if (localStorage.isDashboardLoggedIn) return
@@ -341,7 +342,7 @@ export function AppRouter({ isSuperAdmin, appListCount, loginCount, serverMode }
                     </Route>
                     <Route>
                         <RedirectUserWithSentry
-                            isFirstLoginUser={isSuperAdmin && (serverMode === SERVER_MODE.EA_ONLY && loginCount === 0) || (serverMode === SERVER_MODE.FULL && appListCount === 0)}
+                            isFirstLoginUser={isSuperAdmin && loginCount === 0}
                         />
                     </Route>
                 </Switch>

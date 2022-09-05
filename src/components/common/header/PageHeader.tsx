@@ -46,7 +46,14 @@ function PageHeader({
     showCloseButton = false,
     onClose,
 }: PageHeaderType) {
-    const { loginCount, setLoginCount, showGettingStartedCard, setShowGettingStartedCard, isGettingStartedClicked, setGettingStartedClicked } = useContext(mainContext)
+    const {
+        loginCount,
+        setLoginCount,
+        showGettingStartedCard,
+        setShowGettingStartedCard,
+        isGettingStartedClicked,
+        setGettingStartedClicked,
+    } = useContext(mainContext)
     const [showHelpCard, setShowHelpCard] = useState(false)
     const [showLogOutCard, setShowLogOutCard] = useState(false)
     const loginInfo = getLoginInfo()
@@ -85,21 +92,21 @@ function PageHeader({
 
     const onClickLogoutButton = () => {
         setShowLogOutCard(!showLogOutCard)
-        if(showHelpCard){
-          setShowHelpCard(false)
+        if (showHelpCard) {
+            setShowHelpCard(false)
         }
         setActionWithExpiry('clickedOkay', 1)
         hideGettingStartedCard()
     }
 
-    const onClickHelp = () => {
+    const onClickHelp = (e) => {
         setShowHelpCard(!showHelpCard)
-        if(showLogOutCard) {
-          setShowLogOutCard(false)
+        if (showLogOutCard) {
+            setShowLogOutCard(false)
         }
         setActionWithExpiry('clickedOkay', 1)
         hideGettingStartedCard()
-        handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.HELP)
+        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.HELP)
         ReactGA.event({
             category: 'Main Navigation',
             action: `Help Clicked`,
@@ -109,7 +116,10 @@ function PageHeader({
     const renderLogoutHelpSection = () => {
         return (
             <>
-                <div className="flex left cursor mr-16" onClick={onClickHelp}>
+                <div
+                    className="flex left cursor mr-16"
+                    onClick={onClickHelp}
+                >
                     <span className="icon-dim-24 fcn-9 mr-4 ml-16">
                         <Question />
                     </span>
@@ -127,16 +137,16 @@ function PageHeader({
     }
 
     const hideGettingStartedCard = (count?: string) => {
-      setShowGettingStartedCard(false)
-      if(count){
-        setLoginCount(+count)
-      }
+        setShowGettingStartedCard(false)
+        if (count) {
+            setLoginCount(+count)
+        }
     }
 
     const getExpired = (): boolean => {
-      // Render Getting started tippy card if the time gets expired
-      const now = new Date().valueOf()
-      return now > expiryDate
+        // Render Getting started tippy card if the time gets expired
+        const now = new Date().valueOf()
+        return now > expiryDate
     }
 
     return (
@@ -191,14 +201,14 @@ function PageHeader({
                     setGettingStartedClicked={setGettingStartedClicked}
                 />
             )}
-            {showGettingStartedCard && (loginCount >= 0) && (loginCount < 5) && getExpired() && (
-                        <GettingStartedCard
-                            className="w-300"
-                            showHelpCard={false}
-                            hideGettingStartedCard={hideGettingStartedCard}
-                            loginCount={loginCount}
-                        />
-                    )}
+            {showGettingStartedCard && loginCount >= 0 && loginCount < 5 && getExpired() && (
+                <GettingStartedCard
+                    className="w-300"
+                    showHelpCard={false}
+                    hideGettingStartedCard={hideGettingStartedCard}
+                    loginCount={loginCount}
+                />
+            )}
             {showLogOutCard && (
                 <LogoutCard
                     className={'logout-card__more-option'}

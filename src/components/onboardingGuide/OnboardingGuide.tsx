@@ -30,12 +30,16 @@ function OnboardingGuide({
         }
     }
 
-    const onClickedCICD = () => {
+    const onClickedCICD = (e) => {
         if (serverMode === SERVER_MODE.FULL) {
-            handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.DEPLOY_CUSTOM_APP_CI_CD)
+            handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.DEPLOY_CUSTOM_APP_CI_CD)
         } else {
-            handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.INSTALL_CUSTOM_CI_CD)
+            handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.INSTALL_CUSTOM_CI_CD)
         }
+    }
+
+    const onClickPreviewCard = (e) => {
+        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.PREVIEW)
     }
 
     return (
@@ -56,7 +60,7 @@ function OnboardingGuide({
                                 href={PREVIEW_DEVTRON}
                                 rel="noreferrer noopener"
                                 target="_blank"
-                                onClick={() => handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.PREVIEW)}
+                                onClick={onClickPreviewCard}
                             >
                                 <img className="onboarding-card__img top-radius-4" src={PreviewImage} />
                                 <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">

@@ -425,12 +425,7 @@ export function updateLoginCount(payload): Promise<LoginCountType>  {
     return post(`${Routes.ATTRIBUTES_USER}/${Routes.UPDATE}`, payload)
 }
 interface PostHog extends ResponseType {
-    result?: {
-        eventType: string
-        key: string
-        value: string
-        active: boolean
-    }
+    result?: any
 }
 
 export function updatePostHogEvent(payload): Promise<PostHog> {

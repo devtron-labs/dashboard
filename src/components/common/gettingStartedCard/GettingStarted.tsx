@@ -7,20 +7,20 @@ import { setActionWithExpiry } from '../helpers/Helpers'
 import './gettingStarted.scss'
 
 function GettingStartedCard({ className, hideGettingStartedCard }: GettingStartedType) {
-    const onClickedOkay = () => {
+    const onClickedOkay = (e) => {
         setActionWithExpiry('clickedOkay', 1)
         hideGettingStartedCard()
-        handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.TOOLTIP_OKAY)
+        handlePostHogEventUpdate(e)
     }
 
-    const onClickedDontShowAgain = () => {
+    const onClickedDontShowAgain = (e) => {
         const updatedPayload = {
             key: 'login-count',
             value: '5',
         }
         updateLoginCount(updatedPayload)
         hideGettingStartedCard(updatedPayload.value)
-        handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.TOOLTIP_DONT_SHOW_AGAIN)
+        handlePostHogEventUpdate(e)
     }
 
     return (
@@ -31,11 +31,16 @@ function GettingStartedCard({ className, hideGettingStartedCard }: GettingStarte
                 <div className="flex column left fw-6">Getting started</div>
                 <div>You can always access the Getting Started guide from here.</div>
                 <div className="mt-12 lh-18">
-                    <button onClick={onClickedOkay} className="bw-0 cn-9 fw-6 br-4 mr-12 pt-4 pb-4 pl-8 pr-8 pl-8 pr-8">
+                    <button
+                        onClick={onClickedOkay}
+                        className="bw-0 cn-9 fw-6 br-4 mr-12 pt-4 pb-4 pl-8 pr-8 pl-8 pr-8"
+                        data-posthog={POSTHOG_EVENT_ONBOARDING.TOOLTIP_OKAY}
+                    >
                         Okay
                     </button>
                     <button
                         className="br-4 token__dont-show en-0 bw-1 transparent pl-8 pr-8 pt-3 pb-3"
+                        data-posthog={POSTHOG_EVENT_ONBOARDING.TOOLTIP_DONT_SHOW_AGAIN}
                         onClick={onClickedDontShowAgain}
                     >
                         Don't show again

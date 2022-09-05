@@ -14,9 +14,9 @@ export const POSTHOG_EVENT_ONBOARDING = {
     HELP: 'Clicked Help'
 }
 
-export const handlePostHogEventUpdate = (key) => {
+export const handlePostHogEventUpdate = (e, eventName?: string): void => {
     const payload = {
-        eventType: key,
+        eventType: eventName || e.target.dataset.posthog,
         key: 'login-count',
         value: '',
         active: true,
