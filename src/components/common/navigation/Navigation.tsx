@@ -237,7 +237,7 @@ export default class Navigation extends Component<
                             if (
                                 (this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
                                 (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
-                                (this.state.installedModule.indexOf(item.moduleName)>=0)
+                                (this.state.installedModule.indexOf(item.moduleName)!==-1)
                             ) {
                                 if (item.type === 'button') {
                                     return this.renderNavButton(item)

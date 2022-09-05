@@ -76,7 +76,7 @@ export default function CIPipeline({
     }>({ preBuildStage: [], postBuildStage: [] })
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
     const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
-    const [isSecurityModuleInstalled, setIsSecurityModuleInstalled] = useState<boolean>(false)
+    const [isSecurityModuleInstalled, setSecurityModuleInstalled] = useState<boolean>(false)
     const [formData, setFormData] = useState<FormType>({
         name: '',
         args: [{ key: '', value: '' }],
@@ -203,7 +203,7 @@ export default function CIPipeline({
         try {
             const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
             if (result?.status === ModuleStatus.INSTALLED) {
-              setIsSecurityModuleInstalled(true)
+              setSecurityModuleInstalled(true)
             }
         } catch (error) {}
     }
