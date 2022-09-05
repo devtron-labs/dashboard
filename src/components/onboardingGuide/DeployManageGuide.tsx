@@ -50,6 +50,18 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
       handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.CONNECT_CHART_REPOSITORY)
     }
 
+    const onClickViewApplication = (e) => {
+      handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.VIEW_APPLICATION)
+    }
+
+    const onClickHelmChart = (e) => {
+      handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.BROWSE_HELM_CHART)
+    }
+
+    const onClickCluster = (e) => {
+      handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.BROWSE_HELM_CHART)
+    }
+
     return loader ? (
         <div className="w-100 flex" style={{ height: 'calc(100vh - 80px)' }}>
             <Progressing pageLoader />
@@ -72,8 +84,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                                     to={isDefaultCluster ? NAVIGATION.AUTOCOMPLETE : NAVIGATION.HELM_APPS}
                                     activeClassName="active"
                                     className="no-decor fw-6 cursor cn-9 flex"
-                                    data-posthog={POSTHOG_EVENT_ONBOARDING.VIEW_APPLICATION}
-                                    onClick={handlePostHogEventUpdate}
+                                    onClick={onClickViewApplication}
                                 >
                                     <img
                                         className="left-radius-4 bcn-1"
@@ -95,8 +106,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                                 to={URLS.CHARTS_DISCOVER}
                                 activeClassName="active"
                                 className="no-decor fw-6 cursor cn-9 flex"
-                                data-posthog={POSTHOG_EVENT_ONBOARDING.BROWSW_HELM_CHART}
-                                onClick={handlePostHogEventUpdate}
+                                onClick={onClickHelmChart}
                             >
                                 <img
                                     className="left-radius-4 bcn-1"
@@ -116,8 +126,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                                 to={URLS.GLOBAL_CONFIG_CLUSTER}
                                 activeClassName="active"
                                 className="no-decor fw-6 cursor cn-9 flex"
-                                data-posthog={POSTHOG_EVENT_ONBOARDING.CONNECT_CLUSTER}
-                                onClick={handlePostHogEventUpdate}
+                                onClick={onClickCluster}
                             >
                                 <img
                                     className="left-radius-4 bcn-1"
