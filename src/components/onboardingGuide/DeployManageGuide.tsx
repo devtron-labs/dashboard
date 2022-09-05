@@ -21,15 +21,15 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
     const { serverMode } = useContext(mainContext)
     const [isDefaultCluster, setDefaultCluster] = useState(false)
 
-    const _getInit = () => {
+    const _getInit = async () => {
         if (serverMode === SERVER_MODE.FULL) {
             setLoader(true)
             try {
-                getDevtronInstalledHelmApps('').then((response) => {
+                await getDevtronInstalledHelmApps('').then((response) => {
                     setDevtronHelmCount(response.result.helmApps.length)
                     setLoader(false)
                 })
-                getClusterListMinWithoutAuth().then((response) => {
+                await getClusterListMinWithoutAuth().then((response) => {
                     setDefaultCluster(response?.result?.some((data) => data.cluster_name === 'default_cluster'))
                 })
             } catch (err) {
