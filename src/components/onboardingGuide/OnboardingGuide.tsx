@@ -23,11 +23,9 @@ function OnboardingGuide({
     }
 
     const redirectDeployCardToCICD = (): string => {
-        if (serverMode === SERVER_MODE.FULL) {
-            return `${URLS.APP}/${URLS.APP_LIST}`
-        } else {
-            return `${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`
-        }
+      return  serverMode === SERVER_MODE.FULL
+            ?`${URLS.APP}/${URLS.APP_LIST}`
+            : `${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`
     }
 
     const onClickedCICD = (e) => {
