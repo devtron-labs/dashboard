@@ -6,6 +6,7 @@ export const DEFAULTK8SVERSION = 'v1.16.0'
 export const Routes = {
     GET: 'get',
     UPDATE: 'update',
+    API_VERSION_V2: 'v2',
     LOGIN: 'api/v1/session',
     SOURCE_CONFIG_GET: 'app/get',
     USER_CHECK_ROLE:'user/check/roles',
@@ -86,6 +87,8 @@ export const Routes = {
     USER_CREATE: 'user/create',
     USER_UPDATE: 'user/update',
     USER_LIST: 'user/all',
+    ALL_USERS_LIST: 'user/detail/get',
+    ALL_GROUPS_LIST: 'user/role/group/detailed/get',
 
     DEPLOYMENT_METRICS: 'deployment-metrics',
     APP_CONFIG_MAP_GET: 'configmap/applevel/get',
@@ -218,6 +221,8 @@ export const SourceTypeMap = {
 
 export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A'
 export const MomentDateFormat = 'ddd, DD MMM YYYY'
+export const Moment12HourExportFormat = 'DD-MMM-YYYY hh.mm A'
+
 const DOCUMENTATION_HOME_PAGE = 'https://docs.devtron.ai'
 export const DOCUMENTATION = {
     HOME_PAGE: DOCUMENTATION_HOME_PAGE,

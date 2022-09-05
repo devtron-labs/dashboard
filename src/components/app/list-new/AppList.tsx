@@ -9,6 +9,7 @@ import {
     Modal,
     ErrorScreenManager,
     handleUTCTime,
+    useAsync,
 } from '../../common'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ChartIcon } from '../../../assets/icons/ic-charts.svg'
@@ -16,7 +17,7 @@ import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
 import { ServerErrors } from '../../../modals/commonTypes'
 import { AppListViewType } from '../config'
-import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION } from '../../../config'
+import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION, Moment12HourFormat } from '../../../config'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
@@ -28,6 +29,13 @@ import '../list/list.css'
 import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
 import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
+import { ModuleNameMap } from '../../v2/devtronStackManager/DevtronStackManager.utils'
+import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
+import { FILE_NAMES } from '../../common/ExportToCsv/constants'
+import { getAppList } from '../service'
+import moment from 'moment'
+import { getUserRole } from '../../userGroups/userGroup.service'
+import Tippy from '@tippyjs/react'
 
 export default function AppList({isSuperAdmin, appListCount} : AppListPropType) {
     const location = useLocation()
@@ -62,6 +70,8 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
     })
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
+    const [appCount, setAppCount] = useState(0)
+    const [checkingUserRole, userRoleResponse] = useAsync(getUserRole, [])
 
     // on page load
     useEffect(() => {
@@ -602,6 +612,82 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
         setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)
     }
 
+    const getAppListDataToExport = () => {
+        return getAppList(
+            typeof parsedPayloadOnUrlChange === 'object'
+                ? {
+                      ...parsedPayloadOnUrlChange,
+                      appNameSearch: searchString || '',
+                      sortBy: 'appNameSort',
+                      sortOrder: 'ASC',
+                      size: appCount,
+                  }
+                : {
+                      environments: [],
+                      teams: [],
+                      namespaces: [],
+                      appNameSearch: '',
+                      sortBy: 'appNameSort',
+                      sortOrder: 'ASC',
+                      offset: 0,
+                      hOffset: 0,
+                      size: appCount,
+                  },
+        ).then(({ result }) => {
+            if (result.appContainers) {
+                const _appDataList = []
+                for (let _app of result.appContainers) {
+                    if (_app.environments) {
+                        for (let _env of _app.environments) {
+                            const _clusterId =
+                                _env.clusterName &&
+                                masterFilters.clusters.find((_cluster) => {
+                                    return _cluster.label === _env.clusterName
+                                })?.key
+
+                            _appDataList.push({
+                                appId: _env.appId,
+                                appName: _env.appName,
+                                projectId: _env.teamId,
+                                projectName: _env.teamName,
+                                environmentId: (_env.environmentName && _env.environmentId) || '-',
+                                environmentName: _env.environmentName || '-',
+                                clusterId: `${(_clusterId ?? _clusterId) || '-'}`,
+                                clusterName: _env.clusterName || '-',
+                                namespaceId: _env.namespace && _clusterId ? `${_clusterId}_${_env.namespace}` : '-',
+                                namespace: _env.namespace || '-',
+                                status: _env.status || '-',
+                                lastDeployedTime: _env.lastDeployedTime
+                                    ? moment(_env.lastDeployedTime).format(Moment12HourFormat)
+                                    : '-',
+                            })
+                        }
+                    } else {
+                        _appDataList.push({
+                            appId: _app.appId,
+                            appName: _app.appName,
+                            projectId: _app.projectId,
+                            projectName:
+                                masterFilters.projects.find((_proj) => _proj.id === _app.projectId)?.name || '-',
+                            environmentId: '-',
+                            environmentName: '-',
+                            clusterId: '-',
+                            clusterName: '-',
+                            namespaceId: '-',
+                            namespace: '-',
+                            status: '-',
+                            lastDeployedTime: '-',
+                        })
+                    }
+                }
+
+                return _appDataList
+            }
+
+            return []
+        })
+    }
+
     const renderActionButtons = () => {
         return (
             serverMode === SERVER_MODE.FULL && (
@@ -624,6 +710,11 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
 
     function renderMasterFilters() {
         let _isAnyClusterFilterApplied = masterFilters.clusters.some((_cluster) => _cluster.isChecked)
+        const showExportCsvButton =
+            userRoleResponse?.result?.roles?.indexOf('role:super-admin___') !== -1 &&
+            currentTab === AppListConstants.AppTabs.DEVTRON_APPS &&
+            serverMode !== SERVER_MODE.EA_ONLY
+
         return (
             <div className="search-filter-section">
                 <form style={{ display: 'inline' }} onSubmit={searchApp}>
@@ -649,8 +740,7 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                         )}
                     </div>
                 </form>
-                <div className="filters">
-                    <span className="filters__label">Filter By</span>
+                <div className="app-list-filters filters">
                     <Filter
                         list={masterFilters.projects}
                         labelKey="label"
@@ -692,6 +782,8 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                         showPulsatingDot={showPulsatingDot}
                     />
                     <Filter
+                        rootClassName="no-margin-left"
+                        position={showExportCsvButton ? 'left' : 'right'}
                         list={masterFilters.namespaces.filter((namespace) => namespace.toShow)}
                         labelKey="label"
                         searchKey="actualName"
@@ -710,6 +802,17 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                         errorMessage={'Could not load namespaces'}
                         errorCallbackFunction={_forceFetchAndSetNamespaces}
                     />
+                    {showExportCsvButton && (
+                        <>
+                            <span className="filter-divider"></span>
+                            <ExportToCsv
+                                className="ml-10"
+                                apiPromise={getAppListDataToExport}
+                                fileName={FILE_NAMES.Apps}
+                                disabled={!appCount}
+                            />
+                        </>
+                    )}
                 </div>
             </div>
         )
@@ -804,7 +907,7 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                     {serverMode === SERVER_MODE.EA_ONLY && (
                         <li className="tab-list__tab">
                             <NavLink
-                                to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=cicd`}
+                                to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`}
                                 className={`tab-list__tab-link ${
                                     currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? 'active' : ''
                                 }`}
@@ -924,7 +1027,30 @@ export default function AppList({isSuperAdmin, appListCount} : AppListPropType) 
                     {renderMasterFilters()}
                     {renderAppliedFilters()}
                     {renderAppTabs()}
-                    {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
+                    {serverMode == SERVER_MODE.FULL && renderAppCreateRouter()}
+                    {params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.FULL && (
+                        <DevtronAppListContainer
+                            payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                            appCheckListRes={appCheckListRes}
+                            clearAllFilters={removeAllFilters}
+                            sortApplicationList={sortApplicationList}
+                            updateLastDataSync={updateLastDataSync}
+                            setAppCount={setAppCount}
+                        />
+                    )}
+                    {params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.EA_ONLY && (
+                        <div style={{ height: 'calc(100vh - 250px)' }}>
+                            <EAEmptyState
+                                title={'Create, build, deploy and debug custom apps'}
+                                msg={
+                                    'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'
+                                }
+                                stateType={EAEmptyStateType.DEVTRONAPPS}
+                                knowMoreLink={DOCUMENTATION.HOME_PAGE}
+                            />
+                        </div>
+                    )}
+                    {params.appType == AppListConstants.AppType.HELM_APPS && (
                         <>
                             {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
                                 serverMode === SERVER_MODE.FULL && (

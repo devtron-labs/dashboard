@@ -1,3 +1,4 @@
+import React from 'react';
 import { ServerError } from '../../../modals/commonTypes';
 import { RouteComponentProps } from 'react-router';
 import { AppCheckList, ChartCheckList } from '../../checkList/checklist.type';
@@ -61,6 +62,7 @@ export interface AppListProps extends RouteComponentProps<{ route: string }> {
     appListCount: number
     isSuperAdmin: boolean
     openDevtronAppCreateModel: (event) => void
+    setAppCount: React.Dispatch<React.SetStateAction<number>>
 }
 
 export interface AppListResponse {

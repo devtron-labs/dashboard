@@ -304,6 +304,10 @@ a:focus {
     margin-right: 0px !important;
 }
 
+.no-margin-left {
+    margin-left: 0px !important;
+}
+
 .p-lr-20 {
     padding-left: 20px;
     padding-right: 20px;
@@ -1616,7 +1620,7 @@ button.anchor {
 
 .btn-confirm {
     text-decoration: none !important;
-    margin-left: 20px;
+    margin-left: 12px;
 }
 
 .learn-more__href {

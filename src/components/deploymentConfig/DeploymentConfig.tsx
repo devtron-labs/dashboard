@@ -14,6 +14,7 @@ import {
     useJsonYaml,
     isVersionLessThanOrEqualToTarget,
     sortObjectArrayAlphabetically,
+    versionComparator,
 } from '../common'
 import { useEffectAfterMount, showError } from '../common/helpers/Helpers'
 import ReadmeConfig from './ReadmeConfig'
@@ -32,6 +33,7 @@ import YAML from 'yaml'
 import { NavLink } from 'react-router-dom'
 import { ReactComponent as Upload } from '../../assets/icons/ic-arrow-line-up.svg'
 import { ROLLOUT_DEPLOYMENT } from '../../config'
+import { OrderBy } from '../app/types'
 
 export function OptApplicationMetrics({
     currentChart,
@@ -270,7 +272,9 @@ function DeploymentConfigForm({ respondOnSuccess, isUnSet }) {
         },
     ]
     let filteredCharts = selectedChart
-        ? charts.filter((cv) => cv.name == selectedChart.name).sort((a, b) => b.id - a.id)
+        ? charts
+              .filter((cv) => cv.name == selectedChart.name)
+              .sort((a, b) => versionComparator(a, b, 'version', OrderBy.DESC))
         : []
 
     const chartMenuList = (props) => {
