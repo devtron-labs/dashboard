@@ -12,7 +12,7 @@ import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import GettingStartedCard from '../gettingStartedCard/GettingStarted'
 import { mainContext } from '../navigation/NavigationRoutes'
 import ReactGA from 'react-ga4'
-import { OnClickedHandler, POSTHOG_EVENT_ONBOARDING } from '../../onboardingGuide/onboarding.utils'
+import { handlePostHogEventUpdate, POSTHOG_EVENT_ONBOARDING } from '../../onboardingGuide/onboarding.utils'
 export interface PageHeaderType {
     headerName?: string
     additionalHeaderInfo?: () => JSX.Element
@@ -46,7 +46,7 @@ function PageHeader({
     showCloseButton = false,
     onClose,
 }: PageHeaderType) {
-    const { loginCount, setLoginCount, showGettingStartedCard, setShowGettingStartedCard, isGettingStartedClicked, setIsGettingStartedClicked } = useContext(mainContext)
+    const { loginCount, setLoginCount, showGettingStartedCard, setShowGettingStartedCard, isGettingStartedClicked, setGettingStartedClicked } = useContext(mainContext)
     const [showHelpCard, setShowHelpCard] = useState(false)
     const [showLogOutCard, setShowLogOutCard] = useState(false)
     const loginInfo = getLoginInfo()
@@ -76,8 +76,7 @@ function PageHeader({
     }
 
     useEffect(() => {
-        const expDate = localStorage.getItem('clickedOkay')
-        setExpiryDate(+expDate)
+        setExpiryDate(+localStorage.getItem('clickedOkay'))
     }, [])
 
     useEffect(() => {
@@ -86,17 +85,21 @@ function PageHeader({
 
     const onClickLogoutButton = () => {
         setShowLogOutCard(!showLogOutCard)
-        showHelpCard && setShowHelpCard(false)
+        if(showHelpCard){
+          setShowHelpCard(false)
+        }
         setActionWithExpiry('clickedOkay', 1)
         hideGettingStartedCard()
     }
 
     const onClickHelp = () => {
         setShowHelpCard(!showHelpCard)
-        showLogOutCard && setShowLogOutCard(false)
+        if(showLogOutCard) {
+          setShowLogOutCard(false)
+        }
         setActionWithExpiry('clickedOkay', 1)
         hideGettingStartedCard()
-        OnClickedHandler(POSTHOG_EVENT_ONBOARDING.HELP)
+        handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.HELP)
         ReactGA.event({
             category: 'Main Navigation',
             action: `Help Clicked`,
@@ -133,11 +136,9 @@ function PageHeader({
     const getExpired = (): boolean => {
       // Render Getting started tippy card if the time gets expired
       const now = new Date().valueOf()
-      if (now > expiryDate) {
-          return true
-      }
-      return false
+      return now > expiryDate
     }
+
     return (
         <div
             className={`page-header content-space cn-9 bcn-0 pl-20 pr-20 ${
@@ -187,7 +188,7 @@ function PageHeader({
                     setShowHelpCard={setShowHelpCard}
                     serverInfo={currentServerInfo.serverInfo}
                     fetchingServerInfo={currentServerInfo.fetchingServerInfo}
-                    setIsGettingStartedClicked={setIsGettingStartedClicked}
+                    setGettingStartedClicked={setGettingStartedClicked}
                 />
             )}
             {showGettingStartedCard && (loginCount >= 0) && (loginCount < 5) && getExpired() && (

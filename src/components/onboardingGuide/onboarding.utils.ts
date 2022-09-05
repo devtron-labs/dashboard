@@ -14,8 +14,8 @@ export const POSTHOG_EVENT_ONBOARDING = {
     HELP: 'Clicked Help'
 }
 
-export const OnClickedHandler = (key) => {
-    let payload = {
+export const handlePostHogEventUpdate = (key) => {
+    const payload = {
         eventType: key,
         key: 'login-count',
         value: '',

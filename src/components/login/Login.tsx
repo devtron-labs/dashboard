@@ -112,7 +112,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
 
                     getLoginData().then((response) => {
                         const count = response.result?.value ? parseInt(response.result.value) : 0
-                        this.setState({ loginCount: count || 1 })
+                        this.setState({ loginCount: count ?? 1 })
                         localStorage.setItem('isAdminLogin', 'true')
 
                         this.props.history.push(url)

@@ -9,16 +9,17 @@ import './onboardingGuide.scss'
 import { Progressing, showError } from '../common'
 import { getDevtronInstalledHelmApps } from '../app/list-new/AppListService'
 import { mainContext } from '../common/navigation/NavigationRoutes'
-import { NAVIGATION, OnClickedHandler, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
+import { NAVIGATION, handlePostHogEventUpdate, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
 import CommonGuide from './CommonGuide'
 import { getClusterListMinWithoutAuth } from '../../services/service'
+import { DeployManageGuideType } from './OnboardingGuide.type'
 
-function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
+function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManageGuideType) {
     const history = useHistory()
     const [devtronHelmCount, setDevtronHelmCount] = useState(0)
     const [loader, setLoader] = useState(false)
     const { serverMode } = useContext(mainContext)
-    const [ isDefaultCluster, setIsDefaultCluster] = useState(false)
+    const [isDefaultCluster, setDefaultCluster] = useState(false)
 
     const _getInit = () => {
         if (serverMode === SERVER_MODE.FULL) {
@@ -29,7 +30,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                     setLoader(false)
                 })
                 getClusterListMinWithoutAuth().then((response) => {
-                  setIsDefaultCluster(response?.result?.some((data) => data.cluster_name === 'default_cluster'))
+                    setDefaultCluster(response?.result?.some((data) => data.cluster_name === 'default_cluster'))
                 })
             } catch (err) {
                 showError(err)
@@ -44,7 +45,6 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
     const redirectToAppList = () => {
         history.push(`${URLS.APP}/${URLS.APP_LIST}`)
     }
-
 
     return (
         <div>
@@ -70,7 +70,9 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                             to={isDefaultCluster ? NAVIGATION.AUTOCOMPLETE : NAVIGATION.HELM_APPS}
                                             activeClassName="active"
                                             className="no-decor fw-6 cursor cn-9 flex"
-                                            onClick={() => OnClickedHandler(POSTHOG_EVENT_ONBOARDING.VIEW_APPLICATION)}
+                                            onClick={() =>
+                                                handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.VIEW_APPLICATION)
+                                            }
                                         >
                                             <img
                                                 className="left-radius-4 bcn-1"
@@ -79,7 +81,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                                 height="150"
                                                 alt="Please connect cluster"
                                             />
-                                            <div className="lh-22 fw-6 fs-16 pl-20 pr-20">
+                                            <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
                                                 Check deployed helm apps <br />
                                                 <div className="fs-14 cb-5 mt-8">View applications</div>
                                             </div>
@@ -92,7 +94,9 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                         to={URLS.CHARTS_DISCOVER}
                                         activeClassName="active"
                                         className="no-decor fw-6 cursor cn-9 flex"
-                                        onClick={() => OnClickedHandler(POSTHOG_EVENT_ONBOARDING.BROWSW_HELM_CHART)}
+                                        onClick={() =>
+                                            handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.BROWSW_HELM_CHART)
+                                        }
                                     >
                                         <img
                                             className="left-radius-4 bcn-1"
@@ -101,7 +105,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                             height="150"
                                             alt="Please connect cluster"
                                         />
-                                        <div className="lh-22 fw-6 fs-16 pl-20 pr-20">
+                                        <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
                                             I want to deploy popular helm charts <br />
                                             <div className="fs-14 cb-5 mt-8">Browse helm charts</div>
                                         </div>
@@ -112,7 +116,9 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                         to={URLS.GLOBAL_CONFIG_CLUSTER}
                                         activeClassName="active"
                                         className="no-decor fw-6 cursor cn-9 flex"
-                                        onClick={() => OnClickedHandler(POSTHOG_EVENT_ONBOARDING.CONNECT_CLUSTER)}
+                                        onClick={() =>
+                                            handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.CONNECT_CLUSTER)
+                                        }
                                     >
                                         <img
                                             className="left-radius-4 bcn-1"
@@ -121,7 +127,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                             height="150"
                                             alt="Please connect cluster"
                                         />
-                                        <div className="lh-22 fw-6 fs-16 pl-20 pr-20">
+                                        <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
                                             I have helm applications in other clusters <br />
                                             <div className="fs-14 cb-5 mt-8"> Connect a cluster</div>
                                         </div>
@@ -133,7 +139,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                         activeClassName="active"
                                         className="no-decor fw-6 cursor cn-9 flex"
                                         onClick={() =>
-                                            OnClickedHandler(POSTHOG_EVENT_ONBOARDING.CONNECT_CHART_REPOSITORY)
+                                            handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.CONNECT_CHART_REPOSITORY)
                                         }
                                     >
                                         <img
@@ -143,7 +149,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }) {
                                             height="150"
                                             alt="Please connect cluster"
                                         />
-                                        <div className="lh-22 fw-6 fs-16 pl-20 pr-20">
+                                        <div className="dc__lh-22 fw-6 fs-16 pl-20 pr-20">
                                             I want to connect my own chart repository <br />
                                             <div className="fs-14 cb-5 mt-8"> Connect chart repository</div>
                                         </div>

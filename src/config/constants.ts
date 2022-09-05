@@ -259,8 +259,11 @@ export const DOCUMENTATION = {
     EXTERNAL_LINKS: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/external-links`,
     GLOBAL_CONFIG_GIT_ACCESS_LINK: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/gitops#4.-git-access-credential`,
     DEVTRON_UPGRADE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/upgrade`,
-    PREVIEW_DEVTRON: 'https://preview.devtron.ai/dashboard',
 }
+
+export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
+
+export const PREVIEW_DEVTRON = 'https://preview.devtron.ai/dashboard'
 
 // APP LIST STARTS
 export const AppListConstants = {

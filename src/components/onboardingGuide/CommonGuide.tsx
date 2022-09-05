@@ -3,29 +3,26 @@ import { useHistory, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as GoBack } from '../../assets/icons/ic-arrow-backward.svg'
 import { CommonGuideType } from './OnboardingGuide.type'
+import { URLS } from '../../config'
 
 function CommonGuide({ loginCount, title, subtitle, onClickCloseButton, isGettingStartedClicked }: CommonGuideType) {
     const history = useHistory()
     const match = useRouteMatch()
-    const isGuidePage = match.url.includes('guide')
-
+    const isGuidePage = match.url.includes(`${URLS.GETTING_STARTED}/${URLS.GUIDE}`)
+    const showClossIcon = loginCount > 0 || isGettingStartedClicked
     const onClickedGoBack = () => {
         history.goBack()
     }
 
     return (
         <div className="common-guide__container">
-            <div className={`deploy-manage__header h-300 bc-window bcn-1`}>
-                {(loginCount > 0 || isGettingStartedClicked) && (
+            <div className={`deploy-manage__header h-300 dc__window-bg bcn-1`}>
+                {showClossIcon && (
                     <button type="button" className="w-100 flex right transparent p-20" onClick={onClickCloseButton}>
                         <Close className="icon-dim-24" />
                     </button>
                 )}
-                <div
-                    className={`${
-                        loginCount > 0 || isGettingStartedClicked ? 'deploy-manage__upper top' : 'h-300'
-                    } flex`}
-                >
+                <div className={`${showClossIcon ? 'deploy-manage__upper top' : 'h-300'} flex`}>
                     <div className="deploy__title flex center">
                         {isGuidePage && (
                             <div className="bcn-0 deploy_arrow flex cursor" onClick={onClickedGoBack}>

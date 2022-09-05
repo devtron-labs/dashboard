@@ -2,14 +2,19 @@ import React from 'react'
 import HelmCollage from '../../assets/img/helm-collage.png'
 import DeployCICD from '../../assets/img/guide-onboard.png'
 import { NavLink, useRouteMatch, useHistory } from 'react-router-dom'
-import { DOCUMENTATION, SERVER_MODE, URLS } from '../../config'
+import { PREVIEW_DEVTRON, SERVER_MODE, URLS } from '../../config'
 import './onboardingGuide.scss'
 import PreviewImage from '../../assets/img/ic-preview.png'
-import { OnClickedHandler, POSTHOG_EVENT_ONBOARDING}  from './onboarding.utils'
+import { handlePostHogEventUpdate, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
 import CommonGuide from './CommonGuide'
 import { OnboardingGuideProps } from './OnboardingGuide.type'
 
-function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClicked, isGettingStartedClicked }: OnboardingGuideProps) {
+function OnboardingGuide({
+    loginCount,
+    serverMode,
+    onClickedDeployManageCardClicked,
+    isGettingStartedClicked,
+}: OnboardingGuideProps) {
     const match = useRouteMatch()
     const history = useHistory()
 
@@ -27,25 +32,31 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
 
     const onClickedCICD = () => {
         if (serverMode === SERVER_MODE.FULL) {
-            OnClickedHandler(POSTHOG_EVENT_ONBOARDING.DEPLOY_CUSTOM_APP_CI_CD)
+            handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.DEPLOY_CUSTOM_APP_CI_CD)
         } else {
-            OnClickedHandler(POSTHOG_EVENT_ONBOARDING.INSTALL_CUSTOM_CI_CD)
+            handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.INSTALL_CUSTOM_CI_CD)
         }
     }
 
     return (
         <div className="onboarding-container h-100">
-            <CommonGuide loginCount={loginCount} title= 'What will you use devtron for?' subtitle='This will help us in guiding you towards relevant product features' onClickCloseButton={onClickCloseButton} isGettingStartedClicked={isGettingStartedClicked}/>
+            <CommonGuide
+                loginCount={loginCount}
+                title="What will you use devtron for?"
+                subtitle="This will help us in guiding you towards relevant product features"
+                onClickCloseButton={onClickCloseButton}
+                isGettingStartedClicked={isGettingStartedClicked}
+            />
             <div className="bcn-0 onboarding__bottom flex position-rel cn-9">
-                <div className= "onboarding__abs"  >
+                <div className="onboarding__abs">
                     <div className="onboarding-cards__wrap">
                         <div className="onboarding-card bcn-0 w-300 br-4 en-2 bw-1 cursor">
                             <a
                                 className="learn-more__href cn-9"
-                                href={DOCUMENTATION.PREVIEW_DEVTRON}
+                                href={PREVIEW_DEVTRON}
                                 rel="noreferrer noopener"
                                 target="_blank"
-                                onClick={() => OnClickedHandler(POSTHOG_EVENT_ONBOARDING.PREVIEW)}
+                                onClick={() => handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.PREVIEW)}
                             >
                                 <img className="onboarding-card__img top-radius-4" src={PreviewImage} />
                                 <div className="fw-6 fs-16 pt-32 pb-32 pl-24 pr-24 break-word">
@@ -54,7 +65,10 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
                             </a>
                         </div>
                         <div className="onboarding__line" />
-                        <div className="onboarding-card bcn-0 w-300 br-4 en-2 bw-1 cursor" onClick={onClickedDeployManageCardClicked}>
+                        <div
+                            className="onboarding-card bcn-0 w-300 br-4 en-2 bw-1 cursor"
+                            onClick={onClickedDeployManageCardClicked}
+                        >
                             <NavLink
                                 to={`${match.path}/${URLS.GUIDE}`}
                                 className="no-decor fw-6 cursor cn-9"
@@ -90,7 +104,10 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
                         </div>
                     </div>
                     <div className="fs-14 mt-40 mb-20 flex column">
-                        <NavLink to={`${URLS.APP}/${URLS.APP_LIST}`} className="guide_skip no-decor cb-5 fw-6 cursor mb-4">
+                        <NavLink
+                            to={`${URLS.APP}/${URLS.APP_LIST}`}
+                            className="guide_skip no-decor cb-5 fw-6 cursor mb-4"
+                        >
                             Skip and explore Devtron on your own
                         </NavLink>
                         <div className="cn-7">Tip: You can return here anytime from the Help menu</div>
@@ -102,4 +119,3 @@ function OnboardingGuide({ loginCount, serverMode, onClickedDeployManageCardClic
 }
 
 export default OnboardingGuide
-

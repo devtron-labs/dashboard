@@ -1,11 +1,9 @@
-import React, { useState } from 'react'
+import React from 'react'
 import './guidePage.scss'
 import CreateApp from '../../../assets/img/guide-create-app.png'
 import PreviewImage from '../../../assets/img/ic-preview.png'
-import { DOCUMENTATION } from '../../../config'
+import { DEVTRON_NODE_DEPLOY_VIDEO, DOCUMENTATION, PREVIEW_DEVTRON } from '../../../config'
 import { GuidedPageType } from './GuidePage.type'
-
-const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
 
 function GuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
     const renderSubTitle = () => {
@@ -45,7 +43,7 @@ function GuidePage({ openDevtronAppCreateModel }: GuidedPageType) {
                     <div className="guide-card bcn-0 w-300 br-4 en-2 bw-1 cursor">
                         <a
                             className="cn-9 no-decor fw-6 cursor href__link"
-                            href={DOCUMENTATION.PREVIEW_DEVTRON}
+                            href={PREVIEW_DEVTRON}
                             rel="noreferrer noopener"
                             target="_blank"
                         >

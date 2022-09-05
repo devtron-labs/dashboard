@@ -12,9 +12,14 @@ export interface DeployManageGuide{
 }
 
 export interface OnboardingGuideProps {
-  loginCount: number
-  isSuperAdmin: boolean
-  serverMode: string
-  onClickedDeployManageCardClicked: () => void
-  isGettingStartedClicked: boolean
+    loginCount: number
+    isSuperAdmin: boolean
+    serverMode: string
+    onClickedDeployManageCardClicked: () => void
+    isGettingStartedClicked: boolean
+}
+
+export interface DeployManageGuideType {
+    isGettingStartedClicked: boolean
+    loginCount: number
 }

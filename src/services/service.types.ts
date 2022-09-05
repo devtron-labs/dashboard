@@ -192,3 +192,10 @@ export interface LoginCount {
     key: string
     value: string
 }
+
+export interface AppRouterType {
+  isSuperAdmin?: boolean
+  appListCount: number
+  loginCount: number
+  serverMode: string
+}

@@ -1,5 +1,3 @@
-
-
 .onboarding-container {
     .onboarding-cards__wrap {
         display: grid;
@@ -7,8 +5,8 @@
         grid-gap: 20px;
     }
 
-    .onboarding-header{
-       background: var(--window-bg);
+    .onboarding-header {
+        background: var(--window-bg);
     }
 
     .onboarding-card__img {
@@ -17,30 +15,29 @@
     }
 
     .onboarding__bottom {
-      height: calc(100vh - 300px);
-        .onboarding-card a:hover{
-          color: var(--N900);
-          text-decoration: none;
+        height: calc(100vh - 300px);
+        .onboarding-card a:hover {
+            color: var(--N900);
+            text-decoration: none;
         }
-        .onboarding-card:hover{
-         box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.1), 0 1px 4px 0 rgba(0, 0, 0, 0.1);
-         border-radius: 400;
+        .onboarding-card:hover {
+            box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.1), 0 1px 4px 0 rgba(0, 0, 0, 0.1);
+            border-radius: 400;
         }
-     }
+    }
 
-     .onboarding__line{
-       width: 1px;
-       height: 150px;
-       background-color: var(--N200);
-       align-self: center;
-     }
+    .onboarding__line {
+        width: 1px;
+        height: 150px;
+        background-color: var(--N200);
+        align-self: center;
+    }
 
-     .onboarding__abs{
-      position: absolute;
-      top: -80px;
+    .onboarding__abs {
+        position: absolute;
+        top: -80px;
     }
 }
-
 
 .deploy-manage-container {
     .deploy_arrow {
@@ -58,34 +55,34 @@
         flex-wrap: wrap;
         width: 820px;
         justify-content: center;
-        a:hover{
-          color: var(--N900);
+        a:hover {
+            color: var(--N900);
         }
     }
 
-    .deploy-manage__body{
-      height: calc(100vh - 300px);
-        .deploy-card:hover{
-          box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.1), 0 1px 4px 0 rgba(0, 0, 0, 0.1);
-          border-radius: 400;
+    .deploy-manage__body {
+        height: calc(100vh - 300px);
+        .deploy-card:hover {
+            box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.1), 0 1px 4px 0 rgba(0, 0, 0, 0.1);
+            border-radius: 400;
         }
     }
 
-    .deploy-manage__abs{
-      position: absolute;
-      top: -80px;
+    .deploy-manage__abs {
+        position: absolute;
+        top: -80px;
     }
 
-    .deploy-manage__upper{
-      height: 236px;
+    .deploy-manage__upper {
+        height: 236px;
     }
 
-    .deploy__title{
-      position: absolute;
-      width: 820px;
+    .deploy__title {
+        position: absolute;
+        width: 820px;
     }
 }
 
-.guide_skip a:hover{
-  color: var(--B500);
+.guide_skip a:hover {
+    color: var(--B500);
 }

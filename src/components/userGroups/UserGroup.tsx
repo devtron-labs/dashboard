@@ -29,10 +29,11 @@ import {
     getGroupId,
     getEnvironmentListHelmApps,
     getUsersDataToExport,
-    getGroupsDataToExport
+    getGroupsDataToExport,
+    getUserRole
 } from './userGroup.service'
 import { get } from '../../services/api'
-import { getEnvironmentListMin, getProjectFilteredApps, getUserRole } from '../../services/service'
+import { getEnvironmentListMin, getProjectFilteredApps } from '../../services/service'
 import { getChartGroups } from '../charts/charts.service'
 import { ChartGroup } from '../charts/charts.types'
 import {

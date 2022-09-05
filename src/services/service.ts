@@ -424,17 +424,6 @@ export function getLoginData() : Promise<LoginCountType>  {
 export function updateLoginCount(payload): Promise<LoginCountType>  {
     return post(`${Routes.ATTRIBUTES_USER}/${Routes.UPDATE}`, payload)
 }
-interface UserRole extends ResponseType {
-  result?: {
-      roles: string[];
-      superAdmin: boolean;
-  };
-}
-
-export function getUserRole(): Promise<UserRole> {
-  return get(Routes.USER_CHECK_ROLE);
-}
-
 interface PostHog extends ResponseType {
     result?: {
         eventType: string

@@ -15,10 +15,10 @@ export interface HelpNavType {
     setShowHelpCard: React.Dispatch<React.SetStateAction<boolean>>
     serverInfo: ServerInfo
     fetchingServerInfo: boolean
-    setIsGettingStartedClicked: (isClicked: boolean) => void
+    setGettingStartedClicked: (isClicked: boolean) => void
 }
 
-function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchingServerInfo, setIsGettingStartedClicked }: HelpNavType) {
+function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchingServerInfo, setGettingStartedClicked }: HelpNavType) {
   const history = useHistory()
 
     const HelpOptions = [
@@ -48,7 +48,7 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
     ]
 
     const onClickGettingStarted = () => {
-      setIsGettingStartedClicked(true)
+      setGettingStartedClicked(true)
     }
 
     return (

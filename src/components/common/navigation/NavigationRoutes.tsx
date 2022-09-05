@@ -11,7 +11,6 @@ import {
     dashboardLoggedIn,
     getAppListMin,
     getLoginData,
-    getUserRole,
     getVersionConfig,
     updateLoginCount,
 } from '../../../services/service'
@@ -23,6 +22,8 @@ import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.
 import ClusterNodeContainer from '../../ClusterNodes/ClusterNodeContainer'
 import DeployManageGuide from '../../onboardingGuide/DeployManageGuide'
 import { showError } from '../helpers/Helpers'
+import { AppRouterType } from '../../../services/service.types'
+import { getUserRole } from '../../userGroups/userGroup.service'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -35,13 +36,6 @@ const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
 
 export const mainContext = createContext(null)
-
-export interface AppRouterType {
-  isSuperAdmin?: boolean
-  appListCount: number
-  loginCount: number
-  serverMode: string
-}
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -56,17 +50,18 @@ export default function NavigationRoutes() {
             fetchingServerInfo: false,
         },
     )
-    const [isHelpGettingStartedClicked, setIsHelpGettingStartedClicked] = useState(false)
+    const [isHelpGettingStartedClicked, setHelpGettingStartedClicked] = useState(false)
     const [loginCount, setLoginCount] = useState(0)
     const [expiryDate, setExpiryDate] = useState(0)
     const [isSuperAdmin, setSuperAdmin] = useState(false)
     const [appListCount, setAppListCount] = useState(0)
     const [loginLoader, setLoginLoader] = useState(true)
-    const [isDeployManageCardClicked, setIsDeployManageCardClicked] = useState(false)
+    const [isDeployManageCardClicked, setDeployManageCardClicked] = useState(false)
     const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
-    const [isGettingStartedClicked, setIsGettingStartedClicked] = useState()
+    const [isGettingStartedClicked, setGettingStartedClicked] = useState()
+
     const showCloseButtonAfterGettingStartedClicked = () => {
-        setIsHelpGettingStartedClicked(true)
+        setHelpGettingStartedClicked(true)
     }
 
     useEffect(() => {
@@ -149,7 +144,6 @@ export default function NavigationRoutes() {
             }
         }
 
-        //Only For the first time login user(with superadmin permission)
         if (!loginInfo) return
 
         if (typeof Storage !== 'undefined') {
@@ -210,7 +204,7 @@ export default function NavigationRoutes() {
     }
 
     const onClickedDeployManageCardClicked = () =>{
-      setIsDeployManageCardClicked(true)
+      setDeployManageCardClicked(true)
     }
 
     if (pageState === ViewType.LOADING || loginLoader) {
@@ -231,7 +225,7 @@ export default function NavigationRoutes() {
                     showGettingStartedCard,
                     setShowGettingStartedCard,
                     isGettingStartedClicked,
-                    setIsGettingStartedClicked
+                    setGettingStartedClicked
                 }}
             >
                 <main className={`${window.location.href.includes(URLS.GETTING_STARTED) ? 'no-nav' : ''}`}>

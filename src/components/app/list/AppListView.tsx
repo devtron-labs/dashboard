@@ -133,21 +133,6 @@ export class AppListView extends Component<AppListViewProps>{
                 </div>
             </React.Fragment>
         }
-        // Hiding the checklist for future purpose
-
-        // else if (this.props.view === AppListViewType.EMPTY) {
-        //     return <React.Fragment>
-        //         <AppCheckListModal history={this.props.history}
-        //             location={this.props.location}
-        //             match={this.props.match}
-        //             appChecklist={this.props.appChecklist}
-        //             chartChecklist={this.props.chartChecklist}
-        //             appStageCompleted={this.props.appStageCompleted}
-        //             chartStageCompleted={this.props.chartStageCompleted}
-        //         />
-        //     </React.Fragment>
-        // }
-
 
         else if (this.props.view === AppListViewType.EMPTY) {
             return <React.Fragment>
