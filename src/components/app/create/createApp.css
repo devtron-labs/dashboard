@@ -2,6 +2,8 @@
     width: 450px;
     max-height: 90vh;
     margin-top: 0px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
 }
 
 .footer {
