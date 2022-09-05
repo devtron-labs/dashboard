@@ -46,6 +46,10 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
         history.push(`${URLS.APP}/${URLS.APP_LIST}`)
     }
 
+    const onClickChartCard = (e) => {
+      handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.CONNECT_CHART_REPOSITORY)
+    }
+
     return loader ? (
         <div className="w-100 flex" style={{ height: 'calc(100vh - 80px)' }}>
             <Progressing pageLoader />
@@ -133,8 +137,7 @@ function DeployManageGuide({ isGettingStartedClicked, loginCount }: DeployManage
                                 to={URLS.GLOBAL_CONFIG_CHART}
                                 activeClassName="active"
                                 className="no-decor fw-6 cursor cn-9 flex"
-                                data-posthog={POSTHOG_EVENT_ONBOARDING.CONNECT_CHART_REPOSITORY}
-                                onClick={handlePostHogEventUpdate}
+                                onClick={onClickChartCard}
                             >
                                 <img
                                     className="left-radius-4 bcn-1"

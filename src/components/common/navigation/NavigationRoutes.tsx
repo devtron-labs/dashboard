@@ -24,6 +24,7 @@ import DeployManageGuide from '../../onboardingGuide/DeployManageGuide'
 import { showError } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../userGroups/userGroup.service'
+import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -95,9 +96,9 @@ export default function NavigationRoutes() {
          ) {
              localStorage.removeItem('isSSOLogin')
              localStorage.removeItem('isAdminLogin')
-             if (count < 5) {
+             if (count < MAX_LOGIN_COUNT) {
                  const updatedPayload = {
-                     key: 'login-count',
+                     key: LOGIN_COUNT,
                      value: `${count + 1}`,
                  }
                  updateLoginCount(updatedPayload)

@@ -8,6 +8,7 @@ import { fetchWithFullRoute } from './fetchWithFullRoute';
 import { ModuleNameMap } from '../components/v2/devtronStackManager/DevtronStackManager.utils';
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service';
 import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackManager.type';
+import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils';
 
 
 export function getAppConfigStatus(appId: number): Promise<any> {
@@ -418,16 +419,13 @@ export function dashboardLoggedIn() {
 
 
 export function getLoginData() : Promise<LoginCountType>  {
-  return get(`${Routes.ATTRIBUTES_USER}/${Routes.GET}?key=login-count`)
+  return get(`${Routes.ATTRIBUTES_USER}/${Routes.GET}?key=${LOGIN_COUNT}`)
 }
 
 export function updateLoginCount(payload): Promise<LoginCountType>  {
     return post(`${Routes.ATTRIBUTES_USER}/${Routes.UPDATE}`, payload)
 }
-interface PostHog extends ResponseType {
-    result?: any
-}
 
-export function updatePostHogEvent(payload): Promise<PostHog> {
-    return post(`${Routes.TELEMETRY_EVENT}`, payload)
+export function updatePostHogEvent(payload): Promise<ResponseType> {
+    return post(Routes.TELEMETRY_EVENT, payload)
 }

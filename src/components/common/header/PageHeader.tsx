@@ -12,7 +12,7 @@ import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import GettingStartedCard from '../gettingStartedCard/GettingStarted'
 import { mainContext } from '../navigation/NavigationRoutes'
 import ReactGA from 'react-ga4'
-import { handlePostHogEventUpdate, POSTHOG_EVENT_ONBOARDING } from '../../onboardingGuide/onboarding.utils'
+import { handlePostHogEventUpdate, MAX_LOGIN_COUNT, POSTHOG_EVENT_ONBOARDING } from '../../onboardingGuide/onboarding.utils'
 export interface PageHeaderType {
     headerName?: string
     additionalHeaderInfo?: () => JSX.Element
@@ -201,7 +201,7 @@ function PageHeader({
                     setGettingStartedClicked={setGettingStartedClicked}
                 />
             )}
-            {showGettingStartedCard && loginCount >= 0 && loginCount < 5 && getExpired() && (
+            {showGettingStartedCard && loginCount >= 0 && loginCount < MAX_LOGIN_COUNT && getExpired() && (
                 <GettingStartedCard
                     className="w-300"
                     showHelpCard={false}

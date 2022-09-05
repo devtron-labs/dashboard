@@ -9,7 +9,7 @@ function GuideCommonHeader({ loginCount, title, subtitle, onClickCloseButton, is
     const history = useHistory()
     const match = useRouteMatch()
     const isGuidePage = match.url.includes(`${URLS.GETTING_STARTED}/${URLS.GUIDE}`)
-    const showClossIcon = loginCount > 0 || isGettingStartedClicked
+    const showCloseIcon = loginCount > 0 || isGettingStartedClicked
     const onClickedGoBack = () => {
         history.goBack()
     }
@@ -17,12 +17,12 @@ function GuideCommonHeader({ loginCount, title, subtitle, onClickCloseButton, is
     return (
         <div className="common-guide__container">
             <div className={`deploy-manage__header h-300 dc__window-bg bcn-1`}>
-                {showClossIcon && (
+                {showCloseIcon && (
                     <button type="button" className="w-100 flex right transparent p-20" onClick={onClickCloseButton}>
                         <Close className="icon-dim-24" />
                     </button>
                 )}
-                <div className={`${showClossIcon ? 'deploy-manage__upper top' : 'h-300'} flex`}>
+                <div className={`${showCloseIcon ? 'deploy-manage__upper top' : 'h-300'} flex`}>
                     <div className="deploy__title flex center">
                         {isGuidePage && (
                             <div className="bcn-0 deploy_arrow flex cursor" onClick={onClickedGoBack}>

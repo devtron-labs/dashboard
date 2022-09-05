@@ -63,7 +63,7 @@
     .deploy-manage__body {
         height: calc(100vh - 300px);
         .deploy-card:hover {
-            box-shadow: 0 8px 12px 0 var(--border);
+            box-shadow: 0 8px 12px 0 var(--gray);
             border-radius: 400;
         }
     }
@@ -106,6 +106,6 @@
   }
 
   .guide-card:hover{
-    box-shadow: 0 8px 12px 0 var(--border);
+    box-shadow: 0 8px 12px 0 var(--gray);
   }
 }
