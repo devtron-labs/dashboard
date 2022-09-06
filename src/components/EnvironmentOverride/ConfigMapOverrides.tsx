@@ -28,7 +28,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
 import './environmentOverride.scss'
-import { ConfigMapOverridesProps } from './EnvironmentOverrides.type'
+import { ComponentStates, ConfigMapOverridesProps } from './EnvironmentOverrides.type'
 
 const ConfigMapContext = React.createContext(null)
 
@@ -49,7 +49,7 @@ export default function ConfigMapOverrides({ parentState, setParentState }: Conf
 
     useEffect(() => {
         if (!configMapLoading && configMapList) {
-            setParentState('loaded')
+            setParentState(ComponentStates.loaded)
         }
     }, [configMapLoading])
 
@@ -70,7 +70,7 @@ export default function ConfigMapOverrides({ parentState, setParentState }: Conf
                 }
                 setAppChartRef(appChartRefRes.result)
             } catch (error) {
-                setParentState('failed')
+                setParentState(ComponentStates.failed)
                 showError(error)
             } finally {
                 setConfigMapLoading(false)
@@ -89,7 +89,7 @@ export default function ConfigMapOverrides({ parentState, setParentState }: Conf
             })
         } catch (error) {}
     }
-    if (parentState === 'loading' || !configMapList)
+    if (parentState === ComponentStates.loading || !configMapList)
         return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
 
     if (configMapLoading && !configMapList) {

@@ -36,7 +36,7 @@ import {
     DeploymentTemplateOptionsTabProps,
 } from './types'
 import { getCommonSelectStyles } from './constants'
-import { OrderBy } from '../app/types'
+import { SortingOrder } from '../app/types'
 
 const renderReadMeOption = (openReadMe: boolean, handleReadMeClick: () => void, disabled?: boolean) => {
     const handleReadMeOptionClick = () => {
@@ -177,7 +177,7 @@ export const ChartTypeVersionOptions = ({
     const filteredCharts = selectedChart
         ? charts
               .filter((cv) => cv.name == selectedChart.name)
-              .sort((a, b) => versionComparator(a, b, 'version', OrderBy.DESC))
+              .sort((a, b) => versionComparator(a, b, 'version', SortingOrder.DESC))
         : []
 
     const onSelectChartType = (selected) => {
@@ -186,7 +186,9 @@ export const ChartTypeVersionOptions = ({
         if (selectedChart) {
             selectChart(selectedChart)
         } else {
-            const sortedFilteredCharts = filteredCharts.sort((a, b) => versionComparator(a, b, 'version', OrderBy.DESC))
+            const sortedFilteredCharts = filteredCharts.sort((a, b) =>
+                versionComparator(a, b, 'version', SortingOrder.DESC),
+            )
             selectChart(sortedFilteredCharts[sortedFilteredCharts.length ? sortedFilteredCharts.length - 1 : 0])
         }
     }
@@ -590,7 +592,7 @@ export const DeploymentTemplateEditorView = ({
 
                     return chart.id !== selectedChart.id && chart.name === selectedChart.name
                 })
-                .sort((a, b) => versionComparator(a, b, 'version', OrderBy.DESC))
+                .sort((a, b) => versionComparator(a, b, 'version', SortingOrder.DESC))
 
             setFilteredCharts(
                 _filteredCharts.map((chart) => ({

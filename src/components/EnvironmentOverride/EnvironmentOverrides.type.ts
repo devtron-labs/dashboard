@@ -1,7 +1,12 @@
 import { DOCUMENTATION, URLS } from '../../config'
 import { AppEnvironment } from '../../services/service.types'
 
-export type ComponentStates = 'loading' | 'loaded' | 'success' | 'failed'
+export enum ComponentStates {
+    loading = 'loading',
+    loaded = 'loaded',
+    success = 'success',
+    failed = 'failed'
+}
 
 export interface SectionHeadingType {
     title: string
@@ -28,12 +33,16 @@ export interface EnvironmentOverrideComponentProps {
     environments: AppEnvironment[]
 }
 
-export interface ConfigMapOverridesProps {
+export interface CommonEnvironmentOverridesProps {
     parentState: ComponentStates
     setParentState: React.Dispatch<React.SetStateAction<ComponentStates>>
 }
 
-export interface DeploymentTemplateOverrideProps extends ConfigMapOverridesProps {
+export interface ConfigMapOverridesProps extends CommonEnvironmentOverridesProps {}
+
+export interface SecretOverridesProps extends CommonEnvironmentOverridesProps {}
+
+export interface DeploymentTemplateOverrideProps extends CommonEnvironmentOverridesProps {
     environments: AppEnvironment[]
     environmentName: string
 }

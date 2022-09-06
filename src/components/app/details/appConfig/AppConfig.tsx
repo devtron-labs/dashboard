@@ -362,7 +362,7 @@ export default function AppConfig() {
             <>
                 <div className="app-compose">
                     <div
-                        className={`app-compose__nav flex column left top position-rel overflow-scroll ${
+                        className={`app-compose__nav flex column left top position-rel dc__overflow-scroll ${
                             state.isCDPipeline ? 'hide-app-config-help' : ''
                         }`}
                     >

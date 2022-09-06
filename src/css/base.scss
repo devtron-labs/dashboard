@@ -2065,15 +2065,15 @@ textarea {
     }
 }
 
-.overflow-hidden {
+.dc__overflow-hidden {
     overflow: hidden !important;
 }
 
-.overflow-scroll {
+.dc__overflow-scroll {
     overflow: scroll !important;
 }
 
-.no-svg-fill {
+.dc__no-svg-fill {
     path {
         fill: none !important;
     }

@@ -26,11 +26,11 @@ import { Progressing } from '../common'
 import warningIcon from '../../assets/icons/ic-warning.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { PATTERNS, EXTERNAL_TYPES, ROLLOUT_DEPLOYMENT, DOCUMENTATION } from '../../config'
+import { PATTERNS, ROLLOUT_DEPLOYMENT, DOCUMENTATION } from '../../config'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
-import { getAppChartRef } from '../../services/service'
-import './environmentOverride.scss'
 import { dataHeaders, getTypeGroups, sampleJSONs, hasHashiOrAWS, hasESO, hasProperty } from '../secrets/secret.utils'
+import { ComponentStates, SecretOverridesProps } from './EnvironmentOverrides.type'
+import './environmentOverride.scss'
 
 const SecretContext = React.createContext(null)
 function useSecretContext() {
@@ -41,7 +41,7 @@ function useSecretContext() {
     return context
 }
 
-export default function SecretOverrides({ parentState, setParentState, ...props }) {
+export default function SecretOverrides({ parentState, setParentState }: SecretOverridesProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     const [loading, result, error, reload] = useAsync(() => getEnvironmentSecrets(+appId, +envId), [+appId, +envId])
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
@@ -56,13 +56,13 @@ export default function SecretOverrides({ parentState, setParentState, ...props 
 
     useEffect(() => {
         if (!loading && result) {
-            setParentState('loaded')
+            setParentState(ComponentStates.loaded)
         }
     }, [loading])
 
     if (loading && !result) return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
     if (error) {
-        setParentState('failed')
+        setParentState(ComponentStates.failed)
         showError(error)
         if (!result) return null
     }

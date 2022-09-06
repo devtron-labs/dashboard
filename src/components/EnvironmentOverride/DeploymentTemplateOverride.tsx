@@ -19,7 +19,7 @@ import {
     DeploymentTemplateOptionsTab,
 } from '../deploymentConfig/DeploymentTemplateView'
 import { DeploymentChartVersionType } from '../deploymentConfig/types'
-import { DeploymentTemplateOverrideProps } from './EnvironmentOverrides.type'
+import { ComponentStates, DeploymentTemplateOverrideProps } from './EnvironmentOverrides.type'
 
 export default function DeploymentTemplateOverride({
     parentState,
@@ -125,7 +125,7 @@ export default function DeploymentTemplateOverride({
                 },
             })
         } catch (err) {
-            setParentState('failed')
+            setParentState(ComponentStates.failed)
             showError(err)
         } finally {
             setChartRefLoading(false)
@@ -147,9 +147,9 @@ export default function DeploymentTemplateOverride({
                 state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
             )
             dispatch({ type: 'setResult', value: result })
-            setParentState('loaded')
+            setParentState(ComponentStates.loaded)
         } catch (err) {
-            setParentState('failed')
+            setParentState(ComponentStates.failed)
             showError(err)
         } finally {
             setLoading(false)
@@ -184,7 +184,7 @@ export default function DeploymentTemplateOverride({
         }
     }
 
-    if (loading || state.loading || parentState === 'loading') {
+    if (loading || state.loading || parentState === ComponentStates.loading) {
         return <Progressing size={48} fullHeight />
     }
 

@@ -29,7 +29,7 @@ export default function EnvironmentOverride({ environmentsLoading, environments 
 
     useEffect(() => {
         if (params.envId) setEnvironmentId(+params.envId)
-        setViewState('loading')
+        setViewState(ComponentStates.loading)
     }, [params.envId])
 
     useEffect(() => {
@@ -58,11 +58,11 @@ export default function EnvironmentOverride({ environmentsLoading, environments 
         return null
     } else if (environmentsLoading) {
         return <Progressing pageLoader />
-    } else if (viewState === 'failed') {
+    } else if (viewState === ComponentStates.failed) {
         return (
             <Reload
                 reload={(event) => {
-                    setViewState('loading')
+                    setViewState(ComponentStates.loading)
                 }}
             />
         )
