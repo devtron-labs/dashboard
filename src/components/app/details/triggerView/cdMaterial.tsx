@@ -145,7 +145,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
         {this.renderSequentialCDCardTitle(mat)}
 
-        <div className={`material-history__top ${!this.state.isSecurityModuleInstalled && mat.showSourceInfo?  'border-bottom': ''}`} style={{ 'cursor': `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
+        <div className={`material-history__top ${!this.state.isSecurityModuleInstalled && mat.showSourceInfo?  'dc__border-bottom-n2': ''}`} style={{ 'cursor': `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
           onClick={(event) => { event.stopPropagation(); if (!mat.vulnerable) this.props.selectImage(index, this.props.materialType) }}>
           <div>
            <div className="commit-hash commit-hash--docker"><img src={docker} alt="" className="commit-hash__icon" />{mat.image}</div>
