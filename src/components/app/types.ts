@@ -361,3 +361,8 @@ export enum NodeDetailTabs {
     TERMINAL = 'TERMINAL',
 }
 export type NodeDetailTabsType = keyof typeof NodeDetailTabs;
+
+export enum OrderBy {
+    ASC = 'ASC',
+    DESC = 'DESC'
+}

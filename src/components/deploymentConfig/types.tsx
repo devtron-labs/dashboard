@@ -178,3 +178,43 @@ export interface DeploymentTemplateEditorViewProps {
     readOnly?: boolean
     globalChartRefId?: number
 }
+
+export interface EsoData {
+    secretKey: string
+    key: string
+    property: string
+}
+
+export interface SecretData {
+    key: string
+    name: string
+    property: string
+    isBinary: boolean
+}
+
+export interface EsoSecretData {
+    secretStore: any
+    esoData: EsoData[]
+}
+export interface SecretFormProps {
+    id: number
+    appChartRef: { id: number; version: string; name: string }
+    appId: number
+    roleARN: string
+    name: string
+    index: number
+    external: boolean
+    externalType: string
+    secretData: SecretData[]
+    esoSecretData?: EsoSecretData
+    type: string
+    data: { k: string; v: string }[]
+    isUpdate: boolean
+    mountPath: string
+    keyValueEditable?: boolean
+    filePermission: string
+    subPath: boolean
+    update: (...args) => void
+    collapse: (...args) => void
+    initialise?: () => void
+}

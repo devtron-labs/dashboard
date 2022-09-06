@@ -56,6 +56,7 @@ export const initState = (
         invalidaEnvironment: false,
         invalidProject: false,
         formValidationError: {},
+        showNoGitOpsWarning: false
     }
 }
 
@@ -151,6 +152,8 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
             return { ...state, formValidationError: action.payload }
         case ChartValuesViewActionTypes.multipleOptions:
             return { ...state, ...action.payload }
+        case ChartValuesViewActionTypes.showNoGitOpsWarning:
+          return { ...state, showNoGitOpsWarning: action.payload }
         default:
             return state
     }

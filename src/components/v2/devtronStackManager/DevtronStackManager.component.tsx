@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link, NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
+import { NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
 import {
     ModuleDetailsCardType,
     ModuleStatus,
@@ -11,13 +11,14 @@ import {
     ModuleInstallationStatusType,
     InstallationWrapperType,
     InstallationType,
+    ModuleDetails,
 } from './DevtronStackManager.type'
 import EmptyState from '../../EmptyState/EmptyState'
 import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
 import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as InstallIcon } from '../../../assets/icons/ic-arrow-forward.svg'
-import { ReactComponent as RetyrInstallIcon } from '../../../assets/icons/ic-arrow-clockwise.svg'
+import { ReactComponent as RetryInstallIcon } from '../../../assets/icons/ic-arrow-clockwise.svg'
 import { ReactComponent as SuccessIcon } from '../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as UpToDateIcon } from '../../../assets/icons/ic-celebration.svg'
 import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
@@ -25,22 +26,36 @@ import { ReactComponent as Info } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Note } from '../../../assets/icons/ic-note.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
-import { Checkbox, CHECKBOX_VALUE, Progressing, showError, ToastBody, VisibleModal } from '../../common'
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    ConditionalWrap,
+    noop,
+    Progressing,
+    showError,
+    ToastBody,
+    VisibleModal,
+} from '../../common'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
-import { URLS } from '../../../config'
+import { DOCUMENTATION, URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
 import { toast } from 'react-toastify'
 import {
     AboutSection,
+    DEVTRON_UPGRADE_MESSAGE,
     handleAction,
     isLatestVersionAvailable,
+    ModuleNameMap,
     ModulesSection,
+    MODULE_CONFIGURATION_DETAIL_MAP,
     MORE_MODULE_DETAILS,
+    PENDING_DEPENDENCY_MESSAGE,
 } from './DevtronStackManager.utils'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import './devtronStackManager.component.scss'
 import PageHeader from '../../common/header/PageHeader'
+import Tippy from '@tippyjs/react'
 
 const getInstallationStatusLabel = (installationStatus: ModuleStatus): JSX.Element => {
     if (installationStatus === ModuleStatus.INSTALLING) {
@@ -69,7 +84,7 @@ const getInstallationStatusLabel = (installationStatus: ModuleStatus): JSX.Eleme
     return <></>
 }
 
-const ModuleDeailsCard = ({
+const ModuleDetailsCard = ({
     moduleDetails,
     className,
     handleModuleCardClick,
@@ -77,13 +92,15 @@ const ModuleDeailsCard = ({
 }: ModuleDetailsCardType): JSX.Element => {
     return (
         <div
-            className={`module-details__card flex left column br-8 p-20 mr-20 mb-20 ${className || ''}`}
-            {...(handleModuleCardClick && { onClick: () => handleModuleCardClick(moduleDetails, fromDiscoverModules) })}
+            className={`module-details__card flex left column br-8 p-16 mr-20 mb-20 ${className || ''}`}
+            {...(handleModuleCardClick && {
+                onClick: () => handleModuleCardClick(moduleDetails, fromDiscoverModules),
+            })}
         >
             {getInstallationStatusLabel(moduleDetails.installationStatus)}
             <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
             <div className="module-details__card-name fs-16 fw-6 cn-9 mb-4">{moduleDetails.title}</div>
-            <div className="module-details__card-info fs-13 fw-4 cn-7">
+            <div className="module-details__card-info fs-13 fw-4 cn-7 lh-20">
                 {moduleDetails.name === MORE_MODULE_DETAILS.name ? (
                     <>
                         You can&nbsp;
@@ -118,7 +135,7 @@ export const ModulesListingView = ({
         <div className="flexbox flex-wrap left p-20">
             {modulesList.map((module, idx) => {
                 return (
-                    <ModuleDeailsCard
+                    <ModuleDetailsCard
                         key={`module-details__card-${idx}`}
                         moduleDetails={module}
                         className="cursor"
@@ -128,7 +145,7 @@ export const ModulesListingView = ({
                 )
             })}
             {isDiscoverModulesView && (
-                <ModuleDeailsCard
+                <ModuleDetailsCard
                     moduleDetails={MORE_MODULE_DETAILS}
                     className="more-integrations__card"
                     fromDiscoverModules={isDiscoverModulesView}
@@ -283,6 +300,7 @@ const InstallationStatus = ({
     logPodName,
     isUpgradeView,
     latestVersionAvailable,
+    isCICDModule,
 }: ModuleInstallationStatusType): JSX.Element => {
     return (
         <div
@@ -347,7 +365,7 @@ const InstallationStatus = ({
                                 View details
                             </NavLink>
                         )}
-                        {((isUpgradeView && canViewLogs) || !isUpgradeView) && logPodName && (
+                        {((isUpgradeView && canViewLogs) || (!isUpgradeView && isCICDModule)) && logPodName && (
                             <NavLink
                                 to={`${URLS.APP}/${URLS.EXTERNAL_APPS}/1%7Cdevtroncd%7C${appName}/${appName}/${URLS.APP_DETAILS}/${URLS.APP_DETAILS_K8}/pod/${logPodName}/logs`}
                                 target="_blank"
@@ -369,16 +387,8 @@ const InstallationStatus = ({
 
 const GetHelpCard = (): JSX.Element => {
     return (
-        <div className="module-details__get-help flex column top left br-4 cn-9 fs-13">
+        <div className="module-details__get-help flex column top left br-4 cn-9 fs-13 mb-16">
             <span className="fw-6 mb-10">Facing issues?</span>
-            {/* <a
-                className="module-details__help-guide cb-5 flex left"
-                href="https://discord.devtron.ai/"
-                target="_blank"
-                rel="noreferrer noopener"
-            >
-                <File className="icon-dim-20 mr-12" /> Troubleshooting guide
-            </a> */}
             <a
                 className="module-details__help-chat cb-5 flex left"
                 href="https://discord.devtron.ai/"
@@ -393,7 +403,7 @@ const GetHelpCard = (): JSX.Element => {
 
 const ModuleUpdateNote = (): JSX.Element => {
     return (
-        <div className="module-details__update-note br-4 cn-9 fs-13">
+        <div className="module-details__update-note br-4 cn-9 fs-13 mb-16">
             <div className="fs-4 mb-8">Integrations are updated along with Devtron updates.</div>
             <div className="fs-6">
                 <NavLink to={URLS.STACK_MANAGER_ABOUT} className="fw-6">
@@ -421,12 +431,15 @@ export const handleError = (err: any, isUpgradeView?: boolean): void => {
 }
 
 export const InstallationWrapper = ({
+    modulesList,
+    moduleDetails,
     moduleName,
     installationStatus,
     canViewLogs,
     logPodName,
     serverInfo,
     upgradeVersion,
+    baseMinVersionSupported,
     isUpgradeView,
     isActionTriggered,
     releaseNotes,
@@ -439,6 +452,13 @@ export const InstallationWrapper = ({
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const latestVersionAvailable = isLatestVersionAvailable(serverInfo?.currentVersion, upgradeVersion)
+    const dependentModuleList =
+        modulesList?.filter((module) => moduleDetails.dependentModules.indexOf(Number(module.id)) >= 0) || []
+    const isPendingDependency =
+        !isUpgradeView && dependentModuleList.some((module) => module.installationStatus !== ModuleStatus.INSTALLED)
+    const belowMinSupportedVersion = baseMinVersionSupported
+        ? isLatestVersionAvailable(serverInfo?.currentVersion, baseMinVersionSupported)
+        : false
     const [preRequisiteList, setPreRequisiteList] = useState<
         { version: string; prerequisiteMessage: string; tagLink: string }[]
     >([])
@@ -470,8 +490,11 @@ export const InstallationWrapper = ({
         if (isActionTriggered) {
             return
         } else {
-            if (preRequisiteChecked || preRequisiteList.length === 0) {
-                setShowPreRequisiteConfirmationModal(false)
+            if (!isUpgradeView || preRequisiteChecked || preRequisiteList.length === 0) {
+                if (!isUpgradeView && (belowMinSupportedVersion || isPendingDependency)) {
+                    return
+                }
+                setShowPreRequisiteConfirmationModal && setShowPreRequisiteConfirmationModal(false)
                 updateActionTrigger(true)
                 handleAction(moduleName, isUpgradeView, upgradeVersion, updateActionTrigger, history, location)
             } else {
@@ -570,39 +593,61 @@ export const InstallationWrapper = ({
                             (installationStatus !== ModuleStatus.HEALTHY ||
                                 (installationStatus === ModuleStatus.HEALTHY && latestVersionAvailable)) && (
                                 <>
-                                    <button
-                                        className="module-details__install-button cta flex mb-16"
-                                        onClick={handleActionButtonClick}
+                                    <ConditionalWrap
+                                        condition={!isUpgradeView && (belowMinSupportedVersion || isPendingDependency)}
+                                        wrap={(children) => (
+                                            <Tippy
+                                                className="default-tt w-200"
+                                                arrow={false}
+                                                placement="top"
+                                                content={
+                                                    belowMinSupportedVersion
+                                                        ? DEVTRON_UPGRADE_MESSAGE
+                                                        : PENDING_DEPENDENCY_MESSAGE
+                                                }
+                                            >
+                                                <div>{children}</div>
+                                            </Tippy>
+                                        )}
                                     >
-                                        {isActionTriggered && <Progressing />}
-                                        {!isActionTriggered &&
-                                            (installationStatus === ModuleStatus.NOT_INSTALLED ||
-                                                (installationStatus === ModuleStatus.HEALTHY &&
-                                                    latestVersionAvailable)) && (
-                                                <>
-                                                    {isUpgradeView ? (
-                                                        `Update to ${upgradeVersion.toLowerCase()}`
-                                                    ) : (
-                                                        <>
-                                                            <InstallIcon className="module-details__install-icon icon-dim-16 mr-8" />
-                                                            Install
-                                                        </>
-                                                    )}
-                                                </>
-                                            )}
-                                        {!isActionTriggered &&
-                                            (installationStatus === ModuleStatus.INSTALL_FAILED ||
-                                                installationStatus === ModuleStatus.UPGRADE_FAILED ||
-                                                installationStatus === ModuleStatus.TIMEOUT ||
-                                                installationStatus === ModuleStatus.UNKNOWN) && (
-                                                <>
-                                                    <RetyrInstallIcon className="module-details__retry-install-icon icon-dim-16 mr-8" />
-                                                    {`Retry ${isUpgradeView ? 'update' : 'install'}`}
-                                                </>
-                                            )}
-                                    </button>
-                                    {preRequisiteList.length > 0 && (
-                                        <div className="flexbox pt-10 pr-16 pb-10 pl-16 bcy-1 ey-2 bw-1 br-4">
+                                        <button
+                                            className={`module-details__install-button cta flex mb-16 ${
+                                                !isUpgradeView && (belowMinSupportedVersion || isPendingDependency)
+                                                    ? 'disabled-state'
+                                                    : ''
+                                            }`}
+                                            onClick={handleActionButtonClick}
+                                        >
+                                            {isActionTriggered && <Progressing />}
+                                            {!isActionTriggered &&
+                                                (installationStatus === ModuleStatus.NOT_INSTALLED ||
+                                                    (installationStatus === ModuleStatus.HEALTHY &&
+                                                        latestVersionAvailable)) && (
+                                                    <>
+                                                        {isUpgradeView ? (
+                                                            `Update to ${upgradeVersion.toLowerCase()}`
+                                                        ) : (
+                                                            <>
+                                                                <InstallIcon className="module-details__install-icon icon-dim-16 mr-8" />
+                                                                Install
+                                                            </>
+                                                        )}
+                                                    </>
+                                                )}
+                                            {!isActionTriggered &&
+                                                (installationStatus === ModuleStatus.INSTALL_FAILED ||
+                                                    installationStatus === ModuleStatus.UPGRADE_FAILED ||
+                                                    installationStatus === ModuleStatus.TIMEOUT ||
+                                                    installationStatus === ModuleStatus.UNKNOWN) && (
+                                                    <>
+                                                        <RetryInstallIcon className="module-details__retry-install-icon icon-dim-16 mr-8" />
+                                                        {`Retry ${isUpgradeView ? 'update' : 'install'}`}
+                                                    </>
+                                                )}
+                                        </button>
+                                    </ConditionalWrap>
+                                    {isUpgradeView && preRequisiteList.length > 0 && (
+                                        <div className="flexbox pt-10 pr-16 pb-10 pl-16 bcy-1 ey-2 bw-1 br-4 mb-16">
                                             <Note className="module-details__install-icon icon-dim-16 mt-4 mr-8" />
                                             <div>
                                                 <div className="cn-9 fw-6 fs-13">Pre-requisites for this update</div>
@@ -615,9 +660,9 @@ export const InstallationWrapper = ({
                                             </div>
                                         </div>
                                     )}
+                                    {!isUpgradeView && belowMinSupportedVersion && <UpgradeNote />}
                                 </>
                             )}
-
                         {((installationStatus !== ModuleStatus.NOT_INSTALLED &&
                             installationStatus !== ModuleStatus.HEALTHY) ||
                             (installationStatus === ModuleStatus.HEALTHY && !latestVersionAvailable)) && (
@@ -628,7 +673,11 @@ export const InstallationWrapper = ({
                                 logPodName={logPodName}
                                 isUpgradeView={isUpgradeView}
                                 latestVersionAvailable={latestVersionAvailable}
+                                isCICDModule={moduleName === ModuleNameMap.CICD}
                             />
+                        )}
+                        {moduleDetails && moduleDetails.isModuleConfigurable && !moduleDetails.isModuleConfigured && (
+                            <ModuleNotConfigured moduleName={moduleName} />
                         )}
                         {!isUpgradeView && installationStatus === ModuleStatus.INSTALLED && <ModuleUpdateNote />}
                     </>
@@ -640,6 +689,7 @@ export const InstallationWrapper = ({
                                 installationStatus === ModuleStatus.UPGRADE_FAILED ||
                                 installationStatus === ModuleStatus.TIMEOUT ||
                                 installationStatus === ModuleStatus.UNKNOWN))) && <GetHelpCard />}
+                {!isUpgradeView && modulesList && <DependentModuleList modulesList={dependentModuleList} />}
             </div>
             {renderPrerequisiteConfirmationModal()}
         </>
@@ -647,6 +697,7 @@ export const InstallationWrapper = ({
 }
 
 export const ModuleDetailsView = ({
+    modulesList,
     moduleDetails,
     setDetailsMode,
     serverInfo,
@@ -658,6 +709,7 @@ export const ModuleDetailsView = ({
     history,
     location,
 }: ModuleDetailsViewType): JSX.Element | null => {
+    const queryParams = new URLSearchParams(location.search)
     useEffect(() => {
         if (!moduleDetails && !new URLSearchParams(location.search).get('id')) {
             setDetailsMode('')
@@ -668,23 +720,27 @@ export const ModuleDetailsView = ({
     }, [])
 
     return moduleDetails ? (
-        <div className="module-details__view-container">
+        <div className="module-details__view-container pb-40">
             <Carousel className="module-details__carousel" imageUrls={moduleDetails.assets} />
             <div className="module-details__view-wrapper mt-24">
                 <div className="module-details__feature-wrapper">
+                    <img className="module-details__feature-icon mb-8" src={moduleDetails.icon} alt={moduleDetails.title} />
                     <h2 className="module-details__feature-heading cn-9 fs-20 fw-6">{moduleDetails.title}</h2>
                     <div className="module-details__divider mt-24 mb-24" />
                     <MarkDown
-                        className="module-details__feature-info fs-13 fw-4 cn-9"
+                        className="module-details__feature-info fs-14 fw-4 cn-9"
                         breaks={true}
                         markdown={moduleDetails.description}
                     />
                 </div>
                 <InstallationWrapper
+                    modulesList={modulesList}
+                    moduleDetails={moduleDetails}
                     moduleName={moduleDetails.name}
                     installationStatus={moduleDetails.installationStatus}
                     serverInfo={serverInfo}
                     upgradeVersion={upgradeVersion}
+                    baseMinVersionSupported={moduleDetails.baseMinVersionSupported}
                     logPodName={logPodName}
                     isActionTriggered={isActionTriggered}
                     updateActionTrigger={(isActionTriggered) =>
@@ -743,6 +799,53 @@ const ManagedByNote = (): JSX.Element => {
     )
 }
 
+const ModuleNotConfigured = ({ moduleName }: { moduleName: string }): JSX.Element | null => {
+    const configNoteDetail = MODULE_CONFIGURATION_DETAIL_MAP[moduleName]
+    return (
+        <div className="mb-16">
+            <div className="pt-10 pr 16 pb-10 pl-16 flex top left br-4 cn-9 bcy-1 ey-2">
+                <div className="icon-dim-20 mr-12">
+                  <Warning className="icon-dim-20 warning-icon-y7" />
+                </div>
+                <div>
+                    <h2 className="fs-13 fw-6 lh-20 mb-4 mt-0">{configNoteDetail.title}</h2>
+                    <NavLink
+                        exact
+                        to={configNoteDetail.link}
+                        activeClassName="active"
+                        className="mt-8 no-decor fs-13 fw-6"
+                    >
+                        {configNoteDetail.linkText}
+                    </NavLink>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+const UpgradeNote = (): JSX.Element => {
+    return (
+        <div className="mb-16">
+            <div className="pt-10 pr 16 pb-10 pl-16 flex top left br-4 cn-9 bcb-1 eb-2">
+                <div className="icon-dim-20 mr-12">
+                    <Info className="icon-dim-20" />
+                </div>
+                <div>
+                    <p className="fs-13 fw-4 mb-0 lh-20">{DEVTRON_UPGRADE_MESSAGE}</p>
+                    <NavLink
+                        exact
+                        to={URLS.STACK_MANAGER_ABOUT}
+                        activeClassName="active"
+                        className="mt-8 no-decor fs-13 fw-6"
+                    >
+                        Check for Devtron updates
+                    </NavLink>
+                </div>
+            </div>
+        </div>
+    )
+}
+
 export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }): JSX.Element => {
     return (
         <div className="not-supported__note-wrapper mb-16">
@@ -760,11 +863,7 @@ export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }):
                         {isUpgradeView ? (
                             <>
                                 Please refer&nbsp;
-                                <a
-                                    className="cb-5 fw-6"
-                                    href="https://docs.devtron.ai/devtron/setup/upgrade"
-                                    target="_blank"
-                                >
+                                <a className="cb-5 fw-6" href={DOCUMENTATION.DEVTRON_UPGRADE} target="_blank">
                                     steps to upgrade using CLI
                                 </a>
                             </>
@@ -776,4 +875,37 @@ export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }):
             </div>
         </div>
     )
+}
+
+const DependentModuleList = ({ modulesList }: { modulesList: ModuleDetails[] }): JSX.Element => {
+    const history: RouteComponentProps['history'] = useHistory()
+    const location: RouteComponentProps['location'] = useLocation()
+    const queryParams = new URLSearchParams(location.search)
+
+    const handleModuleCardClick = (moduleDetails: ModuleDetails) => {
+        queryParams.set('id', moduleDetails.name)
+        history.push(
+            `${
+                moduleDetails.installationStatus !== ModuleStatus.INSTALLED
+                    ? URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS
+                    : URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS
+            }?${queryParams.toString()}`,
+        )
+    }
+    return modulesList?.length ? (
+        <div>
+            <div className="fs-14 fw-6 cn-9 mb-16">Pre-requisite integrations</div>
+            {modulesList.map((module, idx) => {
+                return (
+                    <ModuleDetailsCard
+                        key={`module-details__card-${idx}`}
+                        moduleDetails={module}
+                        className="cursor dependent-module__card"
+                        handleModuleCardClick={handleModuleCardClick}
+                        fromDiscoverModules={false}
+                    />
+                )
+            })}
+        </div>
+    ) : null
 }

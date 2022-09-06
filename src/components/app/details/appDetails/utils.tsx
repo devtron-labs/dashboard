@@ -410,7 +410,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
           },
       },
   }
-  if (data) {
+  if (data?.timelines?.length) {
       for (let index = data.timelines.length - 1; index >= 0; index--) {
           const element = data.timelines[index]
           if (element['status'] === 'HEALTHY' || element['status'] === 'DEGRADED') {

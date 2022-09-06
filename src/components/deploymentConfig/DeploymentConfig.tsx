@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from 'react'
+import { useHistory, useParams } from 'react-router'
+import { toast } from 'react-toastify'
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate } from './service'
 import { getChartReferences } from '../../services/service'
-import { Progressing, ConfirmationDialog, useJsonYaml } from '../common'
-import { useEffectAfterMount, showError } from '../common/helpers/Helpers'
-import { useParams } from 'react-router'
-import { toast } from 'react-toastify'
+import { Progressing, ConfirmationDialog, useJsonYaml, useEffectAfterMount, showError } from '../common'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
-import './deploymentConfig.scss'
-import YAML from 'yaml'
-import { useHistory } from 'react-router-dom'
 import {
     DeploymentConfigFormCTA,
     DeploymentTemplateEditorView,
@@ -16,6 +12,8 @@ import {
 } from './DeploymentTemplateView'
 import { DeploymentChartVersionType, DeploymentConfigProps } from './types'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
+import YAML from 'yaml'
+import './deploymentConfig.scss'
 
 export default function DeploymentConfig({
     respondOnSuccess,

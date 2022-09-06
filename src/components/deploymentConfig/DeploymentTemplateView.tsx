@@ -11,6 +11,7 @@ import {
     Progressing,
     showError,
     sortObjectArrayAlphabetically,
+    versionComparator,
 } from '../common'
 import { DropdownIndicator, Option } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Upload } from '../../assets/icons/ic-arrow-line-up.svg'
@@ -30,12 +31,12 @@ import {
     CompareWithDropdownProps,
     DeploymentChartGroupOptionType,
     DeploymentChartOptionType,
-    DeploymentChartVersionType,
     DeploymentConfigFormCTAProps,
     DeploymentTemplateEditorViewProps,
     DeploymentTemplateOptionsTabProps,
 } from './types'
 import { getCommonSelectStyles } from './constants'
+import { OrderBy } from '../app/types'
 
 const renderReadMeOption = (openReadMe: boolean, handleReadMeClick: () => void, disabled?: boolean) => {
     const handleReadMeOptionClick = () => {
@@ -174,7 +175,9 @@ export const ChartTypeVersionOptions = ({
         },
     ]
     const filteredCharts = selectedChart
-        ? charts.filter((cv) => cv.name == selectedChart.name).sort((a, b) => Number(b.id) - Number(a.id))
+        ? charts
+              .filter((cv) => cv.name == selectedChart.name)
+              .sort((a, b) => versionComparator(a, b, 'version', OrderBy.DESC))
         : []
 
     const onSelectChartType = (selected) => {
@@ -183,7 +186,7 @@ export const ChartTypeVersionOptions = ({
         if (selectedChart) {
             selectChart(selectedChart)
         } else {
-            const sortedFilteredCharts = filteredCharts.sort((a, b) => Number(a.id) - Number(b.id))
+            const sortedFilteredCharts = filteredCharts.sort((a, b) => versionComparator(a, b, 'version', OrderBy.DESC))
             selectChart(sortedFilteredCharts[sortedFilteredCharts.length ? sortedFilteredCharts.length - 1 : 0])
         }
     }
@@ -587,7 +590,7 @@ export const DeploymentTemplateEditorView = ({
 
                     return chart.id !== selectedChart.id && chart.name === selectedChart.name
                 })
-                .sort((a, b) => Number(b.id) - Number(a.id))
+                .sort((a, b) => versionComparator(a, b, 'version', OrderBy.DESC))
 
             setFilteredCharts(
                 _filteredCharts.map((chart) => ({

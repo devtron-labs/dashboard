@@ -31,8 +31,9 @@ import {
 } from './DevtronStackManager.type'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import './devtronStackManager.scss'
-import { getVersionConfig } from '../../../services/service'
+import { getVersionConfig, isGitopsConfigured } from '../../../services/service'
 import { toast } from 'react-toastify'
+import { ModuleNameMap } from './DevtronStackManager.utils'
 
 export default function DevtronStackManager({
     serverInfo,
@@ -99,8 +100,20 @@ export default function DevtronStackManager({
             getLatestInfo()
             queryParams.delete('actionTriggered')
             history.push(`${location.pathname}?${queryParams.toString()}`)
+        } else if (location.pathname.includes('/details') && selectedModule) {
+            const moduleId = queryParams.get('id')
+            if (moduleId && selectedModule.name.toLowerCase() !== moduleId.toLowerCase()) {
+                const _selectedModule = stackDetails.discoverModulesList.find(
+                    (module) => module.name.toLowerCase() === moduleId.toLowerCase(),
+                )
+
+                if (_selectedModule) {
+                    setSelectedModule(_selectedModule)
+                }
+            }
         }
     }, [location.search])
+
 
     /**
      * To update the installation status for seleted module after fetching latest details
@@ -204,17 +217,34 @@ export default function DevtronStackManager({
         }
     }
 
+    const _getGitOpsConfigurationStatus = async (): Promise<void> => {
+        try {
+            if (
+                location.pathname.includes('/details') &&
+                queryParams.get('id') === ModuleNameMap.ARGO_CD
+            ) {
+                const { result } = await isGitopsConfigured()
+                const currentModule = stackDetails.discoverModulesList.find(
+                    (_module) => _module.name === ModuleNameMap.ARGO_CD,
+                )
+                if (currentModule) {
+                    currentModule.isModuleConfigurable = true
+                    currentModule.isModuleConfigured = result?.exists || false
+                    setSelectedModule(currentModule)
+                }
+            }
+        } catch (e) {
+            console.error('Error in fetching pod name')
+        }
+    }
+
     const _getDetailsForAllModules = (_modulesList: ModuleDetails[], _stackDetails: StackDetailsType): void => {
         /**
          * 1. Create array of promises to fetch module details
          * - If in full mode then resolve all modules as INSTALLED which has isIncludedInLegacyFullPackage as true
          * - Else create a promise to fetch the details
          */
-        const _moduleDetailsPromiseList = _modulesList?.map((module: ModuleDetails) =>
-            serverMode === SERVER_MODE.FULL && module.isIncludedInLegacyFullPackage
-                ? { result: { name: module.name, status: ModuleStatus.INSTALLED } }
-                : getModuleInfo(module.name),
-        )
+        const _moduleDetailsPromiseList = _modulesList?.map((module: ModuleDetails) => getModuleInfo(module.name))
 
         const _discoverModulesList: ModuleDetails[] = []
         const _installedModulesList: ModuleDetails[] = []
@@ -240,6 +270,9 @@ export default function DevtronStackManager({
                         _discoverModulesList.push(_moduleDetails)
 
                         if (_moduleDetails.installationStatus === ModuleStatus.INSTALLED) {
+                            if (_moduleDetails.name === ModuleNameMap.ARGO_CD) {
+                                _getGitOpsConfigurationStatus()
+                            }
                             _installedModulesList.push(_moduleDetails)
                         }
                     }
@@ -346,6 +379,7 @@ export default function DevtronStackManager({
             <Switch location={location}>
                 <Route path={URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}>
                     <ModuleDetailsView
+                        modulesList={stackDetails.discoverModulesList}
                         moduleDetails={selectedModule}
                         setDetailsMode={setDetailsMode}
                         serverInfo={serverInfo}
@@ -360,6 +394,7 @@ export default function DevtronStackManager({
                 </Route>
                 <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS}>
                     <ModuleDetailsView
+                        modulesList={stackDetails.installedModulesList}
                         moduleDetails={selectedModule}
                         setDetailsMode={setDetailsMode}
                         serverInfo={serverInfo}
