@@ -28,3 +28,9 @@ export class ServerErrors extends Error {
         this.errors = obj.errors.map((err) => new ServerError(err));
     }
 }
+export interface ForceDeleteDialogType {
+  onClickDelete: () => void
+  closeDeleteModal: () => void
+  forceDeleteDialogTitle: string
+  forceDeleteDialogMessage: string
+}
