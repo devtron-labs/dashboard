@@ -1,13 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import HelmCollage from '../../assets/img/helm-collage.png'
 import DeployCICD from '../../assets/img/guide-onboard.png'
 import { NavLink, useRouteMatch, useHistory } from 'react-router-dom'
 import { PREVIEW_DEVTRON, SERVER_MODE, URLS } from '../../config'
 import './onboardingGuide.scss'
 import PreviewImage from '../../assets/img/ic-preview.png'
-import { handlePostHogEventUpdate, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
+import { handlePostHogEventUpdate, LOGIN_COUNT, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
 import GuideCommonHeader from './GuideCommonHeader'
 import { OnboardingGuideProps } from './OnboardingGuide.type'
+import { updateLoginCount } from '../../services/service'
 
 function OnboardingGuide({
     loginCount,
@@ -15,6 +16,17 @@ function OnboardingGuide({
     onClickedDeployManageCardClicked,
     isGettingStartedClicked,
 }: OnboardingGuideProps) {
+
+  useEffect(() => {
+      if (loginCount === 0) {
+          const updatedPayload = {
+              key: LOGIN_COUNT,
+              value: '1',
+          }
+          updateLoginCount(updatedPayload)
+      }
+  }, [])
+
     const match = useRouteMatch()
     const history = useHistory()
 

@@ -66,28 +66,31 @@ export default function NavigationRoutes() {
     }
 
     useEffect(() => {
-        getInit()
-        setExpiryDate(+localStorage.getItem('clickedOkay'))
-    }, [])
+        serverMode && getInit()
+    }, [serverMode])
 
-     const getInit = () => {
+    const getInit = async () => {
         setLoginLoader(true)
-        Promise.all([getUserRole(), serverMode === SERVER_MODE.FULL && getAppListMin(), getLoginData()]).then(
-            (response) => {
-              const superAdmin = response[0]?.result?.roles.includes('role:super-admin___')
-                setSuperAdmin(superAdmin)
-                setAppListCount(response[1]?.result?.length)
-                processLoginData(response[2], superAdmin)
-                setLoginLoader(false)
-            },
-            (err) => {
-                setLoginLoader(false)
-                showError(err)
-            },
-        )
+        setExpiryDate(+localStorage.getItem('clickedOkay'))
+        try {
+            const [userRole, appList, loginData] = await Promise.all([
+                getUserRole(),
+                serverMode === SERVER_MODE.FULL ? getAppListMin() : null,
+                getLoginData(),
+            ])
+            const superAdmin = userRole?.result?.roles.includes('role:super-admin___')
+            setSuperAdmin(superAdmin)
+            const appCount = appList?.result?.length || 0
+            setAppListCount(appCount)
+            processLoginData(loginData, superAdmin, appCount)
+            setLoginLoader(false)
+        } catch (err) {
+            setLoginLoader(false)
+            showError(err)
+        }
     }
 
-     const processLoginData = (response, superAdmin) => {
+     const processLoginData = (response, superAdmin, appListCount) => {
          const count = response.result?.value ? parseInt(response.result.value) : 0
          setLoginCount(count)
          if (
@@ -298,7 +301,7 @@ export default function NavigationRoutes() {
                                         </Route>
 
                                         <Route>
-                                            <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && loginCount === 0} />
+                                            <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0} />
                                         </Route>
                                     </Switch>
                                 </ErrorBoundary>
@@ -341,7 +344,7 @@ export function AppRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                     </Route>
                     <Route>
                         <RedirectUserWithSentry
-                            isFirstLoginUser={isSuperAdmin && loginCount === 0}
+                            isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0}
                         />
                     </Route>
                 </Switch>
@@ -362,7 +365,7 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
                         <RedirectToAppList />
                     </Route>
                     <Route>
-                        <RedirectUserWithSentry isFirstLoginUser = {isSuperAdmin && loginCount === 0} />
+                        <RedirectUserWithSentry isFirstLoginUser = {isSuperAdmin && loginCount === 0 && appListCount === 0} />
                     </Route>
                 </Switch>
             </AppContext.Provider>
