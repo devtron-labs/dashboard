@@ -185,11 +185,11 @@ function NodeComponent({
             const nodeName = `${node.name}.${node.namespace} : { portnumber }`
 
             // Only render node kind header when it's the first node or it's a different kind header
-            _currentNodeHeader = index === 0 ? node.kind : _currentNodeHeader !== node.kind ? node.kind : ''
+            _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
 
             return (
                 <React.Fragment key={'grt' + index}>
-                    {showHeader && (index === 0 || _currentNodeHeader) && (
+                    {showHeader && !!_currentNodeHeader && (
                         <div className="fw-6 pt-10 pb-10 pl-16 border-bottom">
                             <span>{node.kind}</span>
                         </div>
