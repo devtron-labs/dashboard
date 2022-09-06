@@ -1,6 +1,6 @@
 import React from 'react'
+import { ForceDeleteDialogType } from '../../../modals/commonTypes';
 import { DeleteDialog } from '../../common';
-import { ForceDeleteDialogType } from './Dialog.type';
 
 export default function ForceDeleteDialog({ onClickDelete, closeDeleteModal, forceDeleteDialogTitle, forceDeleteDialogMessage }: ForceDeleteDialogType) {
     return (
