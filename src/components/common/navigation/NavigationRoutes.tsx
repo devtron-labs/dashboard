@@ -90,13 +90,7 @@ export default function NavigationRoutes() {
      const processLoginData = (response, superAdmin, appListCount) => {
          const count = response.result?.value ? parseInt(response.result.value) : 0
          setLoginCount(count)
-         if (count === 0) {
-             const updatedPayload = {
-                 key: LOGIN_COUNT,
-                 value: '1',
-             }
-             updateLoginCount(updatedPayload)
-         } else if (
+          if (
              typeof Storage !== 'undefined' &&
              (localStorage.getItem('isSSOLogin') || localStorage.getItem('isAdminLogin'))
          ) {
@@ -110,7 +104,7 @@ export default function NavigationRoutes() {
                  updateLoginCount(updatedPayload)
              }
          }
-         if (!count && superAdmin) {
+         if (!count && superAdmin && appListCount === 0) {
              history.push(`/${URLS.GETTING_STARTED}`)
          } else if (!count) {
              history.push(URLS.APP)

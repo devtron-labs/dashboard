@@ -17,6 +17,18 @@ function OnboardingGuide({
     isGettingStartedClicked,
 }: OnboardingGuideProps) {
 
+  useEffect(() => {
+    return () => {
+      if (loginCount === 0) {
+          const updatedPayload = {
+              key: LOGIN_COUNT,
+              value: '1',
+          }
+          updateLoginCount(updatedPayload)
+      }
+    }
+  }, [])
+
     const match = useRouteMatch()
     const history = useHistory()
 
