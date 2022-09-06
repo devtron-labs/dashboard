@@ -473,3 +473,6 @@ export interface BranchRegexModalProps {
     regexValue
     onCloseBranchRegexModal
 }
+export interface AppDetailsProps {
+    isV2: boolean
+}

@@ -59,6 +59,9 @@ export interface AppListProps extends RouteComponentProps<{ route: string }> {
     clearAllFilters: () => void;
     sortApplicationList : (key: string) => void;
     updateLastDataSync : () => void;
+    appListCount: number
+    isSuperAdmin: boolean
+    openDevtronAppCreateModel: (event) => void
     setAppCount: React.Dispatch<React.SetStateAction<number>>
 }
 
@@ -114,3 +117,7 @@ export const SortBy = {
     ENVIRONMENT: "environmentSort",
 }
 
+export interface AppListPropType {
+  isSuperAdmin: boolean
+  appListCount: number
+}

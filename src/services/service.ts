@@ -2,11 +2,12 @@ import { get, post } from './api';
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config';
 import { sortCallback } from '../components/common/helpers/util';
 import moment from 'moment';
-import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions, ClusterEnvironmentDetailList, EnvironmentListHelmResponse, ClusterListResponse } from './service.types';
+import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions, ClusterEnvironmentDetailList, EnvironmentListHelmResponse, ClusterListResponse, LoginCountType } from './service.types';
 import { Chart } from '../components/charts/charts.types';
 import { fetchWithFullRoute } from './fetchWithFullRoute';
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service';
 import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackManager.type';
+import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils';
 
 
 export function getAppConfigStatus(appId: number): Promise<any> {
@@ -413,4 +414,17 @@ export function dashboardAccessed() {
 
 export function dashboardLoggedIn() {
   return get(Routes.DASHBOARD_LOGGEDIN);
+}
+
+
+export function getLoginData() : Promise<LoginCountType>  {
+  return get(`${Routes.ATTRIBUTES_USER}/${Routes.GET}?key=${LOGIN_COUNT}`)
+}
+
+export function updateLoginCount(payload): Promise<LoginCountType>  {
+    return post(`${Routes.ATTRIBUTES_USER}/${Routes.UPDATE}`, payload)
+}
+
+export function updatePostHogEvent(payload): Promise<ResponseType> {
+    return post(Routes.TELEMETRY_EVENT, payload)
 }

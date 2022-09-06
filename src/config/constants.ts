@@ -4,9 +4,12 @@ export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
 export const DEFAULTK8SVERSION = 'v1.16.0'
 
 export const Routes = {
+    GET: 'get',
+    UPDATE: 'update',
     API_VERSION_V2: 'v2',
     LOGIN: 'api/v1/session',
     SOURCE_CONFIG_GET: 'app/get',
+    USER_CHECK_ROLE:'user/check/roles',
 
     CHART_REFERENCES_MIN: 'chartref/autocomplete',
     CI_CONFIG_GET: 'app/ci-pipeline',
@@ -113,6 +116,7 @@ export const Routes = {
     APP_CREATE_SECRET: 'config/global/cs',
     WORKFLOW: 'app/app-wf',
 
+    ATTRIBUTES_USER: 'attributes/user',
     APP_WORKFLOW_STATUS: 'app/workflow/status',
     APP_CREATE_ENV_SECRET: 'config/environment/cs',
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
@@ -140,8 +144,8 @@ export const Routes = {
     PLUGIN_LIST: 'plugin/global/list',
     PLUGIN_DETAIL: 'plugin/global',
     GLOBAL_VARIABLES: 'plugin/global/list/global-variable',
-    DASHBOARD_ACCESSED: '/dashboard-event/dashboardAccessed',
-    DASHBOARD_LOGGEDIN: '/dashboard-event/dashboardLoggedIn',
+    DASHBOARD_ACCESSED: 'dashboard-event/dashboardAccessed',
+    DASHBOARD_LOGGEDIN: 'dashboard-event/dashboardLoggedIn',
     HELM_APP_HIBERNATE_API: 'application/hibernate',
     HELM_APP_UNHIBERNATE_API: 'application/unhibernate',
     EXTERNAL_LINKS_API: 'external-links',
@@ -158,6 +162,7 @@ export const Routes = {
     NODE_LIST: 'k8s/capacity/node/list',
     NODE_CAPACITY: 'k8s/capacity/node',
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
+    TELEMETRY_EVENT: 'telemetry/event'
 }
 
 export const ViewType = {
@@ -249,13 +254,16 @@ export const DOCUMENTATION = {
     PRE_POST_BUILD_STAGE:
         `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/ci-pipeline/ci-build-pre-post-plugins`,
     CUSTOM_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/custom-charts`,
-    CUSTOM_CHART_PRE_REQUISITES:
-        `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/custom-charts#prerequisites`,
+    CUSTOM_CHART_PRE_REQUISITES: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/custom-charts#prerequisites`,
     ADMIN_PASSWORD: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/install/install-devtron#devtron-admin-credentials`,
     EXTERNAL_LINKS: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/external-links`,
     GLOBAL_CONFIG_GIT_ACCESS_LINK: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/gitops#4.-git-access-credential`,
-    DEVTRON_UPGRADE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/upgrade`
+    DEVTRON_UPGRADE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/upgrade`,
 }
+
+export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
+
+export const PREVIEW_DEVTRON = 'https://preview.devtron.ai/dashboard'
 
 // APP LIST STARTS
 export const AppListConstants = {
