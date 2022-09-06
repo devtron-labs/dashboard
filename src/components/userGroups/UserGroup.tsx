@@ -27,10 +27,10 @@ import {
     getGroupList,
     getUserId,
     getGroupId,
-    getUserRole,
     getEnvironmentListHelmApps,
     getUsersDataToExport,
-    getGroupsDataToExport
+    getGroupsDataToExport,
+    getUserRole
 } from './userGroup.service'
 import { get } from '../../services/api'
 import { getEnvironmentListMin, getProjectFilteredApps } from '../../services/service'

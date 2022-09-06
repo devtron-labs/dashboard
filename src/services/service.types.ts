@@ -184,3 +184,18 @@ export interface Cluster {
     cluster_name : string,
     active: boolean
 }
+export interface LoginCountType extends ResponseType {
+  result?: LoginCount
+}
+
+export interface LoginCount {
+    emailId: string
+    key: string
+    value: string
+}
+
+export interface AppRouterType {
+  isSuperAdmin?: boolean
+  appListCount: number
+  loginCount: number
+}

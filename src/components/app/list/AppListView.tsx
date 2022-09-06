@@ -10,8 +10,7 @@ import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
 import {ReactComponent as DevtronAppIcon} from '../../../assets/icons/ic-devtron-app.svg';
 import {ReactComponent as HelpOutlineIcon} from '../../../assets/icons/ic-help-outline.svg';
 import Tippy from '@tippyjs/react';
-
-
+import DevtronAppGuidePage from '../../onboardingGuide/DevtronAppGuidePage';
 interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
     expandRow: (app: App | null) => void;
     closeExpandedRow: () => void;
@@ -21,6 +20,9 @@ interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
     clearAll: () => void;
     changePage: (pageNo: number) => void;
     changePageSize: (size: number) => void;
+    appListCount: number
+    isSuperAdmin: boolean
+    openDevtronAppCreateModel: (event) => void
 }
 
 export class AppListView extends Component<AppListViewProps>{
@@ -129,18 +131,13 @@ export class AppListView extends Component<AppListViewProps>{
                 </div>
             </React.Fragment>
         }
+
         else if (this.props.view === AppListViewType.EMPTY) {
             return <React.Fragment>
-                <AppCheckListModal history={this.props.history}
-                    location={this.props.location}
-                    match={this.props.match}
-                    appChecklist={this.props.appChecklist}
-                    chartChecklist={this.props.chartChecklist}
-                    appStageCompleted={this.props.appStageCompleted}
-                    chartStageCompleted={this.props.chartStageCompleted}
-                />
+                <DevtronAppGuidePage openDevtronAppCreateModel={this.props.openDevtronAppCreateModel} />
             </React.Fragment>
         }
+
         else if (this.props.view === AppListViewType.NO_RESULT) {
             return <React.Fragment>
                 <Empty view={this.props.view}
