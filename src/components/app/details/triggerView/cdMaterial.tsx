@@ -145,7 +145,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
         {this.renderSequentialCDCardTitle(mat)}
 
-        <div className="material-history__top" style={{ 'cursor': `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
+        <div className={`material-history__top ${!this.state.isSecurityModuleInstalled && mat.showSourceInfo?  'border-bottom': ''}`} style={{ 'cursor': `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
           onClick={(event) => { event.stopPropagation(); if (!mat.vulnerable) this.props.selectImage(index, this.props.materialType) }}>
           <div>
            <div className="commit-hash commit-hash--docker"><img src={docker} alt="" className="commit-hash__icon" />{mat.image}</div>
@@ -159,28 +159,30 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
               : mat.isSelected ? <Check className="align-right icon-dim-24" /> : "Select"}
           </div>
         </div>
+        {!this.props.isFromDeploymentGroup && <>
         {mat.showSourceInfo ? <>
-          <ul className="tab-list tab-list--vulnerability">
-            <li className="tab-list__tab">
-              <button type="button" onClick={(e) => { e.stopPropagation(); this.props.changeTab(index, Number(mat.id), CDModalTab.Changes) }}
-                className={mat.tab === CDModalTab.Changes ? `${tabClasses} active` : `${tabClasses}`}>
-                Changes
-              </button>
-            </li>
-            {this.state.isSecurityModuleInstalled && <li className="tab-list__tab">
-              <button type="button" onClick={(e) => { e.stopPropagation(); this.props.changeTab(index, Number(mat.id), CDModalTab.Security); }}
-                className={mat.tab === CDModalTab.Security ? `${tabClasses} active` : `${tabClasses}`}>
-                Security  {mat.vulnerabilitiesLoading ? `` : `(${mat.vulnerabilities.length})`}
-              </button>
-            </li>}
-          </ul>
-          {mat.tab === CDModalTab.Changes ? this.renderGitMaterialInfo(mat.materialInfo) : this.renderVulnerabilities(mat)}
-        </>
-          : null}
-        <button type="button" className="material-history__changes-btn" onClick={(event) => { event.stopPropagation(); this.props.toggleSourceInfo(index) }}>
-          {mat.showSourceInfo ? "Hide Source Info" : "Show Source Info"}
-          <img src={arrow} alt="" style={{ 'transform': `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }} />
-        </button>
+            {this.state.isSecurityModuleInstalled && <ul className="tab-list tab-list--vulnerability">
+              <li className="tab-list__tab">
+                <button type="button" onClick={(e) => { e.stopPropagation(); this.props.changeTab(index, Number(mat.id), CDModalTab.Changes) }}
+                  className={mat.tab === CDModalTab.Changes ? `${tabClasses} active` : `${tabClasses}`}>
+                  Changes
+                </button>
+              </li>
+              <li className="tab-list__tab">
+                <button type="button" onClick={(e) => { e.stopPropagation(); this.props.changeTab(index, Number(mat.id), CDModalTab.Security); }}
+                  className={mat.tab === CDModalTab.Security ? `${tabClasses} active` : `${tabClasses}`}>
+                  Security  {mat.vulnerabilitiesLoading ? `` : `(${mat.vulnerabilities.length})`}
+                </button>
+              </li>
+            </ul>}
+            {mat.tab === CDModalTab.Changes ? this.renderGitMaterialInfo(mat.materialInfo) : this.renderVulnerabilities(mat)}
+          </>
+            : null}
+          <button type="button" className="material-history__changes-btn" onClick={(event) => { event.stopPropagation(); this.props.toggleSourceInfo(index) }}>
+            {mat.showSourceInfo ? "Hide Source Info" : "Show Source Info"}
+            <img src={arrow} alt="" style={{ 'transform': `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }} />
+          </button>
+        </>}
       </div >
     })
   }
