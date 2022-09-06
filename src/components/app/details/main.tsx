@@ -19,6 +19,7 @@ import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.sv
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import PageHeader from '../../common/header/PageHeader'
+import { AppDetailsProps } from './triggerView/types'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -29,7 +30,7 @@ const IndexComponent = lazy(() => import('../../v2/index'))
 const CDDetails = lazy(() => import('./cdDetails/CDDetails'))
 const TestRunList = lazy(() => import('./testViewer/TestRunList'))
 
-export default function AppDetailsPage({ isV2 }) {
+export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const { path } = useRouteMatch()
     const { appId } = useParams<{ appId }>()
 

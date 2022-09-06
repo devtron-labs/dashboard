@@ -5,10 +5,14 @@ import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import HelpNav from '../HelpNav'
 import './pageHeader.css'
 import LogoutCard from '../LogoutCard'
-import { getLoginInfo, getRandomColor } from '../helpers/Helpers'
+import { getLoginInfo, getRandomColor, setActionWithExpiry } from '../helpers/Helpers'
 import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { useRouteMatch, useHistory, useLocation } from 'react-router'
+import GettingStartedCard from '../gettingStartedCard/GettingStarted'
+import { mainContext } from '../navigation/NavigationRoutes'
 import ReactGA from 'react-ga4'
+import { handlePostHogEventUpdate, MAX_LOGIN_COUNT, POSTHOG_EVENT_ONBOARDING } from '../../onboardingGuide/onboarding.utils'
 export interface PageHeaderType {
     headerName?: string
     additionalHeaderInfo?: () => JSX.Element
@@ -42,6 +46,14 @@ function PageHeader({
     showCloseButton = false,
     onClose,
 }: PageHeaderType) {
+    const {
+        loginCount,
+        setLoginCount,
+        showGettingStartedCard,
+        setShowGettingStartedCard,
+        isGettingStartedClicked,
+        setGettingStartedClicked,
+    } = useContext(mainContext)
     const [showHelpCard, setShowHelpCard] = useState(false)
     const [showLogOutCard, setShowLogOutCard] = useState(false)
     const loginInfo = getLoginInfo()
@@ -52,6 +64,7 @@ function PageHeader({
             fetchingServerInfo: false,
         },
     )
+    const [expiryDate, setExpiryDate] = useState(0)
 
     const getCurrentServerInfo = async () => {
         try {
@@ -68,23 +81,44 @@ function PageHeader({
             console.error('Error in fetching server info')
         }
     }
+
+    useEffect(() => {
+        setExpiryDate(+localStorage.getItem('clickedOkay'))
+    }, [])
+
     useEffect(() => {
         getCurrentServerInfo()
     }, [])
+
+    const onClickLogoutButton = () => {
+        setShowLogOutCard(!showLogOutCard)
+        if (showHelpCard) {
+            setShowHelpCard(false)
+        }
+        setActionWithExpiry('clickedOkay', 1)
+        hideGettingStartedCard()
+    }
+
+    const onClickHelp = (e) => {
+        setShowHelpCard(!showHelpCard)
+        if (showLogOutCard) {
+            setShowLogOutCard(false)
+        }
+        setActionWithExpiry('clickedOkay', 1)
+        hideGettingStartedCard()
+        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.HELP)
+        ReactGA.event({
+            category: 'Main Navigation',
+            action: `Help Clicked`,
+        })
+    }
 
     const renderLogoutHelpSection = () => {
         return (
             <>
                 <div
                     className="flex left cursor mr-16"
-                    onClick={() => {
-                        setShowHelpCard(!showHelpCard)
-                        showLogOutCard && setShowLogOutCard(false)
-                        ReactGA.event({
-                            category: 'Main Navigation',
-                            action: `Help Clicked`,
-                        })
-                    }}
+                    onClick={onClickHelp}
                 >
                     <span className="icon-dim-24 fcn-9 mr-4 ml-16">
                         <Question />
@@ -93,16 +127,26 @@ function PageHeader({
                 </div>
                 <div
                     className="logout-card__initial cursor fs-13 icon-dim-24 flex logout-card__initial--nav"
-                    onClick={() => {
-                        setShowLogOutCard(!showLogOutCard)
-                        showHelpCard && setShowHelpCard(false)
-                    }}
+                    onClick={onClickLogoutButton}
                     style={{ backgroundColor: getRandomColor(email) }}
                 >
                     {email[0]}
                 </div>
             </>
         )
+    }
+
+    const hideGettingStartedCard = (count?: string) => {
+        setShowGettingStartedCard(false)
+        if (count) {
+            setLoginCount(+count)
+        }
+    }
+
+    const getExpired = (): boolean => {
+        // Render Getting started tippy card if the time gets expired
+        const now = new Date().valueOf()
+        return now > expiryDate
     }
 
     return (
@@ -154,6 +198,15 @@ function PageHeader({
                     setShowHelpCard={setShowHelpCard}
                     serverInfo={currentServerInfo.serverInfo}
                     fetchingServerInfo={currentServerInfo.fetchingServerInfo}
+                    setGettingStartedClicked={setGettingStartedClicked}
+                />
+            )}
+            {showGettingStartedCard && loginCount >= 0 && loginCount < MAX_LOGIN_COUNT && getExpired() && (
+                <GettingStartedCard
+                    className="w-300"
+                    showHelpCard={false}
+                    hideGettingStartedCard={hideGettingStartedCard}
+                    loginCount={loginCount}
                 />
             )}
             {showLogOutCard && (

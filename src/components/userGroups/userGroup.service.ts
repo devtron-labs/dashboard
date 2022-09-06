@@ -144,13 +144,11 @@ interface UserRole extends ResponseType {
 }
 
 export function getUserRole(): Promise<UserRole> {
-    return get(`user/check/roles`);
+    return get(Routes.USER_CHECK_ROLE);
 }
-
 export interface UsersDataToExportResponse extends ResponseType {
     result?: CreateUser[]
 }
-
 export interface GroupsDataToExportResponse extends ResponseType {
     result?: CreateGroup[]
 }

@@ -14,8 +14,6 @@ import {
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ChartIcon } from '../../../assets/icons/ic-charts.svg'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
-import InstallDevtronFullImage from '../../../assets/img/install-devtron-full@2x.png'
-import EmptyState from '../../EmptyState/EmptyState'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
 import { ServerErrors } from '../../../modals/commonTypes'
 import { AppListViewType } from '../config'
@@ -24,7 +22,7 @@ import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
 import * as queryString from 'query-string'
-import { OrderBy, SortBy } from '../list/types'
+import { AppListPropType, OrderBy, SortBy } from '../list/types'
 import { AddNewApp } from '../create/CreateApp'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import '../list/list.css'
@@ -37,9 +35,8 @@ import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import { getAppList } from '../service'
 import moment from 'moment'
 import { getUserRole } from '../../userGroups/userGroup.service'
-import Tippy from '@tippyjs/react'
 
-export default function AppList() {
+export default function AppList({isSuperAdmin, appListCount} : AppListPropType) {
     const location = useLocation()
     const history = useHistory()
     const params = useParams<{ appType: string }>()
@@ -50,7 +47,6 @@ export default function AppList() {
     const [lastDataSync, setLastDataSync] = useState(false)
     const [fetchingNamespaces, setFetchingNamespaces] = useState(false)
     const [fetchingNamespacesErrored, setFetchingNamespacesErrored] = useState(false)
-
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({})
     const [currentTab, setCurrentTab] = useState(undefined)
     const [showCreateNewAppSelectionModal, setShowCreateNewAppSelectionModal] = useState(false)
@@ -79,7 +75,7 @@ export default function AppList() {
     // on page load
     useEffect(() => {
         let _currentTab =
-            params.appType == AppListConstants.AppType.DEVTRON_APPS
+            params.appType === AppListConstants.AppType.DEVTRON_APPS
                 ? AppListConstants.AppTabs.DEVTRON_APPS
                 : AppListConstants.AppTabs.HELM_APPS
         setCurrentTab(_currentTab)
@@ -104,7 +100,7 @@ export default function AppList() {
                 setEnvironmentListRes(initData.environmentListRes)
                 setMasterFilters(initData.filters)
                 setDataStateType(AppListViewType.LIST)
-                if (serverMode == SERVER_MODE.EA_ONLY) {
+                if (serverMode === SERVER_MODE.EA_ONLY) {
                     applyClusterSelectionFilterOnPageLoadIfSingle(initData.filters.clusters, _currentTab)
                 }
             })
@@ -1014,65 +1010,70 @@ export default function AppList() {
 
     return (
         <div>
-            {dataStateType == AppListViewType.LOADING && (
+            {dataStateType === AppListViewType.LOADING && (
                 <div className="loading-wrapper">
                     <Progressing pageLoader />
                 </div>
             )}
-            {dataStateType == AppListViewType.ERROR && (
+            {dataStateType === AppListViewType.ERROR && (
                 <div className="loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )}
-            {dataStateType == AppListViewType.LIST && (
+            {dataStateType === AppListViewType.LIST && (
                 <>
                     {renderPageHeader()}
                     {renderMasterFilters()}
                     {renderAppliedFilters()}
                     {renderAppTabs()}
-                    {serverMode == SERVER_MODE.FULL && renderAppCreateRouter()}
-                    {params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.FULL && (
-                        <DevtronAppListContainer
-                            payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                            appCheckListRes={appCheckListRes}
-                            clearAllFilters={removeAllFilters}
-                            sortApplicationList={sortApplicationList}
-                            updateLastDataSync={updateLastDataSync}
-                            setAppCount={setAppCount}
-                        />
-                    )}
-                    {params.appType == AppListConstants.AppType.DEVTRON_APPS && serverMode == SERVER_MODE.EA_ONLY && (
-                        <div style={{ height: 'calc(100vh - 250px)' }}>
-                            <EAEmptyState
-                                title={'Create, build, deploy and debug custom apps'}
-                                msg={
-                                    'Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'
-                                }
-                                stateType={EAEmptyStateType.DEVTRONAPPS}
-                                knowMoreLink={DOCUMENTATION.HOME_PAGE}
-                            />
-                        </div>
-                    )}
-                    {params.appType == AppListConstants.AppType.HELM_APPS && (
+                    {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
                         <>
-                            <HelmAppList
-                                serverMode={serverMode}
-                                payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                                sortApplicationList={sortApplicationList}
-                                clearAllFilters={removeAllFilters}
-                                fetchingExternalApps={fetchingExternalApps}
-                                setFetchingExternalAppsState={setFetchingExternalAppsState}
-                                updateLastDataSync={updateLastDataSync}
-                                setShowPulsatingDotState={setShowPulsatingDotState}
-                                masterFilters={masterFilters}
-                            />
-                            {fetchingExternalApps && (
-                                <div className="mt-16">
-                                    <Progressing size={32} />
-                                </div>
+                            {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
+                                serverMode === SERVER_MODE.FULL && (
+                                    <DevtronAppListContainer
+                                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                                        appCheckListRes={appCheckListRes}
+                                        clearAllFilters={removeAllFilters}
+                                        sortApplicationList={sortApplicationList}
+                                        updateLastDataSync={updateLastDataSync}
+                                        appListCount={appListCount}
+                                        isSuperAdmin={isSuperAdmin}
+                                        openDevtronAppCreateModel={openDevtronAppCreateModel}
+                                        setAppCount={setAppCount}
+                                    />
+                                )}
+                            {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
+                                serverMode === SERVER_MODE.EA_ONLY && (
+                                    <div style={{ height: 'calc(100vh - 250px)' }}>
+                                        <EAEmptyState
+                                            title='Create, build, deploy and debug custom apps'
+                                            msg='Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI.'
+                                            stateType={EAEmptyStateType.DEVTRONAPPS}
+                                            knowMoreLink={DOCUMENTATION.HOME_PAGE}
+                                        />
+                                    </div>
+                                )}
+                            {params.appType === AppListConstants.AppType.HELM_APPS && (
+                                <>
+                                    <HelmAppList
+                                        serverMode={serverMode}
+                                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                                        sortApplicationList={sortApplicationList}
+                                        clearAllFilters={removeAllFilters}
+                                        fetchingExternalApps={fetchingExternalApps}
+                                        setFetchingExternalAppsState={setFetchingExternalAppsState}
+                                        updateLastDataSync={updateLastDataSync}
+                                        setShowPulsatingDotState={setShowPulsatingDotState}
+                                        masterFilters={masterFilters}
+                                    />
+                                    {fetchingExternalApps && (
+                                        <div className="mt-16">
+                                            <Progressing size={32} />
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </>
-                    )}
                 </>
             )}
         </div>
