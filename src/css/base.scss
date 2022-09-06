@@ -1778,6 +1778,10 @@ button.anchor {
     line-height: 20px;
 }
 
+.dc__lh-22{
+  line-height: 22px;
+}
+
 .lh-32 {
     line-height: 32px;
 }
@@ -2063,4 +2067,24 @@ textarea {
     path:nth-child(2) {
         fill: var(--N900);
     }
+}
+
+.href__link{
+  color: var(--N900);
+}
+
+.href__link:hover{
+  color: var(--N900);
+}
+
+.mt-120 {
+  margin-top: 120px;
+}
+
+.h-300 {
+  min-height: 300px;
+}
+
+.dc__window-bg{
+  background: var(--window-bg);
 }

@@ -6,6 +6,7 @@ import YAML from 'yaml';
 import { useWindowSize } from './UseWindowSize';
 import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom';
+import { getDateInMilliseconds } from '../../apiTokens/authorization.utils';
 const commandLineParser = require('command-line-parser');
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void;
@@ -906,7 +907,7 @@ export const sortOptionsByValue = (optionA, optionB) => {
     return 0
 }
 
-// Create instance of MutationObserver & watch for DOM changes until 
+// Create instance of MutationObserver & watch for DOM changes until
 // disconnect() is called.
 export const watchDOMForChanges = (callback: (observer: MutationObserver) => void) => {
     const observer = new MutationObserver(() => {
@@ -936,4 +937,9 @@ export const elementDidMount = (identifier: string): Promise<unknown> => {
             }
         })
     })
+}
+
+// Setting expiry time in local storage for specified action key
+export const setActionWithExpiry = (key: string, days: number): void => {
+  localStorage.setItem(key, `${getDateInMilliseconds(days)}`)
 }
