@@ -65,17 +65,14 @@ export default function NavigationRoutes() {
         setHelpGettingStartedClicked(true)
     }
 
-    useEffect(() => {
-        serverMode && getInit()
-    }, [serverMode])
-
-    const getInit = async () => {
+    const getInit = async (_serverMode: string) => {
         setLoginLoader(true)
-        setExpiryDate(+localStorage.getItem('clickedOkay'))
+        const _expDate = localStorage.getItem('clickedOkay')
+        setExpiryDate(!!_expDate ? +_expDate : 0)
         try {
             const [userRole, appList, loginData] = await Promise.all([
                 getUserRole(),
-                serverMode === SERVER_MODE.FULL ? getAppListMin() : null,
+                _serverMode === SERVER_MODE.FULL ? getAppListMin() : null,
                 getLoginData(),
             ])
             const superAdmin = userRole?.result?.roles.includes('role:super-admin___')
@@ -93,7 +90,13 @@ export default function NavigationRoutes() {
      const processLoginData = (response, superAdmin, appListCount) => {
          const count = response.result?.value ? parseInt(response.result.value) : 0
          setLoginCount(count)
-         if (
+         if (count === 0) {
+             const updatedPayload = {
+                 key: LOGIN_COUNT,
+                 value: '1',
+             }
+             updateLoginCount(updatedPayload)
+         } else if (
              typeof Storage !== 'undefined' &&
              (localStorage.getItem('isSSOLogin') || localStorage.getItem('isAdminLogin'))
          ) {
@@ -169,6 +172,7 @@ export default function NavigationRoutes() {
                 const response = getVersionConfig()
                 const json = await response
                 if (json.code == 200) {
+                    getInit(json.result.serverMode)
                     setServerMode(json.result.serverMode)
                     setPageState(ViewType.FORM)
                 }
