@@ -6,7 +6,7 @@ import { ValidationRules } from '../ciPipeline/validationRules'
 import { Progressing, showError, Toggle } from '../common'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ciPipelineContext } from './CIPipeline'
-import { CiPipelineSourceTypeOption, FormErrorObjectType, FormType, WebhookCIProps } from '../ciPipeline/types'
+import { BuildType, CiPipelineSourceTypeOption, FormErrorObjectType, FormType, WebhookCIProps } from '../ciPipeline/types'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -19,13 +19,7 @@ export function Build({
     ciPipelineId,
     pageState,
     isSecurityModuleInstalled
-}: {
-    showFormError: boolean
-    isAdvanced: boolean
-    ciPipelineId: number
-    pageState: string
-    isSecurityModuleInstalled: boolean
-}) {
+}: BuildType) {
     const {
         formData,
         setFormData,
