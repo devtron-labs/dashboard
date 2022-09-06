@@ -42,6 +42,8 @@ import SavedValuesList from '../SavedValues/SavedValuesList'
 import ChartValues from '../chartValues/ChartValues'
 import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-forward.svg'
 import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWarning'
+import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
+import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
 
 interface EmptyCharts {
     title?: string
@@ -255,6 +257,14 @@ function DiscoverChartList() {
     }
 
     const renderBreadcrumbs = () => {
+        if (typeof state.configureChartIndex === 'number') {
+            return (
+                <span onClick={chartListing} className="fs-16 flex m-0 lh-20 cursor cn-9">
+                    <BackIcon className=" cn-6 mr-16" />
+                    Advanced options
+                </span>
+            )
+        }
         return (
             <div className="m-0 flex left ">
                 {state.charts.length > 0 && (
@@ -274,6 +284,23 @@ function DiscoverChartList() {
 
     const clearSearch = (): void => {
         history.push(url)
+    }
+
+    const viewChartRepo = () => {
+        return (
+            <div className="pt-10 pb-10 pl-12 pr-12 br-4 bw-1 bcv-1 w-100 ev-2 flexbox mxw-300">
+                <div>
+                    <Help className="icon-dim-20 fcv-5" />
+                </div>
+                <span className="ml-10 fw-4 lh-18 fs-12 ">
+                    Can’t find what you’re looking for?
+                    <br />
+                    <a target="_blank" onClick={handleViewAllCharts} className="cursor onlink">
+                        Try refetching connected chart repos or connect a chart repository
+                    </a>
+                </span>
+            </div>
+        )
     }
 
     return (
@@ -352,7 +379,7 @@ function DiscoverChartList() {
                                                     />
                                                 </>
                                             ) : (
-                                                <div className={`${!isGrid ? 'chart-list-view ' : ''}`}>
+                                                <div className={`h-100 ${!isGrid ? 'chart-list-view ' : ''}`}>
                                                     {serverMode == SERVER_MODE.FULL &&
                                                         !searchApplied &&
                                                         selectedChartRepo.length === 0 && (
@@ -364,43 +391,42 @@ function DiscoverChartList() {
                                                                 renderCreateGroupButton={renderCreateGroupButton}
                                                             />
                                                         )}
-                                                    <ChartListHeader charts={state.charts} />
                                                     {chartList.length ? (
-                                                        <div className={`chart-grid ${!isGrid ? 'list-view' : ''}`}>
-                                                            {chartList
-                                                                .slice(0, showDeployModal ? 12 : chartList.length)
-                                                                .map((chart) => (
-                                                                    <ChartSelect
-                                                                        key={chart.id}
-                                                                        chart={chart}
-                                                                        selectedCount={
-                                                                            state.selectedInstances[chart.id]?.length
-                                                                        }
-                                                                        showCheckBoxOnHoverOnly={
-                                                                            state.charts.length === 0
-                                                                        }
-                                                                        addChart={addChart}
-                                                                        showDescription={!isGrid}
-                                                                        subtractChart={subtractChart}
-                                                                        onClick={(chartId) =>
-                                                                            state.charts.length === 0
-                                                                                ? history.push(
-                                                                                      `${url}/chart/${chart.id}`,
-                                                                                  )
-                                                                                : selectChart(chartId)
-                                                                        }
-                                                                    />
-                                                                ))}
-                                                        </div>
+                                                        <>
+                                                            <ChartListHeader charts={state.charts} />
+                                                            <div className={`chart-grid ${!isGrid ? 'list-view' : ''}`}>
+                                                                {chartList
+                                                                    .slice(0, showDeployModal ? 12 : chartList.length)
+                                                                    .map((chart) => (
+                                                                        <ChartSelect
+                                                                            key={chart.id}
+                                                                            chart={chart}
+                                                                            selectedCount={
+                                                                                state.selectedInstances[chart.id]
+                                                                                    ?.length
+                                                                            }
+                                                                            showCheckBoxOnHoverOnly={
+                                                                                state.charts.length === 0
+                                                                            }
+                                                                            addChart={addChart}
+                                                                            showDescription={!isGrid}
+                                                                            subtractChart={subtractChart}
+                                                                            onClick={(chartId) =>
+                                                                                state.charts.length === 0
+                                                                                    ? history.push(
+                                                                                          `${url}/chart/${chart.id}`,
+                                                                                      )
+                                                                                    : selectChart(chartId)
+                                                                            }
+                                                                        />
+                                                                    ))}
+                                                            </div>
+                                                        </>
                                                     ) : (
-                                                        <EmptyChartGroup
-                                                            title={'No matching charts'}
-                                                            removeLearnMore={true}
-                                                            image={emptyImage}
-                                                            onClickViewChartButton={clearSearch}
-                                                            subTitle={`We couldn't find any matching results`}
-                                                            styles={{ height: '300px', justifyContent: 'center' }}
-                                                        />
+                                                        <ChartEmptyState
+                                                        onClickViewChartButton={clearSearch}
+                                                        addComponent={viewChartRepo()}
+                                                    />
                                                     )}
                                                 </div>
                                             )}

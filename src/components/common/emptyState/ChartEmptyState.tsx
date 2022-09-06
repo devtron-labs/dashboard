@@ -8,9 +8,10 @@ interface EmptyChartType {
     onClickViewChartButton: () => void;
     buttonText?: string;
     heightToDeduct?: number;
+    addComponent?: JSX.Element;
 }
 
-function ChartEmptyState({ title, subTitle, onClickViewChartButton, buttonText, heightToDeduct }: EmptyChartType) {
+function ChartEmptyState({ title, subTitle, onClickViewChartButton, buttonText, heightToDeduct, addComponent }: EmptyChartType) {
     return (
         <span
             className="empty-height"
@@ -27,6 +28,7 @@ function ChartEmptyState({ title, subTitle, onClickViewChartButton, buttonText, 
                 <button type="button" onClick={onClickViewChartButton} className="cta ghosted flex mb-24 mt-10">
                     {buttonText || 'View all charts'}
                 </button>
+                {addComponent}
             </EmptyState>
         </span>
     );

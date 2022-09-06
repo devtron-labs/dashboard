@@ -324,12 +324,13 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     }
 
     function removeChart(index: number): void {
-        const tempCharts = [...state.charts]
-        tempCharts.splice(index, 1)
+        let tempCharts = [...state.charts]
+        index === -1 ? tempCharts = [] : tempCharts.splice(index, 1)
+      
         setState((state) => ({
             ...state,
             charts: tempCharts,
-            configureChartIndex: state.configureChartIndex === index ? null : state.configureChartIndex,
+            configureChartIndex: tempCharts.length === 0 ? null : state.configureChartIndex,
             advanceVisited: tempCharts.length === 0 ? false : state.advanceVisited,
         }))
     }
@@ -446,7 +447,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     }
     //TODO: function name must be a verb
     function chartListing() {
-        setState((state) => ({ ...state, configureChartIndex: null }))
+        setState((state) => ({ ...state, configureChartIndex: null, advanceVisited: false }))
     }
 
     function clearUnsaved() {
