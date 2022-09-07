@@ -1671,6 +1671,10 @@ button.anchor {
     justify-content: space-between !important;
 }
 
+.dc__content-center {
+    justify-content: center !important;
+}
+
 .content-start {
     justify-content: flex-start !important;
 }
@@ -1713,6 +1717,10 @@ button.anchor {
 
 .w-600 {
     width: 600px;
+}
+
+.dc__height-inherit {
+  height: inherit;
 }
 
 .h-0 {

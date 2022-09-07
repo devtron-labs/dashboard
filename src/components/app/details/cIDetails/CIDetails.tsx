@@ -17,7 +17,7 @@ import {
     not,
     ConditionalWrap,
 } from '../../../common'
-import { Host, Routes, URLS, SourceTypeMap, ModuleNameMap } from '../../../../config'
+import { Host, Routes, URLS, SourceTypeMap, ModuleNameMap, DOCUMENTATION } from '../../../../config'
 import { toast } from 'react-toastify'
 import { NavLink, Switch, Route, Redirect, Link } from 'react-router-dom'
 import { useRouteMatch, useParams, useLocation, useHistory, generatePath } from 'react-router'
@@ -31,6 +31,8 @@ import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic
 import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg'
 import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-fullscreen.svg'
 import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg'
+import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
+import { ReactComponent as Question } from '../../../../assets/icons/ic-help-filled.svg'
 import { statusColor as colorMap } from '../../config'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
 import { ScanDisabledView, ImageNotScannedView, NoVulnerabilityView, CIRunningView } from './cIDetails.util'
@@ -50,6 +52,7 @@ import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConf
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
+import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -115,7 +118,8 @@ export default function CIDetails() {
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
     const [pipelinesLoading, result, pipelinesError] = useAsync(() => getCIPipelines(+appId), [appId])
-    const [securityLoading, securityModuleStatus, securityModuleError] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [appId])
+    const [securityModuleStatusLoading, securityModuleStatus, securityModuleStatusError] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [appId])
+    const [blobStorageConfigurationLoading, blobStorageConfiguration, blobStorageConfigurationError] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [appId])
     const [loading, triggerHistoryResult, triggerHistoryError, reloadTriggerHistory, , dependencyState] = useAsync(
         () => getTriggerHistory(+pipelineId, pagination),
         [pipelineId, pagination],
@@ -224,6 +228,7 @@ export default function CIDetails() {
                                 setFullScreenView={setFullScreenView}
                                 synchroniseState={synchroniseState}
                                 isSecurityModuleInstalled={securityModuleStatus?.result?.status === ModuleStatus.INSTALLED || false}
+                                isblobStorageConfigured={blobStorageConfiguration?.result?.status === ModuleStatus.INSTALLED || false}
                             />
                         </Route>
                     )}
@@ -395,6 +400,7 @@ interface BuildDetails {
     setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
     synchroniseState: (triggerId: number, triggerDetails: History) => void
     isSecurityModuleInstalled: boolean
+    isblobStorageConfigured: boolean
 }
 const BuildDetails: React.FC<BuildDetails> = ({
     triggerHistory,
@@ -402,7 +408,8 @@ const BuildDetails: React.FC<BuildDetails> = ({
     fullScreenView,
     setFullScreenView,
     synchroniseState,
-    isSecurityModuleInstalled
+    isSecurityModuleInstalled,
+    isblobStorageConfigured
 }) => {
     const { buildId, appId, pipelineId, envId } = useParams<{
         appId: string
@@ -428,6 +435,7 @@ const BuildDetails: React.FC<BuildDetails> = ({
             synchroniseState={synchroniseState}
             triggerHistory={triggerHistory}
             isSecurityModuleInstalled={isSecurityModuleInstalled}
+            isblobStorageConfigured={isblobStorageConfigured}
         />
     )
 }
@@ -438,7 +446,8 @@ const Details: React.FC<BuildDetails> = ({
     setFullScreenView,
     synchroniseState,
     triggerHistory,
-    isSecurityModuleInstalled
+    isSecurityModuleInstalled,
+    isblobStorageConfigured
 }) => {
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
@@ -535,6 +544,7 @@ const Details: React.FC<BuildDetails> = ({
                 pipeline={pipeline}
                 triggerDetails={triggerDetails}
                 setFullScreenView={setFullScreenView}
+                isblobStorageConfigured={isblobStorageConfigured}
             />
         </>
     )
@@ -776,7 +786,8 @@ const HistoryLogs: React.FC<{
     pipeline: CIPipeline
     triggerDetails: History
     setFullScreenView: (...args) => void
-}> = ({ pipeline, triggerDetails, setFullScreenView }) => {
+    isblobStorageConfigured?: boolean
+}> = ({ pipeline, triggerDetails, setFullScreenView, isblobStorageConfigured }) => {
     let { path } = useRouteMatch()
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
     const [autoBottomScroll, setAutoBottomScroll] = useState<boolean>(
@@ -793,7 +804,7 @@ const HistoryLogs: React.FC<{
                     <Switch>
                         <Route path={`${path}/logs`}>
                             <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
-                                <LogsRenderer triggerDetails={triggerDetails} setFullScreenView={setFullScreenView} />
+                                <LogsRenderer triggerDetails={triggerDetails} setFullScreenView={setFullScreenView} isblobStorageConfigured={isblobStorageConfigured} />
                             </div>
                         </Route>
                         <Route
@@ -962,9 +973,10 @@ function NoArtifactsView() {
     )
 }
 
-export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView: (...args) => void }> = ({
+export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView: (...args) => void, isblobStorageConfigured: boolean }> = ({
     triggerDetails,
     setFullScreenView,
+    isblobStorageConfigured
 }) => {
     const keys = useKeyDown()
 
@@ -991,20 +1003,60 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
             return { __html: log }
         }
     }
-    return (
-        <>
-            <div className="logs__body">
-                {logs.map((log, index) => {
-                    return <p className="mono fs-14" key={index} dangerouslySetInnerHTML={createMarkup(log)} />
-                })}
-                {eventSource && eventSource.readyState <= 1 && (
-                    <div className="flex left event-source-status">
-                        <Progressing />
-                    </div>
-                )}
+
+    const renderLogsNotAvailable = (subtitle?: string): JSX.Element => {
+        return (
+            <div className="flexbox dc__content-center flex-align-center dc__height-inherit">
+                <div>
+                <div className="text-center"><Info className="icon-dim-20"/></div>
+                <div className="text-center cn-0 fs-14 fw-6">Logs not available</div>
+                <div className="text-center cn-0 fs-13 fw-4">{subtitle || 'Logs are available only at runtime.'}</div>
+                </div>
             </div>
-        </>
+        )
+    }
+
+    const renderBlobNotConfigured = (): JSX.Element => {
+        return (
+            <>
+                {renderLogsNotAvailable('Blob storage was not configured at pipeline run.')}
+                <div className="flexbox configure-blob-container pt-8 pr-12 pb-8 pl-12 bcv-1 br-4">
+                    <Question className="icon-dim-20" />
+                    <span className="fs-13 fw-4 mr-8 ml-8">Want to store logs to view later?</span>
+                    <a className="fs-13 fw-6 cb-5 no-decor" href={DOCUMENTATION.ADMIN_PASSWORD} target="_blank">
+                        Want to store logs to view later?
+                    </a>
+                    <OpenInNew className="icon-dim-20 ml-8" />
+                </div>
+            </>
+        )
+    }
+
+
+
+    const renderConfigurationError = (): JSX.Element => {
+      return (
+          <div className="flexbox dc__content-center flex-align-center dc__height-inherit">
+              {!isblobStorageConfigured? renderBlobNotConfigured(): renderLogsNotAvailable()}
+          </div>
+      )
+  }
+
+    return !isblobStorageConfigured || !triggerDetails.isLogsAvailable  ? (
+      renderConfigurationError()
+    ) : (
+        <div className="logs__body">
+            {logs.map((log, index) => {
+                return <p className="mono fs-14" key={index} dangerouslySetInnerHTML={createMarkup(log)} />
+            })}
+            {eventSource && eventSource.readyState <= 1 && (
+                <div className="flex left event-source-status">
+                    <Progressing />
+                </div>
+            )}
+        </div>
     )
+
 }
 
 export function Scroller({ scrollToTop, scrollToBottom, style }) {
