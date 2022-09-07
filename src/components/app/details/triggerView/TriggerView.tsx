@@ -853,6 +853,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         getWorkflows={this.getWorkflows}
                         loader={this.state.loader}
                         setLoader={this.setLoader}
+                        isFirstTrigger={nd?.status?.toLowerCase()==='not triggered'}
                     />
                 </>
             )

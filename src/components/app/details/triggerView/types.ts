@@ -83,6 +83,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     getWorkflows: () => void
     loader: boolean
     setLoader: (isLoading) => void
+    isFirstTrigger?: boolean
 }
 
 export interface CIMaterialState {

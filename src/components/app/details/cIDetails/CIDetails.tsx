@@ -1024,7 +1024,7 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
                     <Question className="icon-dim-20" />
                     <span className="fs-13 fw-4 mr-8 ml-8">Want to store logs to view later?</span>
                     <a className="fs-13 fw-6 cb-5 no-decor" href={DOCUMENTATION.ADMIN_PASSWORD} target="_blank">
-                        Want to store logs to view later?
+                        Configure blob storage
                     </a>
                     <OpenInNew className="icon-dim-20 ml-8" />
                 </div>

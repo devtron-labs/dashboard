@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
 import { CIMaterialProps, CIMaterialState } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
-import { ReactComponent as Question } from '../../../../assets/icons/appstatus/unknown.svg'
+import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { VisibleModal, ButtonWithLoader, Checkbox, showError, Progressing } from '../../../common'
 import { TriggerViewContext } from './TriggerView'
-import Tippy from '@tippyjs/react'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { SourceTypeMap } from '../../../../config'
@@ -39,31 +38,36 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     onClickTrigger = (): void => {}
+
+    renderIgnoreCache = (context, canTrigger) => {
+        return this.props.isFirstTrigger ? (
+            <div className="flexbox">
+                <Info className="icon-dim-20 mr-8" />
+                <div>
+                    <div className="fw-6 fs-13">First pipeline run may take longer than usual</div>
+                    <div className="fw-4 fs-12">Future runs will have shorter build time if caching is enabled.</div>
+                </div>
+            </div>
+        ) : (
+            <Checkbox
+                isChecked={context.invalidateCache}
+                onClick={this.onClickStopPropagation}
+                rootClassName="form__checkbox-label--ignore-cache mb-0"
+                value={'CHECKED'}
+                onChange={context.toggleInvalidateCache}
+            >
+                <div className="mr-5">
+                    <div className="fs-13 fw-6">Ignore Cache</div>
+                    <div className="fs-12 fw-4">Ignore CacheIgnoring cache will lead to longer build time.</div>
+                </div>
+            </Checkbox>
+        )
+    }
+
     renderMaterialStartBuild = (context, canTrigger) => {
         return (
             <div className="trigger-modal__trigger">
-                <Checkbox
-                    isChecked={context.invalidateCache}
-                    onClick={this.onClickStopPropagation}
-                    rootClassName="form__checkbox-label--ignore-cache mb-0"
-                    value={'CHECKED'}
-                    onChange={context.toggleInvalidateCache}
-                >
-                    <span className="mr-5">Ignore Cache</span>
-                </Checkbox>
-                <Tippy
-                    className="default-tt"
-                    arrow={false}
-                    placement="top"
-                    content={
-                        <span style={{ display: 'block', width: '200px' }}>
-                            This will ignore previous cache and create a new one. Ignoring cache will lead to longer
-                            build time.
-                        </span>
-                    }
-                >
-                    <Question className="icon-dim-20" />
-                </Tippy>
+                {this.renderIgnoreCache(context, canTrigger)}
                 <ButtonWithLoader
                     rootClassName="cta-with-img cta-with-img--trigger-btn"
                     loaderColor="#ffffff"
