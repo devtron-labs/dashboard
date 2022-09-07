@@ -113,7 +113,7 @@ export default function DeploymentTemplateOverride({
         initialise()
     }, [state.selectedChartRefId])
 
-    async function initialise(isDeleteAction?: boolean) {
+    async function initialise(isDeleteAction?: boolean, forceReloadEnvironments?: boolean) {
         setChartRefLoading(true)
         try {
             const { result } = await chartRefAutocomplete(+appId, +envId)
@@ -124,6 +124,10 @@ export default function DeploymentTemplateOverride({
                     isDeleteAction,
                 },
             })
+
+            if (isDeleteAction || forceReloadEnvironments) {
+                setParentState(ComponentStates.reloading)
+            }
         } catch (err) {
             setParentState(ComponentStates.failed)
             showError(err)
@@ -276,7 +280,7 @@ function DeploymentTemplateOverrideForm({
                 { autoClose: null },
             )
             setFetchedValues({})
-            initialise()
+            initialise(false, true)
         } catch (err) {
             showError(err)
         } finally {

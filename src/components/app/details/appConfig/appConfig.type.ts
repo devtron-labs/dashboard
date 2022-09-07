@@ -47,12 +47,7 @@ export interface CustomNavItemsType {
     currentStep: number
 }
 
-export interface EnvironmentsActionType {
-    setEnvironments: React.Dispatch<React.SetStateAction<AppEnvironment[]>>
-    setEnvironmentsLoading: React.Dispatch<React.SetStateAction<boolean>>
-}
-
-export interface AppConfigNavigationProps extends EnvironmentsActionType {
+export interface AppConfigNavigationProps {
     navItems: CustomNavItemsType[]
     deleteApp: () => void
     isCDPipeline: boolean
@@ -67,7 +62,7 @@ export interface AppComposeRouterProps {
     maxAllowedUrl: string
     isCDPipeline: boolean
     environments: AppEnvironment[]
-    environmentsLoading: boolean
+    setEnvironments: React.Dispatch<React.SetStateAction<AppEnvironment[]>>
 }
 
 export interface EnvironmentOverridesProps {

@@ -1,3 +1,4 @@
+import React from 'react'
 import { DOCUMENTATION, URLS } from '../../config'
 import { AppEnvironment } from '../../services/service.types'
 
@@ -5,7 +6,8 @@ export enum ComponentStates {
     loading = 'loading',
     loaded = 'loaded',
     success = 'success',
-    failed = 'failed'
+    failed = 'failed',
+    reloading = 'reloading',
 }
 
 export interface SectionHeadingType {
@@ -29,8 +31,8 @@ export const SECTION_HEADING_INFO: Record<string, SectionHeadingType> = {
 }
 
 export interface EnvironmentOverrideComponentProps {
-    environmentsLoading: boolean
     environments: AppEnvironment[]
+    setEnvironments: React.Dispatch<React.SetStateAction<AppEnvironment[]>>
 }
 
 export interface CommonEnvironmentOverridesProps {

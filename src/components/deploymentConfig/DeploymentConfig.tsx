@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate } from './service'
-import { getChartReferences } from '../../services/service'
-import { Progressing, ConfirmationDialog, useJsonYaml, useEffectAfterMount, showError } from '../common'
+import { getAppOtherEnvironment, getChartReferences } from '../../services/service'
+import { Progressing, ConfirmationDialog, useJsonYaml, useEffectAfterMount, showError, useAsync } from '../common'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
 import {
     DeploymentConfigFormCTA,
@@ -21,6 +21,7 @@ export default function DeploymentConfig({
     navItems,
     isCiPipeline,
     environments,
+    setEnvironments,
 }: DeploymentConfigProps) {
     const [charts, setCharts] = useState<DeploymentChartVersionType[]>([])
     const [selectedChartRefId, selectChartRefId] = useState(0)
@@ -40,6 +41,11 @@ export default function DeploymentConfig({
     const history = useHistory()
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const [fetchedValues, setFetchedValues] = useState<Record<number | string, string>>({})
+    const [environmentsLoading, environmentResult, environmentError, reloadEnvironments] = useAsync(
+        () => getAppOtherEnvironment(appId),
+        [appId],
+        !!appId,
+    )
 
     useEffect(() => {
         initialise()
@@ -48,6 +54,12 @@ export default function DeploymentConfig({
     useEffectAfterMount(() => {
         fetchDeploymentTemplate()
     }, [selectedChart])
+
+    useEffect(() => {
+        if (!environmentsLoading && environmentResult?.result) {
+            setEnvironments(environmentResult.result)
+        }
+    }, [environmentsLoading, environmentResult])
 
     async function initialise() {
         setChartConfigLoading(true)
@@ -123,6 +135,7 @@ export default function DeploymentConfig({
             }
             const api = chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
             await api(requestBody)
+            reloadEnvironments()
             fetchDeploymentTemplate()
             respondOnSuccess()
             setFetchedValues({})

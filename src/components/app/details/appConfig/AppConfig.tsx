@@ -38,7 +38,6 @@ import {
     AppStageUnlockedType,
     EnvironmentOverrideRouteProps,
     EnvironmentOverridesProps,
-    EnvironmentsActionType,
     NextButtonProps,
     STAGE_NAME,
 } from './appConfig.type'
@@ -185,7 +184,6 @@ export default function AppConfig() {
     const location = useLocation()
     const history = useHistory()
     const [environments, setEnvironments] = useState([])
-    const [environmentsLoading, setEnvironmentsLoading] = useState(false)
 
     const [state, setState] = useState<AppConfigState>({
         view: ViewType.LOADING,
@@ -370,8 +368,6 @@ export default function AppConfig() {
                             deleteApp={showDeleteConfirmation}
                             navItems={state.navItems}
                             isCDPipeline={state.isCDPipeline}
-                            setEnvironments={setEnvironments}
-                            setEnvironmentsLoading={setEnvironmentsLoading}
                         />
                     </div>
                     <div className="app-compose__main">
@@ -384,7 +380,7 @@ export default function AppConfig() {
                             respondOnSuccess={respondOnSuccess}
                             getWorkflows={reloadWorkflows}
                             environments={environments}
-                            environmentsLoading={environmentsLoading}
+                            setEnvironments={setEnvironments}
                         />
                     </div>
                 </div>
@@ -417,13 +413,7 @@ const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, current
     return null
 }
 
-function Navigation({
-    navItems,
-    deleteApp,
-    isCDPipeline,
-    setEnvironments,
-    setEnvironmentsLoading,
-}: AppConfigNavigationProps) {
+function Navigation({ navItems, deleteApp, isCDPipeline }: AppConfigNavigationProps) {
     const location = useLocation()
     const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href) >= 0)[0]
     return (
@@ -445,13 +435,7 @@ function Navigation({
                         </NavLink>
                     )
                 } else {
-                    return (
-                        <EnvironmentOverrideRouter
-                            key={item.title}
-                            setEnvironments={setEnvironments}
-                            setEnvironmentsLoading={setEnvironmentsLoading}
-                        />
-                    )
+                    return <EnvironmentOverrideRouter key={item.title} />
                 }
             })}
             <div className="cta-delete-app flex w-100 position-sticky pt-2 pb-16 bcn-0">
@@ -472,7 +456,7 @@ function AppComposeRouter({
     maxAllowedUrl,
     isCDPipeline,
     environments,
-    environmentsLoading,
+    setEnvironments,
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
 
@@ -515,6 +499,7 @@ function AppComposeRouter({
                                 navItems={navItems}
                                 isCiPipeline={isCiPipeline}
                                 environments={environments}
+                                setEnvironments={setEnvironments}
                             />
                         </Route>
                     )}
@@ -543,8 +528,8 @@ function AppComposeRouter({
                                 path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
                                 render={(props) => (
                                     <EnvironmentOverride
-                                        environmentsLoading={environmentsLoading}
                                         environments={environments}
+                                        setEnvironments={setEnvironments}
                                     />
                                 )}
                             />
@@ -626,7 +611,7 @@ const EnvironmentOverrides = ({ environmentResult, environmentsLoading }: Enviro
         return (
             <div className="w-100" style={{ height: 'calc(100% - 60px)' }}>
                 {environments.map((env) => {
-                    return <EnvOverrideRoute envOverride={env} />
+                    return <EnvOverrideRoute envOverride={env} key={env.environmentName} />
                 })}
             </div>
         )
@@ -643,7 +628,7 @@ const EnvironmentOverrides = ({ environmentResult, environmentsLoading }: Enviro
     }
 }
 
-function EnvironmentOverrideRouter({ setEnvironments, setEnvironmentsLoading }: EnvironmentsActionType) {
+function EnvironmentOverrideRouter() {
     const { pathname } = useLocation()
     const { appId } = useParams<{ appId: string }>()
     const previousPathName = usePrevious(pathname)
@@ -657,15 +642,6 @@ function EnvironmentOverrideRouter({ setEnvironments, setEnvironmentsLoading }: 
             reloadEnvironments()
         }
     }, [pathname])
-
-    useEffect(() => {
-        if (environmentsLoading) {
-            setEnvironmentsLoading(true)
-        } else if (!environmentsLoading && environmentResult?.result?.length > 0) {
-            setEnvironments(environmentResult.result)
-            setEnvironmentsLoading(false)
-        }
-    }, [environmentsLoading, environmentResult])
 
     return (
         <div className="h-100">

@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react'
 import ConfigMapOverrides from './ConfigMapOverrides'
 import SecretOverrides from './SecretOverrides'
 import DeploymentTemplateOverride from './DeploymentTemplateOverride'
-import { mapByKey, Progressing, ErrorBoundary, useAppContext } from '../common'
+import { mapByKey, Progressing, ErrorBoundary, useAppContext, useAsync } from '../common'
 import { useParams, useRouteMatch, generatePath, useHistory, useLocation } from 'react-router'
 import './environmentOverride.scss'
 import Reload from '../Reload/Reload'
 import { getAppComposeURL, APP_COMPOSE_STAGE, URLS } from '../../config'
-import { Route, Switch } from 'react-router-dom'
+import { Redirect, Route, Switch } from 'react-router-dom'
 import {
     ComponentStates,
     EnvironmentOverrideComponentProps,
@@ -15,8 +15,9 @@ import {
     SECTION_HEADING_INFO,
 } from './EnvironmentOverrides.type'
 import { ReactComponent as Arrow } from '../../assets/icons/ic-arrow-left.svg'
+import { getAppOtherEnvironment } from '../../services/service'
 
-export default function EnvironmentOverride({ environmentsLoading, environments }: EnvironmentOverrideComponentProps) {
+export default function EnvironmentOverride({ environments, setEnvironments }: EnvironmentOverrideComponentProps) {
     const params = useParams<{ appId: string; envId: string }>()
     const [viewState, setViewState] = useState<ComponentStates>(null)
     const { path } = useRouteMatch()
@@ -24,6 +25,11 @@ export default function EnvironmentOverride({ environmentsLoading, environments 
     const location = useLocation()
     const { environmentId, setEnvironmentId } = useAppContext()
     const [headingData, setHeadingData] = useState<SectionHeadingType>()
+    const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(
+        () => getAppOtherEnvironment(params.appId),
+        [params.appId],
+        !!params.appId,
+    )
 
     const environmentsMap = mapByKey(environments || [], 'environmentId')
 
@@ -54,9 +60,27 @@ export default function EnvironmentOverride({ environmentsLoading, environments 
     }
     useEffect(envMissingRedirect, [environmentsLoading])
 
+    useEffect(() => {
+        if (viewState === ComponentStates.reloading) {
+            reloadEnvironments()
+        }
+    }, [viewState])
+
+    useEffect(() => {
+        if (
+            !environmentsLoading &&
+            location.pathname.includes(
+                `${URLS.APP_ENV_OVERRIDE_CONFIG}/${params.envId}/${URLS.APP_DEPLOYMENT_CONFIG}`,
+            ) &&
+            environmentResult?.result
+        ) {
+            setEnvironments(environmentResult.result)
+        }
+    }, [environmentsLoading, environmentResult])
+
     if (!params.envId) {
         return null
-    } else if (environmentsLoading) {
+    } else if (environmentsLoading && viewState !== ComponentStates.reloading) {
         return <Progressing pageLoader />
     } else if (viewState === ComponentStates.failed) {
         return (
@@ -71,7 +95,7 @@ export default function EnvironmentOverride({ environmentsLoading, environments 
     return (
         <ErrorBoundary>
             <div className={headingData ? 'environment-override mb-24' : 'deployment-template-override h-100'}>
-                {environmentsMap.size && headingData && (
+                {environmentsMap.size > 0 && headingData && (
                     <>
                         <h1 className="form__title form__title--artifacts flex left">
                             {environmentsMap.has(+params.envId) ? (
@@ -116,6 +140,7 @@ export default function EnvironmentOverride({ environmentsLoading, environments 
                     <Route path={`${path}/${URLS.APP_CS_CONFIG}`}>
                         <SecretOverrides parentState={viewState} setParentState={setViewState} />
                     </Route>
+                    <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />
                 </Switch>
             </div>
         </ErrorBoundary>

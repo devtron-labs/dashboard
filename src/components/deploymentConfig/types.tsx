@@ -2,6 +2,7 @@ import React from 'react'
 import { ServerError } from '../../modals/commonTypes'
 import { AppEnvironment } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
+import { EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.type'
 
 export interface DeploymentObject {
     id: number | null
@@ -64,7 +65,7 @@ export interface ConfigMapRequest {
     secret_data: any
 }
 
-export interface DeploymentConfigProps {
+export interface DeploymentConfigProps extends EnvironmentOverrideComponentProps {
     respondOnSuccess?: () => void
     isUnSet: boolean
     navItems: CustomNavItemsType[]
