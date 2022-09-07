@@ -76,7 +76,8 @@ if (
                         (error['value'] &&
                             (error['value'].includes('write data discarded, use flow control to avoid losing data') ||
                                 error['value'].includes('Failed to update a ServiceWorker') ||
-                                error['title'].includes('TypeError: ServiceWorker') ||
+                                (error['value'].includes('ServiceWorker script at ') &&
+                                    error['value'].includes('encountered an error during installation.')) ||
                                 error['value'].includes('Loading CSS chunk') ||
                                 error['value'].includes(`Unexpected token '<'`))))
                 ) {
