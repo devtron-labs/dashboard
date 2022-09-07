@@ -546,5 +546,5 @@ export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
 export const ModuleNameMap = {
   ARGO_CD: 'argo-cd',
   CICD: 'cicd',
-  SECURITY: 'security_clair',
+  SECURITY: 'security.clair',
 }

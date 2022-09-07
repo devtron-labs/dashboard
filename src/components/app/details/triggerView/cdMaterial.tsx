@@ -32,9 +32,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     try {
         const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
         if (result?.status === ModuleStatus.INSTALLED) {
-            this.setState((prevState) => ({
-                isSecurityModuleInstalled: true,
-            }))
+          this.setState({ isSecurityModuleInstalled: true })
         }
     } catch (error) {}
   }
@@ -160,7 +158,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
           </div>
         </div>
         {!this.props.isFromDeploymentGroup && <>
-        {mat.showSourceInfo ? <>
+        {mat.showSourceInfo && <>
             {this.state.isSecurityModuleInstalled && <ul className="tab-list tab-list--vulnerability">
               <li className="tab-list__tab">
                 <button type="button" onClick={(e) => { e.stopPropagation(); this.props.changeTab(index, Number(mat.id), CDModalTab.Changes) }}
@@ -176,8 +174,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
               </li>
             </ul>}
             {mat.tab === CDModalTab.Changes ? this.renderGitMaterialInfo(mat.materialInfo) : this.renderVulnerabilities(mat)}
-          </>
-            : null}
+          </>}
           <button type="button" className="material-history__changes-btn" onClick={(event) => { event.stopPropagation(); this.props.toggleSourceInfo(index) }}>
             {mat.showSourceInfo ? "Hide Source Info" : "Show Source Info"}
             <img src={arrow} alt="" style={{ 'transform': `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }} />

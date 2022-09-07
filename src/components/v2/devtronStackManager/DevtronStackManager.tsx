@@ -99,7 +99,7 @@ export default function DevtronStackManager({
             getLatestInfo()
             queryParams.delete('actionTriggered')
             history.push(`${location.pathname}?${queryParams.toString()}`)
-        } else if (location.pathname.includes('/details') && selectedModule) {
+        } else if (location.pathname.includes(URLS.DETAILS) && selectedModule) {
             const moduleId = queryParams.get('id')
             if (moduleId && selectedModule.name.toLowerCase() !== moduleId.toLowerCase()) {
                 const _selectedModule = stackDetails.discoverModulesList.find(
@@ -124,7 +124,7 @@ export default function DevtronStackManager({
                 stackDetails.installedModulesList.length === 0
             ) {
                 history.push(URLS.STACK_MANAGER_INSTALLED_MODULES)
-            } else if (location.pathname.includes('/details') && queryParams.get('id')) {
+            } else if (location.pathname.includes(URLS.DETAILS) && queryParams.get('id')) {
                 const _selectedModule = stackDetails.discoverModulesList.find(
                     (module) => module.name.toLowerCase() === queryParams.get('id').toLowerCase(),
                 )
@@ -217,7 +217,7 @@ export default function DevtronStackManager({
 
     const _getGitOpsConfigurationStatus = async (): Promise<void> => {
         try {
-            if (location.pathname.includes('/details') && queryParams.get('id') === ModuleNameMap.ARGO_CD) {
+            if (location.pathname.includes(URLS.DETAILS) && queryParams.get('id') === ModuleNameMap.ARGO_CD) {
                 const { result } = await isGitopsConfigured()
                 const currentModule = stackDetails.discoverModulesList.find(
                     (_module) => _module.name === ModuleNameMap.ARGO_CD,

@@ -180,11 +180,16 @@ function NodeComponent({
     };
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
+        let _currentNodeHeader = ''
         return nodes.map((node, index) => {
-            const nodeName = `${node.name}.${node.namespace} : { portnumber }`;
+            const nodeName = `${node.name}.${node.namespace} : { portnumber }`
+
+            // Only render node kind header when it's the first node or it's a different kind header
+            _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
+
             return (
                 <React.Fragment key={'grt' + index}>
-                    {showHeader && (
+                    {showHeader && !!_currentNodeHeader && (
                         <div className="fw-6 pt-10 pb-10 pl-16 border-bottom">
                             <span>{node.kind}</span>
                         </div>
@@ -321,9 +326,7 @@ function NodeComponent({
     return (
         <>
             {selectedNodes && (
-                <div
-                    className="node-container-fluid"
-                >
+                <div className="node-container-fluid">
                     {isPodAvailable ? (
                         <PodHeaderComponent callBack={setPodType} />
                     ) : (
@@ -352,7 +355,11 @@ function NodeComponent({
                             )
                         })}
                     </div>
-
+                    {params.nodeType === NodeType.Pod.toLowerCase() && containerLevelExternalLinks.length > 0 && (
+                        <div className="fs-12 fw-4 cn-9 bcn-1 lh-16 pt-4 pb-4 pl-32 pr-32">
+                            Expand pods to view external links for containers.
+                        </div>
+                    )}
                     {selectedNodes.length > 0 ? (
                         makeNodeTree(selectedNodes)
                     ) : (
