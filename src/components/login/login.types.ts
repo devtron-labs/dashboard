@@ -15,7 +15,6 @@ export interface LoginFormState {
         password: string;
     };
     loading: boolean;
-    loginCount: number;
 }
 
 export interface LoginProps extends RouteComponentProps<{}> { }
