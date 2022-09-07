@@ -669,7 +669,7 @@ function EnvironmentOverrideRouter({ setEnvironments, setEnvironmentsLoading }: 
 
     return (
         <div className="h-100">
-            <div className="border-top mt-8 mb-8" />
+            <div className="border-bottom-n1 mt-8 mb-8" />
             <div className="app-compose__nav-item flex text-uppercase fs-12 lh-32 fw-6 cn-6 no-hover">Environment Overrides</div>
             <div className="flex column left environment-routes-container top">
                 <EnvironmentOverrides environmentsLoading={environmentsLoading} environmentResult={environmentResult} />
