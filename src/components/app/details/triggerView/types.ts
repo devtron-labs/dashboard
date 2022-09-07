@@ -84,11 +84,13 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     loader: boolean
     setLoader: (isLoading) => void
     isFirstTrigger?: boolean
+    isCacheAvailable?: boolean
 }
 
 export interface CIMaterialState {
     regexValue: Record<number, { value: string; isInvalid: boolean }>
     selectedCIPipeline?: any
+    isBobStorageConfigured?: boolean
 }
 
 export interface NodeAttr {
