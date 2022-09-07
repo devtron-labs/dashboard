@@ -106,8 +106,6 @@ export default function NavigationRoutes() {
          }
          if (!count && superAdmin && appListCount === 0) {
              history.push(`/${URLS.GETTING_STARTED}`)
-         } else if (!count) {
-             history.push(URLS.APP)
          }
      }
 
@@ -379,7 +377,7 @@ export function RedirectUserWithSentry({ isFirstLoginUser  }) {
         if (isFirstLoginUser) {
             push(`${URLS.GETTING_STARTED}`)
         } else {
-            push(`${URLS.APP}`)
+            push(`${URLS.APP}/${URLS.APP_LIST}`)
         }
     }, [])
     return null
