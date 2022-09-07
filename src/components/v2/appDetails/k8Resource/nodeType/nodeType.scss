@@ -56,8 +56,9 @@
     padding-left: 0 !important;
 }
 
-.resource-row:hover{
-    background-color: #edf1f5;
+.resource-row:hover {
+    background-color: var(--N50);
+
     .resource-action-tabs__active{
         visibility: visible;
      }
@@ -69,9 +70,9 @@
     }
 }
 
-.resource-tree__nodes:hover{
-    background-color: #edf1f5;
-    color: #000a14;
+.resource-tree__nodes:hover {
+    background-color: var(--N50);
+    color: var(--N900);
 }
 
 .resource-row__content{
