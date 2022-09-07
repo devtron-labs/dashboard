@@ -379,7 +379,7 @@ export function RedirectUserWithSentry({ isFirstLoginUser  }) {
         if (isFirstLoginUser) {
             push(`${URLS.GETTING_STARTED}`)
         } else {
-            push(`${URLS.APP}/${URLS.APP_LIST}`)
+            push(`${URLS.APP}`)
         }
     }, [])
     return null
