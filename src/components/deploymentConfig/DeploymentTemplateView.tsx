@@ -340,7 +340,7 @@ export const DeploymentTemplateOptionsTab = ({
     disableVersionSelect,
 }: DeploymentTemplateOptionsTabProps) => {
     return (
-        <div className="dt-options-tab-container flex content-space pl-16 pr-16 pt-14 pb-14">
+        <div className="dt-options-tab-container flex content-space pl-16 pr-16 pt-8 pb-8">
             {!openComparison && !openReadMe ? (
                 <ChartTypeVersionOptions
                     isUnSet={isUnSet}
@@ -396,7 +396,6 @@ const customValueContainer = (props): JSX.Element => {
 const CompareWithDropdown = ({
     isEnvOverride,
     environments,
-    charts,
     selectedOption,
     setSelectedOption,
     globalChartRef,
@@ -417,7 +416,7 @@ const CompareWithDropdown = ({
 
     useEffect(() => {
         _initOptions()
-    }, [environments, charts])
+    }, [environments])
 
     const _initOptions = () => {
         const _groupOptions = []
@@ -446,14 +445,10 @@ const CompareWithDropdown = ({
             })
 
             if (!selectedOption) {
-                setSelectedOption(environments.length > 0 ? environments[0] : charts[0])
+                setSelectedOption(environments[0])
             }
         }
 
-        _groupOptions.push({
-            label: 'Other version values',
-            options: charts.length > 0 ? charts : [{ label: 'No options', value: 0, kind: 'chartVersion' }],
-        })
         setGroupedOptions(_groupOptions)
     }
 
@@ -529,10 +524,10 @@ const getCodeEditorHeight = (
     if (openComparison || showReadme) {
         return 'calc(100vh - 158px)'
     } else if (isEnvOverride) {
-        return 'calc(100vh - 282px)'
+        return 'calc(100vh - 264px)'
     }
 
-    return isUnSet ? 'calc(100vh - 256px)' : 'calc(100vh - 224px)'
+    return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 204px)'
 }
 
 export const DeploymentTemplateEditorView = ({
@@ -560,7 +555,6 @@ export const DeploymentTemplateEditorView = ({
     const [fetchingValues, setFetchingValues] = useState(false)
     const [selectedOption, setSelectedOption] = useState<DeploymentChartOptionType>()
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
-    const [filteredCharts, setFilteredCharts] = useState<DeploymentChartOptionType[]>([])
     const [globalChartRef, setGlobalChartRef] = useState(null)
 
     useEffect(() => {
@@ -583,27 +577,10 @@ export const DeploymentTemplateEditorView = ({
     }, [selectedChart, environments])
 
     useEffect(() => {
-        if (selectedChart && charts.length > 0) {
-            const _filteredCharts = charts
-                .filter((chart) => {
-                    if (!globalChartRef && chart.id === globalChartRefId) {
-                        setGlobalChartRef(chart)
-                    }
-
-                    return chart.id !== selectedChart.id && chart.name === selectedChart.name
-                })
-                .sort((a, b) => versionComparator(a, b, 'version', SortingOrder.DESC))
-
-            setFilteredCharts(
-                _filteredCharts.map((chart) => ({
-                    id: `version-${chart.version}`,
-                    label: chart.version,
-                    value: chart.id,
-                    kind: 'chartVersion',
-                })) as DeploymentChartOptionType[],
-            )
+        if (charts.length > 0 && !globalChartRef) {
+            setGlobalChartRef(charts.find((_chart) => _chart.id === globalChartRefId))
         }
-    }, [selectedChart, charts])
+    }, [charts])
 
     useEffect(() => {
         if (selectedChart && selectedOption && selectedOption.id !== -1 && !fetchedValues[selectedOption.id]) {
@@ -685,7 +662,6 @@ export const DeploymentTemplateEditorView = ({
                                     <CompareWithDropdown
                                         isEnvOverride={isEnvOverride}
                                         environments={filteredEnvironments}
-                                        charts={filteredCharts}
                                         selectedOption={selectedOption}
                                         setSelectedOption={setSelectedOption}
                                         globalChartRef={globalChartRef}
@@ -722,7 +698,11 @@ export const DeploymentConfigFormCTA = ({
         currentChart.name === ROLLOUT_DEPLOYMENT &&
         isVersionLessThanOrEqualToTarget(currentChart.version, [3, 7, 0])
     return (
-        <div className="form-cta-section flex right pt-16 pb-16 pr-20 pl-20">
+        <div
+            className={`form-cta-section flex pt-16 pb-16 pr-20 pl-20 ${
+                showAppMetricsToggle ? 'content-space' : 'right'
+            }`}
+        >
             {showAppMetricsToggle && (
                 <div className="form-app-metrics-cta flex top left">
                     {loading ? (
@@ -751,7 +731,7 @@ export const DeploymentConfigFormCTA = ({
                     </div>
                 </div>
             )}
-            <button className="form-submit-cta cta flex h-32" type="submit" disabled={disableButton || loading}>
+            <button className="form-submit-cta cta flex h-36" type="submit" disabled={disableButton || loading}>
                 {loading ? (
                     <Progressing />
                 ) : (

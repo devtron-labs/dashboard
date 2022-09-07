@@ -1,22 +1,24 @@
 .app-compose {
     display: grid;
     grid-template-columns: 240px 1fr;
-    height: calc(100vh - 80px);
+    height: calc(100vh - 77px);
     background: white;
     overflow: hidden;
 
     .app-compose__nav {
-        padding: 16px 16px 0;
+        padding: 16px 12px 0;
         border-right: solid 1px #d6dbdf;
         background: white;
         height: 100%;
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: 110px repeat(6, 40px) 1fr auto;
+        grid-template-rows: 110px repeat(6, 36px) 1fr auto;
         overflow: hidden;
+
         &.hide-app-config-help {
-            grid-template-rows: repeat(6, 40px) 1fr auto;
+            grid-template-rows: repeat(6, 36px) 1fr auto;
         }
+
         .help-container {
             background-color: #f3f0ff;
             padding: 8px 12px;
@@ -42,6 +44,10 @@
 
         .cta-delete-app {
             bottom: 0;
+
+            .cta.delete {
+                width: calc(100% - 8px);
+            }
         }
     }
 
@@ -52,7 +58,7 @@
 
     .app-compose__nav-item {
         font-size: 13px;
-        line-height: 40px;
+        line-height: 36px;
         color: var(--N700);
         width: 100%;
         border-radius: 4px;
@@ -61,14 +67,19 @@
         justify-content: space-between;
         text-decoration: none;
 
-        &:hover {
+        &:hover:not(.no-hover) {
             text-decoration: none;
+            background: var(--N50);
         }
 
         &.active {
             color: var(--B500);
             font-weight: 600;
-            background: #f0f7ff;
+            background: var(--B100);
+
+            &:hover:not(.no-hover) {
+                background: var(--B100);
+            }
         }
     }
 

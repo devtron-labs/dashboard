@@ -73,7 +73,7 @@
     }
 
     .form-cta-section {
-        height: 80px;
+        height: 76px;
 
         .form-app-metrics-cta {
             width: 88%;
@@ -101,6 +101,7 @@
 
     .dt-options-tab-container {
         grid-area: tab;
+        height: 48px;
 
         .dt-view-option {
             padding: 4px 8px;
@@ -166,7 +167,7 @@
 }
 
 .form__row--code-editor-container {
-    height: calc(100% - 140px);
+    height: calc(100% - 124px);
     display: grid;
     grid-template-rows: 32px 1fr;
     overflow: hidden;
@@ -287,10 +288,8 @@
     }
 
     .deployment-template-override-form {
-        height: calc(100% - 60px);
-
-        &.comparison-view {
-            height: 100%;
+        .form__row--code-editor-container {
+            height: calc(100% - 184px);
         }
 
         .override-container {
@@ -327,6 +326,7 @@
                 height: 32px;
                 display: flex;
                 align-items: center;
+                margin: auto;
             }
         }
     }

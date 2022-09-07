@@ -106,7 +106,6 @@ export interface DeploymentConfigFormCTAProps {
 export interface CompareWithDropdownProps {
     isEnvOverride: boolean
     environments: DeploymentChartOptionType[]
-    charts: DeploymentChartOptionType[]
     globalChartRef?: any
     selectedOption: DeploymentChartOptionType
     setSelectedOption: React.Dispatch<React.SetStateAction<DeploymentChartOptionType>>

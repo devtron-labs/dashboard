@@ -15,6 +15,7 @@ export const getCommonSelectStyles = (styleOverrides = {}) => {
         valueContainer: (base, state) => ({
             ...base,
             padding: '0',
+            fontSize: '13px',
             fontWeight: '600',
         }),
         option: (base, state) => ({

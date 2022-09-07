@@ -329,7 +329,7 @@ function DeploymentTemplateOverrideForm({
     return (
         <>
             <form
-                className={`deployment-template-override-form ${state.openComparison ? 'comparison-view' : ''}`}
+                className={`deployment-template-override-form h-100 ${state.openComparison ? 'comparison-view' : ''}`}
                 style={{ marginBottom: '16px' }}
                 onSubmit={handleSubmit}
             >

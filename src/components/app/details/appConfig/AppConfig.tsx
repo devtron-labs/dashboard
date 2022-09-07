@@ -455,7 +455,7 @@ function Navigation({
                 }
             })}
             <div className="cta-delete-app flex w-100 position-sticky pt-2 pb-16 bcn-0">
-                <button type="button" className="cta delete mt-8" onClick={deleteApp}>
+                <button type="button" className="flex cta delete mt-8 w-100 h-36" onClick={deleteApp}>
                     Delete Application
                 </button>
             </div>
@@ -592,7 +592,7 @@ const EnvOverrideRoute = ({ envOverride }: EnvironmentOverrideRouteProps) => {
     return (
         <div className="flex column left environment-route-wrapper top">
             <div
-                className={`app-compose__nav-item flex cursor ${collapsed ? 'fw-4' : 'fw-6'}`}
+                className={`app-compose__nav-item no-hover flex cursor ${collapsed ? 'fw-4' : 'fw-6'}`}
                 onClick={handleNavItemClick}
             >
                 {envOverride.environmentName}
@@ -669,8 +669,8 @@ function EnvironmentOverrideRouter({ setEnvironments, setEnvironmentsLoading }: 
 
     return (
         <div className="h-100">
-            <div className="en-1 bw-1 mt-8 mb-8" />
-            <div className="app-compose__nav-item flex text-uppercase fs-12 cn-6">Environment Overrides</div>
+            <div className="border-top mt-8 mb-8" />
+            <div className="app-compose__nav-item flex text-uppercase fs-12 lh-32 fw-6 cn-6 no-hover">Environment Overrides</div>
             <div className="flex column left environment-routes-container top">
                 <EnvironmentOverrides environmentsLoading={environmentsLoading} environmentResult={environmentResult} />
             </div>
