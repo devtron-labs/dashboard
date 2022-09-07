@@ -592,7 +592,7 @@ const EnvOverrideRoute = ({ envOverride }: EnvironmentOverrideRouteProps) => {
     return (
         <div className="flex column left environment-route-wrapper top">
             <div
-                className={`app-compose__nav-item no-hover flex cursor ${collapsed ? 'fw-4' : 'fw-6'}`}
+                className={`app-compose__nav-item flex cursor ${collapsed ? 'fw-4' : 'fw-6 no-hover'}`}
                 onClick={handleNavItemClick}
             >
                 {envOverride.environmentName}
@@ -670,7 +670,9 @@ function EnvironmentOverrideRouter({ setEnvironments, setEnvironmentsLoading }: 
     return (
         <div className="h-100">
             <div className="border-bottom-n1 mt-8 mb-8" />
-            <div className="app-compose__nav-item flex text-uppercase fs-12 lh-32 fw-6 cn-6 no-hover">Environment Overrides</div>
+            <div className="app-compose__nav-item routes-container-header flex text-uppercase no-hover">
+                Environment Overrides
+            </div>
             <div className="flex column left environment-routes-container top">
                 <EnvironmentOverrides environmentsLoading={environmentsLoading} environmentResult={environmentResult} />
             </div>

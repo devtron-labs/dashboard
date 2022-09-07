@@ -67,6 +67,13 @@
         justify-content: space-between;
         text-decoration: none;
 
+        &.routes-container-header {
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 32px;
+            color: var(--N600);
+        }
+
         &:hover:not(.no-hover) {
             text-decoration: none;
             background: var(--N50);
