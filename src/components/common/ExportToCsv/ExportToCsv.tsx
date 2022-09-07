@@ -72,7 +72,7 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
         return (
             <div className="modal__CTA flex right border-top">
                 <button type="button" className="flex cta cancel h-32" onClick={handleCancelAction}>
-                    Cancel
+                    {exportingData ? 'Cancel' : 'Close'}
                 </button>
                 {!exportingData && errorExportingData && (
                     <button type="button" className="flex cta ml-12 h-32" onClick={generateDataToExport}>
