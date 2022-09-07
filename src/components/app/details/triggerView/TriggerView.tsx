@@ -854,6 +854,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         loader={this.state.loader}
                         setLoader={this.setLoader}
                         isFirstTrigger={nd?.status?.toLowerCase()==='not triggered'}
+                        isCacheAvailable={false}
                     />
                 </>
             )
