@@ -10,7 +10,7 @@ import { Progressing, showError } from '../common'
 import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
 import './login.css'
-import { dashboardAccessed, getLoginData, updateLoginCount } from '../../services/service'
+import { dashboardAccessed } from '../../services/service'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
     constructor(props) {
@@ -23,7 +23,6 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 username: 'admin',
                 password: '',
             },
-            loginCount: 0,
         }
         this.handleChange = this.handleChange.bind(this)
         this.autoFillLogin = this.autoFillLogin.bind(this)
@@ -109,14 +108,8 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                     this.setState({ loading: false })
                     let queryString = this.props.location.search.split('continue=')[1]
                     let url = queryString ? `${queryString}` : URLS.APP
-
-                    getLoginData().then((response) => {
-                        const count = response.result?.value ? parseInt(response.result.value) : 0
-                        this.setState({ loginCount: count ?? 1 })
-                        localStorage.setItem('isAdminLogin', 'true')
-
-                        this.props.history.push(url)
-                    })
+                    this.props.history.push(url)
+                    localStorage.setItem('isAdminLogin', 'true')
                 }
             })
             .catch((errors: ServerErrors) => {
