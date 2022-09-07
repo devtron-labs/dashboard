@@ -33,7 +33,7 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
 }) => {
 
     const removeAllCharts = () => {
-        removeChart(-1)
+        removeChart(0,true)
     }
 
     return (

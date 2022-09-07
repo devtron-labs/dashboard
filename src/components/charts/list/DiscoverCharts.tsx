@@ -286,20 +286,22 @@ function DiscoverChartList() {
         history.push(url)
     }
 
-    const viewChartRepo = () => {
+    const ViewChartRepo = () => {
         return (
-            <div className="pt-10 pb-10 pl-12 pr-12 br-4 bw-1 bcv-1 w-100 ev-2 flexbox mxw-300">
-                <div>
-                    <Help className="icon-dim-20 fcv-5" />
+            <ChartEmptyState onClickViewChartButton={clearSearch}>
+                <div className="pt-10 pb-10 pl-12 pr-12 br-4 bw-1 bcv-1 w-100 ev-2 flexbox mxw-300">
+                    <div>
+                        <Help className="icon-dim-20 fcv-5" />
+                    </div>
+                    <span className="ml-10 fw-4 lh-18 fs-12 ">
+                        Can’t find what you’re looking for?
+                        <br />
+                        <a target="_blank" onClick={handleViewAllCharts} className="cursor onlink">
+                            Try refetching connected chart repos or connect a chart repository
+                        </a>
+                    </span>
                 </div>
-                <span className="ml-10 fw-4 lh-18 fs-12 ">
-                    Can’t find what you’re looking for?
-                    <br />
-                    <a target="_blank" onClick={handleViewAllCharts} className="cursor onlink">
-                        Try refetching connected chart repos or connect a chart repository
-                    </a>
-                </span>
-            </div>
+            </ChartEmptyState>
         )
     }
 
@@ -423,10 +425,7 @@ function DiscoverChartList() {
                                                             </div>
                                                         </>
                                                     ) : (
-                                                        <ChartEmptyState
-                                                        onClickViewChartButton={clearSearch}
-                                                        addComponent={viewChartRepo()}
-                                                    />
+                                                        <ViewChartRepo />
                                                     )}
                                                 </div>
                                             )}

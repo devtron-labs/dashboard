@@ -43,7 +43,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         noGitOpsConfigAvailable: false
     }
     const [state, setState] = useState<ChartGroupState>(initialState)
-
+   
     useEffect(() => {
         async function populateCharts() {
             try {
@@ -187,7 +187,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
             showError(err)
         }
     }
-
+    
     async function validateData() {
         try {
             const nameRegexp = new RegExp(`^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`)
@@ -323,10 +323,17 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setState((state) => ({ ...state, charts: tempCharts }))
     }
 
-    function removeChart(index: number): void {
+    function removeChart(index: number, removeAll?: boolean): void {
         let tempCharts = [...state.charts]
-        index === -1 ? tempCharts = [] : tempCharts.splice(index, 1)
-      
+        if (removeAll) {
+            tempCharts = []
+        } else {
+            tempCharts.splice(index, 1)
+            if (state.configureChartIndex === index) {
+                configureChart(index, tempCharts)
+            }
+        }
+
         setState((state) => ({
             ...state,
             charts: tempCharts,
@@ -345,17 +352,17 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setState((state) => ({ ...state, charts: tempCharts }))
     }
 
-    async function configureChart(index: number) {
+    async function configureChart(index: number, _currentCharts?: ChartGroupEntry[]) {
         if (!state.charts[index]?.isEnabled) {
             toast.warn('Please enable first to configure chart')
             return
         }
         setState((state) => ({ ...state, configureChartIndex: index, advanceVisited: true }))
         const { valuesYaml } = state.charts[index]
-        if (valuesYaml) {
+        if (valuesYaml && !_currentCharts?.length) {
             return
         }
-        const tempCharts = [...state.charts]
+        const tempCharts = !_currentCharts?.length ? [...state.charts] : _currentCharts
         try {
             tempCharts[index].loading = true
             setState((state) => ({ ...state, charts: tempCharts }))

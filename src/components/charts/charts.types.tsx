@@ -255,7 +255,7 @@ export interface ChartGroupHelpers extends ChartSummaryHelpers, AdvancedConfigHe
 }
 
 export interface ChartSummaryHelpers extends CommonHelpers {
-    removeChart?: (index: number) => void;
+    removeChart?: (index: number, removeAll?: boolean) => void;
     toggleChart?: (index: number) => void;
     chartListing?: () => void;
     configureChart: (index: number) => void;

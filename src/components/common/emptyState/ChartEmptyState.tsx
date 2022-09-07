@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Children } from 'react';
 import EmptyState from '../../EmptyState/EmptyState';
 import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 
@@ -8,10 +8,10 @@ interface EmptyChartType {
     onClickViewChartButton: () => void;
     buttonText?: string;
     heightToDeduct?: number;
-    addComponent?: JSX.Element;
+    children?: React.ReactNode;
 }
 
-function ChartEmptyState({ title, subTitle, onClickViewChartButton, buttonText, heightToDeduct, addComponent }: EmptyChartType) {
+function ChartEmptyState({ title, subTitle, onClickViewChartButton, buttonText, heightToDeduct, children }: EmptyChartType) {
     return (
         <span
             className="empty-height"
@@ -28,7 +28,7 @@ function ChartEmptyState({ title, subTitle, onClickViewChartButton, buttonText, 
                 <button type="button" onClick={onClickViewChartButton} className="cta ghosted flex mb-24 mt-10">
                     {buttonText || 'View all charts'}
                 </button>
-                {addComponent}
+                {children}
             </EmptyState>
         </span>
     );
