@@ -32,8 +32,12 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
     setChartDetailsUpdate,
 }) => {
 
-    const removeAllCharts = () => {
+    const removeAllCharts = (): void => {
         removeChart(0,true)
+    }
+
+    const updateChartDetails = (): void => {
+        setChartDetailsUpdate(true)
     }
 
     return (
@@ -44,12 +48,12 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
                         <div className="flex column left border-bottom mb-20">
                             <span className="flex flex-justify w-100 fs-14 cn-9">
                                 Group name
-                                <Pencil className="pointer" onClick={(e) => setChartDetailsUpdate(true)} />
+                                <Pencil className="pointer" onClick={updateChartDetails} />
                             </span>
                             <div className="flex left fw-6 fs-14 mt-8 mb-20">{name}</div>
                         </div>
                     )}
-                    <div className="chart-count flex left column">
+                    <div className="pb-16 flex left column">
                         <b>{charts.length} charts selected</b>
                         <span>Set default chart version and values for each chart.</span>
                     </div>
