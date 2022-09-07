@@ -103,7 +103,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                 ...initialState,
                 availableCharts: state.availableCharts,
                 projects: state.projects,
-                environments: state.environments,
+                environments: state.environments
             })
             const {
                 result: { name, description, chartGroupEntries },
@@ -330,14 +330,23 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         } else {
             tempCharts.splice(index, 1)
             if (state.configureChartIndex === index) {
-                configureChart(index, tempCharts)
+                const chartIndex =
+                    state.configureChartIndex === tempCharts.length && tempCharts.length > 0 ? index - 1 : index
+                configureChart(chartIndex, tempCharts)
             }
         }
+
+        const setConfigureChart =
+            tempCharts.length === 0
+                ? null
+                : index >= state.configureChartIndex && state.configureChartIndex !== tempCharts.length
+                ? state.configureChartIndex
+                : state.configureChartIndex - 1
 
         setState((state) => ({
             ...state,
             charts: tempCharts,
-            configureChartIndex: tempCharts.length === 0 ? null : state.configureChartIndex,
+            configureChartIndex: setConfigureChart,
             advanceVisited: tempCharts.length === 0 ? false : state.advanceVisited,
         }))
     }
