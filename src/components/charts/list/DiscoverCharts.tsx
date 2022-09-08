@@ -305,42 +305,6 @@ function DiscoverChartList() {
         )
     }
 
-    const SelectChartView = () => {
-        if(chartList.length){
-            return  <>
-            <ChartListHeader charts={state.charts} />
-            <div className={`chart-grid ${!isGrid ? 'list-view' : ''}`}>
-                {chartList
-                    .slice(0, showDeployModal ? 12 : chartList.length)
-                    .map((chart) => (
-                        <ChartSelect
-                            key={chart.id}
-                            chart={chart}
-                            selectedCount={
-                                state.selectedInstances[chart.id]
-                                    ?.length
-                            }
-                            showCheckBoxOnHoverOnly={
-                                state.charts.length === 0
-                            }
-                            addChart={addChart}
-                            showDescription={!isGrid}
-                            subtractChart={subtractChart}
-                            onClick={(chartId) =>
-                                state.charts.length === 0
-                                    ? history.push(
-                                          `${url}/chart/${chart.id}`,
-                                      )
-                                    : selectChart(chartId)
-                            }
-                        />
-                    ))}
-            </div>
-        </>
-        } 
-        return <ViewChartRepo />
-    }
-
     return (
         <>
             <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''} chart-store-header`}>
@@ -429,7 +393,40 @@ function DiscoverChartList() {
                                                                 renderCreateGroupButton={renderCreateGroupButton}
                                                             />
                                                         )}
-                                                   <SelectChartView />
+                                                    {chartList.length ? (
+                                                        <>
+                                                            <ChartListHeader charts={state.charts} />
+                                                            <div className={`chart-grid ${!isGrid ? 'list-view' : ''}`}>
+                                                                {chartList
+                                                                    .slice(0, showDeployModal ? 12 : chartList.length)
+                                                                    .map((chart) => (
+                                                                        <ChartSelect
+                                                                            key={chart.id}
+                                                                            chart={chart}
+                                                                            selectedCount={
+                                                                                state.selectedInstances[chart.id]
+                                                                                    ?.length
+                                                                            }
+                                                                            showCheckBoxOnHoverOnly={
+                                                                                state.charts.length === 0
+                                                                            }
+                                                                            addChart={addChart}
+                                                                            showDescription={!isGrid}
+                                                                            subtractChart={subtractChart}
+                                                                            onClick={(chartId) =>
+                                                                                state.charts.length === 0
+                                                                                    ? history.push(
+                                                                                          `${url}/chart/${chart.id}`,
+                                                                                      )
+                                                                                    : selectChart(chartId)
+                                                                            }
+                                                                        />
+                                                                    ))}
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <ViewChartRepo />
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
