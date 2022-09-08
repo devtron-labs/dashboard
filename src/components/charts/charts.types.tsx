@@ -255,7 +255,7 @@ export interface ChartGroupHelpers extends ChartSummaryHelpers, AdvancedConfigHe
 }
 
 export interface ChartSummaryHelpers extends CommonHelpers {
-    removeChart?: (index: number) => void;
+    removeChart?: (index: number, removeAll?: boolean) => void;
     toggleChart?: (index: number) => void;
     chartListing?: () => void;
     configureChart: (index: number) => void;
@@ -300,4 +300,24 @@ export interface HelmTemplateChartResponse extends ResponseType {
     result: {
         manifest: string
     }
+}
+
+export interface MultiChartSummaryProps extends ChartSummaryHelpers {
+    charts: ChartGroupEntry[]
+    configureChartIndex: number
+    hideDeployedValues?: boolean
+    name?: string
+    setChartDetailsUpdate?: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface EmptyCharts {
+    title?: string
+    removeLearnMore?: boolean
+    image?: any
+    onClickViewChartButton?: () => void
+    buttonText?: string
+    subTitle?: string
+    styles?: {}
+    showChartGroupModal?: boolean
+    toggleChartGroupModal?: React.Dispatch<React.SetStateAction<boolean>>
 }
