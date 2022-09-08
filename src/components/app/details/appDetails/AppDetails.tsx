@@ -472,11 +472,11 @@ export const Details: React.FC<{
                                 subtitle={
                                     <p>
                                         Pods for this application will be
-                                        <b>
+                                        <b className='mr-4 ml-4'>
                                             scaled
                                             {hibernateConfirmationModal === 'hibernate'
-                                                ? 'down to 0'
-                                                : ' upto its original count'}
+                                                ? ' down to 0 '
+                                                : ' upto its original count '}
                                             on {appDetails.environmentName}
                                         </b>
                                         environment.
