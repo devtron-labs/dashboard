@@ -21,13 +21,13 @@ function InfoColourBar({ message, classname, Icon, iconClass, renderActionButton
                     </div>
                     <div>
                         <span>{message}</span>
-                        <div>
-                            {linkText && (
+                        {linkText && (
+                            <div>
                                 <a target="_blank" onClick={redirectToLink} className="cursor onlink">
                                     {linkText}
                                 </a>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </div>
                 </span>
                 &nbsp;
