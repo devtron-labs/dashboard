@@ -559,7 +559,7 @@ export const DeploymentTemplateEditorView = ({
 
     useEffect(() => {
         if (selectedChart && environments.length > 0) {
-            let _filteredEnvironments = environments
+            let _filteredEnvironments = environments.sort((a, b) => a.environmentName.localeCompare(b.environmentName))
             if (isEnvOverride) {
                 _filteredEnvironments = environments.filter((env) => +envId !== env.environmentId)
             }
