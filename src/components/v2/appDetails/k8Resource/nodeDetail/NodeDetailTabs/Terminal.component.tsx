@@ -21,8 +21,6 @@ const shellTypes = [
     { label: 'cmd', value: 'cmd' },
 ];
 
-
-
 function TerminalComponent({ selectedTab, isDeleted }) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string }>();
     const { url } = useRouteMatch();
@@ -30,7 +28,6 @@ function TerminalComponent({ selectedTab, isDeleted }) {
     const [selectedContainerName, setSelectedContainerName] = useState(containers ? containers[0] : '')
     const [selectedtTerminalType, setSelectedtTerminalType] = useState(shellTypes[0]);
     const [terminalCleared, setTerminalCleared] = useState(false);
-
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SOCKET_CONNECTION_TYPE.CONNECTING);
 
     useEffect(() => {
