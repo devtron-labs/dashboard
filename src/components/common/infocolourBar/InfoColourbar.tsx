@@ -19,17 +19,16 @@ function InfoColourBar({ message, classname, Icon, iconClass, renderActionButton
                     <div className="icon-dim-20 mr-10">
                         <Icon className={`${iconClass} icon-dim-20 mr-8`} />
                     </div>
-                    <span>
-                        {message}
-                        {linkText && (
-                            <>
-                                <br />
+                    <div>
+                        <span>{message}</span>
+                        <div>
+                            {linkText && (
                                 <a target="_blank" onClick={redirectToLink} className="cursor onlink">
                                     {linkText}
                                 </a>
-                            </>
-                        )}
-                    </span>
+                            )}
+                        </div>
+                    </div>
                 </span>
                 &nbsp;
                 {typeof renderActionButton === 'function' && renderActionButton()}

@@ -1,4 +1,4 @@
-import React, { Children } from 'react';
+import React from 'react';
 import EmptyState from '../../EmptyState/EmptyState';
 import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 

@@ -326,7 +326,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     function removeChart(index: number, removeAll?: boolean): void {
         let tempCharts = [...state.charts]
         if (removeAll) {
-            tempCharts = []
+            tempCharts.length = 0
         } else {
             tempCharts.splice(index, 1)
             if (state.configureChartIndex === index) {
@@ -336,7 +336,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
             }
         }
 
-        const setConfigureChart =
+        const tempChartIndex =
             tempCharts.length === 0
                 ? null
                 : index >= state.configureChartIndex && state.configureChartIndex !== tempCharts.length
@@ -346,7 +346,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setState((state) => ({
             ...state,
             charts: tempCharts,
-            configureChartIndex: setConfigureChart,
+            configureChartIndex: tempChartIndex,
             advanceVisited: tempCharts.length === 0 ? false : state.advanceVisited,
         }))
     }

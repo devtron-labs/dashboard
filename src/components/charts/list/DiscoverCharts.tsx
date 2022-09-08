@@ -397,11 +397,11 @@ function DiscoverChartList() {
                                                     ) : (
                                                         <ChartEmptyState onClickViewChartButton={clearSearch}>
                                                             <InfoColourBar
-                                                                message={'Can’t find what you’re looking for?'}
-                                                                classname={'br-4 bw-1 bcv-1 ev-2 dc__mxw-300 bcv-1 fs-12 pl-12 pr-12'}
+                                                                message="Can’t find what you’re looking for?"
+                                                                classname="br-4 bw-1 bcv-1 ev-2 dc__mxw-300 bcv-1 fs-12 pl-12 pr-12"
                                                                 Icon={Help}
-                                                                iconClass={'fcv-5 h-20'}
-                                                                linkText={'Try refetching connected chart repos or connect a chart repository'}
+                                                                iconClass="fcv-5 h-20"
+                                                                linkText="Try refetching connected chart repos or connect a chart repository"
                                                                 redirectToLink={handleViewAllCharts}
                                                             />
                                                         </ChartEmptyState>
