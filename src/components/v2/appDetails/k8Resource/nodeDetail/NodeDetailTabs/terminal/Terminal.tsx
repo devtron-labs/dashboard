@@ -11,7 +11,8 @@ import ReactGA from 'react-ga4';
 import './terminal.css';
 import IndexStore from '../../../../index.store';
 import { AppType } from '../../../../appDetails.type';
-import { elementDidMount } from '../../../../../../common';
+import { elementDidMount, useOnline } from '../../../../../../common';
+import { SOCKET_CONNECTION_TYPE } from '../Terminal.component';
 
 interface TerminalViewProps {
     nodeName: string;
@@ -32,6 +33,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const [isReconnection, setIsReconnection] = useState(false);
     const [firstMessageReceived, setFirstMessageReceived] = useState(false);
     const [popupText, setPopupText] = useState<boolean>(false);
+    const isOnline = useOnline();
 
     useEffect(() => {
         if (!popupText) return;
@@ -153,13 +155,13 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     };
 
     useEffect(() => {
-        if (terminalViewProps.socketConnection === 'DISCONNECTING') {
+        if (terminalViewProps.socketConnection === SOCKET_CONNECTION_TYPE.DISCONNECTING) {
             if (socket) {
                 socket.close();
                 socket = undefined;
             }
         }
-        if (terminalViewProps.socketConnection === 'CONNECTING') {
+        if (terminalViewProps.socketConnection === SOCKET_CONNECTION_TYPE.CONNECTING) {
             getNewSession();
         }
     }, [terminalViewProps.socketConnection]);
@@ -206,7 +208,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         if (firstMessageReceived) {
             fitAddon.fit();
             terminal.setOption('cursorBlink', true);
-            terminalViewProps.setSocketConnection('CONNECTED');
+            terminalViewProps.setSocketConnection(SOCKET_CONNECTION_TYPE.CONNECTED);
         }
     }, [firstMessageReceived]);
 
@@ -221,7 +223,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 (window.location.port ? ':' + window.location.port : '');
         }
 
-        terminalViewProps.setSocketConnection('CONNECTING');
+        terminalViewProps.setSocketConnection(SOCKET_CONNECTION_TYPE.CONNECTING);
 
         ReactGA.event({
             category: 'Terminal',
@@ -292,31 +294,45 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             });
     };
 
-    return (
-        <div className="terminal-view h-100 w-100">
+    const renderConnectionStrip = () => {
+        return !isOnline ? (
+            <div className="terminal-strip capitalize pl-20 pr-20 w-100 bcr-7 cn-0">
+                You’re offline. Please check your internet connection.
+            </div>
+        ) : (
             <div
-                style={{ zIndex: 4, textTransform: 'capitalize' }}
-                className={`${
-                    terminalViewProps.socketConnection !== 'CONNECTED'
-                        ? `${terminalViewProps.socketConnection === 'CONNECTING' ? 'bcy-2' : 'bcr-7'}  pl-20`
+                className={`terminal-strip capitalize ${
+                    terminalViewProps.socketConnection !== SOCKET_CONNECTION_TYPE.CONNECTED
+                        ? `${
+                              terminalViewProps.socketConnection === SOCKET_CONNECTION_TYPE.CONNECTING
+                                  ? 'bcy-2'
+                                  : 'bcr-7'
+                          }  pl-20`
                         : 'pb-10'
-                } ${terminalViewProps.socketConnection === 'CONNECTING' ? 'cn-9' : 'cn-0'} m-0 pl-20 w-100`}
+                } ${
+                    terminalViewProps.socketConnection === SOCKET_CONNECTION_TYPE.CONNECTING ? 'cn-9' : 'cn-0'
+                } m-0 pl-20 w-100`}
             >
-                {terminalViewProps.socketConnection !== 'CONNECTED' && (
-                    <span className={terminalViewProps.socketConnection === 'CONNECTING' ? 'loading-dots' : ''}>
+                {terminalViewProps.socketConnection !== SOCKET_CONNECTION_TYPE.CONNECTED && (
+                    <span
+                        className={
+                            terminalViewProps.socketConnection === SOCKET_CONNECTION_TYPE.CONNECTING
+                                ? 'loading-dots'
+                                : ''
+                        }
+                    >
                         {terminalViewProps.socketConnection?.toLowerCase()}
                     </span>
                 )}
-                {terminalViewProps.socketConnection === 'DISCONNECTED' && (
+                {terminalViewProps.socketConnection === SOCKET_CONNECTION_TYPE.DISCONNECTED && (
                     <React.Fragment>
                         <span>.&nbsp;</span>
                         <button
                             type="button"
                             onClick={(e) => {
-                                console.log('Resume clicked');
-                                e.stopPropagation();
-                                terminalViewProps.setSocketConnection('CONNECTING');
-                                setIsReconnection(true);
+                                e.stopPropagation()
+                                terminalViewProps.setSocketConnection(SOCKET_CONNECTION_TYPE.CONNECTING)
+                                setIsReconnection(true)
                             }}
                             className="cursor transparent inline-block"
                             style={{ textDecoration: 'underline' }}
@@ -326,18 +342,24 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     </React.Fragment>
                 )}
             </div>
+        )
+    }
+
+    return (
+        <div className="terminal-view h-100 w-100">
+            {renderConnectionStrip()}
 
             <div id="terminal-id" className="terminal-container ml-20">
                 <CopyToast showCopyToast={popupText} />
             </div>
 
-            {terminalViewProps.socketConnection === 'CONNECTED' && (
+            {terminalViewProps.socketConnection === SOCKET_CONNECTION_TYPE.CONNECTED && (
                 <p className={`connection-status ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 capitalize cg-4`}>
                     {terminalViewProps.socketConnection}
                 </p>
             )}
         </div>
-    );
+    )
 }
 
 export default TerminalView;
