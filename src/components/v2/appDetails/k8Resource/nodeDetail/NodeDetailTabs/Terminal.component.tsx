@@ -9,7 +9,7 @@ import './nodeDetailTab.scss';
 import IndexStore from '../../../index.store';
 import Select from 'react-select';
 import { multiSelectStyles } from '../../../../common/ReactSelectCustomization';
-import { SocketConnectionType } from './node.type';
+import { SocketConnectionType, SOCKET_CONNECTION_TYPE } from './node.type';
 import TerminalView from './terminal/Terminal';
 import MessageUI from '../../../../common/message.ui';
 import { Option } from '../../../../common/ReactSelect.utils';
@@ -21,12 +21,7 @@ const shellTypes = [
     { label: 'cmd', value: 'cmd' },
 ];
 
-export enum SOCKET_CONNECTION_TYPE {
-    CONNECTING = 'CONNECTING',
-    CONNECTED = 'CONNECTED',
-    DISCONNECTING = 'DISCONNECTING',
-    DISCONNECTED = 'DISCONNECTED',
-}
+
 
 function TerminalComponent({ selectedTab, isDeleted }) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string }>();

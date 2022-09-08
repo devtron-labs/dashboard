@@ -5,14 +5,13 @@ import { FitAddon } from 'xterm-addon-fit';
 import CopyToast, { handleSelectionChange } from '../CopyToast';
 import * as XtermWebfont from 'xterm-webfont';
 import SockJS from 'sockjs-client';
-import { SocketConnectionType } from '../node.type';
+import { SocketConnectionType, SOCKET_CONNECTION_TYPE } from '../node.type';
 import { get } from '../../../../../../../services/api';
 import ReactGA from 'react-ga4';
 import './terminal.css';
 import IndexStore from '../../../../index.store';
 import { AppType } from '../../../../appDetails.type';
 import { elementDidMount, useOnline } from '../../../../../../common';
-import { SOCKET_CONNECTION_TYPE } from '../Terminal.component';
 
 interface TerminalViewProps {
     nodeName: string;
