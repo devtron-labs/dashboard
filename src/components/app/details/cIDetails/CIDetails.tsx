@@ -31,8 +31,6 @@ import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic
 import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg'
 import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-fullscreen.svg'
 import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg'
-import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help-filled.svg'
 import { statusColor as colorMap } from '../../config'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
 import { ScanDisabledView, ImageNotScannedView, NoVulnerabilityView, CIRunningView } from './cIDetails.util'
@@ -52,7 +50,7 @@ import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConf
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
-import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
+import { renderConfigurationError } from '../cdDetails/cd.utils'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -1008,46 +1006,8 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
         }
     }
 
-    const renderLogsNotAvailable = (subtitle?: string): JSX.Element => {
-        return (
-            <div className="flexbox dc__content-center flex-align-center dc__height-inherit">
-                <div>
-                <div className="text-center"><Info className="icon-dim-20"/></div>
-                <div className="text-center cn-0 fs-14 fw-6">Logs not available</div>
-                <div className="text-center cn-0 fs-13 fw-4">{subtitle || 'Logs are available only at runtime.'}</div>
-                </div>
-            </div>
-        )
-    }
-
-    const renderBlobNotConfigured = (): JSX.Element => {
-        return (
-            <>
-                {renderLogsNotAvailable('Blob storage was not configured at pipeline run.')}
-                <div className="flexbox configure-blob-container pt-8 pr-12 pb-8 pl-12 bcv-1 br-4">
-                    <Question className="icon-dim-20" />
-                    <span className="fs-13 fw-4 mr-8 ml-8">Want to store logs to view later?</span>
-                    <a className="fs-13 fw-6 cb-5 no-decor" href={DOCUMENTATION.ADMIN_PASSWORD} target="_blank">
-                        Configure blob storage
-                    </a>
-                    <OpenInNew className="icon-dim-20 ml-8" />
-                </div>
-            </>
-        )
-    }
-
-
-
-    const renderConfigurationError = (): JSX.Element => {
-      return (
-          <div className="flexbox dc__content-center flex-align-center dc__height-inherit">
-              {!isblobStorageConfigured? renderBlobNotConfigured(): renderLogsNotAvailable()}
-          </div>
-      )
-  }
-
     return !isblobStorageConfigured || !triggerDetails.blobStorageEnabled  ? (
-      renderConfigurationError()
+      renderConfigurationError(isblobStorageConfigured)
     ) : (
         <div className="logs__body">
             {logs.map((log, index) => {
