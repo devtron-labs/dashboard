@@ -301,3 +301,23 @@ export interface HelmTemplateChartResponse extends ResponseType {
         manifest: string
     }
 }
+
+export interface MultiChartSummaryProps extends ChartSummaryHelpers {
+    charts: ChartGroupEntry[]
+    configureChartIndex: number
+    hideDeployedValues?: boolean
+    name?: string
+    setChartDetailsUpdate?: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface EmptyCharts {
+    title?: string
+    removeLearnMore?: boolean
+    image?: any
+    onClickViewChartButton?: () => void
+    buttonText?: string
+    subTitle?: string
+    styles?: {}
+    showChartGroupModal?: boolean
+    toggleChartGroupModal?: React.Dispatch<React.SetStateAction<boolean>>
+}

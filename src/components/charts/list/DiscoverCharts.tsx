@@ -21,7 +21,7 @@ import AdvancedConfig from '../AdvancedConfig'
 import { ChartDetailNavigator } from '../Charts'
 import useChartGroup from '../useChartGroup'
 import { DeployableCharts, deployChartGroup } from '../charts.service'
-import { ChartGroupEntry, Chart } from '../charts.types'
+import { ChartGroupEntry, Chart, EmptyCharts } from '../charts.types'
 import { toast } from 'react-toastify'
 import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy'
 import CreateChartGroup from '../modal/CreateChartGroup'
@@ -44,18 +44,6 @@ import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-forward.s
 import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWarning'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
-
-interface EmptyCharts {
-    title?: string
-    removeLearnMore?: boolean
-    image?: any
-    onClickViewChartButton?: () => void
-    buttonText?: string
-    subTitle?: string
-    styles?: {}
-    showChartGroupModal?: boolean
-    toggleChartGroupModal?: React.Dispatch<React.SetStateAction<boolean>>
-}
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
