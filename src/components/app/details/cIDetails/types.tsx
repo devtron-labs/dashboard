@@ -31,7 +31,7 @@ export interface History {
     artifactId: number
     triggeredByEmail: string
     stage?: 'POST' | 'DEPLOY' | 'PRE'
-    isLogsAvailable?: boolean
+    blobStorageEnabled?: boolean
 }
 
 export interface CiMaterial {

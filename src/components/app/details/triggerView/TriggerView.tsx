@@ -276,7 +276,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 //Create maps from Array
                 if (allCIs.length) {
                     allCIs.forEach((pipeline) => {
-                        ciMap[pipeline.ciPipelineId] = pipeline.ciStatus
+                        ciMap[pipeline.ciPipelineId] = {status: pipeline.ciStatus, storageConfigured: pipeline.storageConfigured || false}
                     })
                 }
                 if (allCDs.length) {
@@ -292,7 +292,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     wf.nodes = wf.nodes.map((node) => {
                         switch (node.type) {
                             case 'CI':
-                                node['status'] = ciMap[node.id]
+                                node['status'] = ciMap[node.id].status
+                                node['storageConfigured'] = ciMap[node.id].storageConfigured
                                 break
                             case 'PRECD':
                                 node['status'] = preCDMap[node.id]
@@ -854,7 +855,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         loader={this.state.loader}
                         setLoader={this.setLoader}
                         isFirstTrigger={nd?.status?.toLowerCase()==='not triggered'}
-                        isCacheAvailable={false}
+                        isCacheAvailable={nd?.storageConfigured}
                     />
                 </>
             )

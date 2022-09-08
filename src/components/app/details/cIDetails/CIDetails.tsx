@@ -92,10 +92,12 @@ function useCIEventSource(url: string, maxLength?: number) {
 
     useEffect(() => {
         buffer.current = []
-        eventSourceRef.current = new EventSource(url, { withCredentials: true })
-        eventSourceRef.current.addEventListener('message', handleMessage)
-        eventSourceRef.current.addEventListener('START_OF_STREAM', handleStreamStart)
-        eventSourceRef.current.addEventListener('END_OF_STREAM', handleStreamEnd)
+        if(url){
+          eventSourceRef.current = new EventSource(url, { withCredentials: true })
+          eventSourceRef.current.addEventListener('message', handleMessage)
+          eventSourceRef.current.addEventListener('START_OF_STREAM', handleStreamStart)
+          eventSourceRef.current.addEventListener('END_OF_STREAM', handleStreamEnd)
+        }
         return closeEventSource
     }, [url, maxLength])
 
@@ -228,7 +230,7 @@ export default function CIDetails() {
                                 setFullScreenView={setFullScreenView}
                                 synchroniseState={synchroniseState}
                                 isSecurityModuleInstalled={securityModuleStatus?.result?.status === ModuleStatus.INSTALLED || false}
-                                isblobStorageConfigured={blobStorageConfiguration?.result?.status === ModuleStatus.INSTALLED || false}
+                                isblobStorageConfigured={blobStorageConfiguration?.result?.status === ModuleStatus.INSTALLED || true}
                             />
                         </Route>
                     )}
@@ -992,7 +994,9 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
     }, [keys])
     const { pipelineId } = useParams<{ pipelineId: string }>()
     const [logs, eventSource] = useCIEventSource(
-        `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`,
+        isblobStorageConfigured && triggerDetails.blobStorageEnabled
+            ? `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`
+            : null,
     )
     function createMarkup(log) {
         try {
@@ -1042,7 +1046,7 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
       )
   }
 
-    return !isblobStorageConfigured || !triggerDetails.isLogsAvailable  ? (
+    return !isblobStorageConfigured || !triggerDetails.blobStorageEnabled  ? (
       renderConfigurationError()
     ) : (
         <div className="logs__body">

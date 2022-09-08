@@ -136,6 +136,7 @@ export interface NodeAttr {
     isRegex?: boolean
     regex?: string
     primaryBranchAfterRegex?: string
+    storageConfigured?: boolean
 }
 
 export interface DownStreams {
