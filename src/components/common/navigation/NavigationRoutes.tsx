@@ -106,8 +106,6 @@ export default function NavigationRoutes() {
          }
          if (!count && superAdmin && appListCount === 0) {
              history.push(`/${URLS.GETTING_STARTED}`)
-         } else if (!count) {
-             history.push(URLS.APP)
          }
      }
 
