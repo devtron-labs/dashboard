@@ -7,9 +7,11 @@ interface InfoColourBarType {
     Icon
     iconClass?: string
     renderActionButton?: () => JSX.Element
+    linkText?: string
+    redirectToLink?:() => void;
 }
 
-function InfoColourBar({ message, classname, Icon, iconClass, renderActionButton }: InfoColourBarType) {
+function InfoColourBar({ message, classname, Icon, iconClass, renderActionButton, redirectToLink, linkText }: InfoColourBarType) {
     return (
         <div className="info-bar-container">
             <div className={`${classname} info_text flex content-space pt-10 pb-10 pl-16 pr-16 br-4 top fs-13 fw-4`}>
@@ -17,7 +19,17 @@ function InfoColourBar({ message, classname, Icon, iconClass, renderActionButton
                     <div className="icon-dim-20 mr-10">
                         <Icon className={`${iconClass} icon-dim-20 mr-8`} />
                     </div>
-                    {message}
+                    <span>
+                        {message}
+                        {linkText && (
+                            <>
+                                <br />
+                                <a target="_blank" onClick={redirectToLink} className="cursor onlink">
+                                    {linkText}
+                                </a>
+                            </>
+                        )}
+                    </span>
                 </span>
                 &nbsp;
                 {typeof renderActionButton === 'function' && renderActionButton()}

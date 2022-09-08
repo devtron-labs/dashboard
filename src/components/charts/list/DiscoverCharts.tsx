@@ -44,6 +44,7 @@ import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-forward.s
 import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWarning'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
+import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -274,25 +275,6 @@ function DiscoverChartList() {
         history.push(url)
     }
 
-    const ViewChartRepo = () => {
-        return (
-            <ChartEmptyState onClickViewChartButton={clearSearch}>
-                <div className="pt-10 pb-10 pl-12 pr-12 br-4 bw-1 bcv-1 w-100 ev-2 flexbox dc__mxw-300">
-                    <div>
-                        <Help className="icon-dim-20 fcv-5" />
-                    </div>
-                    <span className="ml-10 fw-4 lh-18 fs-12 ">
-                        Can’t find what you’re looking for?
-                        <br />
-                        <a target="_blank" onClick={handleViewAllCharts} className="cursor onlink">
-                            Try refetching connected chart repos or connect a chart repository
-                        </a>
-                    </span>
-                </div>
-            </ChartEmptyState>
-        )
-    }
-
     return (
         <>
             <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''} chart-store-header`}>
@@ -413,7 +395,16 @@ function DiscoverChartList() {
                                                             </div>
                                                         </>
                                                     ) : (
-                                                        <ViewChartRepo />
+                                                        <ChartEmptyState onClickViewChartButton={clearSearch}>
+                                                            <InfoColourBar
+                                                                message={'Can’t find what you’re looking for?'}
+                                                                classname={'br-4 bw-1 bcv-1 ev-2 dc__mxw-300 bcv-1 fs-12 pl-12 pr-12'}
+                                                                Icon={Help}
+                                                                iconClass={'fcv-5 h-20'}
+                                                                linkText={'Try refetching connected chart repos or connect a chart repository'}
+                                                                redirectToLink={handleViewAllCharts}
+                                                            />
+                                                        </ChartEmptyState>
                                                     )}
                                                 </div>
                                             )}
