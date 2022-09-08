@@ -5,7 +5,7 @@ import { FitAddon } from 'xterm-addon-fit';
 import CopyToast, { handleSelectionChange } from '../CopyToast';
 import * as XtermWebfont from 'xterm-webfont';
 import SockJS from 'sockjs-client';
-import { SocketConnectionType, SOCKET_CONNECTION_TYPE } from '../node.type';
+import { SocketConnectionType } from '../node.type';
 import { get } from '../../../../../../../services/api';
 import ReactGA from 'react-ga4';
 import './terminal.css';
@@ -135,32 +135,32 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         _socket.onclose = function (evt) {
             disableInput();
-            terminalViewProps.setSocketConnection('DISCONNECTED');
+            terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTED);
         };
 
         _socket.onerror = function (evt) {
             disableInput();
-            terminalViewProps.setSocketConnection('DISCONNECTED');
+            terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTED);
         };
     };
 
     const reconnect = () => {
-        terminalViewProps.setSocketConnection('DISCONNECTING');
+        terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTING);
         terminal?.reset();
 
         setTimeout(() => {
-            terminalViewProps.setSocketConnection('CONNECTING');
+            terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING);
         }, 100);
     };
 
     useEffect(() => {
-        if (terminalViewProps.socketConnection === SOCKET_CONNECTION_TYPE.DISCONNECTING) {
+        if (terminalViewProps.socketConnection === SocketConnectionType.DISCONNECTING) {
             if (socket) {
                 socket.close();
                 socket = undefined;
             }
         }
-        if (terminalViewProps.socketConnection === SOCKET_CONNECTION_TYPE.CONNECTING) {
+        if (terminalViewProps.socketConnection === SocketConnectionType.CONNECTING) {
             getNewSession();
         }
     }, [terminalViewProps.socketConnection]);
@@ -207,7 +207,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         if (firstMessageReceived) {
             fitAddon.fit();
             terminal.setOption('cursorBlink', true);
-            terminalViewProps.setSocketConnection(SOCKET_CONNECTION_TYPE.CONNECTED);
+            terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTED);
         }
     }, [firstMessageReceived]);
 
@@ -222,7 +222,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 (window.location.port ? ':' + window.location.port : '');
         }
 
-        terminalViewProps.setSocketConnection(SOCKET_CONNECTION_TYPE.CONNECTING);
+        terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING);
 
         ReactGA.event({
             category: 'Terminal',
@@ -295,7 +295,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     const onClickResume = (e) => {
         e.stopPropagation()
-        terminalViewProps.setSocketConnection(SOCKET_CONNECTION_TYPE.CONNECTING)
+        terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING)
         setIsReconnection(true)
     }
 
@@ -307,21 +307,21 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         ) : (
             <div
                 className={`terminal-strip capitalize ${
-                    terminalViewProps.socketConnection !== SOCKET_CONNECTION_TYPE.CONNECTED
+                    terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED
                         ? `${
-                              terminalViewProps.socketConnection === SOCKET_CONNECTION_TYPE.CONNECTING
+                              terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
                                   ? 'bcy-2'
                                   : 'bcr-7'
                           }  pl-20`
                         : 'pb-10'
                 } ${
-                    terminalViewProps.socketConnection === SOCKET_CONNECTION_TYPE.CONNECTING ? 'cn-9' : 'cn-0'
+                    terminalViewProps.socketConnection === SocketConnectionType.CONNECTING ? 'cn-9' : 'cn-0'
                 } m-0 pl-20 w-100`}
             >
-                {terminalViewProps.socketConnection !== SOCKET_CONNECTION_TYPE.CONNECTED && (
+                {terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED && (
                     <span
                         className={
-                            terminalViewProps.socketConnection === SOCKET_CONNECTION_TYPE.CONNECTING
+                            terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
                                 ? 'loading-dots'
                                 : ''
                         }
@@ -329,7 +329,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                         {terminalViewProps.socketConnection?.toLowerCase()}
                     </span>
                 )}
-                {terminalViewProps.socketConnection === SOCKET_CONNECTION_TYPE.DISCONNECTED && (
+                {terminalViewProps.socketConnection === SocketConnectionType.DISCONNECTED && (
                     <React.Fragment>
                         <span>.&nbsp;</span>
                         <button
@@ -353,7 +353,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 <CopyToast showCopyToast={popupText} />
             </div>
 
-            {terminalViewProps.socketConnection === SOCKET_CONNECTION_TYPE.CONNECTED && (
+            {terminalViewProps.socketConnection === SocketConnectionType.CONNECTED && (
                 <p className={`connection-status ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 capitalize cg-4`}>
                     {terminalViewProps.socketConnection}
                 </p>

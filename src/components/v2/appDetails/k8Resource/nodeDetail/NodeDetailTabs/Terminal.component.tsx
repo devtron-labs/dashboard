@@ -9,7 +9,7 @@ import './nodeDetailTab.scss';
 import IndexStore from '../../../index.store';
 import Select from 'react-select';
 import { multiSelectStyles } from '../../../../common/ReactSelectCustomization';
-import { SocketConnectionType, SOCKET_CONNECTION_TYPE } from './node.type';
+import { SocketConnectionType } from './node.type';
 import TerminalView from './terminal/Terminal';
 import MessageUI from '../../../../common/message.ui';
 import { Option } from '../../../../common/ReactSelect.utils';
@@ -28,7 +28,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
     const [selectedContainerName, setSelectedContainerName] = useState(containers ? containers[0] : '')
     const [selectedtTerminalType, setSelectedtTerminalType] = useState(shellTypes[0]);
     const [terminalCleared, setTerminalCleared] = useState(false);
-    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SOCKET_CONNECTION_TYPE.CONNECTING);
+    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING);
 
     useEffect(() => {
         selectedTab(NodeDetailTab.TERMINAL, url);
@@ -55,15 +55,15 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                     arrow={false}
                     placement="bottom"
                     content={
-                        socketConnection === SOCKET_CONNECTION_TYPE.CONNECTING || socketConnection === SOCKET_CONNECTION_TYPE.CONNECTED ? 'Disconnect' : 'Connect'
+                        socketConnection === SocketConnectionType.CONNECTING || socketConnection === SocketConnectionType.CONNECTED ? 'Disconnect' : 'Connect'
                     }
                 >
-                    {socketConnection === SOCKET_CONNECTION_TYPE.CONNECTING || socketConnection === SOCKET_CONNECTION_TYPE.CONNECTED ? (
+                    {socketConnection === SocketConnectionType.CONNECTING || socketConnection === SocketConnectionType.CONNECTED ? (
                         <span>
                             <Disconnect
                                 className="icon-dim-20 mr-5"
                                 onClick={(e) => {
-                                    setSocketConnection(SOCKET_CONNECTION_TYPE.DISCONNECTING);
+                                    setSocketConnection(SocketConnectionType.DISCONNECTING);
                                 }}
                             />
                         </span>
@@ -72,7 +72,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                             <Connect
                                 className="icon-dim-20 mr-5"
                                 onClick={(e) => {
-                                    setSocketConnection(SOCKET_CONNECTION_TYPE.CONNECTING);
+                                    setSocketConnection(SocketConnectionType.CONNECTING);
                                 }}
                             />
                         </span>
@@ -139,7 +139,7 @@ function TerminalComponent({ selectedTab, isDeleted }) {
                         onChange={(selected) => {
                             setSelectedtTerminalType(selected as any);
                             setTerminalCleared(true);
-                            setSocketConnection(SOCKET_CONNECTION_TYPE.DISCONNECTING);
+                            setSocketConnection(SocketConnectionType.DISCONNECTING);
                         }}
                         styles={{
                             ...multiSelectStyles,
