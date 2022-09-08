@@ -177,7 +177,7 @@ export const Details: React.FC<{
         })
     let deploymentStatusTimer = null
     const isExternalToolAvailable: boolean = externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
-    const interval = 30000;
+    const interval = window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL || 30000;
     const appDetails = appDetailsResult?.result;
     const syncSSE = useEventSource(
         `${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
