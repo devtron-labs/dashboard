@@ -473,21 +473,25 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         }
 
         if (isHashiOrAWS || isESO) {
-            let secretDataArray = isESO ? esoSecretData : secretData 
-            let isValid = !isESO ? secretDataArray.reduce((isValid, s) => {
-                isValid = isValid && !!s.fileName && !!s.name
-                return isValid
-            }, !!secretData.length) :
-            secretDataArray?.reduce((isValid, s) => {
-                isValid = isValid && !!s.secretKey && !!s.key && 
-                (hasProperty(externalType) ? !!s.property : true)
-                return isValid
-            }, !!secretStore && !!esoSecretData?.length)
+            let isValid = true
+            if (!isESO) {
+                isValid = secretData.reduce((isValid, s) => {
+                    isValid = isValid && !!s.fileName && !!s.name
+                    return isValid
+                }, !!secretData.length)
+            } else {
+                isValid = esoSecretData?.reduce((isValid, s) => {
+                    isValid = isValid && !!s.secretKey && !!s.key && (hasProperty(externalType) ? !!s.property : true)
+                    return isValid
+                }, !!secretStore && !!esoSecretData?.length)
+            }
 
             if (!isValid) {
                 !isESO
                     ? toast.error('Please check key and name')
-                    : !secretStore ? toast.error('Please check secretStore') : toast.error(`Please check key${hasProperty(externalType) ? ', property' : ''}  and secretKey`)
+                    : !secretStore
+                    ? toast.error('Please check secretStore')
+                    : toast.error(`Please check key${hasProperty(externalType) ? ', property' : ''}  and secretKey`)
                 return
             }
         }

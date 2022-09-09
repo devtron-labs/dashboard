@@ -409,17 +409,19 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 return
             }
             if (isHashiOrAWS || isESO) {
-                let secretDataArray = isESO ? esoDataSecret : secretDataValue 
-                let isValid = !isESO
-                    ? secretDataArray?.reduce((isValid, s) => {
-                          isValid = isValid && !!s.fileName && !!s.name && !!secretDataValue.length
-                          return isValid
-                      },!!secretDataValue.length)
-                    : secretDataArray?.reduce((isValid, s) => {
-                          isValid =
-                              isValid && !!s.secretKey && !!s.key && (hasProperty(externalType) ? !!s.property : true)
-                          return isValid
-                      }, !!secretStore && !!esoDataSecret?.length)
+                let isValid = true
+                if (!isESO) {
+                    isValid = secretDataValue.reduce((isValid, s) => {
+                        isValid = isValid && !!s.fileName && !!s.name
+                        return isValid
+                    }, !!secretDataValue.length)
+                } else {
+                    isValid = esoDataSecret?.reduce((isValid, s) => {
+                        isValid = isValid && !!s.secretKey && !!s.key && (hasProperty(externalType) ? !!s.property : true)
+                        return isValid
+                    }, !!secretStore && !!esoDataSecret?.length)
+                }
+    
                 if (!isValid) {
                     !isESO
                         ? toast.error('Please check key and name')
