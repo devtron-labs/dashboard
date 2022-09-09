@@ -66,7 +66,7 @@ export default function SecretOverrides({ parentState, setParentState }: SecretO
         showError(error)
         if (!result) return null
     }
-    if (parentState === 'loading' || !result) return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
+    if (parentState === ComponentStates.loading || !result) return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
 
     let {
         result: { configData, id },
