@@ -468,7 +468,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             return
         }
         if (externalType === '' && !arr.length) {
-            toast.warn('Please add secret data before saving.')
+            toast.error('Please add secret data before saving.')
             return
         }
 
@@ -486,8 +486,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
 
             if (!isValid) {
                 !isESO
-                    ? toast.warn('Please check key and name')
-                    : !secretStore ? toast.warn('Please check secretStore') : toast.warn(`Please check key${hasProperty(externalType) ? ', property' : ''}  and secretKey`)
+                    ? toast.error('Please check key and name')
+                    : !secretStore ? toast.error('Please check secretStore') : toast.error(`Please check key${hasProperty(externalType) ? ', property' : ''}  and secretKey`)
                 return
             }
         }

@@ -72,7 +72,7 @@ export default function SecretOverrides({ parentState, setParentState, ...props 
     } = result
     configData = [{ name: '' }].concat(configData)
     let secrets = mapByKey(configData, 'name')
-    
+
     return (
         <section className="secret-overrides">
             <label htmlFor="" className="form__label bold">
@@ -405,7 +405,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
         try {
             let dataArray = yamlMode ? tempArr.current : state.duplicate
             if (externalType === '' && dataArray.length == 0) {
-                toast.warn('Secret configuration without any data is not allowed.')
+                toast.error('Secret configuration without any data is not allowed.')
                 return
             }
             if (isHashiOrAWS || isESO) {
@@ -422,10 +422,10 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                       }, !!secretStore && !!esoDataSecret?.length)
                 if (!isValid) {
                     !isESO
-                        ? toast.warn('Please check key and name')
+                        ? toast.error('Please check key and name')
                         : !secretStore
-                        ? toast.warn('Please check secretStore')
-                        : toast.warn(`Please check key${hasProperty(externalType) ? ', property' : ''}  and secretKey`)
+                        ? toast.error('Please check secretStore')
+                        : toast.error(`Please check key${hasProperty(externalType) ? ', property' : ''}  and secretKey`)
                     return
                 }
             }
