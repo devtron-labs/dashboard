@@ -291,13 +291,15 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 }
             })
             .catch((err) => {
-                console.log('error while getNewSession ', err)
+              console.log(err)
                 showError(err)
                 if (err instanceof ServerErrors && Array.isArray(err.errors)) {
                     const _invalidNameErr = err.errors[0].userMessage
                     if (_invalidNameErr.includes('Unauthorized')) {
                         setErrorMessage(Error_Message.UNAUTHORIZED)
                     }
+                } else{
+                  setErrorMessage(err)
                 }
             })
     };
