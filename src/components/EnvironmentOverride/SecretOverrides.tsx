@@ -226,10 +226,8 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
             return name && isGlobal
                 ? Object.keys(data).map((k) => ({ k, v: data[k], keyError: '', valueError: '' }))
                 : data
-        } else if (secretData) {
-            return name && isGlobal && secretData
-        } else if (esoSecretData?.esoData) {
-            return name && isGlobal && esoSecretData
+        } else if (name && isGlobal) {
+            return secretData || (esoSecretData?.esoData && esoSecretData)
         } else {
             return null
         }
