@@ -22,6 +22,9 @@ interface customEnv {
     HIDE_DISCORD?: boolean
     POSTHOG_ENABLED?: boolean
     POSTHOG_TOKEN?: string
+    DEVTRON_APP_DETAILS_POLLING_INTERVAL?: number
+    HELM_APP_DETAILS_POLLING_INTERVAL?: number
+    EA_APP_DETAILS_POLLING_INTERVAL?: number
 }
 declare global {
     interface Window {
@@ -104,6 +107,9 @@ if (!window || !window._env_) {
         RECOMMEND_SECURITY_SCANNING: false,
         FORCE_SECURITY_SCANNING: false,
         HIDE_DISCORD: true,
+        DEVTRON_APP_DETAILS_POLLING_INTERVAL: 30000,
+        HELM_APP_DETAILS_POLLING_INTERVAL: 30000,
+        EA_APP_DETAILS_POLLING_INTERVAL: 30000
     }
 }
 

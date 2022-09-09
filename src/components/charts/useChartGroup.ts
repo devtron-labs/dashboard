@@ -43,7 +43,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         noGitOpsConfigAvailable: false
     }
     const [state, setState] = useState<ChartGroupState>(initialState)
-
+   
     useEffect(() => {
         async function populateCharts() {
             try {
@@ -103,7 +103,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                 ...initialState,
                 availableCharts: state.availableCharts,
                 projects: state.projects,
-                environments: state.environments,
+                environments: state.environments
             })
             const {
                 result: { name, description, chartGroupEntries },
@@ -187,7 +187,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
             showError(err)
         }
     }
-
+    
     async function validateData() {
         try {
             const nameRegexp = new RegExp(`^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`)
@@ -323,13 +323,30 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setState((state) => ({ ...state, charts: tempCharts }))
     }
 
-    function removeChart(index: number): void {
-        const tempCharts = [...state.charts]
-        tempCharts.splice(index, 1)
+    function removeChart(index: number, removeAll?: boolean): void {
+        let tempCharts = [...state.charts]
+        if (removeAll) {
+            tempCharts.length = 0
+        } else {
+            tempCharts.splice(index, 1)
+            if (state.configureChartIndex === index) {
+                const chartIndex =
+                    state.configureChartIndex === tempCharts.length && tempCharts.length > 0 ? index - 1 : index
+                configureChart(chartIndex, tempCharts)
+            }
+        }
+
+        const tempChartIndex =
+            tempCharts.length === 0
+                ? null
+                : index >= state.configureChartIndex && state.configureChartIndex !== tempCharts.length
+                ? state.configureChartIndex
+                : state.configureChartIndex - 1
+
         setState((state) => ({
             ...state,
             charts: tempCharts,
-            configureChartIndex: state.configureChartIndex === index ? null : state.configureChartIndex,
+            configureChartIndex: tempChartIndex,
             advanceVisited: tempCharts.length === 0 ? false : state.advanceVisited,
         }))
     }
@@ -344,17 +361,17 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setState((state) => ({ ...state, charts: tempCharts }))
     }
 
-    async function configureChart(index: number) {
+    async function configureChart(index: number, _currentCharts?: ChartGroupEntry[]) {
         if (!state.charts[index]?.isEnabled) {
             toast.warn('Please enable first to configure chart')
             return
         }
         setState((state) => ({ ...state, configureChartIndex: index, advanceVisited: true }))
         const { valuesYaml } = state.charts[index]
-        if (valuesYaml) {
+        if (valuesYaml && !_currentCharts?.length) {
             return
         }
-        const tempCharts = [...state.charts]
+        const tempCharts = !_currentCharts?.length ? [...state.charts] : _currentCharts
         try {
             tempCharts[index].loading = true
             setState((state) => ({ ...state, charts: tempCharts }))
@@ -446,7 +463,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     }
     //TODO: function name must be a verb
     function chartListing() {
-        setState((state) => ({ ...state, configureChartIndex: null }))
+        setState((state) => ({ ...state, configureChartIndex: null, advanceVisited: false }))
     }
 
     function clearUnsaved() {
