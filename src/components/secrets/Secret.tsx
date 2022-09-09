@@ -12,6 +12,7 @@ import {
     CHECKBOX_VALUE,
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
+    DeleteDialog,
 } from '../common'
 import ReactSelect from 'react-select'
 import { useParams } from 'react-router'
@@ -278,15 +279,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
 
     const isESO = hasESO(externalType)
     
-    let tempEsoData: any[] = props?.esoSecretData?.esoData || []
-    tempEsoData = tempEsoData.map((data) => {
-        return {
-            secretKey: data.secretKey,
-            key: data.key,
-            property: data?.property
-        }
-    })
-    
     let tempSecretData: any[] = props?.secretData || []
     tempSecretData = tempSecretData.map((s) => {
         return {
@@ -312,7 +304,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         return temp
     })
     const isEsoSecretData = props.esoSecretData?.secretStore && props.esoSecretData?.esoData.length > 0
-    const [esoSecretData, setEsoData] = useState(tempEsoData)
+    const [esoSecretData, setEsoData] = useState<any[]>(props?.esoSecretData?.esoData)
     const [secretStore, setSecretStore] = useState(props.esoSecretData?.secretStore)
     const [secretData, setSecretData] = useState(tempSecretData)
     const [secretDataYaml, setSecretDataYaml] = useState(YAML.stringify(jsonForSecretDataYaml))
@@ -323,6 +315,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         ...data,
         active: data.title === selectedTab,
     }))
+    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
   
     const sample = YAML.stringify(sampleJSONs[externalType] || sampleJSONs["default"])
     
@@ -484,16 +477,17 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             let isValid = !isESO ? secretDataArray.reduce((isValid, s) => {
                 isValid = isValid && !!s.fileName && !!s.name
                 return isValid
-            }, true) :
+            }, !!secretData.length) :
             secretDataArray?.reduce((isValid, s) => {
                 isValid = isValid && !!s.secretKey && !!s.key && 
                 (hasProperty(externalType) ? !!s.property : true)
                 return isValid
-            }, true)
+            }, !!secretStore && !!esoSecretData?.length)
+
             if (!isValid) {
                 !isESO
                     ? toast.warn('Please check key and name')
-                    : toast.warn(`Please check key${hasProperty(externalType) ? ', property' : ''}  and secretKey`)
+                    : !secretStore ? toast.warn('Please check secretStore') : toast.warn(`Please check key${hasProperty(externalType) ? ', property' : ''}  and secretKey`)
                 return
             }
         }
@@ -528,13 +522,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             } else if (isESO) {
                 payload['esoSecretData'] = {
                     secretStore: secretStore,
-                    esoData: esoSecretData?.map((s) => {
-                        return {
-                            secretKey: s.secretKey,
-                            key: s.key,
-                            property: s?.property
-                        }
-                    })
+                    esoData: esoSecretData
                 }
             }
 
@@ -610,6 +598,25 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         setSecretDataYaml(secretYaml)
     }
 
+    const closeDeleteModal = (): void => {
+        setShowDeleteModal(false)
+    }
+
+    const setShowDelete = (): void => {
+        setShowDeleteModal(true)
+    }
+
+    const renderDeleteCIModal = () => {
+        return (
+            <DeleteDialog
+                title={`Delete '${props.name}' ?`}
+                description={`Are you sure you want to delete this secret ?`}
+                closeDelete={closeDeleteModal}
+                delete={handleDelete}
+            />
+        )
+    }
+
     function handleSecretDataDelete(index: number): void {
         let json = secretData
         setSecretData((state) => {
@@ -638,13 +645,17 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             setSecretDataYaml(yaml)
         }
         try {
-            if (!yaml || !yaml.length) {
-                setEsoData([])
+            let json = YAML.parse(yaml)
+            if (!json) {
                 setSecretData([])
+                setEsoData([])
+                setSecretStore(null)
                 return
             }
-            let json = YAML.parse(yaml) 
-            setSecretStore(json.secretStore)
+            if(isESO){
+                setEsoData(json.esoData)
+                setSecretStore(json.secretStore)
+            }
             if (!isESO && Array.isArray(json)) {
                 json = json.map((j) => {
                     let temp = {}
@@ -661,22 +672,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     return temp
                 })
                 setSecretData(json)
-            }
-            if(isESO && Array.isArray(json?.esoData)){
-                const jsonList = json.esoData.map((j) => {
-                    let temp = {}
-                    if (j.secretKey) {
-                        temp['secretKey'] = j.secretKey
-                    }
-                    if (j.key) {
-                        temp['key'] = j.key
-                    }
-                    if (j.property) {
-                        temp['property'] = j.property
-                    }
-                    return temp
-                })
-                setEsoData(jsonList)
             }
         } catch (error) {
             // console.log(error)
@@ -709,7 +704,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 {!envId && <div>{props.isUpdate ? `Edit Secret` : `Add Secret`}</div>}
                 <div className="uncollapse__delete flex">
                     {props.isUpdate && !secretMode && (
-                        <Trash className="icon-n4 cursor icon-delete" onClick={handleDelete} />
+                        <Trash className="icon-n4 cursor icon-delete" onClick={setShowDelete} />
                     )}
                     {typeof props.collapse === 'function' && !envId && (
                         <img
@@ -1047,6 +1042,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     {loading ? <Progressing /> : `${props.name ? 'Update' : 'Save'} Secret`}
                 </button>
             </div>
+            {showDeleteModal && renderDeleteCIModal()}
         </div>
     )
 }
