@@ -637,7 +637,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     }
 
     function handleSecretDataYamlChange(yaml): void {
-        
         if (codeEditorRadio !== 'data') return
         if (isESO) {
             setEsoYaml(yaml)
@@ -652,7 +651,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 setSecretStore(null)
                 return
             }
-            if(isESO){
+            if (isESO) {
                 setEsoData(json.esoData)
                 setSecretStore(json.secretStore)
             }
@@ -674,7 +673,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 setSecretData(json)
             }
         } catch (error) {
-            // console.log(error)
         }
     }
 

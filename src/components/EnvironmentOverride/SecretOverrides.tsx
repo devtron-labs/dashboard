@@ -222,16 +222,16 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
     })
 
     const initialDuplicate = () => {
-        if(data){
+        if (data) {
             return name && isGlobal
-            ? Object.keys(data).map((k) => ({ k, v: data[k], keyError: '', valueError: '' }))
-            : data
-        }else if(secretData){
+                ? Object.keys(data).map((k) => ({ k, v: data[k], keyError: '', valueError: '' }))
+                : data
+        } else if (secretData) {
             return name && isGlobal && secretData
-        }else if(esoSecretData?.esoData){
+        } else if (esoSecretData?.esoData) {
             return name && isGlobal && esoSecretData
-        }else{
-            return null;
+        } else {
+            return null
         }
     }
 
