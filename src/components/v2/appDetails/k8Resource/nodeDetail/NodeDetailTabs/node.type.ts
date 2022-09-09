@@ -5,6 +5,7 @@ export enum SocketConnectionType {
   DISCONNECTED = 'DISCONNECTED',
 }
 
-export enum Error_Message {
-  UNAUTHORIZED = 'Not authorized. You do not have permission to access the terminal for this application.'
+export const ERROR_MESSAGE= {
+  UNAUTHORIZED: 'Not authorized. You do not have permission to access the terminal for this application.',
+  GENERIC: 'Found some error'
 }

@@ -5,7 +5,7 @@ import { FitAddon } from 'xterm-addon-fit';
 import CopyToast, { handleSelectionChange } from '../CopyToast';
 import * as XtermWebfont from 'xterm-webfont';
 import SockJS from 'sockjs-client';
-import { Error_Message, SocketConnectionType } from '../node.type';
+import { ERROR_MESSAGE, SocketConnectionType } from '../node.type';
 import { get } from '../../../../../../../services/api';
 import ReactGA from 'react-ga4';
 import './terminal.css';
@@ -142,7 +142,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         _socket.onerror = function (evt) {
             disableInput();
-            setErrorMessage('Selected command type is not supported. Please select another.')
+            setErrorMessage(ERROR_MESSAGE.GENERIC)
             terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTED);
 
         };
@@ -298,10 +298,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 if (err instanceof ServerErrors && Array.isArray(err.errors)) {
                     const _invalidNameErr = err.errors[0].userMessage
                     if (_invalidNameErr.includes('Unauthorized')) {
-                        setErrorMessage(Error_Message.UNAUTHORIZED)
+                        setErrorMessage(ERROR_MESSAGE.UNAUTHORIZED)
                     }
-                } else{
-                  setErrorMessage(err)
                 }
             })
     };
