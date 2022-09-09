@@ -20,6 +20,7 @@ import { ReactComponent as File } from '../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Next } from '../../assets/icons/ic-arrow-right.svg'
+import { ReactComponent as Locked } from '../../assets/icons/ic-locked.svg'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { getDeploymentTemplate } from './service'
@@ -31,6 +32,7 @@ import {
     CompareWithDropdownProps,
     DeploymentChartGroupOptionType,
     DeploymentChartOptionType,
+    DeploymentChartVersionType,
     DeploymentConfigFormCTAProps,
     DeploymentTemplateEditorViewProps,
     DeploymentTemplateOptionsTabProps,
@@ -266,9 +268,7 @@ export const ChartTypeVersionOptions = ({
 
 const CompareOptions = ({
     isComparisonAvailable,
-    environmentName,
     isEnvOverride,
-    showComparisonOption,
     openComparison,
     handleComparisonClick,
     chartConfigLoading,
@@ -278,27 +278,25 @@ const CompareOptions = ({
 }: CompareOptionsProps) => {
     return (
         <div className="flex">
-            {showComparisonOption && (
-                <ConditionalWrap
-                    condition={!openComparison && !chartConfigLoading}
-                    wrap={(children) => (
-                        <Tippy
-                            className="default-tt w-200"
-                            arrow={false}
-                            placement="bottom"
-                            content={getComparisonTippyContent(isComparisonAvailable, isEnvOverride)}
-                        >
-                            {children}
-                        </Tippy>
-                    )}
-                >
-                    {renderComparisonOption(
-                        openComparison,
-                        handleComparisonClick,
-                        chartConfigLoading || !isComparisonAvailable,
-                    )}
-                </ConditionalWrap>
-            )}
+            <ConditionalWrap
+                condition={!openComparison && !chartConfigLoading}
+                wrap={(children) => (
+                    <Tippy
+                        className="default-tt w-200"
+                        arrow={false}
+                        placement="bottom"
+                        content={getComparisonTippyContent(isComparisonAvailable, isEnvOverride)}
+                    >
+                        {children}
+                    </Tippy>
+                )}
+            >
+                {renderComparisonOption(
+                    openComparison,
+                    handleComparisonClick,
+                    chartConfigLoading || !isComparisonAvailable,
+                )}
+            </ConditionalWrap>
             <ConditionalWrap
                 condition={!openReadMe && (chartConfigLoading || !isReadMeAvailable)}
                 wrap={(children) => (
@@ -353,9 +351,7 @@ export const DeploymentTemplateOptionsTab = ({
             )}
             <CompareOptions
                 isComparisonAvailable={isComparisonAvailable}
-                environmentName={environmentName}
                 isEnvOverride={isEnvOverride}
-                showComparisonOption={!disableVersionSelect}
                 openComparison={openComparison}
                 handleComparisonClick={handleComparisonClick}
                 chartConfigLoading={chartConfigLoading}
@@ -526,6 +522,32 @@ const getCodeEditorHeight = (
     return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 204px)'
 }
 
+const renderEditorHeading = (
+    isEnvOverride: boolean,
+    readOnly: boolean,
+    environmentName: string,
+    selectedChart: DeploymentChartVersionType,
+) => {
+    return (
+        <>
+            {!readOnly && <Edit className="icon-dim-16 mr-10" />}
+            {`${isEnvOverride ? environmentName : 'Base deployment template'} ${
+                selectedChart ? `(${selectedChart.version})` : ''
+            }`}
+            {isEnvOverride && readOnly && (
+                <Tippy
+                    className="default-tt w-200"
+                    arrow={false}
+                    placement="top"
+                    content="Base configurations are being inherited for this environment. Allow override to fork and edit."
+                >
+                    <Locked className="icon-dim-16 fcn-6 ml-10" />
+                </Tippy>
+            )}
+        </>
+    )
+}
+
 export const DeploymentTemplateEditorView = ({
     appId,
     envId,
@@ -643,10 +665,7 @@ export const DeploymentTemplateEditorView = ({
                     {showReadme && (
                         <CodeEditor.Header hideDefaultSplitHeader={true}>
                             <div className="flex fs-12 fw-6 cn-9">
-                                <Edit className="icon-dim-16 mr-10" />
-                                {`${isEnvOverride ? environmentName : 'Base deployment template'} ${
-                                    selectedChart ? `(${selectedChart.version})` : ''
-                                }`}
+                                {renderEditorHeading(isEnvOverride, readOnly, environmentName, selectedChart)}
                             </div>
                         </CodeEditor.Header>
                     )}
@@ -664,10 +683,7 @@ export const DeploymentTemplateEditorView = ({
                                     />
                                 </div>
                                 <div className="flex left fs-12 fw-6 cn-9 pl-16 h-32">
-                                    <Edit className="icon-dim-16 mr-10" />
-                                    {`${isEnvOverride ? environmentName : 'Base deployment template'} ${
-                                        selectedChart ? `(${selectedChart.version})` : ''
-                                    }`}
+                                    {renderEditorHeading(isEnvOverride, readOnly, environmentName, selectedChart)}
                                 </div>
                             </>
                         </CodeEditor.Header>

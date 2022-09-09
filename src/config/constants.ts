@@ -229,7 +229,8 @@ export const DOCUMENTATION = {
     APP_CREATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/create-application`,
     APP_CREATE_MATERIAL: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/git-material`,
     APP_CREATE_CI_CONFIG: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/docker-build-configuration`,
-    APP_CREATE_DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/rollout-deployment`,
+    APP_ROLLOUT_DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template/rollout-deployment`,
+    APP_DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/deployment-template`,
     APP_CREATE_CONFIG_MAP: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/config-maps`,
     APP_CREATE_SECRET: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/secrets`,
     APP_CREATE_WORKFLOW: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/creating-application/workflow`,
@@ -259,7 +260,7 @@ export const DOCUMENTATION = {
     EXTERNAL_LINKS: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/external-links`,
     GLOBAL_CONFIG_GIT_ACCESS_LINK: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/global-configurations/gitops#4.-git-access-credential`,
     DEVTRON_UPGRADE: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/getting-started/upgrade`,
-    APP_METRICS: `${DOCUMENTATION_HOME_PAGE}/usage/applications/app-details/app-metrics`,
+    APP_METRICS: `${DOCUMENTATION_HOME_PAGE}/v/v0.5/usage/applications/app-details/app-metrics`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'

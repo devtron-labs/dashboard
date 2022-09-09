@@ -125,9 +125,7 @@ export interface ChartTypeVersionOptionsProps {
 
 export interface CompareOptionsProps {
     isComparisonAvailable: boolean
-    environmentName: string
     isEnvOverride: boolean
-    showComparisonOption: boolean
     openComparison: boolean
     handleComparisonClick: () => void
     chartConfigLoading: boolean

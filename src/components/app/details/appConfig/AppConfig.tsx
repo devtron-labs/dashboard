@@ -136,7 +136,7 @@ function getNavItems(isUnlocked: AppStageUnlockedType, appId: string): { navItem
             href: `/app/${appId}/edit/deployment-template`,
             stage: STAGE_NAME.DEPLOYMENT_TEMPLATE,
             isLocked: !isUnlocked.deploymentTemplate,
-            supportDocumentURL: DOCUMENTATION.APP_CREATE_DEPLOYMENT_TEMPLATE,
+            supportDocumentURL: DOCUMENTATION.APP_DEPLOYMENT_TEMPLATE,
             flowCompletionPercent: completedPercent,
             currentStep: completedSteps,
         },

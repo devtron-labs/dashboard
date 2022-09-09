@@ -378,7 +378,7 @@ function DeploymentTemplateOverrideForm({
                             : ''
                     }
                     defaultValue={
-                        state && state.data && state.duplicate
+                        state && state.data && state.openComparison
                             ? YAML.stringify(state.data.globalConfig, { indent: 2 })
                             : ''
                     }
