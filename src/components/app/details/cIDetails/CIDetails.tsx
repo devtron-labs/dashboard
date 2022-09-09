@@ -228,7 +228,7 @@ export default function CIDetails() {
                                 setFullScreenView={setFullScreenView}
                                 synchroniseState={synchroniseState}
                                 isSecurityModuleInstalled={securityModuleStatus?.result?.status === ModuleStatus.INSTALLED || false}
-                                isblobStorageConfigured={blobStorageConfiguration?.result?.status === ModuleStatus.INSTALLED || true}
+                                isBlobStorageConfigured={blobStorageConfiguration?.result?.status === ModuleStatus.INSTALLED || true}
                             />
                         </Route>
                     )}
@@ -400,7 +400,7 @@ interface BuildDetails {
     setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
     synchroniseState: (triggerId: number, triggerDetails: History) => void
     isSecurityModuleInstalled: boolean
-    isblobStorageConfigured: boolean
+    isBlobStorageConfigured: boolean
 }
 const BuildDetails: React.FC<BuildDetails> = ({
     triggerHistory,
@@ -409,7 +409,7 @@ const BuildDetails: React.FC<BuildDetails> = ({
     setFullScreenView,
     synchroniseState,
     isSecurityModuleInstalled,
-    isblobStorageConfigured
+    isBlobStorageConfigured
 }) => {
     const { buildId, appId, pipelineId, envId } = useParams<{
         appId: string
@@ -435,7 +435,7 @@ const BuildDetails: React.FC<BuildDetails> = ({
             synchroniseState={synchroniseState}
             triggerHistory={triggerHistory}
             isSecurityModuleInstalled={isSecurityModuleInstalled}
-            isblobStorageConfigured={isblobStorageConfigured}
+            isBlobStorageConfigured={isBlobStorageConfigured}
         />
     )
 }
@@ -447,7 +447,7 @@ const Details: React.FC<BuildDetails> = ({
     synchroniseState,
     triggerHistory,
     isSecurityModuleInstalled,
-    isblobStorageConfigured
+    isBlobStorageConfigured
 }) => {
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
@@ -544,7 +544,7 @@ const Details: React.FC<BuildDetails> = ({
                 pipeline={pipeline}
                 triggerDetails={triggerDetails}
                 setFullScreenView={setFullScreenView}
-                isblobStorageConfigured={isblobStorageConfigured}
+                isBlobStorageConfigured={isBlobStorageConfigured}
             />
         </>
     )
@@ -787,8 +787,8 @@ const HistoryLogs: React.FC<{
     pipeline: CIPipeline
     triggerDetails: History
     setFullScreenView: (...args) => void
-    isblobStorageConfigured?: boolean
-}> = ({ pipeline, triggerDetails, setFullScreenView, isblobStorageConfigured }) => {
+    isBlobStorageConfigured?: boolean
+}> = ({ pipeline, triggerDetails, setFullScreenView, isBlobStorageConfigured }) => {
     let { path } = useRouteMatch()
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
     const [autoBottomScroll, setAutoBottomScroll] = useState<boolean>(
@@ -805,7 +805,7 @@ const HistoryLogs: React.FC<{
                     <Switch>
                         <Route path={`${path}/logs`}>
                             <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
-                                <LogsRenderer triggerDetails={triggerDetails} setFullScreenView={setFullScreenView} isblobStorageConfigured={isblobStorageConfigured} />
+                                <LogsRenderer triggerDetails={triggerDetails} setFullScreenView={setFullScreenView} isBlobStorageConfigured={isBlobStorageConfigured} />
                             </div>
                         </Route>
                         <Route
@@ -818,6 +818,7 @@ const HistoryLogs: React.FC<{
                                 <Artifacts
                                     triggerDetails={triggerDetails}
                                     getArtifactPromise={() => getArtifact(pipelineId, buildId)}
+                                    isBlobStorageConfigured={isBlobStorageConfigured}
                                 />
                             )}
                         />
@@ -974,10 +975,10 @@ function NoArtifactsView() {
     )
 }
 
-export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView: (...args) => void, isblobStorageConfigured: boolean }> = ({
+export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView: (...args) => void, isBlobStorageConfigured: boolean }> = ({
     triggerDetails,
     setFullScreenView,
-    isblobStorageConfigured
+    isBlobStorageConfigured
 }) => {
     const keys = useKeyDown()
 
@@ -993,7 +994,7 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
     }, [keys])
     const { pipelineId } = useParams<{ pipelineId: string }>()
     const [logs, eventSource] = useCIEventSource(
-        isblobStorageConfigured && triggerDetails.blobStorageEnabled
+        isBlobStorageConfigured && triggerDetails.blobStorageEnabled
             ? `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`
             : null,
     )
@@ -1007,8 +1008,8 @@ export const LogsRenderer: React.FC<{ triggerDetails: History; setFullScreenView
         }
     }
 
-    return !isblobStorageConfigured || !triggerDetails.blobStorageEnabled  ? (
-      renderConfigurationError(isblobStorageConfigured)
+    return !isBlobStorageConfigured || !triggerDetails.blobStorageEnabled  ? (
+      renderConfigurationError(isBlobStorageConfigured)
     ) : (
         <div className="logs__body">
             {logs.map((log, index) => {
@@ -1044,9 +1045,10 @@ export function Scroller({ scrollToTop, scrollToBottom, style }) {
     )
 }
 
-export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?: () => Promise<any> }> = ({
+export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?: () => Promise<any>, isBlobStorageConfigured: boolean }> = ({
     triggerDetails,
     getArtifactPromise,
+    isBlobStorageConfigured
 }) => {
     const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
     const [downloading, setDownloading] = useState(false)
@@ -1098,7 +1100,7 @@ export const Artifacts: React.FC<{ triggerDetails: History; getArtifactPromise?:
                     </div>
                 </div>
             </CIListItem>
-            {getArtifactPromise && (
+            {isBlobStorageConfigured && triggerDetails.blobStorageEnabled && getArtifactPromise && (
                 <CIListItem type="report">
                     <div className="flex column left">
                         <div className="cn-9 fs-14">Reports.zip</div>

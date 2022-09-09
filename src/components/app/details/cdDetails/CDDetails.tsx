@@ -681,6 +681,7 @@ const HistoryLogs: React.FC<{
                                     <Artifacts
                                         getArtifactPromise={() => getCDBuildReport(appId, envId, pipelineId, triggerId)}
                                         triggerDetails={triggerDetails}
+                                        isBlobStorageConfigured={isBlobStorageConfigured}
                                     />
                                 )}
                             />
