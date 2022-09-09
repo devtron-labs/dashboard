@@ -32,11 +32,9 @@
         position: absolute;
         left: 64px;
         width: calc(100% - 64px);
-        height: calc(100% - 78px);
+        height: calc(100% - 75px);
 
-        .white-card__deployment-config,
-        .deployment-template-override-form {
-            display: grid;
+        .white-card__deployment-config {
             grid-template-rows: 48px auto;
             grid-template-columns: 1fr 1fr;
             grid-template-areas: 'tab tab' 'readme editor';
@@ -44,7 +42,32 @@
             &.comparison-view {
                 grid-template-areas: 'tab' 'editor';
                 grid-template-columns: 1fr;
+            }
+        }
 
+        .deployment-template-override-form {
+            grid-template-rows: 60px 48px auto;
+            grid-template-columns: 1fr 1fr;
+            grid-template-areas: 'override override' 'tab tab' 'readme editor';
+
+            &.comparison-view {
+                grid-template-areas: 'override' 'tab' 'editor';
+                grid-template-columns: 1fr;
+            }
+
+            .dt-readme {
+                .dt-readme-markdown {
+                    height: calc(100vh - 216px);
+                    overflow: scroll;
+                }
+            }
+        }
+
+        .white-card__deployment-config,
+        .deployment-template-override-form {
+            display: grid;
+
+            &.comparison-view {
                 .form__row--code-editor-container {
                     .code-editor__header {
                         display: grid;
@@ -303,6 +326,7 @@
         }
 
         .override-container {
+            grid-area: override;
             border: none;
             border-radius: 0;
             margin-bottom: 0;

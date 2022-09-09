@@ -518,9 +518,9 @@ const getCodeEditorHeight = (
     showReadme: boolean,
 ) => {
     if (openComparison || showReadme) {
-        return 'calc(100vh - 158px)'
+        return isEnvOverride ? 'calc(100vh - 216px)' : 'calc(100vh - 158px)'
     } else if (isEnvOverride) {
-        return 'calc(100vh - 264px)'
+        return 'calc(100vh - 266px)'
     }
 
     return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 204px)'

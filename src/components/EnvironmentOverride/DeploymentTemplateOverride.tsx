@@ -334,17 +334,14 @@ function DeploymentTemplateOverrideForm({
         <>
             <form
                 className={`deployment-template-override-form h-100 ${state.openComparison ? 'comparison-view' : ''}`}
-                style={{ marginBottom: '16px' }}
                 onSubmit={handleSubmit}
             >
-                {!state.openComparison && !state.showReadme && (
-                    <Override
-                        external={false}
-                        overridden={!!state.duplicate}
-                        onClick={handleOverride}
-                        type="deployment template"
-                    />
-                )}
+                <Override
+                    external={false}
+                    overridden={!!state.duplicate}
+                    onClick={handleOverride}
+                    type="deployment template"
+                />
                 <DeploymentTemplateOptionsTab
                     isEnvOverride={true}
                     isComparisonAvailable={true}
