@@ -610,20 +610,20 @@ export function ConfigMapForm({
         toggleYamlMode(not)
     }
 
-    const closeDeleteModal = (): void => {
+    const onClickCloseDelete = (): void => {
         setShowDeleteModal(false)
     }
 
-    const setShowDelete = (): void => {
+    const onClickShowDelete = (): void => {
         setShowDeleteModal(true)
     }
 
     const renderDeleteCIModal = () => {
         return (
             <DeleteDialog
-                title={`Delete '${name}' ?`}
-                description={`Are you sure you want to delete this ConfigMap ?`}
-                closeDelete={closeDeleteModal}
+                title={`Delete ConfigMap '${name}' ?`}
+                description={`'${name}' will not be used in future deployments. Are you sure?`}
+                closeDelete={onClickCloseDelete}
                 delete={handleDelete}
             />
         )
@@ -639,7 +639,7 @@ export function ConfigMapForm({
             <div className="white-card__header">
                 {!envId && <div>{isUpdate ? `Edit ConfigMap` : `Add ConfigMap`}</div>}
                 <div className="uncollapse__delete flex">
-                    {isUpdate && <Trash className="cursor icon-delete icon-n4" onClick={setShowDelete} />}
+                    {isUpdate && <Trash className="cursor icon-delete icon-n4" onClick={onClickShowDelete} />}
                     {typeof collapse === 'function' && !envId && (
                         <img
                             onClick={collapse}

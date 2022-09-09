@@ -598,20 +598,20 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         setSecretDataYaml(secretYaml)
     }
 
-    const closeDeleteModal = (): void => {
+    const onClickCloseDelete = (): void => {
         setShowDeleteModal(false)
     }
 
-    const setShowDelete = (): void => {
+    const onClickShowDelete = (): void => {
         setShowDeleteModal(true)
     }
 
     const renderDeleteCIModal = () => {
         return (
             <DeleteDialog
-                title={`Delete '${props.name}' ?`}
-                description={`Are you sure you want to delete this secret ?`}
-                closeDelete={closeDeleteModal}
+                title={`Delete Secret '${props.name}' ?`}
+                description={`'${props.name}' will not be used in future deployments. Are you sure?`}
+                closeDelete={onClickCloseDelete}
                 delete={handleDelete}
             />
         )
@@ -702,7 +702,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 {!envId && <div>{props.isUpdate ? `Edit Secret` : `Add Secret`}</div>}
                 <div className="uncollapse__delete flex">
                     {props.isUpdate && !secretMode && (
-                        <Trash className="icon-n4 cursor icon-delete" onClick={setShowDelete} />
+                        <Trash className="icon-n4 cursor icon-delete" onClick={onClickShowDelete} />
                     )}
                     {typeof props.collapse === 'function' && !envId && (
                         <img
