@@ -51,7 +51,7 @@ function ExternalAppDetail({appId, appName}) {
         }
         initTimer = setTimeout(() => {
             _init();
-        }, 30000);
+        }, window._env_.EA_APP_DETAILS_POLLING_INTERVAL ||30000);
     }
 
     const _convertToGenericAppDetailModel = (helmAppDetailAndInstalledAppInfo : HelmAppDetailAndInstalledAppInfo) : AppDetails =>  {
