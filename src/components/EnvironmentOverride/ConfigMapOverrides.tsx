@@ -6,6 +6,9 @@ import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as FileIcon } from '../../assets/icons/ic-file.svg'
 import { ReactComponent as KeyIcon } from '../../assets/icons/ic-key.svg'
 import { ReactComponent as ArrowTriangle } from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning-y6.svg'
+import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-filled.svg'
 import {
     showError,
     Progressing,
@@ -724,27 +727,36 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
 
 export function Override({ external, overridden, onClick, loading = false, type = 'ConfigMap' }) {
     return (
-        <div className="override-container mb-24">
-            <Info />
+        <div className={`override-container mb-24 ${overridden ? 'override-warning' : ''}`}>
+            {overridden ? <WarningIcon className="icon-dim-20" /> : <InfoIcon className="icon-dim-20" />}
             <div className="flex column left">
                 <div className="override-title">
                     {external
                         ? 'Nothing to override'
                         : overridden
-                        ? 'Restore default configuration'
-                        : 'Override default configuration'}
+                        ? 'Base configurations are overridden'
+                        : 'Inheriting base configurations'}
                 </div>
                 <div className="override-subtitle">
                     {external
                         ? `This ${type} does not have any overridable values.`
                         : overridden
-                        ? 'Restoring will discard the current overrides and application default configuration will be applied.'
-                        : `Overriding will fork the ${type} for this environment. Updating the default values will no longer affect this configuration.`}
+                        ? 'Restoring will discard the current overrides and base configuration will be applicable to this environment.'
+                        : `Overriding will fork the ${type} for this environment. Updating the base values will no longer affect this configuration.`}
                 </div>
             </div>
             {!external && (
-                <button className="cta ghosted override-button" onClick={onClick}>
-                    {loading ? <Progressing /> : overridden ? 'Delete override' : 'Allow override'}
+                <button className={`cta override-button ${overridden ? 'delete scr-5' : 'ghosted'}`} onClick={onClick}>
+                    {loading ? (
+                        <Progressing />
+                    ) : overridden ? (
+                        <>
+                            <DeleteIcon className="icon-dim-16 mr-8" />
+                            <span>Delete override</span>
+                        </>
+                    ) : (
+                        'Allow override'
+                    )}
                 </button>
             )}
         </div>

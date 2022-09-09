@@ -111,21 +111,58 @@ section.config-map-overrides {
 
 div.override-container {
     display: grid;
-    grid-template-columns: 26px 1fr auto;
-    padding: 0 24px;
-    height: 76px;
-    grid-column-gap: 16px;
-    align-items: center;
-    background: linear-gradient(to bottom, #f0f7ff, #f0f7ff);
-    border: 1px solid #B5D3F2;
+    grid-template-columns: 20px 1fr auto;
+    align-items: flex-start;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    grid-column-gap: 10px;
+    background: var(--B100);
+    border: 1px solid var(--B200);
     border-radius: 4px;
-    .override-title {
-        font-size: 14px;
-        color: var(--N900);
+
+    &.override-warning {
+        background: var(--Y100);
+        border: 1px solid var(--Y200);
     }
+
+    .override-title,
     .override-subtitle {
-        color: var(--N600);
-        font-size: 12px;
+        font-size: 13px;
+        color: var(--N900);
+        line-height: 20px;
+    }
+
+    .override-title {
+        font-weight: 600;
+    }
+
+    .override-subtitle {
+        font-weight: 400;
+    }
+
+    .override-button.cta {
+        &.ghosted,
+        &.delete {
+            height: 32px;
+            display: flex;
+            align-items: center;
+            margin: auto;
+        }
+
+        &.delete {
+            svg path {
+                fill: none;
+                stroke: var(--R500);
+            }
+
+            &:hover,
+            &:active,
+            &:focus {
+                svg path {
+                    stroke: white;
+                }
+            }
+        }
     }
 }
 

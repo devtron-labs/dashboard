@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import { NavLink } from 'react-router-dom'
 import ReactSelect, { components } from 'react-select'
-import { MODES, ROLLOUT_DEPLOYMENT, URLS } from '../../config'
+import { DOCUMENTATION, MODES, ROLLOUT_DEPLOYMENT, URLS } from '../../config'
 import {
     Checkbox,
     CHECKBOX_VALUE,
@@ -100,21 +100,17 @@ const renderComparisonOption = (openComparison: boolean, handleComparisonClick: 
     )
 }
 
-const getComparisonTippyContent = (
-    isComparisonAvailable: boolean,
-    environmentName: string,
-    isEnvOverride?: boolean,
-) => {
+const getComparisonTippyContent = (isComparisonAvailable: boolean, isEnvOverride?: boolean) => {
     if (isComparisonAvailable) {
         return isEnvOverride
-            ? `Compare ${environmentName} values with base template values, values on other environments or previous deployments on ${environmentName}`
-            : 'Compare base template values with values on other environments'
+            ? `Compare with values saved for base template or other environments`
+            : 'Compare base template values with values saved for specific environments'
     }
 
     return (
         <>
             <h2 className="fs-12 fw-6 lh-18 m-0">Nothing to compare with</h2>
-            <p className="fs-12 fw-4 lh-18 m-0">No other environments available</p>
+            <p className="fs-12 fw-4 lh-18 m-0">No deployment pipelines are created</p>
         </>
     )
 }
@@ -290,7 +286,7 @@ const CompareOptions = ({
                             className="default-tt w-200"
                             arrow={false}
                             placement="bottom"
-                            content={getComparisonTippyContent(isComparisonAvailable, environmentName, isEnvOverride)}
+                            content={getComparisonTippyContent(isComparisonAvailable, isEnvOverride)}
                         >
                             {children}
                         </Tippy>
@@ -310,7 +306,7 @@ const CompareOptions = ({
                         className="default-tt"
                         arrow={false}
                         placement="bottom"
-                        content={chartConfigLoading ? 'Fetching...' : 'Readme is not available'}
+                        content={chartConfigLoading ? 'Fetching...' : 'Readme is not available for this chart version'}
                     >
                         {children}
                     </Tippy>
@@ -697,6 +693,8 @@ export const DeploymentConfigFormCTA = ({
         showAppMetricsToggle &&
         currentChart.name === ROLLOUT_DEPLOYMENT &&
         isVersionLessThanOrEqualToTarget(currentChart.version, [3, 7, 0])
+    const _disabled = disableButton || loading
+
     return (
         <div
             className={`form-cta-section flex pt-16 pb-16 pr-20 pl-20 ${
@@ -722,7 +720,12 @@ export const DeploymentConfigFormCTA = ({
                         />
                     )}
                     <div className="flex column left">
-                        <b className="fs-13 fw-6 cn-9 mb-4">Show application metrics</b>
+                        <div className="fs-13 mb-4">
+                            <b className="fw-6 cn-9 mr-8">Show application metrics</b>
+                            <a href={DOCUMENTATION.APP_METRICS} target="_blank" className="fw-4 cb-5 text-underline">
+                                Learn more
+                            </a>
+                        </div>
                         <div className={`fs-13 fw-4 ${isUnSupportedChartVersion ? 'cr-5' : 'cn-7'}`}>
                             {isUnSupportedChartVersion
                                 ? 'Application metrics is not supported for the selected chart version. Select a different chart version.'
@@ -731,22 +734,39 @@ export const DeploymentConfigFormCTA = ({
                     </div>
                 </div>
             )}
-            <button className="form-submit-cta cta flex h-36" type="submit" disabled={disableButton || loading}>
-                {loading ? (
-                    <Progressing />
-                ) : (
-                    <>
-                        {!isEnvOverride && !isCiPipeline ? (
-                            <>
-                                Save & Next
-                                <Next className={`icon-dim-16 ml-5 ${disableButton || loading ? 'scn-4' : 'scn-0'}`} />
-                            </>
-                        ) : (
-                            'Save changes'
-                        )}
-                    </>
+            <ConditionalWrap
+                condition={isEnvOverride && disableButton}
+                wrap={(children) => (
+                    <Tippy
+                        className="default-tt w-200"
+                        arrow={false}
+                        placement="top"
+                        content="Base configurations are being inherited for this environment. Allow override to fork and edit."
+                    >
+                        {children}
+                    </Tippy>
                 )}
-            </button>
+            >
+                <button
+                    className={`form-submit-cta cta flex h-36 ${_disabled ? 'disabled' : ''}`}
+                    type={_disabled ? 'button' : 'submit'}
+                >
+                    {loading ? (
+                        <Progressing />
+                    ) : (
+                        <>
+                            {!isEnvOverride && !isCiPipeline ? (
+                                <>
+                                    Save & Next
+                                    <Next className={`icon-dim-16 ml-5 ${_disabled ? 'scn-4' : 'scn-0'}`} />
+                                </>
+                            ) : (
+                                'Save changes'
+                            )}
+                        </>
+                    )}
+                </button>
+            </ConditionalWrap>
         </div>
     )
 }
