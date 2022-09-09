@@ -635,9 +635,10 @@ export const TriggerDetails: React.FC<{ triggerDetails: History; abort?: () => P
                         progressing: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
                         starting: <ProgressingStatus triggerDetails={triggerDetails} abort={abort} type={type} />,
                         failed: <Failed triggerDetails={triggerDetails} type={type} />,
+                        error: <Failed triggerDetails={triggerDetails} type={type} />,
                     }[triggerDetails.status.toLowerCase()]
                 }
-                {!['succeeded', 'healthy', 'running', 'progressing', 'starting', 'failed'].includes(
+                {!['succeeded', 'healthy', 'running', 'progressing', 'starting', 'failed', 'error'].includes(
                     triggerDetails.status.toLowerCase(),
                 ) && <Generic triggerDetails={triggerDetails} type={type} />}
             </div>
