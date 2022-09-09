@@ -6,13 +6,13 @@
 
 .terminal-view-wrapper {
     position: relative;
-    min-height: 600px; 
-    background: #0b0f22; 
+    min-height: 600px;
+    background: #0b0f22;
     flex: 1;
 }
 
 .connection-status {
-    position: absolute; 
+    position: absolute;
     bottom: 0;
     width: 100%;
     background: #0a0f22;
@@ -22,4 +22,8 @@
     height: calc(100% - 30px);
     width: auto;
     overflow: hidden;
+}
+
+.terminal-strip{
+  z-index: 4;
 }
