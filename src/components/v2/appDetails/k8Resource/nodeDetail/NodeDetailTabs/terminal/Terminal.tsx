@@ -34,7 +34,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const [firstMessageReceived, setFirstMessageReceived] = useState(false);
     const [popupText, setPopupText] = useState<boolean>(false);
     const isOnline = useOnline();
-    const [errorMessage, setErrorMessage] = useState<string>(undefined)
+    const [errorMessage, setErrorMessage] = useState<string>('')
 
     useEffect(() => {
         if (!popupText) return;
@@ -142,9 +142,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         _socket.onerror = function (evt) {
             disableInput();
-            setErrorMessage(ERROR_MESSAGE.GENERIC)
             terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTED);
-
         };
     };
 
@@ -293,7 +291,6 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                 }
             })
             .catch((err) => {
-              console.log(err)
                 showError(err)
                 if (err instanceof ServerErrors && Array.isArray(err.errors)) {
                     const _invalidNameErr = err.errors[0].userMessage
@@ -312,9 +309,9 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     const renderConnectionStrip = () => {
         return !isOnline ? (
-            <div className="terminal-strip capitalize pl-20 pr-20 w-100 bcr-7 cn-0">
+            <span className="terminal-strip capitalize pl-20 pr-20 w-100 bcr-7 cn-0">
                 You’re offline. Please check your internet connection.
-            </div>
+            </span>
         ) : (
             <div className='terminal-strip capitalize'>
                 {errorMessage && (

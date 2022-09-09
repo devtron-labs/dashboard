@@ -7,5 +7,5 @@ export enum SocketConnectionType {
 
 export const ERROR_MESSAGE= {
   UNAUTHORIZED: 'Not authorized. You do not have permission to access the terminal for this application.',
-  GENERIC: 'Found some error'
+  DEFAULT: 'Found some error'
 }
