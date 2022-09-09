@@ -143,6 +143,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         _socket.onerror = function (evt) {
             disableInput();
             terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTED);
+            setErrorMessage('Selected command type is not supported. Please select another.')
         };
     };
 
