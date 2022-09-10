@@ -1782,7 +1782,7 @@ button.anchor {
     line-height: 20px;
 }
 
-.dc__lh-22{
+.dc__lh-22 {
   line-height: 22px;
 }
 
@@ -2095,4 +2095,18 @@ textarea {
 
 .dc__window-bg{
   background: var(--window-bg);
+}
+
+.dc__overflow-hidden {
+    overflow: hidden !important;
+}
+
+.dc__overflow-scroll {
+    overflow: scroll !important;
+}
+
+.dc__no-svg-fill {
+    path {
+        fill: none !important;
+    }
 }

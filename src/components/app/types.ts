@@ -362,7 +362,7 @@ export enum NodeDetailTabs {
 }
 export type NodeDetailTabsType = keyof typeof NodeDetailTabs;
 
-export enum OrderBy {
+export enum SortingOrder {
     ASC = 'ASC',
     DESC = 'DESC'
 }
