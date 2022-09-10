@@ -60,7 +60,7 @@ export function SourceInfo({
         })
     }
     return (
-        <div className="flex left w-100 column w-100 source-info-container">
+        <div className="flex left w-100 column source-info-container">
             <div className="flex left w-100 mb-16">
                 <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
                 <Tippy
