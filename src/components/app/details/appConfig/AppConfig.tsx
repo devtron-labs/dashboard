@@ -547,7 +547,7 @@ const EnvOverridesHelpNote = () => {
             Environment overrides allow you to manage environment specific configurations after you’ve created
             deployment pipelines. &nbsp;
             <a
-                className="learn-more__href"
+                className="href__link"
                 href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE}
                 rel="noreferrer noopener"
                 target="_blank"

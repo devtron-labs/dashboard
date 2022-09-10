@@ -68,7 +68,7 @@ function OnboardingGuide({
                     <div className="onboarding-cards__wrap">
                         <div className="onboarding-card bcn-0 w-300 br-4 en-2 bw-1 cursor">
                             <a
-                                className="learn-more__href cn-9"
+                                className="href__link cn-9"
                                 href={PREVIEW_DEVTRON}
                                 rel="noreferrer noopener"
                                 target="_blank"

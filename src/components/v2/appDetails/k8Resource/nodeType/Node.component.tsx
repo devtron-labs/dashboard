@@ -195,8 +195,8 @@ function NodeComponent({
                         </div>
                     )}
                     <div className="node-row m-0 resource-row">
-                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor content-space`}>
-                            <div className="flex align-start">
+                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor dc__content-space`}>
+                            <div className="flex dc__align-start">
                                 <div
                                     className="flex left top ml-2"
                                     onClick={() => {

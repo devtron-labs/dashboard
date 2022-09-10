@@ -301,12 +301,12 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     const renderConnectionStrip = () => {
         return !isOnline ? (
-            <div className="terminal-strip capitalize pl-20 pr-20 w-100 bcr-7 cn-0">
+            <div className="terminal-strip dc__capitalize pl-20 pr-20 w-100 bcr-7 cn-0">
                 You’re offline. Please check your internet connection.
             </div>
         ) : (
             <div
-                className={`terminal-strip capitalize ${
+                className={`terminal-strip dc__capitalize ${
                     terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED
                         ? `${
                               terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
@@ -322,7 +322,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     <span
                         className={
                             terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
-                                ? 'loading-dots'
+                                ? 'dc__loading-dots'
                                 : ''
                         }
                     >
@@ -335,7 +335,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                         <button
                             type="button"
                             onClick={onClickResume}
-                            className="cursor transparent inline-block dc__underline"
+                            className="cursor dc__transparent dc__inline-block dc__underline"
                         >
                             Resume
                         </button>
@@ -354,7 +354,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             </div>
 
             {isOnline && terminalViewProps.socketConnection === SocketConnectionType.CONNECTED && (
-                <p className={`connection-status ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 capitalize cg-4`}>
+                <p className={`connection-status dc__ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 dc__capitalize cg-4`}>
                     {terminalViewProps.socketConnection}
                 </p>
             )}

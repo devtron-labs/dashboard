@@ -173,7 +173,7 @@ function HeaderSection(type: string) {
                     : 'Permission groups allow you to easily manage user permissions by assigning desired permissions to a group and assigning these groups to users to provide all underlying permissions.'}
                 &nbsp;
                 <a
-                    className="learn-more__href"
+                    className="href__link"
                     rel="noreferrer noopener"
                     href={
                         isUserPremissions
