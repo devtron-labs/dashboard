@@ -38,9 +38,14 @@
             .docker-flie-container {
                 display: flex;
                 .checkout-path-container {
-                    padding: 10px;
-                    background: #d0d4d9;
+                    padding: 8px 10px;
+                    background: var(--N100);
                     border-radius: 4px 0 0 4px;
+                    border: 1px solid var(--N200);
+                    border-right: none;
+                    max-width: 200px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
                 .file-name {
                     border-radius: 0 4px 4px 0;
@@ -62,6 +67,7 @@
                     display: inline-block;
                     background-size: contain;
                     margin-right: 4px;
+                    white-space: nowrap;
                 }
             }
         }

@@ -581,7 +581,15 @@ function Form({ dockerRegistries, sourceConfig, ciConfig, reload, appId }) {
                                 Docker file path (relative)*
                             </label>
                             <div className="docker-flie-container">
+                                <Tippy
+                                className="default-tt"
+                                arrow={false}
+                                placement="top"
+                                content={selectedMaterial.checkoutPath}
+                            >
                                 <span className="checkout-path-container">{selectedMaterial.checkoutPath}</span>
+                            </Tippy>
+
                                 <input
                                     tabIndex={4}
                                     type="text"
